@@ -1,4 +1,4 @@
-package org.multibit;
+package org.multibit.viewsystem.swing;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -27,6 +27,8 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+
+import org.multibit.viewsystem.Localiser;
 
 /*
  * JFrame displaying the contents of a Wallet

@@ -1,4 +1,4 @@
-package org.multibit;
+package org.multibit.viewsystem;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -8,6 +8,8 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.swing.KeyStroke;
+
+import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
  * class used for producing localised messages it contains a resource bundle and

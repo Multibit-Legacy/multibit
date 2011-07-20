@@ -36,11 +36,13 @@
  * maintenance of any nuclear facility.
  */
 
-package org.multibit.watermark;
+package org.multibit.viewsystem.swing.watermark;
 
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
+
+
 
 /**
  * An extension of <code>WatermarkPainter</code> that

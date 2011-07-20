@@ -1,4 +1,4 @@
-package org.multibit;
+package org.multibit.viewsystem.swing;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -9,6 +9,8 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
@@ -27,29 +29,37 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import com.google.bitcoin.core.Wallet;
-import org.multibit.actions.ExitAction;
-import org.multibit.actions.HelpAboutAction;
-import org.multibit.actions.OpenWalletAction;
-import org.multibit.actions.ReceiveBitcoinAction;
-import org.multibit.actions.SaveWalletAsAction;
-import org.multibit.actions.SendBitcoinAction;
-import org.multibit.actions.ShowHelpContentsAction;
-import org.multibit.actions.ViewAddressBookAction;
-import org.multibit.actions.ViewPreferencesAction;
-import org.multibit.watermark.FillPainter;
-import org.multibit.watermark.WatermarkPainter;
-import org.multibit.watermark.WatermarkViewport;
+
+import org.multibit.MultiBitController;
+import org.multibit.viewsystem.Localiser;
+import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.ViewSystem;
+import org.multibit.viewsystem.swing.view.HelpContentsView;
+import org.multibit.viewsystem.swing.action.ExitAction;
+import org.multibit.viewsystem.swing.action.HelpAboutAction;
+import org.multibit.viewsystem.swing.action.OpenWalletAction;
+import org.multibit.viewsystem.swing.action.ReceiveBitcoinAction;
+import org.multibit.viewsystem.swing.action.SaveWalletAsAction;
+import org.multibit.viewsystem.swing.action.SendBitcoinAction;
+import org.multibit.viewsystem.swing.action.ShowHelpContentsAction;
+import org.multibit.viewsystem.swing.action.ViewAddressBookAction;
+import org.multibit.viewsystem.swing.action.ViewPreferencesAction;
+import org.multibit.viewsystem.swing.view.HelpAboutView;
+import org.multibit.viewsystem.swing.watermark.FillPainter;
+import org.multibit.viewsystem.swing.watermark.WatermarkPainter;
+import org.multibit.viewsystem.swing.watermark.WatermarkViewport;
 
 /*
  * JFrame displaying the contents of a Wallet
  */
-public class MultiBitFrame extends JFrame {
+public class MultiBitFrame extends JFrame implements ViewSystem {
     private static final String SAVE_AS_ICON_FILE = "/images/saveAs.jpg";
     private static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
     private static final String SEND_BITCOIN_ICON_FILE = "/images/send.jpg";
@@ -69,6 +79,7 @@ public class MultiBitFrame extends JFrame {
     private Wallet wallet;
     private String walletFilename;
 
+    private MultiBitController controller;
     private Localiser localiser;
 
     private JTextField balanceTextField;
@@ -77,7 +88,18 @@ public class MultiBitFrame extends JFrame {
 
     private WalletTableModel tableModel;
 
-    MultiBitFrame(String walletFilename, Localiser localiser) {
+    /**
+     * the view that the controller is telling us to display
+     * an int - one of the View constants
+     * 
+     */
+    private int currentView;
+    
+    private Map<Integer, View> viewMap;
+    
+
+    public MultiBitFrame(MultiBitController controller, String walletFilename, Localiser localiser) {
+        this.controller = controller;
         this.localiser = localiser;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -120,6 +142,11 @@ public class MultiBitFrame extends JFrame {
                     localiser.getString("multiBitFrame.walletNotLoadedMessageBoxTitle"),
                     JOptionPane.ERROR_MESSAGE, new ImageIcon(this.getIconImage()));
         }
+        
+        // create the views
+        viewMap = new HashMap<Integer, View>();
+        viewMap.put(View.HELP_ABOUT_VIEW, new HelpAboutView(controller, localiser, this));        
+        viewMap.put(View.HELP_CONTENTS_VIEW, new HelpContentsView(controller, localiser, this));        
     }
 
     /**
@@ -361,7 +388,7 @@ public class MultiBitFrame extends JFrame {
         menuBar.add(helpMenu);
 
         // open wallet action
-        OpenWalletAction openWalletAction = new OpenWalletAction(localiser,
+        OpenWalletAction openWalletAction = new OpenWalletAction(controller, localiser,
                 createImageIcon(OPEN_WALLET_ICON_FILE), this);
         JMenuItem menuItem = new JMenuItem(openWalletAction);
         fileMenu.add(menuItem);
@@ -383,20 +410,20 @@ public class MultiBitFrame extends JFrame {
         fileMenu.add(menuItem);
 
         // show help contents action
-        ShowHelpContentsAction showHelpContentsAction = new ShowHelpContentsAction(localiser,
-                createImageIcon(HELP_CONTENTS_ICON_FILE), this);
+        ShowHelpContentsAction showHelpContentsAction = new ShowHelpContentsAction(controller,
+                localiser, createImageIcon(HELP_CONTENTS_ICON_FILE));
         menuItem = new JMenuItem(showHelpContentsAction);
         helpMenu.add(menuItem);
 
         // help about action
-        HelpAboutAction helpAboutAction = new HelpAboutAction(localiser, this);
+        HelpAboutAction helpAboutAction = new HelpAboutAction(controller, localiser, this);
         menuItem = new JMenuItem(helpAboutAction);
         helpMenu.add(menuItem);
 
         toolBar.addSeparator();
 
         // receive bitcoin action
-        ReceiveBitcoinAction receiveBitcoinAction = new ReceiveBitcoinAction(localiser,
+        ReceiveBitcoinAction receiveBitcoinAction = new ReceiveBitcoinAction(controller, localiser,
                 createImageIcon(RECEIVE_BITCOIN_ICON_FILE), this);
         tradeMenu.add(receiveBitcoinAction);
         JButton receiveBitcoinButton = new JButton(receiveBitcoinAction);
@@ -441,9 +468,8 @@ public class MultiBitFrame extends JFrame {
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {
-            System.err
-                    .println("org.multibit.ViewerFrame#createImageIcon: Could not find file: "
-                            + path);
+            System.err.println("org.multibit.ViewerFrame#createImageIcon: Could not find file: "
+                    + path);
             return null;
         }
     }
@@ -530,5 +556,79 @@ public class MultiBitFrame extends JFrame {
 
             return label;
         }
+    }
+
+    // MultiBitView methods
+    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
+        if (currentView != 0) {
+            View view = viewMap.get(currentView);
+            view.displayMessage(messageKey, messageData, titleKey);
+        }
+    }
+
+    public void setLocaliser(Localiser localiser) {
+        this.localiser = localiser;
+    }
+
+    public void displayView(int viewToDisplay) {
+        currentView = viewToDisplay;
+        
+        switch (viewToDisplay) {
+        case View.HELP_ABOUT_VIEW: {
+            final View helpAboutView = viewMap.get(View.HELP_ABOUT_VIEW);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    helpAboutView.displayView();
+                }
+            });
+        
+            break;
+        }
+
+        case View.HELP_CONTENTS_VIEW: {
+            final View helpContentsView = viewMap.get(View.HELP_CONTENTS_VIEW);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    helpContentsView.displayView();
+                }
+            });
+        
+            break;
+        }
+
+        default: {
+            // do nothing
+        }
+        }
+        
+    }
+
+    public void navigateAwayFromView(int viewToNavigateAwayFrom, int nextView) {
+        final int finalNextView = nextView;
+        
+        switch (viewToNavigateAwayFrom) {
+        case View.HELP_ABOUT_VIEW: {
+            final View helpAboutView = viewMap.get(View.HELP_ABOUT_VIEW);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    helpAboutView.navigateAwayFromView(finalNextView);
+                }
+            });
+            break;
+        }
+        case View.HELP_CONTENTS_VIEW: {
+            final View helpContentsView = viewMap.get(View.HELP_CONTENTS_VIEW);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    helpContentsView.navigateAwayFromView(finalNextView);
+                }
+            });
+            break;
+        }
+        
+        default: {
+            // do nothing
+        }
+        }        
     }
 }

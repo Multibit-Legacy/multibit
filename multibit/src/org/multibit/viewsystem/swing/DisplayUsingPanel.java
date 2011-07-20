@@ -1,4 +1,4 @@
-package org.multibit;
+package org.multibit.viewsystem.swing;
 
 import java.awt.FlowLayout;
 

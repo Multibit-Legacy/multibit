@@ -1,4 +1,4 @@
-package org.multibit;
+package org.multibit.viewsystem.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -20,6 +20,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import org.multibit.viewsystem.Localiser;
 
 public class SendBitcoinsDialog extends JDialog {
 

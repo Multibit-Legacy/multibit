@@ -1,42 +1,38 @@
-package org.multibit.actions;
+package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 
-import org.multibit.Localiser;
-import org.multibit.MultiBitFrame;
+import org.multibit.ActionForward;
+import org.multibit.MultiBitController;
+import org.multibit.viewsystem.Localiser;
 
 /**
- * This {@link Action} shows the BitCoinJ wiki
+ * This {@link Action} shows the MultiBit help
  */
 public class ShowHelpContentsAction extends AbstractAction {
 
     private static final long serialVersionUID = 1923492460523457765L;
 
-    private MultiBitFrame mainFrame;
-    private Localiser localiser;
+    private MultiBitController controller;
     
     /**
      * Creates a new {@link ShowHelpContentsAction}.
      */
-    public ShowHelpContentsAction(Localiser localiser, ImageIcon icon, MultiBitFrame mainFrame) {
+    public ShowHelpContentsAction(MultiBitController controller, Localiser localiser, ImageIcon icon) {
         super(localiser.getString("showHelpContentsAction.text"), icon);
-        this.localiser = localiser;
+        this.controller = controller;
         putValue(SHORT_DESCRIPTION, localiser.getString("showHelpContentsAction.tooltip"));
         putValue(MNEMONIC_KEY, localiser.getMnemonic("showHelpContentsAction.mnemonicKey"));
-        
-        this.mainFrame = mainFrame;
     }
 
     /**
-     * show the BitCoinJ wiki
+     * forward to the help contents view
      */
-    public void actionPerformed(ActionEvent e) {        
-        JOptionPane.showMessageDialog(mainFrame, "TODO - Show Help Contents");
-        
-    }
+    public void actionPerformed(ActionEvent e) { 
+        controller.setActionForward(ActionForward.FORWARD_TO_HELP_CONTENTS);
+     }
 }

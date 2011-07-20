@@ -1,4 +1,4 @@
-package org.multibit.actions;
+package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -11,8 +11,11 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import com.google.bitcoin.core.Wallet;
-import org.multibit.Localiser;
-import org.multibit.MultiBitFrame;
+
+import org.multibit.ActionForward;
+import org.multibit.MultiBitController;
+import org.multibit.viewsystem.Localiser;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
  * This {@link Action} opens a wallet from a file
@@ -26,13 +29,16 @@ public class OpenWalletAction extends AbstractAction {
      */
     private static JFileChooser fileChooser;
     private MultiBitFrame mainFrame;
+    
+    private MultiBitController controller;
     private Localiser localiser;
     
     /**
      * Creates a new {@link OpenWalletAction}.
      */
-    public OpenWalletAction(Localiser localiser, ImageIcon icon, MultiBitFrame mainFrame) {
+    public OpenWalletAction(MultiBitController controller, Localiser localiser, ImageIcon icon, MultiBitFrame mainFrame) {
         super(localiser.getString("openWalletAction.text"), icon);
+        this.controller = controller;
         this.localiser = localiser;
         putValue(SHORT_DESCRIPTION, localiser.getString("openWalletAction.tooltip"));
         putValue(MNEMONIC_KEY, localiser.getMnemonic("openWalletAction.mnemonicKey"));
@@ -52,7 +58,9 @@ public class OpenWalletAction extends AbstractAction {
     /**
      * open a wallet
      */
-    public void actionPerformed(ActionEvent e) {        
+    public void actionPerformed(ActionEvent e) { 
+        controller.setActionForward(ActionForward.FORWARD_TO_OPEN_WALLET);
+        
         int returnVal = fileChooser.showOpenDialog(mainFrame);
         
         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -68,7 +76,8 @@ public class OpenWalletAction extends AbstractAction {
                         JOptionPane.ERROR_MESSAGE, new ImageIcon(mainFrame.getIconImage()));
 
             }
-        } 
+       } 
+       controller.setActionForward(ActionForward.FORWARD_TO_PREVIOUS);               
     }
     
     public static JFileChooser getFileChooser () {

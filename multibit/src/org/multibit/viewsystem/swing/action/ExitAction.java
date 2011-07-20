@@ -1,11 +1,11 @@
-package org.multibit.actions;
+package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import org.multibit.Localiser;
+import org.multibit.viewsystem.Localiser;
 
 /**
  * This {@link Action} exits the application.

@@ -1,4 +1,4 @@
-package org.multibit.actions;
+package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
 
@@ -6,9 +6,9 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
-import org.multibit.AddressBookDialog;
-import org.multibit.Localiser;
-import org.multibit.MultiBitFrame;
+import org.multibit.viewsystem.Localiser;
+import org.multibit.viewsystem.swing.AddressBookDialog;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
  * This {@link Action} views the address book

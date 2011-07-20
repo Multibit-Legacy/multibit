@@ -36,7 +36,7 @@
  * maintenance of any nuclear facility.
  */
 
-package org.multibit.watermark;
+package org.multibit.viewsystem.swing.watermark;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -47,6 +47,8 @@ import java.awt.event.HierarchyListener;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
+
+
 
 /**
  * This class is the abstract base class for objects that know

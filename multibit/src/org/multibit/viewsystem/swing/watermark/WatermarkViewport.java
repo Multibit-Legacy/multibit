@@ -36,9 +36,12 @@
  * maintenance of any nuclear facility.
  */
 
-package org.multibit.watermark;
+package org.multibit.viewsystem.swing.watermark;
 
 import javax.swing.*;
+
+
+
 import java.awt.*;
 import java.awt.event.*;
 

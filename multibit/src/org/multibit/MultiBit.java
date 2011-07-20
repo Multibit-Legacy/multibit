@@ -2,7 +2,10 @@ package org.multibit;
 
 import java.util.Locale;
 
-import javax.swing.JFrame;
+import org.multibit.viewsystem.Localiser;
+import org.multibit.viewsystem.ViewSystem;
+import org.multibit.viewsystem.commandline.CommandLineViewSystem;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
  * Class for displaying the contents of a Wallet
@@ -41,8 +44,18 @@ public class MultiBit {
             System.out.println(localiser.getString("multiBit.usageNote"));
         }
 
-        // display UI
-        //System.out.println("MultiBit : filename = '" + filename + "', locale = '" + locale + "'");
-        JFrame multiBitFrame = new MultiBitFrame(filename, localiser);
+        // create the controller
+        MultiBitController controller = new MultiBitController();
+        
+        // create the views and set the localisers
+        // add the command line view
+        ViewSystem textView = new CommandLineViewSystem(controller, localiser);
+        controller.registerViewSystem(textView);
+
+        ViewSystem swingView = new MultiBitFrame(controller, filename, localiser);
+        controller.registerViewSystem(swingView);
+        
+        // show the home page
+        controller.setActionForward(ActionForward.FORWARD_TO_HOME_PAGE);
     }
 }

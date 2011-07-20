@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.multibit;
+package org.multibit.view;
 
 import java.util.Locale;
 
 import junit.framework.TestCase;
 
 import org.junit.Test;
+import org.multibit.viewsystem.Localiser;
 
 public class LocaliserTest extends TestCase {
     // some example keys that are in the viewer i18n files for test purposes

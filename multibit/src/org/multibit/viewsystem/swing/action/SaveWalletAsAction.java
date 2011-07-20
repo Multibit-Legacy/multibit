@@ -1,4 +1,4 @@
-package org.multibit.actions;
+package org.multibit.viewsystem.swing.action;
 
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -16,8 +16,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import com.google.bitcoin.core.Wallet;
-import org.multibit.Localiser;
-import org.multibit.MultiBitFrame;
+import org.multibit.viewsystem.Localiser;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
  * This {@link Action} saves a wallet to a new file, backing up any existing

@@ -1,4 +1,4 @@
-package org.multibit.actions;
+package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
 
@@ -7,8 +7,8 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-import org.multibit.Localiser;
-import org.multibit.MultiBitFrame;
+import org.multibit.viewsystem.Localiser;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
  * This {@link Action} views the BitCoinJ preferences
