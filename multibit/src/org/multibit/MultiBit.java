@@ -2,6 +2,7 @@ package org.multibit;
 
 import java.util.Locale;
 
+import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.Localiser;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.commandline.CommandLineViewSystem;
@@ -47,12 +48,17 @@ public class MultiBit {
         // create the controller
         MultiBitController controller = new MultiBitController();
         
-        // create the views and set the localisers
-        // add the command line view
-        ViewSystem textView = new CommandLineViewSystem(controller, localiser);
+        // create the model
+        MultiBitModel model = new MultiBitModel();
+        model.setWalletFilename(filename);
+        
+        // create the view systems and set the localisers
+        // add the command line view system
+        ViewSystem textView = new CommandLineViewSystem(controller, model, localiser);
         controller.registerViewSystem(textView);
 
-        ViewSystem swingView = new MultiBitFrame(controller, filename, localiser);
+        // add the swing view system
+        ViewSystem swingView = new MultiBitFrame(controller, model, localiser);
         controller.registerViewSystem(swingView);
         
         // show the home page

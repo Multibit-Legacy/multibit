@@ -10,10 +10,10 @@ import org.multibit.ActionForward;
 import org.multibit.MultiBitController;
 import org.multibit.viewsystem.Localiser;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.ReceiveBitcoinsDialog;
+import org.multibit.viewsystem.swing.view.ReceiveBitcoinDialog;
 
 /**
- * This {@link Action} sends bitcoin
+ * This {@link Action} receives bitcoin
  */
 public class ReceiveBitcoinAction extends AbstractAction {
 
@@ -41,9 +41,9 @@ public class ReceiveBitcoinAction extends AbstractAction {
      * receive bitcoins
      */
     public void actionPerformed(ActionEvent e) {  
-        controller.setActionForward(ActionForward.FORWARD_TO_RECEIVE_BITCOINS);
+        controller.setActionForward(ActionForward.FORWARD_TO_RECEIVE_BITCOIN);
         
-        ReceiveBitcoinsDialog receiveBitcoinsDialog = new ReceiveBitcoinsDialog(mainFrame, localiser);       
+        ReceiveBitcoinDialog receiveBitcoinsDialog = new ReceiveBitcoinDialog(mainFrame, controller, localiser);       
         receiveBitcoinsDialog.setVisible(true);      
     }
 }

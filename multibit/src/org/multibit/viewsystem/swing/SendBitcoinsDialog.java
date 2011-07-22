@@ -21,7 +21,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.multibit.MultiBitController;
 import org.multibit.viewsystem.Localiser;
+import org.multibit.viewsystem.swing.action.PasteAddressAction;
 
 public class SendBitcoinsDialog extends JDialog {
 
@@ -31,6 +33,7 @@ public class SendBitcoinsDialog extends JDialog {
 
     private JFrame mainFrame;
 
+    private MultiBitController controller;
     private Localiser localiser;
 
     private JTextField addressTextField;
@@ -41,9 +44,10 @@ public class SendBitcoinsDialog extends JDialog {
 
     private final SendBitcoinsDialog thisDialog;
 
-    public SendBitcoinsDialog(JFrame mainFrame, Localiser localiser) {
+    public SendBitcoinsDialog(JFrame mainFrame, MultiBitController controller, Localiser localiser) {
         super();
         this.mainFrame = mainFrame;
+        this.controller = controller;
         this.localiser = localiser;
         this.thisDialog = this;
 
@@ -55,8 +59,8 @@ public class SendBitcoinsDialog extends JDialog {
     }
 
     private void initUI() {
-        positionDialogRelativeToParent(this, 0.20D, 0.25D);
-        setMinimumSize(new Dimension(680, 240));
+        positionDialogRelativeToParent(this, 0.16D, 0.25D);
+        setMinimumSize(new Dimension(740, 240));
         setTitle(localiser.getString("sendBitcoinsDialog.title"));
         setLayout(new BorderLayout());
         add(createSendBitcoinsPanel(), BorderLayout.CENTER);
@@ -143,13 +147,27 @@ public class SendBitcoinsDialog extends JDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         sendBitcoinsPanel.add(addressTextField, constraints);
 
+        PasteAddressAction pasteAddressAction = new PasteAddressAction(controller, localiser);
+        JButton pasteAddressButton = new JButton(pasteAddressAction);
+//        pasteAddressButton.setText(localiser.getString("pasteAddressAction.text"));
+//        pasteAddressButton.setToolTipText(localiser
+//                .getString("pasteAddressAction.tooltip"));
+//        pasteAddressButton.addActionListener(new PasteAddressButtonListener());
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 4;
+        constraints.weightx = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        sendBitcoinsPanel.add(pasteAddressButton, constraints);
+
         JButton addressBookButton = new JButton();
         addressBookButton.setText(localiser.getString("sendBitcoinsDialog.addressBookButton"));
         addressBookButton.setToolTipText(localiser
                 .getString("sendBitcoinsDialog.addressBookButton.tooltip"));
         addressBookButton.addActionListener(new AddressBookButtonListener());
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
+        constraints.gridx = 4;
         constraints.gridy = 4;
         constraints.weightx = 0.1;
         constraints.gridwidth = 1;

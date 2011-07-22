@@ -1,3 +1,10 @@
 org.multibit
-org.multibit.actions
-org.multibit.watermark
+org.multibit.model
+org.multibit.viewsystem
+org.multibit.viewsystem.commandline
+org.multibit.viewsystem.commandline.action
+org.multibit.viewsystem.commandline.view
+org.multibit.viewsystem.swing
+org.multibit.viewsystem.swing.action
+org.multibit.viewsystem.swing.view
+org.multibit.viewsystem.swing.watermark

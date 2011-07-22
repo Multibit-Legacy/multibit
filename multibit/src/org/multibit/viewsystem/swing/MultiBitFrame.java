@@ -38,10 +38,12 @@ import javax.swing.table.TableColumn;
 import com.google.bitcoin.core.Wallet;
 
 import org.multibit.MultiBitController;
+import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.Localiser;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.view.HelpContentsView;
+import org.multibit.viewsystem.swing.view.ReceiveBitcoinView;
 import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.action.HelpAboutAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
@@ -75,11 +77,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.7D;
 
     private static final long serialVersionUID = 7621813615342923041L;
-
-    private Wallet wallet;
-    private String walletFilename;
-
+ 
     private MultiBitController controller;
+    private MultiBitModel model;
     private Localiser localiser;
 
     private JTextField balanceTextField;
@@ -98,26 +98,26 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private Map<Integer, View> viewMap;
     
 
-    public MultiBitFrame(MultiBitController controller, String walletFilename, Localiser localiser) {
+    public MultiBitFrame(MultiBitController controller, MultiBitModel model, Localiser localiser) {
         this.controller = controller;
+        this.model = model;
         this.localiser = localiser;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         boolean walletNotLoaded = false;
         String walletNotLoadedErrorMessage = "";
 
-        if (walletFilename != null) {
-            File file = new File(walletFilename);
+        if (model.getWalletFilename() != null) {
+            File file = new File(model.getWalletFilename());
 
             try {
-                wallet = Wallet.loadFromFile(file);
-                setWallet(wallet, walletFilename);
-
+                model.setWallet(Wallet.loadFromFile(file));
+ 
             } catch (IOException e) {
                 walletNotLoaded = true;
                 walletNotLoadedErrorMessage = localiser.getString(
                         "multiBitFrame.walletNotLoaded",
-                        new Object[] { walletFilename,
+                        new Object[] { model.getWalletFilename(),
                                 e.getClass().getName() + ": " + e.getMessage() });
             }
         } else {
@@ -147,7 +147,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         viewMap = new HashMap<Integer, View>();
         viewMap.put(View.HELP_ABOUT_VIEW, new HelpAboutView(controller, localiser, this));        
         viewMap.put(View.HELP_CONTENTS_VIEW, new HelpContentsView(controller, localiser, this));        
-    }
+        viewMap.put(View.RECEIVE_BITCOIN_VIEW, new ReceiveBitcoinView(controller, localiser, this));        
+     }
 
     /**
      * set a new wallet onto the frame
@@ -156,8 +157,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
      * @param walletPathname
      */
     public void setWallet(Wallet wallet, String walletFilename) {
-        this.wallet = wallet;
-        this.walletFilename = walletFilename;
+        model.setWallet(wallet);
+        model.setWalletFilename(walletFilename);
 
         this.setTitle(walletFilename + TITLE_SEPARATOR + localiser.getString("multiBitFrame.title"));
 
@@ -171,14 +172,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
      * get the current wallet
      */
     public Wallet getWallet() {
-        return wallet;
+        return model.getWallet();
     }
 
     /**
      * get the current wallet filename
      */
     public String getWalletFilename() {
-        return walletFilename;
+        return model.getWalletFilename();
     }
 
     private void sizeAndCenter() {
@@ -301,7 +302,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         walletPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
-        tableModel = new WalletTableModel(wallet, localiser);
+        tableModel = new WalletTableModel(model, localiser);
         JTable table = new JTable(tableModel);
         table.setOpaque(false);
         table.setShowGrid(false);
@@ -432,7 +433,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         toolBar.add(receiveBitcoinButton);
 
         // send bitcoin action
-        SendBitcoinAction sendBitcoinAction = new SendBitcoinAction(localiser,
+        SendBitcoinAction sendBitcoinAction = new SendBitcoinAction(controller, localiser,
                 createImageIcon(SEND_BITCOIN_ICON_FILE), this);
         menuItem = new JMenuItem(sendBitcoinAction);
         tradeMenu.add(menuItem);
@@ -562,7 +563,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
         if (currentView != 0) {
             View view = viewMap.get(currentView);
-            view.displayMessage(messageKey, messageData, titleKey);
+            if (view != null) {
+                view.displayMessage(messageKey, messageData, titleKey);
+            } else {
+                System.out.println("MultiBitFrame#displayMessage - no view with id " + currentView + " to display message with key " + messageKey);
+            }
+        } else {
+            System.out.println("MultiBitFrame#displayMessage - no view on which to display message with key " + messageKey);
         }
     }
 
@@ -574,6 +581,50 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         currentView = viewToDisplay;
         
         switch (viewToDisplay) {
+        case View.RECEIVE_BITCOIN_VIEW: {
+            final View receiveBitcoinView = viewMap.get(View.RECEIVE_BITCOIN_VIEW);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    receiveBitcoinView.displayView();
+                }
+            });
+        
+            break;
+        }
+
+        case View.SEND_BITCOIN_VIEW: {
+            final View sendBitcoinView = viewMap.get(View.SEND_BITCOIN_VIEW);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    sendBitcoinView.displayView();
+                }
+            });
+        
+            break;
+        }
+
+        case View.ADDRESS_BOOK_RECEIVING_VIEW: {
+            final View addressBookReceivingView = viewMap.get(View.ADDRESS_BOOK_RECEIVING_VIEW);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    addressBookReceivingView.displayView();
+                }
+            });
+        
+            break;
+        }
+
+        case View.ADDRESS_BOOK_SENDING_VIEW: {
+            final View addressBookSendingView = viewMap.get(View.ADDRESS_BOOK_SENDING_VIEW);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    addressBookSendingView.displayView();
+                }
+            });
+        
+            break;
+        }
+
         case View.HELP_ABOUT_VIEW: {
             final View helpAboutView = viewMap.get(View.HELP_ABOUT_VIEW);
             SwingUtilities.invokeLater(new Runnable() {
@@ -596,8 +647,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             break;
         }
 
+        case View.HOME_PAGE_VIEW:
         default: {
-            // do nothing
+            // do nothing - already showing the home page
         }
         }
         
@@ -607,6 +659,51 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         final int finalNextView = nextView;
         
         switch (viewToNavigateAwayFrom) {
+        case View.RECEIVE_BITCOIN_VIEW: {
+            final View receiveBitcoinView = viewMap.get(View.RECEIVE_BITCOIN_VIEW);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    receiveBitcoinView.navigateAwayFromView(finalNextView);
+                }
+            });
+        
+            break;
+        }
+
+        case View.SEND_BITCOIN_VIEW: {
+            final View sendBitcoinView = viewMap.get(View.SEND_BITCOIN_VIEW);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    sendBitcoinView.navigateAwayFromView(finalNextView);
+                }
+            });
+        
+            break;
+        }
+
+        case View.ADDRESS_BOOK_RECEIVING_VIEW: {
+            final View addressBookReceivingView = viewMap.get(View.ADDRESS_BOOK_RECEIVING_VIEW);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    addressBookReceivingView.navigateAwayFromView(finalNextView);
+                }
+            });
+        
+            break;
+        }
+
+        case View.ADDRESS_BOOK_SENDING_VIEW: {
+            final View addressBookSendingView = viewMap.get(View.ADDRESS_BOOK_SENDING_VIEW);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    addressBookSendingView.navigateAwayFromView(finalNextView);
+                }
+            });
+        
+            break;
+        }
+
+
         case View.HELP_ABOUT_VIEW: {
             final View helpAboutView = viewMap.get(View.HELP_ABOUT_VIEW);
             SwingUtilities.invokeLater(new Runnable() {
