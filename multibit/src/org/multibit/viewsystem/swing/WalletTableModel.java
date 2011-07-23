@@ -6,9 +6,9 @@ import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.multibit.Localiser;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletData;
-import org.multibit.viewsystem.Localiser;
 
 import com.google.bitcoin.core.Wallet;
 

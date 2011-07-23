@@ -21,11 +21,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.multibit.MultiBitController;
-import org.multibit.viewsystem.Localiser;
+import org.multibit.Localiser;
+import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.action.PasteAddressAction;
+import org.multibit.viewsystem.swing.view.AddressBookDialog;
 
-public class SendBitcoinsDialog extends JDialog {
+public class SendBitcoinDialog extends JDialog {
 
     private static final long serialVersionUID = -2065108657497842662L;
 
@@ -42,9 +43,9 @@ public class SendBitcoinsDialog extends JDialog {
 
     private JTextField amountTextField;
 
-    private final SendBitcoinsDialog thisDialog;
+    private final SendBitcoinDialog thisDialog;
 
-    public SendBitcoinsDialog(JFrame mainFrame, MultiBitController controller, Localiser localiser) {
+    public SendBitcoinDialog(JFrame mainFrame, MultiBitController controller, Localiser localiser) {
         super();
         this.mainFrame = mainFrame;
         this.controller = controller;
@@ -61,7 +62,7 @@ public class SendBitcoinsDialog extends JDialog {
     private void initUI() {
         positionDialogRelativeToParent(this, 0.16D, 0.25D);
         setMinimumSize(new Dimension(740, 240));
-        setTitle(localiser.getString("sendBitcoinsDialog.title"));
+        setTitle(localiser.getString("sendBitcoinDialog.title"));
         setLayout(new BorderLayout());
         add(createSendBitcoinsPanel(), BorderLayout.CENTER);
         add(createButtonsPanel(), BorderLayout.SOUTH);
@@ -93,7 +94,7 @@ public class SendBitcoinsDialog extends JDialog {
         sendBitcoinsPanel.add(new JLabel(sendBigIcon), constraints);
 
         JLabel helpLabel1 = new JLabel(
-                localiser.getString("sendBitcoinsDialog.helpLabel1.message"));
+                localiser.getString("sendBitcoinDialog.helpLabel1.message"));
         helpLabel1.setHorizontalAlignment(JLabel.LEFT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
@@ -106,7 +107,7 @@ public class SendBitcoinsDialog extends JDialog {
         sendBitcoinsPanel.add(helpLabel1, constraints);
       
         JLabel helpLabel2 = new JLabel(
-                localiser.getString("sendBitcoinsDialog.helpLabel2.message"));
+                localiser.getString("sendBitcoinDialog.helpLabel2.message"));
         helpLabel2.setHorizontalAlignment(JLabel.LEFT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
@@ -125,8 +126,8 @@ public class SendBitcoinsDialog extends JDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         sendBitcoinsPanel.add(filler1, constraints);
       
-        JLabel addressLabel = new JLabel(localiser.getString("sendBitcoinsDialog.addressLabel"));
-        addressLabel.setToolTipText(localiser.getString("sendBitcoinsDialog.addressLabel.tooltip"));
+        JLabel addressLabel = new JLabel(localiser.getString("sendBitcoinDialog.addressLabel"));
+        addressLabel.setToolTipText(localiser.getString("sendBitcoinDialog.addressLabel.tooltip"));
         addressLabel.setHorizontalAlignment(JLabel.RIGHT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -162,9 +163,9 @@ public class SendBitcoinsDialog extends JDialog {
         sendBitcoinsPanel.add(pasteAddressButton, constraints);
 
         JButton addressBookButton = new JButton();
-        addressBookButton.setText(localiser.getString("sendBitcoinsDialog.addressBookButton"));
+        addressBookButton.setText(localiser.getString("sendBitcoinDialog.addressBookButton"));
         addressBookButton.setToolTipText(localiser
-                .getString("sendBitcoinsDialog.addressBookButton.tooltip"));
+                .getString("sendBitcoinDialog.addressBookButton.tooltip"));
         addressBookButton.addActionListener(new AddressBookButtonListener());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 4;
@@ -174,8 +175,8 @@ public class SendBitcoinsDialog extends JDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         sendBitcoinsPanel.add(addressBookButton, constraints);
 
-        JLabel labelLabel = new JLabel(localiser.getString("sendBitcoinsDialog.labelLabel"));
-        labelLabel.setToolTipText(localiser.getString("sendBitcoinsDialog.labelLabel.tooltip"));
+        JLabel labelLabel = new JLabel(localiser.getString("sendBitcoinDialog.labelLabel"));
+        labelLabel.setToolTipText(localiser.getString("sendBitcoinDialog.labelLabel.tooltip"));
         labelLabel.setHorizontalAlignment(JLabel.RIGHT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -204,8 +205,8 @@ public class SendBitcoinsDialog extends JDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         sendBitcoinsPanel.add(filler2, constraints);
       
-        JLabel amountLabel = new JLabel(localiser.getString("sendBitcoinsDialog.amountLabel"));
-        amountLabel.setToolTipText(localiser.getString("sendBitcoinsDialog.amountLabel.tooltip"));
+        JLabel amountLabel = new JLabel(localiser.getString("sendBitcoinDialog.amountLabel"));
+        amountLabel.setToolTipText(localiser.getString("sendBitcoinDialog.amountLabel.tooltip"));
         amountLabel.setHorizontalAlignment(JLabel.RIGHT);
         constraints.gridx = 0;
         constraints.gridy = 7;
@@ -225,9 +226,9 @@ public class SendBitcoinsDialog extends JDialog {
         sendBitcoinsPanel.add(amountTextField, constraints);
 
         JLabel amountUnitLabel = new JLabel(
-                localiser.getString("sendBitcoinsDialog.amountUnitLabel"));
+                localiser.getString("sendBitcoinDialog.amountUnitLabel"));
         amountUnitLabel.setToolTipText(localiser
-                .getString("sendBitcoinsDialog.amountUnitLabel.tooltip"));
+                .getString("sendBitcoinDialog.amountUnitLabel.tooltip"));
         constraints.gridx = 2;
         constraints.gridy = 7;
         constraints.weightx = 0.4;
@@ -247,19 +248,19 @@ public class SendBitcoinsDialog extends JDialog {
  //       outerPanel.add(buttonsPanel, BorderLayout.EAST);
 
 //        JCheckBox saveChanges = new JCheckBox(
-//                localiser.getString("sendBitcoinsDialog.saveChangesMessage"), true);
+//                localiser.getString("sendBitcoinDialog.saveChangesMessage"), true);
 //        saveChanges.setFocusable(false);
 //        outerPanel.add(saveChanges, BorderLayout.WEST);
 
         JButton cancelButton = new JButton();
-        cancelButton.setText(localiser.getString("sendBitcoinsDialog.cancelButton"));
-        cancelButton.setToolTipText(localiser.getString("sendBitcoinsDialog.cancelButton.tooltip"));
+        cancelButton.setText(localiser.getString("sendBitcoinDialog.cancelButton"));
+        cancelButton.setToolTipText(localiser.getString("sendBitcoinDialog.cancelButton.tooltip"));
         cancelButton.addActionListener(new CancelButtonListener());
         buttonsPanel.add(cancelButton);
 
         JButton sendButton = new JButton();
-        sendButton.setText(localiser.getString("sendBitcoinsDialog.sendButton"));
-        sendButton.setToolTipText(localiser.getString("sendBitcoinsDialog.sendButton.tooltip"));
+        sendButton.setText(localiser.getString("sendBitcoinDialog.sendButton"));
+        sendButton.setToolTipText(localiser.getString("sendBitcoinDialog.sendButton.tooltip"));
         sendButton.addActionListener(new SendButtonListener());
 
         buttonsPanel.add(sendButton);
@@ -356,13 +357,13 @@ public class SendBitcoinsDialog extends JDialog {
 
             // ask for confirmation
             Object[] options = {
-                    localiser.getString("sendBitcoinsDialog.sendButtonConfirmMessageSendOption"),
-                    localiser.getString("sendBitcoinsDialog.sendButtonConfirmMessageCancelOption") };
+                    localiser.getString("sendBitcoinDialog.sendButtonConfirmMessageSendOption"),
+                    localiser.getString("sendBitcoinDialog.sendButtonConfirmMessageCancelOption") };
             int returnValue = JOptionPane.showOptionDialog(thisDialog, localiser.getString(
-                    "sendBitcoinsDialog.sendButtonConfirmMessage",
+                    "sendBitcoinDialog.sendButtonConfirmMessage",
                     new String[] { amountTextField.getText(), addressTextField.getText(),
                             labelTextField.getText() }), localiser
-                    .getString("sendBitcoinsDialog.sendButtonConfirmTitle"),
+                    .getString("sendBitcoinDialog.sendButtonConfirmTitle"),
                     JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
                     options[1]);
             if (returnValue == 0) {

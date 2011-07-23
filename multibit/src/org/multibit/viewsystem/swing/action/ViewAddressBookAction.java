@@ -6,9 +6,9 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
-import org.multibit.viewsystem.Localiser;
-import org.multibit.viewsystem.swing.AddressBookDialog;
+import org.multibit.Localiser;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.AddressBookDialog;
 
 /**
  * This {@link Action} views the address book

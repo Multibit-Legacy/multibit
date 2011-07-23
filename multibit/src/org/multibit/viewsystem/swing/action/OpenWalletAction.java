@@ -12,9 +12,9 @@ import javax.swing.JOptionPane;
 
 import com.google.bitcoin.core.Wallet;
 
-import org.multibit.ActionForward;
-import org.multibit.MultiBitController;
-import org.multibit.viewsystem.Localiser;
+import org.multibit.Localiser;
+import org.multibit.controller.ActionForward;
+import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
@@ -59,7 +59,7 @@ public class OpenWalletAction extends AbstractAction {
      * open a wallet
      */
     public void actionPerformed(ActionEvent e) { 
-        controller.setActionForward(ActionForward.FORWARD_TO_OPEN_WALLET);
+        controller.setActionForwardToChild(ActionForward.FORWARD_TO_OPEN_WALLET);
         
         int returnVal = fileChooser.showOpenDialog(mainFrame);
         
@@ -77,7 +77,7 @@ public class OpenWalletAction extends AbstractAction {
 
             }
        } 
-       controller.setActionForward(ActionForward.FORWARD_TO_PREVIOUS);               
+       controller.setActionForwardToParent();               
     }
     
     public static JFileChooser getFileChooser () {

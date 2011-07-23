@@ -16,7 +16,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import com.google.bitcoin.core.Wallet;
-import org.multibit.viewsystem.Localiser;
+
+import org.multibit.Localiser;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**

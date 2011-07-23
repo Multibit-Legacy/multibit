@@ -2,8 +2,9 @@ package org.multibit;
 
 import java.util.Locale;
 
+import org.multibit.controller.ActionForward;
+import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.Localiser;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.commandline.CommandLineViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -62,6 +63,6 @@ public class MultiBit {
         controller.registerViewSystem(swingView);
         
         // show the home page
-        controller.setActionForward(ActionForward.FORWARD_TO_HOME_PAGE);
+        controller.setActionForwardToChild(ActionForward.FORWARD_TO_HOME_PAGE);
     }
 }

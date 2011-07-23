@@ -1,4 +1,4 @@
-package org.multibit.viewsystem;
+package org.multibit;
 
 import java.io.IOException;
 import java.text.MessageFormat;

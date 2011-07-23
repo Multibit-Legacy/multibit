@@ -7,10 +7,10 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
-import org.multibit.MultiBitController;
-import org.multibit.viewsystem.Localiser;
+import org.multibit.Localiser;
+import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.SendBitcoinsDialog;
+import org.multibit.viewsystem.swing.SendBitcoinDialog;
 
 /**
  * This {@link Action} sends bitcoin
@@ -40,7 +40,7 @@ public class SendBitcoinAction extends AbstractAction {
      * send bitcoins
      */
     public void actionPerformed(ActionEvent e) {        
-        SendBitcoinsDialog sendBitcoinsDialog = new SendBitcoinsDialog(mainFrame, controller, localiser);       
+        SendBitcoinDialog sendBitcoinsDialog = new SendBitcoinDialog(mainFrame, controller, localiser);       
         sendBitcoinsDialog.setVisible(true);      
     }
 }

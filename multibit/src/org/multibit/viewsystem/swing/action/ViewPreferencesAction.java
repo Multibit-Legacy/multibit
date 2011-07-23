@@ -7,7 +7,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-import org.multibit.viewsystem.Localiser;
+import org.multibit.Localiser;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
@@ -33,7 +33,7 @@ public class ViewPreferencesAction extends AbstractAction {
     }
 
     /**
-     * views the BitCoinJ preferences
+     * views the MultiBit preferences
      */
     public void actionPerformed(ActionEvent e) {
         JOptionPane.showMessageDialog(mainFrame, "TODO - View Preferences");

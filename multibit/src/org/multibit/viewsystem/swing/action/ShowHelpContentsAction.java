@@ -6,9 +6,9 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
-import org.multibit.ActionForward;
-import org.multibit.MultiBitController;
-import org.multibit.viewsystem.Localiser;
+import org.multibit.Localiser;
+import org.multibit.controller.ActionForward;
+import org.multibit.controller.MultiBitController;
 
 /**
  * This {@link Action} shows the MultiBit help
@@ -33,6 +33,6 @@ public class ShowHelpContentsAction extends AbstractAction {
      * forward to the help contents view
      */
     public void actionPerformed(ActionEvent e) { 
-        controller.setActionForward(ActionForward.FORWARD_TO_HELP_CONTENTS);
+        controller.setActionForwardToChild(ActionForward.FORWARD_TO_HELP_CONTENTS);
      }
 }

@@ -37,13 +37,17 @@ import javax.swing.table.TableColumn;
 
 import com.google.bitcoin.core.Wallet;
 
-import org.multibit.MultiBitController;
+import org.multibit.Localiser;
+import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.Localiser;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
+import org.multibit.viewsystem.swing.view.AddressBookReceivingView;
+import org.multibit.viewsystem.swing.view.AddressBookSendingView;
 import org.multibit.viewsystem.swing.view.HelpContentsView;
 import org.multibit.viewsystem.swing.view.ReceiveBitcoinView;
+import org.multibit.viewsystem.swing.view.SendBitcoinView;
+import org.multibit.viewsystem.swing.view.ToDoView;
 import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.action.HelpAboutAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
@@ -77,7 +81,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.7D;
 
     private static final long serialVersionUID = 7621813615342923041L;
- 
+
     private MultiBitController controller;
     private MultiBitModel model;
     private Localiser localiser;
@@ -89,14 +93,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private WalletTableModel tableModel;
 
     /**
-     * the view that the controller is telling us to display
-     * an int - one of the View constants
+     * the view that the controller is telling us to display an int - one of the
+     * View constants
      * 
      */
     private int currentView;
-    
+
     private Map<Integer, View> viewMap;
-    
 
     public MultiBitFrame(MultiBitController controller, MultiBitModel model, Localiser localiser) {
         this.controller = controller;
@@ -112,7 +115,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
             try {
                 model.setWallet(Wallet.loadFromFile(file));
- 
+
             } catch (IOException e) {
                 walletNotLoaded = true;
                 walletNotLoadedErrorMessage = localiser.getString(
@@ -142,13 +145,26 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
                     localiser.getString("multiBitFrame.walletNotLoadedMessageBoxTitle"),
                     JOptionPane.ERROR_MESSAGE, new ImageIcon(this.getIconImage()));
         }
-        
+
         // create the views
         viewMap = new HashMap<Integer, View>();
-        viewMap.put(View.HELP_ABOUT_VIEW, new HelpAboutView(controller, localiser, this));        
-        viewMap.put(View.HELP_CONTENTS_VIEW, new HelpContentsView(controller, localiser, this));        
-        viewMap.put(View.RECEIVE_BITCOIN_VIEW, new ReceiveBitcoinView(controller, localiser, this));        
-     }
+        viewMap.put(View.HOME_PAGE_VIEW, new ToDoView(controller, localiser, this));
+        viewMap.put(View.HELP_ABOUT_VIEW, new HelpAboutView(controller, localiser, this));
+        viewMap.put(View.HELP_CONTENTS_VIEW, new HelpContentsView(controller, localiser, this));
+        viewMap.put(View.SETTINGS_VIEW, new ToDoView(controller, localiser, this));
+        viewMap.put(View.RECEIVE_BITCOIN_VIEW, new ReceiveBitcoinView(controller, localiser, this));
+        viewMap.put(View.SEND_BITCOIN_VIEW, new SendBitcoinView(controller, localiser, this));
+        viewMap.put(View.SEND_BITCOIN_CONFIRM_VIEW, new ToDoView(controller, localiser, this));
+        viewMap.put(View.CREATE_NEW_RECEIVING_ADDRESS_VIEW, new ToDoView(controller, localiser,
+                this));
+        viewMap.put(View.CREATE_NEW_SENDING_ADDRESS_VIEW, new ToDoView(controller, localiser, this));
+        viewMap.put(View.EDIT_RECEIVING_ADDRESS_VIEW, new ToDoView(controller, localiser, this));
+        viewMap.put(View.EDIT_SENDING_ADDRESS_VIEW, new ToDoView(controller, localiser, this));
+        viewMap.put(View.ADDRESS_BOOK_RECEIVING_VIEW, new AddressBookReceivingView(controller,
+                localiser, this));
+        viewMap.put(View.ADDRESS_BOOK_SENDING_VIEW, new AddressBookSendingView(controller,
+                localiser, this));
+    }
 
     /**
      * set a new wallet onto the frame
@@ -566,10 +582,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             if (view != null) {
                 view.displayMessage(messageKey, messageData, titleKey);
             } else {
-                System.out.println("MultiBitFrame#displayMessage - no view with id " + currentView + " to display message with key " + messageKey);
+                System.out.println("MultiBitFrame#displayMessage - no view with id " + currentView
+                        + " to display message with key " + messageKey);
             }
         } else {
-            System.out.println("MultiBitFrame#displayMessage - no view on which to display message with key " + messageKey);
+            System.out
+                    .println("MultiBitFrame#displayMessage - no view on which to display message with key "
+                            + messageKey);
         }
     }
 
@@ -577,155 +596,116 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         this.localiser = localiser;
     }
 
-    public void displayView(int viewToDisplay) {
-        currentView = viewToDisplay;
-        
+    /**
+     * convert the view constant to the corresponding view object in our
+     * viewsystem
+     * 
+     * @param viewToDisplay
+     *            int
+     * @return view object
+     */
+    private View lookupView(int viewToDisplay) {
+        // by default return home page
+        View viewToReturn = viewMap.get(View.HOME_PAGE_VIEW);
+
         switch (viewToDisplay) {
         case View.RECEIVE_BITCOIN_VIEW: {
-            final View receiveBitcoinView = viewMap.get(View.RECEIVE_BITCOIN_VIEW);
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    receiveBitcoinView.displayView();
-                }
-            });
-        
+            viewToReturn = viewMap.get(View.RECEIVE_BITCOIN_VIEW);
             break;
         }
 
         case View.SEND_BITCOIN_VIEW: {
-            final View sendBitcoinView = viewMap.get(View.SEND_BITCOIN_VIEW);
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    sendBitcoinView.displayView();
-                }
-            });
-        
+            viewToReturn = viewMap.get(View.SEND_BITCOIN_VIEW);
+            break;
+        }
+
+        case View.SEND_BITCOIN_CONFIRM_VIEW: {
+            viewToReturn = viewMap.get(View.SEND_BITCOIN_CONFIRM_VIEW);
             break;
         }
 
         case View.ADDRESS_BOOK_RECEIVING_VIEW: {
-            final View addressBookReceivingView = viewMap.get(View.ADDRESS_BOOK_RECEIVING_VIEW);
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    addressBookReceivingView.displayView();
-                }
-            });
-        
+            viewToReturn = viewMap.get(View.ADDRESS_BOOK_RECEIVING_VIEW);
             break;
         }
 
         case View.ADDRESS_BOOK_SENDING_VIEW: {
-            final View addressBookSendingView = viewMap.get(View.ADDRESS_BOOK_SENDING_VIEW);
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    addressBookSendingView.displayView();
-                }
-            });
-        
+            viewToReturn = viewMap.get(View.ADDRESS_BOOK_SENDING_VIEW);
+            break;
+        }
+
+        case View.CREATE_NEW_RECEIVING_ADDRESS_VIEW: {
+            viewToReturn = viewMap.get(View.CREATE_NEW_RECEIVING_ADDRESS_VIEW);
+            break;
+        }
+
+        case View.CREATE_NEW_SENDING_ADDRESS_VIEW: {
+            viewToReturn = viewMap.get(View.CREATE_NEW_SENDING_ADDRESS_VIEW);
+            break;
+        }
+
+        case View.EDIT_RECEIVING_ADDRESS_VIEW: {
+            viewToReturn = viewMap.get(View.EDIT_RECEIVING_ADDRESS_VIEW);
+            break;
+        }
+
+        case View.EDIT_SENDING_ADDRESS_VIEW: {
+            viewToReturn = viewMap.get(View.EDIT_SENDING_ADDRESS_VIEW);
             break;
         }
 
         case View.HELP_ABOUT_VIEW: {
-            final View helpAboutView = viewMap.get(View.HELP_ABOUT_VIEW);
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    helpAboutView.displayView();
-                }
-            });
-        
+            viewToReturn = viewMap.get(View.HELP_ABOUT_VIEW);
             break;
         }
 
         case View.HELP_CONTENTS_VIEW: {
-            final View helpContentsView = viewMap.get(View.HELP_CONTENTS_VIEW);
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    helpContentsView.displayView();
-                }
-            });
-        
+            viewToReturn = viewMap.get(View.HELP_CONTENTS_VIEW);
             break;
         }
 
         case View.HOME_PAGE_VIEW:
         default: {
-            // do nothing - already showing the home page
+            viewToReturn = viewMap.get(View.HOME_PAGE_VIEW);
         }
         }
-        
+
+        return viewToReturn;
     }
 
+    /**
+     * display next view - this may be on another thread hence the
+     * SwingUtilities.invokeLater
+     */
+    public void displayView(int viewToDisplay) {
+        currentView = viewToDisplay;
+
+        if (viewToDisplay != View.HOME_PAGE_VIEW) {
+            final View nextViewFinal = lookupView(viewToDisplay);
+
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    nextViewFinal.displayView();
+                }
+            });
+        }
+    }
+
+    /**
+     * navigate away from view - this may be on another thread hence the
+     * SwingUtilities.invokeLater
+     */
     public void navigateAwayFromView(int viewToNavigateAwayFrom, int nextView) {
-        final int finalNextView = nextView;
-        
-        switch (viewToNavigateAwayFrom) {
-        case View.RECEIVE_BITCOIN_VIEW: {
-            final View receiveBitcoinView = viewMap.get(View.RECEIVE_BITCOIN_VIEW);
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    receiveBitcoinView.navigateAwayFromView(finalNextView);
-                }
-            });
-        
-            break;
-        }
+        if (viewToNavigateAwayFrom != View.HOME_PAGE_VIEW) {
+            final int nextViewFinal = nextView;
 
-        case View.SEND_BITCOIN_VIEW: {
-            final View sendBitcoinView = viewMap.get(View.SEND_BITCOIN_VIEW);
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    sendBitcoinView.navigateAwayFromView(finalNextView);
-                }
-            });
-        
-            break;
-        }
+            final View viewToNavigateAwayFromFinal = lookupView(viewToNavigateAwayFrom);
 
-        case View.ADDRESS_BOOK_RECEIVING_VIEW: {
-            final View addressBookReceivingView = viewMap.get(View.ADDRESS_BOOK_RECEIVING_VIEW);
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    addressBookReceivingView.navigateAwayFromView(finalNextView);
+                    viewToNavigateAwayFromFinal.navigateAwayFromView(nextViewFinal);
                 }
             });
-        
-            break;
         }
-
-        case View.ADDRESS_BOOK_SENDING_VIEW: {
-            final View addressBookSendingView = viewMap.get(View.ADDRESS_BOOK_SENDING_VIEW);
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    addressBookSendingView.navigateAwayFromView(finalNextView);
-                }
-            });
-        
-            break;
-        }
-
-
-        case View.HELP_ABOUT_VIEW: {
-            final View helpAboutView = viewMap.get(View.HELP_ABOUT_VIEW);
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    helpAboutView.navigateAwayFromView(finalNextView);
-                }
-            });
-            break;
-        }
-        case View.HELP_CONTENTS_VIEW: {
-            final View helpContentsView = viewMap.get(View.HELP_CONTENTS_VIEW);
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    helpContentsView.navigateAwayFromView(finalNextView);
-                }
-            });
-            break;
-        }
-        
-        default: {
-            // do nothing
-        }
-        }        
     }
 }

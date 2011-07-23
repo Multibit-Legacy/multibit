@@ -1,4 +1,4 @@
-package org.multibit.viewsystem.swing;
+package org.multibit.viewsystem.swing.view;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -28,10 +28,11 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import org.multibit.viewsystem.Localiser;
+import org.multibit.Localiser;
+import org.multibit.viewsystem.swing.CreateEditAddressDialog;
 
 /*
- * JFrame displaying the contents of a Wallet
+ * dialog displaying the address book
  */
 public class AddressBookDialog extends JDialog {
     private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.4D;

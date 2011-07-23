@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.multibit.viewsystem.Localiser;
+import org.multibit.Localiser;
 
 /**
  * Dialog for creating and editing address + label combinations

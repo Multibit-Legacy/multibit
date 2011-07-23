@@ -18,13 +18,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.multibit.MultiBitController;
-import org.multibit.viewsystem.Localiser;
+import org.multibit.Localiser;
+import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewReceivingAddressAction;
-import org.multibit.viewsystem.swing.action.OkBackToPreviousAction;
-import org.multibit.viewsystem.swing.action.OpenAddressBookReceivingAction;
+import org.multibit.viewsystem.swing.action.OkBackToParentAction;
+import org.multibit.viewsystem.swing.action.OpenAddressBookReceivingAsChildAction;
 
 public class ReceiveBitcoinDialog extends JDialog {
 
@@ -145,7 +145,7 @@ public class ReceiveBitcoinDialog extends JDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveBitcoinsPanel.add(addressTextField, constraints);
 
-        OpenAddressBookReceivingAction openAddressBookReceivingAction = new OpenAddressBookReceivingAction(controller, localiser);
+        OpenAddressBookReceivingAsChildAction openAddressBookReceivingAction = new OpenAddressBookReceivingAsChildAction(controller, localiser);
         JButton addressBookButton = new JButton(openAddressBookReceivingAction);
 //        addressBookButton.setText(localiser.getString("receiveBitcoinDialog.addressBookButton"));
 //        addressBookButton.setToolTipText(localiser.getString("receiveBitcoinDialog.addressBookButton.tooltip"));
@@ -208,7 +208,7 @@ public class ReceiveBitcoinDialog extends JDialog {
 //        createNewButton.addActionListener(new CreateNewButtonListener());
         buttonPanel.add(createNewButton);
 
-        OkBackToPreviousAction okBackToPreviousAction = new OkBackToPreviousAction(controller, localiser);
+        OkBackToParentAction okBackToPreviousAction = new OkBackToParentAction(controller, localiser);
         JButton okButton = new JButton(okBackToPreviousAction);
 //        okButton.setText(localiser.getString("receiveBitcoinDialog.okButton"));
 //        okButton.setToolTipText(localiser.getString("receiveBitcoinDialog.okButton.tooltip"));

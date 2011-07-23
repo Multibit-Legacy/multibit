@@ -5,9 +5,9 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import org.multibit.ActionForward;
-import org.multibit.MultiBitController;
-import org.multibit.viewsystem.Localiser;
+import org.multibit.Localiser;
+import org.multibit.controller.ActionForward;
+import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
@@ -34,6 +34,6 @@ public class HelpAboutAction extends AbstractAction {
      * forward to help about view
      */
     public void actionPerformed(ActionEvent e) {
-        controller.setActionForward(ActionForward.FORWARD_TO_HELP_ABOUT);
+        controller.setActionForwardToChild(ActionForward.FORWARD_TO_HELP_ABOUT);
     }
 }

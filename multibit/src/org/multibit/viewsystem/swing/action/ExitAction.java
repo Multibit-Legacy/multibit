@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import org.multibit.viewsystem.Localiser;
+import org.multibit.Localiser;
 
 /**
  * This {@link Action} exits the application.
