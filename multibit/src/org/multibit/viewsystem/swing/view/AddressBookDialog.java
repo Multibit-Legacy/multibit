@@ -9,8 +9,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.Method;
 
@@ -19,49 +17,54 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.multibit.Localiser;
-import org.multibit.viewsystem.swing.CreateEditAddressDialog;
+import org.multibit.controller.ActionForward;
+import org.multibit.controller.MultiBitController;
+import org.multibit.model.Data;
+import org.multibit.model.DataProvider;
+import org.multibit.viewsystem.swing.action.CopyAddressAction;
+import org.multibit.viewsystem.swing.action.CreateOrEditAddressAction;
+import org.multibit.viewsystem.swing.action.OkBackToParentAction;
 
 /*
  * dialog displaying the address book
  */
-public class AddressBookDialog extends JDialog {
+public class AddressBookDialog extends JDialog implements DataProvider{
     private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.4D;
 
     private static final long serialVersionUID = 7123413615342923041L;
 
+    private MultiBitController controller;
     private Localiser localiser;
 
     private JFrame mainFrame;
-
-    private JDialog thisDialog;
 
     private AddressBookTableModel tableModel;
 
     private JTabbedPane tabbedPane;
 
-    public AddressBookDialog(Localiser localiser, JFrame mainFrame) {
-        this(localiser, mainFrame, true);
+    public AddressBookDialog(MultiBitController controller, Localiser localiser, JFrame mainFrame) {
+        this(controller, localiser, mainFrame, true);
     }
 
-    public AddressBookDialog(Localiser localiser, JFrame mainFrame, boolean showReceiving) {
+    public AddressBookDialog(MultiBitController controller, Localiser localiser, JFrame mainFrame, boolean isReceiving) {
+        this.controller = controller;
         this.localiser = localiser;
         this.mainFrame = mainFrame;
 
-        this.thisDialog = this;
-
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
-        setTitle(localiser.getString("addressBookFrame.title"));
+        setTitle(localiser.getString("addressBookDialog.title"));
 
         sizeAndCenter();
 
@@ -69,11 +72,26 @@ public class AddressBookDialog extends JDialog {
 
         pack();
 
-        if (showReceiving) {
+        if (isReceiving) {
             tabbedPane.setSelectedIndex(0);
         } else {
             tabbedPane.setSelectedIndex(1);
         }
+        
+        final MultiBitController finalController = controller; 
+        tabbedPane.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                if (tabbedPane.getSelectedIndex() == 0) {
+                    // now on receiving
+                    finalController.setActionForwardToSibling(ActionForward.FORWARD_TO_ADDRESS_BOOK_RECEIVING);
+                } else {
+                    // now on sending
+                    finalController.setActionForwardToSibling(ActionForward.FORWARD_TO_ADDRESS_BOOK_SENDING);
+                }
+            }
+          });
+
+   
         setVisible(true);
     }
 
@@ -109,17 +127,7 @@ public class AddressBookDialog extends JDialog {
         constraints.weighty = 0.92;
         constraints.anchor = GridBagConstraints.LINE_START;
         contentPane.add(tabPane, constraints);
-
-        JComponent buttonPanel = createButtonPanel();
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0.08;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        contentPane.add(buttonPanel, constraints);
-    }
+   }
 
     private JTabbedPane createTabPane() {
         tabbedPane = new JTabbedPane();
@@ -133,8 +141,7 @@ public class AddressBookDialog extends JDialog {
         tabbedPane.addTab(localiser.getString("addressBookDialog.sendingAddressesTabText"), null,
                 panel2, "");
         tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
-
-        return tabbedPane;
+      return tabbedPane;
     }
 
     private JPanel createReceivingAddressesPanel() {
@@ -152,14 +159,6 @@ public class AddressBookDialog extends JDialog {
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
 
-        // label left justified
-        // /table.getColumnModel().getColumn(0).setCellRenderer(new
-        // LeftJustifiedRenderer());
-
-        // address left justified
-        // table.getColumnModel().getColumn(1).setCellRenderer(new
-        // LeftJustifiedRenderer());
-
         TableColumn tableColumn = table.getColumnModel().getColumn(0); // label
         tableColumn.setPreferredWidth(40);
 
@@ -174,8 +173,17 @@ public class AddressBookDialog extends JDialog {
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 1;
-
         receiveAddressPanel.add(scrollPane, constraints);
+
+        JComponent buttonPanel = createReceivingButtonPanel();
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.08;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        receiveAddressPanel.add(buttonPanel, constraints);
 
         return receiveAddressPanel;
     }
@@ -195,14 +203,6 @@ public class AddressBookDialog extends JDialog {
         table.setColumnSelectionAllowed(false);
         table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-        // label left justified
-        // table.getColumnModel().getColumn(0).setCellRenderer(new
-        // LeftJustifiedRenderer());
-
-        // address left justified
-        // table.getColumnModel().getColumn(1).setCellRenderer(new
-        // LeftJustifiedRenderer());
-
         TableColumn tableColumn = table.getColumnModel().getColumn(0); // label
         tableColumn.setPreferredWidth(40);
 
@@ -217,42 +217,68 @@ public class AddressBookDialog extends JDialog {
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 1;
-
         sendAddressPanel.add(scrollPane, constraints);
+
+        JComponent buttonPanel = createSendingButtonPanel();
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.08;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        sendAddressPanel.add(buttonPanel, constraints);
 
         return sendAddressPanel;
     }
 
-    private JPanel createButtonPanel() {
+    private JPanel createReceivingButtonPanel() {
         JPanel buttonPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        JButton copyAddressButton = new JButton();
-        copyAddressButton.setText(localiser.getString("addressBookDialog.copyAddressButton"));
-        copyAddressButton.setToolTipText(localiser
-                .getString("addressBookDialog.copyAddressButton.tooltip"));
-        copyAddressButton.addActionListener(new CopyAddressButtonListener());
+        CopyAddressAction copyAddressAction = new CopyAddressAction(controller, localiser, this);
+        JButton copyAddressButton = new JButton(copyAddressAction);
         buttonPanel.add(copyAddressButton);
 
-        JButton createNewButton = new JButton();
-        createNewButton.setText(localiser.getString("addressBookDialog.createNewButton"));
-        createNewButton.setToolTipText(localiser
-                .getString("addressBookDialog.createNewButton.tooltip"));
-        createNewButton.addActionListener(new CreateNewButtonListener());
+        CreateOrEditAddressAction createNewReceivingAddressAction = new CreateOrEditAddressAction(controller, localiser, true, true, this);
+        JButton createNewButton = new JButton(createNewReceivingAddressAction);
         buttonPanel.add(createNewButton);
 
-        JButton editButton = new JButton();
-        editButton.setText(localiser.getString("addressBookDialog.editButton"));
-        editButton.setToolTipText(localiser.getString("addressBookDialog.editButton.tooltip"));
-        editButton.addActionListener(new EditButtonListener());
+        CreateOrEditAddressAction editReceivingAddressAction = new CreateOrEditAddressAction(controller, localiser, false, true, this);
+        JButton editButton = new JButton(editReceivingAddressAction);
         buttonPanel.add(editButton);
 
-        JButton okButton = new JButton();
-        okButton.setText(localiser.getString("addressBookDialog.okButton"));
-        okButton.setToolTipText(localiser.getString("addressBookDialog.okButton.tooltip"));
-        okButton.addActionListener(new OkButtonListener());
+        OkBackToParentAction okBackToParentAction = new OkBackToParentAction(controller, localiser);
+        JButton okButton = new JButton(okBackToParentAction);
+
+        buttonPanel.add(okButton);
+
+        return buttonPanel;
+    }
+
+
+    private JPanel createSendingButtonPanel() {
+        JPanel buttonPanel = new JPanel();
+        FlowLayout flowLayout = new FlowLayout();
+        flowLayout.setAlignment(FlowLayout.RIGHT);
+        buttonPanel.setLayout(flowLayout);
+
+        CopyAddressAction copyAddressAction = new CopyAddressAction(controller, localiser, this);
+        JButton copyAddressButton = new JButton(copyAddressAction);
+        buttonPanel.add(copyAddressButton);
+
+        CreateOrEditAddressAction createNewSendingAddressAction = new CreateOrEditAddressAction(controller, localiser, true, false, this);
+        JButton createNewButton = new JButton(createNewSendingAddressAction);
+        buttonPanel.add(createNewButton);
+
+        CreateOrEditAddressAction editSendingAddressAction = new CreateOrEditAddressAction(controller, localiser, false, false, this);
+        JButton editButton = new JButton(editSendingAddressAction);
+        buttonPanel.add(editButton);
+
+        OkBackToParentAction okBackToParentAction = new OkBackToParentAction(controller, localiser);
+        JButton okButton = new JButton(okBackToParentAction);
 
         buttonPanel.add(okButton);
 
@@ -330,86 +356,8 @@ public class AddressBookDialog extends JDialog {
         }
     }
 
-    // class LeftJustifiedRenderer extends DefaultTableCellRenderer {
-    // private static final long serialVersionUID = 1549545L;
-    //
-    // JLabel label = new JLabel();
-    //
-    // public Component getTableCellRendererComponent(JTable table, Object
-    // value,
-    // boolean isSelected, boolean hasFocus, int row, int column) {
-    // label.setHorizontalAlignment(SwingConstants.LEFT);
-    // label.setOpaque(false);
-    //
-    //
-    // label.setText((String) value);
-    //
-    // return label;
-    // }
-    // }
-    //
-    // class CenterJustifiedRenderer extends DefaultTableCellRenderer {
-    // private static final long serialVersionUID = 1549545L;
-    //
-    // JLabel label = new JLabel();
-    //
-    // public Component getTableCellRendererComponent(JTable table, Object
-    // value,
-    // boolean isSelected, boolean hasFocus, int row, int column) {
-    // label.setHorizontalAlignment(SwingConstants.CENTER);
-    // label.setOpaque(false);
-    //
-    // label.setText((String) value);
-    //
-    // return label;
-    // }
-    // }
-    //
-    private class OkButtonListener implements ActionListener {
-        OkButtonListener() {
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            thisDialog.setVisible(false);
-        }
-    }
-
-    private class CopyAddressButtonListener implements ActionListener {
-        CopyAddressButtonListener() {
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            JOptionPane.showMessageDialog(thisDialog, "TODO - Copy Address");
-        }
-    }
-
-    private class CreateNewButtonListener implements ActionListener {
-        CreateNewButtonListener() {
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            CreateEditAddressDialog createAddressDialog = null;
-            if (tabbedPane.getSelectedIndex() == 0) {
-                createAddressDialog = new CreateEditAddressDialog(mainFrame, localiser,
-                        "addressBookDialog.createReceivingAddressDialog.title",
-                        "addressBookDialog.createReceivingAddressDialog.helpTextKey1",
-                        "addressBookDialog.createReceivingAddressDialog.helpTextKey2");
-            } else {
-                createAddressDialog = new CreateEditAddressDialog(mainFrame, localiser,
-                        "addressBookDialog.createSendingAddressDialog.title",
-                        "addressBookDialog.createSendingAddressDialog.helpTextKey1",
-                        "addressBookDialog.createSendingAddressDialog.helpTextKey2");
-            }
-            createAddressDialog.setVisible(true);
-        }
-    }
-
-    private class EditButtonListener implements ActionListener {
-        EditButtonListener() {
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            JOptionPane.showMessageDialog(thisDialog, "TODO - Edit Address And Label");
-        }
+    public Data getData() {
+        // TODO return the currently selected address so that it can be edited, transfered to other views etc
+        return null;
     }
 }

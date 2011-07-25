@@ -20,13 +20,15 @@ import javax.swing.JTextField;
 
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.Data;
+import org.multibit.model.DataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyAddressAction;
-import org.multibit.viewsystem.swing.action.CreateNewReceivingAddressAction;
+import org.multibit.viewsystem.swing.action.CreateOrEditAddressAction;
 import org.multibit.viewsystem.swing.action.OkBackToParentAction;
-import org.multibit.viewsystem.swing.action.OpenAddressBookReceivingAsChildAction;
+import org.multibit.viewsystem.swing.action.OpenAddressBookAction;
 
-public class ReceiveBitcoinDialog extends JDialog {
+public class ReceiveBitcoinDialog extends JDialog implements DataProvider{
 
     private static final long serialVersionUID = -2065108865497842662L;
 
@@ -145,11 +147,8 @@ public class ReceiveBitcoinDialog extends JDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveBitcoinsPanel.add(addressTextField, constraints);
 
-        OpenAddressBookReceivingAsChildAction openAddressBookReceivingAction = new OpenAddressBookReceivingAsChildAction(controller, localiser);
+        OpenAddressBookAction openAddressBookReceivingAction = new OpenAddressBookAction(controller, localiser, true, true);
         JButton addressBookButton = new JButton(openAddressBookReceivingAction);
-//        addressBookButton.setText(localiser.getString("receiveBitcoinDialog.addressBookButton"));
-//        addressBookButton.setToolTipText(localiser.getString("receiveBitcoinDialog.addressBookButton.tooltip"));
-//        addressBookButton.addActionListener(new AddressBookButtonListener());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 3;
@@ -194,25 +193,16 @@ public class ReceiveBitcoinDialog extends JDialog {
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        CopyAddressAction copyAddressAction = new CopyAddressAction(controller, localiser);
+        CopyAddressAction copyAddressAction = new CopyAddressAction(controller, localiser, this);
         copyAddressButton = new JButton(copyAddressAction);
-//        copyAddressButton.setText(localiser.getString("receiveBitcoinDialog.copyAddressButton"));
-//        copyAddressButton.setToolTipText(localiser.getString("receiveBitcoinDialog.copyAddressButton.tooltip"));
-//        copyAddressButton.addActionListener(new CopyAddressButtonListener());
         buttonPanel.add(copyAddressButton);
 
-        CreateNewReceivingAddressAction createNewReceivingAddressAction = new CreateNewReceivingAddressAction(controller, localiser);
+        CreateOrEditAddressAction createNewReceivingAddressAction = new CreateOrEditAddressAction(controller, localiser, true, true, this);
         JButton createNewButton = new JButton(createNewReceivingAddressAction);
-//        createNewButton.setText(localiser.getString("receiveBitcoinDialog.createNewButton"));
-//        createNewButton.setToolTipText(localiser.getString("receiveBitcoinDialog.createNewButton.tooltip"));
-//        createNewButton.addActionListener(new CreateNewButtonListener());
         buttonPanel.add(createNewButton);
 
         OkBackToParentAction okBackToPreviousAction = new OkBackToParentAction(controller, localiser);
         JButton okButton = new JButton(okBackToPreviousAction);
-//        okButton.setText(localiser.getString("receiveBitcoinDialog.okButton"));
-//        okButton.setToolTipText(localiser.getString("receiveBitcoinDialog.okButton.tooltip"));
-//        okButton.addActionListener(new OkButtonListener());
         buttonPanel.add(okButton);
 
         return buttonPanel;
@@ -285,45 +275,9 @@ public class ReceiveBitcoinDialog extends JDialog {
             return null;
         }
     }
-    
-//    private class OkButtonListener implements ActionListener {
-//        OkButtonListener() {
-//        }
-//
-//        public void actionPerformed(ActionEvent e) {
-//            thisDialog.setVisible(false);
-//        }
-//    }
-    
-//    private class CopyAddressButtonListener implements ActionListener {
-//        CopyAddressButtonListener() {
-//        }
-//
-//        public void actionPerformed(ActionEvent e) {
-//            JOptionPane.showMessageDialog(thisDialog, "TODO - Copy Address");
-//        }
-//    }
-      
-//    private class CreateNewButtonListener implements ActionListener {
-//        CreateNewButtonListener() {
-//        }
-//
-//        public void actionPerformed(ActionEvent e) {
-//            CreateEditAddressDialog createAddressDialog = new CreateEditAddressDialog(mainFrame, localiser, 
-//                    "receiveBitcoinDialog.createAddressDialog.title",
-//                    "receiveBitcoinDialog.createAddressDialog.helpTextKey1",
-//                    "receiveBitcoinDialog.createAddressDialog.helpTextKey2");
-//            createAddressDialog.setVisible(true);
-//        }
-//    }
-       
-//    private class AddressBookButtonListener implements ActionListener {
-//        AddressBookButtonListener() {
-//        }
-//
-//        public void actionPerformed(ActionEvent e) {
-//            AddressBookDialog addressBookDialog = new AddressBookDialog(localiser, mainFrame, true);
-//            addressBookDialog.setVisible(true);
-//       }
-//    }
+
+    public Data getData() {
+        // TODO ensure copy address has the current form data so that it can process it
+        return null;
+    }
 }

@@ -28,6 +28,7 @@ public class Localiser {
     private Properties versionProperties;
     
     private Locale locale;
+    private String bundleName;
 
     private final String MISSING_RESOURCE_TEXT = "Missing resource : ";
 
@@ -39,20 +40,10 @@ public class Localiser {
      * @param locale
      */
     public Localiser(String bundleName, Locale locale) {
+        this.bundleName = bundleName;
         formatter = new MessageFormat("");
-        formatter.setLocale(locale);
-        this.locale = locale;
-
-        try {
-            resourceBundle = ResourceBundle.getBundle(bundleName, locale);
-        } catch (MissingResourceException mre) {
-            // if you cannot find the ResourceBundle you carry on but keys are not looked up
-            mre.printStackTrace();
-        } catch (NullPointerException npe) {
-            // if you cannot find the ResourceBundle you carry on but keys are not looked up
-            npe.printStackTrace();
-        }
-    }
+        setLocale(locale);
+     }
 
     public String getString(String key) {
         if (resourceBundle != null) {
@@ -115,8 +106,24 @@ public class Localiser {
         return locale;
     }
     
+    public void setLocale(Locale locale) {
+        formatter.setLocale(locale);
+        this.locale = locale;
+
+        try {
+            resourceBundle = ResourceBundle.getBundle(bundleName, locale);
+        } catch (MissingResourceException mre) {
+            // if you cannot find the ResourceBundle you carry on but keys are not looked up
+            mre.printStackTrace();
+        } catch (NullPointerException npe) {
+            // if you cannot find the ResourceBundle you carry on but keys are not looked up
+            npe.printStackTrace();
+        }
+    }
+    
     /**
      * get the version number specified in the version.properties file
+     * TODO - this should probably be somewhere else
      * @return
      */
     public String getVersionNumber() {

@@ -41,9 +41,6 @@ public class ReceiveBitcoinAction extends AbstractAction {
      * receive bitcoins
      */
     public void actionPerformed(ActionEvent e) {  
-        controller.setActionForwardToChild(ActionForward.FORWARD_TO_RECEIVE_BITCOIN);
-        
-        ReceiveBitcoinDialog receiveBitcoinsDialog = new ReceiveBitcoinDialog(mainFrame, controller, localiser);       
-        receiveBitcoinsDialog.setVisible(true);      
+        controller.setActionForwardToChild(ActionForward.FORWARD_TO_RECEIVE_BITCOIN);   
     }
 }

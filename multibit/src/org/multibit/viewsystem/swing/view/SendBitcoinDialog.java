@@ -1,4 +1,4 @@
-package org.multibit.viewsystem.swing;
+package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -8,8 +8,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.lang.reflect.Method;
 
 import javax.swing.ImageIcon;
@@ -17,14 +15,16 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
+import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
+import org.multibit.viewsystem.swing.action.OpenAddressBookAction;
 import org.multibit.viewsystem.swing.action.PasteAddressAction;
-import org.multibit.viewsystem.swing.view.AddressBookDialog;
+import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
 
 public class SendBitcoinDialog extends JDialog {
 
@@ -43,14 +43,11 @@ public class SendBitcoinDialog extends JDialog {
 
     private JTextField amountTextField;
 
-    private final SendBitcoinDialog thisDialog;
-
     public SendBitcoinDialog(JFrame mainFrame, MultiBitController controller, Localiser localiser) {
         super();
         this.mainFrame = mainFrame;
         this.controller = controller;
         this.localiser = localiser;
-        this.thisDialog = this;
 
         initUI();
 
@@ -150,10 +147,6 @@ public class SendBitcoinDialog extends JDialog {
 
         PasteAddressAction pasteAddressAction = new PasteAddressAction(controller, localiser);
         JButton pasteAddressButton = new JButton(pasteAddressAction);
-//        pasteAddressButton.setText(localiser.getString("pasteAddressAction.text"));
-//        pasteAddressButton.setToolTipText(localiser
-//                .getString("pasteAddressAction.tooltip"));
-//        pasteAddressButton.addActionListener(new PasteAddressButtonListener());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 4;
@@ -162,11 +155,8 @@ public class SendBitcoinDialog extends JDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         sendBitcoinsPanel.add(pasteAddressButton, constraints);
 
-        JButton addressBookButton = new JButton();
-        addressBookButton.setText(localiser.getString("sendBitcoinDialog.addressBookButton"));
-        addressBookButton.setToolTipText(localiser
-                .getString("sendBitcoinDialog.addressBookButton.tooltip"));
-        addressBookButton.addActionListener(new AddressBookButtonListener());
+        OpenAddressBookAction openAddressBookSendingAction = new OpenAddressBookAction(controller, localiser, true, false);
+        JButton addressBookButton = new JButton(openAddressBookSendingAction);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 4;
         constraints.gridy = 4;
@@ -239,30 +229,17 @@ public class SendBitcoinDialog extends JDialog {
     }
 
     private JPanel createButtonsPanel() {
- //       JPanel outerPanel = new JPanel(new BorderLayout());
-
         JPanel buttonsPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonsPanel.setLayout(flowLayout);
- //       outerPanel.add(buttonsPanel, BorderLayout.EAST);
 
-//        JCheckBox saveChanges = new JCheckBox(
-//                localiser.getString("sendBitcoinDialog.saveChangesMessage"), true);
-//        saveChanges.setFocusable(false);
-//        outerPanel.add(saveChanges, BorderLayout.WEST);
-
-        JButton cancelButton = new JButton();
-        cancelButton.setText(localiser.getString("sendBitcoinDialog.cancelButton"));
-        cancelButton.setToolTipText(localiser.getString("sendBitcoinDialog.cancelButton.tooltip"));
-        cancelButton.addActionListener(new CancelButtonListener());
+        CancelBackToParentAction cancelBackToParentAction = new CancelBackToParentAction(controller, localiser);
+        JButton cancelButton = new JButton(cancelBackToParentAction);
         buttonsPanel.add(cancelButton);
 
-        JButton sendButton = new JButton();
-        sendButton.setText(localiser.getString("sendBitcoinDialog.sendButton"));
-        sendButton.setToolTipText(localiser.getString("sendBitcoinDialog.sendButton.tooltip"));
-        sendButton.addActionListener(new SendButtonListener());
-
+        SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, localiser);
+        JButton sendButton = new JButton(sendBitcoinConfirmAction);
         buttonsPanel.add(sendButton);
 
         return buttonsPanel;
@@ -334,52 +311,5 @@ public class SendBitcoinDialog extends JDialog {
                             + path);
             return null;
         }
-    }
-    
-
-    private class CancelButtonListener implements ActionListener {
-        CancelButtonListener() {
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            thisDialog.setVisible(false);
-        }
-    }
-
-    private class SendButtonListener implements ActionListener {
-        SendButtonListener() {
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            // validate address
-
-            // check amount is a number
-
-            // ask for confirmation
-            Object[] options = {
-                    localiser.getString("sendBitcoinDialog.sendButtonConfirmMessageSendOption"),
-                    localiser.getString("sendBitcoinDialog.sendButtonConfirmMessageCancelOption") };
-            int returnValue = JOptionPane.showOptionDialog(thisDialog, localiser.getString(
-                    "sendBitcoinDialog.sendButtonConfirmMessage",
-                    new String[] { amountTextField.getText(), addressTextField.getText(),
-                            labelTextField.getText() }), localiser
-                    .getString("sendBitcoinDialog.sendButtonConfirmTitle"),
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
-                    options[1]);
-            if (returnValue == 0) {
-                JOptionPane.showMessageDialog(thisDialog, "TODO - actually send the bitcoins");
-                thisDialog.setVisible(false);
-            }
-        }
-    }
-    
-    private class AddressBookButtonListener implements ActionListener {
-        AddressBookButtonListener() {
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            AddressBookDialog addressBookDialog = new AddressBookDialog(localiser, mainFrame, false);
-            addressBookDialog.setVisible(true);
-       }
     }
 }

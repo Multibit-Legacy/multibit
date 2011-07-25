@@ -1,4 +1,4 @@
-package org.multibit.viewsystem.swing;
+package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -15,48 +15,86 @@ import java.lang.reflect.Method;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.multibit.Localiser;
+import org.multibit.controller.MultiBitController;
+import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
+import org.multibit.viewsystem.swing.action.CopyAddressAction;
+import org.multibit.viewsystem.swing.action.OkBackToParentAction;
 
 /**
  * Dialog for creating and editing address + label combinations
  * @author jim
  *
  */
-public class CreateEditAddressDialog extends JDialog {
+public class CreateOrEditAddressDialog extends JDialog {
 
     private static final long serialVersionUID = -209834865497842662L;
 
     private Container mainFrame;
 
+    private MultiBitController controller;
     private Localiser localiser;
 
     private JTextField addressTextField;
 
     private JTextField labelTextField;
     
-    private final CreateEditAddressDialog thisDialog;
-
-    private JButton copyAddressButton;
-
-    public CreateEditAddressDialog(Container mainFrame, Localiser localiser, String titleLocaliserKey, String helpTextKey1, String helpTextKey2) {
+    /**
+     * 
+     * @param mainFrame
+     * @param localiser
+     * @param isCreate true= vreate, false = edit
+     * @param isReceiving true = receiving address, false = sending
+     */
+    public CreateOrEditAddressDialog(JFrame mainFrame, MultiBitController controller, Localiser localiser, boolean isCreate, boolean isReceiving) {
         super();
         this.mainFrame = mainFrame;
+        this.controller = controller;
         this.localiser = localiser;
-        this.thisDialog = this;
-
-        initUI(titleLocaliserKey, helpTextKey1, helpTextKey2);
+        
+        initUI(isCreate, isReceiving);
 
         pack();
-        copyAddressButton.requestFocusInWindow();
+        //copyAddressButton.requestFocusInWindow();
 
     }
 
-    private void initUI(String titleLocaliserKey, String helpTextKey1, String helpTextKey2) {
+    private void initUI(boolean isCreate, boolean isReceiving) {
+        String titleLocaliserKey = null;;
+        String helpTextKey1 = null;;
+        String helpTextKey2 = null;
+        if (isCreate) {
+            if (isReceiving) {
+                // create receiving
+                titleLocaliserKey = "createOrEditAddressDialog.createReceiving.title";
+                helpTextKey1 = "createOrEditAddressDialog.createReceiving.helpTextKey1";
+                helpTextKey2 = "createOrEditAddressDialog.createReceiving.helpTextKey2";
+            } else {
+                // create sending
+                titleLocaliserKey = "createOrEditAddressDialog.createSending.title";
+                helpTextKey1 = "createOrEditAddressDialog.createSending.helpTextKey1";
+                helpTextKey2 = "createOrEditAddressDialog.createSending.helpTextKey2";
+           }          
+        } else {
+           if (isReceiving) {
+               // edit receiving
+               titleLocaliserKey = "createOrEditAddressDialog.editReceiving.title";
+               helpTextKey1 = "createOrEditAddressDialog.editReceiving.helpTextKey1";
+               helpTextKey2 = "createOrEditAddressDialog.editReceiving.helpTextKey2";
+            } else {
+                // edit sending
+                titleLocaliserKey = "createOrEditAddressDialog.editSending.title";
+                helpTextKey1 = "createOrEditAddressDialog.editSending.helpTextKey1";
+                helpTextKey2 = "createOrEditAddressDialog.editSending.helpTextKey2";
+            }                      
+        }
+ 
         positionDialogRelativeToParent(this, 0.25D, 0.3D);
         setMinimumSize(new Dimension(550, 200));
         setTitle(localiser.getString(titleLocaliserKey));
@@ -123,9 +161,9 @@ public class CreateEditAddressDialog extends JDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveBitcoinsPanel.add(filler3, constraints);
 
-        JLabel addressLabel = new JLabel(localiser.getString("receiveBitcoinsDialog.addressLabel"));
+        JLabel addressLabel = new JLabel(localiser.getString("createOrEditAddressDialog.addressLabel"));
         addressLabel.setToolTipText(localiser
-                .getString("receiveBitcoinsDialog.addressLabel.tooltip"));
+                .getString("createOrEditAddressDialog.addressLabel.tooltip"));
         addressLabel.setHorizontalAlignment(JLabel.RIGHT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
@@ -143,8 +181,8 @@ public class CreateEditAddressDialog extends JDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveBitcoinsPanel.add(addressTextField, constraints);
 
-        JLabel labelLabel = new JLabel(localiser.getString("receiveBitcoinsDialog.labelLabel"));
-        labelLabel.setToolTipText(localiser.getString("receiveBitcoinsDialog.labelLabel.tooltip"));
+        JLabel labelLabel = new JLabel(localiser.getString("createOrEditAddressDialog.labelLabel"));
+        labelLabel.setToolTipText(localiser.getString("createOrEditAddressDialog.labelLabel.tooltip"));
         labelLabel.setHorizontalAlignment(JLabel.RIGHT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
@@ -178,16 +216,12 @@ public class CreateEditAddressDialog extends JDialog {
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        copyAddressButton = new JButton();
-        copyAddressButton.setText(localiser.getString("receiveBitcoinsDialog.copyAddressButton"));
-        copyAddressButton.setToolTipText(localiser.getString("receiveBitcoinsDialog.copyAddressButton.tooltip"));
-        copyAddressButton.addActionListener(new CopyAddressButtonListener());
-        buttonPanel.add(copyAddressButton);
+        CancelBackToParentAction cancelBackToParentAction = new CancelBackToParentAction(controller, localiser);
+        JButton cancelButton = new JButton(cancelBackToParentAction);
+        buttonPanel.add(cancelButton);
 
-        JButton okButton = new JButton();
-        okButton.setText(localiser.getString("receiveBitcoinsDialog.okButton"));
-        okButton.setToolTipText(localiser.getString("receiveBitcoinsDialog.okButton.tooltip"));
-        okButton.addActionListener(new OkButtonListener());
+        OkBackToParentAction okBackToParentAction = new OkBackToParentAction(controller, localiser);
+        JButton okButton = new JButton(okBackToParentAction);
 
         buttonPanel.add(okButton);
 
@@ -248,23 +282,4 @@ public class CreateEditAddressDialog extends JDialog {
         final Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
         return new Rectangle(0, 0, s.width, s.height);
     }
-
-    private class OkButtonListener implements ActionListener {
-        OkButtonListener() {
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            thisDialog.setVisible(false);
-        }
-    }
-    
-    private class CopyAddressButtonListener implements ActionListener {
-        CopyAddressButtonListener() {
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            JOptionPane.showMessageDialog(thisDialog, "TODO - Copy Address");
-        }
-    }
-
 }

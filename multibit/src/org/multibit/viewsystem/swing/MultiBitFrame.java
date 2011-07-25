@@ -35,35 +35,37 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import com.google.bitcoin.core.Wallet;
-
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
-import org.multibit.viewsystem.swing.view.AddressBookReceivingView;
-import org.multibit.viewsystem.swing.view.AddressBookSendingView;
-import org.multibit.viewsystem.swing.view.HelpContentsView;
-import org.multibit.viewsystem.swing.view.ReceiveBitcoinView;
-import org.multibit.viewsystem.swing.view.SendBitcoinView;
-import org.multibit.viewsystem.swing.view.ToDoView;
 import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.action.HelpAboutAction;
+import org.multibit.viewsystem.swing.action.OpenAddressBookAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.action.ReceiveBitcoinAction;
 import org.multibit.viewsystem.swing.action.SaveWalletAsAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinAction;
 import org.multibit.viewsystem.swing.action.ShowHelpContentsAction;
-import org.multibit.viewsystem.swing.action.ViewAddressBookAction;
-import org.multibit.viewsystem.swing.action.ViewPreferencesAction;
+import org.multibit.viewsystem.swing.action.ShowPreferencesAction;
+import org.multibit.viewsystem.swing.view.AddressBookView;
+import org.multibit.viewsystem.swing.view.CreateOrEditAddressView;
 import org.multibit.viewsystem.swing.view.HelpAboutView;
+import org.multibit.viewsystem.swing.view.HelpContentsView;
+import org.multibit.viewsystem.swing.view.ReceiveBitcoinView;
+import org.multibit.viewsystem.swing.view.SendBitcoinConfirmView;
+import org.multibit.viewsystem.swing.view.SendBitcoinView;
+import org.multibit.viewsystem.swing.view.ShowPreferencesView;
+import org.multibit.viewsystem.swing.view.ToDoView;
 import org.multibit.viewsystem.swing.watermark.FillPainter;
 import org.multibit.viewsystem.swing.watermark.WatermarkPainter;
 import org.multibit.viewsystem.swing.watermark.WatermarkViewport;
 
+import com.google.bitcoin.core.Wallet;
+
 /*
- * JFrame displaying the contents of a Wallet
+ * JFrame displaying Swing version of MultiBit
  */
 public class MultiBitFrame extends JFrame implements ViewSystem {
     private static final String SAVE_AS_ICON_FILE = "/images/saveAs.jpg";
@@ -101,10 +103,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
     private Map<Integer, View> viewMap;
 
-    public MultiBitFrame(MultiBitController controller, MultiBitModel model, Localiser localiser) {
+    public MultiBitFrame(MultiBitController controller) {
         this.controller = controller;
-        this.model = model;
-        this.localiser = localiser;
+        this.model = controller.getModel();
+        this.localiser = controller.getLocaliser();
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         boolean walletNotLoaded = false;
@@ -131,11 +134,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
         initUI();
 
-        String balanceText = "19 BTC";
-        balanceTextField.setText(balanceText);
-
-        pack();
-        setVisible(true);
+        recreateAllViews(false);
 
         onlineStatusLabel.setText("Online");
         networkStatusLabel.setText("Synchronising with network... (96% done)");
@@ -146,24 +145,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
                     JOptionPane.ERROR_MESSAGE, new ImageIcon(this.getIconImage()));
         }
 
-        // create the views
-        viewMap = new HashMap<Integer, View>();
-        viewMap.put(View.HOME_PAGE_VIEW, new ToDoView(controller, localiser, this));
-        viewMap.put(View.HELP_ABOUT_VIEW, new HelpAboutView(controller, localiser, this));
-        viewMap.put(View.HELP_CONTENTS_VIEW, new HelpContentsView(controller, localiser, this));
-        viewMap.put(View.SETTINGS_VIEW, new ToDoView(controller, localiser, this));
-        viewMap.put(View.RECEIVE_BITCOIN_VIEW, new ReceiveBitcoinView(controller, localiser, this));
-        viewMap.put(View.SEND_BITCOIN_VIEW, new SendBitcoinView(controller, localiser, this));
-        viewMap.put(View.SEND_BITCOIN_CONFIRM_VIEW, new ToDoView(controller, localiser, this));
-        viewMap.put(View.CREATE_NEW_RECEIVING_ADDRESS_VIEW, new ToDoView(controller, localiser,
-                this));
-        viewMap.put(View.CREATE_NEW_SENDING_ADDRESS_VIEW, new ToDoView(controller, localiser, this));
-        viewMap.put(View.EDIT_RECEIVING_ADDRESS_VIEW, new ToDoView(controller, localiser, this));
-        viewMap.put(View.EDIT_SENDING_ADDRESS_VIEW, new ToDoView(controller, localiser, this));
-        viewMap.put(View.ADDRESS_BOOK_RECEIVING_VIEW, new AddressBookReceivingView(controller,
-                localiser, this));
-        viewMap.put(View.ADDRESS_BOOK_SENDING_VIEW, new AddressBookSendingView(controller,
-                localiser, this));
+        String balanceText = "19 BTC";
+        balanceTextField.setText(balanceText);
+
+        pack();
+        setVisible(true);
     }
 
     /**
@@ -461,18 +447,18 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
         toolBar.addSeparator();
 
-        // view address book action
-        ViewAddressBookAction viewAddressBookAction = new ViewAddressBookAction(localiser,
-                createImageIcon(VIEW_ADDRESSBOOK_ICON_FILE), this);
-        viewMenu.add(viewAddressBookAction);
-        JButton viewAddressBookButton = new JButton(viewAddressBookAction);
-        viewAddressBookButton.setVerticalTextPosition(AbstractButton.BOTTOM);
-        viewAddressBookButton.setHorizontalTextPosition(AbstractButton.CENTER);
-        toolBar.add(viewAddressBookButton);
+        // open address book
+        OpenAddressBookAction openAddressBookReceivingAction = new OpenAddressBookAction(
+                controller, localiser, createImageIcon(VIEW_ADDRESSBOOK_ICON_FILE), true, true);
+        viewMenu.add(openAddressBookReceivingAction);
+        JButton openAddressBookReceivingButton = new JButton(openAddressBookReceivingAction);
+        openAddressBookReceivingButton.setVerticalTextPosition(AbstractButton.BOTTOM);
+        openAddressBookReceivingButton.setHorizontalTextPosition(AbstractButton.CENTER);
+        toolBar.add(openAddressBookReceivingButton);
 
-        ViewPreferencesAction viewPreferencesAction = new ViewPreferencesAction(localiser, null,
-                this);
-        viewMenu.add(viewPreferencesAction);
+        // show preferences
+        ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller, null);
+        viewMenu.add(showPreferencesAction);
 
         setJMenuBar(menuBar);
 
@@ -576,6 +562,62 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     }
 
     // MultiBitView methods
+    /**
+     * recreate all views
+     */
+    public void recreateAllViews() {
+        recreateAllViews(true);
+    }
+
+    /**
+     * recreate all views
+     */
+    public void recreateAllViews(boolean initUI) {
+        // close down current view
+        if (currentView != 0) {
+            navigateAwayFromView(currentView, View.HOME_PAGE_VIEW); // home page
+                                                                    // choice
+                                                                    // here is
+                                                                    // arbitary
+        }
+
+        if (initUI) {
+            this.localiser = controller.getLocaliser();
+            Container contentPane = getContentPane();
+            contentPane.removeAll();
+            initUI();
+            repaint();
+            invalidate();
+            validate();
+            
+        }
+
+        // create the views
+        viewMap = new HashMap<Integer, View>();
+
+        // home page view is placeholder - never used - the frame is the view
+        viewMap.put(View.HOME_PAGE_VIEW, new ToDoView(controller, localiser, this));
+        viewMap.put(View.HELP_ABOUT_VIEW, new HelpAboutView(controller, localiser, this));
+        viewMap.put(View.HELP_CONTENTS_VIEW, new HelpContentsView(controller, localiser, this));
+        viewMap.put(View.RECEIVE_BITCOIN_VIEW, new ReceiveBitcoinView(controller, localiser, this));
+        viewMap.put(View.SEND_BITCOIN_VIEW, new SendBitcoinView(controller, localiser, this));
+        viewMap.put(View.SEND_BITCOIN_CONFIRM_VIEW, new SendBitcoinConfirmView(controller,
+                localiser, this));
+        viewMap.put(View.CREATE_NEW_RECEIVING_ADDRESS_VIEW, new CreateOrEditAddressView(controller,
+                localiser, this, true, true));
+        viewMap.put(View.CREATE_NEW_SENDING_ADDRESS_VIEW, new CreateOrEditAddressView(controller,
+                localiser, this, true, false));
+        viewMap.put(View.EDIT_RECEIVING_ADDRESS_VIEW, new CreateOrEditAddressView(controller,
+                localiser, this, false, true));
+        viewMap.put(View.EDIT_SENDING_ADDRESS_VIEW, new CreateOrEditAddressView(controller,
+                localiser, this, false, false));
+        viewMap.put(View.ADDRESS_BOOK_RECEIVING_VIEW, new AddressBookView(controller, localiser,
+                this, true));
+        viewMap.put(View.ADDRESS_BOOK_SENDING_VIEW, new AddressBookView(controller, localiser,
+                this, false));
+        viewMap.put(View.PREFERENCES_VIEW, new ShowPreferencesView(controller, this));
+    }
+
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
         if (currentView != 0) {
             View view = viewMap.get(currentView);
@@ -661,6 +703,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
         case View.HELP_CONTENTS_VIEW: {
             viewToReturn = viewMap.get(View.HELP_CONTENTS_VIEW);
+            break;
+        }
+
+        case View.PREFERENCES_VIEW: {
+            viewToReturn = viewMap.get(View.PREFERENCES_VIEW);
             break;
         }
 

@@ -9,11 +9,9 @@ import javax.swing.JFrame;
 
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
-import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.SendBitcoinDialog;
 
 /**
- * This {@link Action} sends bitcoin
+ * This {@link Action} forwards to the send bitcoin view
  */
 public class SendBitcoinAction extends AbstractAction {
 
@@ -37,10 +35,10 @@ public class SendBitcoinAction extends AbstractAction {
     }
 
     /**
-     * send bitcoins
+     * delegate to generic sendBitcoinAction
      */
-    public void actionPerformed(ActionEvent e) {        
-        SendBitcoinDialog sendBitcoinsDialog = new SendBitcoinDialog(mainFrame, controller, localiser);       
-        sendBitcoinsDialog.setVisible(true);      
+    public void actionPerformed(ActionEvent e) { 
+        org.multibit.action.SendBitcoinAction sendBitcoinAction = new org.multibit.action.SendBitcoinAction(controller, localiser);
+        sendBitcoinAction.execute(null);     
     }
 }
