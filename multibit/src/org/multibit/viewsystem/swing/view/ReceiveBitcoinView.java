@@ -40,7 +40,7 @@ public class ReceiveBitcoinView implements View {
      * show receive bitcoins dialog
      */
     public void displayView() {
-        receiveBitcoinDialog = new ReceiveBitcoinDialog(mainFrame, controller, localiser);
+        receiveBitcoinDialog = new ReceiveBitcoinDialog(mainFrame, controller);
         
         receiveBitcoinDialog.setVisible(true);
         

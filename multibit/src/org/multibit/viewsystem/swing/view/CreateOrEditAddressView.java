@@ -58,7 +58,7 @@ public class CreateOrEditAddressView implements View {
      * show the CreateOrEditAddressDialog
      */
     public void displayView() {
-        createOrEditAddressDialog = new CreateOrEditAddressDialog(mainFrame, controller, localiser, isCreate, isReceiving);
+        createOrEditAddressDialog = new CreateOrEditAddressDialog(mainFrame, controller, isCreate, isReceiving);
         
         createOrEditAddressDialog.setVisible(true);
         

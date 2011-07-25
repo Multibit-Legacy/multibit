@@ -40,7 +40,7 @@ public class SendBitcoinView implements View {
      * show send bitcoin dialog
      */
     public void displayView() {
-        sendBitcoinDialog = new SendBitcoinDialog(mainFrame, controller, localiser);
+        sendBitcoinDialog = new SendBitcoinDialog(mainFrame, controller);
         
         sendBitcoinDialog.setVisible(true);
         

@@ -1,30 +1,19 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.lang.reflect.Method;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
-import org.multibit.viewsystem.swing.action.CopyAddressAction;
 import org.multibit.viewsystem.swing.action.OkBackToParentAction;
 
 /**
@@ -32,14 +21,11 @@ import org.multibit.viewsystem.swing.action.OkBackToParentAction;
  * @author jim
  *
  */
-public class CreateOrEditAddressDialog extends JDialog {
+public class CreateOrEditAddressDialog extends MultiBitDialog {
 
     private static final long serialVersionUID = -209834865497842662L;
 
-    private Container mainFrame;
-
     private MultiBitController controller;
-    private Localiser localiser;
 
     private JTextField addressTextField;
 
@@ -52,17 +38,13 @@ public class CreateOrEditAddressDialog extends JDialog {
      * @param isCreate true= vreate, false = edit
      * @param isReceiving true = receiving address, false = sending
      */
-    public CreateOrEditAddressDialog(JFrame mainFrame, MultiBitController controller, Localiser localiser, boolean isCreate, boolean isReceiving) {
-        super();
-        this.mainFrame = mainFrame;
+    public CreateOrEditAddressDialog(JFrame mainFrame, MultiBitController controller, boolean isCreate, boolean isReceiving) {
+        super(mainFrame);
         this.controller = controller;
-        this.localiser = localiser;
         
         initUI(isCreate, isReceiving);
 
         pack();
-        //copyAddressButton.requestFocusInWindow();
-
     }
 
     private void initUI(boolean isCreate, boolean isReceiving) {
@@ -97,7 +79,7 @@ public class CreateOrEditAddressDialog extends JDialog {
  
         positionDialogRelativeToParent(this, 0.25D, 0.3D);
         setMinimumSize(new Dimension(550, 200));
-        setTitle(localiser.getString(titleLocaliserKey));
+        setTitle(controller.getLocaliser().getString(titleLocaliserKey));
         setLayout(new BorderLayout());
         add(createAddressLabelPanel(helpTextKey1, helpTextKey2), BorderLayout.CENTER);
         add(createButtonPanel(), BorderLayout.SOUTH);
@@ -122,7 +104,7 @@ public class CreateOrEditAddressDialog extends JDialog {
         receiveBitcoinsPanel.add(filler1, constraints);
 
         JLabel helpLabel1 = new JLabel(
-                localiser.getString(helpTextKey1));
+                controller.getLocaliser().getString(helpTextKey1));
         helpLabel1.setHorizontalAlignment(JLabel.LEFT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
@@ -133,7 +115,7 @@ public class CreateOrEditAddressDialog extends JDialog {
         receiveBitcoinsPanel.add(helpLabel1, constraints);
 
         JLabel helpLabel2 = new JLabel(
-                localiser.getString(helpTextKey2));
+                controller.getLocaliser().getString(helpTextKey2));
         helpLabel1.setHorizontalAlignment(JLabel.LEFT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
@@ -161,8 +143,8 @@ public class CreateOrEditAddressDialog extends JDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveBitcoinsPanel.add(filler3, constraints);
 
-        JLabel addressLabel = new JLabel(localiser.getString("createOrEditAddressDialog.addressLabel"));
-        addressLabel.setToolTipText(localiser
+        JLabel addressLabel = new JLabel(controller.getLocaliser().getString("createOrEditAddressDialog.addressLabel"));
+        addressLabel.setToolTipText(controller.getLocaliser()
                 .getString("createOrEditAddressDialog.addressLabel.tooltip"));
         addressLabel.setHorizontalAlignment(JLabel.RIGHT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -181,8 +163,8 @@ public class CreateOrEditAddressDialog extends JDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveBitcoinsPanel.add(addressTextField, constraints);
 
-        JLabel labelLabel = new JLabel(localiser.getString("createOrEditAddressDialog.labelLabel"));
-        labelLabel.setToolTipText(localiser.getString("createOrEditAddressDialog.labelLabel.tooltip"));
+        JLabel labelLabel = new JLabel(controller.getLocaliser().getString("createOrEditAddressDialog.labelLabel"));
+        labelLabel.setToolTipText(controller.getLocaliser().getString("createOrEditAddressDialog.labelLabel.tooltip"));
         labelLabel.setHorizontalAlignment(JLabel.RIGHT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
@@ -226,60 +208,5 @@ public class CreateOrEditAddressDialog extends JDialog {
         buttonPanel.add(okButton);
 
         return buttonPanel;
-    }
-
-    /**
-     * Positions the specified dialog at a position relative to its parent.
-     * 
-     * @param dialog
-     *            the dialog to be positioned.
-     * @param horizontalPercent
-     *            the relative location.
-     * @param verticalPercent
-     *            the relative location.
-     */
-    private void positionDialogRelativeToParent(final JDialog dialog,
-            final double horizontalPercent, final double verticalPercent) {
-        final Dimension d = dialog.getSize();
-        final Dimension p = mainFrame.getSize();
-
-        final int baseX = mainFrame.getX() - d.width;
-        final int baseY = mainFrame.getY() - d.height;
-        final int w = d.width + p.width;
-        final int h = d.height + p.height;
-        int x = baseX + (int) (horizontalPercent * w);
-        int y = baseY + (int) (verticalPercent * h);
-
-        // make sure the dialog fits completely on the screen...
-        final Rectangle s = getMaximumWindowBounds();
-        x = Math.min(x, (s.width - d.width));
-        x = Math.max(x, 0);
-        y = Math.min(y, (s.height - d.height));
-        y = Math.max(y, 0);
-
-        dialog.setBounds(x + s.x, y + s.y, d.width, d.height);
-
-    }
-
-    /**
-     * Computes the maximum bounds of the current screen device. If this method
-     * is called on JDK 1.4, Xinerama-aware results are returned. (See
-     * Sun-Bug-ID 4463949 for details).
-     * 
-     * @return the maximum bounds of the current screen.
-     */
-    private Rectangle getMaximumWindowBounds() {
-        final GraphicsEnvironment localGraphicsEnvironment = GraphicsEnvironment
-                .getLocalGraphicsEnvironment();
-        try {
-            final Method method = GraphicsEnvironment.class.getMethod("getMaximumWindowBounds",
-                    (Class[]) null);
-            return (Rectangle) method.invoke(localGraphicsEnvironment, (Object[]) null);
-        } catch (Exception e) {
-            // ignore ... will fail if this is not a JDK 1.4 ..
-        }
-
-        final Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
-        return new Rectangle(0, 0, s.width, s.height);
     }
 }

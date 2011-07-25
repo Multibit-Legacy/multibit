@@ -9,7 +9,6 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -643,10 +642,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
                     .println("MultiBitFrame#displayMessage - no view on which to display message with key "
                             + messageKey);
         }
-    }
-
-    public void setLocaliser(Localiser localiser) {
-        this.localiser = localiser;
     }
 
     /**

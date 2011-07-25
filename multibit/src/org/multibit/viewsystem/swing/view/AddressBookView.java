@@ -43,7 +43,7 @@ public class AddressBookView implements View {
      * show address book dialog, sending addresses
      */
     public void displayView() {
-        addressBookDialog = new AddressBookDialog(controller, localiser, mainFrame, isReceiving);
+        addressBookDialog = new AddressBookDialog(controller, mainFrame, isReceiving);
         
         addressBookDialog.setVisible(true);
         

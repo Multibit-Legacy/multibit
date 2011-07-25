@@ -2,7 +2,6 @@ package org.multibit.viewsystem.swing.view;
 
 import java.util.Collection;
 
-import org.multibit.Localiser;
 import org.multibit.action.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;

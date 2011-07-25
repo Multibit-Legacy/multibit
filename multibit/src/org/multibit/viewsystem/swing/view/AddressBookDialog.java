@@ -4,17 +4,13 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.lang.reflect.Method;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,7 +23,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import org.multibit.Localiser;
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
@@ -39,32 +34,28 @@ import org.multibit.viewsystem.swing.action.OkBackToParentAction;
 /*
  * dialog displaying the address book
  */
-public class AddressBookDialog extends JDialog implements DataProvider{
+public class AddressBookDialog extends MultiBitDialog implements DataProvider{
     private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.4D;
 
     private static final long serialVersionUID = 7123413615342923041L;
 
     private MultiBitController controller;
-    private Localiser localiser;
-
-    private JFrame mainFrame;
 
     private AddressBookTableModel tableModel;
 
     private JTabbedPane tabbedPane;
 
-    public AddressBookDialog(MultiBitController controller, Localiser localiser, JFrame mainFrame) {
-        this(controller, localiser, mainFrame, true);
+    public AddressBookDialog(MultiBitController controller, JFrame mainFrame) {
+        this(controller, mainFrame, true);
     }
 
-    public AddressBookDialog(MultiBitController controller, Localiser localiser, JFrame mainFrame, boolean isReceiving) {
+    public AddressBookDialog(MultiBitController controller, JFrame mainFrame, boolean isReceiving) {
+        super(mainFrame);
         this.controller = controller;
-        this.localiser = localiser;
-        this.mainFrame = mainFrame;
 
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
-        setTitle(localiser.getString("addressBookDialog.title"));
+        setTitle(controller.getLocaliser().getString("addressBookDialog.title"));
 
         sizeAndCenter();
 
@@ -133,12 +124,12 @@ public class AddressBookDialog extends JDialog implements DataProvider{
         tabbedPane = new JTabbedPane();
 
         JComponent panel1 = createReceivingAddressesPanel();
-        tabbedPane.addTab(localiser.getString("addressBookDialog.receivingAddressesTabText"), null,
+        tabbedPane.addTab(controller.getLocaliser().getString("addressBookDialog.receivingAddressesTabText"), null,
                 panel1, "");
         tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
         JComponent panel2 = createSendingAddressesPanel();
-        tabbedPane.addTab(localiser.getString("addressBookDialog.sendingAddressesTabText"), null,
+        tabbedPane.addTab(controller.getLocaliser().getString("addressBookDialog.sendingAddressesTabText"), null,
                 panel2, "");
         tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
       return tabbedPane;
@@ -151,7 +142,7 @@ public class AddressBookDialog extends JDialog implements DataProvider{
         receiveAddressPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
-        tableModel = new AddressBookTableModel(localiser, true);
+        tableModel = new AddressBookTableModel(controller.getLocaliser(), true);
         JTable table = new JTable(tableModel);
         table.setOpaque(false);
         table.setShowGrid(false);
@@ -195,7 +186,7 @@ public class AddressBookDialog extends JDialog implements DataProvider{
         sendAddressPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
-        tableModel = new AddressBookTableModel(localiser, false);
+        tableModel = new AddressBookTableModel(controller.getLocaliser(), false);
         JTable table = new JTable(tableModel);
         table.setOpaque(false);
         table.setShowGrid(false);
@@ -283,61 +274,6 @@ public class AddressBookDialog extends JDialog implements DataProvider{
         buttonPanel.add(okButton);
 
         return buttonPanel;
-    }
-
-    /**
-     * Positions the specified dialog at a position relative to its parent.
-     * 
-     * @param dialog
-     *            the dialog to be positioned.
-     * @param horizontalPercent
-     *            the relative location.
-     * @param verticalPercent
-     *            the relative location.
-     */
-    private void positionDialogRelativeToParent(final JDialog dialog,
-            final double horizontalPercent, final double verticalPercent) {
-        final Dimension d = dialog.getSize();
-        final Dimension p = mainFrame.getSize();
-
-        final int baseX = mainFrame.getX() - d.width;
-        final int baseY = mainFrame.getY() - d.height;
-        final int w = d.width + p.width;
-        final int h = d.height + p.height;
-        int x = baseX + (int) (horizontalPercent * w);
-        int y = baseY + (int) (verticalPercent * h);
-
-        // make sure the dialog fits completely on the screen...
-        final Rectangle s = getMaximumWindowBounds();
-        x = Math.min(x, (s.width - d.width));
-        x = Math.max(x, 0);
-        y = Math.min(y, (s.height - d.height));
-        y = Math.max(y, 0);
-
-        dialog.setBounds(x + s.x, y + s.y, d.width, d.height);
-
-    }
-
-    /**
-     * Computes the maximum bounds of the current screen device. If this method
-     * is called on JDK 1.4, Xinerama-aware results are returned. (See
-     * Sun-Bug-ID 4463949 for details).
-     * 
-     * @return the maximum bounds of the current screen.
-     */
-    private Rectangle getMaximumWindowBounds() {
-        final GraphicsEnvironment localGraphicsEnvironment = GraphicsEnvironment
-                .getLocalGraphicsEnvironment();
-        try {
-            final Method method = GraphicsEnvironment.class.getMethod("getMaximumWindowBounds",
-                    (Class[]) null);
-            return (Rectangle) method.invoke(localGraphicsEnvironment, (Object[]) null);
-        } catch (Exception e) {
-            // ignore ... will fail if this is not a JDK 1.4 ..
-        }
-
-        final Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
-        return new Rectangle(0, 0, s.width, s.height);
     }
 
     class RightJustifiedRenderer extends DefaultTableCellRenderer {

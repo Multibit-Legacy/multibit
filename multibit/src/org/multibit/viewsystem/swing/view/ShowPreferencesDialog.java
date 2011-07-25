@@ -3,14 +3,10 @@ package org.multibit.viewsystem.swing.view;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +14,6 @@ import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -31,12 +26,10 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
 import org.multibit.viewsystem.swing.action.ShowPreferencesSubmitAction;
 
-public class ShowPreferencesDialog extends JDialog implements DataProvider{
+public class ShowPreferencesDialog extends MultiBitDialog implements DataProvider{
 
     private static final long serialVersionUID = 2065108834587842662L;
     
-    private JFrame mainFrame;
-
     private MultiBitController controller;
     
     private Map<String, String> languageToLanguageCodeMap;
@@ -45,11 +38,9 @@ public class ShowPreferencesDialog extends JDialog implements DataProvider{
     private JComboBox languageComboBox;
     
     private Data data;
-    
-    
+       
     public ShowPreferencesDialog(JFrame mainFrame, MultiBitController controller) {
-        super();
-        this.mainFrame = mainFrame;
+        super(mainFrame);
         this.controller = controller;
 
         languageToLanguageCodeMap = new HashMap<String, String>();
@@ -173,61 +164,6 @@ public class ShowPreferencesDialog extends JDialog implements DataProvider{
         buttonPanel.add(submitButton);
 
         return buttonPanel;
-    }
-
-    /**
-     * Positions the specified dialog at a position relative to its parent.
-     * 
-     * @param dialog
-     *            the dialog to be positioned.
-     * @param horizontalPercent
-     *            the relative location.
-     * @param verticalPercent
-     *            the relative location.
-     */
-    private void positionDialogRelativeToParent(final JDialog dialog,
-            final double horizontalPercent, final double verticalPercent) {
-        final Dimension d = dialog.getSize();
-        final Dimension p = mainFrame.getSize();
-
-        final int baseX = mainFrame.getX() - d.width;
-        final int baseY = mainFrame.getY() - d.height;
-        final int w = d.width + p.width;
-        final int h = d.height + p.height;
-        int x = baseX + (int) (horizontalPercent * w);
-        int y = baseY + (int) (verticalPercent * h);
-
-        // make sure the dialog fits completely on the screen...
-        final Rectangle s = getMaximumWindowBounds();
-        x = Math.min(x, (s.width - d.width));
-        x = Math.max(x, 0);
-        y = Math.min(y, (s.height - d.height));
-        y = Math.max(y, 0);
-
-        dialog.setBounds(x + s.x, y + s.y, d.width, d.height);
-
-    }
-
-    /**
-     * Computes the maximum bounds of the current screen device. If this method
-     * is called on JDK 1.4, Xinerama-aware results are returned. (See
-     * Sun-Bug-ID 4463949 for details).
-     * 
-     * @return the maximum bounds of the current screen.
-     */
-    private Rectangle getMaximumWindowBounds() {
-        final GraphicsEnvironment localGraphicsEnvironment = GraphicsEnvironment
-                .getLocalGraphicsEnvironment();
-        try {
-            final Method method = GraphicsEnvironment.class.getMethod("getMaximumWindowBounds",
-                    (Class[]) null);
-            return (Rectangle) method.invoke(localGraphicsEnvironment, (Object[]) null);
-        } catch (Exception e) {
-            // ignore ... will fail if this is not a JDK 1.4 ..
-        }
-
-        final Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
-        return new Rectangle(0, 0, s.width, s.height);
     }
     
     class ChangeLanguageUsageItemListener implements ItemListener {
