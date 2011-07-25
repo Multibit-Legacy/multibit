@@ -313,7 +313,6 @@ public class MultiBitController {
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.recreateAllViews();
         }
-
     }
 
     public Localiser getLocaliser() {

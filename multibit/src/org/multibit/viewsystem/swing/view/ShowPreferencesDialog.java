@@ -1,7 +1,6 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GraphicsEnvironment;
@@ -17,28 +16,19 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JTextField;
 
-import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
-import org.multibit.viewsystem.swing.action.CopyAddressAction;
-import org.multibit.viewsystem.swing.action.CreateOrEditAddressAction;
-import org.multibit.viewsystem.swing.action.OkBackToParentAction;
-import org.multibit.viewsystem.swing.action.OpenAddressBookAction;
 import org.multibit.viewsystem.swing.action.ShowPreferencesSubmitAction;
 
 public class ShowPreferencesDialog extends JDialog implements DataProvider{

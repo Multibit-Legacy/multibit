@@ -7,6 +7,9 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -109,6 +112,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         this.localiser = controller.getLocaliser();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        final MultiBitController finalController = controller;
+        this.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent arg0) {
+                org.multibit.action.ExitAction exitAction = new org.multibit.action.ExitAction(finalController);
+                exitAction.execute(null);
+            }
+        });
 
         boolean walletNotLoaded = false;
         String walletNotLoadedErrorMessage = "";
@@ -409,7 +420,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         fileMenu.addSeparator();
 
         // exit action
-        menuItem = new JMenuItem(new ExitAction(localiser));
+        menuItem = new JMenuItem(new ExitAction(controller));
         fileMenu.add(menuItem);
 
         // show help contents action

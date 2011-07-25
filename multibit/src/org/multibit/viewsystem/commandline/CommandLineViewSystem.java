@@ -103,7 +103,7 @@ public class CommandLineViewSystem implements ViewSystem {
         homePageActions.add(new OpenAddressBookAction(controller, localiser, true, true));
         homePageActions.add(new ShowPreferencesAction(controller, localiser));
         homePageActions.add(new HelpAboutAction(controller, localiser));
-        homePageActions.add(new ExitAction());
+        homePageActions.add(new ExitAction(controller));
         homePageView.setPossibleActions(homePageActions);
         viewMap.put(View.HOME_PAGE_VIEW, homePageView);
 
