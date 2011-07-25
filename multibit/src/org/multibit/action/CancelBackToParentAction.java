@@ -15,11 +15,10 @@ import org.multibit.model.DataProvider;
 public class CancelBackToParentAction implements Action {
 
     private MultiBitController controller;
-    private Localiser localiser;
+
     
-    public CancelBackToParentAction(MultiBitController controller, Localiser localiser) {
-        this.controller = controller;
-        this.localiser = localiser;     
+    public CancelBackToParentAction(MultiBitController controller) {
+        this.controller = controller;    
     }
     
     public void execute(DataProvider dataProvider) {

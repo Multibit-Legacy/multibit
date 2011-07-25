@@ -15,11 +15,9 @@ import org.multibit.model.DataProvider;
 public class OkBackToParentAction implements Action {
 
     private MultiBitController controller;
-    private Localiser localiser;
     
-    public OkBackToParentAction(MultiBitController controller, Localiser localiser) {
-        this.controller = controller;
-        this.localiser = localiser;     
+    public OkBackToParentAction(MultiBitController controller) {
+        this.controller = controller;   
     }
     
     public void execute(DataProvider dataProvider) {

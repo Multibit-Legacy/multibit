@@ -65,15 +65,14 @@ public class SendBitcoinConfirmView implements View {
         if (returnValue instanceof String && options[0].equals((String) returnValue)) {
             // send
             // actually send bitcoin
-            SendBitcoinNowAction sendBitcoinNowAction = new SendBitcoinNowAction(controller,
-                    localiser);
+            SendBitcoinNowAction sendBitcoinNowAction = new SendBitcoinNowAction(controller);
             // the proposed spend is on the model
             sendBitcoinNowAction.execute(null);
         } else {
             // cancel
             if (returnValue instanceof String && options[1].equals((String) returnValue)) {
                 org.multibit.action.CancelBackToParentAction cancelBackToParentAction = new org.multibit.action.CancelBackToParentAction(
-                        controller, localiser);
+                        controller);
                 cancelBackToParentAction.execute(null);
             }
         }

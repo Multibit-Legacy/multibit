@@ -164,7 +164,7 @@ public class ShowPreferencesDialog extends JDialog implements DataProvider{
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        CancelBackToParentAction cancelAction = new CancelBackToParentAction(controller, controller.getLocaliser());
+        CancelBackToParentAction cancelAction = new CancelBackToParentAction(controller);
         JButton cancelButton = new JButton(cancelAction);
         buttonPanel.add(cancelButton);
 

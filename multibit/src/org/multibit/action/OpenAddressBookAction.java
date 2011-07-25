@@ -13,14 +13,12 @@ import org.multibit.model.DataProvider;
 public class OpenAddressBookAction implements Action {
 
     private MultiBitController controller;
-    private Localiser localiser;
     private boolean isChild;   // true = child, false = sibling
     private boolean isReceiving;
     
-    public OpenAddressBookAction(MultiBitController controller, Localiser localiser, boolean isChild, 
+    public OpenAddressBookAction(MultiBitController controller, boolean isChild, 
             boolean isReceiving) {
         this.controller = controller;
-        this.localiser = localiser; 
         this.isChild = isChild;
         this.isReceiving = isReceiving;
     }

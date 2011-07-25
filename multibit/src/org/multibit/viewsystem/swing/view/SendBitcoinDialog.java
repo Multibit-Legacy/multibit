@@ -145,7 +145,7 @@ public class SendBitcoinDialog extends JDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         sendBitcoinsPanel.add(addressTextField, constraints);
 
-        PasteAddressAction pasteAddressAction = new PasteAddressAction(controller, localiser);
+        PasteAddressAction pasteAddressAction = new PasteAddressAction(controller);
         JButton pasteAddressButton = new JButton(pasteAddressAction);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -155,7 +155,7 @@ public class SendBitcoinDialog extends JDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         sendBitcoinsPanel.add(pasteAddressButton, constraints);
 
-        OpenAddressBookAction openAddressBookSendingAction = new OpenAddressBookAction(controller, localiser, true, false);
+        OpenAddressBookAction openAddressBookSendingAction = new OpenAddressBookAction(controller, true, false);
         JButton addressBookButton = new JButton(openAddressBookSendingAction);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 4;
@@ -234,11 +234,11 @@ public class SendBitcoinDialog extends JDialog {
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonsPanel.setLayout(flowLayout);
 
-        CancelBackToParentAction cancelBackToParentAction = new CancelBackToParentAction(controller, localiser);
+        CancelBackToParentAction cancelBackToParentAction = new CancelBackToParentAction(controller);
         JButton cancelButton = new JButton(cancelBackToParentAction);
         buttonsPanel.add(cancelButton);
 
-        SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, localiser);
+        SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller);
         JButton sendButton = new JButton(sendBitcoinConfirmAction);
         buttonsPanel.add(sendButton);
 

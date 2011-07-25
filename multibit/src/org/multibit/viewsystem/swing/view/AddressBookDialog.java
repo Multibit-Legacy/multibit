@@ -238,19 +238,19 @@ public class AddressBookDialog extends JDialog implements DataProvider{
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        CopyAddressAction copyAddressAction = new CopyAddressAction(controller, localiser, this);
+        CopyAddressAction copyAddressAction = new CopyAddressAction(controller, this);
         JButton copyAddressButton = new JButton(copyAddressAction);
         buttonPanel.add(copyAddressButton);
 
-        CreateOrEditAddressAction createNewReceivingAddressAction = new CreateOrEditAddressAction(controller, localiser, true, true, this);
+        CreateOrEditAddressAction createNewReceivingAddressAction = new CreateOrEditAddressAction(controller, true, true, this);
         JButton createNewButton = new JButton(createNewReceivingAddressAction);
         buttonPanel.add(createNewButton);
 
-        CreateOrEditAddressAction editReceivingAddressAction = new CreateOrEditAddressAction(controller, localiser, false, true, this);
+        CreateOrEditAddressAction editReceivingAddressAction = new CreateOrEditAddressAction(controller, false, true, this);
         JButton editButton = new JButton(editReceivingAddressAction);
         buttonPanel.add(editButton);
 
-        OkBackToParentAction okBackToParentAction = new OkBackToParentAction(controller, localiser);
+        OkBackToParentAction okBackToParentAction = new OkBackToParentAction(controller);
         JButton okButton = new JButton(okBackToParentAction);
 
         buttonPanel.add(okButton);
@@ -265,19 +265,19 @@ public class AddressBookDialog extends JDialog implements DataProvider{
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        CopyAddressAction copyAddressAction = new CopyAddressAction(controller, localiser, this);
+        CopyAddressAction copyAddressAction = new CopyAddressAction(controller, this);
         JButton copyAddressButton = new JButton(copyAddressAction);
         buttonPanel.add(copyAddressButton);
 
-        CreateOrEditAddressAction createNewSendingAddressAction = new CreateOrEditAddressAction(controller, localiser, true, false, this);
+        CreateOrEditAddressAction createNewSendingAddressAction = new CreateOrEditAddressAction(controller, true, false, this);
         JButton createNewButton = new JButton(createNewSendingAddressAction);
         buttonPanel.add(createNewButton);
 
-        CreateOrEditAddressAction editSendingAddressAction = new CreateOrEditAddressAction(controller, localiser, false, false, this);
+        CreateOrEditAddressAction editSendingAddressAction = new CreateOrEditAddressAction(controller, false, false, this);
         JButton editButton = new JButton(editSendingAddressAction);
         buttonPanel.add(editButton);
 
-        OkBackToParentAction okBackToParentAction = new OkBackToParentAction(controller, localiser);
+        OkBackToParentAction okBackToParentAction = new OkBackToParentAction(controller);
         JButton okButton = new JButton(okBackToParentAction);
 
         buttonPanel.add(okButton);

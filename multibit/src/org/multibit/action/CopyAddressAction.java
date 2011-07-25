@@ -12,11 +12,9 @@ import org.multibit.model.DataProvider;
  */
 public class CopyAddressAction implements Action {
     private MultiBitController controller;
-    private Localiser localiser;
     
-    public CopyAddressAction(MultiBitController controller, Localiser localiser) {
-        this.controller = controller;
-        this.localiser = localiser;     
+    public CopyAddressAction(MultiBitController controller) {
+        this.controller = controller;    
     }
     
     public void execute(DataProvider dataProvider) {

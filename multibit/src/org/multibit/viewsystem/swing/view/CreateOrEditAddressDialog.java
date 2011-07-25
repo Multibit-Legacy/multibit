@@ -216,11 +216,11 @@ public class CreateOrEditAddressDialog extends JDialog {
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        CancelBackToParentAction cancelBackToParentAction = new CancelBackToParentAction(controller, localiser);
+        CancelBackToParentAction cancelBackToParentAction = new CancelBackToParentAction(controller);
         JButton cancelButton = new JButton(cancelBackToParentAction);
         buttonPanel.add(cancelButton);
 
-        OkBackToParentAction okBackToParentAction = new OkBackToParentAction(controller, localiser);
+        OkBackToParentAction okBackToParentAction = new OkBackToParentAction(controller);
         JButton okButton = new JButton(okBackToParentAction);
 
         buttonPanel.add(okButton);

@@ -1,6 +1,5 @@
 package org.multibit.action;
 
-import org.multibit.Localiser;
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
@@ -13,11 +12,9 @@ import org.multibit.model.DataProvider;
 public class HelpAboutAction implements Action {
 
     private MultiBitController controller;
-    private Localiser localiser;
     
-    public HelpAboutAction(MultiBitController controller, Localiser localiser) {
-        this.controller = controller;
-        this.localiser = localiser;     
+    public HelpAboutAction(MultiBitController controller) {
+        this.controller = controller;     
     }
     
     public void execute(DataProvider dataProvider) {

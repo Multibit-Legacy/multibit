@@ -17,24 +17,22 @@ public class SendBitcoinConfirmAction extends AbstractAction {
     private static final long serialVersionUID = 1913592460523457765L;
 
     private MultiBitController controller;
-    private Localiser localiser;
     
     /**
      * Creates a new {@link SendBitcoinConfirmAction}.
      */
-    public SendBitcoinConfirmAction(MultiBitController controller, Localiser localiser) {
-        super(localiser.getString("sendBitcoinConfirmAction.text"));
+    public SendBitcoinConfirmAction(MultiBitController controller) {
+        super(controller.getLocaliser().getString("sendBitcoinConfirmAction.text"));
         this.controller = controller;
-        this.localiser = localiser;
-        putValue(SHORT_DESCRIPTION, localiser.getString("sendBitcoinConfirmAction.tooltip"));
-        putValue(MNEMONIC_KEY, localiser.getMnemonic("sendBitcoinConfirmAction.mnemonicKey"));
+        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("sendBitcoinConfirmAction.tooltip"));
+        putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("sendBitcoinConfirmAction.mnemonicKey"));
     }
 
     /**
      * delegate to generic sendBitcoinConfirmAction
      */
     public void actionPerformed(ActionEvent e) { 
-        org.multibit.action.SendBitcoinConfirmAction sendBitcoinConfirmAction = new org.multibit.action.SendBitcoinConfirmAction(controller, localiser);
+        org.multibit.action.SendBitcoinConfirmAction sendBitcoinConfirmAction = new org.multibit.action.SendBitcoinConfirmAction(controller);
         sendBitcoinConfirmAction.execute(null);    
     }
 }

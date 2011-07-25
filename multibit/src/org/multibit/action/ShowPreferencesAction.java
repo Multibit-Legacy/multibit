@@ -14,11 +14,9 @@ import org.multibit.model.DataProvider;
 public class ShowPreferencesAction implements Action {
 
     private MultiBitController controller;
-    private Localiser localiser;
     
-    public ShowPreferencesAction(MultiBitController controller, Localiser localiser) {
-        this.controller = controller;
-        this.localiser = localiser;     
+    public ShowPreferencesAction(MultiBitController controller) {
+        this.controller = controller;    
     }
     
     public void execute(DataProvider dataProvider) {

@@ -147,7 +147,7 @@ public class ReceiveBitcoinDialog extends JDialog implements DataProvider{
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveBitcoinsPanel.add(addressTextField, constraints);
 
-        OpenAddressBookAction openAddressBookReceivingAction = new OpenAddressBookAction(controller, localiser, true, true);
+        OpenAddressBookAction openAddressBookReceivingAction = new OpenAddressBookAction(controller, true, true);
         JButton addressBookButton = new JButton(openAddressBookReceivingAction);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -193,15 +193,15 @@ public class ReceiveBitcoinDialog extends JDialog implements DataProvider{
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        CopyAddressAction copyAddressAction = new CopyAddressAction(controller, localiser, this);
+        CopyAddressAction copyAddressAction = new CopyAddressAction(controller, this);
         copyAddressButton = new JButton(copyAddressAction);
         buttonPanel.add(copyAddressButton);
 
-        CreateOrEditAddressAction createNewReceivingAddressAction = new CreateOrEditAddressAction(controller, localiser, true, true, this);
+        CreateOrEditAddressAction createNewReceivingAddressAction = new CreateOrEditAddressAction(controller, true, true, this);
         JButton createNewButton = new JButton(createNewReceivingAddressAction);
         buttonPanel.add(createNewButton);
 
-        OkBackToParentAction okBackToPreviousAction = new OkBackToParentAction(controller, localiser);
+        OkBackToParentAction okBackToPreviousAction = new OkBackToParentAction(controller);
         JButton okButton = new JButton(okBackToPreviousAction);
         buttonPanel.add(okButton);
 

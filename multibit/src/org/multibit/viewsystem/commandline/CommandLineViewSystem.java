@@ -95,14 +95,14 @@ public class CommandLineViewSystem implements ViewSystem {
         // home page
         View homePageView = new HomePageView(model, localiser, "Home Page", inputStream, printStream);
         Collection<Action> homePageActions = new ArrayList<Action>();
-        homePageActions.add(new HelpContentsAction(controller, localiser));
-        homePageActions.add(new OpenWalletAction(controller, localiser));
-        homePageActions.add(new SaveWalletAsAction(controller, localiser));
-        homePageActions.add(new ReceiveBitcoinAction(controller, localiser));
-        homePageActions.add(new SendBitcoinAction(controller, localiser));
-        homePageActions.add(new OpenAddressBookAction(controller, localiser, true, true));
-        homePageActions.add(new ShowPreferencesAction(controller, localiser));
-        homePageActions.add(new HelpAboutAction(controller, localiser));
+        homePageActions.add(new HelpContentsAction(controller));
+        homePageActions.add(new OpenWalletAction(controller));
+        homePageActions.add(new SaveWalletAsAction(controller));
+        homePageActions.add(new ReceiveBitcoinAction(controller));
+        homePageActions.add(new SendBitcoinAction(controller));
+        homePageActions.add(new OpenAddressBookAction(controller, true, true));
+        homePageActions.add(new ShowPreferencesAction(controller));
+        homePageActions.add(new HelpAboutAction(controller));
         homePageActions.add(new ExitAction(controller));
         homePageView.setPossibleActions(homePageActions);
         viewMap.put(View.HOME_PAGE_VIEW, homePageView);
@@ -110,49 +110,49 @@ public class CommandLineViewSystem implements ViewSystem {
         // Send bitcoin
         View sendBitcoinView = new SendBitcoinView(localiser, "Send Bitcoin", inputStream, printStream);
         Collection<Action> sendBitcoinActions = new ArrayList<Action>();
-        sendBitcoinActions.add(new PasteAddressAction(controller, localiser));
-        sendBitcoinActions.add(new OpenAddressBookAction(controller, localiser, true, false));
-        sendBitcoinActions.add(new CancelBackToParentAction(controller, localiser));
-        sendBitcoinActions.add(new SendBitcoinConfirmAction(controller, localiser));
+        sendBitcoinActions.add(new PasteAddressAction(controller));
+        sendBitcoinActions.add(new OpenAddressBookAction(controller, true, false));
+        sendBitcoinActions.add(new CancelBackToParentAction(controller));
+        sendBitcoinActions.add(new SendBitcoinConfirmAction(controller));
         sendBitcoinView.setPossibleActions(sendBitcoinActions);
         viewMap.put(View.SEND_BITCOIN_VIEW, sendBitcoinView);
         
         // Send bitcoin confirm
         View sendBitcoinConfirmView = new SendBitcoinView(localiser, "Send Bitcoin Confirm", inputStream, printStream);
         Collection<Action> sendBitcoinConfirmActions = new ArrayList<Action>();
-        sendBitcoinConfirmActions.add(new CancelBackToParentAction(controller, localiser));
-        sendBitcoinConfirmActions.add(new SendBitcoinNowAction(controller, localiser));
+        sendBitcoinConfirmActions.add(new CancelBackToParentAction(controller));
+        sendBitcoinConfirmActions.add(new SendBitcoinNowAction(controller));
         sendBitcoinConfirmView.setPossibleActions(sendBitcoinConfirmActions);
         viewMap.put(View.SEND_BITCOIN_CONFIRM_VIEW, sendBitcoinConfirmView);
         
         // Receive bitcoin
         View receiveBitcoinView = new  ReceiveBitcoinView(localiser, "Receive Bitcoin", inputStream, printStream);
         Collection<Action> receiveBitcoinActions = new ArrayList<Action>();
-        receiveBitcoinActions.add(new OpenAddressBookAction(controller, localiser, true, true));
-        receiveBitcoinActions.add(new CopyAddressAction(controller, localiser));
-        receiveBitcoinActions.add(new CreateOrEditAddressAction(controller, localiser, true, true));
-        receiveBitcoinActions.add(new OkBackToParentAction(controller, localiser));
+        receiveBitcoinActions.add(new OpenAddressBookAction(controller, true, true));
+        receiveBitcoinActions.add(new CopyAddressAction(controller));
+        receiveBitcoinActions.add(new CreateOrEditAddressAction(controller, true, true));
+        receiveBitcoinActions.add(new OkBackToParentAction(controller));
         receiveBitcoinView.setPossibleActions(receiveBitcoinActions);
         viewMap.put(View.RECEIVE_BITCOIN_VIEW, receiveBitcoinView);
         
         // Help contents
         View helpContentsView = new HelpContentsView(localiser, "Help Contents", inputStream, printStream);
         Collection<Action> helpContentsActions = new ArrayList<Action>();
-        helpContentsActions.add(new OkBackToParentAction(controller, localiser));
+        helpContentsActions.add(new OkBackToParentAction(controller));
         helpContentsView.setPossibleActions(helpContentsActions);
         viewMap.put(View.HELP_CONTENTS_VIEW, helpContentsView);
 
         // Help About
         View helpAboutView = new HelpAboutView(localiser, "Help About MultiBit", inputStream, printStream);
         Collection<Action> helpAboutActions = new ArrayList<Action>();
-        helpAboutActions.add(new OkBackToParentAction(controller, localiser));
+        helpAboutActions.add(new OkBackToParentAction(controller));
         helpAboutView.setPossibleActions(helpAboutActions);
         viewMap.put(View.HELP_ABOUT_VIEW, helpAboutView);
         
         // Settings
         View settingsView = new SimpleView(localiser, "Preferences", inputStream, printStream);
         Collection<Action> settingsActions = new ArrayList<Action>();
-        settingsActions.add(new OkBackToParentAction(controller, localiser));
+        settingsActions.add(new OkBackToParentAction(controller));
         settingsView.setPossibleActions(settingsActions);
         viewMap.put(View.PREFERENCES_VIEW, settingsView);
         
@@ -160,11 +160,11 @@ public class CommandLineViewSystem implements ViewSystem {
         View addressBookReceivingView = new AddressBookReceivingView(localiser, "Address Book (Receiving)", inputStream, printStream);
         Collection<Action> addressBookReceivingActions = new ArrayList<Action>();
         // need selection of address shown
-        addressBookReceivingActions.add(new CopyAddressAction(controller, localiser));
-        addressBookReceivingActions.add(new CreateOrEditAddressAction(controller, localiser, true, true));
-        addressBookReceivingActions.add(new CreateOrEditAddressAction(controller, localiser, false, true));
-        addressBookReceivingActions.add(new OpenAddressBookAction(controller, localiser, false, false));
-        addressBookReceivingActions.add(new OkBackToParentAction(controller, localiser));
+        addressBookReceivingActions.add(new CopyAddressAction(controller));
+        addressBookReceivingActions.add(new CreateOrEditAddressAction(controller, true, true));
+        addressBookReceivingActions.add(new CreateOrEditAddressAction(controller, false, true));
+        addressBookReceivingActions.add(new OpenAddressBookAction(controller, false, false));
+        addressBookReceivingActions.add(new OkBackToParentAction(controller));
         addressBookReceivingView.setPossibleActions(addressBookReceivingActions);
         viewMap.put(View.ADDRESS_BOOK_RECEIVING_VIEW, addressBookReceivingView);
         
@@ -172,58 +172,58 @@ public class CommandLineViewSystem implements ViewSystem {
         View addressBookSendingView = new AddressBookSendingView(localiser, "Address Book (Sending)", inputStream, printStream);
         Collection<Action> addressBookSendingActions = new ArrayList<Action>();
         // need selection of addresses shown
-        addressBookSendingActions.add(new CopyAddressAction(controller, localiser));
-        addressBookSendingActions.add(new CreateOrEditAddressAction(controller, localiser, true, false));
-        addressBookSendingActions.add(new CreateOrEditAddressAction(controller, localiser, false, false));
-        addressBookSendingActions.add(new OpenAddressBookAction(controller, localiser, false, true));
-        addressBookSendingActions.add(new OkBackToParentAction(controller, localiser));
+        addressBookSendingActions.add(new CopyAddressAction(controller));
+        addressBookSendingActions.add(new CreateOrEditAddressAction(controller, true, false));
+        addressBookSendingActions.add(new CreateOrEditAddressAction(controller, false, false));
+        addressBookSendingActions.add(new OpenAddressBookAction(controller, false, true));
+        addressBookSendingActions.add(new OkBackToParentAction(controller));
         addressBookSendingView.setPossibleActions(addressBookSendingActions);
         viewMap.put(View.ADDRESS_BOOK_SENDING_VIEW, addressBookSendingView);
   
         // Create new receiving address
         View createNewReceivingAddressView = new SimpleView(localiser, "Create New Receiving Address", inputStream, printStream);
         Collection<Action> createNewReceivingAddressActions = new ArrayList<Action>();
-        createNewReceivingAddressActions.add(new CancelBackToParentAction(controller, localiser));
-        createNewReceivingAddressActions.add(new OkBackToParentAction(controller, localiser));
+        createNewReceivingAddressActions.add(new CancelBackToParentAction(controller));
+        createNewReceivingAddressActions.add(new OkBackToParentAction(controller));
         createNewReceivingAddressView.setPossibleActions(createNewReceivingAddressActions);
         viewMap.put(View.CREATE_NEW_RECEIVING_ADDRESS_VIEW, createNewReceivingAddressView);
   
         // Create new sending address
         View createNewSendingAddressView = new SimpleView(localiser, "Create New Sending Address", inputStream, printStream);
         Collection<Action> createNewSendingAddressActions = new ArrayList<Action>();
-        createNewSendingAddressActions.add(new CancelBackToParentAction(controller, localiser));
-        createNewSendingAddressActions.add(new OkBackToParentAction(controller, localiser));
+        createNewSendingAddressActions.add(new CancelBackToParentAction(controller));
+        createNewSendingAddressActions.add(new OkBackToParentAction(controller));
         createNewSendingAddressView.setPossibleActions(createNewSendingAddressActions);
         viewMap.put(View.CREATE_NEW_SENDING_ADDRESS_VIEW, createNewSendingAddressView);
  
         // Edit receiving address
         View editReceivingAddressView = new SimpleView(localiser, "Edit Receiving Address", inputStream, printStream);
         Collection<Action> editReceivingAddressActions = new ArrayList<Action>();
-        editReceivingAddressActions.add(new CancelBackToParentAction(controller, localiser));
-        editReceivingAddressActions.add(new OkBackToParentAction(controller, localiser));
+        editReceivingAddressActions.add(new CancelBackToParentAction(controller));
+        editReceivingAddressActions.add(new OkBackToParentAction(controller));
         editReceivingAddressView.setPossibleActions(editReceivingAddressActions);
         viewMap.put(View.EDIT_RECEIVING_ADDRESS_VIEW, editReceivingAddressView);
   
         // Edit sending address
         View editSendingAddressView = new SimpleView(localiser, "Edit Sending Address", inputStream, printStream);
         Collection<Action> editSendingAddressActions = new ArrayList<Action>();
-        editSendingAddressActions.add(new CancelBackToParentAction(controller, localiser));
-        editSendingAddressActions.add(new OkBackToParentAction(controller, localiser));
+        editSendingAddressActions.add(new CancelBackToParentAction(controller));
+        editSendingAddressActions.add(new OkBackToParentAction(controller));
         editSendingAddressView.setPossibleActions(editSendingAddressActions);
         viewMap.put(View.EDIT_SENDING_ADDRESS_VIEW, editSendingAddressView);
    
         // Open wallet
         View openWalletView = new SimpleView(localiser, "Open Wallet", inputStream, printStream);
         Collection<Action> openWalletActions = new ArrayList<Action>();
-        openWalletActions.add(new CancelBackToParentAction(controller, localiser));
-        openWalletActions.add(new OkBackToParentAction(controller, localiser));
+        openWalletActions.add(new CancelBackToParentAction(controller));
+        openWalletActions.add(new OkBackToParentAction(controller));
         openWalletView.setPossibleActions(openWalletActions);
         viewMap.put(View.OPEN_WALLET_VIEW, openWalletView);
 
         View saveWalletAsView = new SimpleView(localiser, "Save Wallet As", inputStream, printStream);
         Collection<Action> saveWalletAsActions = new ArrayList<Action>();
-        saveWalletAsActions.add(new CancelBackToParentAction(controller, localiser));
-        saveWalletAsActions.add(new OkBackToParentAction(controller, localiser));
+        saveWalletAsActions.add(new CancelBackToParentAction(controller));
+        saveWalletAsActions.add(new OkBackToParentAction(controller));
         saveWalletAsView.setPossibleActions(saveWalletAsActions);
         viewMap.put(View.SAVE_WALLET_AS_VIEW, saveWalletAsView);
     }

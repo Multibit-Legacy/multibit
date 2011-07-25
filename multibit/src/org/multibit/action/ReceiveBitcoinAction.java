@@ -13,11 +13,9 @@ import org.multibit.model.DataProvider;
 public class ReceiveBitcoinAction implements Action {
 
     private MultiBitController controller;
-    private Localiser localiser;
     
-    public ReceiveBitcoinAction(MultiBitController controller, Localiser localiser) {
-        this.controller = controller;
-        this.localiser = localiser;     
+    public ReceiveBitcoinAction(MultiBitController controller) {
+        this.controller = controller;    
     }
     
     public void execute(DataProvider dataProvider) {

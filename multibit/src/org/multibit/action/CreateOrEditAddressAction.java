@@ -13,14 +13,12 @@ import org.multibit.model.DataProvider;
 public class CreateOrEditAddressAction implements Action {
 
     private MultiBitController controller;
-    private Localiser localiser;
  
     private boolean isCreate;
     private boolean isReceiving;
 
-    public CreateOrEditAddressAction(MultiBitController controller, Localiser localiser, boolean isCreate, boolean isReceiving) {
+    public CreateOrEditAddressAction(MultiBitController controller, boolean isCreate, boolean isReceiving) {
         this.controller = controller;
-        this.localiser = localiser; 
         this.isCreate = isCreate;
         this.isReceiving = isReceiving;
     }

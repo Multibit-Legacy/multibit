@@ -18,26 +18,24 @@ public class CopyAddressAction extends AbstractAction {
     private static final long serialVersionUID = 191352235465057705L;
 
     private MultiBitController controller;
-    private Localiser localiser;
     private DataProvider dataProvider;
 
     /**
      * Creates a new {@link CopyAddressAction}.
      */
-    public CopyAddressAction(MultiBitController controller, Localiser localiser, DataProvider dataProvider) {
-        super(localiser.getString("copyAddressAction.text"));
+    public CopyAddressAction(MultiBitController controller, DataProvider dataProvider) {
+        super(controller.getLocaliser().getString("copyAddressAction.text"));
         this.controller = controller;
-        this.localiser = localiser;
         
-        putValue(SHORT_DESCRIPTION, localiser.getString("copyAddressAction.tooltip"));
-        putValue(MNEMONIC_KEY, localiser.getMnemonic("copyAddressAction.mnemonicKey"));
+        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("copyAddressAction.tooltip"));
+        putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("copyAddressAction.mnemonicKey"));
     }
 
     /**
      * delegate to generic copy address action
      */
     public void actionPerformed(ActionEvent e) {
-        org.multibit.action.CopyAddressAction genericCopyAddressAction = new org.multibit.action.CopyAddressAction(controller, localiser);
+        org.multibit.action.CopyAddressAction genericCopyAddressAction = new org.multibit.action.CopyAddressAction(controller);
         genericCopyAddressAction.execute(dataProvider);
     }
 }

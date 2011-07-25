@@ -446,7 +446,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         toolBar.add(receiveBitcoinButton);
 
         // send bitcoin action
-        SendBitcoinAction sendBitcoinAction = new SendBitcoinAction(controller, localiser,
+        SendBitcoinAction sendBitcoinAction = new SendBitcoinAction(controller,
                 createImageIcon(SEND_BITCOIN_ICON_FILE), this);
         menuItem = new JMenuItem(sendBitcoinAction);
         tradeMenu.add(menuItem);
@@ -460,7 +460,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
         // open address book
         OpenAddressBookAction openAddressBookReceivingAction = new OpenAddressBookAction(
-                controller, localiser, createImageIcon(VIEW_ADDRESSBOOK_ICON_FILE), true, true);
+                controller, createImageIcon(VIEW_ADDRESSBOOK_ICON_FILE), true, true);
         viewMenu.add(openAddressBookReceivingAction);
         JButton openAddressBookReceivingButton = new JButton(openAddressBookReceivingAction);
         openAddressBookReceivingButton.setVerticalTextPosition(AbstractButton.BOTTOM);

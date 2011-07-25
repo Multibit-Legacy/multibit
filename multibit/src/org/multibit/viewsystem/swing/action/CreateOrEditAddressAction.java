@@ -17,7 +17,6 @@ public class CreateOrEditAddressAction extends AbstractAction {
     private static final long serialVersionUID = 191352235465875405L;
 
     private MultiBitController controller;
-    private Localiser localiser;
     private boolean isCreate;
     private boolean isReceiving;
     private DataProvider dataProvider;
@@ -25,29 +24,28 @@ public class CreateOrEditAddressAction extends AbstractAction {
     /**
      * Creates a new {@link CreateOrEditAddressAction}.
      */
-    public CreateOrEditAddressAction(MultiBitController controller, Localiser localiser, boolean isCreate, boolean isReceiving, DataProvider dataProvider) {
-        super(isCreate ? localiser.getString("createOrEditAddressAction.createReceiving.text") :  localiser.getString("createOrEditAddressAction.editReceiving.text"));
+    public CreateOrEditAddressAction(MultiBitController controller, boolean isCreate, boolean isReceiving, DataProvider dataProvider) {
+        super(isCreate ? controller.getLocaliser().getString("createOrEditAddressAction.createReceiving.text") :  controller.getLocaliser().getString("createOrEditAddressAction.editReceiving.text"));
         this.controller = controller;
-        this.localiser = localiser;
         this.isCreate = isCreate;
         this.isReceiving = isReceiving;
         this.dataProvider = dataProvider;
         
         if (isCreate) {
             if (isReceiving) {
-                putValue(SHORT_DESCRIPTION, localiser.getString("createOrEditAddressAction.createReceiving.tooltip"));
-                putValue(MNEMONIC_KEY, localiser.getMnemonic("createOrEditAddressAction.createReceiving.mnemonicKey"));
+                putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createOrEditAddressAction.createReceiving.tooltip"));
+                putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("createOrEditAddressAction.createReceiving.mnemonicKey"));
             } else {
-                putValue(SHORT_DESCRIPTION, localiser.getString("createOrEditAddressAction.createSending.tooltip"));
-                putValue(MNEMONIC_KEY, localiser.getMnemonic("createOrEditAddressAction.createSending.mnemonicKey"));
+                putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createOrEditAddressAction.createSending.tooltip"));
+                putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("createOrEditAddressAction.createSending.mnemonicKey"));
             }
         } else {
             if (isReceiving) {
-                putValue(SHORT_DESCRIPTION, localiser.getString("createOrEditAddressAction.editReceiving.tooltip"));
-                putValue(MNEMONIC_KEY, localiser.getMnemonic("createOrEditAddressAction.editReceiving.mnemonicKey"));
+                putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createOrEditAddressAction.editReceiving.tooltip"));
+                putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("createOrEditAddressAction.editReceiving.mnemonicKey"));
             } else {
-                putValue(SHORT_DESCRIPTION, localiser.getString("createOrEditAddressAction.editSending.tooltip"));
-                putValue(MNEMONIC_KEY, localiser.getMnemonic("createOrEditAddressAction.editSending.mnemonicKey"));
+                putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createOrEditAddressAction.editSending.tooltip"));
+                putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("createOrEditAddressAction.editSending.mnemonicKey"));
             }
         }
     }
@@ -56,7 +54,7 @@ public class CreateOrEditAddressAction extends AbstractAction {
      * delegate to generic create or edit address action
      */
     public void actionPerformed(ActionEvent e) {
-        org.multibit.action.CreateOrEditAddressAction genericCreateOrEditAddressAction = new org.multibit.action.CreateOrEditAddressAction(controller, localiser, isCreate, isReceiving);
+        org.multibit.action.CreateOrEditAddressAction genericCreateOrEditAddressAction = new org.multibit.action.CreateOrEditAddressAction(controller, isCreate, isReceiving);
         genericCreateOrEditAddressAction.execute(dataProvider);
     }
 }

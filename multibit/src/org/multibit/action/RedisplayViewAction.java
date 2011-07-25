@@ -13,11 +13,9 @@ import org.multibit.model.DataProvider;
 public class RedisplayViewAction implements Action {
 
     private MultiBitController controller;
-    private Localiser localiser;
     
-    public RedisplayViewAction(MultiBitController controller, Localiser localiser) {
-        this.controller = controller;
-        this.localiser = localiser;     
+    public RedisplayViewAction(MultiBitController controller) {
+        this.controller = controller;    
     }
     
     public void execute(DataProvider dataProvider) {
