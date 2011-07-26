@@ -1,5 +1,6 @@
 package org.multibit;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -10,9 +11,13 @@ import java.util.Properties;
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
+import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.commandline.CommandLineViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Wallet;
 
 /**
  * Main MultiBit entry class
@@ -48,11 +53,20 @@ public class MultiBit {
         }
         controller.setLocaliser(localiser);
 
- 
-        // create the view systems and set the localisers
+        
+        // create the MultiBitService that connects to the bitcoin network
+        // TODO get production or test from settings
+        MultiBitService multiBitService = new MultiBitService(false);
+        
+        model.setWallet(multiBitService.getWallet());
+        model.setWalletFilename(multiBitService.getWalletFilename());
+        
+        
+        // create the view systems
+        
         // add the command line view system
-        ViewSystem textView = new CommandLineViewSystem(controller);
-        controller.registerViewSystem(textView);
+        //ViewSystem textView = new CommandLineViewSystem(controller);
+        //controller.registerViewSystem(textView);
 
         // add the swing view system
         ViewSystem swingView = new MultiBitFrame(controller);
@@ -60,6 +74,9 @@ public class MultiBit {
         
         // show the home page
         controller.setActionForwardToChild(ActionForward.FORWARD_TO_HOME_PAGE);
+        
+        // start downloading the blockchain
+        multiBitService.downloadBlockChain();
     }
     
     private static Properties loadUserPreferences() {
