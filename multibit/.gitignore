@@ -1,6 +1,5 @@
 dist
 out
-multibit-prodnet.blockchain
-multibit-prodnet.wallet
+/multibit-prodnet.blockchain
 /pingservice-prodnet.blockchain
 /pingservice-testnet.blockchain
