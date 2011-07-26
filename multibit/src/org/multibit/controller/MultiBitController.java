@@ -11,6 +11,10 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 
+import com.google.bitcoin.core.Block;
+import com.google.bitcoin.core.Peer;
+import com.google.bitcoin.core.PeerEventListener;
+
 /**
  * the MVC controller for Multibit - this is loosely based on the Apache Struts
  * controller
@@ -18,8 +22,7 @@ import org.multibit.viewsystem.ViewSystem;
  * @author jim
  * 
  */
-public class MultiBitController {
-
+public class MultiBitController implements PeerEventListener {
     /**
      * the view systems under control of the MultiBitController
      */
@@ -321,5 +324,48 @@ public class MultiBitController {
 
     public void setLocaliser(Localiser localiser) {
         this.localiser = localiser;
+    }
+
+    /**
+     * the controller listens for PeerGroup events and notifies interested parties
+     */
+    
+    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
+        // TODO Auto-generated method stub
+        System.out.println("MultiBitController#onBlocksDownloaded called");     
+    }
+
+    public void onChainDownloadStarted(Peer peer, int blocksLeft) {
+        // TODO Auto-generated method stub
+        System.out.println("MultiBitController#onChainDownloadStarted called");     
+    }
+
+    public void onPeerConnected(Peer peer, int peerCount) {
+        // if now online, notify viewSystems
+        System.out.println("MultiBitController#onPeerConnected called - peerCount = " + peerCount);
+        if (peerCount == 1) {
+            for (ViewSystem viewSystem : viewSystems) {
+                viewSystem.nowOnline();
+            }   
+        }
+    }
+
+    public void onPeerDisconnected(Peer peer, int peerCount) {
+        System.out.println("MultiBitController#onPeerDisconnected called - peerCount = " + peerCount);
+        // if now offline, notify viewSystems
+        if (peerCount == 0) {
+            for (ViewSystem viewSystem : viewSystems) {
+                viewSystem.nowOffline();
+            }   
+        }
+    }
+    
+    /**
+     * method called by downloadListener to update download status 
+     */
+    public void updateDownloadStatus(String downloadStatus) {
+        for (ViewSystem viewSystem : viewSystems) {
+            viewSystem.updateDownloadStatus(downloadStatus);
+        }   
     }
 }

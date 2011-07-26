@@ -93,6 +93,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private JTextField balanceTextField;
 
     private JLabel onlineStatusLabel, networkStatusLabel;
+    private boolean isOnline;
+    
 
     private WalletTableModel tableModel;
 
@@ -119,25 +121,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
                 exitAction.execute(null);
             }
         });
-
-        boolean walletNotLoaded = false;
-        String walletNotLoadedErrorMessage = "";
-
-        if (model.getWalletFilename() != null) {
-            File file = new File(model.getWalletFilename());
-
-            try {
-                model.setWallet(Wallet.loadFromFile(file));
-
-            } catch (IOException e) {
-                walletNotLoaded = true;
-                walletNotLoadedErrorMessage = localiser.getString(
-                        "multiBitFrame.walletNotLoaded",
-                        new Object[] { model.getWalletFilename(),
-                                e.getClass().getName() + ": " + e.getMessage() });
-            }
+        
+        String walletFilename = model.getWalletFilename();
+        if (walletFilename != null) {
+            setTitle(localiser.getString("multiBitFrame.title"));            
         } else {
-            setTitle(localiser.getString("multiBitFrame.title"));
+            setTitle(localiser.getString(walletFilename + TITLE_SEPARATOR + "multiBitFrame.title"));
         }
 
         sizeAndCenter();
@@ -146,17 +135,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
         recreateAllViews(false);
 
-        onlineStatusLabel.setText("Online");
-        networkStatusLabel.setText("Synchronising with network... (96% done)");
+        // initialise status bar settings
+        nowOffline();
+        networkStatusLabel.setText(" ");
 
-        if (walletNotLoaded) {
-            JOptionPane.showMessageDialog(this, walletNotLoadedErrorMessage,
-                    localiser.getString("multiBitFrame.walletNotLoadedMessageBoxTitle"),
-                    JOptionPane.ERROR_MESSAGE, new ImageIcon(this.getIconImage()));
-        }
-
-        String balanceText = "19 BTC";
-        balanceTextField.setText(balanceText);
+        balanceTextField.setText(model.getFakeBalance() + " BTC");
 
         pack();
         setVisible(true);
@@ -169,15 +152,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
      * @param walletPathname
      */
     public void setWallet(Wallet wallet, String walletFilename) {
-        model.setWallet(wallet);
         model.setWalletFilename(walletFilename);
-
+        model.setWallet(wallet);
+ 
         this.setTitle(walletFilename + TITLE_SEPARATOR + localiser.getString("multiBitFrame.title"));
 
         if (tableModel != null) {
             tableModel.setWallet(wallet);
         }
         // TODO refresh display properly with listeners
+        // TODO renew MultiService innards because wallet has changed
     }
 
     /**
@@ -257,7 +241,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         onlineStatusLabel.setHorizontalAlignment(SwingConstants.CENTER);
         networkStatusLabel = new JLabel();
         statusBar.setZones(new String[] { "online", "network" }, new JComponent[] {
-                onlineStatusLabel, networkStatusLabel }, new String[] { "8%", "*" });
+                onlineStatusLabel, networkStatusLabel }, new String[] { "12%", "*" });
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 2;
@@ -596,12 +580,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             Container contentPane = getContentPane();
             contentPane.removeAll();
             initUI();
+            updateOnlineStatusText();
             repaint();
             invalidate();
-            validate();
-            
+            validate();    
         }
-
+        
         // create the views
         viewMap = new HashMap<Integer, View>();
 
@@ -760,5 +744,33 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
                 }
             });
         }
+    }
+
+    public void nowOnline() {
+        isOnline = true;
+        updateOnlineStatusText();
+    }
+
+    public void nowOffline() {
+        isOnline = false;
+        updateOnlineStatusText();
+    }
+
+    public void updateOnlineStatusText() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                String onlineStatus = isOnline ? localiser.getString("multiBitFrame.onlineText") : localiser.getString("multiBitFrame.offlineText");
+                onlineStatusLabel.setText(onlineStatus);        
+            }
+        });
+    }
+
+    public void updateDownloadStatus(String updateDownloadStatus) {
+        final String finalUpdateDownloadStatus = updateDownloadStatus;
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                networkStatusLabel.setText(finalUpdateDownloadStatus);        
+            }
+        });
     }
 }

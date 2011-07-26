@@ -1,6 +1,5 @@
 package org.multibit;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,9 +14,6 @@ import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.commandline.CommandLineViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Wallet;
 
 /**
  * Main MultiBit entry class
@@ -35,17 +31,16 @@ public class MultiBit {
     public static void main(String args[]) {
         // create the controller
         MultiBitController controller = new MultiBitController();
-        
-         // create the model and put it in the controller
-        MultiBitModel model = new MultiBitModel();
-        controller.setModel(model);
-               
+
         // load up the user preferences
         Properties userPreferences = loadUserPreferences();
-        model.setAllUserPreferences(userPreferences);
- 
+
+         // create the model and put it in the controller
+        MultiBitModel model = new MultiBitModel(userPreferences);
+        controller.setModel(model);
+                
         Localiser localiser;
-        String userLanguageCode = controller.getModel().getUserPreference(MultiBitModel.USER_LANGUAGE_CODE);
+        String userLanguageCode = model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE);
         if (MultiBitModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
             localiser = new Localiser(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, Locale.getDefault());
         } else {
@@ -54,19 +49,11 @@ public class MultiBit {
         controller.setLocaliser(localiser);
 
         
-        // create the MultiBitService that connects to the bitcoin network
-        // TODO get production or test from settings
-        MultiBitService multiBitService = new MultiBitService(false);
-        
-        model.setWallet(multiBitService.getWallet());
-        model.setWalletFilename(multiBitService.getWalletFilename());
-        
-        
         // create the view systems
         
         // add the command line view system
-        //ViewSystem textView = new CommandLineViewSystem(controller);
-        //controller.registerViewSystem(textView);
+        ViewSystem textView = new CommandLineViewSystem(controller);
+        controller.registerViewSystem(textView);
 
         // add the swing view system
         ViewSystem swingView = new MultiBitFrame(controller);
@@ -74,8 +61,12 @@ public class MultiBit {
         
         // show the home page
         controller.setActionForwardToChild(ActionForward.FORWARD_TO_HOME_PAGE);
+
         
-        // start downloading the blockchain
+        // create the MultiBitService that connects to the bitcoin network
+        // TODO get production or test from settings
+        MultiBitService multiBitService = new MultiBitService(false, controller);
+        
         multiBitService.downloadBlockChain();
     }
     

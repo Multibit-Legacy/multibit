@@ -274,4 +274,15 @@ public class CommandLineViewSystem implements ViewSystem {
     public void recreateAllViews(){
         // nothing to do
     }
+    public void nowOnline() {
+        printStream.println(TEXT_VIEW_OUTPUT_PREFIX + MESSAGE_PREFIX + "Multibit is now online");        
+    }
+
+    public void nowOffline() {
+        printStream.println(TEXT_VIEW_OUTPUT_PREFIX + MESSAGE_PREFIX + "Multibit is now online");        
+    }
+
+    public void updateDownloadStatus(String updateDownloadStatus) {
+        printStream.println(TEXT_VIEW_OUTPUT_PREFIX + MESSAGE_PREFIX + updateDownloadStatus);        
+    }
 }

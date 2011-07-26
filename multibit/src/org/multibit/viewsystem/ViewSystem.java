@@ -32,4 +32,20 @@ public interface ViewSystem {
      * tells the view system to recreate all views e.g. after a language change
      */   
     public void recreateAllViews();
+    
+    /**
+     * a method called when MultiBit is now online i.e. now has a peer when it did not before
+     */
+    public void nowOnline();
+
+    /**
+     * a method called when MultiBit is now offline i.e. the last peer has disconnecte
+     */
+    public void nowOffline();
+    
+    /**
+     * update download status
+     * @param updateDownloadStatus
+     */
+    public void updateDownloadStatus(String updateDownloadStatus);
 }
