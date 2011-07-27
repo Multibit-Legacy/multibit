@@ -35,6 +35,14 @@ public class MultiBit {
         // load up the user preferences
         Properties userPreferences = loadUserPreferences();
 
+        // if test or production is not specified, default to production
+        String testOrProduction = userPreferences.getProperty(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
+        if (testOrProduction == null) {
+            testOrProduction = MultiBitModel.PRODUCTION_NETWORK_VALUE;
+            userPreferences.put(MultiBitModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
+        }
+        boolean useTestNet = testOrProduction == MultiBitModel.TEST_NETWORK_VALUE;
+        
          // create the model and put it in the controller
         MultiBitModel model = new MultiBitModel(userPreferences);
         controller.setModel(model);
@@ -52,8 +60,8 @@ public class MultiBit {
         // create the view systems
         
         // add the command line view system
-        ViewSystem textView = new CommandLineViewSystem(controller);
-        controller.registerViewSystem(textView);
+        //ViewSystem textView = new CommandLineViewSystem(controller);
+        //controller.registerViewSystem(textView);
 
         // add the swing view system
         ViewSystem swingView = new MultiBitFrame(controller);
@@ -64,8 +72,7 @@ public class MultiBit {
 
         
         // create the MultiBitService that connects to the bitcoin network
-        // TODO get production or test from settings
-        MultiBitService multiBitService = new MultiBitService(false, controller);
+        MultiBitService multiBitService = new MultiBitService(useTestNet, controller);
         
         multiBitService.downloadBlockChain();
     }

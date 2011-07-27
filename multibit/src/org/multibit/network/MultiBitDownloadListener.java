@@ -26,54 +26,78 @@ import com.google.bitcoin.core.DownloadListener;
 /**
  * Listen to chain download events and print useful informational messages.
  * 
- * <p>progress, startDownload, doneDownload maybe be overridden to change the way the user
- * is notified.  
+ * <p>
+ * progress, startDownload, doneDownload maybe be overridden to change the way
+ * the user is notified.
  * 
- * <p>Methods are called with the event listener object locked so your
- * implementation does not have to be thread safe. 
+ * <p>
+ * Methods are called with the event listener object locked so your
+ * implementation does not have to be thread safe.
  * 
  * @author miron@google.com (Miron Cuperman a.k.a. devrandom)
- *
+ * 
  */
 public class MultiBitDownloadListener extends DownloadListener {
+    private static final double DONE_FOR_DOUBLES = 99.9999;  // not quite 100 per cent to cater for rounding
+    private static final int CRITERIA_LARGE_NUMBER_OF_BLOCKS = 1000;
+
     MultiBitController controller;
-    
+
     public MultiBitDownloadListener(MultiBitController controller) {
         this.controller = controller;
     }
-    
-   /**
+
+    /**
      * Called when download progress is made.
      * 
-     * @param pct the percentage of chain downloaded, estimated
-     * @param date the date of the last block downloaded 
+     * @param pct
+     *            the percentage of chain downloaded, estimated
+     * @param date
+     *            the date of the last block downloaded
      */
     protected void progress(double pct, Date date) {
-        String downloadStatusText = controller.getLocaliser().getString("multiBitDownloadListener.progressText", new Object[]{ (int)pct,
-                DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(date)});
-        controller.updateDownloadStatus(downloadStatusText);
+        if (pct > DONE_FOR_DOUBLES) {
+            // we are done downloading
+            doneDownload();
+        } else {
+            String downloadStatusText = controller.getLocaliser().getString(
+                    "multiBitDownloadListener.progressText",
+                    new Object[] {
+                            (int) pct,
+                            DateFormat.getDateInstance(DateFormat.MEDIUM,
+                                    controller.getLocaliser().getLocale()).format(date) });
+            controller.updateDownloadStatus(downloadStatusText);
+        }
     }
 
     /**
      * Called when download is initiated.
      * 
-     * @param blocks the number of blocks to download, estimated
+     * @param blocks
+     *            the number of blocks to download, estimated
      */
     protected void startDownload(int blocks) {
-        String startDownloadText;
-        if (blocks <= 1000) {
-            startDownloadText = controller.getLocaliser().getString("multiBitDownloadListener.startDownloadTextShort", new Object[]{blocks}); 
+        if (blocks == 0) {
+            doneDownload();
         } else {
-            startDownloadText = controller.getLocaliser().getString("multiBitDownloadListener.startDownloadTextLong", new Object[]{ blocks});             
+            String startDownloadText;
+            if (blocks <= CRITERIA_LARGE_NUMBER_OF_BLOCKS) {
+                startDownloadText = controller.getLocaliser().getString(
+                        "multiBitDownloadListener.startDownloadTextShort", new Object[] { blocks });
+            } else {
+                startDownloadText = controller.getLocaliser().getString(
+                        "multiBitDownloadListener.startDownloadTextLong", new Object[] { blocks });
+            }
+            controller.updateDownloadStatus(startDownloadText);
         }
-        controller.updateDownloadStatus(startDownloadText);
     }
 
     /**
      * Called when we are done downloading the block chain.
      */
     protected void doneDownload() {
-        String downloadStatusText = controller.getLocaliser().getString("multiBitDownloadListener.doneDownloadText");
+        String downloadStatusText = controller.getLocaliser().getString(
+                "multiBitDownloadListener.doneDownloadText");
         controller.updateDownloadStatus(downloadStatusText);
     }
 }
