@@ -1,6 +1,5 @@
 package org.multibit.action;
 
-import org.multibit.Localiser;
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
@@ -20,8 +19,6 @@ public class SaveWalletAsAction implements Action {
     }
     
     public void execute(DataProvider dataProvider) {
-        // no changes required to model
-        
         controller.setActionForwardToChild(ActionForward.FORWARD_TO_SAVE_WALLET_AS);       
     }
     

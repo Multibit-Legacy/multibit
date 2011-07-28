@@ -9,8 +9,6 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +22,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -55,7 +52,9 @@ import org.multibit.viewsystem.swing.view.AddressBookView;
 import org.multibit.viewsystem.swing.view.CreateOrEditAddressView;
 import org.multibit.viewsystem.swing.view.HelpAboutView;
 import org.multibit.viewsystem.swing.view.HelpContentsView;
+import org.multibit.viewsystem.swing.view.OpenWalletView;
 import org.multibit.viewsystem.swing.view.ReceiveBitcoinView;
+import org.multibit.viewsystem.swing.view.SaveWalletAsView;
 import org.multibit.viewsystem.swing.view.SendBitcoinConfirmView;
 import org.multibit.viewsystem.swing.view.SendBitcoinView;
 import org.multibit.viewsystem.swing.view.ShowPreferencesView;
@@ -76,8 +75,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private static final String RECEIVE_BITCOIN_ICON_FILE = "/images/receive.jpg";
     private static final String VIEW_ADDRESSBOOK_ICON_FILE = "/images/addressBook.jpg";
     private static final String PROGRESS_0_ICON_FILE = "/images/progress0.jpg";
+    private static final String PROGRESS_1_ICON_FILE = "/images/progress1.jpg";
     private static final String PROGRESS_2_ICON_FILE = "/images/progress2.jpg";
+    private static final String PROGRESS_3_ICON_FILE = "/images/progress3.jpg";
     private static final String PROGRESS_4_ICON_FILE = "/images/progress4.jpg";
+    private static final String PROGRESS_5_ICON_FILE = "/images/progress5.jpg";
     private static final String TICK_ICON_FILE = "/images/tick.jpg";
     private static final String HELP_CONTENTS_ICON_FILE = "/images/helpContents.jpg";
     private static final String BITCOINJ_ICON_FILE = "/images/bitcoinj.gif";
@@ -122,13 +124,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             }
         });
         
-        String walletFilename = model.getWalletFilename();
-        if (walletFilename != null) {
-            setTitle(localiser.getString("multiBitFrame.title"));            
-        } else {
-            setTitle(localiser.getString(walletFilename + TITLE_SEPARATOR + "multiBitFrame.title"));
-        }
-
         sizeAndCenter();
 
         initUI();
@@ -137,7 +132,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
         // initialise status bar settings
         nowOffline();
-        networkStatusLabel.setText(" ");
+        networkStatusLabel.setText("");
 
         balanceTextField.setText(model.getFakeBalance() + " BTC");
 
@@ -385,8 +380,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         menuBar.add(helpMenu);
 
         // open wallet action
-        OpenWalletAction openWalletAction = new OpenWalletAction(controller, localiser,
-                createImageIcon(OPEN_WALLET_ICON_FILE), this);
+        OpenWalletAction openWalletAction = new OpenWalletAction(controller,
+                createImageIcon(OPEN_WALLET_ICON_FILE));
         JMenuItem menuItem = new JMenuItem(openWalletAction);
         fileMenu.add(menuItem);
         JButton openWalletButton = new JButton(openWalletAction);
@@ -395,7 +390,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         toolBar.add(openWalletButton);
 
         // save wallet as action
-        SaveWalletAsAction saveWalletAsAction = new SaveWalletAsAction(localiser,
+        SaveWalletAsAction saveWalletAsAction = new SaveWalletAsAction(controller,
                 createImageIcon(SAVE_AS_ICON_FILE), this);
         menuItem = new JMenuItem(saveWalletAsAction);
         fileMenu.add(menuItem);
@@ -580,11 +575,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             Container contentPane = getContentPane();
             contentPane.removeAll();
             initUI();
-            updateOnlineStatusText();
-            repaint();
-            invalidate();
-            validate();    
         }
+        updateOnlineStatusText();
+
+        String walletFilename = model.getWalletFilename();
+        if (walletFilename == null) {
+            setTitle(localiser.getString("multiBitFrame.title"));            
+        } else {
+            setTitle(walletFilename + TITLE_SEPARATOR + localiser.getString("multiBitFrame.title"));
+        }
+
+        repaint();
+        invalidate();
+        validate();    
         
         // create the views
         viewMap = new HashMap<Integer, View>();
@@ -593,6 +596,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         viewMap.put(View.HOME_PAGE_VIEW, new ToDoView(controller, localiser, this));
         viewMap.put(View.HELP_ABOUT_VIEW, new HelpAboutView(controller, localiser, this));
         viewMap.put(View.HELP_CONTENTS_VIEW, new HelpContentsView(controller, localiser, this));
+        viewMap.put(View.OPEN_WALLET_VIEW, new OpenWalletView(controller, localiser, this));
+        viewMap.put(View.SAVE_WALLET_AS_VIEW, new SaveWalletAsView(controller, localiser, this));
         viewMap.put(View.RECEIVE_BITCOIN_VIEW, new ReceiveBitcoinView(controller, localiser, this));
         viewMap.put(View.SEND_BITCOIN_VIEW, new SendBitcoinView(controller, localiser, this));
         viewMap.put(View.SEND_BITCOIN_CONFIRM_VIEW, new SendBitcoinConfirmView(controller,
@@ -693,6 +698,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
         case View.HELP_CONTENTS_VIEW: {
             viewToReturn = viewMap.get(View.HELP_CONTENTS_VIEW);
+            break;
+        }
+
+        case View.OPEN_WALLET_VIEW: {
+            viewToReturn = viewMap.get(View.OPEN_WALLET_VIEW);
+            break;
+        }
+
+        case View.SAVE_WALLET_AS_VIEW: {
+            viewToReturn = viewMap.get(View.SAVE_WALLET_AS_VIEW);
             break;
         }
 

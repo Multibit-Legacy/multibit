@@ -318,6 +318,18 @@ public class MultiBitController implements PeerEventListener {
         }
     }
 
+    /**
+     * the wallet file has been changed
+     */
+    public void fireWalletChanged() {
+        // TODO rewire the blockchain etc
+        
+        // tell the viewSystems to refresh their views
+        for (ViewSystem viewSystem : viewSystems) {
+            viewSystem.recreateAllViews();
+        }
+    }
+
     public Localiser getLocaliser() {
         return localiser;
     }
