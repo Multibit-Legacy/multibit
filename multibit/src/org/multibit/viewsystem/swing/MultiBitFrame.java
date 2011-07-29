@@ -9,6 +9,9 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,12 +66,16 @@ import org.multibit.viewsystem.swing.watermark.FillPainter;
 import org.multibit.viewsystem.swing.watermark.WatermarkPainter;
 import org.multibit.viewsystem.swing.watermark.WatermarkViewport;
 
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.ScriptException;
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.TransactionInput;
 import com.google.bitcoin.core.Wallet;
 
 /*
  * JFrame displaying Swing version of MultiBit
  */
-public class MultiBitFrame extends JFrame implements ViewSystem {
+public class MultiBitFrame extends JFrame implements ViewSystem{
     private static final String SAVE_AS_ICON_FILE = "/images/saveAs.jpg";
     private static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
     private static final String SEND_BITCOIN_ICON_FILE = "/images/send.jpg";
@@ -97,8 +104,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private JLabel onlineStatusLabel, networkStatusLabel;
     private boolean isOnline;
     
+    private MultiBitFrame thisFrame;
+    
 
-    private WalletTableModel tableModel;
+    private WalletTableModel walletTableModel;
 
     /**
      * the view that the controller is telling us to display an int - one of the
@@ -113,6 +122,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         this.controller = controller;
         this.model = controller.getModel();
         this.localiser = controller.getLocaliser();
+        this.thisFrame = this;
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
@@ -134,43 +144,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         nowOffline();
         networkStatusLabel.setText("");
 
-        balanceTextField.setText(model.getFakeBalance() + " BTC");
+        balanceTextField.setText(Localiser.bitcoinValueToFriendlyString(model.getBalance(), true, false));
 
         pack();
         setVisible(true);
-    }
-
-    /**
-     * set a new wallet onto the frame
-     * 
-     * @param wallet
-     * @param walletPathname
-     */
-    public void setWallet(Wallet wallet, String walletFilename) {
-        model.setWalletFilename(walletFilename);
-        model.setWallet(wallet);
- 
-        this.setTitle(walletFilename + TITLE_SEPARATOR + localiser.getString("multiBitFrame.title"));
-
-        if (tableModel != null) {
-            tableModel.setWallet(wallet);
-        }
-        // TODO refresh display properly with listeners
-        // TODO renew MultiService innards because wallet has changed
-    }
-
-    /**
-     * get the current wallet
-     */
-    public Wallet getWallet() {
-        return model.getWallet();
-    }
-
-    /**
-     * get the current wallet filename
-     */
-    public String getWalletFilename() {
-        return model.getWalletFilename();
     }
 
     private void sizeAndCenter() {
@@ -293,8 +270,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         walletPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
-        tableModel = new WalletTableModel(model, localiser);
-        JTable table = new JTable(tableModel);
+        walletTableModel = new WalletTableModel(model, controller);
+        JTable table = new JTable(walletTableModel);
         table.setOpaque(false);
         table.setShowGrid(false);
 
@@ -473,30 +450,56 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
         ImageIcon tickIcon = createImageIcon(TICK_ICON_FILE);
         ImageIcon progress0Icon = createImageIcon(PROGRESS_0_ICON_FILE);
+        ImageIcon progress1Icon = createImageIcon(PROGRESS_1_ICON_FILE);
         ImageIcon progress2Icon = createImageIcon(PROGRESS_2_ICON_FILE);
+        ImageIcon progress3Icon = createImageIcon(PROGRESS_3_ICON_FILE);
         ImageIcon progress4Icon = createImageIcon(PROGRESS_4_ICON_FILE);
+        ImageIcon progress5Icon = createImageIcon(PROGRESS_5_ICON_FILE);
 
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
             label.setHorizontalAlignment(SwingConstants.CENTER);
             label.setOpaque(false);
 
-            switch (row) {
+            int numberOfBlocksEmbedded = ((Integer)value).intValue();
+            if (numberOfBlocksEmbedded < 0 ) {
+                numberOfBlocksEmbedded = 0;
+            }
+            if (numberOfBlocksEmbedded > 6 ) {
+                numberOfBlocksEmbedded = 6;
+            }
+            
+            switch (numberOfBlocksEmbedded) {
             case 0: {
                 label.setIcon(progress0Icon);
                 break;
             }
             case 1: {
-                label.setIcon(progress2Icon);
+                label.setIcon(progress1Icon);
                 break;
             }
             case 2: {
+                label.setIcon(progress2Icon);
+                break;
+            }
+            case 3: {
+                label.setIcon(progress3Icon);
+                break;
+            }
+            case 4: {
                 label.setIcon(progress4Icon);
                 break;
             }
-
-            default:
+            case 5: {
+                label.setIcon(progress5Icon);
+                break;
+            }
+            case 6: {
                 label.setIcon(tickIcon);
+                break;
+            }
+            default:
+                label.setIcon(progress0Icon);
             }
             return label;
         }
@@ -577,7 +580,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             initUI();
         }
         updateOnlineStatusText();
-
+        
         String walletFilename = model.getWalletFilename();
         if (walletFilename == null) {
             setTitle(localiser.getString("multiBitFrame.title"));            
@@ -788,4 +791,55 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             }
         });
     }
+    
+    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
+            BigInteger newBalance) {
+              
+//        final BigInteger finalNewBalance = newBalance;
+//        SwingUtilities.invokeLater(new Runnable() {
+//            public void run() {
+//                JOptionPane.showMessageDialog(thisFrame, "MultiBitFrame#onCoinsReceived - New balance = " + finalNewBalance);
+//            }
+//        });
+       
+        // print out transaction details
+        try {
+            TransactionInput input = transaction.getInputs().get(0);
+            Address from = input.getFromAddress();
+            BigInteger value = transaction.getValueSentToMe(wallet);
+            System.out.println("Received " + Localiser.bitcoinValueToFriendlyString(value, true, false) + " from "
+                    + from.toString());
+            System.out.println("MultiBitFrame#onCoinsReceived - ping 1 - wallet is currently:\n" + wallet.toString());
+            // Now send the coins back
+            //Transaction sendTx = wallet.sendCoins(controller.getMultiBitService().getPeerGroup(), from, value);
+            //assert sendTx != null; // We should never try to send more
+                                   // coins than we have!
+            //System.out.println("Sent coins back! Transaction hash is " + sendTx.getHashAsString());
+            wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
+        } catch (ScriptException e) {
+            // If we didn't understand the scriptSig, just crash.
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        
+        System.out.println("MultiBitFrame#onCoinsReceived - ping 2 - wallet is currently:\n" + wallet.toString());
+        fireDataChanged();
+    }
+    
+    /**
+     * update the UI after the model data has changed
+     */
+    public void fireDataChanged() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                balanceTextField.setText(Localiser.bitcoinValueToFriendlyString(controller.getModel().getBalance(), true, false));
+                
+                // update wallet table model
+                walletTableModel.recreateWalletData();     
+            }
+        });
+    }   
 }

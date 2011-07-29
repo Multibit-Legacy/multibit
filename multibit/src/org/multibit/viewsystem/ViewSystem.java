@@ -1,5 +1,10 @@
 package org.multibit.viewsystem;
 
+import java.math.BigInteger;
+
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.Wallet;
+
 
 /**
  * an interface describing a collection of views that are used to render the MultiBit application
@@ -48,4 +53,14 @@ public interface ViewSystem {
      * @param updateDownloadStatus
      */
     public void updateDownloadStatus(String updateDownloadStatus);
+    
+    /**
+     * WalletEventListener callback method
+     * @param wallet
+     * @param transaction
+     * @param prevBalance
+     * @param newBalance
+     */
+    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
+            BigInteger newBalance);
 }

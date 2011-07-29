@@ -19,20 +19,29 @@ public class WalletData {
             "walletData.debitText", "walletData.creditText" };
 
     private Transaction transaction;
-    private String status;
+    
+    /**
+     * the height of the block this transaction appears in
+     */
+    private int height;
+    
     private Date date;
     private String description;
     private BigInteger debit;
     private BigInteger credit;
 
-    public WalletData(Transaction transaction, String status, Date date, String description,
+    public WalletData(Transaction transaction, int height, Date date, String description,
             BigInteger debit, BigInteger credit) {
         this.transaction = transaction;
-        this.status = status;
+        this.height = height;
         this.date = date;
         this.description = description;
         this.debit = debit;
         this.credit = credit;
+    }
+
+    public WalletData(Transaction transaction) {
+        this.transaction = transaction;
     }
 
     public Transaction getTransaction() {
@@ -43,12 +52,12 @@ public class WalletData {
         this.transaction = transaction;
     }
 
-    public String getStatus() {
-        return status;
+    public int getHeight() {
+        return height;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setHeight(int height) {
+        this.height = height;
     }
 
     public Date getDate() {

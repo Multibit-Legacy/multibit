@@ -89,7 +89,9 @@ public class MultiBitService {
 
     private PeerGroup peerGroup;
     
-    //private MultiBitController controller;
+    private BlockChain chain;
+    
+    private MultiBitController controller;
 
     /**
      * 
@@ -99,7 +101,7 @@ public class MultiBitService {
      *            filename current wallet filename
      */
     public MultiBitService(boolean useTestNet, MultiBitController controller) {
-        //this.controller = controller;
+        this.controller = controller;
         
         final NetworkParameters params = useTestNet ? NetworkParameters.testNet()
                 : NetworkParameters.prodNet();
@@ -118,6 +120,18 @@ public class MultiBitService {
                 
                 // set the new wallet into the model
                 controller.getModel().setWallet(wallet);
+                
+                final MultiBitController finalController = controller;
+                
+                // wire up the controller as a wallet event listener
+                controller.getModel().addWalletEventListener(new WalletEventListener() {
+                    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
+                            BigInteger newBalance)  {
+                        finalController.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
+                    }
+                });
+
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -132,6 +146,15 @@ public class MultiBitService {
             // set the new wallet and wallet filename on the model
             controller.getModel().setWalletFilename(walletFilename);
             controller.getModel().setWallet(wallet);
+            
+            // wire up the controller as a wallet event listener
+            final MultiBitController finalController = controller;
+            controller.getModel().addWalletEventListener(new WalletEventListener() {
+                public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
+                        BigInteger newBalance)  {
+                    finalController.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
+                }
+            });
 
             wallet.keychain.add(new ECKey());
             try {
@@ -157,7 +180,7 @@ public class MultiBitService {
             // Connect to the localhost node. One minute timeout since we won't
             // try any other peers
             System.out.println("Connecting ...");
-            BlockChain chain = new BlockChain(params, wallet, blockStore);
+            chain = new BlockChain(params, wallet, blockStore);
 
             peerGroup = new MultiBitPeerGroup(controller, blockStore, params, chain);
             // peerGroup.addAddress(new PeerAddress(InetAddress.getLocalHost(),
@@ -169,7 +192,6 @@ public class MultiBitService {
             peerGroup.start();
 
             System.out.println("Send coins to: " + key.toAddress(params).toString());
-            System.out.println("Waiting for coins to arrive. Press Ctrl-C to quit.");
 
             // The PeerGroup thread keeps us alive until something kills the
             // process.
@@ -288,5 +310,9 @@ public class MultiBitService {
 
     public PeerGroup getPeerGroup() {
         return peerGroup;
+    }
+
+    public BlockChain getChain() {
+        return chain;
     }
 }

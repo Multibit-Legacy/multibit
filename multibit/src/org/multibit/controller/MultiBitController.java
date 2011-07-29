@@ -1,19 +1,26 @@
 package org.multibit.controller;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EmptyStackException;
 import java.util.Locale;
 import java.util.Stack;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import org.multibit.Localiser;
 import org.multibit.model.MultiBitModel;
+import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 
 import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.Wallet;
 
 /**
  * the MVC controller for Multibit - this is loosely based on the Apache Struts
@@ -57,6 +64,12 @@ public class MultiBitController implements PeerEventListener {
      * the stack of views
      */
     private Stack<Integer> viewStack;
+    
+    /**
+     * the bitcoinj network interface
+     */
+    private MultiBitService multiBitService;
+    
     
     public MultiBitController() {
         viewSystems = new ArrayList<ViewSystem>();
@@ -379,5 +392,21 @@ public class MultiBitController implements PeerEventListener {
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.updateDownloadStatus(downloadStatus);
         }   
+    }
+    
+    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
+            BigInteger newBalance) {
+ 
+        for (ViewSystem viewSystem : viewSystems) {
+            viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
+        }   
+    }
+
+    public MultiBitService getMultiBitService() {
+        return multiBitService;
+    }
+
+    public void setMultiBitService(MultiBitService multiBitService) {
+        this.multiBitService = multiBitService;
     }
 }

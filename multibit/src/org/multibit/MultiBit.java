@@ -12,7 +12,6 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.ViewSystem;
-import org.multibit.viewsystem.commandline.CommandLineViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
@@ -43,12 +42,8 @@ public class MultiBit {
         }
         boolean useTestNet = testOrProduction == MultiBitModel.TEST_NETWORK_VALUE;
         
-         // create the model and put it in the controller
-        MultiBitModel model = new MultiBitModel(userPreferences);
-        controller.setModel(model);
-                
         Localiser localiser;
-        String userLanguageCode = model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE);
+        String userLanguageCode = userPreferences.getProperty(MultiBitModel.USER_LANGUAGE_CODE);
         if (MultiBitModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
             localiser = new Localiser(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, Locale.getDefault());
         } else {
@@ -56,7 +51,11 @@ public class MultiBit {
         }
         controller.setLocaliser(localiser);
 
-        
+        // create the model and put it in the controller
+        MultiBitModel model = new MultiBitModel(controller, userPreferences);
+        controller.setModel(model);
+                
+
         // create the view systems
         
         // add the command line view system
@@ -73,7 +72,10 @@ public class MultiBit {
         
         // create the MultiBitService that connects to the bitcoin network
         MultiBitService multiBitService = new MultiBitService(useTestNet, controller);
+        controller.setMultiBitService(multiBitService);
         
+        // TODO make more generic
+        ((MultiBitFrame)swingView).fireDataChanged();
         multiBitService.downloadBlockChain();
     }
     

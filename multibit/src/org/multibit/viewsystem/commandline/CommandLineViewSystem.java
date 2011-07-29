@@ -2,10 +2,14 @@ package org.multibit.viewsystem.commandline;
 
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.multibit.Localiser;
 import org.multibit.action.Action;
@@ -37,6 +41,9 @@ import org.multibit.viewsystem.commandline.view.HomePageView;
 import org.multibit.viewsystem.commandline.view.ReceiveBitcoinView;
 import org.multibit.viewsystem.commandline.view.SendBitcoinView;
 import org.multibit.viewsystem.commandline.view.SimpleView;
+
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.Wallet;
 
 /**
  * a purely text / command line view for MultiBit
@@ -284,5 +291,11 @@ public class CommandLineViewSystem implements ViewSystem {
 
     public void updateDownloadStatus(String updateDownloadStatus) {
         printStream.println(TEXT_VIEW_OUTPUT_PREFIX + MESSAGE_PREFIX + updateDownloadStatus);        
+    }
+    
+    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
+            BigInteger newBalance) {
+
+        printStream.println(TEXT_VIEW_OUTPUT_PREFIX + MESSAGE_PREFIX + "onCoinsReceived, previous balance = " + prevBalance + ", new balance = " + newBalance);        
     }
 }

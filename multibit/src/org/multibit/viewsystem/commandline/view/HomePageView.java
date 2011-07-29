@@ -2,6 +2,7 @@ package org.multibit.viewsystem.commandline.view;
 
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 
 import org.multibit.Localiser;
@@ -41,9 +42,9 @@ public class HomePageView extends AbstractView{
         printStream.println(filenameMessage);
 
         // output current balance
-        int balance = model.getFakeBalance();
+        BigInteger balance = model.getBalance();
         String balanceMessage = localiser.getString("homePageView.balanceText",
-                new Object[] { new Integer(balance) });
+                new Object[] { balance });   // TODO convert from nanocoins
         printStream.println(balanceMessage);
         
         // output transaction headers
@@ -61,7 +62,7 @@ public class HomePageView extends AbstractView{
         // output the transaction data
          SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy hh:mm");
 
-         for (WalletData walletData : model.getFakeWalletData()) {
+         for (WalletData walletData : model.getWalletData()) {
              String creditText = "";
              if (walletData.getCredit() != null) {
                  creditText = walletData.getCredit().toString();
@@ -71,7 +72,7 @@ public class HomePageView extends AbstractView{
              if (walletData.getDebit() != null) {
                  debitText = walletData.getDebit().toString();
              }
-             printStream.format(printfFormat, walletData.getStatus(),
+             printStream.format(printfFormat, walletData.getHeight(),
                      dateFormatter.format(walletData.getDate()), walletData.getDescription(),
                      debitText, creditText);
          }

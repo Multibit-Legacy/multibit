@@ -1,6 +1,7 @@
 package org.multibit;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -10,6 +11,8 @@ import java.util.ResourceBundle;
 import javax.swing.KeyStroke;
 
 import org.multibit.viewsystem.swing.MultiBitFrame;
+
+import com.google.bitcoin.core.Utils;
 
 /**
  * class used for producing localised messages it contains a resource bundle and
@@ -148,4 +151,25 @@ public class Localiser {
         }
         return version;
     }
+    
+    /** Returns the given value in nanocoins as a 0.12 type string. */
+    public static String bitcoinValueToFriendlyString(BigInteger value, boolean addUnit, boolean blankZero) {
+        if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
+            return "";
+        }
+        
+        boolean negative = value.compareTo(BigInteger.ZERO) < 0;
+        if (negative) {
+            value = value.negate();
+        }
+        BigInteger coins = value.divide(Utils.COIN);
+        BigInteger cents = value.remainder(Utils.COIN);
+        String toReturn = String.format("%s%d.%02d", negative ? "-" : "", coins.intValue(), cents.intValue() / 1000000);
+        if (addUnit) {
+            toReturn = toReturn + " " + "BTC";
+        }
+        return toReturn;
+    }
+    
+
 }
