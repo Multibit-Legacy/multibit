@@ -53,7 +53,7 @@ function windowTitle()
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
 &nbsp;PREV CLASS&nbsp;
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/commandline/view/HelpAboutView.html" title="class in org.multibit.viewsystem.commandline.view"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/commandline/view/AddressBookReceivingView.html" title="class in org.multibit.viewsystem.commandline.view"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../../../index.html?org/multibit/viewsystem/commandline/view/AbstractView.html" target="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="AbstractView.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
@@ -96,7 +96,7 @@ java.lang.Object
 <DT><B>All Implemented Interfaces:</B> <DD><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></DD>
 </DL>
 <DL>
-<DT><B>Direct Known Subclasses:</B> <DD><A HREF="../../../../../org/multibit/viewsystem/commandline/view/HelpAboutView.html" title="class in org.multibit.viewsystem.commandline.view">HelpAboutView</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/HelpContentsView.html" title="class in org.multibit.viewsystem.commandline.view">HelpContentsView</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/HomePageView.html" title="class in org.multibit.viewsystem.commandline.view">HomePageView</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/SimpleView.html" title="class in org.multibit.viewsystem.commandline.view">SimpleView</A></DD>
+<DT><B>Direct Known Subclasses:</B> <DD><A HREF="../../../../../org/multibit/viewsystem/commandline/view/AddressBookReceivingView.html" title="class in org.multibit.viewsystem.commandline.view">AddressBookReceivingView</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/AddressBookSendingView.html" title="class in org.multibit.viewsystem.commandline.view">AddressBookSendingView</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/HelpAboutView.html" title="class in org.multibit.viewsystem.commandline.view">HelpAboutView</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/HelpContentsView.html" title="class in org.multibit.viewsystem.commandline.view">HelpContentsView</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/HomePageView.html" title="class in org.multibit.viewsystem.commandline.view">HomePageView</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/ReceiveBitcoinView.html" title="class in org.multibit.viewsystem.commandline.view">ReceiveBitcoinView</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/SendBitcoinConfirmView.html" title="class in org.multibit.viewsystem.commandline.view">SendBitcoinConfirmView</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/SendBitcoinView.html" title="class in org.multibit.viewsystem.commandline.view">SendBitcoinView</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/SimpleView.html" title="class in org.multibit.viewsystem.commandline.view">SimpleView</A></DD>
 </DL>
 <HR>
 <DL>
@@ -141,7 +141,7 @@ java.lang.Object
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>protected &nbsp;<A HREF="../../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A></CODE></FONT></TD>
+<CODE>protected &nbsp;<A HREF="../../../../../org/multibit/Localiser.html" title="class in org.multibit">Localiser</A></CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#localiser">localiser</A></B></CODE>
 
 <BR>
@@ -149,7 +149,7 @@ java.lang.Object
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>protected &nbsp;java.util.Collection&lt;<A HREF="../../../../../org/multibit/Action.html" title="interface in org.multibit">Action</A>&gt;</CODE></FONT></TD>
+<CODE>protected &nbsp;java.util.Collection&lt;<A HREF="../../../../../org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#possibleActions">possibleActions</A></B></CODE>
 
 <BR>
@@ -170,7 +170,7 @@ java.lang.Object
 <TH ALIGN="left"><B>Fields inherited from interface org.multibit.viewsystem.<A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></B></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#ADDRESS_BOOK_VIEW">ADDRESS_BOOK_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#HELP_ABOUT_VIEW">HELP_ABOUT_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#HELP_CONTENTS_VIEW">HELP_CONTENTS_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#HOME_PAGE_VIEW">HOME_PAGE_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#OPEN_WALLET_VIEW">OPEN_WALLET_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#RECEIVE_BITCOINS_VIEW">RECEIVE_BITCOINS_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#SAVE_WALLET_AS_VIEW">SAVE_WALLET_AS_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#SEND_BITCOINS_CONFIRM_VIEW">SEND_BITCOINS_CONFIRM_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#SEND_BITCOINS_VIEW">SEND_BITCOINS_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#UNKNOWN_VIEW">UNKNOWN_VIEW</A></CODE></TD>
+<TD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#ADDRESS_BOOK_RECEIVING_VIEW">ADDRESS_BOOK_RECEIVING_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#ADDRESS_BOOK_SENDING_VIEW">ADDRESS_BOOK_SENDING_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#CREATE_NEW_RECEIVING_ADDRESS_VIEW">CREATE_NEW_RECEIVING_ADDRESS_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#CREATE_NEW_SENDING_ADDRESS_VIEW">CREATE_NEW_SENDING_ADDRESS_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#EDIT_RECEIVING_ADDRESS_VIEW">EDIT_RECEIVING_ADDRESS_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#EDIT_SENDING_ADDRESS_VIEW">EDIT_SENDING_ADDRESS_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#HELP_ABOUT_VIEW">HELP_ABOUT_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#HELP_CONTENTS_VIEW">HELP_CONTENTS_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#HOME_PAGE_VIEW">HOME_PAGE_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#OPEN_WALLET_VIEW">OPEN_WALLET_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#PREFERENCES_VIEW">PREFERENCES_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#RECEIVE_BITCOIN_VIEW">RECEIVE_BITCOIN_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#SAVE_WALLET_AS_VIEW">SAVE_WALLET_AS_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#SEND_BITCOIN_CONFIRM_VIEW">SEND_BITCOIN_CONFIRM_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#SEND_BITCOIN_VIEW">SEND_BITCOIN_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#UNKNOWN_VIEW">UNKNOWN_VIEW</A></CODE></TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -183,7 +183,7 @@ java.lang.Object
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#AbstractView(org.multibit.viewsystem.Localiser, java.lang.String, java.io.InputStream, java.io.PrintStream)">AbstractView</A></B>(<A HREF="../../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A>&nbsp;localiser,
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#AbstractView(org.multibit.Localiser, java.lang.String, java.io.InputStream, java.io.PrintStream)">AbstractView</A></B>(<A HREF="../../../../../org/multibit/Localiser.html" title="class in org.multibit">Localiser</A>&nbsp;localiser,
              java.lang.String&nbsp;viewDescription,
              java.io.InputStream&nbsp;inputStream,
              java.io.PrintStream&nbsp;printStream)</CODE>
@@ -246,7 +246,7 @@ java.lang.Object
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#setPossibleActions(java.util.Collection)">setPossibleActions</A></B>(java.util.Collection&lt;<A HREF="../../../../../org/multibit/Action.html" title="interface in org.multibit">Action</A>&gt;&nbsp;possibleActions)</CODE>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#setPossibleActions(java.util.Collection)">setPossibleActions</A></B>(java.util.Collection&lt;<A HREF="../../../../../org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>&gt;&nbsp;possibleActions)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -287,7 +287,7 @@ protected java.lang.String <B>description</B></PRE>
 <A NAME="localiser"><!-- --></A><H3>
 localiser</H3>
 <PRE>
-protected <A HREF="../../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A> <B>localiser</B></PRE>
+protected <A HREF="../../../../../org/multibit/Localiser.html" title="class in org.multibit">Localiser</A> <B>localiser</B></PRE>
 <DL>
 <DL>
 </DL>
@@ -317,7 +317,7 @@ protected java.io.PrintStream <B>printStream</B></PRE>
 <A NAME="possibleActions"><!-- --></A><H3>
 possibleActions</H3>
 <PRE>
-protected java.util.Collection&lt;<A HREF="../../../../../org/multibit/Action.html" title="interface in org.multibit">Action</A>&gt; <B>possibleActions</B></PRE>
+protected java.util.Collection&lt;<A HREF="../../../../../org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>&gt; <B>possibleActions</B></PRE>
 <DL>
 <DL>
 </DL>
@@ -343,10 +343,10 @@ protected static <A HREF="../../../../../org/multibit/viewsystem/commandline/Con
 </TR>
 </TABLE>
 
-<A NAME="AbstractView(org.multibit.viewsystem.Localiser, java.lang.String, java.io.InputStream, java.io.PrintStream)"><!-- --></A><H3>
+<A NAME="AbstractView(org.multibit.Localiser, java.lang.String, java.io.InputStream, java.io.PrintStream)"><!-- --></A><H3>
 AbstractView</H3>
 <PRE>
-public <B>AbstractView</B>(<A HREF="../../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A>&nbsp;localiser,
+public <B>AbstractView</B>(<A HREF="../../../../../org/multibit/Localiser.html" title="class in org.multibit">Localiser</A>&nbsp;localiser,
                     java.lang.String&nbsp;viewDescription,
                     java.io.InputStream&nbsp;inputStream,
                     java.io.PrintStream&nbsp;printStream)</PRE>
@@ -430,7 +430,7 @@ public void <B>displayMessage</B>(java.lang.String&nbsp;messageKey,
 <A NAME="setPossibleActions(java.util.Collection)"><!-- --></A><H3>
 setPossibleActions</H3>
 <PRE>
-public void <B>setPossibleActions</B>(java.util.Collection&lt;<A HREF="../../../../../org/multibit/Action.html" title="interface in org.multibit">Action</A>&gt;&nbsp;possibleActions)</PRE>
+public void <B>setPossibleActions</B>(java.util.Collection&lt;<A HREF="../../../../../org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>&gt;&nbsp;possibleActions)</PRE>
 <DL>
 <DD><DL>
 <DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#setPossibleActions(java.util.Collection)">setPossibleActions</A></CODE> in interface <CODE><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></CODE></DL>
@@ -484,7 +484,7 @@ protected void <B>displayActionsAndProcessResponse</B>()</PRE>
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
 &nbsp;PREV CLASS&nbsp;
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/commandline/view/HelpAboutView.html" title="class in org.multibit.viewsystem.commandline.view"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/commandline/view/AddressBookReceivingView.html" title="class in org.multibit.viewsystem.commandline.view"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../../../index.html?org/multibit/viewsystem/commandline/view/AbstractView.html" target="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="AbstractView.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;

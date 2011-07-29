@@ -1,8 +1,11 @@
+com.google.bitcoin.core
 org.multibit
+org.multibit.action
+org.multibit.controller
 org.multibit.model
+org.multibit.network
 org.multibit.viewsystem
 org.multibit.viewsystem.commandline
-org.multibit.viewsystem.commandline.action
 org.multibit.viewsystem.commandline.view
 org.multibit.viewsystem.swing
 org.multibit.viewsystem.swing.action

@@ -52,8 +52,8 @@ function windowTitle()
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../../org/multibit/viewsystem/swing/DisplayUsingPanel.html" title="class in org.multibit.viewsystem.swing"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../../org/multibit/viewsystem/swing/ReceiveBitcoinsDialog.html" title="class in org.multibit.viewsystem.swing"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;PREV CLASS&nbsp;
+&nbsp;<A HREF="../../../../org/multibit/viewsystem/swing/StatusBar.html" title="class in org.multibit.viewsystem.swing"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../../index.html?org/multibit/viewsystem/swing/MultiBitFrame.html" target="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="MultiBitFrame.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
@@ -234,9 +234,7 @@ java.lang.Object
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#MultiBitFrame(org.multibit.MultiBitController, org.multibit.model.MultiBitModel, org.multibit.viewsystem.Localiser)">MultiBitFrame</A></B>(<A HREF="../../../../org/multibit/MultiBitController.html" title="class in org.multibit">MultiBitController</A>&nbsp;controller,
-              <A HREF="../../../../org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>&nbsp;model,
-              <A HREF="../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A>&nbsp;localiser)</CODE>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#MultiBitFrame(org.multibit.controller.MultiBitController)">MultiBitFrame</A></B>(<A HREF="../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -267,23 +265,16 @@ java.lang.Object
 <TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#displayView(int)">displayView</A></B>(int&nbsp;viewToDisplay)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;display the view specified</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;display next view - this may be on another thread hence the
+ SwingUtilities.invokeLater</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;Wallet</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#getWallet()">getWallet</A></B>()</CODE>
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#fireDataChanged()">fireDataChanged</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get the current wallet</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#getWalletFilename()">getWalletFilename</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;get the current wallet filename</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;update the UI after the model data has changed</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -292,24 +283,67 @@ java.lang.Object
                      int&nbsp;nextView)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;navigate away from a view - gives the view the opportunity to tidy up/ disappear etc</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;navigate away from view - this may be on another thread hence the
+ SwingUtilities.invokeLater</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#setLocaliser(org.multibit.viewsystem.Localiser)">setLocaliser</A></B>(<A HREF="../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A>&nbsp;localiser)</CODE>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#nowOffline()">nowOffline</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set the localiser the view system should use</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a method called when MultiBit is now offline i.e.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#setWallet(Wallet, java.lang.String)">setWallet</A></B>(Wallet&nbsp;wallet,
-          java.lang.String&nbsp;walletFilename)</CODE>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#nowOnline()">nowOnline</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set a new wallet onto the frame</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a method called when MultiBit is now online i.e.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#onCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)">onCoinsReceived</A></B>(<A HREF="../../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet,
+                <A HREF="../../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction,
+                java.math.BigInteger&nbsp;prevBalance,
+                java.math.BigInteger&nbsp;newBalance)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WalletEventListener callback method</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#recreateAllViews()">recreateAllViews</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;recreate all views</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#recreateAllViews(boolean)">recreateAllViews</A></B>(boolean&nbsp;initUI)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;recreate all views</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#updateDownloadStatus(java.lang.String)">updateDownloadStatus</A></B>(java.lang.String&nbsp;updateDownloadStatus)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;update download status</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#updateOnlineStatusText()">updateOnlineStatusText</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_javax.swing.JFrame"><!-- --></A>
@@ -388,12 +422,10 @@ java.lang.Object
 </TR>
 </TABLE>
 
-<A NAME="MultiBitFrame(org.multibit.MultiBitController, org.multibit.model.MultiBitModel, org.multibit.viewsystem.Localiser)"><!-- --></A><H3>
+<A NAME="MultiBitFrame(org.multibit.controller.MultiBitController)"><!-- --></A><H3>
 MultiBitFrame</H3>
 <PRE>
-public <B>MultiBitFrame</B>(<A HREF="../../../../org/multibit/MultiBitController.html" title="class in org.multibit">MultiBitController</A>&nbsp;controller,
-                     <A HREF="../../../../org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>&nbsp;model,
-                     <A HREF="../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A>&nbsp;localiser)</PRE>
+public <B>MultiBitFrame</B>(<A HREF="../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller)</PRE>
 <DL>
 </DL>
 
@@ -407,32 +439,15 @@ public <B>MultiBitFrame</B>(<A HREF="../../../../org/multibit/MultiBitController
 </TR>
 </TABLE>
 
-<A NAME="setWallet(Wallet, java.lang.String)"><!-- --></A><H3>
-setWallet</H3>
+<A NAME="recreateAllViews()"><!-- --></A><H3>
+recreateAllViews</H3>
 <PRE>
-public void <B>setWallet</B>(Wallet&nbsp;wallet,
-                      java.lang.String&nbsp;walletFilename)</PRE>
+public void <B>recreateAllViews</B>()</PRE>
 <DL>
-<DD>set a new wallet onto the frame
+<DD>recreate all views
 <P>
 <DD><DL>
-</DL>
-</DD>
-<DD><DL>
-<DT><B>Parameters:</B><DD><CODE>wallet</CODE> - <DD><CODE>walletPathname</CODE> - </DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getWallet()"><!-- --></A><H3>
-getWallet</H3>
-<PRE>
-public Wallet <B>getWallet</B>()</PRE>
-<DL>
-<DD>get the current wallet
-<P>
-<DD><DL>
-</DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#recreateAllViews()">recreateAllViews</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
 </DD>
 <DD><DL>
 </DL>
@@ -440,12 +455,12 @@ public Wallet <B>getWallet</B>()</PRE>
 </DL>
 <HR>
 
-<A NAME="getWalletFilename()"><!-- --></A><H3>
-getWalletFilename</H3>
+<A NAME="recreateAllViews(boolean)"><!-- --></A><H3>
+recreateAllViews</H3>
 <PRE>
-public java.lang.String <B>getWalletFilename</B>()</PRE>
+public void <B>recreateAllViews</B>(boolean&nbsp;initUI)</PRE>
 <DL>
-<DD>get the current wallet filename
+<DD>recreate all views
 <P>
 <DD><DL>
 </DL>
@@ -475,30 +490,13 @@ public void <B>displayMessage</B>(java.lang.String&nbsp;messageKey,
 </DL>
 <HR>
 
-<A NAME="setLocaliser(org.multibit.viewsystem.Localiser)"><!-- --></A><H3>
-setLocaliser</H3>
-<PRE>
-public void <B>setLocaliser</B>(<A HREF="../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A>&nbsp;localiser)</PRE>
-<DL>
-<DD><B>Description copied from interface: <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#setLocaliser(org.multibit.viewsystem.Localiser)">ViewSystem</A></CODE></B></DD>
-<DD>set the localiser the view system should use
-<P>
-<DD><DL>
-<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#setLocaliser(org.multibit.viewsystem.Localiser)">setLocaliser</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
 <A NAME="displayView(int)"><!-- --></A><H3>
 displayView</H3>
 <PRE>
 public void <B>displayView</B>(int&nbsp;viewToDisplay)</PRE>
 <DL>
-<DD><B>Description copied from interface: <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#displayView(int)">ViewSystem</A></CODE></B></DD>
-<DD>display the view specified
+<DD>display next view - this may be on another thread hence the
+ SwingUtilities.invokeLater
 <P>
 <DD><DL>
 <DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#displayView(int)">displayView</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
@@ -515,14 +513,115 @@ navigateAwayFromView</H3>
 public void <B>navigateAwayFromView</B>(int&nbsp;viewToNavigateAwayFrom,
                                  int&nbsp;nextView)</PRE>
 <DL>
-<DD><B>Description copied from interface: <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#navigateAwayFromView(int, int)">ViewSystem</A></CODE></B></DD>
-<DD>navigate away from a view - gives the view the opportunity to tidy up/ disappear etc
+<DD>navigate away from view - this may be on another thread hence the
+ SwingUtilities.invokeLater
 <P>
 <DD><DL>
 <DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#navigateAwayFromView(int, int)">navigateAwayFromView</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
 </DD>
 <DD><DL>
 <DT><B>Parameters:</B><DD><CODE>viewToNavigateAwayFrom</CODE> - - current view to navigate away from -one of the View constants<DD><CODE>nextView</CODE> - - next view - one of the View constants</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="nowOnline()"><!-- --></A><H3>
+nowOnline</H3>
+<PRE>
+public void <B>nowOnline</B>()</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#nowOnline()">ViewSystem</A></CODE></B></DD>
+<DD>a method called when MultiBit is now online i.e. now has a peer when it did not before
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#nowOnline()">nowOnline</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="nowOffline()"><!-- --></A><H3>
+nowOffline</H3>
+<PRE>
+public void <B>nowOffline</B>()</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#nowOffline()">ViewSystem</A></CODE></B></DD>
+<DD>a method called when MultiBit is now offline i.e. the last peer has disconnecte
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#nowOffline()">nowOffline</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="updateOnlineStatusText()"><!-- --></A><H3>
+updateOnlineStatusText</H3>
+<PRE>
+public void <B>updateOnlineStatusText</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="updateDownloadStatus(java.lang.String)"><!-- --></A><H3>
+updateDownloadStatus</H3>
+<PRE>
+public void <B>updateDownloadStatus</B>(java.lang.String&nbsp;updateDownloadStatus)</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#updateDownloadStatus(java.lang.String)">ViewSystem</A></CODE></B></DD>
+<DD>update download status
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#updateDownloadStatus(java.lang.String)">updateDownloadStatus</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="onCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)"><!-- --></A><H3>
+onCoinsReceived</H3>
+<PRE>
+public void <B>onCoinsReceived</B>(<A HREF="../../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet,
+                            <A HREF="../../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction,
+                            java.math.BigInteger&nbsp;prevBalance,
+                            java.math.BigInteger&nbsp;newBalance)</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#onCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)">ViewSystem</A></CODE></B></DD>
+<DD>WalletEventListener callback method
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#onCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)">onCoinsReceived</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="fireDataChanged()"><!-- --></A><H3>
+fireDataChanged</H3>
+<PRE>
+public void <B>fireDataChanged</B>()</PRE>
+<DL>
+<DD>update the UI after the model data has changed
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
 </DD>
 </DL>
 <!-- ========= END OF CLASS DATA ========= -->
@@ -555,8 +654,8 @@ public void <B>navigateAwayFromView</B>(int&nbsp;viewToNavigateAwayFrom,
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../../org/multibit/viewsystem/swing/DisplayUsingPanel.html" title="class in org.multibit.viewsystem.swing"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../../org/multibit/viewsystem/swing/ReceiveBitcoinsDialog.html" title="class in org.multibit.viewsystem.swing"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;PREV CLASS&nbsp;
+&nbsp;<A HREF="../../../../org/multibit/viewsystem/swing/StatusBar.html" title="class in org.multibit.viewsystem.swing"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../../index.html?org/multibit/viewsystem/swing/MultiBitFrame.html" target="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="MultiBitFrame.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;

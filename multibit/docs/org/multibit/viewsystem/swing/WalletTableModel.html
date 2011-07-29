@@ -135,8 +135,8 @@ java.lang.Object
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/WalletTableModel.html#WalletTableModel(org.multibit.model.MultiBitModel, org.multibit.viewsystem.Localiser)">WalletTableModel</A></B>(<A HREF="../../../../org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>&nbsp;model,
-                 <A HREF="../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A>&nbsp;localiser)</CODE>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/WalletTableModel.html#WalletTableModel(org.multibit.model.MultiBitModel, org.multibit.controller.MultiBitController)">WalletTableModel</A></B>(<A HREF="../../../../org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>&nbsp;model,
+                 <A HREF="../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -150,6 +150,14 @@ java.lang.Object
 <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
 <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
 <B>Method Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/WalletTableModel.html#createHeaders()">createHeaders</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -187,20 +195,20 @@ java.lang.Object
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/WalletTableModel.html#recreateWalletData()">recreateWalletData</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/WalletTableModel.html#setValueAt(java.lang.Object, int, int)">setValueAt</A></B>(java.lang.Object&nbsp;value,
            int&nbsp;row,
            int&nbsp;column)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;table model is read only</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/WalletTableModel.html#setWallet(Wallet)">setWallet</A></B>(Wallet&nbsp;wallet)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;put a new wallet into the table</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_javax.swing.table.AbstractTableModel"><!-- --></A>
@@ -234,11 +242,11 @@ java.lang.Object
 </TR>
 </TABLE>
 
-<A NAME="WalletTableModel(org.multibit.model.MultiBitModel, org.multibit.viewsystem.Localiser)"><!-- --></A><H3>
+<A NAME="WalletTableModel(org.multibit.model.MultiBitModel, org.multibit.controller.MultiBitController)"><!-- --></A><H3>
 WalletTableModel</H3>
 <PRE>
 public <B>WalletTableModel</B>(<A HREF="../../../../org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>&nbsp;model,
-                        <A HREF="../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A>&nbsp;localiser)</PRE>
+                        <A HREF="../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller)</PRE>
 <DL>
 </DL>
 
@@ -318,13 +326,22 @@ public void <B>setValueAt</B>(java.lang.Object&nbsp;value,
 </DL>
 <HR>
 
-<A NAME="setWallet(Wallet)"><!-- --></A><H3>
-setWallet</H3>
+<A NAME="recreateWalletData()"><!-- --></A><H3>
+recreateWalletData</H3>
 <PRE>
-public void <B>setWallet</B>(Wallet&nbsp;wallet)</PRE>
+public void <B>recreateWalletData</B>()</PRE>
 <DL>
-<DD>put a new wallet into the table
-<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="createHeaders()"><!-- --></A><H3>
+createHeaders</H3>
+<PRE>
+public void <B>createHeaders</B>()</PRE>
+<DL>
 <DD><DL>
 </DL>
 </DD>

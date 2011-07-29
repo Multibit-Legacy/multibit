@@ -52,8 +52,8 @@ function windowTitle()
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/SaveWalletAsAction.html" title="class in org.multibit.viewsystem.swing.action"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/ShowHelpContentsAction.html" title="class in org.multibit.viewsystem.swing.action"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/SaveWalletAsSubmitAction.html" title="class in org.multibit.viewsystem.swing.action"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/SendBitcoinConfirmAction.html" title="class in org.multibit.viewsystem.swing.action"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../../../index.html?org/multibit/viewsystem/swing/action/SendBitcoinAction.html" target="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="SendBitcoinAction.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
@@ -102,7 +102,7 @@ java.lang.Object
 </PRE>
 
 <P>
-This <CODE>Action</CODE> sends bitcoin
+This <CODE>Action</CODE> forwards to the send bitcoin view
 <P>
 
 <P>
@@ -148,9 +148,9 @@ This <CODE>Action</CODE> sends bitcoin
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/action/SendBitcoinAction.html#SendBitcoinAction(org.multibit.viewsystem.Localiser, javax.swing.ImageIcon, org.multibit.viewsystem.swing.MultiBitFrame)">SendBitcoinAction</A></B>(<A HREF="../../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A>&nbsp;localiser,
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/action/SendBitcoinAction.html#SendBitcoinAction(org.multibit.controller.MultiBitController, javax.swing.ImageIcon, javax.swing.JFrame)">SendBitcoinAction</A></B>(<A HREF="../../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
                   javax.swing.ImageIcon&nbsp;icon,
-                  <A HREF="../../../../../org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A>&nbsp;mainFrame)</CODE>
+                  javax.swing.JFrame&nbsp;mainFrame)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a new <A HREF="../../../../../org/multibit/viewsystem/swing/action/SendBitcoinAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>SendBitcoinAction</CODE></A>.</TD>
@@ -171,7 +171,7 @@ This <CODE>Action</CODE> sends bitcoin
 <TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/action/SendBitcoinAction.html#actionPerformed(java.awt.event.ActionEvent)">actionPerformed</A></B>(java.awt.event.ActionEvent&nbsp;e)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;send bitcoins</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delegate to generic sendBitcoinAction</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_javax.swing.AbstractAction"><!-- --></A>
@@ -205,12 +205,12 @@ This <CODE>Action</CODE> sends bitcoin
 </TR>
 </TABLE>
 
-<A NAME="SendBitcoinAction(org.multibit.viewsystem.Localiser, javax.swing.ImageIcon, org.multibit.viewsystem.swing.MultiBitFrame)"><!-- --></A><H3>
+<A NAME="SendBitcoinAction(org.multibit.controller.MultiBitController, javax.swing.ImageIcon, javax.swing.JFrame)"><!-- --></A><H3>
 SendBitcoinAction</H3>
 <PRE>
-public <B>SendBitcoinAction</B>(<A HREF="../../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A>&nbsp;localiser,
+public <B>SendBitcoinAction</B>(<A HREF="../../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
                          javax.swing.ImageIcon&nbsp;icon,
-                         <A HREF="../../../../../org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A>&nbsp;mainFrame)</PRE>
+                         javax.swing.JFrame&nbsp;mainFrame)</PRE>
 <DL>
 <DD>Creates a new <A HREF="../../../../../org/multibit/viewsystem/swing/action/SendBitcoinAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>SendBitcoinAction</CODE></A>.
 <P>
@@ -231,7 +231,7 @@ actionPerformed</H3>
 <PRE>
 public void <B>actionPerformed</B>(java.awt.event.ActionEvent&nbsp;e)</PRE>
 <DL>
-<DD>send bitcoins
+<DD>delegate to generic sendBitcoinAction
 <P>
 <DD><DL>
 </DL>
@@ -267,8 +267,8 @@ public void <B>actionPerformed</B>(java.awt.event.ActionEvent&nbsp;e)</PRE>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/SaveWalletAsAction.html" title="class in org.multibit.viewsystem.swing.action"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/ShowHelpContentsAction.html" title="class in org.multibit.viewsystem.swing.action"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/SaveWalletAsSubmitAction.html" title="class in org.multibit.viewsystem.swing.action"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/SendBitcoinConfirmAction.html" title="class in org.multibit.viewsystem.swing.action"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../../../index.html?org/multibit/viewsystem/swing/action/SendBitcoinAction.html" target="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="SendBitcoinAction.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;

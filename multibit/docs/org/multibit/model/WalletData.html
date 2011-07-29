@@ -133,8 +133,14 @@ class used to store the data in the table in a quick to access form
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../org/multibit/model/WalletData.html#WalletData(Transaction, java.lang.String, java.util.Date, java.lang.String, java.math.BigInteger, java.math.BigInteger)">WalletData</A></B>(Transaction&nbsp;transaction,
-           java.lang.String&nbsp;status,
+<TD><CODE><B><A HREF="../../../org/multibit/model/WalletData.html#WalletData(com.google.bitcoin.core.Transaction)">WalletData</A></B>(<A HREF="../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../../org/multibit/model/WalletData.html#WalletData(com.google.bitcoin.core.Transaction, int, java.util.Date, java.lang.String, java.math.BigInteger, java.math.BigInteger)">WalletData</A></B>(<A HREF="../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction,
+           int&nbsp;height,
            java.util.Date&nbsp;date,
            java.lang.String&nbsp;description,
            java.math.BigInteger&nbsp;debit,
@@ -187,15 +193,15 @@ class used to store the data in the table in a quick to access form
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/model/WalletData.html#getStatus()">getStatus</A></B>()</CODE>
+<CODE>&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/model/WalletData.html#getHeight()">getHeight</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;Transaction</CODE></FONT></TD>
+<CODE>&nbsp;<A HREF="../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A></CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/multibit/model/WalletData.html#getTransaction()">getTransaction</A></B>()</CODE>
 
 <BR>
@@ -236,7 +242,7 @@ class used to store the data in the table in a quick to access form
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/model/WalletData.html#setStatus(java.lang.String)">setStatus</A></B>(java.lang.String&nbsp;status)</CODE>
+<TD><CODE><B><A HREF="../../../org/multibit/model/WalletData.html#setHeight(int)">setHeight</A></B>(int&nbsp;height)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -244,7 +250,7 @@ class used to store the data in the table in a quick to access form
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/model/WalletData.html#setTransaction(Transaction)">setTransaction</A></B>(Transaction&nbsp;transaction)</CODE>
+<TD><CODE><B><A HREF="../../../org/multibit/model/WalletData.html#setTransaction(com.google.bitcoin.core.Transaction)">setTransaction</A></B>(<A HREF="../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -293,15 +299,23 @@ public static final java.lang.String[] <B>COLUMN_HEADER_KEYS</B></PRE>
 </TR>
 </TABLE>
 
-<A NAME="WalletData(Transaction, java.lang.String, java.util.Date, java.lang.String, java.math.BigInteger, java.math.BigInteger)"><!-- --></A><H3>
+<A NAME="WalletData(com.google.bitcoin.core.Transaction, int, java.util.Date, java.lang.String, java.math.BigInteger, java.math.BigInteger)"><!-- --></A><H3>
 WalletData</H3>
 <PRE>
-public <B>WalletData</B>(Transaction&nbsp;transaction,
-                  java.lang.String&nbsp;status,
+public <B>WalletData</B>(<A HREF="../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction,
+                  int&nbsp;height,
                   java.util.Date&nbsp;date,
                   java.lang.String&nbsp;description,
                   java.math.BigInteger&nbsp;debit,
                   java.math.BigInteger&nbsp;credit)</PRE>
+<DL>
+</DL>
+<HR>
+
+<A NAME="WalletData(com.google.bitcoin.core.Transaction)"><!-- --></A><H3>
+WalletData</H3>
+<PRE>
+public <B>WalletData</B>(<A HREF="../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction)</PRE>
 <DL>
 </DL>
 
@@ -318,7 +332,7 @@ public <B>WalletData</B>(Transaction&nbsp;transaction,
 <A NAME="getTransaction()"><!-- --></A><H3>
 getTransaction</H3>
 <PRE>
-public Transaction <B>getTransaction</B>()</PRE>
+public <A HREF="../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A> <B>getTransaction</B>()</PRE>
 <DL>
 <DD><DL>
 </DL>
@@ -326,10 +340,10 @@ public Transaction <B>getTransaction</B>()</PRE>
 </DL>
 <HR>
 
-<A NAME="setTransaction(Transaction)"><!-- --></A><H3>
+<A NAME="setTransaction(com.google.bitcoin.core.Transaction)"><!-- --></A><H3>
 setTransaction</H3>
 <PRE>
-public void <B>setTransaction</B>(Transaction&nbsp;transaction)</PRE>
+public void <B>setTransaction</B>(<A HREF="../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction)</PRE>
 <DL>
 <DD><DL>
 </DL>
@@ -337,10 +351,10 @@ public void <B>setTransaction</B>(Transaction&nbsp;transaction)</PRE>
 </DL>
 <HR>
 
-<A NAME="getStatus()"><!-- --></A><H3>
-getStatus</H3>
+<A NAME="getHeight()"><!-- --></A><H3>
+getHeight</H3>
 <PRE>
-public java.lang.String <B>getStatus</B>()</PRE>
+public int <B>getHeight</B>()</PRE>
 <DL>
 <DD><DL>
 </DL>
@@ -348,10 +362,10 @@ public java.lang.String <B>getStatus</B>()</PRE>
 </DL>
 <HR>
 
-<A NAME="setStatus(java.lang.String)"><!-- --></A><H3>
-setStatus</H3>
+<A NAME="setHeight(int)"><!-- --></A><H3>
+setHeight</H3>
 <PRE>
-public void <B>setStatus</B>(java.lang.String&nbsp;status)</PRE>
+public void <B>setHeight</B>(int&nbsp;height)</PRE>
 <DL>
 <DD><DL>
 </DL>

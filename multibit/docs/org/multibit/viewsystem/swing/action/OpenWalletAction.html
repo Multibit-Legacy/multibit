@@ -52,8 +52,8 @@ function windowTitle()
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/HelpAboutAction.html" title="class in org.multibit.viewsystem.swing.action"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/ReceiveBitcoinAction.html" title="class in org.multibit.viewsystem.swing.action"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/OpenAddressBookAction.html" title="class in org.multibit.viewsystem.swing.action"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/OpenWalletSubmitAction.html" title="class in org.multibit.viewsystem.swing.action"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../../../index.html?org/multibit/viewsystem/swing/action/OpenWalletAction.html" target="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="OpenWalletAction.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
@@ -148,10 +148,8 @@ This <CODE>Action</CODE> opens a wallet from a file
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/action/OpenWalletAction.html#OpenWalletAction(org.multibit.MultiBitController, org.multibit.viewsystem.Localiser, javax.swing.ImageIcon, org.multibit.viewsystem.swing.MultiBitFrame)">OpenWalletAction</A></B>(<A HREF="../../../../../org/multibit/MultiBitController.html" title="class in org.multibit">MultiBitController</A>&nbsp;controller,
-                 <A HREF="../../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A>&nbsp;localiser,
-                 javax.swing.ImageIcon&nbsp;icon,
-                 <A HREF="../../../../../org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A>&nbsp;mainFrame)</CODE>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/action/OpenWalletAction.html#OpenWalletAction(org.multibit.controller.MultiBitController, javax.swing.ImageIcon)">OpenWalletAction</A></B>(<A HREF="../../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
+                 javax.swing.ImageIcon&nbsp;icon)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a new <A HREF="../../../../../org/multibit/viewsystem/swing/action/OpenWalletAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>OpenWalletAction</CODE></A>.</TD>
@@ -172,23 +170,7 @@ This <CODE>Action</CODE> opens a wallet from a file
 <TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/action/OpenWalletAction.html#actionPerformed(java.awt.event.ActionEvent)">actionPerformed</A></B>(java.awt.event.ActionEvent&nbsp;e)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;open a wallet</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static&nbsp;javax.swing.JFileChooser</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/action/OpenWalletAction.html#getFileChooser()">getFileChooser</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/action/OpenWalletAction.html#setFileChooser(javax.swing.JFileChooser)">setFileChooser</A></B>(javax.swing.JFileChooser&nbsp;fileChooser)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;froward to open wallet view</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_javax.swing.AbstractAction"><!-- --></A>
@@ -222,13 +204,11 @@ This <CODE>Action</CODE> opens a wallet from a file
 </TR>
 </TABLE>
 
-<A NAME="OpenWalletAction(org.multibit.MultiBitController, org.multibit.viewsystem.Localiser, javax.swing.ImageIcon, org.multibit.viewsystem.swing.MultiBitFrame)"><!-- --></A><H3>
+<A NAME="OpenWalletAction(org.multibit.controller.MultiBitController, javax.swing.ImageIcon)"><!-- --></A><H3>
 OpenWalletAction</H3>
 <PRE>
-public <B>OpenWalletAction</B>(<A HREF="../../../../../org/multibit/MultiBitController.html" title="class in org.multibit">MultiBitController</A>&nbsp;controller,
-                        <A HREF="../../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A>&nbsp;localiser,
-                        javax.swing.ImageIcon&nbsp;icon,
-                        <A HREF="../../../../../org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A>&nbsp;mainFrame)</PRE>
+public <B>OpenWalletAction</B>(<A HREF="../../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
+                        javax.swing.ImageIcon&nbsp;icon)</PRE>
 <DL>
 <DD>Creates a new <A HREF="../../../../../org/multibit/viewsystem/swing/action/OpenWalletAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>OpenWalletAction</CODE></A>.
 <P>
@@ -249,30 +229,8 @@ actionPerformed</H3>
 <PRE>
 public void <B>actionPerformed</B>(java.awt.event.ActionEvent&nbsp;e)</PRE>
 <DL>
-<DD>open a wallet
+<DD>froward to open wallet view
 <P>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getFileChooser()"><!-- --></A><H3>
-getFileChooser</H3>
-<PRE>
-public static javax.swing.JFileChooser <B>getFileChooser</B>()</PRE>
-<DL>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="setFileChooser(javax.swing.JFileChooser)"><!-- --></A><H3>
-setFileChooser</H3>
-<PRE>
-public static void <B>setFileChooser</B>(javax.swing.JFileChooser&nbsp;fileChooser)</PRE>
-<DL>
 <DD><DL>
 </DL>
 </DD>
@@ -307,8 +265,8 @@ public static void <B>setFileChooser</B>(javax.swing.JFileChooser&nbsp;fileChoos
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/HelpAboutAction.html" title="class in org.multibit.viewsystem.swing.action"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/ReceiveBitcoinAction.html" title="class in org.multibit.viewsystem.swing.action"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/OpenAddressBookAction.html" title="class in org.multibit.viewsystem.swing.action"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/OpenWalletSubmitAction.html" title="class in org.multibit.viewsystem.swing.action"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../../../index.html?org/multibit/viewsystem/swing/action/OpenWalletAction.html" target="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="OpenWalletAction.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;

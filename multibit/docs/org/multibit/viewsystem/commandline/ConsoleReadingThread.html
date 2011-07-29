@@ -94,11 +94,11 @@ java.lang.Object
       <IMG SRC="../../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.viewsystem.commandline.ConsoleReadingThread</B>
 </PRE>
 <DL>
-<DT><B>All Implemented Interfaces:</B> <DD>java.lang.Runnable</DD>
+<DT><B>All Implemented Interfaces:</B> <DD>java.lang.Runnable, <A HREF="../../../../org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A></DD>
 </DL>
 <HR>
 <DL>
-<DT><PRE>public class <B>ConsoleReadingThread</B><DT>extends java.lang.Thread</DL>
+<DT><PRE>public class <B>ConsoleReadingThread</B><DT>extends java.lang.Thread<DT>implements <A HREF="../../../../org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A></DL>
 </PRE>
 
 <P>
@@ -154,7 +154,7 @@ java.lang.Object
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/commandline/ConsoleReadingThread.html#ConsoleReadingThread(java.io.InputStream, java.io.PrintStream, java.util.Collection)">ConsoleReadingThread</A></B>(java.io.InputStream&nbsp;inputStream,
                      java.io.PrintStream&nbsp;printStream,
-                     java.util.Collection&lt;<A HREF="../../../../org/multibit/Action.html" title="interface in org.multibit">Action</A>&gt;&nbsp;possibleActions)</CODE>
+                     java.util.Collection&lt;<A HREF="../../../../org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>&gt;&nbsp;possibleActions)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -179,6 +179,14 @@ java.lang.Object
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../../org/multibit/model/Data.html" title="class in org.multibit.model">Data</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/commandline/ConsoleReadingThread.html#getData()">getData</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/commandline/ConsoleReadingThread.html#getHoldOfTheConsole()">getHoldOfTheConsole</A></B>()</CODE>
 
@@ -196,7 +204,7 @@ java.lang.Object
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/commandline/ConsoleReadingThread.html#setPossibleActions(java.util.Collection)">setPossibleActions</A></B>(java.util.Collection&lt;<A HREF="../../../../org/multibit/Action.html" title="interface in org.multibit">Action</A>&gt;&nbsp;possibleActions)</CODE>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/commandline/ConsoleReadingThread.html#setPossibleActions(java.util.Collection)">setPossibleActions</A></B>(java.util.Collection&lt;<A HREF="../../../../org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>&gt;&nbsp;possibleActions)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -238,7 +246,7 @@ ConsoleReadingThread</H3>
 <PRE>
 public <B>ConsoleReadingThread</B>(java.io.InputStream&nbsp;inputStream,
                             java.io.PrintStream&nbsp;printStream,
-                            java.util.Collection&lt;<A HREF="../../../../org/multibit/Action.html" title="interface in org.multibit">Action</A>&gt;&nbsp;possibleActions)</PRE>
+                            java.util.Collection&lt;<A HREF="../../../../org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>&gt;&nbsp;possibleActions)</PRE>
 <DL>
 </DL>
 
@@ -255,8 +263,11 @@ public <B>ConsoleReadingThread</B>(java.io.InputStream&nbsp;inputStream,
 <A NAME="setPossibleActions(java.util.Collection)"><!-- --></A><H3>
 setPossibleActions</H3>
 <PRE>
-public void <B>setPossibleActions</B>(java.util.Collection&lt;<A HREF="../../../../org/multibit/Action.html" title="interface in org.multibit">Action</A>&gt;&nbsp;possibleActions)</PRE>
+public void <B>setPossibleActions</B>(java.util.Collection&lt;<A HREF="../../../../org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>&gt;&nbsp;possibleActions)</PRE>
 <DL>
+<DD><DL>
+</DL>
+</DD>
 <DD><DL>
 </DL>
 </DD>
@@ -287,6 +298,9 @@ public void <B>enableReaderFiring</B>(boolean&nbsp;enable)</PRE>
 <DD><DL>
 </DL>
 </DD>
+<DD><DL>
+</DL>
+</DD>
 </DL>
 <HR>
 
@@ -295,6 +309,23 @@ getHoldOfTheConsole</H3>
 <PRE>
 public void <B>getHoldOfTheConsole</B>()</PRE>
 <DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getData()"><!-- --></A><H3>
+getData</H3>
+<PRE>
+public <A HREF="../../../../org/multibit/model/Data.html" title="class in org.multibit.model">Data</A> <B>getData</B>()</PRE>
+<DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/model/DataProvider.html#getData()">getData</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A></CODE></DL>
+</DD>
 <DD><DL>
 </DL>
 </DD>

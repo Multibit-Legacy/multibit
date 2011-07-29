@@ -44,7 +44,7 @@ public class MultiBit {
         
         Localiser localiser;
         String userLanguageCode = userPreferences.getProperty(MultiBitModel.USER_LANGUAGE_CODE);
-        if (MultiBitModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
+        if (userLanguageCode == null || MultiBitModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
             localiser = new Localiser(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, Locale.getDefault());
         } else {
             localiser = new Localiser(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, new Locale(userLanguageCode));       

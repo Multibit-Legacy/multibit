@@ -90,6 +90,13 @@ public class Transaction extends Message implements Serializable {
     }
 
     /**
+     * Returns a read-only list of the outputs of this transaction.
+     */
+    public List<TransactionOutput> getOutputs() {
+        return Collections.unmodifiableList(outputs);
+    }
+
+    /**
      * Returns the transaction hash as you see them in the block explorer.
      */
     public Sha256Hash getHash() {

@@ -85,234 +85,161 @@ Serialized Form</H1>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
 <TH ALIGN="center"><FONT SIZE="+2">
+<B>Package</B> <B>com.google.bitcoin.core</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<A NAME="com.google.bitcoin.core.Wallet"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">com.google.bitcoin.core.Wallet</A> extends java.lang.Object implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>2L
+
+<P>
+<A NAME="serialized_methods"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialization Methods</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<A NAME="readObject(java.io.ObjectInputStream)"><!-- --></A><H3>
+readObject</H3>
+<PRE>
+private void <B>readObject</B>(java.io.ObjectInputStream&nbsp;in)
+                 throws java.io.IOException,
+                        java.lang.ClassNotFoundException</PRE>
+<DL>
+<DD><DL>
+
+<DT><B>Throws:</B>
+<DD><CODE>java.io.IOException</CODE>
+<DD><CODE>java.lang.ClassNotFoundException</CODE></DD>
+</DL>
+</DL>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+pending</H3>
+<PRE>
+java.util.Map&lt;K,V&gt; <B>pending</B></PRE>
+<DL>
+<DD>Map of txhash->Transactions that have not made it into the best chain yet. They are eligible to move there but
+ are waiting for a miner to send a block on the best chain including them. These transactions inputs count as
+ spent for the purposes of calculating our balance but their outputs are not available for spending yet. This
+ means after a spend, our balance can actually go down temporarily before going up again!
+<P>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+unspent</H3>
+<PRE>
+java.util.Map&lt;K,V&gt; <B>unspent</B></PRE>
+<DL>
+<DD>Map of txhash->Transactions where the Transaction has unspent outputs. These are transactions we can use
+ to pay other people and so count towards our balance. Transactions only appear in this map if they are part
+ of the best chain. Transactions we have broacast that are not confirmed yet appear in pending even though they
+ may have unspent "change" outputs.<p>
+
+ Note: for now we will not allow spends of transactions that did not make it into the block chain. The code
+ that handles this in BitCoin C++ is complicated. Satoshis code will not allow you to spend unconfirmed coins,
+ however, it does seem to support dependency resolution entirely within the context of the memory pool so
+ theoretically you could spend zero-conf coins and all of them would be included together. To simplify we'll
+ make people wait but it would be a good improvement to resolve this in future.
+<P>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+spent</H3>
+<PRE>
+java.util.Map&lt;K,V&gt; <B>spent</B></PRE>
+<DL>
+<DD>Map of txhash->Transactions where the Transactions outputs are all fully spent. They are kept separately so
+ the time to create a spend does not grow infinitely as wallets become more used. Some of these transactions
+ may not have appeared in a block yet if they were created by us to spend coins and that spend is still being
+ worked on by miners.<p>
+
+ Transactions only appear in this map if they are part of the best chain.
+<P>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+inactive</H3>
+<PRE>
+java.util.Map&lt;K,V&gt; <B>inactive</B></PRE>
+<DL>
+<DD>An inactive transaction is one that is seen only in a block that is not a part of the best chain. We keep it
+ around in case a re-org promotes a different chain to be the best. In this case some (not necessarily all)
+ inactive transactions will be moved out to unspent and spent, and some might be moved in.<p>
+
+ Note that in the case where a transaction appears in both the best chain and a side chain as well, it is not
+ placed in this map. It's an error for a transaction to be in both the inactive pool and unspent/spent.
+<P>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+dead</H3>
+<PRE>
+java.util.Map&lt;K,V&gt; <B>dead</B></PRE>
+<DL>
+<DD>A dead transaction is one that's been overridden by a double spend. Such a transaction is pending except it
+ will never confirm and so should be presented to the user in some unique way - flashing red for example. This
+ should nearly never happen in normal usage. Dead transactions can be "resurrected" by re-orgs just like any
+ other. Dead transactions are not in the pending pool.
+<P>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+keychain</H3>
+<PRE>
+java.util.ArrayList&lt;E&gt; <B>keychain</B></PRE>
+<DL>
+<DD>A list of public/private EC keys owned by this user.
+<P>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+params</H3>
+<PRE>
+NetworkParameters <B>params</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR SIZE="4" NOSHADE>
+
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="center"><FONT SIZE="+2">
 <B>Package</B> <B>org.multibit.viewsystem.swing</B></FONT></TH>
 </TR>
 </TABLE>
-
-<P>
-<A NAME="org.multibit.viewsystem.swing.AddressBookDialog"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
-<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B>Class <A HREF="org/multibit/viewsystem/swing/AddressBookDialog.html" title="class in org.multibit.viewsystem.swing">org.multibit.viewsystem.swing.AddressBookDialog</A> extends javax.swing.JDialog implements Serializable</B></FONT></TH>
-</TR>
-</TABLE>
-
-<P>
-<B>serialVersionUID:&nbsp;</B>7123413615342923041L
-
-<P>
-<A NAME="serializedForm"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
-<B>Serialized Fields</B></FONT></TH>
-</TR>
-</TABLE>
-
-<H3>
-localiser</H3>
-<PRE>
-<A HREF="org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A> <B>localiser</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-mainFrame</H3>
-<PRE>
-javax.swing.JFrame <B>mainFrame</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-thisDialog</H3>
-<PRE>
-javax.swing.JDialog <B>thisDialog</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-tableModel</H3>
-<PRE>
-<A HREF="org/multibit/viewsystem/swing/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing">AddressBookTableModel</A> <B>tableModel</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-tabbedPane</H3>
-<PRE>
-javax.swing.JTabbedPane <B>tabbedPane</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-
-<P>
-<A NAME="org.multibit.viewsystem.swing.AddressBookTableModel"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
-<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B>Class <A HREF="org/multibit/viewsystem/swing/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing">org.multibit.viewsystem.swing.AddressBookTableModel</A> extends javax.swing.table.AbstractTableModel implements Serializable</B></FONT></TH>
-</TR>
-</TABLE>
-
-<P>
-<B>serialVersionUID:&nbsp;</B>-937886012851116208L
-
-<P>
-<A NAME="serializedForm"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
-<B>Serialized Fields</B></FONT></TH>
-</TR>
-</TABLE>
-
-<H3>
-headers</H3>
-<PRE>
-java.util.Vector&lt;E&gt; <B>headers</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-tableHeaderKeys</H3>
-<PRE>
-java.lang.String[] <B>tableHeaderKeys</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-addressBookDataVector</H3>
-<PRE>
-java.util.Vector&lt;E&gt; <B>addressBookDataVector</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-
-<P>
-<A NAME="org.multibit.viewsystem.swing.CreateEditAddressDialog"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
-<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B>Class <A HREF="org/multibit/viewsystem/swing/CreateEditAddressDialog.html" title="class in org.multibit.viewsystem.swing">org.multibit.viewsystem.swing.CreateEditAddressDialog</A> extends javax.swing.JDialog implements Serializable</B></FONT></TH>
-</TR>
-</TABLE>
-
-<P>
-<B>serialVersionUID:&nbsp;</B>-209834865497842662L
-
-<P>
-<A NAME="serializedForm"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
-<B>Serialized Fields</B></FONT></TH>
-</TR>
-</TABLE>
-
-<H3>
-mainFrame</H3>
-<PRE>
-java.awt.Container <B>mainFrame</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-localiser</H3>
-<PRE>
-<A HREF="org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A> <B>localiser</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-addressTextField</H3>
-<PRE>
-javax.swing.JTextField <B>addressTextField</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-labelTextField</H3>
-<PRE>
-javax.swing.JTextField <B>labelTextField</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-thisDialog</H3>
-<PRE>
-<A HREF="org/multibit/viewsystem/swing/CreateEditAddressDialog.html" title="class in org.multibit.viewsystem.swing">CreateEditAddressDialog</A> <B>thisDialog</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-copyAddressButton</H3>
-<PRE>
-javax.swing.JButton <B>copyAddressButton</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-
-<P>
-<A NAME="org.multibit.viewsystem.swing.DisplayUsingPanel"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
-<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B>Class <A HREF="org/multibit/viewsystem/swing/DisplayUsingPanel.html" title="class in org.multibit.viewsystem.swing">org.multibit.viewsystem.swing.DisplayUsingPanel</A> extends javax.swing.JPanel implements Serializable</B></FONT></TH>
-</TR>
-</TABLE>
-
-<P>
-<A NAME="serializedForm"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
-<B>Serialized Fields</B></FONT></TH>
-</TR>
-</TABLE>
-
-<H3>
-displayUsingLabel</H3>
-<PRE>
-javax.swing.JLabel <B>displayUsingLabel</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-unitComboBox</H3>
-<PRE>
-javax.swing.JComboBox <B>unitComboBox</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
 
 <P>
 <A NAME="org.multibit.viewsystem.swing.MultiBitFrame"><!-- --></A>
@@ -338,7 +265,7 @@ javax.swing.JComboBox <B>unitComboBox</B></PRE>
 <H3>
 controller</H3>
 <PRE>
-<A HREF="org/multibit/MultiBitController.html" title="class in org.multibit">MultiBitController</A> <B>controller</B></PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
 <DL>
 <DL>
 </DL>
@@ -356,7 +283,7 @@ model</H3>
 <H3>
 localiser</H3>
 <PRE>
-<A HREF="org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A> <B>localiser</B></PRE>
+<A HREF="org/multibit/Localiser.html" title="class in org.multibit">Localiser</A> <B>localiser</B></PRE>
 <DL>
 <DL>
 </DL>
@@ -390,9 +317,27 @@ javax.swing.JLabel <B>networkStatusLabel</B></PRE>
 </DL>
 <HR>
 <H3>
-tableModel</H3>
+isOnline</H3>
 <PRE>
-<A HREF="org/multibit/viewsystem/swing/WalletTableModel.html" title="class in org.multibit.viewsystem.swing">WalletTableModel</A> <B>tableModel</B></PRE>
+boolean <B>isOnline</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+thisFrame</H3>
+<PRE>
+<A HREF="org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A> <B>thisFrame</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+walletTableModel</H3>
+<PRE>
+<A HREF="org/multibit/viewsystem/swing/WalletTableModel.html" title="class in org.multibit.viewsystem.swing">WalletTableModel</A> <B>walletTableModel</B></PRE>
 <DL>
 <DL>
 </DL>
@@ -403,8 +348,8 @@ currentView</H3>
 <PRE>
 int <B>currentView</B></PRE>
 <DL>
-<DD>the view that the controller is telling us to display
- an int - one of the View constants
+<DD>the view that the controller is telling us to display an int - one of the
+ View constants
 <P>
 <DL>
 </DL>
@@ -414,156 +359,6 @@ int <B>currentView</B></PRE>
 viewMap</H3>
 <PRE>
 java.util.Map&lt;K,V&gt; <B>viewMap</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-
-<P>
-<A NAME="org.multibit.viewsystem.swing.ReceiveBitcoinsDialog"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
-<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B>Class <A HREF="org/multibit/viewsystem/swing/ReceiveBitcoinsDialog.html" title="class in org.multibit.viewsystem.swing">org.multibit.viewsystem.swing.ReceiveBitcoinsDialog</A> extends javax.swing.JDialog implements Serializable</B></FONT></TH>
-</TR>
-</TABLE>
-
-<P>
-<B>serialVersionUID:&nbsp;</B>-2065108865497842662L
-
-<P>
-<A NAME="serializedForm"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
-<B>Serialized Fields</B></FONT></TH>
-</TR>
-</TABLE>
-
-<H3>
-mainFrame</H3>
-<PRE>
-javax.swing.JFrame <B>mainFrame</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-localiser</H3>
-<PRE>
-<A HREF="org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A> <B>localiser</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-addressTextField</H3>
-<PRE>
-javax.swing.JTextField <B>addressTextField</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-labelTextField</H3>
-<PRE>
-javax.swing.JTextField <B>labelTextField</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-thisDialog</H3>
-<PRE>
-<A HREF="org/multibit/viewsystem/swing/ReceiveBitcoinsDialog.html" title="class in org.multibit.viewsystem.swing">ReceiveBitcoinsDialog</A> <B>thisDialog</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-copyAddressButton</H3>
-<PRE>
-javax.swing.JButton <B>copyAddressButton</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-
-<P>
-<A NAME="org.multibit.viewsystem.swing.SendBitcoinsDialog"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
-<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B>Class <A HREF="org/multibit/viewsystem/swing/SendBitcoinsDialog.html" title="class in org.multibit.viewsystem.swing">org.multibit.viewsystem.swing.SendBitcoinsDialog</A> extends javax.swing.JDialog implements Serializable</B></FONT></TH>
-</TR>
-</TABLE>
-
-<P>
-<B>serialVersionUID:&nbsp;</B>-2065108657497842662L
-
-<P>
-<A NAME="serializedForm"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
-<B>Serialized Fields</B></FONT></TH>
-</TR>
-</TABLE>
-
-<H3>
-mainFrame</H3>
-<PRE>
-javax.swing.JFrame <B>mainFrame</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-localiser</H3>
-<PRE>
-<A HREF="org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A> <B>localiser</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-addressTextField</H3>
-<PRE>
-javax.swing.JTextField <B>addressTextField</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-labelTextField</H3>
-<PRE>
-javax.swing.JTextField <B>labelTextField</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-amountTextField</H3>
-<PRE>
-javax.swing.JTextField <B>amountTextField</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-thisDialog</H3>
-<PRE>
-<A HREF="org/multibit/viewsystem/swing/SendBitcoinsDialog.html" title="class in org.multibit.viewsystem.swing">SendBitcoinsDialog</A> <B>thisDialog</B></PRE>
 <DL>
 <DL>
 </DL>
@@ -639,12 +434,30 @@ java.util.Vector&lt;E&gt; <B>headers</B></PRE>
 </DL>
 <HR>
 <H3>
+walletData</H3>
+<PRE>
+java.util.Vector&lt;E&gt; <B>walletData</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
 multiBitModel</H3>
 <PRE>
 <A HREF="org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A> <B>multiBitModel</B></PRE>
 <DL>
 <DD>the MultiBit model
 <P>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+controller</H3>
+<PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
+<DL>
 <DL>
 </DL>
 </DL>
@@ -667,6 +480,132 @@ java.text.SimpleDateFormat <B>dateFormatter</B></PRE>
 </TABLE>
 
 <P>
+<A NAME="org.multibit.viewsystem.swing.action.CancelBackToParentAction"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/action/CancelBackToParentAction.html" title="class in org.multibit.viewsystem.swing.action">org.multibit.viewsystem.swing.action.CancelBackToParentAction</A> extends javax.swing.AbstractAction implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>191354565461234705L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+controller</H3>
+<PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+
+<P>
+<A NAME="org.multibit.viewsystem.swing.action.CopyAddressAction"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/action/CopyAddressAction.html" title="class in org.multibit.viewsystem.swing.action">org.multibit.viewsystem.swing.action.CopyAddressAction</A> extends javax.swing.AbstractAction implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>191352235465057705L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+controller</H3>
+<PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+dataProvider</H3>
+<PRE>
+<A HREF="org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A> <B>dataProvider</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+
+<P>
+<A NAME="org.multibit.viewsystem.swing.action.CreateOrEditAddressAction"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/action/CreateOrEditAddressAction.html" title="class in org.multibit.viewsystem.swing.action">org.multibit.viewsystem.swing.action.CreateOrEditAddressAction</A> extends javax.swing.AbstractAction implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>191352235465875405L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+controller</H3>
+<PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+isCreate</H3>
+<PRE>
+boolean <B>isCreate</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+isReceiving</H3>
+<PRE>
+boolean <B>isReceiving</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+dataProvider</H3>
+<PRE>
+<A HREF="org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A> <B>dataProvider</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+
+<P>
 <A NAME="org.multibit.viewsystem.swing.action.ExitAction"><!-- --></A>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
@@ -679,6 +618,22 @@ java.text.SimpleDateFormat <B>dateFormatter</B></PRE>
 <B>serialVersionUID:&nbsp;</B>1913592460565057705L
 
 <P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+controller</H3>
+<PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
 
 <P>
 <A NAME="org.multibit.viewsystem.swing.action.HelpAboutAction"><!-- --></A>
@@ -704,7 +659,85 @@ java.text.SimpleDateFormat <B>dateFormatter</B></PRE>
 <H3>
 controller</H3>
 <PRE>
-<A HREF="org/multibit/MultiBitController.html" title="class in org.multibit">MultiBitController</A> <B>controller</B></PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+
+<P>
+<A NAME="org.multibit.viewsystem.swing.action.OkBackToParentAction"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/action/OkBackToParentAction.html" title="class in org.multibit.viewsystem.swing.action">org.multibit.viewsystem.swing.action.OkBackToParentAction</A> extends javax.swing.AbstractAction implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>191352235461234705L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+controller</H3>
+<PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+
+<P>
+<A NAME="org.multibit.viewsystem.swing.action.OpenAddressBookAction"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/action/OpenAddressBookAction.html" title="class in org.multibit.viewsystem.swing.action">org.multibit.viewsystem.swing.action.OpenAddressBookAction</A> extends javax.swing.AbstractAction implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>191352235465123405L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+controller</H3>
+<PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+isChild</H3>
+<PRE>
+boolean <B>isChild</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+isReceiving</H3>
+<PRE>
+boolean <B>isReceiving</B></PRE>
 <DL>
 <DL>
 </DL>
@@ -732,27 +765,78 @@ controller</H3>
 </TABLE>
 
 <H3>
-mainFrame</H3>
+controller</H3>
 <PRE>
-<A HREF="org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A> <B>mainFrame</B></PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
 <DL>
 <DL>
 </DL>
 </DL>
-<HR>
+
+<P>
+<A NAME="org.multibit.viewsystem.swing.action.OpenWalletSubmitAction"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/action/OpenWalletSubmitAction.html" title="class in org.multibit.viewsystem.swing.action">org.multibit.viewsystem.swing.action.OpenWalletSubmitAction</A> extends javax.swing.AbstractAction implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>1923492460523457765L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
 <H3>
 controller</H3>
 <PRE>
-<A HREF="org/multibit/MultiBitController.html" title="class in org.multibit">MultiBitController</A> <B>controller</B></PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
 <DL>
 <DL>
 </DL>
 </DL>
 <HR>
 <H3>
-localiser</H3>
+dataProvider</H3>
 <PRE>
-<A HREF="org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A> <B>localiser</B></PRE>
+<A HREF="org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A> <B>dataProvider</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+
+<P>
+<A NAME="org.multibit.viewsystem.swing.action.PasteAddressAction"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/action/PasteAddressAction.html" title="class in org.multibit.viewsystem.swing.action">org.multibit.viewsystem.swing.action.PasteAddressAction</A> extends javax.swing.AbstractAction implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>114352235465057705L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+controller</H3>
+<PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
 <DL>
 <DL>
 </DL>
@@ -791,7 +875,7 @@ mainFrame</H3>
 <H3>
 controller</H3>
 <PRE>
-<A HREF="org/multibit/MultiBitController.html" title="class in org.multibit">MultiBitController</A> <B>controller</B></PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
 <DL>
 <DL>
 </DL>
@@ -800,55 +884,7 @@ controller</H3>
 <H3>
 localiser</H3>
 <PRE>
-<A HREF="org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A> <B>localiser</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-
-<P>
-<A NAME="org.multibit.viewsystem.swing.action.SaveWalletAction"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
-<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B>Class <A HREF="org/multibit/viewsystem/swing/action/SaveWalletAction.html" title="class in org.multibit.viewsystem.swing.action">org.multibit.viewsystem.swing.action.SaveWalletAction</A> extends javax.swing.AbstractAction implements Serializable</B></FONT></TH>
-</TR>
-</TABLE>
-
-<P>
-<B>serialVersionUID:&nbsp;</B>191352210565057705L
-
-<P>
-<A NAME="serializedForm"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
-<B>Serialized Fields</B></FONT></TH>
-</TR>
-</TABLE>
-
-<H3>
-mainFrame</H3>
-<PRE>
-<A HREF="org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A> <B>mainFrame</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-localiser</H3>
-<PRE>
-<A HREF="org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A> <B>localiser</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-imageIcon</H3>
-<PRE>
-javax.swing.ImageIcon <B>imageIcon</B></PRE>
+<A HREF="org/multibit/Localiser.html" title="class in org.multibit">Localiser</A> <B>localiser</B></PRE>
 <DL>
 <DL>
 </DL>
@@ -876,27 +912,48 @@ javax.swing.ImageIcon <B>imageIcon</B></PRE>
 </TABLE>
 
 <H3>
-mainFrame</H3>
+controller</H3>
 <PRE>
-<A HREF="org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A> <B>mainFrame</B></PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+
+<P>
+<A NAME="org.multibit.viewsystem.swing.action.SaveWalletAsSubmitAction"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/action/SaveWalletAsSubmitAction.html" title="class in org.multibit.viewsystem.swing.action">org.multibit.viewsystem.swing.action.SaveWalletAsSubmitAction</A> extends javax.swing.AbstractAction implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>1923492460523457765L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+controller</H3>
+<PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
 <DL>
 <DL>
 </DL>
 </DL>
 <HR>
 <H3>
-localiser</H3>
+dataProvider</H3>
 <PRE>
-<A HREF="org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A> <B>localiser</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-imageIcon</H3>
-<PRE>
-javax.swing.ImageIcon <B>imageIcon</B></PRE>
+<A HREF="org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A> <B>dataProvider</B></PRE>
 <DL>
 <DL>
 </DL>
@@ -924,18 +981,39 @@ javax.swing.ImageIcon <B>imageIcon</B></PRE>
 </TABLE>
 
 <H3>
-mainFrame</H3>
+controller</H3>
 <PRE>
-<A HREF="org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A> <B>mainFrame</B></PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
 <DL>
 <DL>
 </DL>
 </DL>
-<HR>
+
+<P>
+<A NAME="org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/action/SendBitcoinConfirmAction.html" title="class in org.multibit.viewsystem.swing.action">org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction</A> extends javax.swing.AbstractAction implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>1913592460523457765L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
 <H3>
-localiser</H3>
+controller</H3>
 <PRE>
-<A HREF="org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A> <B>localiser</B></PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
 <DL>
 <DL>
 </DL>
@@ -965,18 +1043,18 @@ localiser</H3>
 <H3>
 controller</H3>
 <PRE>
-<A HREF="org/multibit/MultiBitController.html" title="class in org.multibit">MultiBitController</A> <B>controller</B></PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
 <DL>
 <DL>
 </DL>
 </DL>
 
 <P>
-<A NAME="org.multibit.viewsystem.swing.action.ViewAddressBookAction"><!-- --></A>
+<A NAME="org.multibit.viewsystem.swing.action.ShowPreferencesAction"><!-- --></A>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
 <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B>Class <A HREF="org/multibit/viewsystem/swing/action/ViewAddressBookAction.html" title="class in org.multibit.viewsystem.swing.action">org.multibit.viewsystem.swing.action.ViewAddressBookAction</A> extends javax.swing.AbstractAction implements Serializable</B></FONT></TH>
+<B>Class <A HREF="org/multibit/viewsystem/swing/action/ShowPreferencesAction.html" title="class in org.multibit.viewsystem.swing.action">org.multibit.viewsystem.swing.action.ShowPreferencesAction</A> extends javax.swing.AbstractAction implements Serializable</B></FONT></TH>
 </TR>
 </TABLE>
 
@@ -993,29 +1071,20 @@ controller</H3>
 </TABLE>
 
 <H3>
-mainFrame</H3>
+controller</H3>
 <PRE>
-<A HREF="org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A> <B>mainFrame</B></PRE>
-<DL>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-localiser</H3>
-<PRE>
-<A HREF="org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A> <B>localiser</B></PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
 <DL>
 <DL>
 </DL>
 </DL>
 
 <P>
-<A NAME="org.multibit.viewsystem.swing.action.ViewPreferencesAction"><!-- --></A>
+<A NAME="org.multibit.viewsystem.swing.action.ShowPreferencesSubmitAction"><!-- --></A>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
 <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B>Class <A HREF="org/multibit/viewsystem/swing/action/ViewPreferencesAction.html" title="class in org.multibit.viewsystem.swing.action">org.multibit.viewsystem.swing.action.ViewPreferencesAction</A> extends javax.swing.AbstractAction implements Serializable</B></FONT></TH>
+<B>Class <A HREF="org/multibit/viewsystem/swing/action/ShowPreferencesSubmitAction.html" title="class in org.multibit.viewsystem.swing.action">org.multibit.viewsystem.swing.action.ShowPreferencesSubmitAction</A> extends javax.swing.AbstractAction implements Serializable</B></FONT></TH>
 </TR>
 </TABLE>
 
@@ -1032,18 +1101,389 @@ localiser</H3>
 </TABLE>
 
 <H3>
-mainFrame</H3>
+controller</H3>
 <PRE>
-<A HREF="org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A> <B>mainFrame</B></PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
 <DL>
 <DL>
 </DL>
 </DL>
 <HR>
 <H3>
-localiser</H3>
+dataProvider</H3>
 <PRE>
-<A HREF="org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A> <B>localiser</B></PRE>
+<A HREF="org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A> <B>dataProvider</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR SIZE="4" NOSHADE>
+
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="center"><FONT SIZE="+2">
+<B>Package</B> <B>org.multibit.viewsystem.swing.view</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<A NAME="org.multibit.viewsystem.swing.view.AddressBookDialog"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/view/AddressBookDialog.html" title="class in org.multibit.viewsystem.swing.view">org.multibit.viewsystem.swing.view.AddressBookDialog</A> extends <A HREF="org/multibit/viewsystem/swing/view/MultiBitDialog.html" title="class in org.multibit.viewsystem.swing.view">MultiBitDialog</A> implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>7123413615342923041L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+controller</H3>
+<PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+tableModel</H3>
+<PRE>
+<A HREF="org/multibit/viewsystem/swing/view/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing.view">AddressBookTableModel</A> <B>tableModel</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+tabbedPane</H3>
+<PRE>
+javax.swing.JTabbedPane <B>tabbedPane</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+
+<P>
+<A NAME="org.multibit.viewsystem.swing.view.AddressBookTableModel"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/view/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing.view">org.multibit.viewsystem.swing.view.AddressBookTableModel</A> extends javax.swing.table.AbstractTableModel implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>-937886012851116208L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+headers</H3>
+<PRE>
+java.util.Vector&lt;E&gt; <B>headers</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+tableHeaderKeys</H3>
+<PRE>
+java.lang.String[] <B>tableHeaderKeys</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+addressBookDataVector</H3>
+<PRE>
+java.util.Vector&lt;E&gt; <B>addressBookDataVector</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+
+<P>
+<A NAME="org.multibit.viewsystem.swing.view.CreateOrEditAddressDialog"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/view/CreateOrEditAddressDialog.html" title="class in org.multibit.viewsystem.swing.view">org.multibit.viewsystem.swing.view.CreateOrEditAddressDialog</A> extends <A HREF="org/multibit/viewsystem/swing/view/MultiBitDialog.html" title="class in org.multibit.viewsystem.swing.view">MultiBitDialog</A> implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>-209834865497842662L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+controller</H3>
+<PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+addressTextField</H3>
+<PRE>
+javax.swing.JTextField <B>addressTextField</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+labelTextField</H3>
+<PRE>
+javax.swing.JTextField <B>labelTextField</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+
+<P>
+<A NAME="org.multibit.viewsystem.swing.view.MultiBitDialog"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/view/MultiBitDialog.html" title="class in org.multibit.viewsystem.swing.view">org.multibit.viewsystem.swing.view.MultiBitDialog</A> extends javax.swing.JDialog implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>-917160539607329862L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+mainFrame</H3>
+<PRE>
+javax.swing.JFrame <B>mainFrame</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+
+<P>
+<A NAME="org.multibit.viewsystem.swing.view.ReceiveBitcoinDialog"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/view/ReceiveBitcoinDialog.html" title="class in org.multibit.viewsystem.swing.view">org.multibit.viewsystem.swing.view.ReceiveBitcoinDialog</A> extends <A HREF="org/multibit/viewsystem/swing/view/MultiBitDialog.html" title="class in org.multibit.viewsystem.swing.view">MultiBitDialog</A> implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>-2065108865497842662L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+controller</H3>
+<PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+addressTextField</H3>
+<PRE>
+javax.swing.JTextField <B>addressTextField</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+labelTextField</H3>
+<PRE>
+javax.swing.JTextField <B>labelTextField</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+copyAddressButton</H3>
+<PRE>
+javax.swing.JButton <B>copyAddressButton</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+
+<P>
+<A NAME="org.multibit.viewsystem.swing.view.SendBitcoinDialog"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/view/SendBitcoinDialog.html" title="class in org.multibit.viewsystem.swing.view">org.multibit.viewsystem.swing.view.SendBitcoinDialog</A> extends <A HREF="org/multibit/viewsystem/swing/view/MultiBitDialog.html" title="class in org.multibit.viewsystem.swing.view">MultiBitDialog</A> implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>-2065108657497842662L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+controller</H3>
+<PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+addressTextField</H3>
+<PRE>
+javax.swing.JTextField <B>addressTextField</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+labelTextField</H3>
+<PRE>
+javax.swing.JTextField <B>labelTextField</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+amountTextField</H3>
+<PRE>
+javax.swing.JTextField <B>amountTextField</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+
+<P>
+<A NAME="org.multibit.viewsystem.swing.view.ShowPreferencesDialog"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/view/ShowPreferencesDialog.html" title="class in org.multibit.viewsystem.swing.view">org.multibit.viewsystem.swing.view.ShowPreferencesDialog</A> extends <A HREF="org/multibit/viewsystem/swing/view/MultiBitDialog.html" title="class in org.multibit.viewsystem.swing.view">MultiBitDialog</A> implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>2065108834587842662L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+controller</H3>
+<PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+languageToLanguageCodeMap</H3>
+<PRE>
+java.util.Map&lt;K,V&gt; <B>languageToLanguageCodeMap</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+languageCodeToLanguageMap</H3>
+<PRE>
+java.util.Map&lt;K,V&gt; <B>languageCodeToLanguageMap</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+useDefaultLocale</H3>
+<PRE>
+javax.swing.JRadioButton <B>useDefaultLocale</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+languageComboBox</H3>
+<PRE>
+javax.swing.JComboBox <B>languageComboBox</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+data</H3>
+<PRE>
+<A HREF="org/multibit/model/Data.html" title="class in org.multibit.model">Data</A> <B>data</B></PRE>
 <DL>
 <DL>
 </DL>

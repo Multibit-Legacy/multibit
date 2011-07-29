@@ -1,5 +1,6 @@
 package org.multibit.viewsystem.swing;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -76,6 +77,10 @@ import com.google.bitcoin.core.Wallet;
  * JFrame displaying Swing version of MultiBit
  */
 public class MultiBitFrame extends JFrame implements ViewSystem{
+    private static final int A_SMALL_NUMBER_OF_PIXELS = 100;
+    private static final int A_LARGE_NUMBER_OF_PIXELS = 1000000;
+    private static final int STATUSBAR_HEIGHT = 30;
+    private static final int TOOLBAR_HEIGHT = 120;
     private static final String SAVE_AS_ICON_FILE = "/images/saveAs.jpg";
     private static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
     private static final String SEND_BITCOIN_ICON_FILE = "/images/send.jpg";
@@ -106,7 +111,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
     
     private MultiBitFrame thisFrame;
     
-
     private WalletTableModel walletTableModel;
 
     /**
@@ -177,11 +181,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         }
 
         JToolBar toolBar = addMenuBarAndCreateToolBar(constraints, contentPane);
+        toolBar.setMaximumSize(new Dimension(A_LARGE_NUMBER_OF_PIXELS, TOOLBAR_HEIGHT));
+        toolBar.setMaximumSize(new Dimension(A_SMALL_NUMBER_OF_PIXELS, TOOLBAR_HEIGHT));
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 0.85;
-        constraints.weighty = 0.06;
+        constraints.weighty = 0.01;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
 
@@ -193,7 +200,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         constraints.gridy = 0;
         constraints.gridwidth = 1;
         constraints.weightx = 0.15;
-        constraints.weighty = 0.06;
+        constraints.weighty = 0.01;
         constraints.anchor = GridBagConstraints.LINE_START;
 
         contentPane.add(balancePanel, constraints);
@@ -204,11 +211,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         constraints.gridy = 1;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
-        constraints.weighty = 0.88;
+        constraints.weighty = 2;
         constraints.anchor = GridBagConstraints.LINE_START;
         contentPane.add(walletPanel, constraints);
 
         StatusBar statusBar = new StatusBar();
+        statusBar.setMaximumSize(new Dimension(A_LARGE_NUMBER_OF_PIXELS, STATUSBAR_HEIGHT));
+        statusBar.setMaximumSize(new Dimension(A_SMALL_NUMBER_OF_PIXELS, STATUSBAR_HEIGHT));
         onlineStatusLabel = new JLabel();
         onlineStatusLabel.setHorizontalAlignment(SwingConstants.CENTER);
         networkStatusLabel = new JLabel();
@@ -218,7 +227,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         constraints.gridx = 0;
         constraints.gridy = 2;
         constraints.weightx = 1;
-        constraints.weighty = 0.06;
+        constraints.weighty = 0.01;
         contentPane.add(statusBar, constraints);
     }
 
@@ -357,6 +366,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         menuBar.add(helpMenu);
 
         // open wallet action
+        JPanel openWalletPanel = new JPanel(new BorderLayout());
+        openWalletPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+  
         OpenWalletAction openWalletAction = new OpenWalletAction(controller,
                 createImageIcon(OPEN_WALLET_ICON_FILE));
         JMenuItem menuItem = new JMenuItem(openWalletAction);
@@ -364,7 +376,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         JButton openWalletButton = new JButton(openWalletAction);
         openWalletButton.setVerticalTextPosition(AbstractButton.BOTTOM);
         openWalletButton.setHorizontalTextPosition(AbstractButton.CENTER);
-        toolBar.add(openWalletButton);
+        openWalletPanel.add(openWalletButton);
+        toolBar.add(openWalletPanel);
 
         // save wallet as action
         SaveWalletAsAction saveWalletAsAction = new SaveWalletAsAction(controller,
@@ -389,16 +402,17 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         menuItem = new JMenuItem(helpAboutAction);
         helpMenu.add(menuItem);
 
-        toolBar.addSeparator();
-
         // receive bitcoin action
+        JPanel receiveBitcoinPanel = new JPanel(new BorderLayout());
+        receiveBitcoinPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
         ReceiveBitcoinAction receiveBitcoinAction = new ReceiveBitcoinAction(controller, localiser,
                 createImageIcon(RECEIVE_BITCOIN_ICON_FILE), this);
         tradeMenu.add(receiveBitcoinAction);
         JButton receiveBitcoinButton = new JButton(receiveBitcoinAction);
         receiveBitcoinButton.setVerticalTextPosition(AbstractButton.BOTTOM);
         receiveBitcoinButton.setHorizontalTextPosition(AbstractButton.CENTER);
-        toolBar.add(receiveBitcoinButton);
+        receiveBitcoinPanel.add(receiveBitcoinButton);
+        toolBar.add(receiveBitcoinPanel);
 
         // send bitcoin action
         SendBitcoinAction sendBitcoinAction = new SendBitcoinAction(controller,
@@ -406,21 +420,25 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         menuItem = new JMenuItem(sendBitcoinAction);
         tradeMenu.add(menuItem);
 
+        JPanel sendBitcoinPanel = new JPanel(new BorderLayout());
+        sendBitcoinPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
         JButton sendBitcoinButton = new JButton(sendBitcoinAction);
         sendBitcoinButton.setVerticalTextPosition(AbstractButton.BOTTOM);
         sendBitcoinButton.setHorizontalTextPosition(AbstractButton.CENTER);
-        toolBar.add(sendBitcoinButton);
-
-        toolBar.addSeparator();
+        sendBitcoinPanel.add(sendBitcoinButton);
+        toolBar.add(sendBitcoinPanel);
 
         // open address book
+        JPanel openAddressBookReceivingPanel = new JPanel(new BorderLayout());
+        openAddressBookReceivingPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
         OpenAddressBookAction openAddressBookReceivingAction = new OpenAddressBookAction(
                 controller, createImageIcon(VIEW_ADDRESSBOOK_ICON_FILE), true, true);
         viewMenu.add(openAddressBookReceivingAction);
         JButton openAddressBookReceivingButton = new JButton(openAddressBookReceivingAction);
         openAddressBookReceivingButton.setVerticalTextPosition(AbstractButton.BOTTOM);
         openAddressBookReceivingButton.setHorizontalTextPosition(AbstractButton.CENTER);
-        toolBar.add(openAddressBookReceivingButton);
+        openAddressBookReceivingPanel.add(openAddressBookReceivingButton);
+        toolBar.add(openAddressBookReceivingPanel);
 
         // show preferences
         ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller, null);
@@ -472,34 +490,42 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
             switch (numberOfBlocksEmbedded) {
             case 0: {
                 label.setIcon(progress0Icon);
+                label.setToolTipText(localiser.getString("multiBitFrame.status.notConfirmed"));
                 break;
             }
             case 1: {
                 label.setIcon(progress1Icon);
+                label.setToolTipText(localiser.getString("multiBitFrame.status.beingConfirmed"));
                 break;
             }
             case 2: {
                 label.setIcon(progress2Icon);
+                label.setToolTipText(localiser.getString("multiBitFrame.status.beingConfirmed"));
                 break;
             }
             case 3: {
                 label.setIcon(progress3Icon);
+                label.setToolTipText(localiser.getString("multiBitFrame.status.beingConfirmed"));
                 break;
             }
             case 4: {
                 label.setIcon(progress4Icon);
+                label.setToolTipText(localiser.getString("multiBitFrame.status.beingConfirmed"));
                 break;
             }
             case 5: {
                 label.setIcon(progress5Icon);
+                label.setToolTipText(localiser.getString("multiBitFrame.status.beingConfirmed"));
                 break;
             }
             case 6: {
                 label.setIcon(tickIcon);
+                label.setToolTipText(localiser.getString("multiBitFrame.status.isConfirmed"));
                 break;
             }
             default:
                 label.setIcon(progress0Icon);
+                label.setToolTipText(localiser.getString("multiBitFrame.status.notConfirmed"));
             }
             return label;
         }
@@ -580,6 +606,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
             initUI();
         }
         updateOnlineStatusText();
+        balanceTextField.setText(Localiser.bitcoinValueToFriendlyString(model.getBalance(), true, false));
         
         String walletFilename = model.getWalletFilename();
         if (walletFilename == null) {
@@ -794,13 +821,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
     
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
             BigInteger newBalance) {
-              
-//        final BigInteger finalNewBalance = newBalance;
-//        SwingUtilities.invokeLater(new Runnable() {
-//            public void run() {
-//                JOptionPane.showMessageDialog(thisFrame, "MultiBitFrame#onCoinsReceived - New balance = " + finalNewBalance);
-//            }
-//        });
        
         // print out transaction details
         try {
@@ -809,7 +829,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
             BigInteger value = transaction.getValueSentToMe(wallet);
             System.out.println("Received " + Localiser.bitcoinValueToFriendlyString(value, true, false) + " from "
                     + from.toString());
-            System.out.println("MultiBitFrame#onCoinsReceived - ping 1 - wallet is currently:\n" + wallet.toString());
+            //.out.println("MultiBitFrame#onCoinsReceived - ping 1 - wallet is currently:\n" + wallet.toString());
             // Now send the coins back
             //Transaction sendTx = wallet.sendCoins(controller.getMultiBitService().getPeerGroup(), from, value);
             //assert sendTx != null; // We should never try to send more
@@ -825,7 +845,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
             throw new RuntimeException(e);
         }
         
-        System.out.println("MultiBitFrame#onCoinsReceived - ping 2 - wallet is currently:\n" + wallet.toString());
+        System.out.println("MultiBitFrame#onCoinsReceived - wallet is currently:\n" + wallet.toString());
         fireDataChanged();
     }
     
@@ -838,7 +858,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
                 balanceTextField.setText(Localiser.bitcoinValueToFriendlyString(controller.getModel().getBalance(), true, false));
                 
                 // update wallet table model
-                walletTableModel.recreateWalletData();     
+                walletTableModel.recreateWalletData();    
+                walletTableModel.fireTableDataChanged();
+                
+                thisFrame.invalidate();
+                thisFrame.validate();
+                thisFrame.repaint();
             }
         });
     }   

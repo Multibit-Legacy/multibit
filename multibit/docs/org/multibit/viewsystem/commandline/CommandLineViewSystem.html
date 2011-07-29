@@ -198,9 +198,7 @@ a purely text / command line view for MultiBit
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/commandline/CommandLineViewSystem.html#CommandLineViewSystem(org.multibit.MultiBitController, org.multibit.model.MultiBitModel, org.multibit.viewsystem.Localiser)">CommandLineViewSystem</A></B>(<A HREF="../../../../org/multibit/MultiBitController.html" title="class in org.multibit">MultiBitController</A>&nbsp;controller,
-                      <A HREF="../../../../org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>&nbsp;model,
-                      <A HREF="../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A>&nbsp;localiser)</CODE>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/commandline/CommandLineViewSystem.html#CommandLineViewSystem(org.multibit.controller.MultiBitController)">CommandLineViewSystem</A></B>(<A HREF="../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -245,10 +243,45 @@ a purely text / command line view for MultiBit
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/commandline/CommandLineViewSystem.html#setLocaliser(org.multibit.viewsystem.Localiser)">setLocaliser</A></B>(<A HREF="../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A>&nbsp;localiser)</CODE>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/commandline/CommandLineViewSystem.html#nowOffline()">nowOffline</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set the localiser the view system should use</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a method called when MultiBit is now offline i.e.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/commandline/CommandLineViewSystem.html#nowOnline()">nowOnline</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a method called when MultiBit is now online i.e.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/commandline/CommandLineViewSystem.html#onCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)">onCoinsReceived</A></B>(<A HREF="../../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet,
+                <A HREF="../../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction,
+                java.math.BigInteger&nbsp;prevBalance,
+                java.math.BigInteger&nbsp;newBalance)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WalletEventListener callback method</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/commandline/CommandLineViewSystem.html#recreateAllViews()">recreateAllViews</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;no need to recreate views as they are not cached</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/commandline/CommandLineViewSystem.html#updateDownloadStatus(java.lang.String)">updateDownloadStatus</A></B>(java.lang.String&nbsp;updateDownloadStatus)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;update download status</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
@@ -362,12 +395,10 @@ public static java.lang.String <B>MENU_CHOOSE_PREFIX</B></PRE>
 </TR>
 </TABLE>
 
-<A NAME="CommandLineViewSystem(org.multibit.MultiBitController, org.multibit.model.MultiBitModel, org.multibit.viewsystem.Localiser)"><!-- --></A><H3>
+<A NAME="CommandLineViewSystem(org.multibit.controller.MultiBitController)"><!-- --></A><H3>
 CommandLineViewSystem</H3>
 <PRE>
-public <B>CommandLineViewSystem</B>(<A HREF="../../../../org/multibit/MultiBitController.html" title="class in org.multibit">MultiBitController</A>&nbsp;controller,
-                             <A HREF="../../../../org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>&nbsp;model,
-                             <A HREF="../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A>&nbsp;localiser)</PRE>
+public <B>CommandLineViewSystem</B>(<A HREF="../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller)</PRE>
 <DL>
 </DL>
 
@@ -380,23 +411,6 @@ public <B>CommandLineViewSystem</B>(<A HREF="../../../../org/multibit/MultiBitCo
 <B>Method Detail</B></FONT></TH>
 </TR>
 </TABLE>
-
-<A NAME="setLocaliser(org.multibit.viewsystem.Localiser)"><!-- --></A><H3>
-setLocaliser</H3>
-<PRE>
-public void <B>setLocaliser</B>(<A HREF="../../../../org/multibit/viewsystem/Localiser.html" title="class in org.multibit.viewsystem">Localiser</A>&nbsp;localiser)</PRE>
-<DL>
-<DD><B>Description copied from interface: <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#setLocaliser(org.multibit.viewsystem.Localiser)">ViewSystem</A></CODE></B></DD>
-<DD>set the localiser the view system should use
-<P>
-<DD><DL>
-<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#setLocaliser(org.multibit.viewsystem.Localiser)">setLocaliser</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
 
 <A NAME="displayMessage(java.lang.String, java.lang.Object[], java.lang.String)"><!-- --></A><H3>
 displayMessage</H3>
@@ -448,6 +462,93 @@ public void <B>navigateAwayFromView</B>(int&nbsp;viewToNavigateAwayFrom,
 </DD>
 <DD><DL>
 <DT><B>Parameters:</B><DD><CODE>viewToNavigateAwayFrom</CODE> - - current view to navigate away from -one of the View constants<DD><CODE>nextViewId</CODE> - - next view - one of the View constants</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="recreateAllViews()"><!-- --></A><H3>
+recreateAllViews</H3>
+<PRE>
+public void <B>recreateAllViews</B>()</PRE>
+<DL>
+<DD>no need to recreate views as they are not cached
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#recreateAllViews()">recreateAllViews</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="nowOnline()"><!-- --></A><H3>
+nowOnline</H3>
+<PRE>
+public void <B>nowOnline</B>()</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#nowOnline()">ViewSystem</A></CODE></B></DD>
+<DD>a method called when MultiBit is now online i.e. now has a peer when it did not before
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#nowOnline()">nowOnline</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="nowOffline()"><!-- --></A><H3>
+nowOffline</H3>
+<PRE>
+public void <B>nowOffline</B>()</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#nowOffline()">ViewSystem</A></CODE></B></DD>
+<DD>a method called when MultiBit is now offline i.e. the last peer has disconnecte
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#nowOffline()">nowOffline</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="updateDownloadStatus(java.lang.String)"><!-- --></A><H3>
+updateDownloadStatus</H3>
+<PRE>
+public void <B>updateDownloadStatus</B>(java.lang.String&nbsp;updateDownloadStatus)</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#updateDownloadStatus(java.lang.String)">ViewSystem</A></CODE></B></DD>
+<DD>update download status
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#updateDownloadStatus(java.lang.String)">updateDownloadStatus</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="onCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)"><!-- --></A><H3>
+onCoinsReceived</H3>
+<PRE>
+public void <B>onCoinsReceived</B>(<A HREF="../../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet,
+                            <A HREF="../../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction,
+                            java.math.BigInteger&nbsp;prevBalance,
+                            java.math.BigInteger&nbsp;newBalance)</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#onCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)">ViewSystem</A></CODE></B></DD>
+<DD>WalletEventListener callback method
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#onCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)">onCoinsReceived</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
 </DD>
 </DL>
 <!-- ========= END OF CLASS DATA ========= -->
