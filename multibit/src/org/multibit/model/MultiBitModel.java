@@ -29,15 +29,27 @@ import com.google.bitcoin.core.WalletEventListener;
  */
 public class MultiBitModel {
 
-    // statics that are used in persisting the user preferences
-    public static final String USER_LANGUAGE_CODE = "languageCode";
-    public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
+    // constants used in the multibit.properties and in data provider data payloads
+    
+    // MultiBit start up
     public static final String TEST_OR_PRODUCTION_NETWORK = "testOrProductionNetwork";
     public static final String TEST_NETWORK_VALUE = "test";
     public static final String PRODUCTION_NETWORK_VALUE = "production";
     public static final String WALLET_FILENAME = "walletFilename";
+   
+    // user preferences
+    public static final String USER_LANGUAGE_CODE = "languageCode";
+    public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
+    
+    // open wallet and save wallet as dialog
     public static final String SELECTED_WALLET_FILENAME = "selectedWalletFilename";
 
+    // send bitcoin and send bitcoin confirm
+    public static final String SEND_ADDRESS = "sendAddress";
+    public static final String SEND_LABEL = "sendLabel";
+    public static final String SEND_AMOUNT = "sendAmount";
+
+    
     private Wallet wallet;
 
     private MultiBitController controller;

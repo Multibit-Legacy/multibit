@@ -1,0 +1,378 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--NewPage-->
+<HTML>
+<HEAD>
+<TITLE>
+AddressBookView
+</TITLE>
+
+
+<LINK REL ="stylesheet" TYPE="text/css" HREF="../../../../../stylesheet.css" TITLE="Style">
+
+<SCRIPT type="text/javascript">
+function windowTitle()
+{
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="AddressBookView";
+    }
+}
+</SCRIPT>
+<NOSCRIPT>
+</NOSCRIPT>
+
+</HEAD>
+
+<BODY BGCOLOR="white" onload="windowTitle();">
+<HR>
+
+
+<!-- ========= START OF TOP NAVBAR ======= -->
+<A NAME="navbar_top"><!-- --></A>
+<A HREF="#skip-navbar_top" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_top_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/view/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing.view"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/view/CreateOrEditAddressDialog.html" title="class in org.multibit.viewsystem.swing.view"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../../../index.html?org/multibit/viewsystem/swing/view/AddressBookView.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="AddressBookView.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_top"></A>
+<!-- ========= END OF TOP NAVBAR ========= -->
+
+<HR>
+<!-- ======== START OF CLASS DATA ======== -->
+<H2>
+<FONT SIZE="-1">
+org.multibit.viewsystem.swing.view</FONT>
+<BR>
+Class AddressBookView</H2>
+<PRE>
+java.lang.Object
+  <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.viewsystem.swing.view.AddressBookView</B>
+</PRE>
+<DL>
+<DT><B>All Implemented Interfaces:</B> <DD><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></DD>
+</DL>
+<HR>
+<DL>
+<DT><PRE>public class <B>AddressBookView</B><DT>extends java.lang.Object<DT>implements <A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></DL>
+</PRE>
+
+<P>
+The view of the address book
+<P>
+
+<P>
+<HR>
+
+<P>
+<!-- =========== FIELD SUMMARY =========== -->
+
+<A NAME="field_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Field Summary</B></FONT></TH>
+</TR>
+</TABLE>
+&nbsp;<A NAME="fields_inherited_from_class_org.multibit.viewsystem.View"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Fields inherited from interface org.multibit.viewsystem.<A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#ADDRESS_BOOK_RECEIVING_VIEW">ADDRESS_BOOK_RECEIVING_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#ADDRESS_BOOK_SENDING_VIEW">ADDRESS_BOOK_SENDING_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#CREATE_NEW_RECEIVING_ADDRESS_VIEW">CREATE_NEW_RECEIVING_ADDRESS_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#CREATE_NEW_SENDING_ADDRESS_VIEW">CREATE_NEW_SENDING_ADDRESS_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#EDIT_RECEIVING_ADDRESS_VIEW">EDIT_RECEIVING_ADDRESS_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#EDIT_SENDING_ADDRESS_VIEW">EDIT_SENDING_ADDRESS_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#HELP_ABOUT_VIEW">HELP_ABOUT_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#HELP_CONTENTS_VIEW">HELP_CONTENTS_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#HOME_PAGE_VIEW">HOME_PAGE_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#OPEN_WALLET_VIEW">OPEN_WALLET_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#PREFERENCES_VIEW">PREFERENCES_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#RECEIVE_BITCOIN_VIEW">RECEIVE_BITCOIN_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#SAVE_WALLET_AS_VIEW">SAVE_WALLET_AS_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#SEND_BITCOIN_CONFIRM_VIEW">SEND_BITCOIN_CONFIRM_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#SEND_BITCOIN_VIEW">SEND_BITCOIN_VIEW</A>, <A HREF="../../../../../org/multibit/viewsystem/View.html#UNKNOWN_VIEW">UNKNOWN_VIEW</A></CODE></TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+
+<A NAME="constructor_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Constructor Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/AddressBookView.html#AddressBookView(org.multibit.controller.MultiBitController, org.multibit.Localiser, org.multibit.viewsystem.swing.MultiBitFrame, boolean)">AddressBookView</A></B>(<A HREF="../../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
+                <A HREF="../../../../../org/multibit/Localiser.html" title="class in org.multibit">Localiser</A>&nbsp;localiser,
+                <A HREF="../../../../../org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A>&nbsp;mainFrame,
+                boolean&nbsp;isReceiving)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a new <A HREF="../../../../../org/multibit/viewsystem/swing/view/AddressBookView.html" title="class in org.multibit.viewsystem.swing.view"><CODE>AddressBookView</CODE></A>.</TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ========== METHOD SUMMARY =========== -->
+
+<A NAME="method_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Method Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/AddressBookView.html#displayMessage(java.lang.String, java.lang.Object[], java.lang.String)">displayMessage</A></B>(java.lang.String&nbsp;messageKey,
+               java.lang.Object[]&nbsp;messageData,
+               java.lang.String&nbsp;titleKey)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/AddressBookView.html#displayView()">displayView</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;show address book dialog, sending addresses</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;java.lang.String</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/AddressBookView.html#getDescription()">getDescription</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/AddressBookView.html#navigateAwayFromView(int)">navigateAwayFromView</A></B>(int&nbsp;nextViewId)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/AddressBookView.html#setPossibleActions(java.util.Collection)">setPossibleActions</A></B>(java.util.Collection&lt;<A HREF="../../../../../org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>&gt;&nbsp;possibleActions)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class java.lang.Object</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;
+<P>
+
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+
+<A NAME="constructor_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Constructor Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="AddressBookView(org.multibit.controller.MultiBitController, org.multibit.Localiser, org.multibit.viewsystem.swing.MultiBitFrame, boolean)"><!-- --></A><H3>
+AddressBookView</H3>
+<PRE>
+public <B>AddressBookView</B>(<A HREF="../../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
+                       <A HREF="../../../../../org/multibit/Localiser.html" title="class in org.multibit">Localiser</A>&nbsp;localiser,
+                       <A HREF="../../../../../org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A>&nbsp;mainFrame,
+                       boolean&nbsp;isReceiving)</PRE>
+<DL>
+<DD>Creates a new <A HREF="../../../../../org/multibit/viewsystem/swing/view/AddressBookView.html" title="class in org.multibit.viewsystem.swing.view"><CODE>AddressBookView</CODE></A>.
+<P>
+</DL>
+
+<!-- ============ METHOD DETAIL ========== -->
+
+<A NAME="method_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Method Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="getDescription()"><!-- --></A><H3>
+getDescription</H3>
+<PRE>
+public java.lang.String <B>getDescription</B>()</PRE>
+<DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#getDescription()">getDescription</A></CODE> in interface <CODE><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="displayView()"><!-- --></A><H3>
+displayView</H3>
+<PRE>
+public void <B>displayView</B>()</PRE>
+<DL>
+<DD>show address book dialog, sending addresses
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#displayView()">displayView</A></CODE> in interface <CODE><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="displayMessage(java.lang.String, java.lang.Object[], java.lang.String)"><!-- --></A><H3>
+displayMessage</H3>
+<PRE>
+public void <B>displayMessage</B>(java.lang.String&nbsp;messageKey,
+                           java.lang.Object[]&nbsp;messageData,
+                           java.lang.String&nbsp;titleKey)</PRE>
+<DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#displayMessage(java.lang.String, java.lang.Object[], java.lang.String)">displayMessage</A></CODE> in interface <CODE><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="navigateAwayFromView(int)"><!-- --></A><H3>
+navigateAwayFromView</H3>
+<PRE>
+public void <B>navigateAwayFromView</B>(int&nbsp;nextViewId)</PRE>
+<DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#navigateAwayFromView(int)">navigateAwayFromView</A></CODE> in interface <CODE><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setPossibleActions(java.util.Collection)"><!-- --></A><H3>
+setPossibleActions</H3>
+<PRE>
+public void <B>setPossibleActions</B>(java.util.Collection&lt;<A HREF="../../../../../org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>&gt;&nbsp;possibleActions)</PRE>
+<DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#setPossibleActions(java.util.Collection)">setPossibleActions</A></CODE> in interface <CODE><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<!-- ========= END OF CLASS DATA ========= -->
+<HR>
+
+
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<A NAME="navbar_bottom"><!-- --></A>
+<A HREF="#skip-navbar_bottom" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_bottom_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/view/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing.view"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/view/CreateOrEditAddressDialog.html" title="class in org.multibit.viewsystem.swing.view"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../../../index.html?org/multibit/viewsystem/swing/view/AddressBookView.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="AddressBookView.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_bottom"></A>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+
+<HR>
+
+</BODY>
+</HTML>

@@ -806,6 +806,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 String onlineStatus = isOnline ? localiser.getString("multiBitFrame.onlineText") : localiser.getString("multiBitFrame.offlineText");
+                if (isOnline) {
+                    onlineStatusLabel.setForeground(new Color(0, 140, 0));
+                } else {
+                    onlineStatusLabel.setForeground(new Color(180, 0, 0));
+                }
                 onlineStatusLabel.setText(onlineStatus);        
             }
         });

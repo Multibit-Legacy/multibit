@@ -7,15 +7,13 @@ import java.util.EmptyStackException;
 import java.util.Locale;
 import java.util.Stack;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 import org.multibit.Localiser;
 import org.multibit.model.MultiBitModel;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 
+import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
@@ -39,12 +37,12 @@ public class MultiBitController implements PeerEventListener {
      * the data model backing the views
      */
     private MultiBitModel model;
-    
+
     /**
      * the localiser used to localise everything
      */
     private Localiser localiser;
-    
+
     /**
      * the view currently being displayed to the user
      */
@@ -64,32 +62,33 @@ public class MultiBitController implements PeerEventListener {
      * the stack of views
      */
     private Stack<Integer> viewStack;
-    
+
     /**
      * the bitcoinj network interface
      */
     private MultiBitService multiBitService;
-    
-    
+
     public MultiBitController() {
         viewSystems = new ArrayList<ViewSystem>();
 
         // initialise everything to look at the home page
         viewStack = new Stack<Integer>();
         viewStack.push(View.HOME_PAGE_VIEW);
-        
+
         previousView = View.HOME_PAGE_VIEW;
         currentView = View.HOME_PAGE_VIEW;
         nextView = View.HOME_PAGE_VIEW;
     }
 
     /**
-     * set the action forward that will be used to determined the next view
-     * to display
+     * set the action forward that will be used to determined the next view to
+     * display
      * 
      * normally called by the action once it has decided what the next view is
      * 
-     * this setActionForward should be used when the next view is a child of the current view
+     * this setActionForward should be used when the next view is a child of the
+     * current view
+     * 
      * @param actionForward
      */
     public void setActionForwardToChild(ActionForward actionForward) {
@@ -100,9 +99,9 @@ public class MultiBitController implements PeerEventListener {
     }
 
     /**
-     * set the action forward that will be used to determined the next view
-     * to display where the next view is a sibling of the current view
-
+     * set the action forward that will be used to determined the next view to
+     * display where the next view is a sibling of the current view
+     * 
      * @param actionForward
      */
     public void setActionForwardToSibling(ActionForward actionForward) {
@@ -114,6 +113,7 @@ public class MultiBitController implements PeerEventListener {
 
     /**
      * set the next view to be the parent of the current
+     * 
      * @param actionForward
      */
     public void setActionForwardToParent() {
@@ -129,12 +129,14 @@ public class MultiBitController implements PeerEventListener {
     }
 
     /**
-     * set the action forward that will be used to determined the next view
-     * to display
+     * set the action forward that will be used to determined the next view to
+     * display
      * 
      * normally called by the action once it has decided what the next view is
      * 
-     * this setActionForward should be used when the next view is a child of the current view
+     * this setActionForward should be used when the next view is a child of the
+     * current view
+     * 
      * @param actionForward
      * @return next view (on View enum)
      */
@@ -232,7 +234,7 @@ public class MultiBitController implements PeerEventListener {
 
         case FORWARD_TO_HOME_PAGE: {
             // show the home page
-             nextView = View.HOME_PAGE_VIEW;
+            nextView = View.HOME_PAGE_VIEW;
             break;
         }
 
@@ -244,7 +246,8 @@ public class MultiBitController implements PeerEventListener {
     }
 
     /**
-     * @param relationshipOfNewViewToPrevious - one of ViewSystem relationship constants
+     * @param relationshipOfNewViewToPrevious
+     *            - one of ViewSystem relationship constants
      */
     private void displayNextView(int relationshipOfNewViewToPrevious) {
         if (nextView != 0) {
@@ -254,16 +257,18 @@ public class MultiBitController implements PeerEventListener {
             nextView = View.UNKNOWN_VIEW;
 
         } else {
-            System.out.println("MultiBitController - could not determine next view to display, previousView = "
+            System.out
+                    .println("MultiBitController - could not determine next view to display, previousView = "
                             + previousView + ", currentView = " + currentView);
             System.out.println("MultiBitController - displaying the home page anyhow");
             previousView = currentView;
             currentView = View.HOME_PAGE_VIEW;
         }
-        
+
         // tell all views to close the previous view
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.navigateAwayFromView(previousView, currentView, relationshipOfNewViewToPrevious);
+            viewSystem.navigateAwayFromView(previousView, currentView,
+                    relationshipOfNewViewToPrevious);
         }
         // tell all views which view to display
         for (ViewSystem viewSystem : viewSystems) {
@@ -274,7 +279,8 @@ public class MultiBitController implements PeerEventListener {
     /**
      * register a new MultiBitViewSystem from the list of views that are managed
      * 
-     * @param viewSystem system
+     * @param viewSystem
+     *            system
      */
     public void registerViewSystem(ViewSystem viewSystem) {
         viewSystems.add(viewSystem);
@@ -293,6 +299,7 @@ public class MultiBitController implements PeerEventListener {
      * display a message to the user - localisation is done by the viewSystems
      * 
      * @param messageKey the key to localise for the message
+     * 
      * @param titleKey the key to localise for the title
      */
     public void displayMessage(String messageKey, String titleKey) {
@@ -303,7 +310,9 @@ public class MultiBitController implements PeerEventListener {
      * display a message to the user - localisation is done by the viewSystems
      * 
      * @param messageKey the key to localise for the message
+     * 
      * @param messageData the data used in the message
+     * 
      * @param titleKey the key to localise for the title
      * 
      * @param any localisation data
@@ -317,17 +326,17 @@ public class MultiBitController implements PeerEventListener {
     public MultiBitModel getModel() {
         return model;
     }
-    
+
     public void setModel(MultiBitModel model) {
         this.model = model;
     }
-    
+
     /**
      * the language has been changed
      */
     public void fireLanguageChanged() {
         localiser.setLocale(new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE)));
-        
+
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.recreateAllViews();
@@ -339,7 +348,7 @@ public class MultiBitController implements PeerEventListener {
      */
     public void fireWalletChanged() {
         // TODO rewire the blockchain etc
-        
+
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.recreateAllViews();
@@ -355,17 +364,18 @@ public class MultiBitController implements PeerEventListener {
     }
 
     /**
-     * the controller listens for PeerGroup events and notifies interested parties
+     * the controller listens for PeerGroup events and notifies interested
+     * parties
      */
-    
+
     public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
         // TODO Auto-generated method stub
-        System.out.println("MultiBitController#onBlocksDownloaded called");     
+        System.out.println("MultiBitController#onBlocksDownloaded called");
     }
 
     public void onChainDownloadStarted(Peer peer, int blocksLeft) {
         // TODO Auto-generated method stub
-        System.out.println("MultiBitController#onChainDownloadStarted called");     
+        System.out.println("MultiBitController#onChainDownloadStarted called");
     }
 
     public void onPeerConnected(Peer peer, int peerCount) {
@@ -374,35 +384,48 @@ public class MultiBitController implements PeerEventListener {
         if (peerCount == 1) {
             for (ViewSystem viewSystem : viewSystems) {
                 viewSystem.nowOnline();
-            }   
+            }
         }
     }
 
     public void onPeerDisconnected(Peer peer, int peerCount) {
-        System.out.println("MultiBitController#onPeerDisconnected called - peerCount = " + peerCount);
+        System.out.println("MultiBitController#onPeerDisconnected called - peerCount = "
+                + peerCount);
         // if now offline, notify viewSystems
         if (peerCount == 0) {
             for (ViewSystem viewSystem : viewSystems) {
                 viewSystem.nowOffline();
-            }   
+            }
         }
     }
-    
+
     /**
-     * method called by downloadListener to update download status 
+     * method called by downloadListener to update download status
      */
     public void updateDownloadStatus(String downloadStatus) {
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.updateDownloadStatus(downloadStatus);
-        }   
+        }
     }
-    
+
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
             BigInteger newBalance) {
- 
+
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
-        }   
+        }
+    }
+
+    public void sendCoins(String sendAddressString, String sendLabel, String amount) {
+        try {
+            // send the coins
+            Transaction sendTransaction = multiBitService.sendCoins(sendAddressString, amount);
+            fireWalletChanged();
+        } catch (java.io.IOException ioe) {
+            ioe.printStackTrace();
+        } catch (AddressFormatException e) {
+            e.printStackTrace();
+        }
     }
 
     public MultiBitService getMultiBitService() {

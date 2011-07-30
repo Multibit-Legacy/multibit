@@ -45,6 +45,7 @@ public class SendBitcoinView implements View {
         if (sendBitcoinDialog == null) {
             sendBitcoinDialog = new SendBitcoinDialog(mainFrame, controller);
         }
+        sendBitcoinDialog.loadForm();
         sendBitcoinDialog.setVisible(true);
 
         // the action listeners of the code in the dialog do all the action
@@ -56,6 +57,7 @@ public class SendBitcoinView implements View {
     }
 
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+
         if (ViewSystem.newViewIsParentOfPrevious == relationshipOfNewViewToPrevious) {
             if (sendBitcoinDialog != null) {
                 sendBitcoinDialog.setVisible(false);

@@ -2,6 +2,7 @@ package org.multibit.action;
 
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 
 /**
@@ -18,7 +19,8 @@ public class SendBitcoinConfirmAction implements Action {
     }
     
     public void execute(DataProvider dataProvider) {
-        // no changes required to model
+        // copy the data into the user preferences (side effect of getData call)
+        Data data = dataProvider.getData();
         
         controller.setActionForwardToChild(ActionForward.FORWARD_TO_SEND_BITCOIN_CONFIRM);       
     }

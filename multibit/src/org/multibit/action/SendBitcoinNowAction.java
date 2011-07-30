@@ -3,6 +3,7 @@ package org.multibit.action;
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
+import org.multibit.model.MultiBitModel;
 
 /**
  * an action that actually sends bitcoin
@@ -18,8 +19,13 @@ public class SendBitcoinNowAction implements Action {
     }
     
     public void execute(DataProvider dataProvider) {
-        // TODO - Actually send the bitcoin
-        controller.displayMessage("sendBitcoinNowAction.message", null, "");
+        // get the data out of the user preferences
+        String sendAddress = controller.getModel().getUserPreference(MultiBitModel.SEND_ADDRESS);
+        String sendLabel = controller.getModel().getUserPreference(MultiBitModel.SEND_LABEL);
+        String sendAmount = controller.getModel().getUserPreference(MultiBitModel.SEND_AMOUNT);
+
+        controller.sendCoins(sendAddress, sendLabel, sendAmount);
+
         controller.setActionForwardToChild(ActionForward.FORWARD_TO_HOME_PAGE);       
     }
     

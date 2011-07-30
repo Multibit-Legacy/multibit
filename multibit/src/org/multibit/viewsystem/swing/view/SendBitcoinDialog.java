@@ -14,12 +14,15 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.Data;
+import org.multibit.model.DataProvider;
+import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
 import org.multibit.viewsystem.swing.action.OpenAddressBookAction;
 import org.multibit.viewsystem.swing.action.PasteAddressAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
-
-public class SendBitcoinDialog extends MultiBitDialog {
+ 
+public class SendBitcoinDialog extends MultiBitDialog implements DataProvider {
 
     private static final long serialVersionUID = -2065108657497842662L;
 
@@ -33,20 +36,43 @@ public class SendBitcoinDialog extends MultiBitDialog {
 
     private JTextField amountTextField;
 
+    private Data data;
+    
     public SendBitcoinDialog(JFrame mainFrame, MultiBitController controller) {
         super(mainFrame);
         this.controller = controller;
 
+        data = new Data();
+        
         initUI();
 
+        loadForm();
+      
         pack();
         addressTextField.requestFocusInWindow();
 
     }
 
+    public void loadForm() {
+        String sendAddress = controller.getModel().getUserPreference(MultiBitModel.SEND_ADDRESS);
+        if (sendAddress != null) {
+            addressTextField.setText(sendAddress);
+        }
+        
+        String sendLabel = controller.getModel().getUserPreference(MultiBitModel.SEND_LABEL);
+        if (sendLabel != null) {
+            labelTextField.setText(sendLabel);
+        }
+        
+        String sendAmount = controller.getModel().getUserPreference(MultiBitModel.SEND_AMOUNT);
+        if (sendAmount != null) {
+            amountTextField.setText(sendAmount);
+        }      
+    }
+    
     private void initUI() {
-        positionDialogRelativeToParent(this, 0.16D, 0.25D);
-        setMinimumSize(new Dimension(740, 240));
+        positionDialogRelativeToParent(this, 0.10D, 0.25D);
+        setMinimumSize(new Dimension(780, 240));
         setTitle(controller.getLocaliser().getString("sendBitcoinDialog.title"));
         setLayout(new BorderLayout());
         add(createSendBitcoinsPanel(), BorderLayout.CENTER);
@@ -226,10 +252,19 @@ public class SendBitcoinDialog extends MultiBitDialog {
         JButton cancelButton = new JButton(cancelBackToParentAction);
         buttonsPanel.add(cancelButton);
 
-        SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller);
+        SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, this);
         JButton sendButton = new JButton(sendBitcoinConfirmAction);
         buttonsPanel.add(sendButton);
 
         return buttonsPanel;
+    }
+
+    public Data getData() {        
+        // put the data in the user preferences
+        controller.getModel().setUserPreference(MultiBitModel.SEND_ADDRESS, addressTextField.getText());
+        controller.getModel().setUserPreference(MultiBitModel.SEND_LABEL, labelTextField.getText());
+        controller.getModel().setUserPreference(MultiBitModel.SEND_AMOUNT, amountTextField.getText());
+
+        return data;
     }
 }

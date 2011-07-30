@@ -1,0 +1,408 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--NewPage-->
+<HTML>
+<HEAD>
+<TITLE>
+Action
+</TITLE>
+
+
+<LINK REL ="stylesheet" TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+
+<SCRIPT type="text/javascript">
+function windowTitle()
+{
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="Action";
+    }
+}
+</SCRIPT>
+<NOSCRIPT>
+</NOSCRIPT>
+
+</HEAD>
+
+<BODY BGCOLOR="white" onload="windowTitle();">
+<HR>
+
+
+<!-- ========= START OF TOP NAVBAR ======= -->
+<A NAME="navbar_top"><!-- --></A>
+<A HREF="#skip-navbar_top" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_top_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;PREV CLASS&nbsp;
+&nbsp;<A HREF="../../../org/multibit/action/CancelBackToParentAction.html" title="class in org.multibit.action"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../index.html?org/multibit/action/Action.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Action.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;<A HREF="#field_summary">FIELD</A>&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_top"></A>
+<!-- ========= END OF TOP NAVBAR ========= -->
+
+<HR>
+<!-- ======== START OF CLASS DATA ======== -->
+<H2>
+<FONT SIZE="-1">
+org.multibit.action</FONT>
+<BR>
+Interface Action</H2>
+<DL>
+<DT><B>All Known Implementing Classes:</B> <DD><A HREF="../../../org/multibit/action/CancelBackToParentAction.html" title="class in org.multibit.action">CancelBackToParentAction</A>, <A HREF="../../../org/multibit/action/CopyAddressAction.html" title="class in org.multibit.action">CopyAddressAction</A>, <A HREF="../../../org/multibit/action/CreateOrEditAddressAction.html" title="class in org.multibit.action">CreateOrEditAddressAction</A>, <A HREF="../../../org/multibit/action/ExitAction.html" title="class in org.multibit.action">ExitAction</A>, <A HREF="../../../org/multibit/action/HelpAboutAction.html" title="class in org.multibit.action">HelpAboutAction</A>, <A HREF="../../../org/multibit/action/HelpContentsAction.html" title="class in org.multibit.action">HelpContentsAction</A>, <A HREF="../../../org/multibit/action/OkBackToParentAction.html" title="class in org.multibit.action">OkBackToParentAction</A>, <A HREF="../../../org/multibit/action/OpenAddressBookAction.html" title="class in org.multibit.action">OpenAddressBookAction</A>, <A HREF="../../../org/multibit/action/OpenWalletAction.html" title="class in org.multibit.action">OpenWalletAction</A>, <A HREF="../../../org/multibit/action/OpenWalletSubmitAction.html" title="class in org.multibit.action">OpenWalletSubmitAction</A>, <A HREF="../../../org/multibit/action/PasteAddressAction.html" title="class in org.multibit.action">PasteAddressAction</A>, <A HREF="../../../org/multibit/action/ReceiveBitcoinAction.html" title="class in org.multibit.action">ReceiveBitcoinAction</A>, <A HREF="../../../org/multibit/action/RedisplayViewAction.html" title="class in org.multibit.action">RedisplayViewAction</A>, <A HREF="../../../org/multibit/action/SaveWalletAsAction.html" title="class in org.multibit.action">SaveWalletAsAction</A>, <A HREF="../../../org/multibit/action/SaveWalletAsSubmitAction.html" title="class in org.multibit.action">SaveWalletAsSubmitAction</A>, <A HREF="../../../org/multibit/action/SendBitcoinAction.html" title="class in org.multibit.action">SendBitcoinAction</A>, <A HREF="../../../org/multibit/action/SendBitcoinConfirmAction.html" title="class in org.multibit.action">SendBitcoinConfirmAction</A>, <A HREF="../../../org/multibit/action/SendBitcoinNowAction.html" title="class in org.multibit.action">SendBitcoinNowAction</A>, <A HREF="../../../org/multibit/action/ShowPreferencesAction.html" title="class in org.multibit.action">ShowPreferencesAction</A>, <A HREF="../../../org/multibit/action/ShowPreferencesSubmitAction.html" title="class in org.multibit.action">ShowPreferencesSubmitAction</A></DD>
+</DL>
+<HR>
+<DL>
+<DT><PRE>public interface <B>Action</B></DL>
+</PRE>
+
+<P>
+<HR>
+
+<P>
+<!-- =========== FIELD SUMMARY =========== -->
+
+<A NAME="field_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Field Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/action/Action.html#ADDRESS_BOOK_ACTION">ADDRESS_BOOK_ACTION</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/action/Action.html#HELP_ABOUT_ACTION">HELP_ABOUT_ACTION</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/action/Action.html#HELP_CONTENTS_ACTION">HELP_CONTENTS_ACTION</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/action/Action.html#HOME_PAGE_ACTION">HOME_PAGE_ACTION</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/action/Action.html#OPEN_WALLET_ACTION">OPEN_WALLET_ACTION</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/action/Action.html#RECEIVE_BITCOINS_ACTION">RECEIVE_BITCOINS_ACTION</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/action/Action.html#SAVE_WALLET_AS_ACTION">SAVE_WALLET_AS_ACTION</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/action/Action.html#SEND_BITCOINS_ACTION">SEND_BITCOINS_ACTION</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/action/Action.html#SEND_BITCOINS_CONFIRM_ACTION">SEND_BITCOINS_CONFIRM_ACTION</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ========== METHOD SUMMARY =========== -->
+
+<A NAME="method_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Method Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/action/Action.html#execute(org.multibit.model.DataProvider)">execute</A></B>(<A HREF="../../../org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A>&nbsp;dataProvider)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;execute the action using data from the data provider</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;java.lang.String</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/action/Action.html#getDisplayText()">getDisplayText</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the text to display for this action's visual representation</TD>
+</TR>
+</TABLE>
+&nbsp;
+<P>
+
+<!-- ============ FIELD DETAIL =========== -->
+
+<A NAME="field_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Field Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="HOME_PAGE_ACTION"><!-- --></A><H3>
+HOME_PAGE_ACTION</H3>
+<PRE>
+static final int <B>HOME_PAGE_ACTION</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.action.Action.HOME_PAGE_ACTION">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="SEND_BITCOINS_ACTION"><!-- --></A><H3>
+SEND_BITCOINS_ACTION</H3>
+<PRE>
+static final int <B>SEND_BITCOINS_ACTION</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.action.Action.SEND_BITCOINS_ACTION">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="SEND_BITCOINS_CONFIRM_ACTION"><!-- --></A><H3>
+SEND_BITCOINS_CONFIRM_ACTION</H3>
+<PRE>
+static final int <B>SEND_BITCOINS_CONFIRM_ACTION</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.action.Action.SEND_BITCOINS_CONFIRM_ACTION">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="RECEIVE_BITCOINS_ACTION"><!-- --></A><H3>
+RECEIVE_BITCOINS_ACTION</H3>
+<PRE>
+static final int <B>RECEIVE_BITCOINS_ACTION</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.action.Action.RECEIVE_BITCOINS_ACTION">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="HELP_CONTENTS_ACTION"><!-- --></A><H3>
+HELP_CONTENTS_ACTION</H3>
+<PRE>
+static final int <B>HELP_CONTENTS_ACTION</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.action.Action.HELP_CONTENTS_ACTION">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="HELP_ABOUT_ACTION"><!-- --></A><H3>
+HELP_ABOUT_ACTION</H3>
+<PRE>
+static final int <B>HELP_ABOUT_ACTION</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.action.Action.HELP_ABOUT_ACTION">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="ADDRESS_BOOK_ACTION"><!-- --></A><H3>
+ADDRESS_BOOK_ACTION</H3>
+<PRE>
+static final int <B>ADDRESS_BOOK_ACTION</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.action.Action.ADDRESS_BOOK_ACTION">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="OPEN_WALLET_ACTION"><!-- --></A><H3>
+OPEN_WALLET_ACTION</H3>
+<PRE>
+static final int <B>OPEN_WALLET_ACTION</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.action.Action.OPEN_WALLET_ACTION">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="SAVE_WALLET_AS_ACTION"><!-- --></A><H3>
+SAVE_WALLET_AS_ACTION</H3>
+<PRE>
+static final int <B>SAVE_WALLET_AS_ACTION</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.action.Action.SAVE_WALLET_AS_ACTION">Constant Field Values</A></DL>
+</DL>
+
+<!-- ============ METHOD DETAIL ========== -->
+
+<A NAME="method_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Method Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="execute(org.multibit.model.DataProvider)"><!-- --></A><H3>
+execute</H3>
+<PRE>
+void <B>execute</B>(<A HREF="../../../org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A>&nbsp;dataProvider)</PRE>
+<DL>
+<DD>execute the action using data from the data provider
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getDisplayText()"><!-- --></A><H3>
+getDisplayText</H3>
+<PRE>
+java.lang.String <B>getDisplayText</B>()</PRE>
+<DL>
+<DD>the text to display for this action's visual representation
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<!-- ========= END OF CLASS DATA ========= -->
+<HR>
+
+
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<A NAME="navbar_bottom"><!-- --></A>
+<A HREF="#skip-navbar_bottom" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_bottom_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;PREV CLASS&nbsp;
+&nbsp;<A HREF="../../../org/multibit/action/CancelBackToParentAction.html" title="class in org.multibit.action"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../index.html?org/multibit/action/Action.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Action.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;<A HREF="#field_summary">FIELD</A>&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_bottom"></A>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+
+<HR>
+
+</BODY>
+</HTML>

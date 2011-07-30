@@ -9,6 +9,7 @@ import org.multibit.Localiser;
 import org.multibit.action.Action;
 import org.multibit.action.SendBitcoinNowAction;
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
@@ -45,12 +46,16 @@ public class SendBitcoinConfirmView implements View {
      * show send bitcoin confirm view
      */
     public void displayView() {
+        // get the data out of the user preferences
+        String sendAddress = controller.getModel().getUserPreference(MultiBitModel.SEND_ADDRESS);
+        String sendLabel = controller.getModel().getUserPreference(MultiBitModel.SEND_LABEL);
+        String sendAmount = controller.getModel().getUserPreference(MultiBitModel.SEND_AMOUNT);
 
         // ask for confirmation of send bitcoin
         Object[] options = { localiser.getString("sendBitcoinConfirmView.sendOption"),
                 localiser.getString("sendBitcoinConfirmView.cancelOption") };
         String confirmMessage = localiser.getString("sendBitcoinConfirmView.message", new String[] {
-                "AMOUNT", "ADDRESS", "LABEL" });
+                sendAmount, sendAddress, sendLabel });
         JOptionPane optionPane = new JOptionPane(confirmMessage, JOptionPane.INFORMATION_MESSAGE,
                 JOptionPane.DEFAULT_OPTION, null, options, options[1]);
 
