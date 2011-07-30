@@ -11,7 +11,11 @@ import com.google.bitcoin.core.Wallet;
  * @author jim
  *
  */
-public interface ViewSystem {  
+public interface ViewSystem { 
+    public static final int newViewIsChildOfPrevious = 10000;
+    public static final int newViewIsParentOfPrevious = 10001;
+    public static final int newViewIsSiblingOfPrevious = 10002;
+       
     /**
      * display the view specified
      * @param view to display - one of the View constants
@@ -22,8 +26,9 @@ public interface ViewSystem {
      * navigate away from a view - gives the view the opportunity to tidy up/ disappear etc
      * @param viewToNavigateAwayFrom - current view to navigate away from -one of the View constants
      * @param nextView - next view - one of the View constants
+     * @param relationshipOfNewViewToPrevious - one of ViewSystem.isChild, isParent, isSibling
      */   
-    public void navigateAwayFromView(int viewToNavigateAwayFrom, int nextView);
+    public void navigateAwayFromView(int viewToNavigateAwayFrom, int nextView, int relationshipOfNewViewToPrevious);
     
     /**
      * display a message to the user - using the current localiser

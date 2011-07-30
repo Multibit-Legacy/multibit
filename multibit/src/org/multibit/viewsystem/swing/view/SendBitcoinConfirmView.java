@@ -61,7 +61,7 @@ public class SendBitcoinConfirmView implements View {
         // if send was pressed (i.e. not disposed by navigateAwayFromView) fire
         // action forward else cancel
         Object returnValue = optionPane.getValue();
-        //JOptionPane.showMessageDialog(mainFrame, optionPane.getValue());
+        // JOptionPane.showMessageDialog(mainFrame, optionPane.getValue());
         if (returnValue instanceof String && options[0].equals((String) returnValue)) {
             // send
             // actually send bitcoin
@@ -82,7 +82,7 @@ public class SendBitcoinConfirmView implements View {
         // not implemented on this view
     }
 
-    public void navigateAwayFromView(int nextViewId) {
+    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
         if (messageDialog != null) {
             messageDialog.setVisible(false);
             messageDialog.dispose();

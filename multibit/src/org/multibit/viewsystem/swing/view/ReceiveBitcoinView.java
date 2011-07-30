@@ -6,6 +6,7 @@ import org.multibit.Localiser;
 import org.multibit.action.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
@@ -26,11 +27,12 @@ public class ReceiveBitcoinView implements View {
     /**
      * Creates a new {@link ReceiveBitcoinView}.
      */
-    public ReceiveBitcoinView(MultiBitController controller, Localiser localiser, MultiBitFrame mainFrame) {
+    public ReceiveBitcoinView(MultiBitController controller, Localiser localiser,
+            MultiBitFrame mainFrame) {
         this.controller = controller;
         this.localiser = localiser;
         this.mainFrame = mainFrame;
-   }
+    }
 
     public String getDescription() {
         return localiser.getString("receiveBitcoinsDialog.title");
@@ -40,22 +42,26 @@ public class ReceiveBitcoinView implements View {
      * show receive bitcoins dialog
      */
     public void displayView() {
-        receiveBitcoinDialog = new ReceiveBitcoinDialog(mainFrame, controller);
-        
+        if (receiveBitcoinDialog == null) {
+            receiveBitcoinDialog = new ReceiveBitcoinDialog(mainFrame, controller);
+        }
         receiveBitcoinDialog.setVisible(true);
-        
-        // the action listeners of the code in the dialog do all the action forwarding so nothing to do here
+
+        // the action listeners of the code in the dialog do all the action
+        // forwarding so nothing to do here
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
         // not implemented on this view
     }
 
-    public void navigateAwayFromView(int nextViewId) {
-        if (receiveBitcoinDialog != null) {
-            receiveBitcoinDialog.setVisible(false);
-            receiveBitcoinDialog.dispose();
-            receiveBitcoinDialog = null;
+    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+        if (ViewSystem.newViewIsParentOfPrevious == relationshipOfNewViewToPrevious) {
+            if (receiveBitcoinDialog != null) {
+                receiveBitcoinDialog.setVisible(false);
+                receiveBitcoinDialog.dispose();
+                receiveBitcoinDialog = null;
+            }
         }
     }
 

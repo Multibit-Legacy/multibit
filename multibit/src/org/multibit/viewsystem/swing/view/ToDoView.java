@@ -64,7 +64,7 @@ public class ToDoView implements View {
         // not implemented on this view
     }
 
-    public void navigateAwayFromView(int nextViewId) {
+    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
         if (messageDialog != null) {
             messageDialog.setVisible(false);
             messageDialog.dispose();

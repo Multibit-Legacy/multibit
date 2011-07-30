@@ -34,7 +34,7 @@ import org.multibit.viewsystem.swing.action.OkBackToParentAction;
 /*
  * dialog displaying the address book
  */
-public class AddressBookDialog extends MultiBitDialog implements DataProvider{
+public class AddressBookDialog extends MultiBitDialog implements DataProvider {
     private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.4D;
 
     private static final long serialVersionUID = 7123413615342923041L;
@@ -63,27 +63,34 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider{
 
         pack();
 
-        if (isReceiving) {
-            tabbedPane.setSelectedIndex(0);
-        } else {
-            tabbedPane.setSelectedIndex(1);
-        }
-        
-        final MultiBitController finalController = controller; 
+        displayTab(isReceiving);
+
+        final MultiBitController finalController = controller;
         tabbedPane.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 if (tabbedPane.getSelectedIndex() == 0) {
                     // now on receiving
-                    finalController.setActionForwardToSibling(ActionForward.FORWARD_TO_ADDRESS_BOOK_RECEIVING);
+                    finalController
+                            .setActionForwardToSibling(ActionForward.FORWARD_TO_ADDRESS_BOOK_RECEIVING);
                 } else {
                     // now on sending
-                    finalController.setActionForwardToSibling(ActionForward.FORWARD_TO_ADDRESS_BOOK_SENDING);
+                    finalController
+                            .setActionForwardToSibling(ActionForward.FORWARD_TO_ADDRESS_BOOK_SENDING);
                 }
             }
-          });
+        });
 
-   
         setVisible(true);
+    }
+
+    public void displayTab(boolean isReceiving) {
+        if (tabbedPane != null) {
+            if (isReceiving) {
+                tabbedPane.setSelectedIndex(0);
+            } else {
+                tabbedPane.setSelectedIndex(1);
+            }
+        }
     }
 
     private void sizeAndCenter() {
@@ -118,21 +125,23 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider{
         constraints.weighty = 0.92;
         constraints.anchor = GridBagConstraints.LINE_START;
         contentPane.add(tabPane, constraints);
-   }
+    }
 
     private JTabbedPane createTabPane() {
         tabbedPane = new JTabbedPane();
 
         JComponent panel1 = createReceivingAddressesPanel();
-        tabbedPane.addTab(controller.getLocaliser().getString("addressBookDialog.receivingAddressesTabText"), null,
-                panel1, "");
+        tabbedPane.addTab(
+                controller.getLocaliser().getString("addressBookDialog.receivingAddressesTabText"),
+                null, panel1, "");
         tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
         JComponent panel2 = createSendingAddressesPanel();
-        tabbedPane.addTab(controller.getLocaliser().getString("addressBookDialog.sendingAddressesTabText"), null,
-                panel2, "");
+        tabbedPane.addTab(
+                controller.getLocaliser().getString("addressBookDialog.sendingAddressesTabText"),
+                null, panel2, "");
         tabbedPane.setMnemonicAt(1, KeyEvent.VK_2);
-      return tabbedPane;
+        return tabbedPane;
     }
 
     private JPanel createReceivingAddressesPanel() {
@@ -233,11 +242,13 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider{
         JButton copyAddressButton = new JButton(copyAddressAction);
         buttonPanel.add(copyAddressButton);
 
-        CreateOrEditAddressAction createNewReceivingAddressAction = new CreateOrEditAddressAction(controller, true, true, this);
+        CreateOrEditAddressAction createNewReceivingAddressAction = new CreateOrEditAddressAction(
+                controller, true, true, this);
         JButton createNewButton = new JButton(createNewReceivingAddressAction);
         buttonPanel.add(createNewButton);
 
-        CreateOrEditAddressAction editReceivingAddressAction = new CreateOrEditAddressAction(controller, false, true, this);
+        CreateOrEditAddressAction editReceivingAddressAction = new CreateOrEditAddressAction(
+                controller, false, true, this);
         JButton editButton = new JButton(editReceivingAddressAction);
         buttonPanel.add(editButton);
 
@@ -249,7 +260,6 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider{
         return buttonPanel;
     }
 
-
     private JPanel createSendingButtonPanel() {
         JPanel buttonPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
@@ -260,11 +270,13 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider{
         JButton copyAddressButton = new JButton(copyAddressAction);
         buttonPanel.add(copyAddressButton);
 
-        CreateOrEditAddressAction createNewSendingAddressAction = new CreateOrEditAddressAction(controller, true, false, this);
+        CreateOrEditAddressAction createNewSendingAddressAction = new CreateOrEditAddressAction(
+                controller, true, false, this);
         JButton createNewButton = new JButton(createNewSendingAddressAction);
         buttonPanel.add(createNewButton);
 
-        CreateOrEditAddressAction editSendingAddressAction = new CreateOrEditAddressAction(controller, false, false, this);
+        CreateOrEditAddressAction editSendingAddressAction = new CreateOrEditAddressAction(
+                controller, false, false, this);
         JButton editButton = new JButton(editSendingAddressAction);
         buttonPanel.add(editButton);
 
@@ -293,7 +305,8 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider{
     }
 
     public Data getData() {
-        // TODO return the currently selected address so that it can be edited, transfered to other views etc
+        // TODO return the currently selected address so that it can be edited,
+        // transfered to other views etc
         return null;
     }
 }

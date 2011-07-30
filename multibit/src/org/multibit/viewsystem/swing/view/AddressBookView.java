@@ -6,10 +6,11 @@ import org.multibit.Localiser;
 import org.multibit.action.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
- * The view of the address book 
+ * The view of the address book
  */
 public class AddressBookView implements View {
 
@@ -21,19 +22,20 @@ public class AddressBookView implements View {
 
     private Localiser localiser;
 
-    private AddressBookDialog addressBookDialog;
-    
+    private static AddressBookDialog addressBookDialog;
+
     private boolean isReceiving;
 
     /**
      * Creates a new {@link AddressBookView}.
      */
-    public AddressBookView(MultiBitController controller, Localiser localiser, MultiBitFrame mainFrame, boolean isReceiving) {
+    public AddressBookView(MultiBitController controller, Localiser localiser,
+            MultiBitFrame mainFrame, boolean isReceiving) {
         this.controller = controller;
         this.localiser = localiser;
         this.mainFrame = mainFrame;
         this.isReceiving = isReceiving;
-   }
+    }
 
     public String getDescription() {
         return localiser.getString("addressBookFrame.title");
@@ -43,22 +45,27 @@ public class AddressBookView implements View {
      * show address book dialog, sending addresses
      */
     public void displayView() {
-        addressBookDialog = new AddressBookDialog(controller, mainFrame, isReceiving);
-        
+        if (addressBookDialog == null) {
+            addressBookDialog = new AddressBookDialog(controller, mainFrame, isReceiving);
+        }
+        addressBookDialog.displayTab(isReceiving);
         addressBookDialog.setVisible(true);
-        
-        // the action listeners of the code in the dialog do all the action forwarding so nothing to do here
+
+        // the action listeners of the code in the dialog do all the action
+        // forwarding so nothing to do here
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
         // not implemented on this view
     }
 
-    public void navigateAwayFromView(int nextViewId) {
-        if (addressBookDialog != null) {
-            addressBookDialog.setVisible(false);
-            addressBookDialog.dispose();
-            addressBookDialog = null;
+    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+        if (ViewSystem.newViewIsParentOfPrevious == relationshipOfNewViewToPrevious) {
+            if (addressBookDialog != null) {
+                addressBookDialog.setVisible(false);
+                addressBookDialog.dispose();
+                addressBookDialog = null;
+            }
         }
     }
 

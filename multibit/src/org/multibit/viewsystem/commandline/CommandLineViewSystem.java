@@ -260,7 +260,7 @@ public class CommandLineViewSystem implements ViewSystem {
         }
     }
 
-    public void navigateAwayFromView(int viewToNavigateAwayFrom, int nextViewId) {
+    public void navigateAwayFromView(int viewToNavigateAwayFrom, int nextViewId, int relationshipOfNewViewToPrevious) {
         printStream.print("\n");
         assert viewToNavigateAwayFrom == currentViewId : "Different current views";
         View currentView = viewMap.get(currentViewId);
@@ -268,7 +268,7 @@ public class CommandLineViewSystem implements ViewSystem {
         currentViewId = View.UNKNOWN_VIEW;
 
         if (currentView != null) {
-            currentView.navigateAwayFromView(nextViewId);
+            currentView.navigateAwayFromView(nextViewId, relationshipOfNewViewToPrevious);
         } else {
             printStream.println(TEXT_VIEW_OUTPUT_PREFIX + ERROR_PREFIX
                     + "No view to navigate away from.   Next view id is " + nextViewId);

@@ -86,7 +86,7 @@ public class OpenWalletView implements View, DataProvider {
                 JOptionPane.INFORMATION_MESSAGE, new ImageIcon(mainFrame.getIconImage()));
     }
 
-    public void navigateAwayFromView(int nextViewId) {
+    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
         if (fileChooser != null) {
             fileChooser.setVisible(false);
         }

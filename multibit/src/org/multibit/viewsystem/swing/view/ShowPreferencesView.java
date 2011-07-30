@@ -47,7 +47,7 @@ public class ShowPreferencesView implements View {
         // not implemented on this view
     }
 
-    public void navigateAwayFromView(int nextViewId) {
+    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
         if (showPreferencesDialog != null) {
             showPreferencesDialog.setVisible(false);
             showPreferencesDialog.dispose();

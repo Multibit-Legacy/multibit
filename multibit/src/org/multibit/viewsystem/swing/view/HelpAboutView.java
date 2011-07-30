@@ -11,6 +11,7 @@ import org.multibit.action.Action;
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
@@ -53,7 +54,8 @@ public class HelpAboutView implements View {
      */
     @SuppressWarnings("deprecation")
     public void displayView() {
-        // JOptionPane.showMessageDialog(mainFrame, "HelpAboutView#displayView called");
+        // JOptionPane.showMessageDialog(mainFrame,
+        // "HelpAboutView#displayView called");
         String versionNumber = localiser.getVersionNumber();
 
         JOptionPane optionPane = new JOptionPane(localiser.getString("helpAboutAction.messageText",
@@ -63,10 +65,12 @@ public class HelpAboutView implements View {
         messageDialog = optionPane.createDialog(mainFrame,
                 localiser.getString("helpAboutAction.messageBoxTitle"));
         messageDialog.show();
-        
-        // if ok was pressed (i.e. not disposed by navigateAwayFromView) fire action forward
+
+        // if ok was pressed (i.e. not disposed by navigateAwayFromView) fire
+        // action forward
         Object returnValue = optionPane.getValue();
-        if (returnValue instanceof Integer && ((Integer)returnValue).intValue() == JOptionPane.OK_OPTION) {
+        if (returnValue instanceof Integer
+                && ((Integer) returnValue).intValue() == JOptionPane.OK_OPTION) {
             controller.setActionForwardToChild(ActionForward.FORWARD_TO_PREVIOUS);
         }
     }
@@ -87,10 +91,12 @@ public class HelpAboutView implements View {
         }
     }
 
-    public void navigateAwayFromView(int nextViewId) {
-        if (messageDialog != null) {
-            messageDialog.setVisible(false);
-            messageDialog.dispose();
+    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+        if (ViewSystem.newViewIsParentOfPrevious == relationshipOfNewViewToPrevious) {
+            if (messageDialog != null) {
+                messageDialog.setVisible(false);
+                messageDialog.dispose();
+            }
         }
     }
 

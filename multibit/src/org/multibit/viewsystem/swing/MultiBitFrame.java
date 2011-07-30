@@ -593,7 +593,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
     public void recreateAllViews(boolean initUI) {
         // close down current view
         if (currentView != 0) {
-            navigateAwayFromView(currentView, View.HOME_PAGE_VIEW); // home page
+            navigateAwayFromView(currentView, View.HOME_PAGE_VIEW, ViewSystem.newViewIsParentOfPrevious); // home page
                                                                     // choice
                                                                     // here is
                                                                     // arbitary
@@ -777,15 +777,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
      * navigate away from view - this may be on another thread hence the
      * SwingUtilities.invokeLater
      */
-    public void navigateAwayFromView(int viewToNavigateAwayFrom, int nextView) {
+    public void navigateAwayFromView(int viewToNavigateAwayFrom, int nextView, int relationshipOfNewViewToPrevious) {
         if (viewToNavigateAwayFrom != View.HOME_PAGE_VIEW) {
             final int nextViewFinal = nextView;
+            final int relationshipOfNewViewToPreviousFinal = relationshipOfNewViewToPrevious;
 
             final View viewToNavigateAwayFromFinal = lookupView(viewToNavigateAwayFrom);
 
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    viewToNavigateAwayFromFinal.navigateAwayFromView(nextViewFinal);
+                    viewToNavigateAwayFromFinal.navigateAwayFromView(nextViewFinal, relationshipOfNewViewToPreviousFinal);
                 }
             });
         }

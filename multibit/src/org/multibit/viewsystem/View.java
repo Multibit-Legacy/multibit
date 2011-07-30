@@ -35,7 +35,12 @@ public interface View {
     
     public void displayView();
     
-    public void navigateAwayFromView(int nextViewId);
+    /**
+     * 
+     * @param nextViewId - one of the View constants
+     * @param relationshipOfNewViewToPrevious - one of the ViewSystem relationship constants
+     */
+    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious);
     
     public void displayMessage(String messageKey, Object[] messageData, String titleKey);   
 }

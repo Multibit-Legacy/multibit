@@ -53,9 +53,10 @@ public abstract class AbstractView implements View {
      *            - the next view being viewed - this is given so that the view
      *            can custom its behaviour - it may present a nested view or pop
      *            to a parent view (this is left to the view)
+     * @param relationshipOfNewViewToPrevious - one of the ViewSystem relationship constants
      * @see org.multibit.viewsystem.View#navigateAwayFromView()
      */
-    public void navigateAwayFromView(int nextViewId) {
+    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
         // switch off the reader
         if (consoleReader != null) {
             consoleReader.enableReaderFiring(false);

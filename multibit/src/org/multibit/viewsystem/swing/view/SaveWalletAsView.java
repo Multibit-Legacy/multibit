@@ -87,7 +87,7 @@ public class SaveWalletAsView implements View, DataProvider {
                         mainFrame.getIconImage()));
     }
 
-    public void navigateAwayFromView(int nextViewId) {
+    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
         if (fileChooser != null) {
             fileChooser.setVisible(false);
         }

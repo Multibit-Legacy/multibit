@@ -96,7 +96,7 @@ public class MultiBitController implements PeerEventListener {
         // push current view onto the stack
         viewStack.push(currentView);
         determineNextView(actionForward);
-        displayNextView();
+        displayNextView(ViewSystem.newViewIsChildOfPrevious);
     }
 
     /**
@@ -109,7 +109,7 @@ public class MultiBitController implements PeerEventListener {
         determineNextView(actionForward);
 
         // do not change the call stack
-        displayNextView();
+        displayNextView(ViewSystem.newViewIsSiblingOfPrevious);
     }
 
     /**
@@ -125,7 +125,7 @@ public class MultiBitController implements PeerEventListener {
             nextView = View.HOME_PAGE_VIEW;
             viewStack.push(nextView);
         }
-        displayNextView();
+        displayNextView(ViewSystem.newViewIsParentOfPrevious);
     }
 
     /**
@@ -243,7 +243,10 @@ public class MultiBitController implements PeerEventListener {
         }
     }
 
-    private void displayNextView() {
+    /**
+     * @param relationshipOfNewViewToPrevious - one of ViewSystem relationship constants
+     */
+    private void displayNextView(int relationshipOfNewViewToPrevious) {
         if (nextView != 0) {
             // cycle the previous / current / next views
             previousView = currentView;
@@ -260,7 +263,7 @@ public class MultiBitController implements PeerEventListener {
         
         // tell all views to close the previous view
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.navigateAwayFromView(previousView, currentView);
+            viewSystem.navigateAwayFromView(previousView, currentView, relationshipOfNewViewToPrevious);
         }
         // tell all views which view to display
         for (ViewSystem viewSystem : viewSystems) {
