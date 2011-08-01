@@ -835,12 +835,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
             BigInteger value = transaction.getValueSentToMe(wallet);
             System.out.println("Received " + Localiser.bitcoinValueToFriendlyString(value, true, false) + " from "
                     + from.toString());
-            //.out.println("MultiBitFrame#onCoinsReceived - ping 1 - wallet is currently:\n" + wallet.toString());
-            // Now send the coins back
-            //Transaction sendTx = wallet.sendCoins(controller.getMultiBitService().getPeerGroup(), from, value);
-            //assert sendTx != null; // We should never try to send more
-                                   // coins than we have!
-            //System.out.println("Sent coins back! Transaction hash is " + sendTx.getHashAsString());
             wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
         } catch (ScriptException e) {
             // If we didn't understand the scriptSig, just crash.

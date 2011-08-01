@@ -257,7 +257,16 @@ java.lang.Object
 <TD><CODE><B><A HREF="../../../org/multibit/network/MultiBitService.html#getWalletFilename()">getWalletFilename</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;example code from PingService</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/network/MultiBitService.html#sendCoins(java.lang.String, java.lang.String)">sendCoins</A></B>(java.lang.String&nbsp;sendAddressString,
+          java.lang.String&nbsp;amount)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;send bitcoins</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
@@ -384,17 +393,32 @@ public void <B>downloadBlockChain</B>()</PRE>
 </DL>
 <HR>
 
+<A NAME="sendCoins(java.lang.String, java.lang.String)"><!-- --></A><H3>
+sendCoins</H3>
+<PRE>
+public <A HREF="../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A> <B>sendCoins</B>(java.lang.String&nbsp;sendAddressString,
+                             java.lang.String&nbsp;amount)
+                      throws java.io.IOException,
+                             AddressFormatException</PRE>
+<DL>
+<DD>send bitcoins
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>sendAddressString</CODE> - - the address to send to, as a String<DD><CODE>amount</CODE> - - the amount to send to, in BTC, as a String
+<DT><B>Throws:</B>
+<DD><CODE>java.io.IOException</CODE>
+<DD><CODE>AddressFormatException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
 <A NAME="getWalletFilename()"><!-- --></A><H3>
 getWalletFilename</H3>
 <PRE>
 public java.lang.String <B>getWalletFilename</B>()</PRE>
 <DL>
-<DD>example code from PingService
-<P>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>args</CODE> - 
-<DT><B>Throws:</B>
-<DD><CODE>java.lang.Exception</CODE></DL>
+</DL>
 </DD>
 </DL>
 <HR>

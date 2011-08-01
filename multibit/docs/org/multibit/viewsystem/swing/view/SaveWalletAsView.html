@@ -190,7 +190,8 @@ The view for saving a wallet to a new file
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/SaveWalletAsView.html#navigateAwayFromView(int)">navigateAwayFromView</A></B>(int&nbsp;nextViewId)</CODE>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/SaveWalletAsView.html#navigateAwayFromView(int, int)">navigateAwayFromView</A></B>(int&nbsp;nextViewId,
+                     int&nbsp;relationshipOfNewViewToPrevious)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -293,16 +294,17 @@ public void <B>displayMessage</B>(java.lang.String&nbsp;messageKey,
 </DL>
 <HR>
 
-<A NAME="navigateAwayFromView(int)"><!-- --></A><H3>
+<A NAME="navigateAwayFromView(int, int)"><!-- --></A><H3>
 navigateAwayFromView</H3>
 <PRE>
-public void <B>navigateAwayFromView</B>(int&nbsp;nextViewId)</PRE>
+public void <B>navigateAwayFromView</B>(int&nbsp;nextViewId,
+                                 int&nbsp;relationshipOfNewViewToPrevious)</PRE>
 <DL>
 <DD><DL>
-<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#navigateAwayFromView(int)">navigateAwayFromView</A></CODE> in interface <CODE><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></CODE></DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#navigateAwayFromView(int, int)">navigateAwayFromView</A></CODE> in interface <CODE><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></CODE></DL>
 </DD>
 <DD><DL>
-</DL>
+<DT><B>Parameters:</B><DD><CODE>nextViewId</CODE> - - one of the View constants<DD><CODE>relationshipOfNewViewToPrevious</CODE> - - one of the ViewSystem relationship constants</DL>
 </DD>
 </DL>
 <HR>

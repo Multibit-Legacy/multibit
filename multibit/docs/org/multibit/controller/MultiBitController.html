@@ -149,12 +149,13 @@ the MVC controller for Multibit - this is loosely based on the Apache Struts
 <TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#determineNextView(org.multibit.controller.ActionForward)">determineNextView</A></B>(<A HREF="../../../org/multibit/controller/ActionForward.html" title="enum in org.multibit.controller">ActionForward</A>&nbsp;actionForward)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set the action forward that will be used to determined the next view
- to display
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set the action forward that will be used to determined the next view to
+ display
  
  normally called by the action once it has decided what the next view is
  
- this setActionForward should be used when the next view is a child of the current view</TD>
+ this setActionForward should be used when the next view is a child of the
+ current view</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -223,7 +224,8 @@ the MVC controller for Multibit - this is loosely based on the Apache Struts
                    int&nbsp;blocksLeft)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the controller listens for PeerGroup events and notifies interested parties</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the controller listens for PeerGroup events and notifies interested
+ parties</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -274,15 +276,26 @@ the MVC controller for Multibit - this is loosely based on the Apache Struts
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#sendCoins(java.lang.String, java.lang.String, java.lang.String)">sendCoins</A></B>(java.lang.String&nbsp;sendAddressString,
+          java.lang.String&nbsp;sendLabel,
+          java.lang.String&nbsp;amount)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#setActionForwardToChild(org.multibit.controller.ActionForward)">setActionForwardToChild</A></B>(<A HREF="../../../org/multibit/controller/ActionForward.html" title="enum in org.multibit.controller">ActionForward</A>&nbsp;actionForward)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set the action forward that will be used to determined the next view
- to display
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set the action forward that will be used to determined the next view to
+ display
  
  normally called by the action once it has decided what the next view is
  
- this setActionForward should be used when the next view is a child of the current view</TD>
+ this setActionForward should be used when the next view is a child of the
+ current view</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -298,8 +311,8 @@ the MVC controller for Multibit - this is loosely based on the Apache Struts
 <TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#setActionForwardToSibling(org.multibit.controller.ActionForward)">setActionForwardToSibling</A></B>(<A HREF="../../../org/multibit/controller/ActionForward.html" title="enum in org.multibit.controller">ActionForward</A>&nbsp;actionForward)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set the action forward that will be used to determined the next view
- to display where the next view is a sibling of the current view</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set the action forward that will be used to determined the next view to
+ display where the next view is a sibling of the current view</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -378,12 +391,13 @@ setActionForwardToChild</H3>
 <PRE>
 public void <B>setActionForwardToChild</B>(<A HREF="../../../org/multibit/controller/ActionForward.html" title="enum in org.multibit.controller">ActionForward</A>&nbsp;actionForward)</PRE>
 <DL>
-<DD>set the action forward that will be used to determined the next view
- to display
+<DD>set the action forward that will be used to determined the next view to
+ display
  
  normally called by the action once it has decided what the next view is
  
- this setActionForward should be used when the next view is a child of the current view
+ this setActionForward should be used when the next view is a child of the
+ current view
 <P>
 <DD><DL>
 <DT><B>Parameters:</B><DD><CODE>actionForward</CODE> - </DL>
@@ -396,8 +410,8 @@ setActionForwardToSibling</H3>
 <PRE>
 public void <B>setActionForwardToSibling</B>(<A HREF="../../../org/multibit/controller/ActionForward.html" title="enum in org.multibit.controller">ActionForward</A>&nbsp;actionForward)</PRE>
 <DL>
-<DD>set the action forward that will be used to determined the next view
- to display where the next view is a sibling of the current view
+<DD>set the action forward that will be used to determined the next view to
+ display where the next view is a sibling of the current view
 <P>
 <DD><DL>
 <DT><B>Parameters:</B><DD><CODE>actionForward</CODE> - </DL>
@@ -423,12 +437,13 @@ determineNextView</H3>
 <PRE>
 public void <B>determineNextView</B>(<A HREF="../../../org/multibit/controller/ActionForward.html" title="enum in org.multibit.controller">ActionForward</A>&nbsp;actionForward)</PRE>
 <DL>
-<DD>set the action forward that will be used to determined the next view
- to display
+<DD>set the action forward that will be used to determined the next view to
+ display
  
  normally called by the action once it has decided what the next view is
  
- this setActionForward should be used when the next view is a child of the current view
+ this setActionForward should be used when the next view is a child of the
+ current view
 <P>
 <DD><DL>
 <DT><B>Parameters:</B><DD><CODE>actionForward</CODE> - </DL>
@@ -564,7 +579,8 @@ public void <B>onBlocksDownloaded</B>(Peer&nbsp;peer,
                                Block&nbsp;block,
                                int&nbsp;blocksLeft)</PRE>
 <DL>
-<DD>the controller listens for PeerGroup events and notifies interested parties
+<DD>the controller listens for PeerGroup events and notifies interested
+ parties
 <P>
 <DD><DL>
 </DL>
@@ -628,6 +644,19 @@ public void <B>onCoinsReceived</B>(<A HREF="../../../com/google/bitcoin/core/Wal
                             <A HREF="../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction,
                             java.math.BigInteger&nbsp;prevBalance,
                             java.math.BigInteger&nbsp;newBalance)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="sendCoins(java.lang.String, java.lang.String, java.lang.String)"><!-- --></A><H3>
+sendCoins</H3>
+<PRE>
+public void <B>sendCoins</B>(java.lang.String&nbsp;sendAddressString,
+                      java.lang.String&nbsp;sendLabel,
+                      java.lang.String&nbsp;amount)</PRE>
 <DL>
 <DD><DL>
 </DL>

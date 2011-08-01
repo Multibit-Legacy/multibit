@@ -38,7 +38,7 @@ import com.google.bitcoin.core.DownloadListener;
  * 
  */
 public class MultiBitDownloadListener extends DownloadListener {
-    private static final double DONE_FOR_DOUBLES = 99.9999;  // not quite 100 per cent to cater for rounding
+    private static final double DONE_FOR_DOUBLES = 99.99;  // not quite 100 per cent to cater for rounding
     private static final int CRITERIA_LARGE_NUMBER_OF_BLOCKS = 1000;
 
     MultiBitController controller;

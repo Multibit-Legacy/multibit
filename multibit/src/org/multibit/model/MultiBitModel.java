@@ -11,7 +11,6 @@ import java.util.Vector;
 
 import org.multibit.controller.MultiBitController;
 
-import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.StoredBlock;
@@ -61,17 +60,15 @@ public class MultiBitModel {
 
     private Vector<WalletData> walletData;
 
-    // development items - will get replaced by real things
-    private Vector<AddressBookData> fakeReceivingAddressBookData;
-    private Vector<AddressBookData> fakeSendingAddressBookData;
-
+    // address book
+    private AddressBook addressBook;
+    
     public MultiBitModel(MultiBitController controller, Properties userPreferences) {
         this.controller = controller;
         this.userPreferences = userPreferences;
 
         walletData = new Vector<WalletData>();
-        fakeReceivingAddressBookData = createFakeReceivingAddressBookData();
-        fakeSendingAddressBookData = createFakeSendingAddressBookData();
+        addressBook = new AddressBook();
     }
 
     /**
@@ -122,20 +119,8 @@ public class MultiBitModel {
         return walletData;
     }
 
-    public Vector<AddressBookData> getFakeReceivingAddressBookData() {
-        return fakeReceivingAddressBookData;
-    }
-
-    public void setFakeReceivingAddressBookData(Vector<AddressBookData> fakeReceivingAddressBookData) {
-        this.fakeReceivingAddressBookData = fakeReceivingAddressBookData;
-    }
-
-    public Vector<AddressBookData> getFakeSendingAddressBookData() {
-        return fakeSendingAddressBookData;
-    }
-
-    public void setFakeSendingAddressBookData(Vector<AddressBookData> fakeSendingAddressBookData) {
-        this.fakeSendingAddressBookData = fakeSendingAddressBookData;
+    public AddressBook getAddressBook() {
+        return addressBook;
     }
 
     public Wallet getWallet() {
@@ -323,44 +308,6 @@ public class MultiBitModel {
             }
         }
         return -1; // -1 = we do not know
-    }
-
-    private Vector<AddressBookData> createFakeReceivingAddressBookData() {
-        Vector<AddressBookData> addressBookDataVector = new Vector<AddressBookData>();
-
-        // fake data
-        AddressBookData addressBookData;
-
-        addressBookData = new AddressBookData("Mt Gox account",
-                "1GFrHq4CC8E5yaDARrKygX1E4yQaCUHDQZ ");
-        addressBookDataVector.add(addressBookData);
-
-        addressBookData = new AddressBookData("Jim's Amazon account",
-                "1GC6s72s5oiuav29p4oyBt93ZMftjTpAra ");
-        addressBookDataVector.add(addressBookData);
-
-        addressBookData = new AddressBookData("Google dividend",
-                "1GJwaK4Xh6QsD6u9XYqQiPEkxXuRshdeDv ");
-        addressBookDataVector.add(addressBookData);
-
-        return addressBookDataVector;
-    }
-
-    private Vector<AddressBookData> createFakeSendingAddressBookData() {
-        Vector<AddressBookData> addressBookDataVector = new Vector<AddressBookData>();
-
-        // fake data
-        AddressBookData addressBookData;
-        addressBookData = new AddressBookData("Jose Alvaro", "1x3f45ed");
-        addressBookDataVector.add(addressBookData);
-
-        addressBookData = new AddressBookData("Joseph Jacks", "1xq90");
-        addressBookDataVector.add(addressBookData);
-
-        addressBookData = new AddressBookData("Michelle Jones", "1j8s2");
-        addressBookDataVector.add(addressBookData);
-
-        return addressBookDataVector;
     }
 
     public void addWalletEventListener(WalletEventListener walletEventListener) {

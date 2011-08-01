@@ -238,7 +238,8 @@ java.lang.Object
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#navigateAwayFromView(int)">navigateAwayFromView</A></B>(int&nbsp;nextViewId)</CODE>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#navigateAwayFromView(int, int)">navigateAwayFromView</A></B>(int&nbsp;nextViewId,
+                     int&nbsp;relationshipOfNewViewToPrevious)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;navigate away from this view</TD>
@@ -393,20 +394,21 @@ public java.lang.String <B>getDescription</B>()</PRE>
 </DL>
 <HR>
 
-<A NAME="navigateAwayFromView(int)"><!-- --></A><H3>
+<A NAME="navigateAwayFromView(int, int)"><!-- --></A><H3>
 navigateAwayFromView</H3>
 <PRE>
-public void <B>navigateAwayFromView</B>(int&nbsp;nextViewId)</PRE>
+public void <B>navigateAwayFromView</B>(int&nbsp;nextViewId,
+                                 int&nbsp;relationshipOfNewViewToPrevious)</PRE>
 <DL>
 <DD>navigate away from this view
 <P>
 <DD><DL>
-<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#navigateAwayFromView(int)">navigateAwayFromView</A></CODE> in interface <CODE><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></CODE></DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#navigateAwayFromView(int, int)">navigateAwayFromView</A></CODE> in interface <CODE><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></CODE></DL>
 </DD>
 <DD><DL>
 <DT><B>Parameters:</B><DD><CODE>nextView</CODE> - - the next view being viewed - this is given so that the view
             can custom its behaviour - it may present a nested view or pop
-            to a parent view (this is left to the view)<DT><B>See Also:</B><DD><CODE>org.multibit.viewsystem.View#navigateAwayFromView()</CODE></DL>
+            to a parent view (this is left to the view)<DD><CODE>relationshipOfNewViewToPrevious</CODE> - - one of the ViewSystem relationship constants<DT><B>See Also:</B><DD><CODE>org.multibit.viewsystem.View#navigateAwayFromView()</CODE></DL>
 </DD>
 </DL>
 <HR>

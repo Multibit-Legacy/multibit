@@ -73,9 +73,9 @@ function windowTitle()
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;<A HREF="#field_summary">FIELD</A>&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-DETAIL:&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
 </TR>
 </TABLE>
 <A NAME="skip-navbar_top"></A>
@@ -108,7 +108,40 @@ an interface describing a collection of views that are used to render the MultiB
 <HR>
 
 <P>
+<!-- =========== FIELD SUMMARY =========== -->
 
+<A NAME="field_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Field Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/viewsystem/ViewSystem.html#newViewIsChildOfPrevious">newViewIsChildOfPrevious</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/viewsystem/ViewSystem.html#newViewIsParentOfPrevious">newViewIsParentOfPrevious</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/viewsystem/ViewSystem.html#newViewIsSiblingOfPrevious">newViewIsSiblingOfPrevious</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;
 <!-- ========== METHOD SUMMARY =========== -->
 
 <A NAME="method_summary"><!-- --></A>
@@ -138,8 +171,9 @@ an interface describing a collection of views that are used to render the MultiB
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/viewsystem/ViewSystem.html#navigateAwayFromView(int, int)">navigateAwayFromView</A></B>(int&nbsp;viewToNavigateAwayFrom,
-                     int&nbsp;nextView)</CODE>
+<TD><CODE><B><A HREF="../../../org/multibit/viewsystem/ViewSystem.html#navigateAwayFromView(int, int, int)">navigateAwayFromView</A></B>(int&nbsp;viewToNavigateAwayFrom,
+                     int&nbsp;nextView,
+                     int&nbsp;relationshipOfNewViewToPrevious)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;navigate away from a view - gives the view the opportunity to tidy up/ disappear etc</TD>
@@ -191,6 +225,45 @@ an interface describing a collection of views that are used to render the MultiB
 &nbsp;
 <P>
 
+<!-- ============ FIELD DETAIL =========== -->
+
+<A NAME="field_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Field Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="newViewIsChildOfPrevious"><!-- --></A><H3>
+newViewIsChildOfPrevious</H3>
+<PRE>
+static final int <B>newViewIsChildOfPrevious</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.viewsystem.ViewSystem.newViewIsChildOfPrevious">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="newViewIsParentOfPrevious"><!-- --></A><H3>
+newViewIsParentOfPrevious</H3>
+<PRE>
+static final int <B>newViewIsParentOfPrevious</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.viewsystem.ViewSystem.newViewIsParentOfPrevious">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="newViewIsSiblingOfPrevious"><!-- --></A><H3>
+newViewIsSiblingOfPrevious</H3>
+<PRE>
+static final int <B>newViewIsSiblingOfPrevious</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.viewsystem.ViewSystem.newViewIsSiblingOfPrevious">Constant Field Values</A></DL>
+</DL>
+
 <!-- ============ METHOD DETAIL ========== -->
 
 <A NAME="method_detail"><!-- --></A>
@@ -214,16 +287,17 @@ void <B>displayView</B>(int&nbsp;viewToDisplay)</PRE>
 </DL>
 <HR>
 
-<A NAME="navigateAwayFromView(int, int)"><!-- --></A><H3>
+<A NAME="navigateAwayFromView(int, int, int)"><!-- --></A><H3>
 navigateAwayFromView</H3>
 <PRE>
 void <B>navigateAwayFromView</B>(int&nbsp;viewToNavigateAwayFrom,
-                          int&nbsp;nextView)</PRE>
+                          int&nbsp;nextView,
+                          int&nbsp;relationshipOfNewViewToPrevious)</PRE>
 <DL>
 <DD>navigate away from a view - gives the view the opportunity to tidy up/ disappear etc
 <P>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>viewToNavigateAwayFrom</CODE> - - current view to navigate away from -one of the View constants<DD><CODE>nextView</CODE> - - next view - one of the View constants</DL>
+<DT><B>Parameters:</B><DD><CODE>viewToNavigateAwayFrom</CODE> - - current view to navigate away from -one of the View constants<DD><CODE>nextView</CODE> - - next view - one of the View constants<DD><CODE>relationshipOfNewViewToPrevious</CODE> - - one of ViewSystem.isChild, isParent, isSibling</DL>
 </DD>
 </DL>
 <HR>
@@ -360,9 +434,9 @@ void <B>onCoinsReceived</B>(<A HREF="../../../com/google/bitcoin/core/Wallet.htm
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;<A HREF="#field_summary">FIELD</A>&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-DETAIL:&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
 </TR>
 </TABLE>
 <A NAME="skip-navbar_bottom"></A>

@@ -293,12 +293,13 @@ Variable in class org.multibit.viewsystem.commandline.view.<A HREF="./org/multib
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/controller/MultiBitController.html#determineNextView(org.multibit.controller.ActionForward)"><B>determineNextView(ActionForward)</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
-<DD>set the action forward that will be used to determined the next view
- to display
+<DD>set the action forward that will be used to determined the next view to
+ display
  
  normally called by the action once it has decided what the next view is
  
- this setActionForward should be used when the next view is a child of the current view
+ this setActionForward should be used when the next view is a child of the
+ current view
 <DT><A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html#DISPLAY_MENU_OPTIONS_PREFIX"><B>DISPLAY_MENU_OPTIONS_PREFIX</B></A> - 
 Static variable in class org.multibit.viewsystem.commandline.<A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html" title="class in org.multibit.viewsystem.commandline">CommandLineViewSystem</A>
 <DD>&nbsp;
@@ -362,6 +363,9 @@ Method in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/V
 <DT><A HREF="./org/multibit/viewsystem/ViewSystem.html#displayMessage(java.lang.String, java.lang.Object[], java.lang.String)"><B>displayMessage(String, Object[], String)</B></A> - 
 Method in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A>
 <DD>display a message to the user - using the current localiser
+<DT><A HREF="./org/multibit/viewsystem/swing/view/AddressBookDialog.html#displayTab(boolean)"><B>displayTab(boolean)</B></A> - 
+Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/AddressBookDialog.html" title="class in org.multibit.viewsystem.swing.view">AddressBookDialog</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html#displayView(int)"><B>displayView(int)</B></A> - 
 Method in class org.multibit.viewsystem.commandline.<A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html" title="class in org.multibit.viewsystem.commandline">CommandLineViewSystem</A>
 <DD>&nbsp;
@@ -633,6 +637,9 @@ Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/views
 <DT><A HREF="./org/multibit/viewsystem/swing/view/SaveWalletAsView.html#getData()"><B>getData()</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/SaveWalletAsView.html" title="class in org.multibit.viewsystem.swing.view">SaveWalletAsView</A>
 <DD>&nbsp;
+<DT><A HREF="./org/multibit/viewsystem/swing/view/SendBitcoinDialog.html#getData()"><B>getData()</B></A> - 
+Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/SendBitcoinDialog.html" title="class in org.multibit.viewsystem.swing.view">SendBitcoinDialog</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/swing/view/ShowPreferencesDialog.html#getData()"><B>getData()</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/ShowPreferencesDialog.html" title="class in org.multibit.viewsystem.swing.view">ShowPreferencesDialog</A>
 <DD>&nbsp;
@@ -864,7 +871,7 @@ Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.h
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/network/MultiBitService.html#getWalletFilename()"><B>getWalletFilename()</B></A> - 
 Method in class org.multibit.network.<A HREF="./org/multibit/network/MultiBitService.html" title="class in org.multibit.network">MultiBitService</A>
-<DD>example code from PingService
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/swing/StatusBar.html#getZone(java.lang.String)"><B>getZone(String)</B></A> - 
 Method in class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem/swing/StatusBar.html" title="class in org.multibit.viewsystem.swing">StatusBar</A>
 <DD>&nbsp;
@@ -955,6 +962,9 @@ Variable in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wal
 <A NAME="_L_"><!-- --></A><H2>
 <B>L</B></H2>
 <DL>
+<DT><A HREF="./org/multibit/viewsystem/swing/view/SendBitcoinDialog.html#loadForm()"><B>loadForm()</B></A> - 
+Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/SendBitcoinDialog.html" title="class in org.multibit.viewsystem.swing.view">SendBitcoinDialog</A>
+<DD>&nbsp;
 <DT><A HREF="./com/google/bitcoin/core/Wallet.html#loadFromFile(java.io.File)"><B>loadFromFile(File)</B></A> - 
 Static method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>
 <DD>Returns a wallet deserialized from the given file.
@@ -1032,55 +1042,64 @@ Constructor for class org.multibit.network.<A HREF="./org/multibit/network/Multi
 <DT><A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html#NAVIGATE_AWAY_FROM_VIEW_PREFIX"><B>NAVIGATE_AWAY_FROM_VIEW_PREFIX</B></A> - 
 Static variable in class org.multibit.viewsystem.commandline.<A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html" title="class in org.multibit.viewsystem.commandline">CommandLineViewSystem</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html#navigateAwayFromView(int, int)"><B>navigateAwayFromView(int, int)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html#navigateAwayFromView(int, int, int)"><B>navigateAwayFromView(int, int, int)</B></A> - 
 Method in class org.multibit.viewsystem.commandline.<A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html" title="class in org.multibit.viewsystem.commandline">CommandLineViewSystem</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/commandline/view/AbstractView.html#navigateAwayFromView(int)"><B>navigateAwayFromView(int)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/commandline/view/AbstractView.html#navigateAwayFromView(int, int)"><B>navigateAwayFromView(int, int)</B></A> - 
 Method in class org.multibit.viewsystem.commandline.view.<A HREF="./org/multibit/viewsystem/commandline/view/AbstractView.html" title="class in org.multibit.viewsystem.commandline.view">AbstractView</A>
 <DD>navigate away from this view
-<DT><A HREF="./org/multibit/viewsystem/swing/MultiBitFrame.html#navigateAwayFromView(int, int)"><B>navigateAwayFromView(int, int)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/swing/MultiBitFrame.html#navigateAwayFromView(int, int, int)"><B>navigateAwayFromView(int, int, int)</B></A> - 
 Method in class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A>
 <DD>navigate away from view - this may be on another thread hence the
  SwingUtilities.invokeLater
-<DT><A HREF="./org/multibit/viewsystem/swing/view/AddressBookView.html#navigateAwayFromView(int)"><B>navigateAwayFromView(int)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/swing/view/AddressBookView.html#navigateAwayFromView(int, int)"><B>navigateAwayFromView(int, int)</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/AddressBookView.html" title="class in org.multibit.viewsystem.swing.view">AddressBookView</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/swing/view/CreateOrEditAddressView.html#navigateAwayFromView(int)"><B>navigateAwayFromView(int)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/swing/view/CreateOrEditAddressView.html#navigateAwayFromView(int, int)"><B>navigateAwayFromView(int, int)</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/CreateOrEditAddressView.html" title="class in org.multibit.viewsystem.swing.view">CreateOrEditAddressView</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/swing/view/HelpAboutView.html#navigateAwayFromView(int)"><B>navigateAwayFromView(int)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/swing/view/HelpAboutView.html#navigateAwayFromView(int, int)"><B>navigateAwayFromView(int, int)</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/HelpAboutView.html" title="class in org.multibit.viewsystem.swing.view">HelpAboutView</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/swing/view/HelpContentsView.html#navigateAwayFromView(int)"><B>navigateAwayFromView(int)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/swing/view/HelpContentsView.html#navigateAwayFromView(int, int)"><B>navigateAwayFromView(int, int)</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/HelpContentsView.html" title="class in org.multibit.viewsystem.swing.view">HelpContentsView</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/swing/view/OpenWalletView.html#navigateAwayFromView(int)"><B>navigateAwayFromView(int)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/swing/view/OpenWalletView.html#navigateAwayFromView(int, int)"><B>navigateAwayFromView(int, int)</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/OpenWalletView.html" title="class in org.multibit.viewsystem.swing.view">OpenWalletView</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/swing/view/ReceiveBitcoinView.html#navigateAwayFromView(int)"><B>navigateAwayFromView(int)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/swing/view/ReceiveBitcoinView.html#navigateAwayFromView(int, int)"><B>navigateAwayFromView(int, int)</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/ReceiveBitcoinView.html" title="class in org.multibit.viewsystem.swing.view">ReceiveBitcoinView</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/swing/view/SaveWalletAsView.html#navigateAwayFromView(int)"><B>navigateAwayFromView(int)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/swing/view/SaveWalletAsView.html#navigateAwayFromView(int, int)"><B>navigateAwayFromView(int, int)</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/SaveWalletAsView.html" title="class in org.multibit.viewsystem.swing.view">SaveWalletAsView</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/swing/view/SendBitcoinConfirmView.html#navigateAwayFromView(int)"><B>navigateAwayFromView(int)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/swing/view/SendBitcoinConfirmView.html#navigateAwayFromView(int, int)"><B>navigateAwayFromView(int, int)</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/SendBitcoinConfirmView.html" title="class in org.multibit.viewsystem.swing.view">SendBitcoinConfirmView</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/swing/view/SendBitcoinView.html#navigateAwayFromView(int)"><B>navigateAwayFromView(int)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/swing/view/SendBitcoinView.html#navigateAwayFromView(int, int)"><B>navigateAwayFromView(int, int)</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/SendBitcoinView.html" title="class in org.multibit.viewsystem.swing.view">SendBitcoinView</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/swing/view/ShowPreferencesView.html#navigateAwayFromView(int)"><B>navigateAwayFromView(int)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/swing/view/ShowPreferencesView.html#navigateAwayFromView(int, int)"><B>navigateAwayFromView(int, int)</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/ShowPreferencesView.html" title="class in org.multibit.viewsystem.swing.view">ShowPreferencesView</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/swing/view/ToDoView.html#navigateAwayFromView(int)"><B>navigateAwayFromView(int)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/swing/view/ToDoView.html#navigateAwayFromView(int, int)"><B>navigateAwayFromView(int, int)</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/ToDoView.html" title="class in org.multibit.viewsystem.swing.view">ToDoView</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/View.html#navigateAwayFromView(int)"><B>navigateAwayFromView(int)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/View.html#navigateAwayFromView(int, int)"><B>navigateAwayFromView(int, int)</B></A> - 
 Method in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/ViewSystem.html#navigateAwayFromView(int, int)"><B>navigateAwayFromView(int, int)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/ViewSystem.html#navigateAwayFromView(int, int, int)"><B>navigateAwayFromView(int, int, int)</B></A> - 
 Method in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A>
 <DD>navigate away from a view - gives the view the opportunity to tidy up/ disappear etc
+<DT><A HREF="./org/multibit/viewsystem/ViewSystem.html#newViewIsChildOfPrevious"><B>newViewIsChildOfPrevious</B></A> - 
+Static variable in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/viewsystem/ViewSystem.html#newViewIsParentOfPrevious"><B>newViewIsParentOfPrevious</B></A> - 
+Static variable in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/viewsystem/ViewSystem.html#newViewIsSiblingOfPrevious"><B>newViewIsSiblingOfPrevious</B></A> - 
+Static variable in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html#nowOffline()"><B>nowOffline()</B></A> - 
 Method in class org.multibit.viewsystem.commandline.<A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html" title="class in org.multibit.viewsystem.commandline">CommandLineViewSystem</A>
 <DD>&nbsp;
@@ -1113,7 +1132,8 @@ Constructor for class org.multibit.viewsystem.swing.action.<A HREF="./org/multib
 <DD>Creates a new <A HREF="./org/multibit/viewsystem/swing/action/OkBackToParentAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>OkBackToParentAction</CODE></A>.
 <DT><A HREF="./org/multibit/controller/MultiBitController.html#onBlocksDownloaded(Peer, Block, int)"><B>onBlocksDownloaded(Peer, Block, int)</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
-<DD>the controller listens for PeerGroup events and notifies interested parties
+<DD>the controller listens for PeerGroup events and notifies interested
+ parties
 <DT><A HREF="./org/multibit/controller/MultiBitController.html#onChainDownloadStarted(Peer, int)"><B>onChainDownloadStarted(Peer, int)</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
 <DD>&nbsp;
@@ -1313,6 +1333,12 @@ Constructor for class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit
 <DT><A HREF="./org/multibit/model/MultiBitModel.html#SELECTED_WALLET_FILENAME"><B>SELECTED_WALLET_FILENAME</B></A> - 
 Static variable in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>&nbsp;
+<DT><A HREF="./org/multibit/model/MultiBitModel.html#SEND_ADDRESS"><B>SEND_ADDRESS</B></A> - 
+Static variable in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/model/MultiBitModel.html#SEND_AMOUNT"><B>SEND_AMOUNT</B></A> - 
+Static variable in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/View.html#SEND_BITCOIN_CONFIRM_VIEW"><B>SEND_BITCOIN_CONFIRM_VIEW</B></A> - 
 Static variable in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A>
 <DD>&nbsp;
@@ -1325,6 +1351,9 @@ Static variable in interface org.multibit.action.<A HREF="./org/multibit/action/
 <DT><A HREF="./org/multibit/action/Action.html#SEND_BITCOINS_CONFIRM_ACTION"><B>SEND_BITCOINS_CONFIRM_ACTION</B></A> - 
 Static variable in interface org.multibit.action.<A HREF="./org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>
 <DD>&nbsp;
+<DT><A HREF="./org/multibit/model/MultiBitModel.html#SEND_LABEL"><B>SEND_LABEL</B></A> - 
+Static variable in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/action/SendBitcoinAction.html" title="class in org.multibit.action"><B>SendBitcoinAction</B></A> - Class in <A HREF="./org/multibit/action/package-summary.html">org.multibit.action</A><DD>an action to the send bitcoin view<DT><A HREF="./org/multibit/action/SendBitcoinAction.html#SendBitcoinAction(org.multibit.controller.MultiBitController)"><B>SendBitcoinAction(MultiBitController)</B></A> - 
 Constructor for class org.multibit.action.<A HREF="./org/multibit/action/SendBitcoinAction.html" title="class in org.multibit.action">SendBitcoinAction</A>
 <DD>&nbsp;
@@ -1334,7 +1363,7 @@ Constructor for class org.multibit.viewsystem.swing.action.<A HREF="./org/multib
 <DT><A HREF="./org/multibit/action/SendBitcoinConfirmAction.html" title="class in org.multibit.action"><B>SendBitcoinConfirmAction</B></A> - Class in <A HREF="./org/multibit/action/package-summary.html">org.multibit.action</A><DD>an action to the send bitcoin confirm view<DT><A HREF="./org/multibit/action/SendBitcoinConfirmAction.html#SendBitcoinConfirmAction(org.multibit.controller.MultiBitController)"><B>SendBitcoinConfirmAction(MultiBitController)</B></A> - 
 Constructor for class org.multibit.action.<A HREF="./org/multibit/action/SendBitcoinConfirmAction.html" title="class in org.multibit.action">SendBitcoinConfirmAction</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/swing/action/SendBitcoinConfirmAction.html" title="class in org.multibit.viewsystem.swing.action"><B>SendBitcoinConfirmAction</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/action/package-summary.html">org.multibit.viewsystem.swing.action</A><DD>This <CODE>Action</CODE> forwards to the send bitcoin confirm view<DT><A HREF="./org/multibit/viewsystem/swing/action/SendBitcoinConfirmAction.html#SendBitcoinConfirmAction(org.multibit.controller.MultiBitController)"><B>SendBitcoinConfirmAction(MultiBitController)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/swing/action/SendBitcoinConfirmAction.html" title="class in org.multibit.viewsystem.swing.action"><B>SendBitcoinConfirmAction</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/action/package-summary.html">org.multibit.viewsystem.swing.action</A><DD>This <CODE>Action</CODE> forwards to the send bitcoin confirm view<DT><A HREF="./org/multibit/viewsystem/swing/action/SendBitcoinConfirmAction.html#SendBitcoinConfirmAction(org.multibit.controller.MultiBitController, org.multibit.model.DataProvider)"><B>SendBitcoinConfirmAction(MultiBitController, DataProvider)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.action.<A HREF="./org/multibit/viewsystem/swing/action/SendBitcoinConfirmAction.html" title="class in org.multibit.viewsystem.swing.action">SendBitcoinConfirmAction</A>
 <DD>Creates a new <A HREF="./org/multibit/viewsystem/swing/action/SendBitcoinConfirmAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>SendBitcoinConfirmAction</CODE></A>.
 <DT><A HREF="./org/multibit/viewsystem/commandline/view/SendBitcoinConfirmView.html" title="class in org.multibit.viewsystem.commandline.view"><B>SendBitcoinConfirmView</B></A> - Class in <A HREF="./org/multibit/viewsystem/commandline/view/package-summary.html">org.multibit.viewsystem.commandline.view</A><DD>the command line view for send bitcoin<DT><A HREF="./org/multibit/viewsystem/commandline/view/SendBitcoinConfirmView.html#SendBitcoinConfirmView(org.multibit.Localiser, java.lang.String, java.io.InputStream, java.io.PrintStream)"><B>SendBitcoinConfirmView(Localiser, String, InputStream, PrintStream)</B></A> - 
@@ -1361,6 +1390,12 @@ Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Walle
 <DT><A HREF="./com/google/bitcoin/core/Wallet.html#sendCoins(Peer, Address, java.math.BigInteger)"><B>sendCoins(Peer, Address, BigInteger)</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>
 <DD>Sends coins to the given address, via the given <CODE>Peer</CODE>.
+<DT><A HREF="./org/multibit/controller/MultiBitController.html#sendCoins(java.lang.String, java.lang.String, java.lang.String)"><B>sendCoins(String, String, String)</B></A> - 
+Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/network/MultiBitService.html#sendCoins(java.lang.String, java.lang.String)"><B>sendCoins(String, String)</B></A> - 
+Method in class org.multibit.network.<A HREF="./org/multibit/network/MultiBitService.html" title="class in org.multibit.network">MultiBitService</A>
+<DD>send bitcoins
 <DT><A HREF="./org/multibit/network/MultiBitService.html#SEPARATOR"><B>SEPARATOR</B></A> - 
 Static variable in class org.multibit.network.<A HREF="./org/multibit/network/MultiBitService.html" title="class in org.multibit.network">MultiBitService</A>
 <DD>&nbsp;
@@ -1372,19 +1407,20 @@ Static variable in class org.multibit.viewsystem.commandline.view.<A HREF="./org
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/controller/MultiBitController.html#setActionForwardToChild(org.multibit.controller.ActionForward)"><B>setActionForwardToChild(ActionForward)</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
-<DD>set the action forward that will be used to determined the next view
- to display
+<DD>set the action forward that will be used to determined the next view to
+ display
  
  normally called by the action once it has decided what the next view is
  
- this setActionForward should be used when the next view is a child of the current view
+ this setActionForward should be used when the next view is a child of the
+ current view
 <DT><A HREF="./org/multibit/controller/MultiBitController.html#setActionForwardToParent()"><B>setActionForwardToParent()</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
 <DD>set the next view to be the parent of the current
 <DT><A HREF="./org/multibit/controller/MultiBitController.html#setActionForwardToSibling(org.multibit.controller.ActionForward)"><B>setActionForwardToSibling(ActionForward)</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
-<DD>set the action forward that will be used to determined the next view
- to display where the next view is a sibling of the current view
+<DD>set the action forward that will be used to determined the next view to
+ display where the next view is a sibling of the current view
 <DT><A HREF="./org/multibit/model/MultiBitModel.html#setAllUserPreferences(java.util.Properties)"><B>setAllUserPreferences(Properties)</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>set all user preferences

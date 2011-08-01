@@ -49,27 +49,6 @@ import com.google.bitcoin.store.BoundedOverheadBlockStore;
  * 
  * It is based on the bitcoinj PingService code
  * 
- * <p>
- * If running on TestNet (slow but better than using real coins on prodnet) do
- * the following:
- * <ol>
- * <li>Backup your current wallet.dat in case of unforeseen problems</li>
- * <li>Start your bitcoin client in test mode <code>bitcoin -testnet</code>.
- * This will create a new sub-directory called testnet and should not interfere
- * with normal wallets or operations.</li>
- * <li>(Optional) Choose a fresh address</li>
- * <li>(Optional) Visit the Testnet faucet
- * (https://testnet.freebitcoins.appspot.com/) to load your client with test
- * coins</li>
- * <li>Run <code>PingService -testnet</code></li>
- * <li>Wait for the block chain to download</li>
- * <li>Send some coins from your bitcoin client to the address provided in the
- * PingService console</li>
- * <li>Leave it running until you get the coins back again</li>
- * </ol>
- * </p>
- * 
- * <p>
  * The testnet can be slow or flaky as it's a shared resource. You can use the
  * <a href="http://sourceforge
  * .net/projects/bitcoin/files/Bitcoin/testnet-in-a-box/">testnet in a box</a>
@@ -78,7 +57,6 @@ import com.google.bitcoin.store.BoundedOverheadBlockStore;
  */
 public class MultiBitService {
     public static final String MULTIBIT_PREFIX = "multibit";
-    public static final String PRODUCTION_NET_PREFIX = "prodnet";
     public static final String TEST_NET_PREFIX = "testnet";
     public static final String SEPARATOR = "-";
 
@@ -108,7 +86,7 @@ public class MultiBitService {
 
         networkParameters = useTestNet ? NetworkParameters.testNet() : NetworkParameters.prodNet();
         String filePrefix = useTestNet ? MULTIBIT_PREFIX + SEPARATOR + TEST_NET_PREFIX
-                : MULTIBIT_PREFIX + SEPARATOR + PRODUCTION_NET_PREFIX;
+                : MULTIBIT_PREFIX;
 
         // Try to read the wallet from storage, create a new one if not
         // possible.

@@ -206,6 +206,15 @@ java.lang.Object
 <TD><CODE>BOTTOM_ALIGNMENT, CENTER_ALIGNMENT, LEFT_ALIGNMENT, RIGHT_ALIGNMENT, TOP_ALIGNMENT</CODE></TD>
 </TR>
 </TABLE>
+&nbsp;<A NAME="fields_inherited_from_class_org.multibit.viewsystem.ViewSystem"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Fields inherited from interface org.multibit.viewsystem.<A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#newViewIsChildOfPrevious">newViewIsChildOfPrevious</A>, <A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#newViewIsParentOfPrevious">newViewIsParentOfPrevious</A>, <A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#newViewIsSiblingOfPrevious">newViewIsSiblingOfPrevious</A></CODE></TD>
+</TR>
+</TABLE>
 &nbsp;<A NAME="fields_inherited_from_class_javax.swing.WindowConstants"><!-- --></A>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
@@ -279,8 +288,9 @@ java.lang.Object
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#navigateAwayFromView(int, int)">navigateAwayFromView</A></B>(int&nbsp;viewToNavigateAwayFrom,
-                     int&nbsp;nextView)</CODE>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#navigateAwayFromView(int, int, int)">navigateAwayFromView</A></B>(int&nbsp;viewToNavigateAwayFrom,
+                     int&nbsp;nextView,
+                     int&nbsp;relationshipOfNewViewToPrevious)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;navigate away from view - this may be on another thread hence the
@@ -507,20 +517,21 @@ public void <B>displayView</B>(int&nbsp;viewToDisplay)</PRE>
 </DL>
 <HR>
 
-<A NAME="navigateAwayFromView(int, int)"><!-- --></A><H3>
+<A NAME="navigateAwayFromView(int, int, int)"><!-- --></A><H3>
 navigateAwayFromView</H3>
 <PRE>
 public void <B>navigateAwayFromView</B>(int&nbsp;viewToNavigateAwayFrom,
-                                 int&nbsp;nextView)</PRE>
+                                 int&nbsp;nextView,
+                                 int&nbsp;relationshipOfNewViewToPrevious)</PRE>
 <DL>
 <DD>navigate away from view - this may be on another thread hence the
  SwingUtilities.invokeLater
 <P>
 <DD><DL>
-<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#navigateAwayFromView(int, int)">navigateAwayFromView</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#navigateAwayFromView(int, int, int)">navigateAwayFromView</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
 </DD>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>viewToNavigateAwayFrom</CODE> - - current view to navigate away from -one of the View constants<DD><CODE>nextView</CODE> - - next view - one of the View constants</DL>
+<DT><B>Parameters:</B><DD><CODE>viewToNavigateAwayFrom</CODE> - - current view to navigate away from -one of the View constants<DD><CODE>nextView</CODE> - - next view - one of the View constants<DD><CODE>relationshipOfNewViewToPrevious</CODE> - - one of ViewSystem.isChild, isParent, isSibling</DL>
 </DD>
 </DL>
 <HR>

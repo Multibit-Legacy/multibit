@@ -151,7 +151,7 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider {
         receiveAddressPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
-        tableModel = new AddressBookTableModel(controller.getLocaliser(), true);
+        tableModel = new AddressBookTableModel(controller.getLocaliser(), controller.getModel().getAddressBook(), true);
         JTable table = new JTable(tableModel);
         table.setOpaque(false);
         table.setShowGrid(false);
@@ -195,7 +195,7 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider {
         sendAddressPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
-        tableModel = new AddressBookTableModel(controller.getLocaliser(), false);
+        tableModel = new AddressBookTableModel(controller.getLocaliser(), controller.getModel().getAddressBook(), false);
         JTable table = new JTable(tableModel);
         table.setOpaque(false);
         table.setShowGrid(false);
