@@ -32,9 +32,7 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.PeerGroup;
-import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionInput;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletEventListener;
@@ -228,5 +226,9 @@ public class MultiBitService {
 
     public BlockChain getChain() {
         return chain;
+    }
+
+    public NetworkParameters getNetworkParameters() {
+        return networkParameters;
     }
 }

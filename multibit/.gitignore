@@ -3,3 +3,5 @@ out
 /multibit-prodnet.blockchain
 /pingservice-prodnet.blockchain
 /pingservice-testnet.blockchain
+/multibit.addressbook
+/multibit.wallet

@@ -98,6 +98,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
     private static final String TITLE_SEPARATOR = " - ";
     private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.7D;
 
+    public static final String SPACER = "  ";
+    
+    
     private static final long serialVersionUID = 7621813615342923041L;
 
     private MultiBitController controller;
@@ -287,8 +290,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         // use status icons
         table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
 
-        // date centered
-        table.getColumnModel().getColumn(1).setCellRenderer(new CenterJustifiedRenderer());
+        // date right justified
+        table.getColumnModel().getColumn(1).setCellRenderer(new RightJustifiedRenderer());
 
         // center column headers
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
@@ -303,19 +306,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         table.getColumnModel().getColumn(4).setCellRenderer(new RightJustifiedRenderer());
 
         TableColumn tableColumn = table.getColumnModel().getColumn(0); // status
-        tableColumn.setPreferredWidth(40);
+        tableColumn.setPreferredWidth(35);
 
         tableColumn = table.getColumnModel().getColumn(1); // date
-        tableColumn.setPreferredWidth(80);
+        tableColumn.setPreferredWidth(85);
 
         tableColumn = table.getColumnModel().getColumn(2); // description
-        tableColumn.setPreferredWidth(300);
+        tableColumn.setPreferredWidth(320);
 
         tableColumn = table.getColumnModel().getColumn(3); // debit
-        tableColumn.setPreferredWidth(50);
+        tableColumn.setPreferredWidth(40);
 
         tableColumn = table.getColumnModel().getColumn(4); // credit
-        tableColumn.setPreferredWidth(50);
+        tableColumn.setPreferredWidth(40);
 
         JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -541,7 +544,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
             label.setHorizontalAlignment(SwingConstants.RIGHT);
             label.setOpaque(false);
 
-            label.setText((String) value);
+            label.setText((String) value + SPACER);
 
             return label;
         }
@@ -615,9 +618,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
             setTitle(walletFilename + TITLE_SEPARATOR + localiser.getString("multiBitFrame.title"));
         }
 
-        repaint();
         invalidate();
         validate();    
+        repaint();
         
         // create the views
         viewMap = new HashMap<Integer, View>();
@@ -820,9 +823,20 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         final String finalUpdateDownloadStatus = updateDownloadStatus;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                networkStatusLabel.setText(finalUpdateDownloadStatus);        
+                networkStatusLabel.setText(finalUpdateDownloadStatus); 
             }
         });
+    }
+    
+    public void blockDownloaded() {
+        final JFrame finalMainFrame = this;
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                // update screen in case status bars have changed
+                finalMainFrame.invalidate();
+                finalMainFrame.validate();    
+                finalMainFrame.repaint();            }
+        });       
     }
     
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,

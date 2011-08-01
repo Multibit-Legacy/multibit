@@ -58,7 +58,12 @@ public interface ViewSystem {
      * @param updateDownloadStatus
      */
     public void updateDownloadStatus(String updateDownloadStatus);
-    
+  
+    /**
+     * notification that a block has been downloaded
+     */
+    public void blockDownloaded();
+  
     /**
      * WalletEventListener callback method
      * @param wallet

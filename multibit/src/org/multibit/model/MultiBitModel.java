@@ -1,6 +1,7 @@
 package org.multibit.model;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -10,8 +11,12 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.network.MultiBitService;
 
+import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.Block;
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
@@ -28,18 +33,19 @@ import com.google.bitcoin.core.WalletEventListener;
  */
 public class MultiBitModel {
 
-    // constants used in the multibit.properties and in data provider data payloads
-    
+    // constants used in the multibit.properties and in data provider data
+    // payloads
+
     // MultiBit start up
     public static final String TEST_OR_PRODUCTION_NETWORK = "testOrProductionNetwork";
     public static final String TEST_NETWORK_VALUE = "test";
     public static final String PRODUCTION_NETWORK_VALUE = "production";
     public static final String WALLET_FILENAME = "walletFilename";
-   
+
     // user preferences
     public static final String USER_LANGUAGE_CODE = "languageCode";
     public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
-    
+
     // open wallet and save wallet as dialog
     public static final String SELECTED_WALLET_FILENAME = "selectedWalletFilename";
 
@@ -48,7 +54,6 @@ public class MultiBitModel {
     public static final String SEND_LABEL = "sendLabel";
     public static final String SEND_AMOUNT = "sendAmount";
 
-    
     private Wallet wallet;
 
     private MultiBitController controller;
@@ -62,7 +67,7 @@ public class MultiBitModel {
 
     // address book
     private AddressBook addressBook;
-    
+
     public MultiBitModel(MultiBitController controller, Properties userPreferences) {
         this.controller = controller;
         this.userPreferences = userPreferences;
@@ -130,6 +135,7 @@ public class MultiBitModel {
     public void setWallet(Wallet wallet) {
         this.wallet = wallet;
         createWalletData();
+        createAddressBookReceivingAddresses();
     }
 
     public String getWalletFilename() {
@@ -228,6 +234,28 @@ public class MultiBitModel {
         return walletData;
     }
 
+    /**
+     * add the receiving addresses of all the keys in this wallet
+     */
+    public void createAddressBookReceivingAddresses() {
+        if (wallet != null) {
+            ArrayList<ECKey> keyChain = wallet.keychain;
+            if (keyChain != null) {
+                MultiBitService multiBitService = controller.getMultiBitService();
+                if (multiBitService != null) {
+                    NetworkParameters networkParameters = multiBitService.getNetworkParameters();
+                    if (networkParameters != null) {
+                        
+                        for (ECKey key : keyChain) {
+                            Address address = key.toAddress(controller.getMultiBitService().getNetworkParameters());
+                            addressBook.addReceivingAddress(address);
+                        }               
+                    }
+                }
+            }
+        }
+    }
+    
     private String createDescription(List<TransactionInput> transactionInputs,
             List<TransactionOutput> transactionOutputs, BigInteger credit, BigInteger debit) {
         String toReturn = "";
@@ -251,9 +279,17 @@ public class MultiBitModel {
             if (credit != null && credit.compareTo(BigInteger.ZERO) > 0) {
                 // credit
                 try {
-                    toReturn = controller.getLocaliser().getString(
-                            "multiBitModel.creditDescription",
-                            new Object[] { input.getFromAddress().toString() });
+                    // see if the address is a known receiving address
+                    String addressString = input.getFromAddress().toString();
+                    String label = addressBook.lookupLabelForReceivingAddress(addressString);
+                    if (label != null && label != "") {
+                        toReturn = controller.getLocaliser().getString(
+                                "multiBitModel.creditDescriptionWithLabel",
+                                new Object[] { addressString, label });
+                    } else {
+                        toReturn = controller.getLocaliser().getString(
+                                "multiBitModel.creditDescription", new Object[] { addressString });
+                    }
                 } catch (ScriptException e) {
                     e.printStackTrace();
                 }
@@ -263,9 +299,17 @@ public class MultiBitModel {
             if (debit != null && debit.compareTo(BigInteger.ZERO) > 0) {
                 // debit
                 try {
-                    toReturn = controller.getLocaliser().getString(
-                            "multiBitModel.debitDescription",
-                            new Object[] { output.getScriptPubKey().getToAddress() });
+                    // see if the address is a known sending address
+                    String addressString = output.getScriptPubKey().getToAddress().toString();
+                    String label = addressBook.lookupLabelForSendingAddress(addressString);
+                    if (label != null && label != "") {
+                        toReturn = controller.getLocaliser().getString(
+                                "multiBitModel.debitDescriptionWithLabel",
+                                new Object[] { addressString, label });
+                    } else {
+                        toReturn = controller.getLocaliser().getString(
+                                "multiBitModel.debitDescription", new Object[] { addressString });
+                    }
                 } catch (ScriptException e) {
                     e.printStackTrace();
                 }

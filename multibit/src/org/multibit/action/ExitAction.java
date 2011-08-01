@@ -9,6 +9,7 @@ import java.util.Properties;
 
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.AddressBook;
 import org.multibit.model.DataProvider;
 
 
@@ -26,6 +27,8 @@ public class ExitAction implements Action{
     }
     
     public void execute(DataProvider dataProvider) {
+        
+        // write the user properties
         Properties userPreferences = controller.getModel().getAllUserPreferences();
         OutputStream outputStream;
         try {
@@ -40,7 +43,11 @@ public class ExitAction implements Action{
             e.printStackTrace();
         }
         
-       System.exit(0);     
+        // write the address book
+        AddressBook addressBook = controller.getModel().getAddressBook();
+        addressBook.writeToFile();
+        
+        System.exit(0);     
     }
     
     public String getDisplayText() {

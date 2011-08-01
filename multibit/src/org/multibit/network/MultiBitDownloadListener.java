@@ -67,6 +67,7 @@ public class MultiBitDownloadListener extends DownloadListener {
                             DateFormat.getDateInstance(DateFormat.MEDIUM,
                                     controller.getLocaliser().getLocale()).format(date) });
             controller.updateDownloadStatus(downloadStatusText);
+            controller.fireBlockDownloaded();
         }
     }
 
@@ -89,6 +90,7 @@ public class MultiBitDownloadListener extends DownloadListener {
                         "multiBitDownloadListener.startDownloadTextLong", new Object[] { blocks });
             }
             controller.updateDownloadStatus(startDownloadText);
+            controller.fireBlockDownloaded();
         }
     }
 
@@ -99,5 +101,6 @@ public class MultiBitDownloadListener extends DownloadListener {
         String downloadStatusText = controller.getLocaliser().getString(
                 "multiBitDownloadListener.doneDownloadText");
         controller.updateDownloadStatus(downloadStatusText);
+        controller.fireBlockDownloaded();
     }
 }

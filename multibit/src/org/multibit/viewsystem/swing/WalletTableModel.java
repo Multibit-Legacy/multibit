@@ -68,7 +68,7 @@ public class WalletTableModel extends AbstractTableModel {
             if (currentHead != null) {
                 currentHeight = currentHead.getHeight();
             }
-            int numberOfBlocksEmbedded = currentHeight - walletDataRow.getHeight();
+            int numberOfBlocksEmbedded = currentHeight - walletDataRow.getHeight() + 1;
             return numberOfBlocksEmbedded;
         }
         case 1: {

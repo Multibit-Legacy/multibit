@@ -74,6 +74,9 @@ public class MultiBit {
         MultiBitService multiBitService = new MultiBitService(useTestNet, controller);
         controller.setMultiBitService(multiBitService);
         
+        // add the keys to the address book as receiving addresses
+        controller.getModel().createAddressBookReceivingAddresses();
+        
         // TODO make more generic
         ((MultiBitFrame)swingView).fireDataChanged();
         multiBitService.downloadBlockChain();

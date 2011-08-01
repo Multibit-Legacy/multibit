@@ -347,8 +347,15 @@ public class MultiBitController implements PeerEventListener {
      * the wallet file has been changed
      */
     public void fireWalletChanged() {
-        // TODO rewire the blockchain etc
+        // TODO rewire the blockchain etc to reference the new wallet
 
+        fireWalletDataChanged();
+    }
+
+    /**
+     * the wallet data has been changed
+     */
+    public void fireWalletDataChanged() {
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.recreateAllViews();
@@ -369,13 +376,13 @@ public class MultiBitController implements PeerEventListener {
      */
 
     public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
-        // TODO Auto-generated method stub
         System.out.println("MultiBitController#onBlocksDownloaded called");
+        fireBlockDownloaded();
     }
 
     public void onChainDownloadStarted(Peer peer, int blocksLeft) {
-        // TODO Auto-generated method stub
         System.out.println("MultiBitController#onChainDownloadStarted called");
+        fireBlockDownloaded();
     }
 
     public void onPeerConnected(Peer peer, int peerCount) {
@@ -408,6 +415,15 @@ public class MultiBitController implements PeerEventListener {
         }
     }
 
+    /**
+     * method called by downloadListener whenever a block is downloaded
+     */
+    public void fireBlockDownloaded() {
+        for (ViewSystem viewSystem : viewSystems) {
+            viewSystem.blockDownloaded();
+        }
+    }
+
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
             BigInteger newBalance) {
 
@@ -420,7 +436,7 @@ public class MultiBitController implements PeerEventListener {
         try {
             // send the coins
             Transaction sendTransaction = multiBitService.sendCoins(sendAddressString, amount);
-            fireWalletChanged();
+            fireWalletDataChanged();
         } catch (java.io.IOException ioe) {
             ioe.printStackTrace();
         } catch (AddressFormatException e) {

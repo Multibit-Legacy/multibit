@@ -27,13 +27,13 @@ public class SendBitcoinNowAction implements Action {
         String sendLabel = controller.getModel().getUserPreference(MultiBitModel.SEND_LABEL);
         String sendAmount = controller.getModel().getUserPreference(MultiBitModel.SEND_AMOUNT);
 
-        // TODO add this address and label to the address book
         if (sendLabel != null && sendLabel != "") {
             AddressBook addressBook = controller.getModel().getAddressBook();
             addressBook.addSendingAddress(new AddressBookData(sendLabel, sendAddress));
         }
         controller.sendCoins(sendAddress, sendLabel, sendAmount);
 
+        controller.fireWalletDataChanged();
         controller.setActionForwardToChild(ActionForward.FORWARD_TO_HOME_PAGE);
     }
 
