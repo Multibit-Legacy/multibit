@@ -387,7 +387,7 @@ public class MultiBitController implements PeerEventListener {
 
     public void onPeerConnected(Peer peer, int peerCount) {
         // if now online, notify viewSystems
-        System.out.println("MultiBitController#onPeerConnected called - peerCount = " + peerCount);
+        //System.out.println("MultiBitController#onPeerConnected called - peerCount = " + peerCount);
         if (peerCount == 1) {
             for (ViewSystem viewSystem : viewSystems) {
                 viewSystem.nowOnline();
@@ -396,8 +396,8 @@ public class MultiBitController implements PeerEventListener {
     }
 
     public void onPeerDisconnected(Peer peer, int peerCount) {
-        System.out.println("MultiBitController#onPeerDisconnected called - peerCount = "
-                + peerCount);
+        //System.out.println("MultiBitController#onPeerDisconnected called - peerCount = "
+        //        + peerCount);
         // if now offline, notify viewSystems
         if (peerCount == 0) {
             for (ViewSystem viewSystem : viewSystems) {

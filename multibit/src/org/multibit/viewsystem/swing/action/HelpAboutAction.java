@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ImageIcon;
 
 import org.multibit.Localiser;
 import org.multibit.controller.ActionForward;
@@ -22,12 +23,12 @@ public class HelpAboutAction extends AbstractAction {
     /**
      * Creates a new {@link HelpAboutAction}.
      */
-    public HelpAboutAction(MultiBitController controller, Localiser localiser, MultiBitFrame mainFrame) {
-        super(localiser.getString("helpAboutAction.text"));
+    public HelpAboutAction(MultiBitController controller, ImageIcon icon, MultiBitFrame mainFrame) {
+        super(controller.getLocaliser().getString("helpAboutAction.text"), icon);
         this.controller = controller;
 
-        putValue(SHORT_DESCRIPTION, localiser.getString("helpAboutAction.tooltip"));
-        putValue(MNEMONIC_KEY, localiser.getMnemonic("helpAboutAction.mnemonicKey"));
+        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("helpAboutAction.tooltip"));
+        putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("helpAboutAction.mnemonicKey"));
     }
 
     /**

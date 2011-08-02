@@ -145,9 +145,7 @@ public class MultiBitService {
         }
 
         // Fetch the first key in the wallet (should be the only key).
-        ECKey key = wallet.keychain.get(0);
-
-        System.out.println(wallet);
+        //ECKey key = wallet.keychain.get(0);
 
         // Load the block chain, if there is one stored locally.
         System.out.println("Reading block store from disk");
@@ -170,7 +168,7 @@ public class MultiBitService {
             peerGroup.addEventListener(controller);
             peerGroup.start();
 
-            System.out.println("Send coins to: " + key.toAddress(networkParameters).toString());
+            //System.out.println("MultiBitService constructor - Send coins to: " + key.toAddress(networkParameters).toString());
 
             // The PeerGroup thread keeps us alive until something kills the
             // process.

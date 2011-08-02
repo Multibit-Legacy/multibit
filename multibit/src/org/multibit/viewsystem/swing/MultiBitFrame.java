@@ -93,12 +93,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
     private static final String PROGRESS_4_ICON_FILE = "/images/progress4.jpg";
     private static final String PROGRESS_5_ICON_FILE = "/images/progress5.jpg";
     private static final String TICK_ICON_FILE = "/images/tick.jpg";
+    private static final String PREFERENCES_ICON_FILE = "/images/preferences.jpg";
     private static final String HELP_CONTENTS_ICON_FILE = "/images/helpContents.jpg";
-    private static final String BITCOINJ_ICON_FILE = "/images/bitcoinj.gif";
+    private static final String MULTIBIT_SMALL_ICON_FILE = "/images/multibit-small.jpg";
+    private static final String MULTIBIT_ICON_FILE = "/images/multibit.gif";
     private static final String TITLE_SEPARATOR = " - ";
     private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.7D;
 
-    public static final String SPACER = "  ";
+    public static final String SPACER = "   "; // 3 spaces
     
     
     private static final long serialVersionUID = 7621813615342923041L;
@@ -178,7 +180,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         GridBagConstraints constraints = new GridBagConstraints();
 
         // set the application icon
-        ImageIcon imageIcon = createImageIcon(BITCOINJ_ICON_FILE);
+        ImageIcon imageIcon = createImageIcon(MULTIBIT_ICON_FILE);
         if (imageIcon != null) {
             setIconImage(imageIcon.getImage());
         }
@@ -401,7 +403,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         helpMenu.add(menuItem);
 
         // help about action
-        HelpAboutAction helpAboutAction = new HelpAboutAction(controller, localiser, this);
+        HelpAboutAction helpAboutAction = new HelpAboutAction(controller, createImageIcon(MULTIBIT_SMALL_ICON_FILE), this);
         menuItem = new JMenuItem(helpAboutAction);
         helpMenu.add(menuItem);
 
@@ -444,7 +446,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         toolBar.add(openAddressBookReceivingPanel);
 
         // show preferences
-        ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller, null);
+        ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller, createImageIcon(PREFERENCES_ICON_FILE));
         viewMenu.add(showPreferencesAction);
 
         setJMenuBar(menuBar);
@@ -810,7 +812,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
             public void run() {
                 String onlineStatus = isOnline ? localiser.getString("multiBitFrame.onlineText") : localiser.getString("multiBitFrame.offlineText");
                 if (isOnline) {
-                    onlineStatusLabel.setForeground(new Color(0, 140, 0));
+                    onlineStatusLabel.setForeground(new Color(0, 100, 0));
                 } else {
                     onlineStatusLabel.setForeground(new Color(180, 0, 0));
                 }

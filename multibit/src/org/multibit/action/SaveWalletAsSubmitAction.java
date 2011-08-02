@@ -9,15 +9,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.swing.view.OpenWalletView;
 
 import com.google.bitcoin.core.Wallet;
 

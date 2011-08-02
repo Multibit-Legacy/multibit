@@ -53,7 +53,11 @@ public class MultiBitModel {
     public static final String SEND_ADDRESS = "sendAddress";
     public static final String SEND_LABEL = "sendLabel";
     public static final String SEND_AMOUNT = "sendAmount";
-
+    
+    // receive bitcoin
+    public static final String RECEIVE_ADDRESS = "receiveAddress";
+    public static final String RECEIVE_LABEL = "receiveLabel";
+    
     private Wallet wallet;
 
     private MultiBitController controller;
@@ -280,6 +284,7 @@ public class MultiBitModel {
                 // credit
                 try {
                     // see if the address is a known receiving address
+                    //String addressString = output.getScriptPubKey().getToAddress().toString();
                     String addressString = input.getFromAddress().toString();
                     String label = addressBook.lookupLabelForReceivingAddress(addressString);
                     if (label != null && label != "") {

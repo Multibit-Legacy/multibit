@@ -53,15 +53,7 @@ public class HelpContentsView implements View {
                 localiser.getString("helpContentsView.messageTitle"));
         messageDialog.show();
 
-        // if ok was pressed (i.e. not disposed by navigateAwayFromView) fire
-        // action forward
-        Object returnValue = optionPane.getValue();
-        // JOptionPane.showMessageDialog(mainFrame, optionPane.getValue());
-        if (returnValue instanceof Integer
-                && ((Integer) returnValue).intValue() == JOptionPane.OK_OPTION) {
-            // JOptionPane.showMessageDialog(mainFrame, "FIRE");
-            controller.setActionForwardToChild(ActionForward.FORWARD_TO_PREVIOUS);
-        }
+        controller.setActionForwardToParent();
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {

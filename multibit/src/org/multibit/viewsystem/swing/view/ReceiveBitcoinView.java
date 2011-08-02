@@ -45,6 +45,7 @@ public class ReceiveBitcoinView implements View {
         if (receiveBitcoinDialog == null) {
             receiveBitcoinDialog = new ReceiveBitcoinDialog(mainFrame, controller);
         }
+        receiveBitcoinDialog.loadForm();
         receiveBitcoinDialog.setVisible(true);
 
         // the action listeners of the code in the dialog do all the action

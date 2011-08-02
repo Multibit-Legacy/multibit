@@ -16,10 +16,12 @@ import javax.swing.JTextField;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
+import org.multibit.model.Item;
+import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.action.CopyAddressAction;
 import org.multibit.viewsystem.swing.action.CreateOrEditAddressAction;
-import org.multibit.viewsystem.swing.action.OkBackToParentAction;
 import org.multibit.viewsystem.swing.action.OpenAddressBookAction;
+import org.multibit.viewsystem.swing.action.ReceiveBitcoinSubmitAction;
 
 public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider{
 
@@ -41,9 +43,9 @@ public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider
 
         initUI();
 
+        loadForm();
         pack();
-        copyAddressButton.requestFocusInWindow();
-
+        labelTextField.requestFocusInWindow();
     }
 
     private void initUI() {
@@ -128,6 +130,8 @@ public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider
 
         addressTextField = new JTextField();
         addressTextField.setHorizontalAlignment(JTextField.LEFT);
+        addressTextField.setEditable(false);
+        addressTextField.setFocusable(false);
 
         constraints.gridx = 2;
         constraints.gridy = 3;
@@ -189,15 +193,35 @@ public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider
         JButton createNewButton = new JButton(createNewReceivingAddressAction);
         buttonPanel.add(createNewButton);
 
-        OkBackToParentAction okBackToPreviousAction = new OkBackToParentAction(controller);
-        JButton okButton = new JButton(okBackToPreviousAction);
+        ReceiveBitcoinSubmitAction receiveBitcoinSubmitAction = new ReceiveBitcoinSubmitAction(controller, this);
+        JButton okButton = new JButton(receiveBitcoinSubmitAction);
         buttonPanel.add(okButton);
 
         return buttonPanel;
     }
 
     public Data getData() {
-        // TODO ensure copy address has the current form data so that it can process it
-        return null;
+        Data data = new Data();
+        Item receiveAddressItem = new Item(MultiBitModel.RECEIVE_ADDRESS);
+        receiveAddressItem.setNewValue(addressTextField.getText());
+        data.addItem(MultiBitModel.RECEIVE_ADDRESS, receiveAddressItem);
+
+        Item receiveLabelItem = new Item(MultiBitModel.RECEIVE_LABEL);
+        receiveLabelItem.setNewValue(labelTextField.getText());
+        data.addItem(MultiBitModel.RECEIVE_LABEL, receiveLabelItem);
+
+        return data;
+    }
+    
+    public void loadForm() {
+        // get the current receive address and label from the model
+        String receiveAddress = controller.getModel().getUserPreference(MultiBitModel.RECEIVE_ADDRESS);
+        String receiveLabel = controller.getModel().getUserPreference(MultiBitModel.RECEIVE_LABEL);
+        if (receiveAddress != null) {
+            addressTextField.setText(receiveAddress);
+        }
+        if (receiveLabel != null) {
+            labelTextField.setText(receiveLabel);
+        }
     }
 }

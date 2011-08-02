@@ -1,9 +1,11 @@
 package org.multibit.action;
 
-import org.multibit.Localiser;
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
+import org.multibit.model.Item;
+import org.multibit.model.MultiBitModel;
 
 /**
  * an action to copy the address in the supplied formbean to the system clipboard
@@ -18,12 +20,19 @@ public class CopyAddressAction implements Action {
     }
     
     public void execute(DataProvider dataProvider) {
-        // TO DO - copy address from supplied formbean to system clipboard
-        String addressToCopy = "TODO - get address from form";
-        
-        TextTransfer textTransfer = new TextTransfer();
-        textTransfer.setClipboardContents(addressToCopy);
-        
+        if (dataProvider != null) {
+            Data data = dataProvider.getData();
+            
+            if (data != null)  {
+                Item item = data.getItem(MultiBitModel.RECEIVE_ADDRESS);
+                if (item != null && item.getNewValue() != null) {
+                    
+                    // copy to clipboard
+                    TextTransfer textTransfer = new TextTransfer();
+                    textTransfer.setClipboardContents((String)item.getNewValue());            
+                }
+            }
+        }
         // forward back to the same view
         controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);       
     }

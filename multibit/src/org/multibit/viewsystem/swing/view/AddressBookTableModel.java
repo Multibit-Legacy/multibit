@@ -3,13 +3,13 @@ package org.multibit.viewsystem.swing.view;
 import java.util.SortedSet;
 import java.util.Vector;
 
-import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 
 import org.multibit.Localiser;
 import org.multibit.model.AddressBook;
 import org.multibit.model.AddressBookData;
 
-public class AddressBookTableModel extends AbstractTableModel {
+public class AddressBookTableModel extends DefaultTableModel {
 
     private static final long serialVersionUID = -937886012851116208L;
 
@@ -36,9 +36,17 @@ public class AddressBookTableModel extends AbstractTableModel {
 
     public int getRowCount() {
         if (isReceiving) {
-            return addressBook.getReceivingAddresses().size();
+            if (addressBook != null && addressBook.getReceivingAddresses() != null) {
+                return addressBook.getReceivingAddresses().size();
+            } else {
+                return 0;
+            }
         } else {
-            return addressBook.getSendingAddresses().size();
+            if (addressBook != null && addressBook.getSendingAddresses() != null) {
+                return addressBook.getSendingAddresses().size();
+            } else {
+                return 0;
+            }
         }
     }
 
@@ -79,5 +87,57 @@ public class AddressBookTableModel extends AbstractTableModel {
      */
     public void setValueAt(Object value, int row, int column) {
         throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * find a row, given a receiving address
+     */
+    public int findRowByAddress(String address) {
+        if (address == null) {
+            return -1;
+        }
+        SortedSet<AddressBookData> addresses;
+        if (isReceiving) {
+            addresses = addressBook.getReceivingAddresses();
+        } else {
+            addresses = addressBook.getSendingAddresses();
+        }
+        
+        int row = 0;
+        if (addresses != null) {
+            for (AddressBookData loopAddress : addresses) {
+                if (address.equals(loopAddress.getAddress())) {
+                    // select this row in the table
+                    return row;
+                }
+                row++;
+            }
+        }
+        return -1;
+    }
+    
+    /**
+     * given a row, return the AddressBookData on this row
+     */
+    public AddressBookData getAddressBookDataByRow(int row, boolean isReceiving) {
+        SortedSet<AddressBookData> addresses;
+        if (isReceiving) {
+            addresses = addressBook.getReceivingAddresses();
+        } else {
+            addresses = addressBook.getSendingAddresses();
+        }
+        
+        int loopRow = 0;
+        if (addresses != null) {
+            for (AddressBookData loopAddress : addresses) {
+                if (loopRow == row) {
+                    // return this row
+                    //System.out.println("AddressBookModel#getAddressBookDataByRow, row = " + row + ", isReceiving = " + isReceiving + ", addressBookData = " + loopAddress);
+                    return loopAddress;
+                }
+                loopRow++;
+            }
+        }
+        return null;
     }
 }

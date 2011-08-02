@@ -9,6 +9,7 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 
+import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -17,16 +18,21 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.AddressBookData;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
+import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.action.CopyAddressAction;
 import org.multibit.viewsystem.swing.action.CreateOrEditAddressAction;
 import org.multibit.viewsystem.swing.action.OkBackToParentAction;
@@ -44,6 +50,8 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider {
     private AddressBookTableModel tableModel;
 
     private JTabbedPane tabbedPane;
+
+    private int selectedRow;
 
     public AddressBookDialog(MultiBitController controller, JFrame mainFrame) {
         this(controller, mainFrame, true);
@@ -79,7 +87,7 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider {
                 }
             }
         });
-
+ 
         setVisible(true);
     }
 
@@ -148,10 +156,15 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider {
         JPanel receiveAddressPanel = new JPanel();
         receiveAddressPanel.setOpaque(false);
 
+        // get the stored previously selected receive address
+        String receiveAddress = controller.getModel().getUserPreference(
+                MultiBitModel.RECEIVE_ADDRESS);
+
         receiveAddressPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
-        tableModel = new AddressBookTableModel(controller.getLocaliser(), controller.getModel().getAddressBook(), true);
+        tableModel = new AddressBookTableModel(controller.getLocaliser(), controller.getModel()
+                .getAddressBook(), true);
         JTable table = new JTable(tableModel);
         table.setOpaque(false);
         table.setShowGrid(false);
@@ -185,6 +198,20 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider {
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveAddressPanel.add(buttonPanel, constraints);
 
+        // see if the current receive address is on the table and select it
+        int rowToSelect = tableModel.findRowByAddress(receiveAddress);
+        if (rowToSelect >= 0) {
+            table.getSelectionModel().setSelectionInterval(rowToSelect, rowToSelect);
+            selectedRow = rowToSelect;
+        }
+        
+        // add on a selection listener
+        SelectionListener listener = new SelectionListener(table, true);
+        table.getSelectionModel().addListSelectionListener(listener);
+//        table.getColumnModel().getSelectionModel()
+//            .addListSelectionListener(listener);
+
+
         return receiveAddressPanel;
     }
 
@@ -195,7 +222,8 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider {
         sendAddressPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
-        tableModel = new AddressBookTableModel(controller.getLocaliser(), controller.getModel().getAddressBook(), false);
+        tableModel = new AddressBookTableModel(controller.getLocaliser(), controller.getModel()
+                .getAddressBook(), false);
         JTable table = new JTable(tableModel);
         table.setOpaque(false);
         table.setShowGrid(false);
@@ -308,5 +336,42 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider {
         // TODO return the currently selected address so that it can be edited,
         // transfered to other views etc
         return null;
+    }
+
+    class SelectionListener implements ListSelectionListener {
+        JTable table;
+        boolean isReceiving;
+
+        // It is necessary to keep the table since it is not possible
+        // to determine the table from the event's source
+        SelectionListener(JTable table, boolean isReceiving) {
+            this.table = table;
+            this.isReceiving = isReceiving;
+        }
+
+        public void valueChanged(ListSelectionEvent e) {
+            //System.out.println("AddressBookDialog#valueChanged - e = " + e.toString());
+            // If cell selection is enabled, both row and column change events
+            // are fired
+            if (e.getSource() instanceof DefaultListSelectionModel && !e.getValueIsAdjusting()) {
+                // Column selection changed
+                int firstIndex = e.getFirstIndex();
+                int lastIndex = e.getLastIndex();
+                if (selectedRow == firstIndex) {
+                    selectedRow = lastIndex;
+                } else {
+                    if (selectedRow == lastIndex) {
+                        selectedRow = firstIndex;
+                    }
+                }
+                AddressBookData rowData = tableModel.getAddressBookDataByRow(selectedRow, isReceiving);
+                if (rowData != null) {
+                    controller.getModel().setUserPreference(MultiBitModel.RECEIVE_ADDRESS,
+                            rowData.getAddress());
+                    controller.getModel().setUserPreference(MultiBitModel.RECEIVE_LABEL,
+                            rowData.getLabel());
+                }
+            } 
+        }
     }
 }

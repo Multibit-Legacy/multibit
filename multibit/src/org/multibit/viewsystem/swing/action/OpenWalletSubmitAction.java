@@ -37,6 +37,4 @@ public class OpenWalletSubmitAction extends AbstractAction {
         org.multibit.action.OpenWalletSubmitAction submitAction = new org.multibit.action.OpenWalletSubmitAction(controller);
         submitAction.execute(dataProvider);
     }
-    
-    
 }

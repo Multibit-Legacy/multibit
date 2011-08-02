@@ -26,6 +26,7 @@ public class CopyAddressAction extends AbstractAction {
     public CopyAddressAction(MultiBitController controller, DataProvider dataProvider) {
         super(controller.getLocaliser().getString("copyAddressAction.text"));
         this.controller = controller;
+        this.dataProvider = dataProvider;
         
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("copyAddressAction.tooltip"));
         putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("copyAddressAction.mnemonicKey"));
