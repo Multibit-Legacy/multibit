@@ -50,6 +50,13 @@ public class AddressBookView implements View {
         }
         addressBookDialog.displayTab(isReceiving);
         addressBookDialog.setVisible(true);
+        addressBookDialog.selectRows();
+        addressBookDialog.getReceivingAddressesTable().invalidate();
+        addressBookDialog.getReceivingAddressesTable().validate();
+        addressBookDialog.getReceivingAddressesTable().repaint();
+        addressBookDialog.getSendingAddressesTable().invalidate();
+        addressBookDialog.getSendingAddressesTable().validate();
+        addressBookDialog.getSendingAddressesTable().repaint();
 
         // the action listeners of the code in the dialog do all the action
         // forwarding so nothing to do here

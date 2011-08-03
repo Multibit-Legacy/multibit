@@ -96,6 +96,8 @@ public class MultiBitService {
                 walletFile = new File(walletFilename);
                 wallet = Wallet.loadFromFile(walletFile);
 
+                System.out.println("MultiBitService#MultiBitService wallet = \n" + wallet.toString());
+                
                 // set the new wallet into the model
                 controller.getModel().setWallet(wallet);
 
@@ -204,6 +206,7 @@ public class MultiBitService {
         Transaction sendTransaction = wallet.sendCoins(peerGroup, sendAddress, Utils.toNanoCoins(amount));
         assert sendTransaction != null; // We should never try to send more
                                // coins than we have!
+        // throw an exception if sendTransaction is null - no money
         System.out.println("MultiBitService#sendCoins - Sent coins. Transaction hash is " + sendTransaction.getHashAsString());
         wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
         

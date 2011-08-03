@@ -27,7 +27,9 @@ public class ExitAction implements Action{
     }
     
     public void execute(DataProvider dataProvider) {
-        
+        // save the wallet file
+        controller.getModel().saveWallet();
+
         // write the user properties
         Properties userPreferences = controller.getModel().getAllUserPreferences();
         OutputStream outputStream;
@@ -46,6 +48,8 @@ public class ExitAction implements Action{
         // write the address book
         AddressBook addressBook = controller.getModel().getAddressBook();
         addressBook.writeToFile();
+        
+        // write the wallet file
         
         System.exit(0);     
     }

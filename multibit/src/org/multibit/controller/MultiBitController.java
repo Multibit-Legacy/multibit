@@ -443,7 +443,7 @@ public class MultiBitController implements PeerEventListener {
             e.printStackTrace();
         }
     }
-
+    
     public MultiBitService getMultiBitService() {
         return multiBitService;
     }

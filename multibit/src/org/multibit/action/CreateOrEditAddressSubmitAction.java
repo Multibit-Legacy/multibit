@@ -8,6 +8,7 @@ import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Wallet;
 
 /**
  * an action to process the submit of the CreateOrEditAddress view
@@ -63,6 +64,7 @@ public class CreateOrEditAddressSubmitAction implements Action {
                     if (receiveNewKeyItem != null) {
                         ECKey newKey = (ECKey)receiveNewKeyItem.getNewValue();
                         controller.getModel().getWallet().keychain.add(newKey);
+                        controller.getModel().saveWallet();
                     }
                 }
             } else {

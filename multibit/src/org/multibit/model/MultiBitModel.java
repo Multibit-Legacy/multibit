@@ -1,5 +1,7 @@
 package org.multibit.model;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,12 +55,12 @@ public class MultiBitModel {
     public static final String SEND_ADDRESS = "sendAddress";
     public static final String SEND_LABEL = "sendLabel";
     public static final String SEND_AMOUNT = "sendAmount";
-    
+
     // receive bitcoin
     public static final String RECEIVE_ADDRESS = "receiveAddress";
     public static final String RECEIVE_LABEL = "receiveLabel";
     public static final String RECEIVE_NEW_KEY = "receiveNewKey";
-    
+
     private Wallet wallet;
 
     private MultiBitController controller;
@@ -180,9 +182,8 @@ public class MultiBitModel {
                 if (transactionInputs != null) {
                     TransactionInput firstInput = transactionInputs.get(0);
                     if (firstInput != null) {
-                        walletDataRow.setDescription(createDescription(transactionInputs,
-                                transactionOutputs, walletDataRow.getCredit(),
-                                walletDataRow.getDebit()));
+                        walletDataRow.setDescription(createDescription(transactionInputs, transactionOutputs,
+                                walletDataRow.getCredit(), walletDataRow.getDebit()));
                     }
                 }
                 walletDataRow.setDate(createDate(pendingTransaction));
@@ -205,9 +206,8 @@ public class MultiBitModel {
                 if (transactionInputs != null) {
                     TransactionInput firstInput = transactionInputs.get(0);
                     if (firstInput != null) {
-                        walletDataRow.setDescription(createDescription(transactionInputs,
-                                transactionOutputs, walletDataRow.getCredit(),
-                                walletDataRow.getDebit()));
+                        walletDataRow.setDescription(createDescription(transactionInputs, transactionOutputs,
+                                walletDataRow.getCredit(), walletDataRow.getDebit()));
                     }
                 }
                 walletDataRow.setDate(createDate(unspentTransaction));
@@ -228,8 +228,8 @@ public class MultiBitModel {
                 List<TransactionInput> transactionInputs = spentTransaction.getInputs();
                 List<TransactionOutput> transactionOutputs = spentTransaction.getOutputs();
 
-                walletDataRow.setDescription(createDescription(transactionInputs,
-                        transactionOutputs, walletDataRow.getCredit(), walletDataRow.getDebit()));
+                walletDataRow.setDescription(createDescription(transactionInputs, transactionOutputs,
+                        walletDataRow.getCredit(), walletDataRow.getDebit()));
 
                 walletDataRow.setDate(createDate(spentTransaction));
                 walletDataRow.setHeight(workOutHeight(spentTransaction));
@@ -250,19 +250,19 @@ public class MultiBitModel {
                 if (multiBitService != null) {
                     NetworkParameters networkParameters = multiBitService.getNetworkParameters();
                     if (networkParameters != null) {
-                        
+
                         for (ECKey key : keyChain) {
                             Address address = key.toAddress(controller.getMultiBitService().getNetworkParameters());
                             addressBook.addReceivingAddress(address);
-                        }               
+                        }
                     }
                 }
             }
         }
     }
-    
-    private String createDescription(List<TransactionInput> transactionInputs,
-            List<TransactionOutput> transactionOutputs, BigInteger credit, BigInteger debit) {
+
+    private String createDescription(List<TransactionInput> transactionInputs, List<TransactionOutput> transactionOutputs,
+            BigInteger credit, BigInteger debit) {
         String toReturn = "";
 
         TransactionInput input = null;
@@ -270,55 +270,61 @@ public class MultiBitModel {
             input = transactionInputs.get(0);
         }
 
-        TransactionOutput output = null;
+        TransactionOutput myOutput = null;
+        TransactionOutput theirOutput = null;
         if (transactionOutputs != null) {
             for (TransactionOutput transactionOutput : transactionOutputs) {
+                if (transactionOutput != null && transactionOutput.isMine(wallet)) {
+                    myOutput = transactionOutput;
+                }
                 if (transactionOutput != null && !transactionOutput.isMine(wallet)) {
-                    output = transactionOutputs.get(0);
-                    break;
+                    theirOutput = transactionOutput;
                 }
             }
         }
 
-        if (input != null) {
-            if (credit != null && credit.compareTo(BigInteger.ZERO) > 0) {
-                // credit
-                try {
-                    // see if the address is a known receiving address
-                    //String addressString = output.getScriptPubKey().getToAddress().toString();
-                    String addressString = input.getFromAddress().toString();
-                    String label = addressBook.lookupLabelForReceivingAddress(addressString);
-                    if (label != null && label != "") {
-                        toReturn = controller.getLocaliser().getString(
-                                "multiBitModel.creditDescriptionWithLabel",
-                                new Object[] { addressString, label });
-                    } else {
-                        toReturn = controller.getLocaliser().getString(
-                                "multiBitModel.creditDescription", new Object[] { addressString });
-                    }
-                } catch (ScriptException e) {
-                    e.printStackTrace();
+        if (credit != null && credit.compareTo(BigInteger.ZERO) > 0) {
+            // credit
+            try {
+                String addressString = "";
+
+                if (controller.getMultiBitService() != null && myOutput != null) {
+                    Address toAddress = new Address(controller.getMultiBitService().getNetworkParameters(), myOutput
+                            .getScriptPubKey().getPubKeyHash());
+                    addressString = toAddress.toString();
                 }
+
+                // String addressString = input.getFromAddress().toString();
+                String label = addressBook.lookupLabelForReceivingAddress(addressString);
+                if (label != null && label != "") {
+                    toReturn = controller.getLocaliser().getString("multiBitModel.creditDescriptionWithLabel",
+                            new Object[] { addressString, label });
+                } else {
+                    toReturn = controller.getLocaliser().getString("multiBitModel.creditDescription",
+                            new Object[] { addressString });
+                }
+            } catch (ScriptException e) {
+                e.printStackTrace();
             }
         }
-        if (output != null) {
-            if (debit != null && debit.compareTo(BigInteger.ZERO) > 0) {
-                // debit
-                try {
-                    // see if the address is a known sending address
-                    String addressString = output.getScriptPubKey().getToAddress().toString();
+
+        if (debit != null && debit.compareTo(BigInteger.ZERO) > 0) {
+            // debit
+            try {
+                // see if the address is a known sending address
+                if (theirOutput != null) {
+                    String addressString = theirOutput.getScriptPubKey().getToAddress().toString();
                     String label = addressBook.lookupLabelForSendingAddress(addressString);
                     if (label != null && label != "") {
-                        toReturn = controller.getLocaliser().getString(
-                                "multiBitModel.debitDescriptionWithLabel",
+                        toReturn = controller.getLocaliser().getString("multiBitModel.debitDescriptionWithLabel",
                                 new Object[] { addressString, label });
                     } else {
-                        toReturn = controller.getLocaliser().getString(
-                                "multiBitModel.debitDescription", new Object[] { addressString });
+                        toReturn = controller.getLocaliser().getString("multiBitModel.debitDescription",
+                                new Object[] { addressString });
                     }
-                } catch (ScriptException e) {
-                    e.printStackTrace();
                 }
+            } catch (ScriptException e) {
+                e.printStackTrace();
             }
         }
 
@@ -366,5 +372,17 @@ public class MultiBitModel {
 
     public void removeWalletEventListener(WalletEventListener walletEventListener) {
         wallet.removeEventListener(walletEventListener);
+    }
+
+    public void saveWallet() {
+        File file = new File(getWalletFilename());
+        if (file != null) {
+            try {
+                wallet.saveToFile(file);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 }
