@@ -64,7 +64,7 @@ public class CreateOrEditAddressView implements View {
             createOrEditAddressDialog = new CreateOrEditAddressDialog(mainFrame, controller,
                     isCreate, isReceiving);
         }
-
+        createOrEditAddressDialog.loadForm();
         createOrEditAddressDialog.setVisible(true);
 
         // the action listeners of the code in the dialog do all the action

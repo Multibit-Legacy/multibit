@@ -57,6 +57,7 @@ public class MultiBitModel {
     // receive bitcoin
     public static final String RECEIVE_ADDRESS = "receiveAddress";
     public static final String RECEIVE_LABEL = "receiveLabel";
+    public static final String RECEIVE_NEW_KEY = "receiveNewKey";
     
     private Wallet wallet;
 

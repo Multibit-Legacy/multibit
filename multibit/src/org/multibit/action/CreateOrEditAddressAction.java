@@ -3,6 +3,9 @@ package org.multibit.action;
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
+import org.multibit.model.MultiBitModel;
+
+import com.google.bitcoin.core.ECKey;
 
 /**
  * an action to create or edit an address
@@ -28,9 +31,9 @@ public class CreateOrEditAddressAction implements Action {
         if (isCreate) {
             if (isReceiving) {
                 controller.setActionForwardToChild(ActionForward.FORWARD_TO_CREATE_NEW_RECEIVING_ADDRESS); 
-            } else {
+             } else {
                 controller.setActionForwardToChild(ActionForward.FORWARD_TO_CREATE_NEW_SENDING_ADDRESS); 
-            }
+             }
         } else {
             if (isReceiving) {
                 controller.setActionForwardToChild(ActionForward.FORWARD_TO_EDIT_RECEIVING_ADDRESS); 
@@ -49,5 +52,4 @@ public class CreateOrEditAddressAction implements Action {
             return "edit";
         }
     }
-
 }
