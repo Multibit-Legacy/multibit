@@ -185,7 +185,7 @@ public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        CopyAddressAction copyAddressAction = new CopyAddressAction(controller, this);
+        CopyAddressAction copyAddressAction = new CopyAddressAction(controller, this, true);
         copyAddressButton = new JButton(copyAddressAction);
         buttonPanel.add(copyAddressButton);
 

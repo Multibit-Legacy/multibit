@@ -136,7 +136,7 @@ public class CommandLineViewSystem implements ViewSystem {
         View receiveBitcoinView = new  ReceiveBitcoinView(localiser, "Receive Bitcoin", inputStream, printStream);
         Collection<Action> receiveBitcoinActions = new ArrayList<Action>();
         receiveBitcoinActions.add(new OpenAddressBookAction(controller, true, true));
-        receiveBitcoinActions.add(new CopyAddressAction(controller));
+        receiveBitcoinActions.add(new CopyAddressAction(controller, true));
         receiveBitcoinActions.add(new CreateOrEditAddressAction(controller, true, true));
         receiveBitcoinActions.add(new OkBackToParentAction(controller));
         receiveBitcoinView.setPossibleActions(receiveBitcoinActions);
@@ -167,7 +167,7 @@ public class CommandLineViewSystem implements ViewSystem {
         View addressBookReceivingView = new AddressBookReceivingView(localiser, "Address Book (Receiving)", inputStream, printStream);
         Collection<Action> addressBookReceivingActions = new ArrayList<Action>();
         // need selection of address shown
-        addressBookReceivingActions.add(new CopyAddressAction(controller));
+        addressBookReceivingActions.add(new CopyAddressAction(controller, true));
         addressBookReceivingActions.add(new CreateOrEditAddressAction(controller, true, true));
         addressBookReceivingActions.add(new CreateOrEditAddressAction(controller, false, true));
         addressBookReceivingActions.add(new OpenAddressBookAction(controller, false, false));
@@ -179,7 +179,7 @@ public class CommandLineViewSystem implements ViewSystem {
         View addressBookSendingView = new AddressBookSendingView(localiser, "Address Book (Sending)", inputStream, printStream);
         Collection<Action> addressBookSendingActions = new ArrayList<Action>();
         // need selection of addresses shown
-        addressBookSendingActions.add(new CopyAddressAction(controller));
+        addressBookSendingActions.add(new CopyAddressAction(controller, false));
         addressBookSendingActions.add(new CreateOrEditAddressAction(controller, true, false));
         addressBookSendingActions.add(new CreateOrEditAddressAction(controller, false, false));
         addressBookSendingActions.add(new OpenAddressBookAction(controller, false, true));

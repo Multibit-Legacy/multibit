@@ -19,14 +19,16 @@ public class CopyAddressAction extends AbstractAction {
 
     private MultiBitController controller;
     private DataProvider dataProvider;
+    private boolean isReceiving;
 
     /**
      * Creates a new {@link CopyAddressAction}.
      */
-    public CopyAddressAction(MultiBitController controller, DataProvider dataProvider) {
+    public CopyAddressAction(MultiBitController controller, DataProvider dataProvider, boolean isReceiving) {
         super(controller.getLocaliser().getString("copyAddressAction.text"));
         this.controller = controller;
         this.dataProvider = dataProvider;
+        this.isReceiving = isReceiving;
         
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("copyAddressAction.tooltip"));
         putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("copyAddressAction.mnemonicKey"));
@@ -36,7 +38,7 @@ public class CopyAddressAction extends AbstractAction {
      * delegate to generic copy address action
      */
     public void actionPerformed(ActionEvent e) {
-        org.multibit.action.CopyAddressAction genericCopyAddressAction = new org.multibit.action.CopyAddressAction(controller);
+        org.multibit.action.CopyAddressAction genericCopyAddressAction = new org.multibit.action.CopyAddressAction(controller, isReceiving);
         genericCopyAddressAction.execute(dataProvider);
     }
 }

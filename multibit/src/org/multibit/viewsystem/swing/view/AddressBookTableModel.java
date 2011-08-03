@@ -90,9 +90,9 @@ public class AddressBookTableModel extends DefaultTableModel {
     }
     
     /**
-     * find a row, given a receiving address
+     * find a row, given an address
      */
-    public int findRowByAddress(String address) {
+    public int findRowByAddress(String address, boolean isReceiving) {
         if (address == null) {
             return -1;
         }
