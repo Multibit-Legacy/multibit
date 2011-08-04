@@ -1,0 +1,25 @@
+TODO for minimal viable product
+--------------------------------
+check sending and receiving works reliably
+only receive addresses you have keys for should be present
+order transactions in reverse order
+make sure right icons are used - no coffee cups
+test it works on the test network
+ensure all transactions have a transaction date shown
+after update of address book - need to recreate transactions descriptions
+get rid of hardwired peer address - MultiBitService#MultiBitService
+
+Documentation
+-------------
+write release notes
+get the online help to point to a website - put in basic help
+
+Logging and errors
+------------------
+no error message in MultiBitService#sendCoins when not enough money
+no error message when cannot connect to peer
+no logging - use log4j
+
+Nice to have
+------------
+internationalise to Russion

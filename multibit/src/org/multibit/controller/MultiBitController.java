@@ -270,6 +270,14 @@ public class MultiBitController implements PeerEventListener {
             viewSystem.navigateAwayFromView(previousView, currentView,
                     relationshipOfNewViewToPrevious);
         }
+        
+        // for the top level views, clear the view stack
+        // this makes the UI behaviour a bit more 'normal'
+        if (currentView == View.HOME_PAGE_VIEW || currentView == View.OPEN_WALLET_VIEW || currentView == View.SAVE_WALLET_AS_VIEW ||
+                currentView == View.RECEIVE_BITCOIN_VIEW || currentView == View.SEND_BITCOIN_VIEW || currentView == View.HELP_ABOUT_VIEW ||
+                currentView == View.HELP_CONTENTS_VIEW || currentView == View.PREFERENCES_VIEW) {
+            clearViewStack();
+        }
         // tell all views which view to display
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.displayView(currentView);
@@ -442,6 +450,12 @@ public class MultiBitController implements PeerEventListener {
         } catch (AddressFormatException e) {
             e.printStackTrace();
         }
+    }
+    
+    public void clearViewStack() {
+        viewStack.clear();
+        viewStack.push(View.HOME_PAGE_VIEW);
+        previousView = View.HOME_PAGE_VIEW;
     }
     
     public MultiBitService getMultiBitService() {
