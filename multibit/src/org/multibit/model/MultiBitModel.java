@@ -235,6 +235,21 @@ public class MultiBitModel {
                 walletDataRow.setHeight(workOutHeight(spentTransaction));
             }
         }
+        
+        // run through all the walletdata to see if both credit and debit are set (this means change was received)
+        for (WalletData walletDataRow : walletData) {
+            if (walletDataRow.getCredit() != null && (walletDataRow.getCredit().compareTo(BigInteger.ZERO) > 0) && 
+                    (walletDataRow.getDebit() != null) && walletDataRow.getDebit().compareTo(BigInteger.ZERO)  > 0) {
+                BigInteger net = walletDataRow.getCredit().subtract(walletDataRow.getDebit());
+                if (net.compareTo(BigInteger.ZERO) >= 0) {
+                    walletDataRow.setCredit(net);
+                    walletDataRow.setDebit(BigInteger.ZERO);
+                } else {
+                    walletDataRow.setCredit(BigInteger.ZERO);
+                    walletDataRow.setDebit(net.negate());                    
+                }
+            }
+        }
 
         return walletData;
     }

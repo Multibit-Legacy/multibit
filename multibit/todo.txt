@@ -4,7 +4,7 @@ check sending and receiving works reliably
 switching wallets does not clear the address book
 make sure right icons are used - no coffee cups
 test it works on the test network
-ensure all transactions have a transaction date shown
+ensure all transactions have a transaction date shown - currently pendings don't
 after update of address book - need to recreate transactions descriptions
 get rid of hardwired peer address - MultiBitService#MultiBitService
 
