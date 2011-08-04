@@ -129,22 +129,22 @@ java.lang.Object
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#addReceivingAddress(Address)">addReceivingAddress</A></B>(Address&nbsp;receivingAddress)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add a receiving address in the form of an Address, keeping the label of
- any existing address (the candidate receiving addresses are used to
- ensure only receiving addresses actually in the wallet are shown)</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#addReceivingAddress(org.multibit.model.AddressBookData, boolean)">addReceivingAddress</A></B>(<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&nbsp;receivingAddress,
                     boolean&nbsp;addToCandidates)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add a receiving address in the form of an AddressBookData, replacing the
  label of any existing address</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#addReceivingAddressOfKey(Address)">addReceivingAddressOfKey</A></B>(Address&nbsp;receivingAddress)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add a receiving address that belongs to a key of the current wallet
+ this will always be added and will take the label of any matching address
+ in the list of candidate addresses fron the address book</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -164,7 +164,7 @@ java.lang.Object
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;java.util.SortedSet&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;java.util.Set&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#getReceivingAddresses()">getReceivingAddresses</A></B>()</CODE>
 
 <BR>
@@ -172,7 +172,7 @@ java.lang.Object
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;java.util.SortedSet&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt;</CODE></FONT></TD>
+<CODE>&nbsp;java.util.Set&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#getSendingAddresses()">getSendingAddresses</A></B>()</CODE>
 
 <BR>
@@ -270,7 +270,7 @@ public <B>AddressBook</B>()</PRE>
 <A NAME="getReceivingAddresses()"><!-- --></A><H3>
 getReceivingAddresses</H3>
 <PRE>
-public java.util.SortedSet&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt; <B>getReceivingAddresses</B>()</PRE>
+public java.util.Set&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt; <B>getReceivingAddresses</B>()</PRE>
 <DL>
 <DD><DL>
 </DL>
@@ -292,7 +292,7 @@ public void <B>setReceivingAddresses</B>(java.util.SortedSet&lt;<A HREF="../../.
 <A NAME="getSendingAddresses()"><!-- --></A><H3>
 getSendingAddresses</H3>
 <PRE>
-public java.util.SortedSet&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt; <B>getSendingAddresses</B>()</PRE>
+public java.util.Set&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt; <B>getSendingAddresses</B>()</PRE>
 <DL>
 <DD><DL>
 </DL>
@@ -326,14 +326,14 @@ public void <B>addReceivingAddress</B>(<A HREF="../../../org/multibit/model/Addr
 </DL>
 <HR>
 
-<A NAME="addReceivingAddress(Address)"><!-- --></A><H3>
-addReceivingAddress</H3>
+<A NAME="addReceivingAddressOfKey(Address)"><!-- --></A><H3>
+addReceivingAddressOfKey</H3>
 <PRE>
-public void <B>addReceivingAddress</B>(Address&nbsp;receivingAddress)</PRE>
+public void <B>addReceivingAddressOfKey</B>(Address&nbsp;receivingAddress)</PRE>
 <DL>
-<DD>add a receiving address in the form of an Address, keeping the label of
- any existing address (the candidate receiving addresses are used to
- ensure only receiving addresses actually in the wallet are shown)
+<DD>add a receiving address that belongs to a key of the current wallet
+ this will always be added and will take the label of any matching address
+ in the list of candidate addresses fron the address book
 <P>
 <DD><DL>
 <DT><B>Parameters:</B><DD><CODE>receivingAddress</CODE> - </DL>

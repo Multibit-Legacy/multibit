@@ -33,7 +33,6 @@ import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerAddress;
-import com.google.bitcoin.core.PeerException;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
@@ -137,7 +136,10 @@ public class MultiBitService {
                 }
             });
 
-            wallet.keychain.add(new ECKey());
+            ECKey newKey = new ECKey();
+            wallet.keychain.add(newKey);
+            System.out.println("MultiBitService#MultiBitService - Send coins to: " + newKey.toAddress(networkParameters).toString());
+            
             try {
                 // TODO need to make sure dont overwrite an existing wallet
                 wallet.saveToFile(walletFile);

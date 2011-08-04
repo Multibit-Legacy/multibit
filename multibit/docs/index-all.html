@@ -172,11 +172,11 @@ Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Trans
 Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
 <DD>add a receiving address in the form of an AddressBookData, replacing the
  label of any existing address
-<DT><A HREF="./org/multibit/model/AddressBook.html#addReceivingAddress(Address)"><B>addReceivingAddress(Address)</B></A> - 
+<DT><A HREF="./org/multibit/model/AddressBook.html#addReceivingAddressOfKey(Address)"><B>addReceivingAddressOfKey(Address)</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
-<DD>add a receiving address in the form of an Address, keeping the label of
- any existing address (the candidate receiving addresses are used to
- ensure only receiving addresses actually in the wallet are shown)
+<DD>add a receiving address that belongs to a key of the current wallet
+ this will always be added and will take the label of any matching address
+ in the list of candidate addresses fron the address book
 <DT><A HREF="./org/multibit/action/Action.html#ADDRESS_BOOK_ACTION"><B>ADDRESS_BOOK_ACTION</B></A> - 
 Static variable in interface org.multibit.action.<A HREF="./org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>
 <DD>&nbsp;
