@@ -48,7 +48,7 @@ public class ReceiveBitcoinSubmitAction implements Action {
                 if (receiveLabel == null) {
                     receiveLabel = "";
                 }
-                controller.getModel().getAddressBook().addReceivingAddress(new AddressBookData(receiveLabel, receiveAddress));
+                controller.getModel().getAddressBook().addReceivingAddress(new AddressBookData(receiveLabel, receiveAddress), false);
             }
         }
         controller.setActionForwardToParent();

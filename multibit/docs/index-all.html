@@ -92,6 +92,9 @@ Method in class org.multibit.viewsystem.swing.action.<A HREF="./org/multibit/vie
 <DT><A HREF="./org/multibit/viewsystem/swing/action/CreateOrEditAddressAction.html#actionPerformed(java.awt.event.ActionEvent)"><B>actionPerformed(ActionEvent)</B></A> - 
 Method in class org.multibit.viewsystem.swing.action.<A HREF="./org/multibit/viewsystem/swing/action/CreateOrEditAddressAction.html" title="class in org.multibit.viewsystem.swing.action">CreateOrEditAddressAction</A>
 <DD>delegate to generic create or edit address action
+<DT><A HREF="./org/multibit/viewsystem/swing/action/CreateOrEditAddressSubmitAction.html#actionPerformed(java.awt.event.ActionEvent)"><B>actionPerformed(ActionEvent)</B></A> - 
+Method in class org.multibit.viewsystem.swing.action.<A HREF="./org/multibit/viewsystem/swing/action/CreateOrEditAddressSubmitAction.html" title="class in org.multibit.viewsystem.swing.action">CreateOrEditAddressSubmitAction</A>
+<DD>delegate to generic submit action
 <DT><A HREF="./org/multibit/viewsystem/swing/action/ExitAction.html#actionPerformed(java.awt.event.ActionEvent)"><B>actionPerformed(ActionEvent)</B></A> - 
 Method in class org.multibit.viewsystem.swing.action.<A HREF="./org/multibit/viewsystem/swing/action/ExitAction.html" title="class in org.multibit.viewsystem.swing.action">ExitAction</A>
 <DD>delegate to the generic ExitAction
@@ -116,6 +119,9 @@ Method in class org.multibit.viewsystem.swing.action.<A HREF="./org/multibit/vie
 <DT><A HREF="./org/multibit/viewsystem/swing/action/ReceiveBitcoinAction.html#actionPerformed(java.awt.event.ActionEvent)"><B>actionPerformed(ActionEvent)</B></A> - 
 Method in class org.multibit.viewsystem.swing.action.<A HREF="./org/multibit/viewsystem/swing/action/ReceiveBitcoinAction.html" title="class in org.multibit.viewsystem.swing.action">ReceiveBitcoinAction</A>
 <DD>receive bitcoins
+<DT><A HREF="./org/multibit/viewsystem/swing/action/ReceiveBitcoinSubmitAction.html#actionPerformed(java.awt.event.ActionEvent)"><B>actionPerformed(ActionEvent)</B></A> - 
+Method in class org.multibit.viewsystem.swing.action.<A HREF="./org/multibit/viewsystem/swing/action/ReceiveBitcoinSubmitAction.html" title="class in org.multibit.viewsystem.swing.action">ReceiveBitcoinSubmitAction</A>
+<DD>delegate to generic submit action
 <DT><A HREF="./org/multibit/viewsystem/swing/action/SaveWalletAsAction.html#actionPerformed(java.awt.event.ActionEvent)"><B>actionPerformed(ActionEvent)</B></A> - 
 Method in class org.multibit.viewsystem.swing.action.<A HREF="./org/multibit/viewsystem/swing/action/SaveWalletAsAction.html" title="class in org.multibit.viewsystem.swing.action">SaveWalletAsAction</A>
 <DD>Save wallet to a new file.
@@ -162,6 +168,15 @@ Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Walle
 <DT><A HREF="./com/google/bitcoin/core/Transaction.html#addOutput(TransactionOutput)"><B>addOutput(TransactionOutput)</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>
 <DD>Adds the given output to this transaction.
+<DT><A HREF="./org/multibit/model/AddressBook.html#addReceivingAddress(org.multibit.model.AddressBookData, boolean)"><B>addReceivingAddress(AddressBookData, boolean)</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
+<DD>add a receiving address in the form of an AddressBookData, replacing the
+ label of any existing address
+<DT><A HREF="./org/multibit/model/AddressBook.html#addReceivingAddress(Address)"><B>addReceivingAddress(Address)</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
+<DD>add a receiving address in the form of an Address, keeping the label of
+ any existing address (the candidate receiving addresses are used to
+ ensure only receiving addresses actually in the wallet are shown)
 <DT><A HREF="./org/multibit/action/Action.html#ADDRESS_BOOK_ACTION"><B>ADDRESS_BOOK_ACTION</B></A> - 
 Static variable in interface org.multibit.action.<A HREF="./org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>
 <DD>&nbsp;
@@ -170,6 +185,9 @@ Static variable in interface org.multibit.viewsystem.<A HREF="./org/multibit/vie
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/View.html#ADDRESS_BOOK_SENDING_VIEW"><B>ADDRESS_BOOK_SENDING_VIEW</B></A> - 
 Static variable in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model"><B>AddressBook</B></A> - Class in <A HREF="./org/multibit/model/package-summary.html">org.multibit.model</A><DD>&nbsp;<DT><A HREF="./org/multibit/model/AddressBook.html#AddressBook()"><B>AddressBook()</B></A> - 
+Constructor for class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/model/AddressBookData.html" title="class in org.multibit.model"><B>AddressBookData</B></A> - Class in <A HREF="./org/multibit/model/package-summary.html">org.multibit.model</A><DD>class used to store the data in the table in a quick to access form<DT><A HREF="./org/multibit/model/AddressBookData.html#AddressBookData(java.lang.String, java.lang.String)"><B>AddressBookData(String, String)</B></A> - 
 Constructor for class org.multibit.model.<A HREF="./org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>
@@ -186,12 +204,15 @@ Constructor for class org.multibit.viewsystem.commandline.view.<A HREF="./org/mu
 <DT><A HREF="./org/multibit/viewsystem/commandline/view/AddressBookSendingView.html" title="class in org.multibit.viewsystem.commandline.view"><B>AddressBookSendingView</B></A> - Class in <A HREF="./org/multibit/viewsystem/commandline/view/package-summary.html">org.multibit.viewsystem.commandline.view</A><DD>the command line view for the address book open at the sending addresses<DT><A HREF="./org/multibit/viewsystem/commandline/view/AddressBookSendingView.html#AddressBookSendingView(org.multibit.Localiser, java.lang.String, java.io.InputStream, java.io.PrintStream)"><B>AddressBookSendingView(Localiser, String, InputStream, PrintStream)</B></A> - 
 Constructor for class org.multibit.viewsystem.commandline.view.<A HREF="./org/multibit/viewsystem/commandline/view/AddressBookSendingView.html" title="class in org.multibit.viewsystem.commandline.view">AddressBookSendingView</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/swing/view/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing.view"><B>AddressBookTableModel</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/view/package-summary.html">org.multibit.viewsystem.swing.view</A><DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/swing/view/AddressBookTableModel.html#AddressBookTableModel(org.multibit.Localiser, boolean)"><B>AddressBookTableModel(Localiser, boolean)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/swing/view/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing.view"><B>AddressBookTableModel</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/view/package-summary.html">org.multibit.viewsystem.swing.view</A><DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/swing/view/AddressBookTableModel.html#AddressBookTableModel(org.multibit.Localiser, org.multibit.model.AddressBook, boolean)"><B>AddressBookTableModel(Localiser, AddressBook, boolean)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing.view">AddressBookTableModel</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/swing/view/AddressBookView.html" title="class in org.multibit.viewsystem.swing.view"><B>AddressBookView</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/view/package-summary.html">org.multibit.viewsystem.swing.view</A><DD>The view of the address book<DT><A HREF="./org/multibit/viewsystem/swing/view/AddressBookView.html#AddressBookView(org.multibit.controller.MultiBitController, org.multibit.Localiser, org.multibit.viewsystem.swing.MultiBitFrame, boolean)"><B>AddressBookView(MultiBitController, Localiser, MultiBitFrame, boolean)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/AddressBookView.html" title="class in org.multibit.viewsystem.swing.view">AddressBookView</A>
 <DD>Creates a new <A HREF="./org/multibit/viewsystem/swing/view/AddressBookView.html" title="class in org.multibit.viewsystem.swing.view"><CODE>AddressBookView</CODE></A>.
+<DT><A HREF="./org/multibit/model/AddressBook.html#addSendingAddress(org.multibit.model.AddressBookData)"><B>addSendingAddress(AddressBookData)</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/model/MultiBitModel.html#addWalletEventListener(WalletEventListener)"><B>addWalletEventListener(WalletEventListener)</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>&nbsp;
@@ -212,6 +233,15 @@ Static method in class org.multibit.<A HREF="./org/multibit/Localiser.html" titl
 <DT><A HREF="./org/multibit/network/MultiBitService.html#BLOCKCHAIN_SUFFIX"><B>BLOCKCHAIN_SUFFIX</B></A> - 
 Static variable in class org.multibit.network.<A HREF="./org/multibit/network/MultiBitService.html" title="class in org.multibit.network">MultiBitService</A>
 <DD>&nbsp;
+<DT><A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html#blockDownloaded()"><B>blockDownloaded()</B></A> - 
+Method in class org.multibit.viewsystem.commandline.<A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html" title="class in org.multibit.viewsystem.commandline">CommandLineViewSystem</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/viewsystem/swing/MultiBitFrame.html#blockDownloaded()"><B>blockDownloaded()</B></A> - 
+Method in class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/viewsystem/ViewSystem.html#blockDownloaded()"><B>blockDownloaded()</B></A> - 
+Method in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A>
+<DD>notification that a block has been downloaded
 </DL>
 <HR>
 <A NAME="_C_"><!-- --></A><H2>
@@ -224,6 +254,9 @@ Constructor for class org.multibit.action.<A HREF="./org/multibit/action/CancelB
 <DT><A HREF="./org/multibit/viewsystem/swing/action/CancelBackToParentAction.html" title="class in org.multibit.viewsystem.swing.action"><B>CancelBackToParentAction</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/action/package-summary.html">org.multibit.viewsystem.swing.action</A><DD>This <CODE>Action</CODE> represents a cancel action to go back to the parent view<DT><A HREF="./org/multibit/viewsystem/swing/action/CancelBackToParentAction.html#CancelBackToParentAction(org.multibit.controller.MultiBitController)"><B>CancelBackToParentAction(MultiBitController)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.action.<A HREF="./org/multibit/viewsystem/swing/action/CancelBackToParentAction.html" title="class in org.multibit.viewsystem.swing.action">CancelBackToParentAction</A>
 <DD>Creates a new <A HREF="./org/multibit/viewsystem/swing/action/CancelBackToParentAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>CancelBackToParentAction</CODE></A>.
+<DT><A HREF="./org/multibit/controller/MultiBitController.html#clearViewStack()"><B>clearViewStack()</B></A> - 
+Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/model/WalletData.html#COLUMN_HEADER_KEYS"><B>COLUMN_HEADER_KEYS</B></A> - 
 Static variable in class org.multibit.model.<A HREF="./org/multibit/model/WalletData.html" title="class in org.multibit.model">WalletData</A>
 <DD>keys that give column header text for output formatting
@@ -233,16 +266,23 @@ Static variable in class org.multibit.model.<A HREF="./org/multibit/model/Wallet
  ensure separation of concerns<DT><A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html#CommandLineViewSystem(org.multibit.controller.MultiBitController)"><B>CommandLineViewSystem(MultiBitController)</B></A> - 
 Constructor for class org.multibit.viewsystem.commandline.<A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html" title="class in org.multibit.viewsystem.commandline">CommandLineViewSystem</A>
 <DD>&nbsp;
+<DT><A HREF="./org/multibit/model/AddressBookData.html#compareTo(java.lang.Object)"><B>compareTo(Object)</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/commandline/view/AbstractView.html#consoleReader"><B>consoleReader</B></A> - 
 Static variable in class org.multibit.viewsystem.commandline.view.<A HREF="./org/multibit/viewsystem/commandline/view/AbstractView.html" title="class in org.multibit.viewsystem.commandline.view">AbstractView</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/commandline/ConsoleReadingThread.html" title="class in org.multibit.viewsystem.commandline"><B>ConsoleReadingThread</B></A> - Class in <A HREF="./org/multibit/viewsystem/commandline/package-summary.html">org.multibit.viewsystem.commandline</A><DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/commandline/ConsoleReadingThread.html#ConsoleReadingThread(java.io.InputStream, java.io.PrintStream, java.util.Collection)"><B>ConsoleReadingThread(InputStream, PrintStream, Collection&lt;Action&gt;)</B></A> - 
 Constructor for class org.multibit.viewsystem.commandline.<A HREF="./org/multibit/viewsystem/commandline/ConsoleReadingThread.html" title="class in org.multibit.viewsystem.commandline">ConsoleReadingThread</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/action/CopyAddressAction.html" title="class in org.multibit.action"><B>CopyAddressAction</B></A> - Class in <A HREF="./org/multibit/action/package-summary.html">org.multibit.action</A><DD>an action to copy the address in the supplied formbean to the system clipboard<DT><A HREF="./org/multibit/action/CopyAddressAction.html#CopyAddressAction(org.multibit.controller.MultiBitController)"><B>CopyAddressAction(MultiBitController)</B></A> - 
+<DT><A HREF="./org/multibit/model/AddressBook.html#containsReceivingAddress(java.lang.String)"><B>containsReceivingAddress(String)</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/action/CopyAddressAction.html" title="class in org.multibit.action"><B>CopyAddressAction</B></A> - Class in <A HREF="./org/multibit/action/package-summary.html">org.multibit.action</A><DD>an action to copy the address in the supplied formbean to the system
+ clipboard<DT><A HREF="./org/multibit/action/CopyAddressAction.html#CopyAddressAction(org.multibit.controller.MultiBitController, boolean)"><B>CopyAddressAction(MultiBitController, boolean)</B></A> - 
 Constructor for class org.multibit.action.<A HREF="./org/multibit/action/CopyAddressAction.html" title="class in org.multibit.action">CopyAddressAction</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/swing/action/CopyAddressAction.html" title="class in org.multibit.viewsystem.swing.action"><B>CopyAddressAction</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/action/package-summary.html">org.multibit.viewsystem.swing.action</A><DD>This <CODE>Action</CODE> represents the swing copy address action<DT><A HREF="./org/multibit/viewsystem/swing/action/CopyAddressAction.html#CopyAddressAction(org.multibit.controller.MultiBitController, org.multibit.model.DataProvider)"><B>CopyAddressAction(MultiBitController, DataProvider)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/swing/action/CopyAddressAction.html" title="class in org.multibit.viewsystem.swing.action"><B>CopyAddressAction</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/action/package-summary.html">org.multibit.viewsystem.swing.action</A><DD>This <CODE>Action</CODE> represents the swing copy address action<DT><A HREF="./org/multibit/viewsystem/swing/action/CopyAddressAction.html#CopyAddressAction(org.multibit.controller.MultiBitController, org.multibit.model.DataProvider, boolean)"><B>CopyAddressAction(MultiBitController, DataProvider, boolean)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.action.<A HREF="./org/multibit/viewsystem/swing/action/CopyAddressAction.html" title="class in org.multibit.viewsystem.swing.action">CopyAddressAction</A>
 <DD>Creates a new <A HREF="./org/multibit/viewsystem/swing/action/CopyAddressAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>CopyAddressAction</CODE></A>.
 <DT><A HREF="./org/multibit/viewsystem/View.html#CREATE_NEW_RECEIVING_ADDRESS_VIEW"><B>CREATE_NEW_RECEIVING_ADDRESS_VIEW</B></A> - 
@@ -251,6 +291,9 @@ Static variable in interface org.multibit.viewsystem.<A HREF="./org/multibit/vie
 <DT><A HREF="./org/multibit/viewsystem/View.html#CREATE_NEW_SENDING_ADDRESS_VIEW"><B>CREATE_NEW_SENDING_ADDRESS_VIEW</B></A> - 
 Static variable in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A>
 <DD>&nbsp;
+<DT><A HREF="./org/multibit/model/MultiBitModel.html#createAddressBookReceivingAddresses()"><B>createAddressBookReceivingAddresses()</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
+<DD>add the receiving addresses of all the keys in this wallet
 <DT><A HREF="./org/multibit/viewsystem/swing/WalletTableModel.html#createHeaders()"><B>createHeaders()</B></A> - 
 Method in class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem/swing/WalletTableModel.html" title="class in org.multibit.viewsystem.swing">WalletTableModel</A>
 <DD>&nbsp;
@@ -266,6 +309,12 @@ Constructor for class org.multibit.viewsystem.swing.action.<A HREF="./org/multib
 <DT><A HREF="./org/multibit/viewsystem/swing/view/CreateOrEditAddressDialog.html" title="class in org.multibit.viewsystem.swing.view"><B>CreateOrEditAddressDialog</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/view/package-summary.html">org.multibit.viewsystem.swing.view</A><DD>Dialog for creating and editing address + label combinations<DT><A HREF="./org/multibit/viewsystem/swing/view/CreateOrEditAddressDialog.html#CreateOrEditAddressDialog(javax.swing.JFrame, org.multibit.controller.MultiBitController, boolean, boolean)"><B>CreateOrEditAddressDialog(JFrame, MultiBitController, boolean, boolean)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/CreateOrEditAddressDialog.html" title="class in org.multibit.viewsystem.swing.view">CreateOrEditAddressDialog</A>
 <DD>&nbsp;
+<DT><A HREF="./org/multibit/action/CreateOrEditAddressSubmitAction.html" title="class in org.multibit.action"><B>CreateOrEditAddressSubmitAction</B></A> - Class in <A HREF="./org/multibit/action/package-summary.html">org.multibit.action</A><DD>an action to process the submit of the CreateOrEditAddress view<DT><A HREF="./org/multibit/action/CreateOrEditAddressSubmitAction.html#CreateOrEditAddressSubmitAction(org.multibit.controller.MultiBitController, boolean, boolean)"><B>CreateOrEditAddressSubmitAction(MultiBitController, boolean, boolean)</B></A> - 
+Constructor for class org.multibit.action.<A HREF="./org/multibit/action/CreateOrEditAddressSubmitAction.html" title="class in org.multibit.action">CreateOrEditAddressSubmitAction</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/viewsystem/swing/action/CreateOrEditAddressSubmitAction.html" title="class in org.multibit.viewsystem.swing.action"><B>CreateOrEditAddressSubmitAction</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/action/package-summary.html">org.multibit.viewsystem.swing.action</A><DD>This <CODE>Action</CODE> submits the CreateOrEditAddress swing view<DT><A HREF="./org/multibit/viewsystem/swing/action/CreateOrEditAddressSubmitAction.html#CreateOrEditAddressSubmitAction(org.multibit.controller.MultiBitController, org.multibit.model.DataProvider, boolean, boolean)"><B>CreateOrEditAddressSubmitAction(MultiBitController, DataProvider, boolean, boolean)</B></A> - 
+Constructor for class org.multibit.viewsystem.swing.action.<A HREF="./org/multibit/viewsystem/swing/action/CreateOrEditAddressSubmitAction.html" title="class in org.multibit.viewsystem.swing.action">CreateOrEditAddressSubmitAction</A>
+<DD>Creates a new <A HREF="./org/multibit/viewsystem/swing/action/CreateOrEditAddressSubmitAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>CreateOrEditAddressSubmitAction</CODE></A>.
 <DT><A HREF="./org/multibit/viewsystem/swing/view/CreateOrEditAddressView.html" title="class in org.multibit.viewsystem.swing.view"><B>CreateOrEditAddressView</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/view/package-summary.html">org.multibit.viewsystem.swing.view</A><DD>The create new receiving address view<DT><A HREF="./org/multibit/viewsystem/swing/view/CreateOrEditAddressView.html#CreateOrEditAddressView(org.multibit.controller.MultiBitController, org.multibit.Localiser, javax.swing.JFrame, boolean, boolean)"><B>CreateOrEditAddressView(MultiBitController, Localiser, JFrame, boolean, boolean)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/CreateOrEditAddressView.html" title="class in org.multibit.viewsystem.swing.view">CreateOrEditAddressView</A>
 <DD>Creates a new <A HREF="./org/multibit/viewsystem/swing/view/CreateOrEditAddressView.html" title="class in org.multibit.viewsystem.swing.view"><CODE>CreateOrEditAddressView</CODE></A>.
@@ -468,6 +517,9 @@ Method in class org.multibit.viewsystem.commandline.<A HREF="./org/multibit/view
 <DT><A HREF="./com/google/bitcoin/core/Transaction.html#equals(java.lang.Object)"><B>equals(Object)</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>
 <DD>&nbsp;
+<DT><A HREF="./org/multibit/model/AddressBookData.html#equals(java.lang.Object)"><B>equals(Object)</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html#ERROR_PREFIX"><B>ERROR_PREFIX</B></A> - 
 Static variable in class org.multibit.viewsystem.commandline.<A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html" title="class in org.multibit.viewsystem.commandline">CommandLineViewSystem</A>
 <DD>&nbsp;
@@ -482,6 +534,9 @@ Method in class org.multibit.action.<A HREF="./org/multibit/action/CopyAddressAc
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/action/CreateOrEditAddressAction.html#execute(org.multibit.model.DataProvider)"><B>execute(DataProvider)</B></A> - 
 Method in class org.multibit.action.<A HREF="./org/multibit/action/CreateOrEditAddressAction.html" title="class in org.multibit.action">CreateOrEditAddressAction</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/action/CreateOrEditAddressSubmitAction.html#execute(org.multibit.model.DataProvider)"><B>execute(DataProvider)</B></A> - 
+Method in class org.multibit.action.<A HREF="./org/multibit/action/CreateOrEditAddressSubmitAction.html" title="class in org.multibit.action">CreateOrEditAddressSubmitAction</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/action/ExitAction.html#execute(org.multibit.model.DataProvider)"><B>execute(DataProvider)</B></A> - 
 Method in class org.multibit.action.<A HREF="./org/multibit/action/ExitAction.html" title="class in org.multibit.action">ExitAction</A>
@@ -509,6 +564,9 @@ Method in class org.multibit.action.<A HREF="./org/multibit/action/PasteAddressA
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/action/ReceiveBitcoinAction.html#execute(org.multibit.model.DataProvider)"><B>execute(DataProvider)</B></A> - 
 Method in class org.multibit.action.<A HREF="./org/multibit/action/ReceiveBitcoinAction.html" title="class in org.multibit.action">ReceiveBitcoinAction</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/action/ReceiveBitcoinSubmitAction.html#execute(org.multibit.model.DataProvider)"><B>execute(DataProvider)</B></A> - 
+Method in class org.multibit.action.<A HREF="./org/multibit/action/ReceiveBitcoinSubmitAction.html" title="class in org.multibit.action">ReceiveBitcoinSubmitAction</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/action/RedisplayViewAction.html#execute(org.multibit.model.DataProvider)"><B>execute(DataProvider)</B></A> - 
 Method in class org.multibit.action.<A HREF="./org/multibit/action/RedisplayViewAction.html" title="class in org.multibit.action">RedisplayViewAction</A>
@@ -555,6 +613,12 @@ Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Walle
 <DT><A HREF="./com/google/bitcoin/core/Wallet.html#findKeyFromPubKey(byte[])"><B>findKeyFromPubKey(byte[])</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>
 <DD>Locates a keypair from the keychain given the raw public key bytes.
+<DT><A HREF="./org/multibit/viewsystem/swing/view/AddressBookTableModel.html#findRowByAddress(java.lang.String, boolean)"><B>findRowByAddress(String, boolean)</B></A> - 
+Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing.view">AddressBookTableModel</A>
+<DD>find a row, given an address
+<DT><A HREF="./org/multibit/controller/MultiBitController.html#fireBlockDownloaded()"><B>fireBlockDownloaded()</B></A> - 
+Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
+<DD>method called by downloadListener whenever a block is downloaded
 <DT><A HREF="./org/multibit/viewsystem/swing/MultiBitFrame.html#fireDataChanged()"><B>fireDataChanged()</B></A> - 
 Method in class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A>
 <DD>update the UI after the model data has changed
@@ -564,11 +628,23 @@ Method in class org.multibit.controller.<A HREF="./org/multibit/controller/Multi
 <DT><A HREF="./org/multibit/controller/MultiBitController.html#fireWalletChanged()"><B>fireWalletChanged()</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
 <DD>the wallet file has been changed
+<DT><A HREF="./org/multibit/controller/MultiBitController.html#fireWalletDataChanged()"><B>fireWalletDataChanged()</B></A> - 
+Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
+<DD>the wallet data has been changed
 </DL>
 <HR>
 <A NAME="_G_"><!-- --></A><H2>
 <B>G</B></H2>
 <DL>
+<DT><A HREF="./org/multibit/model/AddressBookData.html#getAddress()"><B>getAddress()</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/model/MultiBitModel.html#getAddressBook()"><B>getAddressBook()</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/viewsystem/swing/view/AddressBookTableModel.html#getAddressBookDataByRow(int, boolean)"><B>getAddressBookDataByRow(int, boolean)</B></A> - 
+Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing.view">AddressBookTableModel</A>
+<DD>given a row, return the AddressBookData on this row
 <DT><A HREF="./org/multibit/model/MultiBitModel.html#getAllUserPreferences()"><B>getAllUserPreferences()</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>get all user preference
@@ -627,6 +703,9 @@ Method in class org.multibit.viewsystem.commandline.<A HREF="./org/multibit/view
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/swing/view/AddressBookDialog.html#getData()"><B>getData()</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/AddressBookDialog.html" title="class in org.multibit.viewsystem.swing.view">AddressBookDialog</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/viewsystem/swing/view/CreateOrEditAddressDialog.html#getData()"><B>getData()</B></A> - 
+Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/CreateOrEditAddressDialog.html" title="class in org.multibit.viewsystem.swing.view">CreateOrEditAddressDialog</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/swing/view/OpenWalletView.html#getData()"><B>getData()</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/OpenWalletView.html" title="class in org.multibit.viewsystem.swing.view">OpenWalletView</A>
@@ -706,6 +785,9 @@ Method in class org.multibit.action.<A HREF="./org/multibit/action/CopyAddressAc
 <DT><A HREF="./org/multibit/action/CreateOrEditAddressAction.html#getDisplayText()"><B>getDisplayText()</B></A> - 
 Method in class org.multibit.action.<A HREF="./org/multibit/action/CreateOrEditAddressAction.html" title="class in org.multibit.action">CreateOrEditAddressAction</A>
 <DD>&nbsp;
+<DT><A HREF="./org/multibit/action/CreateOrEditAddressSubmitAction.html#getDisplayText()"><B>getDisplayText()</B></A> - 
+Method in class org.multibit.action.<A HREF="./org/multibit/action/CreateOrEditAddressSubmitAction.html" title="class in org.multibit.action">CreateOrEditAddressSubmitAction</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/action/ExitAction.html#getDisplayText()"><B>getDisplayText()</B></A> - 
 Method in class org.multibit.action.<A HREF="./org/multibit/action/ExitAction.html" title="class in org.multibit.action">ExitAction</A>
 <DD>&nbsp;
@@ -733,6 +815,9 @@ Method in class org.multibit.action.<A HREF="./org/multibit/action/PasteAddressA
 <DT><A HREF="./org/multibit/action/ReceiveBitcoinAction.html#getDisplayText()"><B>getDisplayText()</B></A> - 
 Method in class org.multibit.action.<A HREF="./org/multibit/action/ReceiveBitcoinAction.html" title="class in org.multibit.action">ReceiveBitcoinAction</A>
 <DD>&nbsp;
+<DT><A HREF="./org/multibit/action/ReceiveBitcoinSubmitAction.html#getDisplayText()"><B>getDisplayText()</B></A> - 
+Method in class org.multibit.action.<A HREF="./org/multibit/action/ReceiveBitcoinSubmitAction.html" title="class in org.multibit.action">ReceiveBitcoinSubmitAction</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/action/RedisplayViewAction.html#getDisplayText()"><B>getDisplayText()</B></A> - 
 Method in class org.multibit.action.<A HREF="./org/multibit/action/RedisplayViewAction.html" title="class in org.multibit.action">RedisplayViewAction</A>
 <DD>&nbsp;
@@ -756,12 +841,6 @@ Method in class org.multibit.action.<A HREF="./org/multibit/action/ShowPreferenc
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/action/ShowPreferencesSubmitAction.html#getDisplayText()"><B>getDisplayText()</B></A> - 
 Method in class org.multibit.action.<A HREF="./org/multibit/action/ShowPreferencesSubmitAction.html" title="class in org.multibit.action">ShowPreferencesSubmitAction</A>
-<DD>&nbsp;
-<DT><A HREF="./org/multibit/model/MultiBitModel.html#getFakeReceivingAddressBookData()"><B>getFakeReceivingAddressBookData()</B></A> - 
-Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
-<DD>&nbsp;
-<DT><A HREF="./org/multibit/model/MultiBitModel.html#getFakeSendingAddressBookData()"><B>getFakeSendingAddressBookData()</B></A> - 
-Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/swing/watermark/WatermarkViewport.html#getForegroundPainter()"><B>getForegroundPainter()</B></A> - 
 Method in class org.multibit.viewsystem.swing.watermark.<A HREF="./org/multibit/viewsystem/swing/watermark/WatermarkViewport.html" title="class in org.multibit.viewsystem.swing.watermark">WatermarkViewport</A>
@@ -790,6 +869,9 @@ Method in class org.multibit.model.<A HREF="./org/multibit/model/Data.html" titl
 <DT><A HREF="./org/multibit/model/Item.html#getItemName()"><B>getItemName()</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/Item.html" title="class in org.multibit.model">Item</A>
 <DD>&nbsp;
+<DT><A HREF="./org/multibit/model/AddressBookData.html#getLabel()"><B>getLabel()</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/Localiser.html#getLocale()"><B>getLocale()</B></A> - 
 Method in class org.multibit.<A HREF="./org/multibit/Localiser.html" title="class in org.multibit">Localiser</A>
 <DD>&nbsp;
@@ -808,6 +890,9 @@ Method in class org.multibit.controller.<A HREF="./org/multibit/controller/Multi
 <DT><A HREF="./org/multibit/controller/MultiBitController.html#getMultiBitService()"><B>getMultiBitService()</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
 <DD>&nbsp;
+<DT><A HREF="./org/multibit/network/MultiBitService.html#getNetworkParameters()"><B>getNetworkParameters()</B></A> - 
+Method in class org.multibit.network.<A HREF="./org/multibit/network/MultiBitService.html" title="class in org.multibit.network">MultiBitService</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/model/Item.html#getNewValue()"><B>getNewValue()</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/Item.html" title="class in org.multibit.model">Item</A>
 <DD>&nbsp;
@@ -823,11 +908,23 @@ Method in class org.multibit.network.<A HREF="./org/multibit/network/MultiBitSer
 <DT><A HREF="./com/google/bitcoin/core/Wallet.html#getPendingTransactions()"><B>getPendingTransactions()</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>
 <DD>Returns an immutable view of the transactions currently waiting for network confirmations.
+<DT><A HREF="./org/multibit/model/AddressBook.html#getReceivingAddresses()"><B>getReceivingAddresses()</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/viewsystem/swing/view/AddressBookDialog.html#getReceivingAddressesTable()"><B>getReceivingAddressesTable()</B></A> - 
+Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/AddressBookDialog.html" title="class in org.multibit.viewsystem.swing.view">AddressBookDialog</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/swing/view/AddressBookTableModel.html#getRowCount()"><B>getRowCount()</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing.view">AddressBookTableModel</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/swing/WalletTableModel.html#getRowCount()"><B>getRowCount()</B></A> - 
 Method in class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem/swing/WalletTableModel.html" title="class in org.multibit.viewsystem.swing">WalletTableModel</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/model/AddressBook.html#getSendingAddresses()"><B>getSendingAddresses()</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/viewsystem/swing/view/AddressBookDialog.html#getSendingAddressesTable()"><B>getSendingAddressesTable()</B></A> - 
+Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/AddressBookDialog.html" title="class in org.multibit.viewsystem.swing.view">AddressBookDialog</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/Localiser.html#getString(java.lang.String)"><B>getString(String)</B></A> - 
 Method in class org.multibit.<A HREF="./org/multibit/Localiser.html" title="class in org.multibit">Localiser</A>
@@ -883,6 +980,9 @@ Method in class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem
 <DT><A HREF="./com/google/bitcoin/core/Transaction.html#hashCode()"><B>hashCode()</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>
 <DD>&nbsp;
+<DT><A HREF="./org/multibit/model/AddressBookData.html#hashCode()"><B>hashCode()</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/action/Action.html#HELP_ABOUT_ACTION"><B>HELP_ABOUT_ACTION</B></A> - 
 Static variable in interface org.multibit.action.<A HREF="./org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>
 <DD>&nbsp;
@@ -898,7 +998,7 @@ Static variable in interface org.multibit.viewsystem.<A HREF="./org/multibit/vie
 <DT><A HREF="./org/multibit/action/HelpAboutAction.html" title="class in org.multibit.action"><B>HelpAboutAction</B></A> - Class in <A HREF="./org/multibit/action/package-summary.html">org.multibit.action</A><DD>an action to the help about view<DT><A HREF="./org/multibit/action/HelpAboutAction.html#HelpAboutAction(org.multibit.controller.MultiBitController)"><B>HelpAboutAction(MultiBitController)</B></A> - 
 Constructor for class org.multibit.action.<A HREF="./org/multibit/action/HelpAboutAction.html" title="class in org.multibit.action">HelpAboutAction</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/swing/action/HelpAboutAction.html" title="class in org.multibit.viewsystem.swing.action"><B>HelpAboutAction</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/action/package-summary.html">org.multibit.viewsystem.swing.action</A><DD>This <CODE>Action</CODE> represents the Help About action<DT><A HREF="./org/multibit/viewsystem/swing/action/HelpAboutAction.html#HelpAboutAction(org.multibit.controller.MultiBitController, org.multibit.Localiser, org.multibit.viewsystem.swing.MultiBitFrame)"><B>HelpAboutAction(MultiBitController, Localiser, MultiBitFrame)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/swing/action/HelpAboutAction.html" title="class in org.multibit.viewsystem.swing.action"><B>HelpAboutAction</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/action/package-summary.html">org.multibit.viewsystem.swing.action</A><DD>This <CODE>Action</CODE> represents the Help About action<DT><A HREF="./org/multibit/viewsystem/swing/action/HelpAboutAction.html#HelpAboutAction(org.multibit.controller.MultiBitController, javax.swing.ImageIcon, org.multibit.viewsystem.swing.MultiBitFrame)"><B>HelpAboutAction(MultiBitController, ImageIcon, MultiBitFrame)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.action.<A HREF="./org/multibit/viewsystem/swing/action/HelpAboutAction.html" title="class in org.multibit.viewsystem.swing.action">HelpAboutAction</A>
 <DD>Creates a new <A HREF="./org/multibit/viewsystem/swing/action/HelpAboutAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>HelpAboutAction</CODE></A>.
 <DT><A HREF="./org/multibit/viewsystem/commandline/view/HelpAboutView.html" title="class in org.multibit.viewsystem.commandline.view"><B>HelpAboutView</B></A> - Class in <A HREF="./org/multibit/viewsystem/commandline/view/package-summary.html">org.multibit.viewsystem.commandline.view</A><DD>the help about command line view<DT><A HREF="./org/multibit/viewsystem/commandline/view/HelpAboutView.html#HelpAboutView(org.multibit.Localiser, java.lang.String, java.io.InputStream, java.io.PrintStream)"><B>HelpAboutView(Localiser, String, InputStream, PrintStream)</B></A> - 
@@ -962,12 +1062,21 @@ Variable in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wal
 <A NAME="_L_"><!-- --></A><H2>
 <B>L</B></H2>
 <DL>
+<DT><A HREF="./org/multibit/viewsystem/swing/view/CreateOrEditAddressDialog.html#loadForm()"><B>loadForm()</B></A> - 
+Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/CreateOrEditAddressDialog.html" title="class in org.multibit.viewsystem.swing.view">CreateOrEditAddressDialog</A>
+<DD>load the current address into the form
+<DT><A HREF="./org/multibit/viewsystem/swing/view/ReceiveBitcoinDialog.html#loadForm()"><B>loadForm()</B></A> - 
+Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/ReceiveBitcoinDialog.html" title="class in org.multibit.viewsystem.swing.view">ReceiveBitcoinDialog</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/swing/view/SendBitcoinDialog.html#loadForm()"><B>loadForm()</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/SendBitcoinDialog.html" title="class in org.multibit.viewsystem.swing.view">SendBitcoinDialog</A>
 <DD>&nbsp;
 <DT><A HREF="./com/google/bitcoin/core/Wallet.html#loadFromFile(java.io.File)"><B>loadFromFile(File)</B></A> - 
 Static method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>
 <DD>Returns a wallet deserialized from the given file.
+<DT><A HREF="./org/multibit/model/AddressBook.html#loadFromFile()"><B>loadFromFile()</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
+<DD>&nbsp;
 <DT><A HREF="./com/google/bitcoin/core/Wallet.html#loadFromFileStream(java.io.FileInputStream)"><B>loadFromFileStream(FileInputStream)</B></A> - 
 Static method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>
 <DD>Returns a wallet deserialied from the given file input stream.
@@ -978,6 +1087,12 @@ Constructor for class org.multibit.<A HREF="./org/multibit/Localiser.html" title
  'bundleName' with Locale 'locale'
 <DT><A HREF="./org/multibit/viewsystem/commandline/view/AbstractView.html#localiser"><B>localiser</B></A> - 
 Variable in class org.multibit.viewsystem.commandline.view.<A HREF="./org/multibit/viewsystem/commandline/view/AbstractView.html" title="class in org.multibit.viewsystem.commandline.view">AbstractView</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/model/AddressBook.html#lookupLabelForReceivingAddress(java.lang.String)"><B>lookupLabelForReceivingAddress(String)</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/model/AddressBook.html#lookupLabelForSendingAddress(java.lang.String)"><B>lookupLabelForSendingAddress(String)</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/action/TextTransfer.html#lostOwnership(java.awt.datatransfer.Clipboard, java.awt.datatransfer.Transferable)"><B>lostOwnership(Clipboard, Transferable)</B></A> - 
 Method in class org.multibit.action.<A HREF="./org/multibit/action/TextTransfer.html" title="class in org.multibit.action">TextTransfer</A>
@@ -1031,7 +1146,9 @@ Constructor for class org.multibit.network.<A HREF="./org/multibit/network/Multi
  MultiBitService encapsulates the interaction with the bitcoin netork
  including: o Peers o Block chain download o sending / receiving bitcoins
  
- It is based on the bitcoinj PingService code<DT><A HREF="./org/multibit/network/MultiBitService.html#MultiBitService(boolean, org.multibit.controller.MultiBitController)"><B>MultiBitService(boolean, MultiBitController)</B></A> - 
+ It is based on the bitcoinj PingService code
+ 
+ The testnet can be slow or flaky as it's a shared resource.<DT><A HREF="./org/multibit/network/MultiBitService.html#MultiBitService(boolean, org.multibit.controller.MultiBitController)"><B>MultiBitService(boolean, MultiBitController)</B></A> - 
 Constructor for class org.multibit.network.<A HREF="./org/multibit/network/MultiBitService.html" title="class in org.multibit.network">MultiBitService</A>
 <DD>&nbsp;
 </DL>
@@ -1226,9 +1343,6 @@ Static variable in interface org.multibit.viewsystem.<A HREF="./org/multibit/vie
 <DT><A HREF="./org/multibit/viewsystem/commandline/view/AbstractView.html#printStream"><B>printStream</B></A> - 
 Variable in class org.multibit.viewsystem.commandline.view.<A HREF="./org/multibit/viewsystem/commandline/view/AbstractView.html" title="class in org.multibit.viewsystem.commandline.view">AbstractView</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/network/MultiBitService.html#PRODUCTION_NET_PREFIX"><B>PRODUCTION_NET_PREFIX</B></A> - 
-Static variable in class org.multibit.network.<A HREF="./org/multibit/network/MultiBitService.html" title="class in org.multibit.network">MultiBitService</A>
-<DD>&nbsp;
 <DT><A HREF="./org/multibit/model/MultiBitModel.html#PRODUCTION_NETWORK_VALUE"><B>PRODUCTION_NETWORK_VALUE</B></A> - 
 Static variable in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>&nbsp;
@@ -1246,11 +1360,20 @@ Static variable in class org.multibit.<A HREF="./org/multibit/MultiBit.html" tit
 <A NAME="_R_"><!-- --></A><H2>
 <B>R</B></H2>
 <DL>
+<DT><A HREF="./org/multibit/model/MultiBitModel.html#RECEIVE_ADDRESS"><B>RECEIVE_ADDRESS</B></A> - 
+Static variable in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/View.html#RECEIVE_BITCOIN_VIEW"><B>RECEIVE_BITCOIN_VIEW</B></A> - 
 Static variable in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/action/Action.html#RECEIVE_BITCOINS_ACTION"><B>RECEIVE_BITCOINS_ACTION</B></A> - 
 Static variable in interface org.multibit.action.<A HREF="./org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/model/MultiBitModel.html#RECEIVE_LABEL"><B>RECEIVE_LABEL</B></A> - 
+Static variable in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/model/MultiBitModel.html#RECEIVE_NEW_KEY"><B>RECEIVE_NEW_KEY</B></A> - 
+Static variable in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/action/ReceiveBitcoinAction.html" title="class in org.multibit.action"><B>ReceiveBitcoinAction</B></A> - Class in <A HREF="./org/multibit/action/package-summary.html">org.multibit.action</A><DD>an action to the receive bitcoin view<DT><A HREF="./org/multibit/action/ReceiveBitcoinAction.html#ReceiveBitcoinAction(org.multibit.controller.MultiBitController)"><B>ReceiveBitcoinAction(MultiBitController)</B></A> - 
 Constructor for class org.multibit.action.<A HREF="./org/multibit/action/ReceiveBitcoinAction.html" title="class in org.multibit.action">ReceiveBitcoinAction</A>
@@ -1261,6 +1384,12 @@ Constructor for class org.multibit.viewsystem.swing.action.<A HREF="./org/multib
 <DT><A HREF="./org/multibit/viewsystem/swing/view/ReceiveBitcoinDialog.html" title="class in org.multibit.viewsystem.swing.view"><B>ReceiveBitcoinDialog</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/view/package-summary.html">org.multibit.viewsystem.swing.view</A><DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/swing/view/ReceiveBitcoinDialog.html#ReceiveBitcoinDialog(javax.swing.JFrame, org.multibit.controller.MultiBitController)"><B>ReceiveBitcoinDialog(JFrame, MultiBitController)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/ReceiveBitcoinDialog.html" title="class in org.multibit.viewsystem.swing.view">ReceiveBitcoinDialog</A>
 <DD>&nbsp;
+<DT><A HREF="./org/multibit/action/ReceiveBitcoinSubmitAction.html" title="class in org.multibit.action"><B>ReceiveBitcoinSubmitAction</B></A> - Class in <A HREF="./org/multibit/action/package-summary.html">org.multibit.action</A><DD>an action to process the submit of the Receive Bitcoin view<DT><A HREF="./org/multibit/action/ReceiveBitcoinSubmitAction.html#ReceiveBitcoinSubmitAction(org.multibit.controller.MultiBitController)"><B>ReceiveBitcoinSubmitAction(MultiBitController)</B></A> - 
+Constructor for class org.multibit.action.<A HREF="./org/multibit/action/ReceiveBitcoinSubmitAction.html" title="class in org.multibit.action">ReceiveBitcoinSubmitAction</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/viewsystem/swing/action/ReceiveBitcoinSubmitAction.html" title="class in org.multibit.viewsystem.swing.action"><B>ReceiveBitcoinSubmitAction</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/action/package-summary.html">org.multibit.viewsystem.swing.action</A><DD>This <CODE>Action</CODE> submits the Receive Bitcoin swing view<DT><A HREF="./org/multibit/viewsystem/swing/action/ReceiveBitcoinSubmitAction.html#ReceiveBitcoinSubmitAction(org.multibit.controller.MultiBitController, org.multibit.model.DataProvider)"><B>ReceiveBitcoinSubmitAction(MultiBitController, DataProvider)</B></A> - 
+Constructor for class org.multibit.viewsystem.swing.action.<A HREF="./org/multibit/viewsystem/swing/action/ReceiveBitcoinSubmitAction.html" title="class in org.multibit.viewsystem.swing.action">ReceiveBitcoinSubmitAction</A>
+<DD>Creates a new <A HREF="./org/multibit/viewsystem/swing/action/ReceiveBitcoinSubmitAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>ReceiveBitcoinSubmitAction</CODE></A>.
 <DT><A HREF="./org/multibit/viewsystem/commandline/view/ReceiveBitcoinView.html" title="class in org.multibit.viewsystem.commandline.view"><B>ReceiveBitcoinView</B></A> - Class in <A HREF="./org/multibit/viewsystem/commandline/view/package-summary.html">org.multibit.viewsystem.commandline.view</A><DD>the command line view for receive bitcoin<DT><A HREF="./org/multibit/viewsystem/commandline/view/ReceiveBitcoinView.html#ReceiveBitcoinView(org.multibit.Localiser, java.lang.String, java.io.InputStream, java.io.PrintStream)"><B>ReceiveBitcoinView(Localiser, String, InputStream, PrintStream)</B></A> - 
 Constructor for class org.multibit.viewsystem.commandline.view.<A HREF="./org/multibit/viewsystem/commandline/view/ReceiveBitcoinView.html" title="class in org.multibit.viewsystem.commandline.view">ReceiveBitcoinView</A>
 <DD>&nbsp;
@@ -1314,6 +1443,9 @@ Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Walle
 <DT><A HREF="./com/google/bitcoin/core/Wallet.html#saveToFileStream(java.io.FileOutputStream)"><B>saveToFileStream(FileOutputStream)</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>
 <DD>Uses Java serialization to save the wallet to the given file stream.
+<DT><A HREF="./org/multibit/model/MultiBitModel.html#saveWallet()"><B>saveWallet()</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/action/SaveWalletAsAction.html" title="class in org.multibit.action"><B>SaveWalletAsAction</B></A> - Class in <A HREF="./org/multibit/action/package-summary.html">org.multibit.action</A><DD>an action to save wallet as view<DT><A HREF="./org/multibit/action/SaveWalletAsAction.html#SaveWalletAsAction(org.multibit.controller.MultiBitController)"><B>SaveWalletAsAction(MultiBitController)</B></A> - 
 Constructor for class org.multibit.action.<A HREF="./org/multibit/action/SaveWalletAsAction.html" title="class in org.multibit.action">SaveWalletAsAction</A>
 <DD>&nbsp;
@@ -1333,6 +1465,9 @@ Constructor for class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit
 <DT><A HREF="./org/multibit/model/MultiBitModel.html#SELECTED_WALLET_FILENAME"><B>SELECTED_WALLET_FILENAME</B></A> - 
 Static variable in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>&nbsp;
+<DT><A HREF="./org/multibit/viewsystem/swing/view/AddressBookDialog.html#selectRows()"><B>selectRows()</B></A> - 
+Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/AddressBookDialog.html" title="class in org.multibit.viewsystem.swing.view">AddressBookDialog</A>
+<DD>select the rows that correspond to the current receiving and sending data
 <DT><A HREF="./org/multibit/model/MultiBitModel.html#SEND_ADDRESS"><B>SEND_ADDRESS</B></A> - 
 Static variable in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>&nbsp;
@@ -1421,6 +1556,9 @@ Method in class org.multibit.controller.<A HREF="./org/multibit/controller/Multi
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
 <DD>set the action forward that will be used to determined the next view to
  display where the next view is a sibling of the current view
+<DT><A HREF="./org/multibit/model/AddressBookData.html#setAddress(java.lang.String)"><B>setAddress(String)</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/model/MultiBitModel.html#setAllUserPreferences(java.util.Properties)"><B>setAllUserPreferences(Properties)</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>set all user preferences
@@ -1446,17 +1584,14 @@ Method in class org.multibit.model.<A HREF="./org/multibit/model/WalletData.html
 <DT><A HREF="./org/multibit/model/WalletData.html#setDescription(java.lang.String)"><B>setDescription(String)</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/WalletData.html" title="class in org.multibit.model">WalletData</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/model/MultiBitModel.html#setFakeReceivingAddressBookData(java.util.Vector)"><B>setFakeReceivingAddressBookData(Vector&lt;AddressBookData&gt;)</B></A> - 
-Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
-<DD>&nbsp;
-<DT><A HREF="./org/multibit/model/MultiBitModel.html#setFakeSendingAddressBookData(java.util.Vector)"><B>setFakeSendingAddressBookData(Vector&lt;AddressBookData&gt;)</B></A> - 
-Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
-<DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/swing/watermark/WatermarkViewport.html#setForegroundPainter(org.multibit.viewsystem.swing.watermark.WatermarkPainter)"><B>setForegroundPainter(WatermarkPainter)</B></A> - 
 Method in class org.multibit.viewsystem.swing.watermark.<A HREF="./org/multibit/viewsystem/swing/watermark/WatermarkViewport.html" title="class in org.multibit.viewsystem.swing.watermark">WatermarkViewport</A>
 <DD>Set the painter to use to paint the foregreound.
 <DT><A HREF="./org/multibit/model/WalletData.html#setHeight(int)"><B>setHeight(int)</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/WalletData.html" title="class in org.multibit.model">WalletData</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/model/AddressBookData.html#setLabel(java.lang.String)"><B>setLabel(String)</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/Localiser.html#setLocale(java.util.Locale)"><B>setLocale(Locale)</B></A> - 
 Method in class org.multibit.<A HREF="./org/multibit/Localiser.html" title="class in org.multibit">Localiser</A>
@@ -1517,6 +1652,12 @@ Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/views
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/View.html#setPossibleActions(java.util.Collection)"><B>setPossibleActions(Collection&lt;Action&gt;)</B></A> - 
 Method in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/model/AddressBook.html#setReceivingAddresses(java.util.SortedSet)"><B>setReceivingAddresses(SortedSet&lt;AddressBookData&gt;)</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/model/AddressBook.html#setSendingAddresses(java.util.SortedSet)"><B>setSendingAddresses(SortedSet&lt;AddressBookData&gt;)</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/model/WalletData.html#setTransaction(com.google.bitcoin.core.Transaction)"><B>setTransaction(Transaction)</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/WalletData.html" title="class in org.multibit.model">WalletData</A>
@@ -1579,6 +1720,9 @@ Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Trans
 <DT><A HREF="./org/multibit/viewsystem/commandline/view/SimpleView.html" title="class in org.multibit.viewsystem.commandline.view"><B>SimpleView</B></A> - Class in <A HREF="./org/multibit/viewsystem/commandline/view/package-summary.html">org.multibit.viewsystem.commandline.view</A><DD>a simple implementation of a view for the command line view system<DT><A HREF="./org/multibit/viewsystem/commandline/view/SimpleView.html#SimpleView(org.multibit.Localiser, java.lang.String, java.io.InputStream, java.io.PrintStream)"><B>SimpleView(Localiser, String, InputStream, PrintStream)</B></A> - 
 Constructor for class org.multibit.viewsystem.commandline.view.<A HREF="./org/multibit/viewsystem/commandline/view/SimpleView.html" title="class in org.multibit.viewsystem.commandline.view">SimpleView</A>
 <DD>&nbsp;
+<DT><A HREF="./org/multibit/viewsystem/swing/MultiBitFrame.html#SPACER"><B>SPACER</B></A> - 
+Static variable in class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A>
+<DD>&nbsp;
 <DT><A HREF="./com/google/bitcoin/core/Wallet.html#spentTransactions()"><B>spentTransactions()</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>
 <DD>Returns an immutable view of the spent transactions.
@@ -1622,6 +1766,9 @@ Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Trans
 <DD>&nbsp;
 <DT><A HREF="./com/google/bitcoin/core/Wallet.html#toString()"><B>toString()</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/model/AddressBookData.html#toString()"><B>toString()</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>
 <DD>&nbsp;
 <DT><A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core"><B>Transaction</B></A> - Class in <A HREF="./com/google/bitcoin/core/package-summary.html">com.google.bitcoin.core</A><DD>A transaction represents the movement of coins from some addresses to some other addresses.<DT><A HREF="./com/google/bitcoin/core/Transaction.html#Transaction(NetworkParameters, byte[])"><B>Transaction(NetworkParameters, byte[])</B></A> - 
 Constructor for class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>
@@ -1743,6 +1890,10 @@ Constructor for class org.multibit.viewsystem.swing.watermark.<A HREF="./org/mul
 Constructor for class org.multibit.viewsystem.swing.watermark.<A HREF="./org/multibit/viewsystem/swing/watermark/WatermarkViewport.html" title="class in org.multibit.viewsystem.swing.watermark">WatermarkViewport</A>
 <DD>Creates a WatermarkViewport with the specified background
  and foreground painters.
+<DT><A HREF="./org/multibit/model/AddressBook.html#writeToFile()"><B>writeToFile()</B></A> - 
+Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
+<DD>write out the address book - a simple comma separated file format is used
+ - should probably be something like JSON
 </DL>
 <HR>
 <A HREF="#_A_">A</A> <A HREF="#_B_">B</A> <A HREF="#_C_">C</A> <A HREF="#_D_">D</A> <A HREF="#_E_">E</A> <A HREF="#_F_">F</A> <A HREF="#_G_">G</A> <A HREF="#_H_">H</A> <A HREF="#_I_">I</A> <A HREF="#_K_">K</A> <A HREF="#_L_">L</A> <A HREF="#_M_">M</A> <A HREF="#_N_">N</A> <A HREF="#_O_">O</A> <A HREF="#_P_">P</A> <A HREF="#_R_">R</A> <A HREF="#_S_">S</A> <A HREF="#_T_">T</A> <A HREF="#_U_">U</A> <A HREF="#_V_">V</A> <A HREF="#_W_">W</A> 

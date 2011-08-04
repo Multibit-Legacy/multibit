@@ -138,6 +138,14 @@ the MVC controller for Multibit - this is loosely based on the Apache Struts
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#clearViewStack()">clearViewStack</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#deregisterViewSystem(org.multibit.viewsystem.ViewSystem)">deregisterViewSystem</A></B>(<A HREF="../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A>&nbsp;viewSystem)</CODE>
 
 <BR>
@@ -179,6 +187,14 @@ the MVC controller for Multibit - this is loosely based on the Apache Struts
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#fireBlockDownloaded()">fireBlockDownloaded</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;method called by downloadListener whenever a block is downloaded</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#fireLanguageChanged()">fireLanguageChanged</A></B>()</CODE>
 
 <BR>
@@ -191,6 +207,14 @@ the MVC controller for Multibit - this is loosely based on the Apache Struts
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the wallet file has been changed</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#fireWalletDataChanged()">fireWalletDataChanged</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the wallet data has been changed</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -550,6 +574,19 @@ public void <B>fireWalletChanged</B>()</PRE>
 </DL>
 <HR>
 
+<A NAME="fireWalletDataChanged()"><!-- --></A><H3>
+fireWalletDataChanged</H3>
+<PRE>
+public void <B>fireWalletDataChanged</B>()</PRE>
+<DL>
+<DD>the wallet data has been changed
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
 <A NAME="getLocaliser()"><!-- --></A><H3>
 getLocaliser</H3>
 <PRE>
@@ -637,6 +674,19 @@ public void <B>updateDownloadStatus</B>(java.lang.String&nbsp;downloadStatus)</P
 </DL>
 <HR>
 
+<A NAME="fireBlockDownloaded()"><!-- --></A><H3>
+fireBlockDownloaded</H3>
+<PRE>
+public void <B>fireBlockDownloaded</B>()</PRE>
+<DL>
+<DD>method called by downloadListener whenever a block is downloaded
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
 <A NAME="onCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)"><!-- --></A><H3>
 onCoinsReceived</H3>
 <PRE>
@@ -657,6 +707,17 @@ sendCoins</H3>
 public void <B>sendCoins</B>(java.lang.String&nbsp;sendAddressString,
                       java.lang.String&nbsp;sendLabel,
                       java.lang.String&nbsp;amount)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="clearViewStack()"><!-- --></A><H3>
+clearViewStack</H3>
+<PRE>
+public void <B>clearViewStack</B>()</PRE>
 <DL>
 <DD><DL>
 </DL>

@@ -73,10 +73,10 @@ public class WalletTableModel extends AbstractTableModel {
         }
         case 1: {
             if (walletDataRow.getDate() == null) {
-                return "";
+                return null;
             } else {
             }
-            return dateFormatter.format(walletDataRow.getDate());
+            return walletDataRow.getDate();
         }
         case 2:
             return walletDataRow.getDescription();

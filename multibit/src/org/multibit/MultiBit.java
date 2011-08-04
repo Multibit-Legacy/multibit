@@ -73,10 +73,7 @@ public class MultiBit {
         // create the MultiBitService that connects to the bitcoin network
         MultiBitService multiBitService = new MultiBitService(useTestNet, controller);
         controller.setMultiBitService(multiBitService);
-        
-        // add the keys to the address book as receiving addresses
-        controller.getModel().createAddressBookReceivingAddresses();
-        
+                
         // TODO make more generic
         ((MultiBitFrame)swingView).fireDataChanged();
         multiBitService.downloadBlockChain();

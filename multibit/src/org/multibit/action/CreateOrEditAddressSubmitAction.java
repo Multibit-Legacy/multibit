@@ -56,7 +56,7 @@ public class CreateOrEditAddressSubmitAction implements Action {
                         receiveLabel = "";
                     }
                     controller.getModel().getAddressBook()
-                            .addReceivingAddress(new AddressBookData(receiveLabel, receiveAddress));
+                            .addReceivingAddress(new AddressBookData(receiveLabel, receiveAddress), false);
                 }
                 
                 if (isCreate) {

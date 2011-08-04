@@ -3,7 +3,7 @@
 <HTML>
 <HEAD>
 <TITLE>
-AddressBookData
+AddressBook
 </TITLE>
 
 
@@ -13,7 +13,7 @@ AddressBookData
 function windowTitle()
 {
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="AddressBookData";
+        parent.document.title="AddressBook";
     }
 }
 </SCRIPT>
@@ -52,11 +52,11 @@ function windowTitle()
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../org/multibit/model/AddressBook.html" title="class in org.multibit.model"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../org/multibit/model/Data.html" title="class in org.multibit.model"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;PREV CLASS&nbsp;
+&nbsp;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../index.html?org/multibit/model/AddressBookData.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="AddressBookData.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../../index.html?org/multibit/model/AddressBook.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="AddressBook.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
@@ -87,22 +87,15 @@ DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&n
 <FONT SIZE="-1">
 org.multibit.model</FONT>
 <BR>
-Class AddressBookData</H2>
+Class AddressBook</H2>
 <PRE>
 java.lang.Object
-  <IMG SRC="../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.model.AddressBookData</B>
+  <IMG SRC="../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.model.AddressBook</B>
 </PRE>
-<DL>
-<DT><B>All Implemented Interfaces:</B> <DD>java.lang.Comparable</DD>
-</DL>
 <HR>
 <DL>
-<DT><PRE>public class <B>AddressBookData</B><DT>extends java.lang.Object<DT>implements java.lang.Comparable</DL>
+<DT><PRE>public class <B>AddressBook</B><DT>extends java.lang.Object</DL>
 </PRE>
-
-<P>
-class used to store the data in the table in a quick to access form
-<P>
 
 <P>
 <HR>
@@ -118,8 +111,7 @@ class used to store the data in the table in a quick to access form
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBookData.html#AddressBookData(java.lang.String, java.lang.String)">AddressBookData</A></B>(java.lang.String&nbsp;label,
-                java.lang.String&nbsp;address)</CODE>
+<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#AddressBook()">AddressBook</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -136,8 +128,28 @@ class used to store the data in the table in a quick to access form
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBookData.html#compareTo(java.lang.Object)">compareTo</A></B>(java.lang.Object&nbsp;other)</CODE>
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#addReceivingAddress(Address)">addReceivingAddress</A></B>(Address&nbsp;receivingAddress)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add a receiving address in the form of an Address, keeping the label of
+ any existing address (the candidate receiving addresses are used to
+ ensure only receiving addresses actually in the wallet are shown)</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#addReceivingAddress(org.multibit.model.AddressBookData, boolean)">addReceivingAddress</A></B>(<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&nbsp;receivingAddress,
+                    boolean&nbsp;addToCandidates)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add a receiving address in the form of an AddressBookData, replacing the
+ label of any existing address</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#addSendingAddress(org.multibit.model.AddressBookData)">addSendingAddress</A></B>(<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&nbsp;sendingAddress)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -145,31 +157,23 @@ class used to store the data in the table in a quick to access form
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;boolean</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBookData.html#equals(java.lang.Object)">equals</A></B>(java.lang.Object&nbsp;obj)</CODE>
+<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#containsReceivingAddress(java.lang.String)">containsReceivingAddress</A></B>(java.lang.String&nbsp;receivingAddress)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBookData.html#getAddress()">getAddress</A></B>()</CODE>
+<CODE>&nbsp;java.util.SortedSet&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#getReceivingAddresses()">getReceivingAddresses</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBookData.html#getLabel()">getLabel</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBookData.html#hashCode()">hashCode</A></B>()</CODE>
+<CODE>&nbsp;java.util.SortedSet&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt;</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#getSendingAddresses()">getSendingAddresses</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -177,15 +181,7 @@ class used to store the data in the table in a quick to access form
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBookData.html#setAddress(java.lang.String)">setAddress</A></B>(java.lang.String&nbsp;address)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBookData.html#setLabel(java.lang.String)">setLabel</A></B>(java.lang.String&nbsp;label)</CODE>
+<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#loadFromFile()">loadFromFile</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -193,10 +189,43 @@ class used to store the data in the table in a quick to access form
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBookData.html#toString()">toString</A></B>()</CODE>
+<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#lookupLabelForReceivingAddress(java.lang.String)">lookupLabelForReceivingAddress</A></B>(java.lang.String&nbsp;address)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;java.lang.String</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#lookupLabelForSendingAddress(java.lang.String)">lookupLabelForSendingAddress</A></B>(java.lang.String&nbsp;address)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#setReceivingAddresses(java.util.SortedSet)">setReceivingAddresses</A></B>(java.util.SortedSet&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt;&nbsp;receivingAddresses)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#setSendingAddresses(java.util.SortedSet)">setSendingAddresses</A></B>(java.util.SortedSet&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt;&nbsp;sendingAddresses)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/model/AddressBook.html#writeToFile()">writeToFile</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;write out the address book - a simple comma separated file format is used
+ - should probably be something like JSON</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
@@ -205,7 +234,7 @@ class used to store the data in the table in a quick to access form
 <TH ALIGN="left"><B>Methods inherited from class java.lang.Object</B></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE>clone, finalize, getClass, notify, notifyAll, wait, wait, wait</CODE></TD>
+<TD><CODE>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</CODE></TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -221,11 +250,10 @@ class used to store the data in the table in a quick to access form
 </TR>
 </TABLE>
 
-<A NAME="AddressBookData(java.lang.String, java.lang.String)"><!-- --></A><H3>
-AddressBookData</H3>
+<A NAME="AddressBook()"><!-- --></A><H3>
+AddressBook</H3>
 <PRE>
-public <B>AddressBookData</B>(java.lang.String&nbsp;label,
-                       java.lang.String&nbsp;address)</PRE>
+public <B>AddressBook</B>()</PRE>
 <DL>
 </DL>
 
@@ -239,112 +267,143 @@ public <B>AddressBookData</B>(java.lang.String&nbsp;label,
 </TR>
 </TABLE>
 
-<A NAME="hashCode()"><!-- --></A><H3>
-hashCode</H3>
+<A NAME="getReceivingAddresses()"><!-- --></A><H3>
+getReceivingAddresses</H3>
 <PRE>
-public int <B>hashCode</B>()</PRE>
+public java.util.SortedSet&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt; <B>getReceivingAddresses</B>()</PRE>
 <DL>
-<DD><DL>
-<DT><B>Overrides:</B><DD><CODE>hashCode</CODE> in class <CODE>java.lang.Object</CODE></DL>
-</DD>
 <DD><DL>
 </DL>
 </DD>
 </DL>
 <HR>
 
-<A NAME="equals(java.lang.Object)"><!-- --></A><H3>
-equals</H3>
+<A NAME="setReceivingAddresses(java.util.SortedSet)"><!-- --></A><H3>
+setReceivingAddresses</H3>
 <PRE>
-public boolean <B>equals</B>(java.lang.Object&nbsp;obj)</PRE>
+public void <B>setReceivingAddresses</B>(java.util.SortedSet&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt;&nbsp;receivingAddresses)</PRE>
 <DL>
-<DD><DL>
-<DT><B>Overrides:</B><DD><CODE>equals</CODE> in class <CODE>java.lang.Object</CODE></DL>
-</DD>
 <DD><DL>
 </DL>
 </DD>
 </DL>
 <HR>
 
-<A NAME="toString()"><!-- --></A><H3>
-toString</H3>
+<A NAME="getSendingAddresses()"><!-- --></A><H3>
+getSendingAddresses</H3>
 <PRE>
-public java.lang.String <B>toString</B>()</PRE>
+public java.util.SortedSet&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt; <B>getSendingAddresses</B>()</PRE>
 <DL>
-<DD><DL>
-<DT><B>Overrides:</B><DD><CODE>toString</CODE> in class <CODE>java.lang.Object</CODE></DL>
-</DD>
 <DD><DL>
 </DL>
 </DD>
 </DL>
 <HR>
 
-<A NAME="compareTo(java.lang.Object)"><!-- --></A><H3>
-compareTo</H3>
+<A NAME="setSendingAddresses(java.util.SortedSet)"><!-- --></A><H3>
+setSendingAddresses</H3>
 <PRE>
-public int <B>compareTo</B>(java.lang.Object&nbsp;other)</PRE>
+public void <B>setSendingAddresses</B>(java.util.SortedSet&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt;&nbsp;sendingAddresses)</PRE>
 <DL>
-<DD><DL>
-<DT><B>Specified by:</B><DD><CODE>compareTo</CODE> in interface <CODE>java.lang.Comparable</CODE></DL>
-</DD>
 <DD><DL>
 </DL>
 </DD>
 </DL>
 <HR>
 
-<A NAME="getLabel()"><!-- --></A><H3>
-getLabel</H3>
+<A NAME="addReceivingAddress(org.multibit.model.AddressBookData, boolean)"><!-- --></A><H3>
+addReceivingAddress</H3>
 <PRE>
-public java.lang.String <B>getLabel</B>()</PRE>
+public void <B>addReceivingAddress</B>(<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&nbsp;receivingAddress,
+                                boolean&nbsp;addToCandidates)</PRE>
 <DL>
+<DD>add a receiving address in the form of an AddressBookData, replacing the
+ label of any existing address
+<P>
 <DD><DL>
-</DL>
+<DT><B>Parameters:</B><DD><CODE>receivingAddress</CODE> - <DD><CODE>addToCandidates</CODE> - - add to the list of candidate receiving addresses</DL>
 </DD>
+</DL>
+<HR>
+
+<A NAME="addReceivingAddress(Address)"><!-- --></A><H3>
+addReceivingAddress</H3>
+<PRE>
+public void <B>addReceivingAddress</B>(Address&nbsp;receivingAddress)</PRE>
+<DL>
+<DD>add a receiving address in the form of an Address, keeping the label of
+ any existing address (the candidate receiving addresses are used to
+ ensure only receiving addresses actually in the wallet are shown)
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>receivingAddress</CODE> - </DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="containsReceivingAddress(java.lang.String)"><!-- --></A><H3>
+containsReceivingAddress</H3>
+<PRE>
+public boolean <B>containsReceivingAddress</B>(java.lang.String&nbsp;receivingAddress)</PRE>
+<DL>
 <DD><DL>
 </DL>
 </DD>
 </DL>
 <HR>
 
-<A NAME="setLabel(java.lang.String)"><!-- --></A><H3>
-setLabel</H3>
+<A NAME="addSendingAddress(org.multibit.model.AddressBookData)"><!-- --></A><H3>
+addSendingAddress</H3>
 <PRE>
-public void <B>setLabel</B>(java.lang.String&nbsp;label)</PRE>
+public void <B>addSendingAddress</B>(<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&nbsp;sendingAddress)</PRE>
 <DL>
-<DD><DL>
-</DL>
-</DD>
 <DD><DL>
 </DL>
 </DD>
 </DL>
 <HR>
 
-<A NAME="getAddress()"><!-- --></A><H3>
-getAddress</H3>
+<A NAME="lookupLabelForReceivingAddress(java.lang.String)"><!-- --></A><H3>
+lookupLabelForReceivingAddress</H3>
 <PRE>
-public java.lang.String <B>getAddress</B>()</PRE>
+public java.lang.String <B>lookupLabelForReceivingAddress</B>(java.lang.String&nbsp;address)</PRE>
 <DL>
-<DD><DL>
-</DL>
-</DD>
 <DD><DL>
 </DL>
 </DD>
 </DL>
 <HR>
 
-<A NAME="setAddress(java.lang.String)"><!-- --></A><H3>
-setAddress</H3>
+<A NAME="lookupLabelForSendingAddress(java.lang.String)"><!-- --></A><H3>
+lookupLabelForSendingAddress</H3>
 <PRE>
-public void <B>setAddress</B>(java.lang.String&nbsp;address)</PRE>
+public java.lang.String <B>lookupLabelForSendingAddress</B>(java.lang.String&nbsp;address)</PRE>
 <DL>
 <DD><DL>
 </DL>
 </DD>
+</DL>
+<HR>
+
+<A NAME="writeToFile()"><!-- --></A><H3>
+writeToFile</H3>
+<PRE>
+public void <B>writeToFile</B>()</PRE>
+<DL>
+<DD>write out the address book - a simple comma separated file format is used
+ - should probably be something like JSON
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="loadFromFile()"><!-- --></A><H3>
+loadFromFile</H3>
+<PRE>
+public void <B>loadFromFile</B>()</PRE>
+<DL>
 <DD><DL>
 </DL>
 </DD>
@@ -379,11 +438,11 @@ public void <B>setAddress</B>(java.lang.String&nbsp;address)</PRE>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../org/multibit/model/AddressBook.html" title="class in org.multibit.model"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../org/multibit/model/Data.html" title="class in org.multibit.model"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;PREV CLASS&nbsp;
+&nbsp;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../index.html?org/multibit/model/AddressBookData.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="AddressBookData.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../../index.html?org/multibit/model/AddressBook.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="AddressBook.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {

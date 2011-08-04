@@ -1,6 +1,6 @@
 package org.multibit.viewsystem.swing.view;
 
-import java.util.SortedSet;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
@@ -55,7 +55,7 @@ public class AddressBookTableModel extends DefaultTableModel {
     }
 
     public Object getValueAt(int row, int column) {
-        SortedSet<AddressBookData> addresses;
+        Set<AddressBookData> addresses;
         if (isReceiving) {
             addresses = addressBook.getReceivingAddresses();
         } else {
@@ -96,7 +96,7 @@ public class AddressBookTableModel extends DefaultTableModel {
         if (address == null) {
             return -1;
         }
-        SortedSet<AddressBookData> addresses;
+        Set<AddressBookData> addresses;
         if (isReceiving) {
             addresses = addressBook.getReceivingAddresses();
         } else {
@@ -120,7 +120,7 @@ public class AddressBookTableModel extends DefaultTableModel {
      * given a row, return the AddressBookData on this row
      */
     public AddressBookData getAddressBookDataByRow(int row, boolean isReceiving) {
-        SortedSet<AddressBookData> addresses;
+        Set<AddressBookData> addresses;
         if (isReceiving) {
             addresses = addressBook.getReceivingAddresses();
         } else {

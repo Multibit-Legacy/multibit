@@ -128,6 +128,30 @@ model containing the MultiBit data
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/model/MultiBitModel.html#RECEIVE_ADDRESS">RECEIVE_ADDRESS</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/model/MultiBitModel.html#RECEIVE_LABEL">RECEIVE_LABEL</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/model/MultiBitModel.html#RECEIVE_NEW_KEY">RECEIVE_NEW_KEY</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/multibit/model/MultiBitModel.html#SELECTED_WALLET_FILENAME">SELECTED_WALLET_FILENAME</A></B></CODE>
 
 <BR>
@@ -234,12 +258,28 @@ model containing the MultiBit data
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/model/MultiBitModel.html#createAddressBookReceivingAddresses()">createAddressBookReceivingAddresses</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add the receiving addresses of all the keys in this wallet</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;java.util.Vector&lt;<A HREF="../../../org/multibit/model/WalletData.html" title="class in org.multibit.model">WalletData</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/multibit/model/MultiBitModel.html#createWalletData()">createWalletData</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;convert the wallet info into walletdata records as they are easier to
  show to the user</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/model/MultiBitModel.html#getAddressBook()">getAddressBook</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -253,22 +293,6 @@ model containing the MultiBit data
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;java.math.BigInteger</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/multibit/model/MultiBitModel.html#getBalance()">getBalance</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;java.util.Vector&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt;</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/model/MultiBitModel.html#getFakeReceivingAddressBookData()">getFakeReceivingAddressBookData</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;java.util.Vector&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt;</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/model/MultiBitModel.html#getFakeSendingAddressBookData()">getFakeSendingAddressBookData</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -316,26 +340,18 @@ model containing the MultiBit data
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/model/MultiBitModel.html#saveWallet()">saveWallet</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/multibit/model/MultiBitModel.html#setAllUserPreferences(java.util.Properties)">setAllUserPreferences</A></B>(java.util.Properties&nbsp;properties)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set all user preferences</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/model/MultiBitModel.html#setFakeReceivingAddressBookData(java.util.Vector)">setFakeReceivingAddressBookData</A></B>(java.util.Vector&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt;&nbsp;fakeReceivingAddressBookData)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/model/MultiBitModel.html#setFakeSendingAddressBookData(java.util.Vector)">setFakeSendingAddressBookData</A></B>(java.util.Vector&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt;&nbsp;fakeSendingAddressBookData)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -483,6 +499,36 @@ public static final java.lang.String <B>SEND_AMOUNT</B></PRE>
 <DL>
 <DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.model.MultiBitModel.SEND_AMOUNT">Constant Field Values</A></DL>
 </DL>
+<HR>
+
+<A NAME="RECEIVE_ADDRESS"><!-- --></A><H3>
+RECEIVE_ADDRESS</H3>
+<PRE>
+public static final java.lang.String <B>RECEIVE_ADDRESS</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.model.MultiBitModel.RECEIVE_ADDRESS">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="RECEIVE_LABEL"><!-- --></A><H3>
+RECEIVE_LABEL</H3>
+<PRE>
+public static final java.lang.String <B>RECEIVE_LABEL</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.model.MultiBitModel.RECEIVE_LABEL">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="RECEIVE_NEW_KEY"><!-- --></A><H3>
+RECEIVE_NEW_KEY</H3>
+<PRE>
+public static final java.lang.String <B>RECEIVE_NEW_KEY</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.model.MultiBitModel.RECEIVE_NEW_KEY">Constant Field Values</A></DL>
+</DL>
 
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 
@@ -589,43 +635,10 @@ public java.util.Vector&lt;<A HREF="../../../org/multibit/model/WalletData.html"
 </DL>
 <HR>
 
-<A NAME="getFakeReceivingAddressBookData()"><!-- --></A><H3>
-getFakeReceivingAddressBookData</H3>
+<A NAME="getAddressBook()"><!-- --></A><H3>
+getAddressBook</H3>
 <PRE>
-public java.util.Vector&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt; <B>getFakeReceivingAddressBookData</B>()</PRE>
-<DL>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="setFakeReceivingAddressBookData(java.util.Vector)"><!-- --></A><H3>
-setFakeReceivingAddressBookData</H3>
-<PRE>
-public void <B>setFakeReceivingAddressBookData</B>(java.util.Vector&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt;&nbsp;fakeReceivingAddressBookData)</PRE>
-<DL>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getFakeSendingAddressBookData()"><!-- --></A><H3>
-getFakeSendingAddressBookData</H3>
-<PRE>
-public java.util.Vector&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt; <B>getFakeSendingAddressBookData</B>()</PRE>
-<DL>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="setFakeSendingAddressBookData(java.util.Vector)"><!-- --></A><H3>
-setFakeSendingAddressBookData</H3>
-<PRE>
-public void <B>setFakeSendingAddressBookData</B>(java.util.Vector&lt;<A HREF="../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>&gt;&nbsp;fakeSendingAddressBookData)</PRE>
+public <A HREF="../../../org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A> <B>getAddressBook</B>()</PRE>
 <DL>
 <DD><DL>
 </DL>
@@ -691,6 +704,19 @@ public java.util.Vector&lt;<A HREF="../../../org/multibit/model/WalletData.html"
 </DL>
 <HR>
 
+<A NAME="createAddressBookReceivingAddresses()"><!-- --></A><H3>
+createAddressBookReceivingAddresses</H3>
+<PRE>
+public void <B>createAddressBookReceivingAddresses</B>()</PRE>
+<DL>
+<DD>add the receiving addresses of all the keys in this wallet
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
 <A NAME="addWalletEventListener(WalletEventListener)"><!-- --></A><H3>
 addWalletEventListener</H3>
 <PRE>
@@ -706,6 +732,17 @@ public void <B>addWalletEventListener</B>(WalletEventListener&nbsp;walletEventLi
 removeWalletEventListener</H3>
 <PRE>
 public void <B>removeWalletEventListener</B>(WalletEventListener&nbsp;walletEventListener)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="saveWallet()"><!-- --></A><H3>
+saveWallet</H3>
+<PRE>
+public void <B>saveWallet</B>()</PRE>
 <DL>
 <DD><DL>
 </DL>

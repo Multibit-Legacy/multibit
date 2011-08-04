@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -14,6 +15,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.AddressBook;
+import org.multibit.model.AddressBookData;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
@@ -23,7 +26,7 @@ import org.multibit.viewsystem.swing.action.CreateOrEditAddressAction;
 import org.multibit.viewsystem.swing.action.OpenAddressBookAction;
 import org.multibit.viewsystem.swing.action.ReceiveBitcoinSubmitAction;
 
-public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider{
+public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider {
 
     private static final long serialVersionUID = -2065108865497842662L;
 
@@ -57,14 +60,14 @@ public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider
         add(createButtonPanel(), BorderLayout.SOUTH);
     }
 
-    private JPanel createReceiveBitcoinsPanel() {       
+    private JPanel createReceiveBitcoinsPanel() {
         JPanel receiveBitcoinsPanel = new JPanel();
-        
+
         JPanel buttonPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
         flowLayout.setAlignment(FlowLayout.LEFT);
         buttonPanel.setLayout(flowLayout);
-        
+
         receiveBitcoinsPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         JPanel filler1 = new JPanel();
@@ -85,9 +88,8 @@ public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         receiveBitcoinsPanel.add(new JLabel(receiveBigIcon), constraints);
-        
-        JLabel helpLabel1 = new JLabel(
-                controller.getLocaliser().getString("receiveBitcoinDialog.helpLabel1.message"));
+
+        JLabel helpLabel1 = new JLabel(controller.getLocaliser().getString("receiveBitcoinDialog.helpLabel1.message"));
         helpLabel1.setHorizontalAlignment(JLabel.LEFT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
@@ -105,7 +107,7 @@ public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveBitcoinsPanel.add(filler2, constraints);
-      
+
         JPanel filler3 = new JPanel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -117,8 +119,7 @@ public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider
         receiveBitcoinsPanel.add(filler3, constraints);
 
         JLabel addressLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinDialog.addressLabel"));
-        addressLabel.setToolTipText(controller.getLocaliser()
-                .getString("receiveBitcoinDialog.addressLabel.tooltip"));
+        addressLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinDialog.addressLabel.tooltip"));
         addressLabel.setHorizontalAlignment(JLabel.RIGHT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
@@ -175,7 +176,7 @@ public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider
         constraints.weighty = 0.2;
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveBitcoinsPanel.add(filler4, constraints);
-      
+
         return receiveBitcoinsPanel;
     }
 
@@ -212,11 +213,43 @@ public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider
 
         return data;
     }
-    
+
     public void loadForm() {
         // get the current receive address and label from the model
         String receiveAddress = controller.getModel().getUserPreference(MultiBitModel.RECEIVE_ADDRESS);
         String receiveLabel = controller.getModel().getUserPreference(MultiBitModel.RECEIVE_LABEL);
+
+        // if the currently stored address is missing or is not in this wallet,
+        // pick
+        // the address book's first receiving address
+        boolean pickFirstReceivingAddress = false;
+        if (receiveAddress == null || receiveAddress == "") {
+            pickFirstReceivingAddress = true;
+        } else {
+            AddressBook addressBook = controller.getModel().getAddressBook();
+            if (addressBook != null) {
+                if (!addressBook.containsReceivingAddress(receiveAddress)) {
+                    pickFirstReceivingAddress = true;
+                }
+            }
+        }
+
+        if (pickFirstReceivingAddress) {
+            AddressBook addressBook = controller.getModel().getAddressBook();
+            if (addressBook != null) {
+                Set<AddressBookData> receivingAddresses = addressBook.getReceivingAddresses();
+                if (receivingAddresses != null) {
+                    AddressBookData addressBookData = receivingAddresses.iterator().next();
+                    if (addressBookData != null) {
+                        receiveAddress = addressBookData.getAddress();
+                        receiveLabel = addressBookData.getLabel();
+                        controller.getModel().setUserPreference(MultiBitModel.RECEIVE_ADDRESS, receiveAddress);
+                        controller.getModel().setUserPreference(MultiBitModel.RECEIVE_LABEL, receiveLabel);
+                    }
+                }
+            }
+        }
+
         if (receiveAddress != null) {
             addressTextField.setText(receiveAddress);
         }

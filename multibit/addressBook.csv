@@ -1,6 +1,7 @@
 multiBit.addressBook,1
-receive,1EW8ZeMtayjzwBSPnpa67iuaRRxkjuu8Ev,
-receive,15YCVN15X5zwZcuSBB6JrMwRu3x6UwoYFm,default
-receive,1HQK3qndzNT2LShTUt4cqb9ncYQ6tBmwWV,jim1
-send,1M7qAsXrE2dye8cHmT5DaiCXx24dQS3UsE,Instawallet
-send,15YCVN15X5zwZcuSBB6JrMwRu3x6UwoYFm,Second wallet
+receive,1EW8ZeMtayjzwBSPnpa67iuaRRxkjuu8Ev,m1EW8
+receive,1DStPmHFmLiESz4mkbSg4fbZAYGZmuHdS8,m1DSt
+receive,1CtXdnhsPSdJD48qmuQFDiSXSg6gTeg8KE,m1CtXd
+receive,1KjpNydW472GmV24AsMePKnhwMkjAE1gKg,m1Kjp
+receive,1HQK3qndzNT2LShTUt4cqb9ncYQ6tBmwWV,k1HQK3
+receive,15YCVN15X5zwZcuSBB6JrMwRu3x6UwoYFm,k15YCVN

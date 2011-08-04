@@ -21,8 +21,10 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.AddressBook;
 import org.multibit.model.MultiBitModel;
 
 import com.google.bitcoin.core.Address;
@@ -31,6 +33,7 @@ import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerAddress;
+import com.google.bitcoin.core.PeerException;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
@@ -83,8 +86,7 @@ public class MultiBitService {
         this.controller = controller;
 
         networkParameters = useTestNet ? NetworkParameters.testNet() : NetworkParameters.prodNet();
-        String filePrefix = useTestNet ? MULTIBIT_PREFIX + SEPARATOR + TEST_NET_PREFIX
-                : MULTIBIT_PREFIX;
+        String filePrefix = useTestNet ? MULTIBIT_PREFIX + SEPARATOR + TEST_NET_PREFIX : MULTIBIT_PREFIX;
 
         // Try to read the wallet from storage, create a new one if not
         // possible.
@@ -97,7 +99,7 @@ public class MultiBitService {
                 wallet = Wallet.loadFromFile(walletFile);
 
                 System.out.println("MultiBitService#MultiBitService wallet = \n" + wallet.toString());
-                
+
                 // set the new wallet into the model
                 controller.getModel().setWallet(wallet);
 
@@ -105,10 +107,9 @@ public class MultiBitService {
 
                 // wire up the controller as a wallet event listener
                 controller.getModel().addWalletEventListener(new WalletEventListener() {
-                    public void onCoinsReceived(Wallet wallet, Transaction transaction,
-                            BigInteger prevBalance, BigInteger newBalance) {
-                        finalController.onCoinsReceived(wallet, transaction, prevBalance,
-                                newBalance);
+                    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
+                            BigInteger newBalance) {
+                        finalController.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
                     }
                 });
 
@@ -130,8 +131,8 @@ public class MultiBitService {
             // wire up the controller as a wallet event listener
             final MultiBitController finalController = controller;
             controller.getModel().addWalletEventListener(new WalletEventListener() {
-                public void onCoinsReceived(Wallet wallet, Transaction transaction,
-                        BigInteger prevBalance, BigInteger newBalance) {
+                public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
+                        BigInteger newBalance) {
                     finalController.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
                 }
             });
@@ -140,21 +141,33 @@ public class MultiBitService {
             try {
                 // TODO need to make sure dont overwrite an existing wallet
                 wallet.saveToFile(walletFile);
+                // ensure title on frame is updated
+                controller.fireWalletDataChanged();
 
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
         }
 
-        // Fetch the first key in the wallet (should be the only key).
-        //ECKey key = wallet.keychain.get(0);
+        // add the keys for this wallet to the address book as receiving addresses
+        ArrayList<ECKey> keys = wallet.keychain;
+        if (keys != null) {
+            AddressBook addressBook = controller.getModel().getAddressBook();
+            if (addressBook != null) {
+                for (ECKey key : keys) {
+                    if (key != null) {
+                        Address address = key.toAddress(networkParameters);
+                        addressBook.addReceivingAddressOfKey(address);
+                    }
+                }
+            }
+        }
 
         // Load the block chain, if there is one stored locally.
         System.out.println("Reading block store from disk");
         BlockStore blockStore;
         try {
-            blockStore = new BoundedOverheadBlockStore(networkParameters, new File(filePrefix
-                    + ".blockchain"));
+            blockStore = new BoundedOverheadBlockStore(networkParameters, new File(filePrefix + ".blockchain"));
 
             // Connect to the localhost node. One minute timeout since we won't
             // try any other peers
@@ -170,16 +183,17 @@ public class MultiBitService {
             peerGroup.addEventListener(controller);
             peerGroup.start();
 
-            //System.out.println("MultiBitService constructor - Send coins to: " + key.toAddress(networkParameters).toString());
+            // System.out.println("MultiBitService constructor - Send coins to: "
+            // + key.toAddress(networkParameters).toString());
 
             // The PeerGroup thread keeps us alive until something kills the
             // process.
         } catch (BlockStoreException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            controller.displayMessage("multiBitService.errorText", new Object[]{e.getClass().getName() + " " + e.getMessage()}, "multiBitService.errorTitleText");
         } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            controller.displayMessage("multiBitService.errorText", new Object[]{e.getClass().getName() + " " + e.getMessage()}, "multiBitService.errorTitleText");
+        } catch (Exception e) {
+            controller.displayMessage("multiBitService.errorText", new Object[]{e.getClass().getName() + " " + e.getMessage()}, "multiBitService.errorTitleText");
         }
     }
 
@@ -199,17 +213,16 @@ public class MultiBitService {
      *            - the amount to send to, in BTC, as a String
      */
 
-    public Transaction sendCoins(String sendAddressString, String amount) throws java.io.IOException,
-            AddressFormatException {
+    public Transaction sendCoins(String sendAddressString, String amount) throws java.io.IOException, AddressFormatException {
         // send the coins
         Address sendAddress = new Address(networkParameters, sendAddressString);
         Transaction sendTransaction = wallet.sendCoins(peerGroup, sendAddress, Utils.toNanoCoins(amount));
         assert sendTransaction != null; // We should never try to send more
-                               // coins than we have!
+        // coins than we have!
         // throw an exception if sendTransaction is null - no money
         System.out.println("MultiBitService#sendCoins - Sent coins. Transaction hash is " + sendTransaction.getHashAsString());
         wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
-        
+
         return sendTransaction;
     }
 

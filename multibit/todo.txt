@@ -1,8 +1,7 @@
 TODO for minimal viable product
 --------------------------------
 check sending and receiving works reliably
-only receive addresses you have keys for should be present
-order transactions in reverse order
+switching wallets does not clear the address book
 make sure right icons are used - no coffee cups
 test it works on the test network
 ensure all transactions have a transaction date shown

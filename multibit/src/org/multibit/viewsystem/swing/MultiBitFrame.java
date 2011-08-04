@@ -13,7 +13,12 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.AbstractButton;
@@ -31,12 +36,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
@@ -76,7 +84,7 @@ import com.google.bitcoin.core.Wallet;
 /*
  * JFrame displaying Swing version of MultiBit
  */
-public class MultiBitFrame extends JFrame implements ViewSystem{
+public class MultiBitFrame extends JFrame implements ViewSystem {
     private static final int A_SMALL_NUMBER_OF_PIXELS = 100;
     private static final int A_LARGE_NUMBER_OF_PIXELS = 1000000;
     private static final int STATUSBAR_HEIGHT = 30;
@@ -101,8 +109,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
     private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.7D;
 
     public static final String SPACER = "   "; // 3 spaces
-    
-    
+
     private static final long serialVersionUID = 7621813615342923041L;
 
     private MultiBitController controller;
@@ -113,9 +120,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
 
     private JLabel onlineStatusLabel, networkStatusLabel;
     private boolean isOnline;
-    
+
     private MultiBitFrame thisFrame;
-    
+
     private WalletTableModel walletTableModel;
 
     /**
@@ -134,7 +141,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         this.thisFrame = this;
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+
         final MultiBitController finalController = controller;
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent arg0) {
@@ -142,7 +149,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
                 exitAction.execute(null);
             }
         });
-        
+
         sizeAndCenter();
 
         initUI();
@@ -226,8 +233,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         onlineStatusLabel = new JLabel();
         onlineStatusLabel.setHorizontalAlignment(SwingConstants.CENTER);
         networkStatusLabel = new JLabel();
-        statusBar.setZones(new String[] { "online", "network" }, new JComponent[] {
-                onlineStatusLabel, networkStatusLabel }, new String[] { "12%", "*" });
+        statusBar.setZones(new String[] { "online", "network" }, new JComponent[] { onlineStatusLabel, networkStatusLabel },
+                new String[] { "12%", "*" });
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 2;
@@ -241,8 +248,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         balancePanel.setMinimumSize(new Dimension(180, 30));
         balancePanel.setPreferredSize(new Dimension(180, 30));
         balancePanel.setOpaque(true);
-        Border border = BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK),
+        Border border = BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK),
                 BorderFactory.createEmptyBorder(0, 3, 0, 3));
         balancePanel.setBorder(border);
         balancePanel.setBackground(Color.WHITE);
@@ -293,7 +299,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
 
         // date right justified
-        table.getColumnModel().getColumn(1).setCellRenderer(new RightJustifiedRenderer());
+        table.getColumnModel().getColumn(1).setCellRenderer(new RightJustifiedDateRenderer());
 
         // center column headers
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
@@ -322,6 +328,29 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         tableColumn = table.getColumnModel().getColumn(4); // credit
         tableColumn.setPreferredWidth(40);
 
+        // sorter
+        TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(table.getModel());
+        table.setRowSorter(sorter);
+
+        // sort by date descending
+        List<TableRowSorter.SortKey> sortKeys = new ArrayList<TableRowSorter.SortKey>();
+        sortKeys.add(new TableRowSorter.SortKey(1, SortOrder.DESCENDING));
+        sorter.setSortKeys(sortKeys);
+        Comparator<Date> comparator = new Comparator<Date>() {
+            public int compare(Date o1, Date o2) {
+                long n1 = o1.getTime();
+                long n2 = o2.getTime();
+                if (n1 < n2) {
+                    return -1;
+                } else if (n1 > n2) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        };
+        sorter.setComparator(1, comparator);
+
         JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         constraints.fill = GridBagConstraints.BOTH;
@@ -341,8 +370,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         return walletPanel;
     }
 
-    private JToolBar addMenuBarAndCreateToolBar(GridBagConstraints constraints,
-            Container contentPane) {
+    private JToolBar addMenuBarAndCreateToolBar(GridBagConstraints constraints, Container contentPane) {
         // Create the menu bar
         JMenuBar menuBar = new JMenuBar();
 
@@ -373,9 +401,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         // open wallet action
         JPanel openWalletPanel = new JPanel(new BorderLayout());
         openWalletPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-  
-        OpenWalletAction openWalletAction = new OpenWalletAction(controller,
-                createImageIcon(OPEN_WALLET_ICON_FILE));
+
+        OpenWalletAction openWalletAction = new OpenWalletAction(controller, createImageIcon(OPEN_WALLET_ICON_FILE));
         JMenuItem menuItem = new JMenuItem(openWalletAction);
         fileMenu.add(menuItem);
         JButton openWalletButton = new JButton(openWalletAction);
@@ -385,8 +412,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         toolBar.add(openWalletPanel);
 
         // save wallet as action
-        SaveWalletAsAction saveWalletAsAction = new SaveWalletAsAction(controller,
-                createImageIcon(SAVE_AS_ICON_FILE), this);
+        SaveWalletAsAction saveWalletAsAction = new SaveWalletAsAction(controller, createImageIcon(SAVE_AS_ICON_FILE), this);
         menuItem = new JMenuItem(saveWalletAsAction);
         fileMenu.add(menuItem);
 
@@ -397,8 +423,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         fileMenu.add(menuItem);
 
         // show help contents action
-        ShowHelpContentsAction showHelpContentsAction = new ShowHelpContentsAction(controller,
-                localiser, createImageIcon(HELP_CONTENTS_ICON_FILE));
+        ShowHelpContentsAction showHelpContentsAction = new ShowHelpContentsAction(controller, localiser,
+                createImageIcon(HELP_CONTENTS_ICON_FILE));
         menuItem = new JMenuItem(showHelpContentsAction);
         helpMenu.add(menuItem);
 
@@ -420,8 +446,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         toolBar.add(receiveBitcoinPanel);
 
         // send bitcoin action
-        SendBitcoinAction sendBitcoinAction = new SendBitcoinAction(controller,
-                createImageIcon(SEND_BITCOIN_ICON_FILE), this);
+        SendBitcoinAction sendBitcoinAction = new SendBitcoinAction(controller, createImageIcon(SEND_BITCOIN_ICON_FILE), this);
         menuItem = new JMenuItem(sendBitcoinAction);
         tradeMenu.add(menuItem);
 
@@ -436,8 +461,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         // open address book
         JPanel openAddressBookReceivingPanel = new JPanel(new BorderLayout());
         openAddressBookReceivingPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-        OpenAddressBookAction openAddressBookReceivingAction = new OpenAddressBookAction(
-                controller, createImageIcon(VIEW_ADDRESSBOOK_ICON_FILE), true, true);
+        OpenAddressBookAction openAddressBookReceivingAction = new OpenAddressBookAction(controller,
+                createImageIcon(VIEW_ADDRESSBOOK_ICON_FILE), true, true);
         viewMenu.add(openAddressBookReceivingAction);
         JButton openAddressBookReceivingButton = new JButton(openAddressBookReceivingAction);
         openAddressBookReceivingButton.setVerticalTextPosition(AbstractButton.BOTTOM);
@@ -446,7 +471,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         toolBar.add(openAddressBookReceivingPanel);
 
         // show preferences
-        ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller, createImageIcon(PREFERENCES_ICON_FILE));
+        ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller,
+                createImageIcon(PREFERENCES_ICON_FILE));
         viewMenu.add(showPreferencesAction);
 
         setJMenuBar(menuBar);
@@ -460,8 +486,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {
-            System.err.println("org.multibit.ViewerFrame#createImageIcon: Could not find file: "
-                    + path);
+            System.err.println("org.multibit.ViewerFrame#createImageIcon: Could not find file: " + path);
             return null;
         }
     }
@@ -479,19 +504,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         ImageIcon progress4Icon = createImageIcon(PROGRESS_4_ICON_FILE);
         ImageIcon progress5Icon = createImageIcon(PROGRESS_5_ICON_FILE);
 
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+                int row, int column) {
             label.setHorizontalAlignment(SwingConstants.CENTER);
             label.setOpaque(false);
 
-            int numberOfBlocksEmbedded = ((Integer)value).intValue();
-            if (numberOfBlocksEmbedded < 0 ) {
+            int numberOfBlocksEmbedded = ((Integer) value).intValue();
+            if (numberOfBlocksEmbedded < 0) {
                 numberOfBlocksEmbedded = 0;
             }
-            if (numberOfBlocksEmbedded > 6 ) {
+            if (numberOfBlocksEmbedded > 6) {
                 numberOfBlocksEmbedded = 6;
             }
-            
+
             switch (numberOfBlocksEmbedded) {
             case 0: {
                 label.setIcon(progress0Icon);
@@ -541,12 +566,42 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
 
         JLabel label = new JLabel();
 
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+                int row, int column) {
             label.setHorizontalAlignment(SwingConstants.RIGHT);
             label.setOpaque(false);
 
             label.setText((String) value + SPACER);
+
+            return label;
+        }
+    }
+
+    class RightJustifiedDateRenderer extends DefaultTableCellRenderer {
+        private static final long serialVersionUID = 1549545L;
+
+        JLabel label = new JLabel();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm");
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+                int row, int column) {
+            label.setHorizontalAlignment(SwingConstants.RIGHT);
+            label.setOpaque(false);
+
+            String formattedDate = "";
+            if (value != null) {
+                if (value instanceof Date) {
+                    try {
+                        formattedDate = dateFormatter.format(value);
+                    } catch (IllegalArgumentException iae) {
+                        // ok
+                    }
+                } else {
+                    formattedDate = value.toString();
+                }
+            }
+
+            label.setText(formattedDate + SPACER);
 
             return label;
         }
@@ -557,8 +612,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
 
         JLabel label = new JLabel();
 
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+                int row, int column) {
             label.setHorizontalAlignment(SwingConstants.LEFT);
             label.setOpaque(false);
 
@@ -573,8 +628,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
 
         JLabel label = new JLabel();
 
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+                int row, int column) {
             label.setHorizontalAlignment(SwingConstants.CENTER);
             label.setOpaque(false);
 
@@ -598,10 +653,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
     public void recreateAllViews(boolean initUI) {
         // close down current view
         if (currentView != 0) {
-            navigateAwayFromView(currentView, View.HOME_PAGE_VIEW, ViewSystem.newViewIsParentOfPrevious); // home page
-                                                                    // choice
-                                                                    // here is
-                                                                    // arbitary
+            navigateAwayFromView(currentView, View.HOME_PAGE_VIEW, ViewSystem.newViewIsParentOfPrevious); // home
+                                                                                                          // page
+            // choice
+            // here is
+            // arbitary
         }
 
         if (initUI) {
@@ -612,18 +668,18 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         }
         updateOnlineStatusText();
         balanceTextField.setText(Localiser.bitcoinValueToFriendlyString(model.getBalance(), true, false));
-        
+
         String walletFilename = model.getWalletFilename();
         if (walletFilename == null) {
-            setTitle(localiser.getString("multiBitFrame.title"));            
+            setTitle(localiser.getString("multiBitFrame.title"));
         } else {
             setTitle(walletFilename + TITLE_SEPARATOR + localiser.getString("multiBitFrame.title"));
         }
 
         invalidate();
-        validate();    
+        validate();
         repaint();
-        
+
         // create the views
         viewMap = new HashMap<Integer, View>();
 
@@ -635,20 +691,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         viewMap.put(View.SAVE_WALLET_AS_VIEW, new SaveWalletAsView(controller, localiser, this));
         viewMap.put(View.RECEIVE_BITCOIN_VIEW, new ReceiveBitcoinView(controller, localiser, this));
         viewMap.put(View.SEND_BITCOIN_VIEW, new SendBitcoinView(controller, localiser, this));
-        viewMap.put(View.SEND_BITCOIN_CONFIRM_VIEW, new SendBitcoinConfirmView(controller,
-                localiser, this));
-        viewMap.put(View.CREATE_NEW_RECEIVING_ADDRESS_VIEW, new CreateOrEditAddressView(controller,
-                localiser, this, true, true));
-        viewMap.put(View.CREATE_NEW_SENDING_ADDRESS_VIEW, new CreateOrEditAddressView(controller,
-                localiser, this, true, false));
-        viewMap.put(View.EDIT_RECEIVING_ADDRESS_VIEW, new CreateOrEditAddressView(controller,
-                localiser, this, false, true));
-        viewMap.put(View.EDIT_SENDING_ADDRESS_VIEW, new CreateOrEditAddressView(controller,
-                localiser, this, false, false));
-        viewMap.put(View.ADDRESS_BOOK_RECEIVING_VIEW, new AddressBookView(controller, localiser,
-                this, true));
-        viewMap.put(View.ADDRESS_BOOK_SENDING_VIEW, new AddressBookView(controller, localiser,
-                this, false));
+        viewMap.put(View.SEND_BITCOIN_CONFIRM_VIEW, new SendBitcoinConfirmView(controller, localiser, this));
+        viewMap.put(View.CREATE_NEW_RECEIVING_ADDRESS_VIEW,
+                new CreateOrEditAddressView(controller, localiser, this, true, true));
+        viewMap.put(View.CREATE_NEW_SENDING_ADDRESS_VIEW, new CreateOrEditAddressView(controller, localiser, this, true, false));
+        viewMap.put(View.EDIT_RECEIVING_ADDRESS_VIEW, new CreateOrEditAddressView(controller, localiser, this, false, true));
+        viewMap.put(View.EDIT_SENDING_ADDRESS_VIEW, new CreateOrEditAddressView(controller, localiser, this, false, false));
+        viewMap.put(View.ADDRESS_BOOK_RECEIVING_VIEW, new AddressBookView(controller, localiser, this, true));
+        viewMap.put(View.ADDRESS_BOOK_SENDING_VIEW, new AddressBookView(controller, localiser, this, false));
         viewMap.put(View.PREFERENCES_VIEW, new ShowPreferencesView(controller, this));
     }
 
@@ -662,9 +712,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
                         + " to display message with key " + messageKey);
             }
         } else {
-            System.out
-                    .println("MultiBitFrame#displayMessage - no view on which to display message with key "
-                            + messageKey);
+            System.out.println("MultiBitFrame#displayMessage - no view on which to display message with key " + messageKey);
         }
     }
 
@@ -810,13 +858,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
     public void updateOnlineStatusText() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                String onlineStatus = isOnline ? localiser.getString("multiBitFrame.onlineText") : localiser.getString("multiBitFrame.offlineText");
+                String onlineStatus = isOnline ? localiser.getString("multiBitFrame.onlineText") : localiser
+                        .getString("multiBitFrame.offlineText");
                 if (isOnline) {
                     onlineStatusLabel.setForeground(new Color(0, 100, 0));
                 } else {
                     onlineStatusLabel.setForeground(new Color(180, 0, 0));
                 }
-                onlineStatusLabel.setText(onlineStatus);        
+                onlineStatusLabel.setText(onlineStatus);
             }
         });
     }
@@ -825,25 +874,25 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
         final String finalUpdateDownloadStatus = updateDownloadStatus;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                networkStatusLabel.setText(finalUpdateDownloadStatus); 
+                networkStatusLabel.setText(finalUpdateDownloadStatus);
             }
         });
     }
-    
+
     public void blockDownloaded() {
         final JFrame finalMainFrame = this;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 // update screen in case status bars have changed
                 finalMainFrame.invalidate();
-                finalMainFrame.validate();    
-                finalMainFrame.repaint();            }
-        });       
+                finalMainFrame.validate();
+                finalMainFrame.repaint();
+            }
+        });
     }
-    
-    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
-            BigInteger newBalance) {
-       
+
+    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+
         // print out transaction details
         try {
             TransactionInput input = transaction.getInputs().get(0);
@@ -860,27 +909,28 @@ public class MultiBitFrame extends JFrame implements ViewSystem{
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        
+
         System.out.println("MultiBitFrame#onCoinsReceived - wallet is currently:\n" + wallet.toString());
         fireDataChanged();
     }
-    
+
     /**
      * update the UI after the model data has changed
      */
     public void fireDataChanged() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                balanceTextField.setText(Localiser.bitcoinValueToFriendlyString(controller.getModel().getBalance(), true, false));
-                
+                balanceTextField.setText(Localiser
+                        .bitcoinValueToFriendlyString(controller.getModel().getBalance(), true, false));
+
                 // update wallet table model
-                walletTableModel.recreateWalletData();    
+                walletTableModel.recreateWalletData();
                 walletTableModel.fireTableDataChanged();
-                
+
                 thisFrame.invalidate();
                 thisFrame.validate();
                 thisFrame.repaint();
             }
         });
-    }   
+    }
 }

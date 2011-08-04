@@ -58,9 +58,9 @@
  	<copy file="lib/slf4j-api-1.6.1.jar" todir="dist"/>
  	<copy file="lib/slf4j-simple-1.6.1.jar" todir="dist"/>
  	<copy file="standard-multibit.properties" tofile="dist/multibit.properties"/>
- 	<copy file="multibit-prodnet.blockchain" todir="dist"/>
+ 	<copy file="multibit.blockchain" todir="dist"/>
     <zip destfile="dist/multibit-${DSTAMP}.zip" basedir="dist"
-	       includes="multibit.jar, bitcoinj.jar, slf4j-api-1.6.1.jar, slf4j-simple-1.6.1.jar, multibit.properties, multibit-prodnet.blockchain"
+	       includes="multibit.jar, bitcoinj.jar, slf4j-api-1.6.1.jar, slf4j-simple-1.6.1.jar, multibit.properties, multibit.blockchain"
     />
   </target>
 

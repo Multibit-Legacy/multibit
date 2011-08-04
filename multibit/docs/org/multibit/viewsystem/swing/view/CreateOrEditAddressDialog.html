@@ -73,9 +73,9 @@ function windowTitle()
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;<A HREF="#nested_classes_inherited_from_class_javax.swing.JDialog">NESTED</A>&nbsp;|&nbsp;<A HREF="#fields_inherited_from_class_org.multibit.viewsystem.swing.view.MultiBitDialog">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#methods_inherited_from_class_org.multibit.viewsystem.swing.view.MultiBitDialog">METHOD</A></FONT></TD>
+  SUMMARY:&nbsp;<A HREF="#nested_classes_inherited_from_class_javax.swing.JDialog">NESTED</A>&nbsp;|&nbsp;<A HREF="#fields_inherited_from_class_org.multibit.viewsystem.swing.view.MultiBitDialog">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;METHOD</FONT></TD>
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
 </TR>
 </TABLE>
 <A NAME="skip-navbar_top"></A>
@@ -99,11 +99,11 @@ java.lang.Object
                           <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.viewsystem.swing.view.CreateOrEditAddressDialog</B>
 </PRE>
 <DL>
-<DT><B>All Implemented Interfaces:</B> <DD>java.awt.image.ImageObserver, java.awt.MenuContainer, java.io.Serializable, javax.accessibility.Accessible, javax.swing.RootPaneContainer, javax.swing.WindowConstants</DD>
+<DT><B>All Implemented Interfaces:</B> <DD>java.awt.image.ImageObserver, java.awt.MenuContainer, java.io.Serializable, javax.accessibility.Accessible, javax.swing.RootPaneContainer, javax.swing.WindowConstants, <A HREF="../../../../../org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A></DD>
 </DL>
 <HR>
 <DL>
-<DT><PRE>public class <B>CreateOrEditAddressDialog</B><DT>extends <A HREF="../../../../../org/multibit/viewsystem/swing/view/MultiBitDialog.html" title="class in org.multibit.viewsystem.swing.view">MultiBitDialog</A></DL>
+<DT><PRE>public class <B>CreateOrEditAddressDialog</B><DT>extends <A HREF="../../../../../org/multibit/viewsystem/swing/view/MultiBitDialog.html" title="class in org.multibit.viewsystem.swing.view">MultiBitDialog</A><DT>implements <A HREF="../../../../../org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A></DL>
 </PRE>
 
 <P>
@@ -268,6 +268,22 @@ Dialog for creating and editing address + label combinations
 <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
 <B>Method Summary</B></FONT></TH>
 </TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../../../org/multibit/model/Data.html" title="class in org.multibit.model">Data</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/CreateOrEditAddressDialog.html#getData()">getData</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/CreateOrEditAddressDialog.html#loadForm()">loadForm</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;load the current address into the form</TD>
+</TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_org.multibit.viewsystem.swing.view.MultiBitDialog"><!-- --></A>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
@@ -356,6 +372,45 @@ public <B>CreateOrEditAddressDialog</B>(javax.swing.JFrame&nbsp;mainFrame,
 <DL>
 <DT><B>Parameters:</B><DD><CODE>mainFrame</CODE> - <DD><CODE>localiser</CODE> - <DD><CODE>isCreate</CODE> - true= vreate, false = edit<DD><CODE>isReceiving</CODE> - true = receiving address, false = sending</DL>
 </DL>
+
+<!-- ============ METHOD DETAIL ========== -->
+
+<A NAME="method_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Method Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="loadForm()"><!-- --></A><H3>
+loadForm</H3>
+<PRE>
+public void <B>loadForm</B>()</PRE>
+<DL>
+<DD>load the current address into the form
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getData()"><!-- --></A><H3>
+getData</H3>
+<PRE>
+public <A HREF="../../../../../org/multibit/model/Data.html" title="class in org.multibit.model">Data</A> <B>getData</B>()</PRE>
+<DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/model/DataProvider.html#getData()">getData</A></CODE> in interface <CODE><A HREF="../../../../../org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
 <!-- ========= END OF CLASS DATA ========= -->
 <HR>
 
@@ -407,9 +462,9 @@ public <B>CreateOrEditAddressDialog</B>(javax.swing.JFrame&nbsp;mainFrame,
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;<A HREF="#nested_classes_inherited_from_class_javax.swing.JDialog">NESTED</A>&nbsp;|&nbsp;<A HREF="#fields_inherited_from_class_org.multibit.viewsystem.swing.view.MultiBitDialog">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#methods_inherited_from_class_org.multibit.viewsystem.swing.view.MultiBitDialog">METHOD</A></FONT></TD>
+  SUMMARY:&nbsp;<A HREF="#nested_classes_inherited_from_class_javax.swing.JDialog">NESTED</A>&nbsp;|&nbsp;<A HREF="#fields_inherited_from_class_org.multibit.viewsystem.swing.view.MultiBitDialog">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;METHOD</FONT></TD>
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
 </TR>
 </TABLE>
 <A NAME="skip-navbar_bottom"></A>

@@ -3,7 +3,7 @@
 <HTML>
 <HEAD>
 <TITLE>
-SaveWalletAsAction
+ReceiveBitcoinSubmitAction
 </TITLE>
 
 
@@ -13,7 +13,7 @@ SaveWalletAsAction
 function windowTitle()
 {
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="SaveWalletAsAction";
+        parent.document.title="ReceiveBitcoinSubmitAction";
     }
 }
 </SCRIPT>
@@ -52,11 +52,11 @@ function windowTitle()
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/ReceiveBitcoinSubmitAction.html" title="class in org.multibit.viewsystem.swing.action"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/SaveWalletAsSubmitAction.html" title="class in org.multibit.viewsystem.swing.action"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/ReceiveBitcoinAction.html" title="class in org.multibit.viewsystem.swing.action"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/SaveWalletAsAction.html" title="class in org.multibit.viewsystem.swing.action"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../../../index.html?org/multibit/viewsystem/swing/action/SaveWalletAsAction.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="SaveWalletAsAction.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../../../../index.html?org/multibit/viewsystem/swing/action/ReceiveBitcoinSubmitAction.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="ReceiveBitcoinSubmitAction.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
@@ -87,28 +87,27 @@ DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&n
 <FONT SIZE="-1">
 org.multibit.viewsystem.swing.action</FONT>
 <BR>
-Class SaveWalletAsAction</H2>
+Class ReceiveBitcoinSubmitAction</H2>
 <PRE>
 java.lang.Object
   <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by ">javax.swing.AbstractAction
-      <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.viewsystem.swing.action.SaveWalletAsAction</B>
+      <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.viewsystem.swing.action.ReceiveBitcoinSubmitAction</B>
 </PRE>
 <DL>
 <DT><B>All Implemented Interfaces:</B> <DD>java.awt.event.ActionListener, java.io.Serializable, java.lang.Cloneable, java.util.EventListener, javax.swing.Action</DD>
 </DL>
 <HR>
 <DL>
-<DT><PRE>public class <B>SaveWalletAsAction</B><DT>extends javax.swing.AbstractAction</DL>
+<DT><PRE>public class <B>ReceiveBitcoinSubmitAction</B><DT>extends javax.swing.AbstractAction</DL>
 </PRE>
 
 <P>
-This <CODE>Action</CODE> saves a wallet to a new file, backing up any existing
- file with the same name
+This <CODE>Action</CODE> submits the Receive Bitcoin swing view
 <P>
 
 <P>
 <DL>
-<DT><B>See Also:</B><DD><A HREF="../../../../../serialized-form.html#org.multibit.viewsystem.swing.action.SaveWalletAsAction">Serialized Form</A></DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../../serialized-form.html#org.multibit.viewsystem.swing.action.ReceiveBitcoinSubmitAction">Serialized Form</A></DL>
 <HR>
 
 <P>
@@ -149,12 +148,11 @@ This <CODE>Action</CODE> saves a wallet to a new file, backing up any existing
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/action/SaveWalletAsAction.html#SaveWalletAsAction(org.multibit.controller.MultiBitController, javax.swing.ImageIcon, org.multibit.viewsystem.swing.MultiBitFrame)">SaveWalletAsAction</A></B>(<A HREF="../../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
-                   javax.swing.ImageIcon&nbsp;icon,
-                   <A HREF="../../../../../org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A>&nbsp;mainFrame)</CODE>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/action/ReceiveBitcoinSubmitAction.html#ReceiveBitcoinSubmitAction(org.multibit.controller.MultiBitController, org.multibit.model.DataProvider)">ReceiveBitcoinSubmitAction</A></B>(<A HREF="../../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
+                           <A HREF="../../../../../org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A>&nbsp;dataProvider)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a new <A HREF="../../../../../org/multibit/viewsystem/swing/action/SaveWalletAsAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>SaveWalletAsAction</CODE></A>.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a new <A HREF="../../../../../org/multibit/viewsystem/swing/action/ReceiveBitcoinSubmitAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>ReceiveBitcoinSubmitAction</CODE></A>.</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -169,10 +167,10 @@ This <CODE>Action</CODE> saves a wallet to a new file, backing up any existing
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/action/SaveWalletAsAction.html#actionPerformed(java.awt.event.ActionEvent)">actionPerformed</A></B>(java.awt.event.ActionEvent&nbsp;e)</CODE>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/action/ReceiveBitcoinSubmitAction.html#actionPerformed(java.awt.event.ActionEvent)">actionPerformed</A></B>(java.awt.event.ActionEvent&nbsp;e)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Save wallet to a new file.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delegate to generic submit action</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_javax.swing.AbstractAction"><!-- --></A>
@@ -206,14 +204,13 @@ This <CODE>Action</CODE> saves a wallet to a new file, backing up any existing
 </TR>
 </TABLE>
 
-<A NAME="SaveWalletAsAction(org.multibit.controller.MultiBitController, javax.swing.ImageIcon, org.multibit.viewsystem.swing.MultiBitFrame)"><!-- --></A><H3>
-SaveWalletAsAction</H3>
+<A NAME="ReceiveBitcoinSubmitAction(org.multibit.controller.MultiBitController, org.multibit.model.DataProvider)"><!-- --></A><H3>
+ReceiveBitcoinSubmitAction</H3>
 <PRE>
-public <B>SaveWalletAsAction</B>(<A HREF="../../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
-                          javax.swing.ImageIcon&nbsp;icon,
-                          <A HREF="../../../../../org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A>&nbsp;mainFrame)</PRE>
+public <B>ReceiveBitcoinSubmitAction</B>(<A HREF="../../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
+                                  <A HREF="../../../../../org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A>&nbsp;dataProvider)</PRE>
 <DL>
-<DD>Creates a new <A HREF="../../../../../org/multibit/viewsystem/swing/action/SaveWalletAsAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>SaveWalletAsAction</CODE></A>.
+<DD>Creates a new <A HREF="../../../../../org/multibit/viewsystem/swing/action/ReceiveBitcoinSubmitAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>ReceiveBitcoinSubmitAction</CODE></A>.
 <P>
 </DL>
 
@@ -232,8 +229,7 @@ actionPerformed</H3>
 <PRE>
 public void <B>actionPerformed</B>(java.awt.event.ActionEvent&nbsp;e)</PRE>
 <DL>
-<DD>Save wallet to a new file. Note - old files are always backed up to avoid
- bitcoin loss
+<DD>delegate to generic submit action
 <P>
 <DD><DL>
 </DL>
@@ -269,11 +265,11 @@ public void <B>actionPerformed</B>(java.awt.event.ActionEvent&nbsp;e)</PRE>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/ReceiveBitcoinSubmitAction.html" title="class in org.multibit.viewsystem.swing.action"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/SaveWalletAsSubmitAction.html" title="class in org.multibit.viewsystem.swing.action"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/ReceiveBitcoinAction.html" title="class in org.multibit.viewsystem.swing.action"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/action/SaveWalletAsAction.html" title="class in org.multibit.viewsystem.swing.action"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../../../index.html?org/multibit/viewsystem/swing/action/SaveWalletAsAction.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="SaveWalletAsAction.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../../../../index.html?org/multibit/viewsystem/swing/action/ReceiveBitcoinSubmitAction.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="ReceiveBitcoinSubmitAction.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {

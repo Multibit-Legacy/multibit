@@ -104,27 +104,6 @@ java.lang.Object
  
  It is based on the bitcoinj PingService code
  
- <p>
- If running on TestNet (slow but better than using real coins on prodnet) do
- the following:
- <ol>
- <li>Backup your current wallet.dat in case of unforeseen problems</li>
- <li>Start your bitcoin client in test mode <code>bitcoin -testnet</code>.
- This will create a new sub-directory called testnet and should not interfere
- with normal wallets or operations.</li>
- <li>(Optional) Choose a fresh address</li>
- <li>(Optional) Visit the Testnet faucet
- (https://testnet.freebitcoins.appspot.com/) to load your client with test
- coins</li>
- <li>Run <code>PingService -testnet</code></li>
- <li>Wait for the block chain to download</li>
- <li>Send some coins from your bitcoin client to the address provided in the
- PingService console</li>
- <li>Leave it running until you get the coins back again</li>
- </ol>
- </p>
- 
- <p>
  The testnet can be slow or flaky as it's a shared resource. You can use the
  <a href="http://sourceforge
  .net/projects/bitcoin/files/Bitcoin/testnet-in-a-box/">testnet in a box</a>
@@ -156,14 +135,6 @@ java.lang.Object
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/multibit/network/MultiBitService.html#MULTIBIT_PREFIX">MULTIBIT_PREFIX</A></B></CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/network/MultiBitService.html#PRODUCTION_NET_PREFIX">PRODUCTION_NET_PREFIX</A></B></CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -237,6 +208,14 @@ java.lang.Object
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;NetworkParameters</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/network/MultiBitService.html#getNetworkParameters()">getNetworkParameters</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;PeerGroup</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/multibit/network/MultiBitService.html#getPeerGroup()">getPeerGroup</A></B>()</CODE>
 
@@ -298,16 +277,6 @@ public static final java.lang.String <B>MULTIBIT_PREFIX</B></PRE>
 <DL>
 <DL>
 <DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.network.MultiBitService.MULTIBIT_PREFIX">Constant Field Values</A></DL>
-</DL>
-<HR>
-
-<A NAME="PRODUCTION_NET_PREFIX"><!-- --></A><H3>
-PRODUCTION_NET_PREFIX</H3>
-<PRE>
-public static final java.lang.String <B>PRODUCTION_NET_PREFIX</B></PRE>
-<DL>
-<DL>
-<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#org.multibit.network.MultiBitService.PRODUCTION_NET_PREFIX">Constant Field Values</A></DL>
 </DL>
 <HR>
 
@@ -449,6 +418,17 @@ public PeerGroup <B>getPeerGroup</B>()</PRE>
 getChain</H3>
 <PRE>
 public BlockChain <B>getChain</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getNetworkParameters()"><!-- --></A><H3>
+getNetworkParameters</H3>
+<PRE>
+public NetworkParameters <B>getNetworkParameters</B>()</PRE>
 <DL>
 <DD><DL>
 </DL>

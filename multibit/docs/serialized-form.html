@@ -547,6 +547,15 @@ dataProvider</H3>
 <DL>
 </DL>
 </DL>
+<HR>
+<H3>
+isReceiving</H3>
+<PRE>
+boolean <B>isReceiving</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
 
 <P>
 <A NAME="org.multibit.viewsystem.swing.action.CreateOrEditAddressAction"><!-- --></A>
@@ -600,6 +609,63 @@ boolean <B>isReceiving</B></PRE>
 dataProvider</H3>
 <PRE>
 <A HREF="org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A> <B>dataProvider</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+
+<P>
+<A NAME="org.multibit.viewsystem.swing.action.CreateOrEditAddressSubmitAction"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/action/CreateOrEditAddressSubmitAction.html" title="class in org.multibit.viewsystem.swing.action">org.multibit.viewsystem.swing.action.CreateOrEditAddressSubmitAction</A> extends javax.swing.AbstractAction implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>1923492460523457765L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+controller</H3>
+<PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+dataProvider</H3>
+<PRE>
+<A HREF="org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A> <B>dataProvider</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+isCreate</H3>
+<PRE>
+boolean <B>isCreate</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+isReceiver</H3>
+<PRE>
+boolean <B>isReceiver</B></PRE>
 <DL>
 <DL>
 </DL>
@@ -891,6 +957,45 @@ localiser</H3>
 </DL>
 
 <P>
+<A NAME="org.multibit.viewsystem.swing.action.ReceiveBitcoinSubmitAction"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/action/ReceiveBitcoinSubmitAction.html" title="class in org.multibit.viewsystem.swing.action">org.multibit.viewsystem.swing.action.ReceiveBitcoinSubmitAction</A> extends javax.swing.AbstractAction implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>1923492460523457765L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+controller</H3>
+<PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+dataProvider</H3>
+<PRE>
+<A HREF="org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A> <B>dataProvider</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+
+<P>
 <A NAME="org.multibit.viewsystem.swing.action.SaveWalletAsAction"><!-- --></A>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
@@ -1166,9 +1271,54 @@ controller</H3>
 </DL>
 <HR>
 <H3>
-tableModel</H3>
+receivingAddressesTableModel</H3>
 <PRE>
-<A HREF="org/multibit/viewsystem/swing/view/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing.view">AddressBookTableModel</A> <B>tableModel</B></PRE>
+<A HREF="org/multibit/viewsystem/swing/view/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing.view">AddressBookTableModel</A> <B>receivingAddressesTableModel</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+sendingAddressesTableModel</H3>
+<PRE>
+<A HREF="org/multibit/viewsystem/swing/view/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing.view">AddressBookTableModel</A> <B>sendingAddressesTableModel</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+receivingAddressesTable</H3>
+<PRE>
+javax.swing.JTable <B>receivingAddressesTable</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+sendingAddressesTable</H3>
+<PRE>
+javax.swing.JTable <B>sendingAddressesTable</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+receivingAddressesListener</H3>
+<PRE>
+org.multibit.viewsystem.swing.view.AddressBookDialog.SelectionListener <B>receivingAddressesListener</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+sendingAddressesListener</H3>
+<PRE>
+org.multibit.viewsystem.swing.view.AddressBookDialog.SelectionListener <B>sendingAddressesListener</B></PRE>
 <DL>
 <DL>
 </DL>
@@ -1182,13 +1332,31 @@ javax.swing.JTabbedPane <B>tabbedPane</B></PRE>
 <DL>
 </DL>
 </DL>
+<HR>
+<H3>
+selectedReceivingRow</H3>
+<PRE>
+int <B>selectedReceivingRow</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+selectedSendingRow</H3>
+<PRE>
+int <B>selectedSendingRow</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
 
 <P>
 <A NAME="org.multibit.viewsystem.swing.view.AddressBookTableModel"><!-- --></A>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
 <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B>Class <A HREF="org/multibit/viewsystem/swing/view/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing.view">org.multibit.viewsystem.swing.view.AddressBookTableModel</A> extends javax.swing.table.AbstractTableModel implements Serializable</B></FONT></TH>
+<B>Class <A HREF="org/multibit/viewsystem/swing/view/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing.view">org.multibit.viewsystem.swing.view.AddressBookTableModel</A> extends javax.swing.table.DefaultTableModel implements Serializable</B></FONT></TH>
 </TR>
 </TABLE>
 
@@ -1223,9 +1391,18 @@ java.lang.String[] <B>tableHeaderKeys</B></PRE>
 </DL>
 <HR>
 <H3>
-addressBookDataVector</H3>
+addressBook</H3>
 <PRE>
-java.util.Vector&lt;E&gt; <B>addressBookDataVector</B></PRE>
+<A HREF="org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A> <B>addressBook</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+isReceiving</H3>
+<PRE>
+boolean <B>isReceiving</B></PRE>
 <DL>
 <DL>
 </DL>
@@ -1274,6 +1451,33 @@ javax.swing.JTextField <B>addressTextField</B></PRE>
 labelTextField</H3>
 <PRE>
 javax.swing.JTextField <B>labelTextField</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+candidateNewKey</H3>
+<PRE>
+ECKey <B>candidateNewKey</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+isCreate</H3>
+<PRE>
+boolean <B>isCreate</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+isReceiving</H3>
+<PRE>
+boolean <B>isReceiving</B></PRE>
 <DL>
 <DL>
 </DL>

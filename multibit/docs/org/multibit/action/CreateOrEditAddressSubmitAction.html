@@ -3,7 +3,7 @@
 <HTML>
 <HEAD>
 <TITLE>
-CopyAddressAction
+CreateOrEditAddressSubmitAction
 </TITLE>
 
 
@@ -13,7 +13,7 @@ CopyAddressAction
 function windowTitle()
 {
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="CopyAddressAction";
+        parent.document.title="CreateOrEditAddressSubmitAction";
     }
 }
 </SCRIPT>
@@ -52,11 +52,11 @@ function windowTitle()
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../org/multibit/action/CancelBackToParentAction.html" title="class in org.multibit.action"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../org/multibit/action/CreateOrEditAddressAction.html" title="class in org.multibit.action"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../org/multibit/action/CreateOrEditAddressAction.html" title="class in org.multibit.action"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../org/multibit/action/ExitAction.html" title="class in org.multibit.action"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../index.html?org/multibit/action/CopyAddressAction.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="CopyAddressAction.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../../index.html?org/multibit/action/CreateOrEditAddressSubmitAction.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="CreateOrEditAddressSubmitAction.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
@@ -87,22 +87,21 @@ DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&n
 <FONT SIZE="-1">
 org.multibit.action</FONT>
 <BR>
-Class CopyAddressAction</H2>
+Class CreateOrEditAddressSubmitAction</H2>
 <PRE>
 java.lang.Object
-  <IMG SRC="../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.action.CopyAddressAction</B>
+  <IMG SRC="../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.action.CreateOrEditAddressSubmitAction</B>
 </PRE>
 <DL>
 <DT><B>All Implemented Interfaces:</B> <DD><A HREF="../../../org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A></DD>
 </DL>
 <HR>
 <DL>
-<DT><PRE>public class <B>CopyAddressAction</B><DT>extends java.lang.Object<DT>implements <A HREF="../../../org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A></DL>
+<DT><PRE>public class <B>CreateOrEditAddressSubmitAction</B><DT>extends java.lang.Object<DT>implements <A HREF="../../../org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A></DL>
 </PRE>
 
 <P>
-an action to copy the address in the supplied formbean to the system
- clipboard
+an action to process the submit of the CreateOrEditAddress view
 <P>
 
 <P>
@@ -141,8 +140,9 @@ an action to copy the address in the supplied formbean to the system
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../org/multibit/action/CopyAddressAction.html#CopyAddressAction(org.multibit.controller.MultiBitController, boolean)">CopyAddressAction</A></B>(<A HREF="../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
-                  boolean&nbsp;isReceiving)</CODE>
+<TD><CODE><B><A HREF="../../../org/multibit/action/CreateOrEditAddressSubmitAction.html#CreateOrEditAddressSubmitAction(org.multibit.controller.MultiBitController, boolean, boolean)">CreateOrEditAddressSubmitAction</A></B>(<A HREF="../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
+                                boolean&nbsp;isCreate,
+                                boolean&nbsp;isReceiving)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -160,7 +160,7 @@ an action to copy the address in the supplied formbean to the system
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/action/CopyAddressAction.html#execute(org.multibit.model.DataProvider)">execute</A></B>(<A HREF="../../../org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A>&nbsp;dataProvider)</CODE>
+<TD><CODE><B><A HREF="../../../org/multibit/action/CreateOrEditAddressSubmitAction.html#execute(org.multibit.model.DataProvider)">execute</A></B>(<A HREF="../../../org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A>&nbsp;dataProvider)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;execute the action using data from the data provider</TD>
@@ -168,7 +168,7 @@ an action to copy the address in the supplied formbean to the system
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/action/CopyAddressAction.html#getDisplayText()">getDisplayText</A></B>()</CODE>
+<TD><CODE><B><A HREF="../../../org/multibit/action/CreateOrEditAddressSubmitAction.html#getDisplayText()">getDisplayText</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the text to display for this action's visual representation</TD>
@@ -196,11 +196,12 @@ an action to copy the address in the supplied formbean to the system
 </TR>
 </TABLE>
 
-<A NAME="CopyAddressAction(org.multibit.controller.MultiBitController, boolean)"><!-- --></A><H3>
-CopyAddressAction</H3>
+<A NAME="CreateOrEditAddressSubmitAction(org.multibit.controller.MultiBitController, boolean, boolean)"><!-- --></A><H3>
+CreateOrEditAddressSubmitAction</H3>
 <PRE>
-public <B>CopyAddressAction</B>(<A HREF="../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
-                         boolean&nbsp;isReceiving)</PRE>
+public <B>CreateOrEditAddressSubmitAction</B>(<A HREF="../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
+                                       boolean&nbsp;isCreate,
+                                       boolean&nbsp;isReceiving)</PRE>
 <DL>
 </DL>
 
@@ -276,11 +277,11 @@ public java.lang.String <B>getDisplayText</B>()</PRE>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../org/multibit/action/CancelBackToParentAction.html" title="class in org.multibit.action"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../org/multibit/action/CreateOrEditAddressAction.html" title="class in org.multibit.action"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../org/multibit/action/CreateOrEditAddressAction.html" title="class in org.multibit.action"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../org/multibit/action/ExitAction.html" title="class in org.multibit.action"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../index.html?org/multibit/action/CopyAddressAction.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="CopyAddressAction.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../../index.html?org/multibit/action/CreateOrEditAddressSubmitAction.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="CreateOrEditAddressSubmitAction.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {

@@ -73,7 +73,7 @@ function windowTitle()
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;<A HREF="#fields_inherited_from_class_javax.swing.table.AbstractTableModel">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;<A HREF="#fields_inherited_from_class_javax.swing.table.DefaultTableModel">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
 DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
 </TR>
@@ -91,14 +91,15 @@ Class AddressBookTableModel</H2>
 <PRE>
 java.lang.Object
   <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by ">javax.swing.table.AbstractTableModel
-      <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.viewsystem.swing.view.AddressBookTableModel</B>
+      <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by ">javax.swing.table.DefaultTableModel
+          <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.viewsystem.swing.view.AddressBookTableModel</B>
 </PRE>
 <DL>
 <DT><B>All Implemented Interfaces:</B> <DD>java.io.Serializable, javax.swing.table.TableModel</DD>
 </DL>
 <HR>
 <DL>
-<DT><PRE>public class <B>AddressBookTableModel</B><DT>extends javax.swing.table.AbstractTableModel</DL>
+<DT><PRE>public class <B>AddressBookTableModel</B><DT>extends javax.swing.table.DefaultTableModel</DL>
 </PRE>
 
 <P>
@@ -114,6 +115,15 @@ java.lang.Object
 <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
 <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
 <B>Field Summary</B></FONT></TH>
+</TR>
+</TABLE>
+&nbsp;<A NAME="fields_inherited_from_class_javax.swing.table.DefaultTableModel"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Fields inherited from class javax.swing.table.DefaultTableModel</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>columnIdentifiers, dataVector</CODE></TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="fields_inherited_from_class_javax.swing.table.AbstractTableModel"><!-- --></A>
@@ -135,7 +145,8 @@ java.lang.Object
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/AddressBookTableModel.html#AddressBookTableModel(org.multibit.Localiser, boolean)">AddressBookTableModel</A></B>(<A HREF="../../../../../org/multibit/Localiser.html" title="class in org.multibit">Localiser</A>&nbsp;localiser,
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/AddressBookTableModel.html#AddressBookTableModel(org.multibit.Localiser, org.multibit.model.AddressBook, boolean)">AddressBookTableModel</A></B>(<A HREF="../../../../../org/multibit/Localiser.html" title="class in org.multibit">Localiser</A>&nbsp;localiser,
+                      <A HREF="../../../../../org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>&nbsp;addressBook,
                       boolean&nbsp;isReceiving)</CODE>
 
 <BR>
@@ -150,6 +161,24 @@ java.lang.Object
 <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
 <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
 <B>Method Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/AddressBookTableModel.html#findRowByAddress(java.lang.String, boolean)">findRowByAddress</A></B>(java.lang.String&nbsp;address,
+                 boolean&nbsp;isReceiving)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;find a row, given an address</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/AddressBookTableModel.html#getAddressBookDataByRow(int, boolean)">getAddressBookDataByRow</A></B>(int&nbsp;row,
+                        boolean&nbsp;isReceiving)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;given a row, return the AddressBookData on this row</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -195,13 +224,22 @@ java.lang.Object
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;table model is read only</TD>
 </TR>
 </TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_javax.swing.table.DefaultTableModel"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class javax.swing.table.DefaultTableModel</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>addColumn, addColumn, addColumn, addRow, addRow, convertToVector, convertToVector, getDataVector, insertRow, insertRow, isCellEditable, moveRow, newDataAvailable, newRowsAdded, removeRow, rowsRemoved, setColumnCount, setColumnIdentifiers, setColumnIdentifiers, setDataVector, setDataVector, setNumRows, setRowCount</CODE></TD>
+</TR>
+</TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_javax.swing.table.AbstractTableModel"><!-- --></A>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
 <TH ALIGN="left"><B>Methods inherited from class javax.swing.table.AbstractTableModel</B></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE>addTableModelListener, findColumn, fireTableCellUpdated, fireTableChanged, fireTableDataChanged, fireTableRowsDeleted, fireTableRowsInserted, fireTableRowsUpdated, fireTableStructureChanged, getColumnClass, getListeners, getTableModelListeners, isCellEditable, removeTableModelListener</CODE></TD>
+<TD><CODE>addTableModelListener, findColumn, fireTableCellUpdated, fireTableChanged, fireTableDataChanged, fireTableRowsDeleted, fireTableRowsInserted, fireTableRowsUpdated, fireTableStructureChanged, getColumnClass, getListeners, getTableModelListeners, removeTableModelListener</CODE></TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
@@ -226,10 +264,11 @@ java.lang.Object
 </TR>
 </TABLE>
 
-<A NAME="AddressBookTableModel(org.multibit.Localiser, boolean)"><!-- --></A><H3>
+<A NAME="AddressBookTableModel(org.multibit.Localiser, org.multibit.model.AddressBook, boolean)"><!-- --></A><H3>
 AddressBookTableModel</H3>
 <PRE>
 public <B>AddressBookTableModel</B>(<A HREF="../../../../../org/multibit/Localiser.html" title="class in org.multibit">Localiser</A>&nbsp;localiser,
+                             <A HREF="../../../../../org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>&nbsp;addressBook,
                              boolean&nbsp;isReceiving)</PRE>
 <DL>
 </DL>
@@ -250,6 +289,9 @@ getColumnCount</H3>
 public int <B>getColumnCount</B>()</PRE>
 <DL>
 <DD><DL>
+<DT><B>Specified by:</B><DD><CODE>getColumnCount</CODE> in interface <CODE>javax.swing.table.TableModel</CODE><DT><B>Overrides:</B><DD><CODE>getColumnCount</CODE> in class <CODE>javax.swing.table.DefaultTableModel</CODE></DL>
+</DD>
+<DD><DL>
 </DL>
 </DD>
 </DL>
@@ -260,6 +302,9 @@ getRowCount</H3>
 <PRE>
 public int <B>getRowCount</B>()</PRE>
 <DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE>getRowCount</CODE> in interface <CODE>javax.swing.table.TableModel</CODE><DT><B>Overrides:</B><DD><CODE>getRowCount</CODE> in class <CODE>javax.swing.table.DefaultTableModel</CODE></DL>
+</DD>
 <DD><DL>
 </DL>
 </DD>
@@ -272,7 +317,7 @@ getColumnName</H3>
 public java.lang.String <B>getColumnName</B>(int&nbsp;column)</PRE>
 <DL>
 <DD><DL>
-<DT><B>Specified by:</B><DD><CODE>getColumnName</CODE> in interface <CODE>javax.swing.table.TableModel</CODE><DT><B>Overrides:</B><DD><CODE>getColumnName</CODE> in class <CODE>javax.swing.table.AbstractTableModel</CODE></DL>
+<DT><B>Specified by:</B><DD><CODE>getColumnName</CODE> in interface <CODE>javax.swing.table.TableModel</CODE><DT><B>Overrides:</B><DD><CODE>getColumnName</CODE> in class <CODE>javax.swing.table.DefaultTableModel</CODE></DL>
 </DD>
 <DD><DL>
 </DL>
@@ -286,6 +331,9 @@ getValueAt</H3>
 public java.lang.Object <B>getValueAt</B>(int&nbsp;row,
                                    int&nbsp;column)</PRE>
 <DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE>getValueAt</CODE> in interface <CODE>javax.swing.table.TableModel</CODE><DT><B>Overrides:</B><DD><CODE>getValueAt</CODE> in class <CODE>javax.swing.table.DefaultTableModel</CODE></DL>
+</DD>
 <DD><DL>
 </DL>
 </DD>
@@ -302,8 +350,36 @@ public void <B>setValueAt</B>(java.lang.Object&nbsp;value,
 <DD>table model is read only
 <P>
 <DD><DL>
-<DT><B>Specified by:</B><DD><CODE>setValueAt</CODE> in interface <CODE>javax.swing.table.TableModel</CODE><DT><B>Overrides:</B><DD><CODE>setValueAt</CODE> in class <CODE>javax.swing.table.AbstractTableModel</CODE></DL>
+<DT><B>Specified by:</B><DD><CODE>setValueAt</CODE> in interface <CODE>javax.swing.table.TableModel</CODE><DT><B>Overrides:</B><DD><CODE>setValueAt</CODE> in class <CODE>javax.swing.table.DefaultTableModel</CODE></DL>
 </DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="findRowByAddress(java.lang.String, boolean)"><!-- --></A><H3>
+findRowByAddress</H3>
+<PRE>
+public int <B>findRowByAddress</B>(java.lang.String&nbsp;address,
+                            boolean&nbsp;isReceiving)</PRE>
+<DL>
+<DD>find a row, given an address
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getAddressBookDataByRow(int, boolean)"><!-- --></A><H3>
+getAddressBookDataByRow</H3>
+<PRE>
+public <A HREF="../../../../../org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A> <B>getAddressBookDataByRow</B>(int&nbsp;row,
+                                               boolean&nbsp;isReceiving)</PRE>
+<DL>
+<DD>given a row, return the AddressBookData on this row
+<P>
 <DD><DL>
 </DL>
 </DD>
@@ -359,7 +435,7 @@ public void <B>setValueAt</B>(java.lang.Object&nbsp;value,
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;<A HREF="#fields_inherited_from_class_javax.swing.table.AbstractTableModel">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;<A HREF="#fields_inherited_from_class_javax.swing.table.DefaultTableModel">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
 DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
 </TR>

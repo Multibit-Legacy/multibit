@@ -253,7 +253,7 @@ public class MultiBitModel {
 
                         for (ECKey key : keyChain) {
                             Address address = key.toAddress(controller.getMultiBitService().getNetworkParameters());
-                            addressBook.addReceivingAddress(address);
+                            addressBook.addReceivingAddressOfKey(address);
                         }
                     }
                 }

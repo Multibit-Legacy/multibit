@@ -171,6 +171,7 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider {
         receivingAddressesTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         receivingAddressesTable.setRowSelectionAllowed(true);
         receivingAddressesTable.setColumnSelectionAllowed(false);
+        // TODO make sure table cannot be edited by double click
 
         TableColumn tableColumn = receivingAddressesTable.getColumnModel().getColumn(0); // label
         tableColumn.setPreferredWidth(40);
