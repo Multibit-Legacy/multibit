@@ -1,21 +1,31 @@
 TODO for minimal viable product
 --------------------------------
 check sending and receiving works reliably
+add in support for fees
 make sure right icons are used - no coffee cups
 test it works on the test network
-get rid of hardwired peer address - MultiBitService#MultiBitService
+get rid of hardwired peer address - MultiBitService#MultiBitService - use DNSDiscovery on prod, IRCDiscovery on test
+check switching of wallets hooks up all listeners correctly
 
 Documentation
 -------------
-write release notes
-get the online help to point to a website - put in basic help
+write release notes / install guide
+get the online help to point to basic HTML help
 
 Logging and errors
 ------------------
 no error message in MultiBitService#sendCoins when not enough money
 no error message when cannot connect to peer
+client does not go offline if you disconnect from network
 no logging - use log4j
 
-Nice to have
-------------
+Future enhancements
+-------------------
 internationalise to Russion
+add in proper jar bundling to exe and DMG - look at ProGuard
+improve UI - address can be on main screen rather than a key click away
+add in wallet encryption
+
+Bugs
+----
+Copy address on receive blanks label (copy address needs to get form data and store it). From Mike Hearn, 5 Aug 2011.
