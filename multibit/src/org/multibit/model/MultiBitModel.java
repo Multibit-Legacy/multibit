@@ -265,7 +265,8 @@ public class MultiBitModel {
                 if (multiBitService != null) {
                     NetworkParameters networkParameters = multiBitService.getNetworkParameters();
                     if (networkParameters != null) {
-
+                        // clear the existing receiving addresses
+                        addressBook.getReceivingAddresses().clear();
                         for (ECKey key : keyChain) {
                             Address address = key.toAddress(controller.getMultiBitService().getNetworkParameters());
                             addressBook.addReceivingAddressOfKey(address);
@@ -357,7 +358,7 @@ public class MultiBitModel {
                     Block appearsInBlock = appearsInStoredBlock.getHeader();
                     // set the time of the block to be the time of the
                     // transaction - TODO get transaction time
-                    return new Date(appearsInBlock.getTime() * 1000);
+                    return new Date(appearsInBlock.getTimeSeconds()* 1000);
                 }
             }
         }
