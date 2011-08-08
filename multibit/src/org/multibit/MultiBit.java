@@ -40,7 +40,7 @@ public class MultiBit {
             testOrProduction = MultiBitModel.PRODUCTION_NETWORK_VALUE;
             userPreferences.put(MultiBitModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
         }
-        boolean useTestNet = testOrProduction == MultiBitModel.TEST_NETWORK_VALUE;
+        boolean useTestNet = MultiBitModel.TEST_NETWORK_VALUE.equals(testOrProduction);
         
         Localiser localiser;
         String userLanguageCode = userPreferences.getProperty(MultiBitModel.USER_LANGUAGE_CODE);

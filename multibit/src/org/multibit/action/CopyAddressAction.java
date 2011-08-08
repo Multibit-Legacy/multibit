@@ -2,6 +2,7 @@ package org.multibit.action;
 
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.AddressBookData;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
@@ -28,17 +29,86 @@ public class CopyAddressAction implements Action {
             Data data = dataProvider.getData();
 
             if (data != null) {
-                Item item;
-                if (isReceiving) {
-                    item = data.getItem(MultiBitModel.RECEIVE_ADDRESS);
-                } else {
-                    item = data.getItem(MultiBitModel.SEND_ADDRESS);
+                // copy the address and label to the user preferences so the next view gets populated correctly
+                if (dataProvider != null) {
+                    String receiveAddress = null;
+                    String receiveLabel = null;
+
+                        Item receiveAddressItem = data.getItem(MultiBitModel.RECEIVE_ADDRESS);
+                        if (receiveAddressItem != null && receiveAddressItem.getNewValue() != null) {
+                            receiveAddress = (String) receiveAddressItem.getNewValue();
+                            controller.getModel().setUserPreference(MultiBitModel.RECEIVE_ADDRESS,
+                                    receiveAddress);
+                        }
+                        Item receiveLabelItem = data.getItem(MultiBitModel.RECEIVE_LABEL);
+                        if (receiveLabelItem != null && receiveLabelItem.getNewValue() != null) {
+                            receiveLabel = (String) receiveLabelItem.getNewValue();
+                            controller.getModel().setUserPreference(MultiBitModel.RECEIVE_LABEL,
+                                    receiveLabel);
+                        }
+                    
+                    if (receiveAddress != null) {
+                        if (receiveLabel == null) {
+                            receiveLabel = "";
+                        }
+                        controller.getModel().getAddressBook().addReceivingAddress(new AddressBookData(receiveLabel, receiveAddress), false);
+                    }
                 }
-                if (item != null && item.getNewValue() != null) {
+                Item addressItem;
+                Item labelItem;
+                if (isReceiving) {
+                    String address = null;
+                    String label = null;
+                    addressItem = data.getItem(MultiBitModel.RECEIVE_ADDRESS);
+                    if (addressItem != null && addressItem.getNewValue() != null) {
+                        address = (String) addressItem.getNewValue();
+                        controller.getModel().setUserPreference(MultiBitModel.RECEIVE_ADDRESS,
+                                address);
+                    }
+
+                    labelItem = data.getItem(MultiBitModel.RECEIVE_LABEL);
+                    if (labelItem != null && labelItem.getNewValue() != null) {
+                        label = (String) labelItem.getNewValue();
+                        controller.getModel().setUserPreference(MultiBitModel.RECEIVE_LABEL,
+                                label);
+                    }
+                    
+                    if (address != null) {
+                        if (label == null) {
+                            label = "";
+                        }
+                        controller.getModel().getAddressBook().addReceivingAddress(new AddressBookData(label, address), false);
+                    }  
+               } else {
+                   String address = null;
+                   String label = null;
+
+                    addressItem = data.getItem(MultiBitModel.SEND_ADDRESS);
+                    if (addressItem != null && addressItem.getNewValue() != null) {
+                       address = (String) addressItem.getNewValue();
+                        controller.getModel().setUserPreference(MultiBitModel.SEND_ADDRESS,
+                                address);
+                    }
+
+                    labelItem = data.getItem(MultiBitModel.SEND_LABEL);
+                    if (labelItem != null && labelItem.getNewValue() != null) {
+                        label = (String) labelItem.getNewValue();
+                        controller.getModel().setUserPreference(MultiBitModel.SEND_LABEL,
+                                label);
+                    }
+                    
+                    if (address != null) {
+                        if (label == null) {
+                            label = "";
+                        }
+                        controller.getModel().getAddressBook().addSendingAddress(new AddressBookData(label, address));
+                    }
+                }
+                if (addressItem != null && addressItem.getNewValue() != null) {
                     // copy to clipboard
                     TextTransfer textTransfer = new TextTransfer();
-                    textTransfer.setClipboardContents((String) item.getNewValue());
-                }
+                    textTransfer.setClipboardContents((String) addressItem.getNewValue());
+                }               
             }
         }
         // forward back to the same view

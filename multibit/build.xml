@@ -64,6 +64,11 @@
     />
   </target>
 
+  <target name="makeDMG" depends="dist">
+	<exec executable="hdiutil">
+	<arg line="create -srcfolder ${folder.containing.your.app} ${dist.dmg.file}"/>
+	</exec>
+	</target>
   <target name="all" depends="clean,dist,docs,test"/>
 
   <target name="clean">

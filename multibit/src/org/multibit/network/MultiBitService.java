@@ -19,8 +19,6 @@ package org.multibit.network;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import org.multibit.controller.MultiBitController;
@@ -32,12 +30,13 @@ import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletEventListener;
+import com.google.bitcoin.discovery.DnsDiscovery;
+import com.google.bitcoin.discovery.IrcDiscovery;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 import com.google.bitcoin.store.BoundedOverheadBlockStore;
@@ -62,6 +61,8 @@ public class MultiBitService {
 
     public static final String BLOCKCHAIN_SUFFIX = ".blockchain";
     public static final String WALLET_SUFFIX = ".wallet";
+    
+    public static final String IRC_CHANNEL_TEST = "#bitcoinTEST";;
 
     private String walletFilename;
     private Wallet wallet;
@@ -177,10 +178,15 @@ public class MultiBitService {
             chain = new BlockChain(networkParameters, wallet, blockStore);
 
             peerGroup = new MultiBitPeerGroup(controller, blockStore, networkParameters, chain);
-            // peerGroup.addAddress(new PeerAddress(InetAddress.getLocalHost(),
-            // 8333));
-            peerGroup.addAddress(new PeerAddress(InetAddress.getByName("98.143.152.19"), 8333));
-
+            // peerGroup.addAddress(new PeerAddress(InetAddress.getLocalHost(), 8333));
+            //peerGroup.addAddress(new PeerAddress(InetAddress.getByName("98.143.152.19"), 8333)); // production fall back node
+            
+            // use DNS for production, IRC for test
+            if (useTestNet) {
+                peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST)); 
+            } else {
+                peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
+            }
             // add the controller as a PeerEventListener
             peerGroup.addEventListener(controller);
             peerGroup.start();
@@ -191,8 +197,6 @@ public class MultiBitService {
             // The PeerGroup thread keeps us alive until something kills the
             // process.
         } catch (BlockStoreException e) {
-            controller.displayMessage("multiBitService.errorText", new Object[]{e.getClass().getName() + " " + e.getMessage()}, "multiBitService.errorTitleText");
-        } catch (UnknownHostException e) {
             controller.displayMessage("multiBitService.errorText", new Object[]{e.getClass().getName() + " " + e.getMessage()}, "multiBitService.errorTitleText");
         } catch (Exception e) {
             controller.displayMessage("multiBitService.errorText", new Object[]{e.getClass().getName() + " " + e.getMessage()}, "multiBitService.errorTitleText");
