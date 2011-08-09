@@ -1,0 +1,10 @@
+	
+MultiBit release notes.
+
+
+Version 0.1.1
+o  Initial working version 
+
+Version 0.1.1alpha
+o  Non functional version illustrating user interface.
+
