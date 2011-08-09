@@ -1,10 +1,21 @@
-	
 MultiBit release notes.
 
-
+Version 0.1.2 (work in progress)
+	Enhancements:
+	o Added russian translation (Thanks Gary and Katya).
+	
+	Bug fixes
+	o Copy address in receive bitcoin cleared label.
+	o Not connecting to testnet when multibit.properties setting testOrProductionNetwork = test
+	
 Version 0.1.1
-o  Initial working version 
+   Initial working version 
 
 Version 0.1.1alpha
-o  Non functional version illustrating user interface.
+   Non functional version illustrating user interface for review by bitcoinj group.
+
+
+Sha256Hash
+8192881847956930155
+4807494979333778890
 
