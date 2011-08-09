@@ -1,11 +1,16 @@
 package org.multibit;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Properties;
+import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 import javax.swing.KeyStroke;
@@ -22,14 +27,16 @@ import com.google.bitcoin.core.Utils;
  * 
  */
 public class Localiser {
-    public static final String VIEWER_RESOURCE_BUNDLE_NAME = "i18n/viewer";
+    public static final String VIEWER_RESOURCE_BUNDLE_NAME = "/i18n/viewer";
+    public static final String SEPARATOR = "_";
+    public static final String PROPERTY_NAME_SUFFIX = ".properties";
     public static final String VERSION_PROPERTY_KEY_NAME = "version";
     public static final String VERSION_PROPERTIES_FILENAME = "/version.properties";
     private ResourceBundle resourceBundle;
     private MessageFormat formatter;
 
     private Properties versionProperties;
-    
+
     private Locale locale;
     private String bundleName;
 
@@ -46,7 +53,7 @@ public class Localiser {
         this.bundleName = bundleName;
         formatter = new MessageFormat("");
         setLocale(locale);
-     }
+    }
 
     public String getString(String key) {
         if (resourceBundle != null) {
@@ -63,9 +70,10 @@ public class Localiser {
             return MISSING_RESOURCE_TEXT + key;
         }
     }
-    
+
     /**
      * get the mnemonic key code for the passed in internationalisation key
+     * 
      * @param key
      * @return
      */
@@ -84,7 +92,7 @@ public class Localiser {
             return 0;
         }
     }
-    
+
     public String getString(String key, Object[] parameters) {
         if (resourceBundle != null) {
             try {
@@ -108,25 +116,58 @@ public class Localiser {
     public Locale getLocale() {
         return locale;
     }
-    
+
     public void setLocale(Locale locale) {
         formatter.setLocale(locale);
         this.locale = locale;
 
+        String propertyFilename = bundleName + SEPARATOR + locale.getLanguage() + PROPERTY_NAME_SUFFIX;
+        String propertyFilenameBase = bundleName + PROPERTY_NAME_SUFFIX;
+        System.out.println("Localiser#setLocale propertyFilename = " + propertyFilename);
+        System.out.println("Localiser#setLocale propertyFilenameBase = " + propertyFilenameBase);
+        boolean foundIt = false;
         try {
-            resourceBundle = ResourceBundle.getBundle(bundleName, locale);
-        } catch (MissingResourceException mre) {
-            // if you cannot find the ResourceBundle you carry on but keys are not looked up
-            mre.printStackTrace();
-        } catch (NullPointerException npe) {
-            // if you cannot find the ResourceBundle you carry on but keys are not looked up
-            npe.printStackTrace();
+            // resourceBundle = ResourceBundle.getBundle(bundleName, locale);
+            // resourceBundle = new PropertyResourceBundle(new
+            // FileReader(propertyFilename));
+            InputStream inputStream = MultiBitFrame.class.getResourceAsStream(propertyFilename);
+            if (inputStream != null) {
+                resourceBundle = new PropertyResourceBundle(new InputStreamReader(inputStream, "UTF8"));
+                foundIt = true;
+                System.out.println("Localiser#setLocale - PING 1");
+            }
+            // ResourceBundle.getBundle(bundleName, locale);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (!foundIt) {
+            // just get the base version i.e. English
+            try {
+                InputStream inputStream =  MultiBitFrame.class.getResourceAsStream(propertyFilenameBase);
+                if (inputStream != null) {
+                    resourceBundle = new PropertyResourceBundle(new InputStreamReader(inputStream, "UTF8"));
+                    System.out.println("Localiser#setLocale - PING 2");
+                }
+                //resourceBundle = new PropertyResourceBundle(new InputStreamReader(getClass().getClassLoader()
+                //        .getResourceAsStream(propertyFilenameBase), "UTF8"));
+                // resourceBundle = new PropertyResourceBundle(new
+                // FileReader(propertyFilenameBase));
+                //System.out.println("Localiser#setLocale - PING 2");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
-    
+
     /**
-     * get the version number specified in the version.properties file
-     * TODO - this should probably be somewhere else
+     * get the version number specified in the version.properties file TODO -
+     * this should probably be somewhere else
+     * 
      * @return
      */
     public String getVersionNumber() {
@@ -142,7 +183,7 @@ public class Localiser {
                 ioe.printStackTrace();
             }
         }
-        
+
         if (versionProperties != null) {
             version = versionProperties.getProperty(VERSION_PROPERTY_KEY_NAME);
             if (version == null) {
@@ -151,13 +192,13 @@ public class Localiser {
         }
         return version;
     }
-    
+
     /** Returns the given value in nanocoins as a 0.12 type string. */
     public static String bitcoinValueToFriendlyString(BigInteger value, boolean addUnit, boolean blankZero) {
         if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
             return "";
         }
-        
+
         boolean negative = value.compareTo(BigInteger.ZERO) < 0;
         if (negative) {
             value = value.negate();
@@ -170,6 +211,5 @@ public class Localiser {
         }
         return toReturn;
     }
-    
 
 }

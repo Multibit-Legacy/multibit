@@ -4,8 +4,8 @@ check sending and receiving works reliably
 add in support for fees
 make sure right icons are used - no coffee cups
 test it works on the test network
-get rid of hardwired peer address - MultiBitService#MultiBitService - use DNSDiscovery on prod, IRCDiscovery on test
 check switching of wallets hooks up all listeners correctly
+ensure switch from test to prod does not confuse which wallet is open. (last test/prod wallet setting ?)
 
 Documentation
 -------------
@@ -25,7 +25,9 @@ internationalise to Russion
 add in proper jar bundling to exe and DMG - look at ProGuard
 improve UI - address can be on main screen rather than a key click away
 add in wallet encryption
+support for subscriptions/ standing orders
 
 Bugs
 ----
-Copy address on receive blanks label (copy address needs to get form data and store it). From Mike Hearn, 5 Aug 2011.
+Raised 05 Aug 2011 by Mike Hearn. Fixed 08 Aug 2011.  Cannot attach to testnet when multibit.properties testOrProductionNetwork=test.  
+Raised 05 Aug 2011 by Mike Hearn. Fixed 08 Aug 2011.  Copy address on receive bitcoin blanks label (copy address needs to get form data and store it). 
