@@ -6,10 +6,11 @@ make sure right icons are used - no coffee cups
 test it works on the test network
 check switching of wallets hooks up all listeners correctly
 ensure switch from test to prod does not confuse which wallet is open. (last test/prod wallet setting ?)
+increase width of address book - cannot see all russian buttons
 
 Documentation
 -------------
-write release notes / install guide
+write install guide/ what files there should be
 get the online help to point to basic HTML help
 
 Logging and errors
@@ -17,17 +18,15 @@ Logging and errors
 no error message in MultiBitService#sendCoins when not enough money
 no error message when cannot connect to peer
 client does not go offline if you disconnect from network
-no logging - use log4j
+no logging - use log4j - cannot debug executable jar
 
 Future enhancements
 -------------------
-internationalise to Russion
 add in proper jar bundling to exe and DMG - look at ProGuard
 improve UI - address can be on main screen rather than a key click away
 add in wallet encryption
-support for subscriptions/ standing orders
+support for subscriptions/ standing orders - add to development plan.
 
-Bugs
-----
-Raised 05 Aug 2011 by Mike Hearn. Fixed 08 Aug 2011.  Cannot attach to testnet when multibit.properties testOrProductionNetwork=test.  
-Raised 05 Aug 2011 by Mike Hearn. Fixed 08 Aug 2011.  Copy address on receive bitcoin blanks label (copy address needs to get form data and store it). 
+Outstanding Bugs
+----------------
+o Receive bitcoin screen not opening in executable jar environment.

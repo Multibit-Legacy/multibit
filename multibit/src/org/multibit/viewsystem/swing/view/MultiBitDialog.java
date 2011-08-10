@@ -93,6 +93,5 @@ abstract public class MultiBitDialog extends JDialog {
                             + path);
             return null;
         }
-    }
-    
+    } 
 }

@@ -123,8 +123,8 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider {
     }
 
     private void initUI() {
-        positionDialogRelativeToParent(this, 0.25D, 0.1D);
-        setMinimumSize(new Dimension(300, 400));
+        positionDialogRelativeToParent(this, 0.2D, 0.1D);
+        setMinimumSize(new Dimension(600, 400));
 
         Container contentPane = getContentPane();
         contentPane.setLayout(new GridBagLayout());

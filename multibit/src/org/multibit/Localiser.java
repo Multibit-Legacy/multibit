@@ -1,7 +1,6 @@
 package org.multibit;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -127,14 +126,10 @@ public class Localiser {
         System.out.println("Localiser#setLocale propertyFilenameBase = " + propertyFilenameBase);
         boolean foundIt = false;
         try {
-            // resourceBundle = ResourceBundle.getBundle(bundleName, locale);
-            // resourceBundle = new PropertyResourceBundle(new
-            // FileReader(propertyFilename));
             InputStream inputStream = MultiBitFrame.class.getResourceAsStream(propertyFilename);
             if (inputStream != null) {
                 resourceBundle = new PropertyResourceBundle(new InputStreamReader(inputStream, "UTF8"));
                 foundIt = true;
-                System.out.println("Localiser#setLocale - PING 1");
             }
             // ResourceBundle.getBundle(bundleName, locale);
         } catch (FileNotFoundException e) {
@@ -149,13 +144,7 @@ public class Localiser {
                 InputStream inputStream =  MultiBitFrame.class.getResourceAsStream(propertyFilenameBase);
                 if (inputStream != null) {
                     resourceBundle = new PropertyResourceBundle(new InputStreamReader(inputStream, "UTF8"));
-                    System.out.println("Localiser#setLocale - PING 2");
                 }
-                //resourceBundle = new PropertyResourceBundle(new InputStreamReader(getClass().getClassLoader()
-                //        .getResourceAsStream(propertyFilenameBase), "UTF8"));
-                // resourceBundle = new PropertyResourceBundle(new
-                // FileReader(propertyFilenameBase));
-                //System.out.println("Localiser#setLocale - PING 2");
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -211,5 +200,4 @@ public class Localiser {
         }
         return toReturn;
     }
-
 }

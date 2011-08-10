@@ -26,13 +26,12 @@ public class HelpContentsView implements View {
 
     private Localiser localiser;
 
-    private JDialog messageDialog;
+    private Browser browser;
 
     /**
      * Creates a new {@link HelpContentsView}.
      */
-    public HelpContentsView(MultiBitController controller, Localiser localiser,
-            MultiBitFrame mainFrame) {
+    public HelpContentsView(MultiBitController controller, Localiser localiser, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.localiser = localiser;
         this.mainFrame = mainFrame;
@@ -46,12 +45,7 @@ public class HelpContentsView implements View {
      * show help contents message box
      */
     public void displayView() {
-        JOptionPane optionPane = new JOptionPane(localiser.getString("helpContentsView.todo"),
-                JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION);
-
-        messageDialog = optionPane.createDialog(mainFrame,
-                localiser.getString("helpContentsView.messageTitle"));
-        messageDialog.show();
+        browser = new Browser(mainFrame, "http://www.multibit.org/help_contents.html");
 
         controller.setActionForwardToParent();
     }
@@ -61,13 +55,7 @@ public class HelpContentsView implements View {
     }
 
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
-        if (ViewSystem.newViewIsParentOfPrevious == relationshipOfNewViewToPrevious) {
-            if (messageDialog != null) {
-                messageDialog.setVisible(false);
-                messageDialog.dispose();
-                messageDialog = null;
-            }
-        }
+        // just keep the help frame open
     }
 
     public void setPossibleActions(Collection<Action> possibleActions) {
