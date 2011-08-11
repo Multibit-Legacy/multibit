@@ -5,3 +5,5 @@ out
 /pingservice-testnet.blockchain
 /multibit.addressbook
 /multibit.wallet
+/multibit.log
+/log

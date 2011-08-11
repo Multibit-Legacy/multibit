@@ -14,6 +14,8 @@
       <classpath path="lib/bitcoinj.jar"/>
       <classpath path="lib/slf4j-api-1.6.1.jar"/>
       <classpath path="lib/slf4j-simple-1.6.1.jar"/>
+      <classpath path="lib/log4j-1.2.16.jar"/>
+      <classpath path="lib/apache-log4j-extras-1.1.jar"/>    	
     </javac>
   </target>
 
@@ -29,8 +31,12 @@
     <junit showoutput="false">
       <classpath path="lib/bitcoinj.jar"/>
       <classpath path="lib/junit-4.8.2.jar:out"/>
-      <classpath path="lib/slf4j-api-1.6.1.jar:out"/>
-      <classpath path="lib/slf4j-simple-1.6.1.jar:out"/>
+      <classpath path="lib/slf4j-api-1.6.1.jar"/>
+      <classpath path="lib/slf4j-simple-1.6.1.jar"/>
+      <classpath path="lib/log4j-1.2.16.jar"/>
+      <classpath path="lib/apache-log4j-extras-1.1.jar"/>    	
+      <classpath path=" lib/bcprov-jdk15-1.46.jar"/>    	
+
       <batchtest>
 	    <fileset dir="tests"><include name="**/*.java"/></fileset>
         <formatter type="brief" usefile="no"/> 
@@ -45,22 +51,27 @@
     <mkdir dir="dist"/>
     <jar jarfile="dist/multibit.jar" basedir="out">
     	 <manifest>
-    	 	<attribute name="Main-Class" value="org.multibit.MultiBit"/>
-    	 	<attribute name="Class-Path" value="bitcoinj.jar junit-4.8.2.jar slf4j-api-1.6.1.jar slf4j-simple-1.6.1.jar"/>
+    	 	<attribute name="Main-Class" value="org.multibit.MultiBitInExecutableJar"/>
+    	 	<attribute name="Class-Path" value="lib/bitcoinj.jar lib/bcprov-jdk15-1.46.jar lib/junit-4.8.2.jar lib/slf4j-api-1.6.1.jar lib/slf4j-simple-1.6.1.jar lib/log4j-1.2.16.jar lib/apache-log4j-extras-1.1.jar"/>
     	 	 <section name="org.multibit/">
     	 	 	<attribute name="Sealed" value="true"/>
     	 	 </section>
     	 	<attribute name="SplashScreen-Image" value="images/splash.jpg"/>
     	 </manifest>
     </jar>
-	<copy file="lib/bitcoinj.jar" todir="dist"/>
-	<copy file="lib/junit-4.8.2.jar" todir="dist"/>
- 	<copy file="lib/slf4j-api-1.6.1.jar" todir="dist"/>
- 	<copy file="lib/slf4j-simple-1.6.1.jar" todir="dist"/>
+    <mkdir dir="dist/lib"/>
  	<copy file="standard-multibit.properties" tofile="dist/multibit.properties"/>
+ 	<copy file="log4j.xml" tofile="dist/log4j.xml"/>
  	<copy file="multibit.blockchain" todir="dist"/>
+	<copy file="lib/bitcoinj.jar" todir="dist/lib"/>
+	<copy file="lib/junit-4.8.2.jar" todir="dist/lib"/>
+ 	<copy file="lib/slf4j-api-1.6.1.jar" todir="dist/lib"/>
+ 	<copy file="lib/slf4j-simple-1.6.1.jar" todir="dist/lib"/>
+ 	<copy file="lib/log4j-1.2.16.jar" todir="dist/lib"/>
+ 	<copy file="lib/apache-log4j-extras-1.1.jar" todir="dist/lib"/>
+ 	<copy file="lib/bcprov-jdk15-1.46.jar" todir="dist/lib"/>
     <zip destfile="dist/multibit-${DSTAMP}.zip" basedir="dist"
-	       includes="multibit.jar, bitcoinj.jar, slf4j-api-1.6.1.jar, slf4j-simple-1.6.1.jar, multibit.properties, multibit.blockchain"
+	       includes="multibit.jar, lib/**/*.jar, multibit.properties, multibit.blockchain, log4j.xml"
     />
   </target>
 

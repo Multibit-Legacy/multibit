@@ -122,8 +122,8 @@ public class Localiser {
 
         String propertyFilename = bundleName + SEPARATOR + locale.getLanguage() + PROPERTY_NAME_SUFFIX;
         String propertyFilenameBase = bundleName + PROPERTY_NAME_SUFFIX;
-        System.out.println("Localiser#setLocale propertyFilename = " + propertyFilename);
-        System.out.println("Localiser#setLocale propertyFilenameBase = " + propertyFilenameBase);
+        //System.out.println("Localiser#setLocale propertyFilename = " + propertyFilename);
+        //System.out.println("Localiser#setLocale propertyFilenameBase = " + propertyFilenameBase);
         boolean foundIt = false;
         try {
             InputStream inputStream = MultiBitFrame.class.getResourceAsStream(propertyFilename);

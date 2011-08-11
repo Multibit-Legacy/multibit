@@ -7,6 +7,10 @@ import java.io.InputStream;
 import java.util.Locale;
 import java.util.Properties;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.xml.DOMConfigurator;
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
@@ -24,10 +28,17 @@ public class MultiBit {
     public static final String PROPERTIES_FILE_NAME = "multibit.properties";
     public static final String PROPERTIES_HEADER_TEXT= "multibit";
     
+    private static Logger logger;
+
+    
     /**
      * start multibit user interface
      */
     public static void main(String args[]) {
+        // initialise log4j
+        DOMConfigurator.configure("log4j.xml");
+        logger = Logger.getLogger(MultiBit.class.getName());
+        
         // create the controller
         MultiBitController controller = new MultiBitController();
 
@@ -41,9 +52,12 @@ public class MultiBit {
             userPreferences.put(MultiBitModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
         }
         boolean useTestNet = MultiBitModel.TEST_NETWORK_VALUE.equals(testOrProduction);
+        logger.debug("useTestNet = " + useTestNet);
         
         Localiser localiser;
         String userLanguageCode = userPreferences.getProperty(MultiBitModel.USER_LANGUAGE_CODE);
+        logger.debug("userLanguageCode = " + userLanguageCode);
+        
         if (userLanguageCode == null || MultiBitModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
             localiser = new Localiser(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, Locale.getDefault());
         } else {
