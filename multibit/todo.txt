@@ -29,4 +29,4 @@ support for subscriptions/ standing orders - add to development plan.
 
 Outstanding Bugs
 ----------------
-o Receive bitcoin screen not opening in executable jar environment.
+o On send bitcoin, immediately gets confirmed and no date of transaction shown.

@@ -61,8 +61,9 @@
     </jar>
     <mkdir dir="dist/lib"/>
  	<copy file="standard-multibit.properties" tofile="dist/multibit.properties"/>
- 	<copy file="log4j.xml" tofile="dist/log4j.xml"/>
  	<copy file="multibit.blockchain" todir="dist"/>
+ 	<copy file="release_notes.txt" todir="dist"/>
+ 	<copy file="log4j.xml" todir="dist"/>
 	<copy file="lib/bitcoinj.jar" todir="dist/lib"/>
 	<copy file="lib/junit-4.8.2.jar" todir="dist/lib"/>
  	<copy file="lib/slf4j-api-1.6.1.jar" todir="dist/lib"/>
@@ -71,7 +72,7 @@
  	<copy file="lib/apache-log4j-extras-1.1.jar" todir="dist/lib"/>
  	<copy file="lib/bcprov-jdk15-1.46.jar" todir="dist/lib"/>
     <zip destfile="dist/multibit-${DSTAMP}.zip" basedir="dist"
-	       includes="multibit.jar, lib/**/*.jar, multibit.properties, multibit.blockchain, log4j.xml"
+	       includes="multibit.jar, lib/**/*.jar, multibit.properties, multibit.blockchain, log4j.xml, release_notes.txt"
     />
   </target>
 
