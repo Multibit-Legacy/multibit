@@ -6,27 +6,22 @@ make sure right icons are used - no coffee cups
 test it works on the test network
 check switching of wallets hooks up all listeners correctly
 ensure switch from test to prod does not confuse which wallet is open. (last test/prod wallet setting ?)
-increase width of address book - cannot see all russian buttons
-
-Documentation
--------------
-write install guide/ what files there should be
-get the online help to point to basic HTML help
 
 Logging and errors
 ------------------
 no error message in MultiBitService#sendCoins when not enough money
 no error message when cannot connect to peer
 client does not go offline if you disconnect from network
-no logging - use log4j - cannot debug executable jar
-
-Future enhancements
--------------------
-add in proper jar bundling to exe and DMG - look at ProGuard
-improve UI - address can be on main screen rather than a key click away
-add in wallet encryption
-support for subscriptions/ standing orders - add to development plan.
+extend log4j logging to all important classes
 
 Outstanding Bugs
 ----------------
 o On send bitcoin, immediately gets confirmed and no date of transaction shown.
+o multibit.properties needs to be writtern and read in UTF8 - there could be Russian in a label.
+
+Future enhancements
+-------------------
+o Add in proper jar bundling to exe and DMG - look at ProGuard
+o Improve UI - address can be on main screen rather than a key click away
+o Add in wallet encryption
+o Support for subscriptions/ standing orders - add to development plan.
