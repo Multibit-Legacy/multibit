@@ -1,6 +1,6 @@
 MultiBit release notes.
 
-Version 0.1.2alpha
+Version 0.1.2
   Enhancements:
 	o Added Russian translation. (Thanks Gary and Katya.)
 	o DNS peer discovery is now used on production network, IRC on testnet.
