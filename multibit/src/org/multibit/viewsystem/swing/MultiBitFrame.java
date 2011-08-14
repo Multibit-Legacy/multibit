@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
@@ -46,6 +47,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import org.apache.log4j.Logger;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
@@ -122,8 +124,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private boolean isOnline;
 
     private MultiBitFrame thisFrame;
-
+    private JTable table;
     private WalletTableModel walletTableModel;
+    
+    public Logger logger = Logger.getLogger(MultiBitFrame.class.getName());
+
 
     /**
      * the view that the controller is telling us to display an int - one of the
@@ -134,6 +139,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
     private Map<Integer, View> viewMap;
 
+    private Timer refreshTimer;
+    
     public MultiBitFrame(MultiBitController controller) {
         this.controller = controller;
         this.model = controller.getModel();
@@ -161,6 +168,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         networkStatusLabel.setText("");
 
         balanceTextField.setText(Localiser.bitcoinValueToFriendlyString(model.getBalance(), true, false));
+
+        refreshTimer = new Timer();
+        refreshTimer.schedule(new RefreshTimerTask(this), 0, 60000); // fires once a minute
 
         pack();
         setVisible(true);
@@ -291,7 +301,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         GridBagConstraints constraints = new GridBagConstraints();
 
         walletTableModel = new WalletTableModel(model, controller);
-        JTable table = new JTable(walletTableModel);
+        table = new JTable(walletTableModel);
         table.setOpaque(false);
         table.setShowGrid(false);
 
@@ -892,23 +902,28 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     }
 
     public void blockDownloaded() {
-        final MultiBitFrame finalMainFrame = this;
-        SwingUtilities.invokeLater(new Runnable() {
+       logger.debug("blockDownloaded");;
+       SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 // update screen in case status bars have changed
-                finalMainFrame.fireDataChanged();
+                thisFrame.fireDataChanged();
+                table.invalidate();
+                table.validate();
+                table.repaint();
+                thisFrame.invalidate();
+                thisFrame.validate();
+                thisFrame.repaint();
             }
         });
     }
 
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-
         // print out transaction details
         try {
             TransactionInput input = transaction.getInputs().get(0);
             Address from = input.getFromAddress();
             BigInteger value = transaction.getValueSentToMe(wallet);
-            System.out.println("Received " + Localiser.bitcoinValueToFriendlyString(value, true, false) + " from "
+            logger.debug("Received " + Localiser.bitcoinValueToFriendlyString(value, true, false) + " from "
                     + from.toString());
             wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
         } catch (ScriptException e) {
@@ -920,7 +935,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             throw new RuntimeException(e);
         }
 
-        System.out.println("MultiBitFrame#onCoinsReceived - wallet is currently:\n" + wallet.toString());
+        logger.debug("MultiBitFrame#onCoinsReceived - wallet is currently:\n" + wallet.toString());
         fireDataChanged();
     }
 
@@ -935,7 +950,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
                 // update wallet table model
                 walletTableModel.recreateWalletData();
-
+                table.invalidate();
+                table.validate();
+                table.repaint();
                 thisFrame.invalidate();
                 thisFrame.validate();
                 thisFrame.repaint();

@@ -7,11 +7,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.PropertyResourceBundle;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
