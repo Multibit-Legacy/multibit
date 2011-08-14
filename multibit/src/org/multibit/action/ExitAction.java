@@ -1,10 +1,14 @@
 package org.multibit.action;
 
 import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Properties;
 
 import org.multibit.MultiBit;
@@ -36,7 +40,8 @@ public class ExitAction implements Action{
         try {
             outputStream = new FileOutputStream(MultiBit.PROPERTIES_FILE_NAME);
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
-            userPreferences.store(bufferedOutputStream, MultiBit.PROPERTIES_HEADER_TEXT);
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(bufferedOutputStream, "UTF8");
+            userPreferences.store(outputStreamWriter, MultiBit.PROPERTIES_HEADER_TEXT);
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

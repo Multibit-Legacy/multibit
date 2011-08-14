@@ -1,6 +1,7 @@
 TODO for minimal viable product
 --------------------------------
-check sending and receiving works reliably
+add wallet encryption
+add tests to check sending and receiving works reliably
 add in support for fees
 make sure right icons are used - no coffee cups
 test it works on the test network
@@ -17,11 +18,9 @@ extend log4j logging to all important classes
 Outstanding Bugs
 ----------------
 o On send bitcoin, immediately gets confirmed and no date of transaction shown.
-o multibit.properties needs to be writtern and read in UTF8 - there could be Russian in a label.
 
 Future enhancements
 -------------------
 o Add in proper jar bundling to exe and DMG - look at ProGuard
 o Improve UI - address can be on main screen rather than a key click away
-o Add in wallet encryption
 o Support for subscriptions/ standing orders - add to development plan.

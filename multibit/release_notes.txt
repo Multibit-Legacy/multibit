@@ -1,25 +1,33 @@
 MultiBit release notes.
 
+Version 0.1.3alpha
+Enhancements
++
+
+Bug fixes
++
+
+
 Version 0.1.2
-  Enhancements:
-	o Added Russian translation. (Thanks Gary and Katya.)
-	o DNS peer discovery is now used on production network, IRC on testnet.
-	o Help Contents now displays HTML help from multibit.org in a mini-browser.
-	o Added log directory with console log and log4j debug log.
-	o Added lib directory to tidy up runtime environment.
-	o There is now a project_plan.txt describing planned future development
+Enhancements:
++  Added Russian translation. (Thanks Gary and Katya.)
++  DNS peer discovery is now used on production network, IRC on testnet.
++  Help Contents now displays HTML help from multibit.org in a mini-browser.
++  Added log directory with console log and log4j debug log.
++  Added lib directory to tidy up runtime environment.
++  There is now a project_plan.txt describing planned future development.
 	
-  Bug fixes
-	o Copy address in receive bitcoin cleared label bug fixed.
-	o Not connecting to testnet when multibit.properties setting testOrProductionNetwork = test fixed.
+Bug fixes
++  Copy address in receive bitcoin cleared label bug fixed.
++  Not connecting to testnet when multibit.properties setting testOrProductionNetwork = test fixed.
 
 	
 Version 0.1.1
-  Initial working version with:
-    o Send and receive bitcoins.
-    o Address book.  
-    o English and Spanish translation with ability to switch languages in a preferences setting.
+Initial working version with:
++  Send and receive bitcoins.
++  Address book.  
++  English and Spanish translation with ability to switch languages in a preferences setting.
 
 
 Version 0.1.1alpha
-  Non functional version illustrating user interface for review by bitcoinj group.
+Non functional version illustrating user interface for review by bitcoinj group.

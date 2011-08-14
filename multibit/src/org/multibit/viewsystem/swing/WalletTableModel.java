@@ -20,12 +20,12 @@ public class WalletTableModel extends AbstractTableModel {
     private Vector<String> headers;
 
     private Vector<WalletData> walletData;
-    
+
     /**
      * the MultiBit model
      */
     private MultiBitModel multiBitModel;
-    
+
     private MultiBitController controller;
 
     SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm");
@@ -35,7 +35,7 @@ public class WalletTableModel extends AbstractTableModel {
         this.controller = controller;
 
         createHeaders();
-        
+
         walletData = model.createWalletData();
     }
 
@@ -62,14 +62,20 @@ public class WalletTableModel extends AbstractTableModel {
 
         switch (column) {
         case 0: {
-            // work out the difference between the wallet data height and the current head
+            // work out the difference between the wallet data height and the
+            // current head
             StoredBlock currentHead = controller.getMultiBitService().getChain().getChainHead();
             int currentHeight = Integer.MIN_VALUE;
             if (currentHead != null) {
                 currentHeight = currentHead.getHeight();
             }
-            int numberOfBlocksEmbedded = currentHeight - walletDataRow.getHeight() + 1;
-            return numberOfBlocksEmbedded;
+            if (walletDataRow.getHeight() != -1) {
+                int numberOfBlocksEmbedded = currentHeight - walletDataRow.getHeight() + 1;
+                return numberOfBlocksEmbedded;
+            } else {
+                // do not know the height - probably a send that is not confirmed
+                return 0; // not confirmed yet
+            }
         }
         case 1: {
             if (walletDataRow.getDate() == null) {
@@ -110,8 +116,8 @@ public class WalletTableModel extends AbstractTableModel {
         // recreate the wallet data as the underlying wallet has changed
         walletData = multiBitModel.createWalletData();
         this.fireTableDataChanged();
-    }   
-    
+    }
+
     public void createHeaders() {
         headers = new Vector<String>();
         for (int j = 0; j < WalletData.COLUMN_HEADER_KEYS.length; j++) {

@@ -4,8 +4,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.PropertyResourceBundle;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -97,7 +99,8 @@ public class MultiBit {
         Properties userPreferences = new Properties();
         try {
             InputStream inputStream = new FileInputStream(MultiBit.PROPERTIES_FILE_NAME);
-            userPreferences.load(inputStream);
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF8");
+            userPreferences.load(inputStreamReader);
         } catch (FileNotFoundException e) {
             // ok - may not have been created yet
         } catch (IOException e) {
