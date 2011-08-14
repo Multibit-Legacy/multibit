@@ -340,6 +340,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             public int compare(Date o1, Date o2) {
                 long n1 = o1.getTime();
                 long n2 = o2.getTime();
+                if (n1 == 0) {
+                    // object 1 has missing date
+                    return 1;
+                }
+                if (n2 == 0) {
+                    // object 2 has missing date
+                    return -1;
+                }
                 if (n1 < n2) {
                     return -1;
                 } else if (n1 > n2) {
@@ -591,10 +599,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             String formattedDate = "";
             if (value != null) {
                 if (value instanceof Date) {
-                    try {
-                        formattedDate = dateFormatter.format(value);
-                    } catch (IllegalArgumentException iae) {
-                        // ok
+                    if (((Date) value).getTime() == 0) {
+                        // date is actually missing - just keep a blank string
+                    } else {
+                        try {
+                            formattedDate = dateFormatter.format(value);
+                        } catch (IllegalArgumentException iae) {
+                            // ok
+                        }
                     }
                 } else {
                     formattedDate = value.toString();
@@ -880,13 +892,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     }
 
     public void blockDownloaded() {
-        final JFrame finalMainFrame = this;
+        final MultiBitFrame finalMainFrame = this;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 // update screen in case status bars have changed
-                finalMainFrame.invalidate();
-                finalMainFrame.validate();
-                finalMainFrame.repaint();
+                finalMainFrame.fireDataChanged();
             }
         });
     }
@@ -925,7 +935,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
                 // update wallet table model
                 walletTableModel.recreateWalletData();
-                walletTableModel.fireTableDataChanged();
 
                 thisFrame.invalidate();
                 thisFrame.validate();

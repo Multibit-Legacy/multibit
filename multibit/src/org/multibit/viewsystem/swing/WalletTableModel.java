@@ -2,6 +2,7 @@ package org.multibit.viewsystem.swing;
 
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
@@ -79,7 +80,7 @@ public class WalletTableModel extends AbstractTableModel {
         }
         case 1: {
             if (walletDataRow.getDate() == null) {
-                return null;
+                return new Date(0);   // the earliest date (for sorting)
             } else {
             }
             return walletDataRow.getDate();

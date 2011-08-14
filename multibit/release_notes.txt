@@ -5,8 +5,8 @@ Enhancements
 +
 
 Bug fixes
-+
-
++  On send bitcoin status was incorrectly showing 'confirmed' icon rather than 'unconfirmed(0)'. Fixed.
++  multibit.properties and addressBook.csv now stored in UTF8.
 
 Version 0.1.2
 Enhancements:
