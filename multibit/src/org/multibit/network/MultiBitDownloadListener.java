@@ -1,11 +1,11 @@
 /**
- * Copyright 2011 Google Inc.
+ * Copyright 2011 multibit.org
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *    http://opensource.org/licenses/mit-license.php
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,8 +33,6 @@ import com.google.bitcoin.core.DownloadListener;
  * <p>
  * Methods are called with the event listener object locked so your
  * implementation does not have to be thread safe.
- * 
- * @author miron@google.com (Miron Cuperman a.k.a. devrandom)
  * 
  */
 public class MultiBitDownloadListener extends DownloadListener {

@@ -89,7 +89,7 @@ abstract public class MultiBitDialog extends JDialog {
             return new ImageIcon(imgURL);
         } else {
             System.err
-                    .println("com.google.bitcoin.tools.viewer.ViewerFrame#createImageIcon: Could not find file: "
+                    .println("MultiBitDialog#createImageIcon: Could not find file: "
                             + path);
             return null;
         }

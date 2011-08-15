@@ -60,6 +60,13 @@ public class MultiBitModel {
     public static final String RECEIVE_ADDRESS = "receiveAddress";
     public static final String RECEIVE_LABEL = "receiveLabel";
     public static final String RECEIVE_NEW_KEY = "receiveNewKey";
+    
+    // validation
+    public static final String VALIDATION_ADDRESS_IS_INVALID = "validationAddressIsInvalid";
+    public static final String VALIDATION_AMOUNT_IS_INVALID = "validationAmountIsInvalid";
+    public static final String VALIDATION_NOT_ENOUGH_FUNDS = "validationNotEnoughFunds";
+    public static final String VALIDATION_ADDRESS_VALUE = "validationAddressValue";
+    public static final String VALIDATION_AMOUNT_VALUE = "validationAmountValue";
 
     private Wallet wallet;
 

@@ -1,1 +1,24 @@
 MultiBit is a bitcoin desktop client powered by bitcoinj
+
+
+Build Preparations.
+
+You can build MultiBit straight from the github code 
+however the user experience is improved if you include a
+copy of the production blockchain.   This gets the user started
+quicker.
+
+The blockchain is the same format as created by bitcoinj but has to be
+called 'multibit.blockchain' (production) or
+'multibit-testnet.blockchain' (testnet) in the same dir as the
+executable jar.
+
+
+How to Build MultiBit
+
+To build MultiBit, run the 'all' task in the build.xml.
+The distributable is created in the 'dist' directory and is called:
+"multibit-yyyymmdd.zip"
+
+To run MultiBit from the distributable, follow the instructions at:
+http://www.multibit.org/download.html
