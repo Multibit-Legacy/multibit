@@ -3,7 +3,7 @@
 <HTML>
 <HEAD>
 <TITLE>
-HelpContentsView
+ValidationErrorView
 </TITLE>
 
 
@@ -13,7 +13,7 @@ HelpContentsView
 function windowTitle()
 {
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="HelpContentsView";
+        parent.document.title="ValidationErrorView";
     }
 }
 </SCRIPT>
@@ -52,11 +52,11 @@ function windowTitle()
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/commandline/view/HelpAboutView.html" title="class in org.multibit.viewsystem.commandline.view"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/commandline/view/HomePageView.html" title="class in org.multibit.viewsystem.commandline.view"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/view/ToDoView.html" title="class in org.multibit.viewsystem.swing.view"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;NEXT CLASS</FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../../../index.html?org/multibit/viewsystem/commandline/view/HelpContentsView.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="HelpContentsView.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../../../../index.html?org/multibit/viewsystem/swing/view/ValidationErrorView.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="ValidationErrorView.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
@@ -73,7 +73,7 @@ function windowTitle()
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;<A HREF="#fields_inherited_from_class_org.multibit.viewsystem.commandline.view.AbstractView">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
 DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
 </TR>
@@ -85,31 +85,26 @@ DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&n
 <!-- ======== START OF CLASS DATA ======== -->
 <H2>
 <FONT SIZE="-1">
-org.multibit.viewsystem.commandline.view</FONT>
+org.multibit.viewsystem.swing.view</FONT>
 <BR>
-Class HelpContentsView</H2>
+Class ValidationErrorView</H2>
 <PRE>
 java.lang.Object
-  <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by "><A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html" title="class in org.multibit.viewsystem.commandline.view">org.multibit.viewsystem.commandline.view.AbstractView</A>
-      <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.viewsystem.commandline.view.HelpContentsView</B>
+  <IMG SRC="../../../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.viewsystem.swing.view.ValidationErrorView</B>
 </PRE>
 <DL>
 <DT><B>All Implemented Interfaces:</B> <DD><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></DD>
 </DL>
 <HR>
 <DL>
-<DT><PRE>public class <B>HelpContentsView</B><DT>extends <A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html" title="class in org.multibit.viewsystem.commandline.view">AbstractView</A></DL>
+<DT><PRE>public class <B>ValidationErrorView</B><DT>extends java.lang.Object<DT>implements <A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></DL>
 </PRE>
 
 <P>
-help contents view for command line view system
+The validation error view - used to tell the user their input is invalid
 <P>
 
 <P>
-<DL>
-<DT><B>Author:</B></DT>
-  <DD>jim</DD>
-</DL>
 <HR>
 
 <P>
@@ -120,15 +115,6 @@ help contents view for command line view system
 <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
 <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
 <B>Field Summary</B></FONT></TH>
-</TR>
-</TABLE>
-&nbsp;<A NAME="fields_inherited_from_class_org.multibit.viewsystem.commandline.view.AbstractView"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
-<TH ALIGN="left"><B>Fields inherited from class org.multibit.viewsystem.commandline.view.<A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html" title="class in org.multibit.viewsystem.commandline.view">AbstractView</A></B></TH>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#consoleReader">consoleReader</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#description">description</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#inputStream">inputStream</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#localiser">localiser</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#possibleActions">possibleActions</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#printStream">printStream</A></CODE></TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="fields_inherited_from_class_org.multibit.viewsystem.View"><!-- --></A>
@@ -150,13 +136,12 @@ help contents view for command line view system
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/commandline/view/HelpContentsView.html#HelpContentsView(org.multibit.Localiser, java.lang.String, java.io.InputStream, java.io.PrintStream)">HelpContentsView</A></B>(<A HREF="../../../../../org/multibit/Localiser.html" title="class in org.multibit">Localiser</A>&nbsp;localiser,
-                 java.lang.String&nbsp;viewDescription,
-                 java.io.InputStream&nbsp;inputStream,
-                 java.io.PrintStream&nbsp;printStream)</CODE>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/ValidationErrorView.html#ValidationErrorView(org.multibit.controller.MultiBitController, org.multibit.Localiser, org.multibit.viewsystem.swing.MultiBitFrame)">ValidationErrorView</A></B>(<A HREF="../../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
+                    <A HREF="../../../../../org/multibit/Localiser.html" title="class in org.multibit">Localiser</A>&nbsp;localiser,
+                    <A HREF="../../../../../org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A>&nbsp;mainFrame)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a new <A HREF="../../../../../org/multibit/viewsystem/swing/view/ValidationErrorView.html" title="class in org.multibit.viewsystem.swing.view"><CODE>ValidationErrorView</CODE></A>.</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -171,19 +156,45 @@ help contents view for command line view system
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/commandline/view/HelpContentsView.html#displayView()">displayView</A></B>()</CODE>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/ValidationErrorView.html#displayMessage(java.lang.String, java.lang.Object[], java.lang.String)">displayMessage</A></B>(java.lang.String&nbsp;messageKey,
+               java.lang.Object[]&nbsp;messageData,
+               java.lang.String&nbsp;titleKey)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;display the view to the user</TD>
-</TR>
-</TABLE>
-&nbsp;<A NAME="methods_inherited_from_class_org.multibit.viewsystem.commandline.view.AbstractView"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
-<TH ALIGN="left"><B>Methods inherited from class org.multibit.viewsystem.commandline.view.<A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html" title="class in org.multibit.viewsystem.commandline.view">AbstractView</A></B></TH>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#displayActionsAndProcessResponse()">displayActionsAndProcessResponse</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#displayMessage(java.lang.String, java.lang.Object[], java.lang.String)">displayMessage</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#getDescription()">getDescription</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#navigateAwayFromView(int, int)">navigateAwayFromView</A>, <A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#setPossibleActions(java.util.Collection)">setPossibleActions</A></CODE></TD>
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/ValidationErrorView.html#displayView()">displayView</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;show validation error view</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;java.lang.String</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/ValidationErrorView.html#getDescription()">getDescription</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/ValidationErrorView.html#navigateAwayFromView(int, int)">navigateAwayFromView</A></B>(int&nbsp;nextViewId,
+                     int&nbsp;relationshipOfNewViewToPrevious)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../org/multibit/viewsystem/swing/view/ValidationErrorView.html#setPossibleActions(java.util.Collection)">setPossibleActions</A></B>(java.util.Collection&lt;<A HREF="../../../../../org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>&gt;&nbsp;possibleActions)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
@@ -208,14 +219,15 @@ help contents view for command line view system
 </TR>
 </TABLE>
 
-<A NAME="HelpContentsView(org.multibit.Localiser, java.lang.String, java.io.InputStream, java.io.PrintStream)"><!-- --></A><H3>
-HelpContentsView</H3>
+<A NAME="ValidationErrorView(org.multibit.controller.MultiBitController, org.multibit.Localiser, org.multibit.viewsystem.swing.MultiBitFrame)"><!-- --></A><H3>
+ValidationErrorView</H3>
 <PRE>
-public <B>HelpContentsView</B>(<A HREF="../../../../../org/multibit/Localiser.html" title="class in org.multibit">Localiser</A>&nbsp;localiser,
-                        java.lang.String&nbsp;viewDescription,
-                        java.io.InputStream&nbsp;inputStream,
-                        java.io.PrintStream&nbsp;printStream)</PRE>
+public <B>ValidationErrorView</B>(<A HREF="../../../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
+                           <A HREF="../../../../../org/multibit/Localiser.html" title="class in org.multibit">Localiser</A>&nbsp;localiser,
+                           <A HREF="../../../../../org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A>&nbsp;mainFrame)</PRE>
 <DL>
+<DD>Creates a new <A HREF="../../../../../org/multibit/viewsystem/swing/view/ValidationErrorView.html" title="class in org.multibit.viewsystem.swing.view"><CODE>ValidationErrorView</CODE></A>.
+<P>
 </DL>
 
 <!-- ============ METHOD DETAIL ========== -->
@@ -228,15 +240,74 @@ public <B>HelpContentsView</B>(<A HREF="../../../../../org/multibit/Localiser.ht
 </TR>
 </TABLE>
 
+<A NAME="getDescription()"><!-- --></A><H3>
+getDescription</H3>
+<PRE>
+public java.lang.String <B>getDescription</B>()</PRE>
+<DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#getDescription()">getDescription</A></CODE> in interface <CODE><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
 <A NAME="displayView()"><!-- --></A><H3>
 displayView</H3>
 <PRE>
 public void <B>displayView</B>()</PRE>
 <DL>
-<DD>display the view to the user
+<DD>show validation error view
 <P>
 <DD><DL>
-<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#displayView()">displayView</A></CODE> in interface <CODE><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></CODE><DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html#displayView()">displayView</A></CODE> in class <CODE><A HREF="../../../../../org/multibit/viewsystem/commandline/view/AbstractView.html" title="class in org.multibit.viewsystem.commandline.view">AbstractView</A></CODE></DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#displayView()">displayView</A></CODE> in interface <CODE><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="displayMessage(java.lang.String, java.lang.Object[], java.lang.String)"><!-- --></A><H3>
+displayMessage</H3>
+<PRE>
+public void <B>displayMessage</B>(java.lang.String&nbsp;messageKey,
+                           java.lang.Object[]&nbsp;messageData,
+                           java.lang.String&nbsp;titleKey)</PRE>
+<DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#displayMessage(java.lang.String, java.lang.Object[], java.lang.String)">displayMessage</A></CODE> in interface <CODE><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="navigateAwayFromView(int, int)"><!-- --></A><H3>
+navigateAwayFromView</H3>
+<PRE>
+public void <B>navigateAwayFromView</B>(int&nbsp;nextViewId,
+                                 int&nbsp;relationshipOfNewViewToPrevious)</PRE>
+<DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#navigateAwayFromView(int, int)">navigateAwayFromView</A></CODE> in interface <CODE><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></CODE></DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>nextViewId</CODE> - - one of the View constants<DD><CODE>relationshipOfNewViewToPrevious</CODE> - - one of the ViewSystem relationship constants</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setPossibleActions(java.util.Collection)"><!-- --></A><H3>
+setPossibleActions</H3>
+<PRE>
+public void <B>setPossibleActions</B>(java.util.Collection&lt;<A HREF="../../../../../org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>&gt;&nbsp;possibleActions)</PRE>
+<DL>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../../org/multibit/viewsystem/View.html#setPossibleActions(java.util.Collection)">setPossibleActions</A></CODE> in interface <CODE><A HREF="../../../../../org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A></CODE></DL>
 </DD>
 <DD><DL>
 </DL>
@@ -272,11 +343,11 @@ public void <B>displayView</B>()</PRE>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/commandline/view/HelpAboutView.html" title="class in org.multibit.viewsystem.commandline.view"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../../../org/multibit/viewsystem/commandline/view/HomePageView.html" title="class in org.multibit.viewsystem.commandline.view"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../../../org/multibit/viewsystem/swing/view/ToDoView.html" title="class in org.multibit.viewsystem.swing.view"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;NEXT CLASS</FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../../../index.html?org/multibit/viewsystem/commandline/view/HelpContentsView.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="HelpContentsView.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../../../../index.html?org/multibit/viewsystem/swing/view/ValidationErrorView.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="ValidationErrorView.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
@@ -293,7 +364,7 @@ public void <B>displayView</B>()</PRE>
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;<A HREF="#fields_inherited_from_class_org.multibit.viewsystem.commandline.view.AbstractView">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
 DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
 </TR>

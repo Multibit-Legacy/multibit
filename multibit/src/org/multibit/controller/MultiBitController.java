@@ -238,6 +238,12 @@ public class MultiBitController implements PeerEventListener {
             break;
         }
 
+        case FORWARD_TO_VALIDATION_ERROR: {
+            // show the validation error view
+            nextView = View.VALIDATION_ERROR_VIEW;
+            break;
+        }
+
         default: {
             nextView = View.HOME_PAGE_VIEW;
             break;

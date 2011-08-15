@@ -3,17 +3,17 @@
 <HTML>
 <HEAD>
 <TITLE>
-MultiBitDownloadListener
+RefreshTimerTask
 </TITLE>
 
 
-<LINK REL ="stylesheet" TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
+<LINK REL ="stylesheet" TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
 
 <SCRIPT type="text/javascript">
 function windowTitle()
 {
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="MultiBitDownloadListener";
+        parent.document.title="RefreshTimerTask";
     }
 }
 </SCRIPT>
@@ -35,13 +35,13 @@ function windowTitle()
 <A NAME="navbar_top_firstrow"><!-- --></A>
 <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
   <TR ALIGN="center" VALIGN="top">
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
   </TR>
 </TABLE>
 </TD>
@@ -52,20 +52,20 @@ function windowTitle()
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;PREV CLASS&nbsp;
-&nbsp;<A HREF="../../../org/multibit/network/MultiBitPeerGroup.html" title="class in org.multibit.network"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../org/multibit/viewsystem/swing/StatusBar.html" title="class in org.multibit.viewsystem.swing"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../index.html?org/multibit/network/MultiBitDownloadListener.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="MultiBitDownloadListener.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../../../index.html?org/multibit/viewsystem/swing/RefreshTimerTask.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="RefreshTimerTask.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
-    document.writeln('<A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>');
+    document.writeln('<A HREF="../../../../allclasses-noframe.html"><B>All Classes</B></A>');
   }
   //-->
 </SCRIPT>
 <NOSCRIPT>
-  <A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>
+  <A HREF="../../../../allclasses-noframe.html"><B>All Classes</B></A>
 </NOSCRIPT>
 
 
@@ -85,32 +85,34 @@ DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&n
 <!-- ======== START OF CLASS DATA ======== -->
 <H2>
 <FONT SIZE="-1">
-org.multibit.network</FONT>
+org.multibit.viewsystem.swing</FONT>
 <BR>
-Class MultiBitDownloadListener</H2>
+Class RefreshTimerTask</H2>
 <PRE>
 java.lang.Object
-  <IMG SRC="../../../resources/inherit.gif" ALT="extended by ">DownloadListener
-      <IMG SRC="../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.network.MultiBitDownloadListener</B>
+  <IMG SRC="../../../../resources/inherit.gif" ALT="extended by ">java.util.TimerTask
+      <IMG SRC="../../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.viewsystem.swing.RefreshTimerTask</B>
 </PRE>
+<DL>
+<DT><B>All Implemented Interfaces:</B> <DD>java.lang.Runnable</DD>
+</DL>
 <HR>
 <DL>
-<DT><PRE>public class <B>MultiBitDownloadListener</B><DT>extends DownloadListener</DL>
+<DT><PRE>public class <B>RefreshTimerTask</B><DT>extends java.util.TimerTask</DL>
 </PRE>
 
 <P>
-Listen to chain download events and print useful informational messages.
- 
- <p>
- progress, startDownload, doneDownload maybe be overridden to change the way
- the user is notified.
- 
- <p>
- Methods are called with the event listener object locked so your
- implementation does not have to be thread safe.
+This is a timertask because it extends the class java.util.TimerTask. This
+ class will be given to the timer (java.util.Timer) as the code to be
+ executed.
 <P>
 
 <P>
+<DL>
+<DT><B>Author:</B></DT>
+  <DD>http://www.gammelsaeter.com/</DD>
+<DT><B>See Also:</B><DD><CODE>Timer</CODE>, 
+<CODE>TimerTask</CODE></DL>
 <HR>
 
 <P>
@@ -124,10 +126,10 @@ Listen to chain download events and print useful informational messages.
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../org/multibit/network/MultiBitDownloadListener.html#MultiBitDownloadListener(org.multibit.controller.MultiBitController)">MultiBitDownloadListener</A></B>(<A HREF="../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller)</CODE>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/RefreshTimerTask.html#RefreshTimerTask(org.multibit.viewsystem.swing.MultiBitFrame)">RefreshTimerTask</A></B>(<A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A>&nbsp;mainFrame)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructs the object, sets the string to be output in function run()</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -141,28 +143,20 @@ Listen to chain download events and print useful informational messages.
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>protected &nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/network/MultiBitDownloadListener.html#doneDownload()">doneDownload</A></B>()</CODE>
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/RefreshTimerTask.html#run()">run</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Called when we are done downloading the block chain.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;When the timer executes, this code is run.</TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_java.util.TimerTask"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class java.util.TimerTask</B></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>protected &nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/network/MultiBitDownloadListener.html#progress(double, java.util.Date)">progress</A></B>(double&nbsp;pct,
-         java.util.Date&nbsp;date)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Called when download progress is made.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>protected &nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/network/MultiBitDownloadListener.html#startDownload(int)">startDownload</A></B>(int&nbsp;blocks)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Called when download is initiated.</TD>
+<TD><CODE>cancel, scheduledExecutionTime</CODE></TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
@@ -187,11 +181,15 @@ Listen to chain download events and print useful informational messages.
 </TR>
 </TABLE>
 
-<A NAME="MultiBitDownloadListener(org.multibit.controller.MultiBitController)"><!-- --></A><H3>
-MultiBitDownloadListener</H3>
+<A NAME="RefreshTimerTask(org.multibit.viewsystem.swing.MultiBitFrame)"><!-- --></A><H3>
+RefreshTimerTask</H3>
 <PRE>
-public <B>MultiBitDownloadListener</B>(<A HREF="../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller)</PRE>
+public <B>RefreshTimerTask</B>(<A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A>&nbsp;mainFrame)</PRE>
 <DL>
+<DD>Constructs the object, sets the string to be output in function run()
+<P>
+<DL>
+<DT><B>Parameters:</B><DD><CODE>str</CODE> - </DL>
 </DL>
 
 <!-- ============ METHOD DETAIL ========== -->
@@ -204,40 +202,16 @@ public <B>MultiBitDownloadListener</B>(<A HREF="../../../org/multibit/controller
 </TR>
 </TABLE>
 
-<A NAME="progress(double, java.util.Date)"><!-- --></A><H3>
-progress</H3>
+<A NAME="run()"><!-- --></A><H3>
+run</H3>
 <PRE>
-protected void <B>progress</B>(double&nbsp;pct,
-                        java.util.Date&nbsp;date)</PRE>
+public void <B>run</B>()</PRE>
 <DL>
-<DD>Called when download progress is made.
+<DD>When the timer executes, this code is run.
 <P>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>pct</CODE> - the percentage of chain downloaded, estimated<DD><CODE>date</CODE> - the date of the last block downloaded</DL>
+<DT><B>Specified by:</B><DD><CODE>run</CODE> in interface <CODE>java.lang.Runnable</CODE><DT><B>Specified by:</B><DD><CODE>run</CODE> in class <CODE>java.util.TimerTask</CODE></DL>
 </DD>
-</DL>
-<HR>
-
-<A NAME="startDownload(int)"><!-- --></A><H3>
-startDownload</H3>
-<PRE>
-protected void <B>startDownload</B>(int&nbsp;blocks)</PRE>
-<DL>
-<DD>Called when download is initiated.
-<P>
-<DD><DL>
-<DT><B>Parameters:</B><DD><CODE>blocks</CODE> - the number of blocks to download, estimated</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="doneDownload()"><!-- --></A><H3>
-doneDownload</H3>
-<PRE>
-protected void <B>doneDownload</B>()</PRE>
-<DL>
-<DD>Called when we are done downloading the block chain.
-<P>
 <DD><DL>
 </DL>
 </DD>
@@ -255,13 +229,13 @@ protected void <B>doneDownload</B>()</PRE>
 <A NAME="navbar_bottom_firstrow"><!-- --></A>
 <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
   <TR ALIGN="center" VALIGN="top">
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
   </TR>
 </TABLE>
 </TD>
@@ -272,20 +246,20 @@ protected void <B>doneDownload</B>()</PRE>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;PREV CLASS&nbsp;
-&nbsp;<A HREF="../../../org/multibit/network/MultiBitPeerGroup.html" title="class in org.multibit.network"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../org/multibit/viewsystem/swing/StatusBar.html" title="class in org.multibit.viewsystem.swing"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../index.html?org/multibit/network/MultiBitDownloadListener.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="MultiBitDownloadListener.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../../../index.html?org/multibit/viewsystem/swing/RefreshTimerTask.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="RefreshTimerTask.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
-    document.writeln('<A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>');
+    document.writeln('<A HREF="../../../../allclasses-noframe.html"><B>All Classes</B></A>');
   }
   //-->
 </SCRIPT>
 <NOSCRIPT>
-  <A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>
+  <A HREF="../../../../allclasses-noframe.html"><B>All Classes</B></A>
 </NOSCRIPT>
 
 

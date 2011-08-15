@@ -3,7 +3,7 @@
 <HTML>
 <HEAD>
 <TITLE>
-TextTransfer
+Validator
 </TITLE>
 
 
@@ -13,7 +13,7 @@ TextTransfer
 function windowTitle()
 {
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="TextTransfer";
+        parent.document.title="Validator";
     }
 }
 </SCRIPT>
@@ -52,11 +52,11 @@ function windowTitle()
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../org/multibit/action/ShowPreferencesSubmitAction.html" title="class in org.multibit.action"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../org/multibit/action/Validator.html" title="class in org.multibit.action"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../org/multibit/action/TextTransfer.html" title="class in org.multibit.action"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;NEXT CLASS</FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../index.html?org/multibit/action/TextTransfer.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="TextTransfer.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../../index.html?org/multibit/action/Validator.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Validator.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
@@ -87,20 +87,25 @@ DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&n
 <FONT SIZE="-1">
 org.multibit.action</FONT>
 <BR>
-Class TextTransfer</H2>
+Class Validator</H2>
 <PRE>
 java.lang.Object
-  <IMG SRC="../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.action.TextTransfer</B>
+  <IMG SRC="../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.action.Validator</B>
 </PRE>
-<DL>
-<DT><B>All Implemented Interfaces:</B> <DD>java.awt.datatransfer.ClipboardOwner</DD>
-</DL>
 <HR>
 <DL>
-<DT><PRE>public final class <B>TextTransfer</B><DT>extends java.lang.Object<DT>implements java.awt.datatransfer.ClipboardOwner</DL>
+<DT><PRE>public class <B>Validator</B><DT>extends java.lang.Object</DL>
 </PRE>
 
 <P>
+a class to validate String addresses and amounts
+<P>
+
+<P>
+<DL>
+<DT><B>Author:</B></DT>
+  <DD>jim</DD>
+</DL>
 <HR>
 
 <P>
@@ -114,7 +119,7 @@ java.lang.Object
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../org/multibit/action/TextTransfer.html#TextTransfer()">TextTransfer</A></B>()</CODE>
+<TD><CODE><B><A HREF="../../../org/multibit/action/Validator.html#Validator(org.multibit.controller.MultiBitController)">Validator</A></B>(<A HREF="../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -131,37 +136,12 @@ java.lang.Object
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/action/TextTransfer.html#getClipboardContents()">getClipboardContents</A></B>()</CODE>
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/action/Validator.html#validate(java.lang.String, java.lang.String)">validate</A></B>(java.lang.String&nbsp;address,
+         java.lang.String&nbsp;amount)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Get the String residing on the clipboard.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/action/TextTransfer.html#lostOwnership(java.awt.datatransfer.Clipboard, java.awt.datatransfer.Transferable)">lostOwnership</A></B>(java.awt.datatransfer.Clipboard&nbsp;aClipboard,
-              java.awt.datatransfer.Transferable&nbsp;aContents)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Empty implementation of the ClipboardOwner interface.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/action/TextTransfer.html#main(java.lang.String...)">main</A></B>(java.lang.String...&nbsp;aArguments)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/action/TextTransfer.html#setClipboardContents(java.lang.String)">setClipboardContents</A></B>(java.lang.String&nbsp;aString)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Place a String on the clipboard, and make this class the owner of the
- Clipboard's contents.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Validate a String address and amount</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
@@ -186,10 +166,10 @@ java.lang.Object
 </TR>
 </TABLE>
 
-<A NAME="TextTransfer()"><!-- --></A><H3>
-TextTransfer</H3>
+<A NAME="Validator(org.multibit.controller.MultiBitController)"><!-- --></A><H3>
+Validator</H3>
 <PRE>
-public <B>TextTransfer</B>()</PRE>
+public <B>Validator</B>(<A HREF="../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller)</PRE>
 <DL>
 </DL>
 
@@ -203,68 +183,17 @@ public <B>TextTransfer</B>()</PRE>
 </TR>
 </TABLE>
 
-<A NAME="main(java.lang.String...)"><!-- --></A><H3>
-main</H3>
+<A NAME="validate(java.lang.String, java.lang.String)"><!-- --></A><H3>
+validate</H3>
 <PRE>
-public static void <B>main</B>(java.lang.String...&nbsp;aArguments)</PRE>
+public boolean <B>validate</B>(java.lang.String&nbsp;address,
+                        java.lang.String&nbsp;amount)</PRE>
 <DL>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="lostOwnership(java.awt.datatransfer.Clipboard, java.awt.datatransfer.Transferable)"><!-- --></A><H3>
-lostOwnership</H3>
-<PRE>
-public void <B>lostOwnership</B>(java.awt.datatransfer.Clipboard&nbsp;aClipboard,
-                          java.awt.datatransfer.Transferable&nbsp;aContents)</PRE>
-<DL>
-<DD>Empty implementation of the ClipboardOwner interface.
+<DD>Validate a String address and amount
 <P>
 <DD><DL>
-<DT><B>Specified by:</B><DD><CODE>lostOwnership</CODE> in interface <CODE>java.awt.datatransfer.ClipboardOwner</CODE></DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="setClipboardContents(java.lang.String)"><!-- --></A><H3>
-setClipboardContents</H3>
-<PRE>
-public void <B>setClipboardContents</B>(java.lang.String&nbsp;aString)</PRE>
-<DL>
-<DD>Place a String on the clipboard, and make this class the owner of the
- Clipboard's contents.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getClipboardContents()"><!-- --></A><H3>
-getClipboardContents</H3>
-<PRE>
-public java.lang.String <B>getClipboardContents</B>()</PRE>
-<DL>
-<DD>Get the String residing on the clipboard.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-
-<DT><B>Returns:</B><DD>any text found on the Clipboard; if none found, return an empty
-         String.</DL>
+<DT><B>Parameters:</B><DD><CODE>address</CODE> - <DD><CODE>amount</CODE> - 
+<DT><B>Returns:</B><DD></DL>
 </DD>
 </DL>
 <!-- ========= END OF CLASS DATA ========= -->
@@ -297,11 +226,11 @@ public java.lang.String <B>getClipboardContents</B>()</PRE>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../org/multibit/action/ShowPreferencesSubmitAction.html" title="class in org.multibit.action"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../org/multibit/action/Validator.html" title="class in org.multibit.action"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../org/multibit/action/TextTransfer.html" title="class in org.multibit.action"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;NEXT CLASS</FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../index.html?org/multibit/action/TextTransfer.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="TextTransfer.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../../index.html?org/multibit/action/Validator.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Validator.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {

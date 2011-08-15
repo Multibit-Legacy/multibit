@@ -28,6 +28,7 @@ public interface View {
     public static final int EDIT_SENDING_ADDRESS_VIEW = 13;
     public static final int OPEN_WALLET_VIEW = 14;
     public static final int SAVE_WALLET_AS_VIEW = 15;
+    public static final int VALIDATION_ERROR_VIEW = 16;
  
     public String getDescription();
     

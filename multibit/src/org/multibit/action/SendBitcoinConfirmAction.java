@@ -3,6 +3,7 @@ package org.multibit.action;
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
+import org.multibit.model.MultiBitModel;
 
 /**
  * an action to the send bitcoin confirm view
@@ -20,8 +21,16 @@ public class SendBitcoinConfirmAction implements Action {
     public void execute(DataProvider dataProvider) {
         // copy the data into the user preferences (side effect of getData call)
         dataProvider.getData();
-        
-        controller.setActionForwardToChild(ActionForward.FORWARD_TO_SEND_BITCOIN_CONFIRM);       
+  
+        String sendAddress = controller.getModel().getUserPreference(MultiBitModel.SEND_ADDRESS);
+        String sendAmount = controller.getModel().getUserPreference(MultiBitModel.SEND_AMOUNT);
+
+        Validator validator = new Validator(controller);
+        if (validator.validate(sendAddress, sendAmount)) {
+            controller.setActionForwardToChild(ActionForward.FORWARD_TO_SEND_BITCOIN_CONFIRM);
+        } else {
+            controller.setActionForwardToChild(ActionForward.FORWARD_TO_VALIDATION_ERROR);           
+        }
     }
     
     public String getDisplayText() {
