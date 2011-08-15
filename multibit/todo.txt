@@ -11,7 +11,6 @@ add validation of fields, send: amount, address.   receive address, amount.
 
 Logging and errors
 ------------------
-o receive bitcoin address is not copiable
 o no error message in MultiBitService#sendCoins when not enough money
 o no error message when cannot connect to peer
 o client does not go offline if you disconnect from network

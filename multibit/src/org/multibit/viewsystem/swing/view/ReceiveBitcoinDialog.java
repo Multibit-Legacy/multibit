@@ -7,11 +7,13 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.multibit.controller.MultiBitController;
@@ -34,7 +36,7 @@ public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider
 
     private MultiBitController controller;
 
-    private JTextField addressTextField;
+    private JTextArea addressTextArea;
 
     private JTextField labelTextField;
 
@@ -129,16 +131,15 @@ public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider
         constraints.anchor = GridBagConstraints.LINE_END;
         receiveBitcoinsPanel.add(addressLabel, constraints);
 
-        addressTextField = new JTextField();
-        addressTextField.setHorizontalAlignment(JTextField.LEFT);
-        addressTextField.setEditable(false);
-        addressTextField.setFocusable(false);
+        addressTextArea = new JTextArea();
+        addressTextArea.setEditable(false);
+        addressTextArea.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
 
         constraints.gridx = 2;
         constraints.gridy = 3;
         constraints.weightx = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        receiveBitcoinsPanel.add(addressTextField, constraints);
+        receiveBitcoinsPanel.add(addressTextArea, constraints);
 
         OpenAddressBookAction openAddressBookReceivingAction = new OpenAddressBookAction(controller, true, true);
         JButton addressBookButton = new JButton(openAddressBookReceivingAction);
@@ -204,7 +205,7 @@ public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider
     public Data getData() {
         Data data = new Data();
         Item receiveAddressItem = new Item(MultiBitModel.RECEIVE_ADDRESS);
-        receiveAddressItem.setNewValue(addressTextField.getText());
+        receiveAddressItem.setNewValue(addressTextArea.getText());
         data.addItem(MultiBitModel.RECEIVE_ADDRESS, receiveAddressItem);
 
         Item receiveLabelItem = new Item(MultiBitModel.RECEIVE_LABEL);
@@ -251,7 +252,7 @@ public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider
         }
 
         if (receiveAddress != null) {
-            addressTextField.setText(receiveAddress);
+            addressTextArea.setText(receiveAddress);
         }
         if (receiveLabel != null) {
             labelTextField.setText(receiveLabel);

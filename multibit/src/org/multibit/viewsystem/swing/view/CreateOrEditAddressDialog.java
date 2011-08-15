@@ -10,7 +10,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
@@ -34,7 +36,7 @@ public class CreateOrEditAddressDialog extends MultiBitDialog implements DataPro
 
     private MultiBitController controller;
 
-    private JTextField addressTextField;
+    private JTextComponent addressTextComponent;
 
     private JTextField labelTextField;
 
@@ -63,11 +65,11 @@ public class CreateOrEditAddressDialog extends MultiBitDialog implements DataPro
         loadForm();
 
         pack();
-        
+
         if (isReceiving) {
             labelTextField.requestFocusInWindow();
         } else {
-            addressTextField.requestFocusInWindow();
+            addressTextComponent.requestFocusInWindow();
         }
     }
 
@@ -177,17 +179,19 @@ public class CreateOrEditAddressDialog extends MultiBitDialog implements DataPro
         constraints.anchor = GridBagConstraints.LINE_END;
         receiveBitcoinsPanel.add(addressLabel, constraints);
 
-        addressTextField = new JTextField();
-        addressTextField.setHorizontalAlignment(JTextField.LEFT);
         if (isReceiving) {
-            // receiving address is not editable by user
-            addressTextField.setEditable(false);
+            addressTextComponent = new JTextArea();
+            //addressTextComponent.setEditable(false);
+        } else {
+            addressTextComponent = new JTextField();
+            ((JTextField) addressTextComponent).setHorizontalAlignment(JTextField.LEFT);
         }
+
         constraints.gridx = 2;
         constraints.gridy = 4;
         constraints.weightx = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        receiveBitcoinsPanel.add(addressTextField, constraints);
+        receiveBitcoinsPanel.add(addressTextComponent, constraints);
 
         JLabel labelLabel = new JLabel(controller.getLocaliser().getString("createOrEditAddressDialog.labelLabel"));
         labelLabel.setToolTipText(controller.getLocaliser().getString("createOrEditAddressDialog.labelLabel.tooltip"));
@@ -228,7 +232,8 @@ public class CreateOrEditAddressDialog extends MultiBitDialog implements DataPro
         JButton cancelButton = new JButton(cancelBackToParentAction);
         buttonPanel.add(cancelButton);
 
-        CreateOrEditAddressSubmitAction createOrEditSubmitAction = new CreateOrEditAddressSubmitAction(controller, this, isCreate, isReceiving);
+        CreateOrEditAddressSubmitAction createOrEditSubmitAction = new CreateOrEditAddressSubmitAction(controller, this,
+                isCreate, isReceiving);
         JButton okButton = new JButton(createOrEditSubmitAction);
 
         buttonPanel.add(okButton);
@@ -244,12 +249,12 @@ public class CreateOrEditAddressDialog extends MultiBitDialog implements DataPro
             if (isReceiving) {
                 // create receiving
                 candidateNewKey = new ECKey();
-                addressTextField.setText(candidateNewKey.toAddress(controller.getMultiBitService().getNetworkParameters())
+                addressTextComponent.setText(candidateNewKey.toAddress(controller.getMultiBitService().getNetworkParameters())
                         .toString());
                 labelTextField.setText(controller.getLocaliser().getString("createOrEditAddressAction.defaultNewLabelText"));
             } else {
                 // create sending
-                addressTextField.setText("");
+                addressTextComponent.setText("");
                 labelTextField.setText("");
             }
         } else {
@@ -259,7 +264,7 @@ public class CreateOrEditAddressDialog extends MultiBitDialog implements DataPro
                 String receiveAddress = controller.getModel().getUserPreference(MultiBitModel.RECEIVE_ADDRESS);
                 String receiveLabel = controller.getModel().getUserPreference(MultiBitModel.RECEIVE_LABEL);
                 if (receiveAddress != null) {
-                    addressTextField.setText(receiveAddress);
+                    addressTextComponent.setText(receiveAddress);
                 }
                 if (receiveLabel != null) {
                     labelTextField.setText(receiveLabel);
@@ -270,7 +275,7 @@ public class CreateOrEditAddressDialog extends MultiBitDialog implements DataPro
                 String sendAddress = controller.getModel().getUserPreference(MultiBitModel.SEND_ADDRESS);
                 String sendLabel = controller.getModel().getUserPreference(MultiBitModel.SEND_LABEL);
                 if (sendAddress != null) {
-                    addressTextField.setText(sendAddress);
+                    addressTextComponent.setText(sendAddress);
                 }
                 if (sendLabel != null) {
                     labelTextField.setText(sendLabel);
@@ -283,19 +288,19 @@ public class CreateOrEditAddressDialog extends MultiBitDialog implements DataPro
         Data data = new Data();
         if (isReceiving) {
             Item receiveAddressItem = new Item(MultiBitModel.RECEIVE_ADDRESS);
-            receiveAddressItem.setNewValue(addressTextField.getText());
+            receiveAddressItem.setNewValue(addressTextComponent.getText());
             data.addItem(MultiBitModel.RECEIVE_ADDRESS, receiveAddressItem);
 
             Item receiveLabelItem = new Item(MultiBitModel.RECEIVE_LABEL);
             receiveLabelItem.setNewValue(labelTextField.getText());
             data.addItem(MultiBitModel.RECEIVE_LABEL, receiveLabelItem);
-            
+
             Item receiveNewKeyItem = new Item(MultiBitModel.RECEIVE_NEW_KEY);
             receiveNewKeyItem.setNewValue(candidateNewKey);
             data.addItem(MultiBitModel.RECEIVE_NEW_KEY, receiveNewKeyItem);
         } else {
             Item sendAddressItem = new Item(MultiBitModel.SEND_ADDRESS);
-            sendAddressItem.setNewValue(addressTextField.getText());
+            sendAddressItem.setNewValue(addressTextComponent.getText());
             data.addItem(MultiBitModel.SEND_ADDRESS, sendAddressItem);
 
             Item sendLabelItem = new Item(MultiBitModel.SEND_LABEL);

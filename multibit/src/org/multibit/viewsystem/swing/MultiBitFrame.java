@@ -169,11 +169,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
         balanceTextField.setText(Localiser.bitcoinValueToFriendlyString(model.getBalance(), true, false));
 
-        refreshTimer = new Timer();
-        refreshTimer.schedule(new RefreshTimerTask(this), 0, 60000); // fires once a minute
-
         pack();
         setVisible(true);
+        
+        refreshTimer = new Timer();
+        refreshTimer.schedule(new RefreshTimerTask(this), 0, 60000); // fires once a minute
     }
 
     private void sizeAndCenter() {

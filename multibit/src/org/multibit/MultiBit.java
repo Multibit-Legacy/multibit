@@ -75,12 +75,14 @@ public class MultiBit {
         MultiBitModel model = new MultiBitModel(controller, userPreferences);
         controller.setModel(model);
                 
-        System.out.println("MultiBit#main PING 8");
+        System.out.println("MultiBit#main PING 8.1");
         
         // create the view systems
         // add the swing view system
         ViewSystem swingView = new MultiBitFrame(controller);
+        System.out.println("MultiBit#main PING 8.2");
         controller.registerViewSystem(swingView);
+        System.out.println("MultiBit#main PING 8.3");
         
         // show the home page
         controller.setActionForwardToSibling(ActionForward.FORWARD_TO_HOME_PAGE);
