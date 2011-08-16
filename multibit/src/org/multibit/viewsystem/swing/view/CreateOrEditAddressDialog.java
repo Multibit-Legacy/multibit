@@ -254,8 +254,23 @@ public class CreateOrEditAddressDialog extends MultiBitDialog implements DataPro
                 labelTextField.setText(controller.getLocaliser().getString("createOrEditAddressAction.defaultNewLabelText"));
             } else {
                 // create sending
-                addressTextComponent.setText("");
-                labelTextField.setText("");
+                String addressIsInvalid = controller.getModel().getUserPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID);
+                boolean addressIsInvalidBoolean = false;
+                if (Boolean.TRUE.toString().equals(addressIsInvalid)) {
+                    addressIsInvalidBoolean = true;           
+                }
+
+                if (addressIsInvalidBoolean) {
+                    // put the old values in the input fields
+                    String sendAddress = controller.getModel().getUserPreference(MultiBitModel.SEND_ADDRESS);
+                    String sendLabel = controller.getModel().getUserPreference(MultiBitModel.SEND_LABEL);
+                    addressTextComponent.setText(sendAddress);
+                    labelTextField.setText(sendLabel);
+
+                } else {
+                    addressTextComponent.setText("");
+                    labelTextField.setText("");
+                }
             }
         } else {
             if (isReceiving) {

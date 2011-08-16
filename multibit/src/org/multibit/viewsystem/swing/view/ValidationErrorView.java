@@ -5,7 +5,6 @@ import java.util.Collection;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
-import org.multibit.Localiser;
 import org.multibit.action.Action;
 import org.multibit.action.OkBackToParentAction;
 import org.multibit.controller.MultiBitController;
@@ -24,22 +23,19 @@ public class ValidationErrorView implements View {
 
     private MultiBitController controller;
 
-    private Localiser localiser;
-
     private JDialog messageDialog;
 
     /**
      * Creates a new {@link ValidationErrorView}.
      */
-    public ValidationErrorView(MultiBitController controller, Localiser localiser,
+    public ValidationErrorView(MultiBitController controller, 
             MultiBitFrame mainFrame) {
         this.controller = controller;
-        this.localiser = localiser;
         this.mainFrame = mainFrame;
     }
 
     public String getDescription() {
-        return localiser.getString("validationErrorView.title");
+        return controller.getLocaliser().getString("validationErrorView.title");
     }
 
     /**
@@ -53,21 +49,21 @@ public class ValidationErrorView implements View {
         // invalid address
         String addressIsInvalid = controller.getModel().getUserPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID);
         boolean addressIsInvalidBoolean = false;
-        if ("true".equals(addressIsInvalid)) {
+        if (Boolean.TRUE.toString().equals(addressIsInvalid)) {
             addressIsInvalidBoolean = true;           
         }
         
         // invalid amount i.e. not a number or could not parse
         String amountIsInvalid = controller.getModel().getUserPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID);
         boolean amountIsInvalidBoolean = false; 
-        if ("true".equals(amountIsInvalid)) {
+        if (Boolean.TRUE.toString().equals(amountIsInvalid)) {
             amountIsInvalidBoolean = true;
         }
         
         // amount is more than available funds
         String notEnoughFunds = controller.getModel().getUserPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS);
         boolean notEnoughFundsBoolean = false; 
-        if ("true".equals(notEnoughFunds)) {
+        if (Boolean.TRUE.toString().equals(notEnoughFunds)) {
             notEnoughFundsBoolean = true;
         }
 
@@ -75,36 +71,36 @@ public class ValidationErrorView implements View {
         String completeMessage = "";
         
         if (addressIsInvalidBoolean) {
-            completeMessage = localiser.getString("validationErrorView.addressInvalidMessage", new String[] {addressValue});
+            completeMessage = controller.getLocaliser().getString("validationErrorView.addressInvalidMessage", new String[] {addressValue});
         }
         if (amountIsInvalidBoolean) {
             if (!"".equals(completeMessage)) {
                 completeMessage = completeMessage + "\n";
             }
-            completeMessage = completeMessage + localiser.getString("validationErrorView.amountInvalidMessage", new String[] {amountValue});
+            completeMessage = completeMessage + controller.getLocaliser().getString("validationErrorView.amountInvalidMessage", new String[] {amountValue});
         }
         if (notEnoughFundsBoolean) {
             if (!"".equals(completeMessage)) {
                 completeMessage = completeMessage + "\n";
             }
-            completeMessage = completeMessage + localiser.getString("validationErrorView.notEnoughFundsMessage", new String[] {amountValue});
+            completeMessage = completeMessage + controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage", new String[] {amountValue});
         }
  
         
         // tell user validation messages
-        Object[] options = { localiser.getString("validationErrorView.okOption") };
+        Object[] options = { controller.getLocaliser().getString("validationErrorView.okOption") };
  
         JOptionPane optionPane = new JOptionPane(completeMessage, JOptionPane.ERROR_MESSAGE,
                 JOptionPane.DEFAULT_OPTION, null, options, options[0]);
 
         messageDialog = optionPane.createDialog(mainFrame,
-                localiser.getString("validationErrorView.title"));
-        messageDialog.show();
+                controller.getLocaliser().getString("validationErrorView.title"));
+        messageDialog.setVisible(true);
 
         // if ok was pressed (i.e. not disposed by navigateAwayFromView) fire
         // action forward else cancel
         Object returnValue = optionPane.getValue();
-        // JOptionPane.showMessageDialog(mainFrame, optionPane.getValue());
+        //JOptionPane.showMessageDialog(mainFrame, optionPane.getValue());
         if (returnValue instanceof String && options[0].equals((String) returnValue)) {
                 org.multibit.action.OkBackToParentAction okBackToParentAction = new OkBackToParentAction(
                         controller);

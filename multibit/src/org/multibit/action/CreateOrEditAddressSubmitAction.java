@@ -1,5 +1,6 @@
 package org.multibit.action;
 
+import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.Data;
@@ -31,6 +32,7 @@ public class CreateOrEditAddressSubmitAction implements Action {
     public void execute(DataProvider dataProvider) {
         // get the receive address and label and put it in the user preferences
         // and address book
+        
         if (dataProvider != null) {
             if (isReceiving) {
                 String receiveAddress = null;
@@ -83,6 +85,15 @@ public class CreateOrEditAddressSubmitAction implements Action {
                     if (sendLabelItem != null && sendLabelItem.getNewValue() != null) {
                         sendLabel = (String) sendLabelItem.getNewValue();
                         controller.getModel().setUserPreference(MultiBitModel.SEND_LABEL, sendLabel);
+                    }
+                    
+                    String sendAddressString = (String)sendAddressItem.getNewValue();
+                    Validator validator = new Validator(controller);
+                    if (validator.validate(sendAddressString)) {
+                        // carry on
+                    } else {
+                        controller.setActionForwardToChild(ActionForward.FORWARD_TO_VALIDATION_ERROR); 
+                        return;
                     }
                 }
 

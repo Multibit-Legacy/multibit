@@ -30,6 +30,10 @@ public class CreateOrEditAddressAction implements Action {
     }
 
     public void execute(DataProvider dataProvider) {
+        // clear any previous validation state
+        Validator validator = new Validator(controller);
+        validator.clearValidationState();
+        
         if (dataProvider != null) {
             Data data = dataProvider.getData();
 

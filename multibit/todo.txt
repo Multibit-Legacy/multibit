@@ -1,13 +1,12 @@
 TODO for minimal viable product
 --------------------------------
 add wallet encryption
-add tests to check sending and receiving works reliably
 add in support for fees
-make sure right icons are used - no coffee cups
+make sure right icons are used - no coffee cups including help
 test it works on the test network
 check switching of wallets hooks up all listeners correctly
 ensure switch from test to prod does not confuse which wallet is open. (last test/prod wallet setting ?)
-add validation of fields, send: amount, address.   receive address, amount.
+add validation of fields, send: amount, address.   receive address, amount. create send address.
 
 Logging and errors
 ------------------
@@ -21,7 +20,9 @@ Outstanding Bugs
 
 Improvements
 ------------
+o add in more test classes
+o add tests to check sending and receiving works reliably
 o Tidy up github - get rid of extra multibit directory
 o Add in proper jar bundling to exe and DMG - look at ProGuard
-o Improve UI - address can be on main screen rather than a key click away - too many windows
+o Improve UI - address can be on main screen rather than a key click away - too many windows - Eclipse style ?
 

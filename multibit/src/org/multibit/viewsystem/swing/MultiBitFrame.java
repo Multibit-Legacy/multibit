@@ -73,6 +73,7 @@ import org.multibit.viewsystem.swing.view.SendBitcoinConfirmView;
 import org.multibit.viewsystem.swing.view.SendBitcoinView;
 import org.multibit.viewsystem.swing.view.ShowPreferencesView;
 import org.multibit.viewsystem.swing.view.ToDoView;
+import org.multibit.viewsystem.swing.view.ValidationErrorView;
 import org.multibit.viewsystem.swing.watermark.FillPainter;
 import org.multibit.viewsystem.swing.watermark.WatermarkPainter;
 import org.multibit.viewsystem.swing.watermark.WatermarkViewport;
@@ -722,6 +723,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         viewMap.put(View.ADDRESS_BOOK_RECEIVING_VIEW, new AddressBookView(controller, localiser, this, true));
         viewMap.put(View.ADDRESS_BOOK_SENDING_VIEW, new AddressBookView(controller, localiser, this, false));
         viewMap.put(View.PREFERENCES_VIEW, new ShowPreferencesView(controller, this));
+        viewMap.put(View.VALIDATION_ERROR_VIEW, new ValidationErrorView(controller, this));
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
@@ -818,6 +820,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
         case View.PREFERENCES_VIEW: {
             viewToReturn = viewMap.get(View.PREFERENCES_VIEW);
+            break;
+        }
+
+        case View.VALIDATION_ERROR_VIEW: {
+            viewToReturn = viewMap.get(View.VALIDATION_ERROR_VIEW);
             break;
         }
 

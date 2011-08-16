@@ -25,6 +25,7 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionInput;
 import com.google.bitcoin.core.TransactionOutput;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.Wallet.BalanceType;
 import com.google.bitcoin.core.WalletEventListener;
 
 /**
@@ -130,7 +131,7 @@ public class MultiBitModel {
         if (wallet == null) {
             return new BigInteger("0");
         } else {
-            return wallet.getBalance();
+            return wallet.getBalance(BalanceType.ESTIMATED);
         }
     }
 
