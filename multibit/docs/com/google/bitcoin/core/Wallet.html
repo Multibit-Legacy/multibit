@@ -52,7 +52,7 @@ function windowTitle()
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../../com/google/bitcoin/core/Transaction.SigHash.html" title="enum in com.google.bitcoin.core"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../com/google/bitcoin/core/TransactionInput.html" title="class in com.google.bitcoin.core"><B>PREV CLASS</B></A>&nbsp;
 &nbsp;<A HREF="../../../../com/google/bitcoin/core/Wallet.BalanceType.html" title="enum in com.google.bitcoin.core"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../../index.html?com/google/bitcoin/core/Wallet.html" target="_top"><B>FRAMES</B></A>  &nbsp;
@@ -177,7 +177,7 @@ A Wallet stores keys and a record of transactions that have not yet been spent. 
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/Wallet.html#addEventListener(WalletEventListener)">addEventListener</A></B>(WalletEventListener&nbsp;listener)</CODE>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/Wallet.html#addEventListener(com.google.bitcoin.core.WalletEventListener)">addEventListener</A></B>(<A HREF="../../../../com/google/bitcoin/core/WalletEventListener.html" title="class in com.google.bitcoin.core">WalletEventListener</A>&nbsp;listener)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Adds an event listener object.</TD>
@@ -273,7 +273,7 @@ A Wallet stores keys and a record of transactions that have not yet been spent. 
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;boolean</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/Wallet.html#removeEventListener(WalletEventListener)">removeEventListener</A></B>(WalletEventListener&nbsp;listener)</CODE>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/Wallet.html#removeEventListener(com.google.bitcoin.core.WalletEventListener)">removeEventListener</A></B>(<A HREF="../../../../com/google/bitcoin/core/WalletEventListener.html" title="class in com.google.bitcoin.core">WalletEventListener</A>&nbsp;listener)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Removes the given event listener object.</TD>
@@ -297,22 +297,22 @@ A Wallet stores keys and a record of transactions that have not yet been spent. 
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/Wallet.html#sendCoins(Peer, Address, java.math.BigInteger)">sendCoins</A></B>(Peer&nbsp;peer,
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/Wallet.html#sendCoins(com.google.bitcoin.core.Peer, Address, java.math.BigInteger)">sendCoins</A></B>(<A HREF="../../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>&nbsp;peer,
           Address&nbsp;to,
           java.math.BigInteger&nbsp;nanocoins)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sends coins to the given address, via the given <CODE>Peer</CODE>.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sends coins to the given address, via the given <A HREF="../../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core"><CODE>Peer</CODE></A>.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/Wallet.html#sendCoins(PeerGroup, Address, java.math.BigInteger)">sendCoins</A></B>(PeerGroup&nbsp;peerGroup,
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/Wallet.html#sendCoins(com.google.bitcoin.core.PeerGroup, Address, java.math.BigInteger)">sendCoins</A></B>(<A HREF="../../../../com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A>&nbsp;peerGroup,
           Address&nbsp;to,
           java.math.BigInteger&nbsp;nanocoins)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sends coins to the given address, via the given <CODE>PeerGroup</CODE>.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sends coins to the given address, via the given <A HREF="../../../../com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core"><CODE>PeerGroup</CODE></A>.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -478,10 +478,10 @@ public static <A HREF="../../../../com/google/bitcoin/core/Wallet.html" title="c
 </DL>
 <HR>
 
-<A NAME="addEventListener(WalletEventListener)"><!-- --></A><H3>
+<A NAME="addEventListener(com.google.bitcoin.core.WalletEventListener)"><!-- --></A><H3>
 addEventListener</H3>
 <PRE>
-public void <B>addEventListener</B>(WalletEventListener&nbsp;listener)</PRE>
+public void <B>addEventListener</B>(<A HREF="../../../../com/google/bitcoin/core/WalletEventListener.html" title="class in com.google.bitcoin.core">WalletEventListener</A>&nbsp;listener)</PRE>
 <DL>
 <DD>Adds an event listener object. Methods on this object are called when something interesting happens,
  like receiving money.<p>
@@ -499,10 +499,10 @@ public void <B>addEventListener</B>(WalletEventListener&nbsp;listener)</PRE>
 </DL>
 <HR>
 
-<A NAME="removeEventListener(WalletEventListener)"><!-- --></A><H3>
+<A NAME="removeEventListener(com.google.bitcoin.core.WalletEventListener)"><!-- --></A><H3>
 removeEventListener</H3>
 <PRE>
-public boolean <B>removeEventListener</B>(WalletEventListener&nbsp;listener)</PRE>
+public boolean <B>removeEventListener</B>(<A HREF="../../../../com/google/bitcoin/core/WalletEventListener.html" title="class in com.google.bitcoin.core">WalletEventListener</A>&nbsp;listener)</PRE>
 <DL>
 <DD>Removes the given event listener object. Returns true if the listener was removed,
  false if that listener was never added.
@@ -516,15 +516,15 @@ public boolean <B>removeEventListener</B>(WalletEventListener&nbsp;listener)</PR
 </DL>
 <HR>
 
-<A NAME="sendCoins(PeerGroup, Address, java.math.BigInteger)"><!-- --></A><H3>
+<A NAME="sendCoins(com.google.bitcoin.core.PeerGroup, Address, java.math.BigInteger)"><!-- --></A><H3>
 sendCoins</H3>
 <PRE>
-public <A HREF="../../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A> <B>sendCoins</B>(PeerGroup&nbsp;peerGroup,
+public <A HREF="../../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A> <B>sendCoins</B>(<A HREF="../../../../com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A>&nbsp;peerGroup,
                              Address&nbsp;to,
                              java.math.BigInteger&nbsp;nanocoins)
                       throws java.io.IOException</PRE>
 <DL>
-<DD>Sends coins to the given address, via the given <CODE>PeerGroup</CODE>.
+<DD>Sends coins to the given address, via the given <A HREF="../../../../com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core"><CODE>PeerGroup</CODE></A>.
  Change is returned to the first key in the wallet.
 <P>
 <DD><DL>
@@ -539,15 +539,15 @@ public <A HREF="../../../../com/google/bitcoin/core/Transaction.html" title="cla
 </DL>
 <HR>
 
-<A NAME="sendCoins(Peer, Address, java.math.BigInteger)"><!-- --></A><H3>
+<A NAME="sendCoins(com.google.bitcoin.core.Peer, Address, java.math.BigInteger)"><!-- --></A><H3>
 sendCoins</H3>
 <PRE>
-public <A HREF="../../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A> <B>sendCoins</B>(Peer&nbsp;peer,
+public <A HREF="../../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A> <B>sendCoins</B>(<A HREF="../../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>&nbsp;peer,
                              Address&nbsp;to,
                              java.math.BigInteger&nbsp;nanocoins)
                       throws java.io.IOException</PRE>
 <DL>
-<DD>Sends coins to the given address, via the given <CODE>Peer</CODE>.
+<DD>Sends coins to the given address, via the given <A HREF="../../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core"><CODE>Peer</CODE></A>.
  Change is returned to the first key in the wallet.
 <P>
 <DD><DL>
@@ -788,7 +788,7 @@ public java.util.Collection&lt;<A HREF="../../../../com/google/bitcoin/core/Tran
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../../com/google/bitcoin/core/Transaction.SigHash.html" title="enum in com.google.bitcoin.core"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../com/google/bitcoin/core/TransactionInput.html" title="class in com.google.bitcoin.core"><B>PREV CLASS</B></A>&nbsp;
 &nbsp;<A HREF="../../../../com/google/bitcoin/core/Wallet.BalanceType.html" title="enum in com.google.bitcoin.core"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../../index.html?com/google/bitcoin/core/Wallet.html" target="_top"><B>FRAMES</B></A>  &nbsp;

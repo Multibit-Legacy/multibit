@@ -288,6 +288,17 @@ a purely text / command line view for MultiBit
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/commandline/CommandLineViewSystem.html#onPendingCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)">onPendingCoinsReceived</A></B>(<A HREF="../../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet,
+                       <A HREF="../../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction,
+                       java.math.BigInteger&nbsp;prevBalance,
+                       java.math.BigInteger&nbsp;newBalance)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WalletEventListener callback method</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/commandline/CommandLineViewSystem.html#recreateAllViews()">recreateAllViews</A></B>()</CODE>
 
 <BR>
@@ -565,6 +576,26 @@ public void <B>onCoinsReceived</B>(<A HREF="../../../../com/google/bitcoin/core/
 <P>
 <DD><DL>
 <DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#onCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)">onCoinsReceived</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="onPendingCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)"><!-- --></A><H3>
+onPendingCoinsReceived</H3>
+<PRE>
+public void <B>onPendingCoinsReceived</B>(<A HREF="../../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet,
+                                   <A HREF="../../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction,
+                                   java.math.BigInteger&nbsp;prevBalance,
+                                   java.math.BigInteger&nbsp;newBalance)</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#onPendingCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)">ViewSystem</A></CODE></B></DD>
+<DD>WalletEventListener callback method
+<P>
+<DD><DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#onPendingCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)">onPendingCoinsReceived</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
 </DD>
 <DD><DL>
 </DL>

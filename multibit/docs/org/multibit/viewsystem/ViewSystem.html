@@ -216,6 +216,17 @@ an interface describing a collection of views that are used to render the MultiB
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/viewsystem/ViewSystem.html#onPendingCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)">onPendingCoinsReceived</A></B>(<A HREF="../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet,
+                       <A HREF="../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction,
+                       java.math.BigInteger&nbsp;prevBalance,
+                       java.math.BigInteger&nbsp;newBalance)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WalletEventListener callback method</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/multibit/viewsystem/ViewSystem.html#recreateAllViews()">recreateAllViews</A></B>()</CODE>
 
 <BR>
@@ -397,6 +408,22 @@ void <B>onCoinsReceived</B>(<A HREF="../../../com/google/bitcoin/core/Wallet.htm
                      <A HREF="../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction,
                      java.math.BigInteger&nbsp;prevBalance,
                      java.math.BigInteger&nbsp;newBalance)</PRE>
+<DL>
+<DD>WalletEventListener callback method
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>wallet</CODE> - <DD><CODE>transaction</CODE> - <DD><CODE>prevBalance</CODE> - <DD><CODE>newBalance</CODE> - </DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="onPendingCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)"><!-- --></A><H3>
+onPendingCoinsReceived</H3>
+<PRE>
+void <B>onPendingCoinsReceived</B>(<A HREF="../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet,
+                            <A HREF="../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction,
+                            java.math.BigInteger&nbsp;prevBalance,
+                            java.math.BigInteger&nbsp;newBalance)</PRE>
 <DL>
 <DD>WalletEventListener callback method
 <P>

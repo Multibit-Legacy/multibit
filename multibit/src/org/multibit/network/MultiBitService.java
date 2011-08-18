@@ -111,8 +111,11 @@ public class MultiBitService {
                             BigInteger newBalance) {
                         finalController.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
                     }
+                    public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
+                            BigInteger newBalance) {
+                        finalController.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
+                    }
                 });
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -134,6 +137,10 @@ public class MultiBitService {
                 public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
                         BigInteger newBalance) {
                     finalController.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
+                }
+                public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
+                        BigInteger newBalance) {
+                    finalController.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
                 }
             });
 
@@ -177,7 +184,7 @@ public class MultiBitService {
             System.out.println("Connecting ...");
             chain = new BlockChain(networkParameters, wallet, blockStore);
 
-            peerGroup = new MultiBitPeerGroup(controller, blockStore, networkParameters, chain);
+            peerGroup = new MultiBitPeerGroup(controller, blockStore, networkParameters, chain, wallet);
             // peerGroup.addAddress(new PeerAddress(InetAddress.getLocalHost(), 8333));
             //peerGroup.addAddress(new PeerAddress(InetAddress.getByName("98.143.152.19"), 8333)); // production fall back node
             

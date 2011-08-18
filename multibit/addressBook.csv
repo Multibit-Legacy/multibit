@@ -1,20 +1,7 @@
-"multiBit.addressBook",1,
-"receive","1DStPmHFmLiESz4mkbSg4fbZAYGZmuHdS8","m1DSt"
-"receive","1P3MxFHT6qV16F9kYmWexhZnYNWEe2ovC3","jim662"
-"receive","185ZpLURWtv6ThFJ6qKxcJHjTFNHN2AfN8","мояЭтикетка2"
-"receive","1NaSzvhYTWSaKgoQzgWZxeptUvkqva2Wk6","default"
-"receive","1NrqAyXUEuk66FLZqRLqotCTPkMMLk4wBa","мояЭтикетка"
-"receive","n3ZKFJNRurvFsMdNGLV2ncn7QN6waSntUt","ddd"
-"receive","1CRdvLiQdWtnn8HD2c2AFaa1Cta5UiLpiX","jim4"
-"receive","mrwbDPoPSYL3ZEkpkAzY5VnL4tAnMc6ows",
-"receive","mmBtJKS3ULQiB3iBr29CSob9xrHZHtrMcy","default"
-"receive","1EW8ZeMtayjzwBSPnpa67iuaRRxkjuu8Ev","m1EW8"
-"receive","156RRVQi9CqCHWvnF6bE5C65HRCpFPgcV2","myLabel"
-"receive","1CtXdnhsPSdJD48qmuQFDiSXSg6gTeg8KE","m1CtXd"
-"receive","1KjpNydW472GmV24AsMePKnhwMkjAE1gKg","m1Kjp"
-"receive","1HQK3qndzNT2LShTUt4cqb9ncYQ6tBmwWV","k1HQK3"
-"receive","16fw1GM4fJyTPwEa8TApctNq6rgrQHR8nS",
-"receive","15YCVN15X5zwZcuSBB6JrMwRu3x6UwoYFm","k15YCVN"
-"receive","1ESVDzKHoi3PJcv833KMg9tqhiWi2Vgvpu","jim22"
-"receive","mtxSX3QGcjUe5jPjkcHjW57AZi7QskDXbX",
-"send","1M7qAsXrE2dye8cHmT5DaiCXx24dQS3UsE","Instawallet2"
+multiBit.addressBook,1
+receive,156RRVQi9CqCHWvnF6bE5C65HRCpFPgcV2,fromInstawallet
+receive,185ZpLURWtv6ThFJ6qKxcJHjTFNHN2AfN8,
+receive,1NaSzvhYTWSaKgoQzgWZxeptUvkqva2Wk6,
+receive,1NrqAyXUEuk66FLZqRLqotCTPkMMLk4wBa,
+send,1M7qAsXrE2dye8cHmT5DaiCXx24dQS3UsE,Instawallet
+send,1DoMVd34UYpBTYAWjPyN29C9CKzk26zAaE,executable jar

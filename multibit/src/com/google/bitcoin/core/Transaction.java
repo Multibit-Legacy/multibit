@@ -46,6 +46,9 @@ public class Transaction extends Message implements Serializable {
     ArrayList<TransactionInput> inputs;
     ArrayList<TransactionOutput> outputs;
     long lockTime;
+    
+    // Serialised in Java only
+    private Date updatedAt;
 
     // This is only stored in Java serialization. It records which blocks (and their height + work) the transaction
     // has been included in. For most transactions this set will have a single member. In the case of a chain split a
@@ -65,6 +68,8 @@ public class Transaction extends Message implements Serializable {
         inputs = new ArrayList<TransactionInput>();
         outputs = new ArrayList<TransactionOutput>();
         // We don't initialize appearsIn deliberately as it's only useful for transactions stored in the wallet.
+ 
+        updatedAt = new Date();
     }
 
     /**
@@ -256,6 +261,49 @@ public class Transaction extends Message implements Serializable {
         return inputs.get(0).isCoinBase();
     }
 
+    /**
+     * returns whether this transaction was sent by this wallet
+     * @param wallet
+     * @return
+     */
+    public boolean sent(Wallet wallet) {
+        for (TransactionInput in : inputs) {
+            if (in.isMine(wallet)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * returns whether this transaction uses one of the wallet's keys
+     * @param wallet
+     * @return
+     */
+    public boolean isMine(Wallet wallet) {
+        try {
+            for (TransactionOutput output : this.outputs) {
+                // TODO: Handle more types of outputs, not just regular to address outputs.
+                if (output.getScriptPubKey().isSentToIP()) continue;
+                // This is not thread safe as a key could be removed between the call to isMine and receive.
+                if (output.isMine(wallet)) {
+                    return true;
+                }
+            }
+
+            for (TransactionInput input : this.inputs) {
+                if (input.getScriptSig().isSentToIP()) continue;
+                // This is not thread safe as a key could be removed between the call to isPubKeyMine and receive.
+                if (input.isMine(wallet)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (ScriptException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
     /**
      * @return A human readable version of the transaction useful for debugging.
      */
@@ -463,5 +511,13 @@ public class Transaction extends Message implements Serializable {
     @Override
     public int hashCode() {
         return getHash().hashCode();
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

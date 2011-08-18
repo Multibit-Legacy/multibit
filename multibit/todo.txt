@@ -6,7 +6,6 @@ make sure right icons are used - no coffee cups including help
 test it works on the test network
 check switching of wallets hooks up all listeners correctly
 ensure switch from test to prod does not confuse which wallet is open. (last test/prod wallet setting ?)
-add validation of fields, send: amount, address.   receive address, amount. create send address.
 
 Logging and errors
 ------------------

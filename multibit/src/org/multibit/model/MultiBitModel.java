@@ -356,6 +356,12 @@ public class MultiBitModel {
     }
 
     private Date createDate(Transaction transaction) {
+        // if transaction has altered date - return that
+        if (transaction.getUpdatedAt() != null) {
+            return transaction.getUpdatedAt();
+        }
+        
+        // other wise return the date of the block it first appeared in
         Set<StoredBlock> appearsIn = transaction.getAppearsIn();
         if (appearsIn != null) {
             if (!appearsIn.isEmpty()) {

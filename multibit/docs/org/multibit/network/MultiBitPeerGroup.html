@@ -90,12 +90,12 @@ org.multibit.network</FONT>
 Class MultiBitPeerGroup</H2>
 <PRE>
 java.lang.Object
-  <IMG SRC="../../../resources/inherit.gif" ALT="extended by ">PeerGroup
+  <IMG SRC="../../../resources/inherit.gif" ALT="extended by "><A HREF="../../../com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">com.google.bitcoin.core.PeerGroup</A>
       <IMG SRC="../../../resources/inherit.gif" ALT="extended by "><B>org.multibit.network.MultiBitPeerGroup</B>
 </PRE>
 <HR>
 <DL>
-<DT><PRE>public class <B>MultiBitPeerGroup</B><DT>extends PeerGroup</DL>
+<DT><PRE>public class <B>MultiBitPeerGroup</B><DT>extends <A HREF="../../../com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A></DL>
 </PRE>
 
 <P>
@@ -112,10 +112,11 @@ java.lang.Object
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../org/multibit/network/MultiBitPeerGroup.html#MultiBitPeerGroup(org.multibit.controller.MultiBitController, BlockStore, NetworkParameters, BlockChain)">MultiBitPeerGroup</A></B>(<A HREF="../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
+<TD><CODE><B><A HREF="../../../org/multibit/network/MultiBitPeerGroup.html#MultiBitPeerGroup(org.multibit.controller.MultiBitController, BlockStore, NetworkParameters, BlockChain, com.google.bitcoin.core.Wallet)">MultiBitPeerGroup</A></B>(<A HREF="../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
                   BlockStore&nbsp;blockStore,
                   NetworkParameters&nbsp;params,
-                  BlockChain&nbsp;chain)</CODE>
+                  BlockChain&nbsp;chain,
+                  <A HREF="../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -137,6 +138,15 @@ java.lang.Object
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Download the blockchain from peers.</TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_com.google.bitcoin.core.PeerGroup"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class com.google.bitcoin.core.<A HREF="../../../com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A></B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><A HREF="../../../com/google/bitcoin/core/PeerGroup.html#addAddress(PeerAddress)">addAddress</A>, <A HREF="../../../com/google/bitcoin/core/PeerGroup.html#addEventListener(PeerEventListener)">addEventListener</A>, <A HREF="../../../com/google/bitcoin/core/PeerGroup.html#addPeerDiscovery(PeerDiscovery)">addPeerDiscovery</A>, <A HREF="../../../com/google/bitcoin/core/PeerGroup.html#broadcastTransaction(com.google.bitcoin.core.Transaction)">broadcastTransaction</A>, <A HREF="../../../com/google/bitcoin/core/PeerGroup.html#getMaxConnections()">getMaxConnections</A>, <A HREF="../../../com/google/bitcoin/core/PeerGroup.html#handleNewPeer(com.google.bitcoin.core.Peer)">handleNewPeer</A>, <A HREF="../../../com/google/bitcoin/core/PeerGroup.html#handlePeerDeath(com.google.bitcoin.core.Peer)">handlePeerDeath</A>, <A HREF="../../../com/google/bitcoin/core/PeerGroup.html#removeEventListener(PeerEventListener)">removeEventListener</A>, <A HREF="../../../com/google/bitcoin/core/PeerGroup.html#setMaxConnections(int)">setMaxConnections</A>, <A HREF="../../../com/google/bitcoin/core/PeerGroup.html#start()">start</A>, <A HREF="../../../com/google/bitcoin/core/PeerGroup.html#startBlockChainDownload(PeerEventListener)">startBlockChainDownload</A>, <A HREF="../../../com/google/bitcoin/core/PeerGroup.html#stop()">stop</A></CODE></TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
@@ -161,13 +171,14 @@ java.lang.Object
 </TR>
 </TABLE>
 
-<A NAME="MultiBitPeerGroup(org.multibit.controller.MultiBitController, BlockStore, NetworkParameters, BlockChain)"><!-- --></A><H3>
+<A NAME="MultiBitPeerGroup(org.multibit.controller.MultiBitController, BlockStore, NetworkParameters, BlockChain, com.google.bitcoin.core.Wallet)"><!-- --></A><H3>
 MultiBitPeerGroup</H3>
 <PRE>
 public <B>MultiBitPeerGroup</B>(<A HREF="../../../org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>&nbsp;controller,
                          BlockStore&nbsp;blockStore,
                          NetworkParameters&nbsp;params,
-                         BlockChain&nbsp;chain)</PRE>
+                         BlockChain&nbsp;chain,
+                         <A HREF="../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet)</PRE>
 <DL>
 </DL>
 
@@ -191,6 +202,9 @@ public void <B>downloadBlockChain</B>()</PRE>
  <p>This method wait until the download is complete.  "Complete" is defined as downloading
  from at least one peer all the blocks that are in that peer's inventory.
 <P>
+<DD><DL>
+<DT><B>Overrides:</B><DD><CODE><A HREF="../../../com/google/bitcoin/core/PeerGroup.html#downloadBlockChain()">downloadBlockChain</A></CODE> in class <CODE><A HREF="../../../com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A></CODE></DL>
+</DD>
 <DD><DL>
 </DL>
 </DD>

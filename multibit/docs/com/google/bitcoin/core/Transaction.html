@@ -52,7 +52,7 @@ function windowTitle()
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;PREV CLASS&nbsp;
+&nbsp;<A HREF="../../../../com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core"><B>PREV CLASS</B></A>&nbsp;
 &nbsp;<A HREF="../../../../com/google/bitcoin/core/Transaction.SigHash.html" title="enum in com.google.bitcoin.core"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../../index.html?com/google/bitcoin/core/Transaction.html" target="_top"><B>FRAMES</B></A>  &nbsp;
@@ -169,14 +169,6 @@ A transaction represents the movement of coins from some addresses to some other
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/Transaction.html#addInput(TransactionInput)">addInput</A></B>(TransactionInput&nbsp;input)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Adds an input directly, with no checking that it's valid.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/Transaction.html#addInput(TransactionOutput)">addInput</A></B>(TransactionOutput&nbsp;from)</CODE>
 
 <BR>
@@ -233,7 +225,7 @@ A transaction represents the movement of coins from some addresses to some other
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;java.util.List&lt;TransactionInput&gt;</CODE></FONT></TD>
+<CODE>&nbsp;java.util.List&lt;<A HREF="../../../../com/google/bitcoin/core/TransactionInput.html" title="class in com.google.bitcoin.core">TransactionInput</A>&gt;</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/Transaction.html#getInputs()">getInputs</A></B>()</CODE>
 
 <BR>
@@ -246,6 +238,14 @@ A transaction represents the movement of coins from some addresses to some other
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns a read-only list of the outputs of this transaction.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;java.util.Date</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/Transaction.html#getUpdatedAt()">getUpdatedAt</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -278,6 +278,30 @@ A transaction represents the movement of coins from some addresses to some other
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A coinbase transaction is one that creates a new coin.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/Transaction.html#isMine(com.google.bitcoin.core.Wallet)">isMine</A></B>(<A HREF="../../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;returns whether this transaction uses one of the wallet's keys</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/Transaction.html#sent(com.google.bitcoin.core.Wallet)">sent</A></B>(<A HREF="../../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;returns whether this transaction was sent by this wallet</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/Transaction.html#setUpdatedAt(java.util.Date)">setUpdatedAt</A></B>(java.util.Date&nbsp;updatedAt)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -374,7 +398,7 @@ public <B>Transaction</B>(NetworkParameters&nbsp;params,
 <A NAME="getInputs()"><!-- --></A><H3>
 getInputs</H3>
 <PRE>
-public java.util.List&lt;TransactionInput&gt; <B>getInputs</B>()</PRE>
+public java.util.List&lt;<A HREF="../../../../com/google/bitcoin/core/TransactionInput.html" title="class in com.google.bitcoin.core">TransactionInput</A>&gt; <B>getInputs</B>()</PRE>
 <DL>
 <DD>Returns a read-only list of the inputs of this transaction.
 <P>
@@ -507,6 +531,40 @@ public boolean <B>isCoinBase</B>()</PRE>
 </DL>
 <HR>
 
+<A NAME="sent(com.google.bitcoin.core.Wallet)"><!-- --></A><H3>
+sent</H3>
+<PRE>
+public boolean <B>sent</B>(<A HREF="../../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet)</PRE>
+<DL>
+<DD>returns whether this transaction was sent by this wallet
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>wallet</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isMine(com.google.bitcoin.core.Wallet)"><!-- --></A><H3>
+isMine</H3>
+<PRE>
+public boolean <B>isMine</B>(<A HREF="../../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet)</PRE>
+<DL>
+<DD>returns whether this transaction uses one of the wallet's keys
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>wallet</CODE> - 
+<DT><B>Returns:</B><DD></DL>
+</DD>
+</DL>
+<HR>
+
 <A NAME="toString()"><!-- --></A><H3>
 toString</H3>
 <PRE>
@@ -531,22 +589,6 @@ public void <B>addInput</B>(TransactionOutput&nbsp;from)</PRE>
  complete and after every input is added with addInput() and every output is added with addOutput(),
  signInputs() must be called to finalize the transaction and finish the inputs off. Otherwise it won't be
  accepted by the network.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="addInput(TransactionInput)"><!-- --></A><H3>
-addInput</H3>
-<PRE>
-public void <B>addInput</B>(TransactionInput&nbsp;input)</PRE>
-<DL>
-<DD>Adds an input directly, with no checking that it's valid.
 <P>
 <DD><DL>
 </DL>
@@ -665,6 +707,34 @@ public int <B>hashCode</B>()</PRE>
 </DL>
 </DD>
 </DL>
+<HR>
+
+<A NAME="getUpdatedAt()"><!-- --></A><H3>
+getUpdatedAt</H3>
+<PRE>
+public java.util.Date <B>getUpdatedAt</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setUpdatedAt(java.util.Date)"><!-- --></A><H3>
+setUpdatedAt</H3>
+<PRE>
+public void <B>setUpdatedAt</B>(java.util.Date&nbsp;updatedAt)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
 <!-- ========= END OF CLASS DATA ========= -->
 <HR>
 
@@ -695,7 +765,7 @@ public int <B>hashCode</B>()</PRE>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;PREV CLASS&nbsp;
+&nbsp;<A HREF="../../../../com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core"><B>PREV CLASS</B></A>&nbsp;
 &nbsp;<A HREF="../../../../com/google/bitcoin/core/Transaction.SigHash.html" title="enum in com.google.bitcoin.core"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../../index.html?com/google/bitcoin/core/Transaction.html" target="_top"><B>FRAMES</B></A>  &nbsp;

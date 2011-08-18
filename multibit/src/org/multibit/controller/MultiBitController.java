@@ -446,6 +446,14 @@ public class MultiBitController implements PeerEventListener {
         }
     }
 
+    public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
+            BigInteger newBalance) {
+
+        for (ViewSystem viewSystem : viewSystems) {
+            viewSystem.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
+        }
+    }
+
     public void sendCoins(String sendAddressString, String sendLabel, String amount) {
         try {
             // send the coins

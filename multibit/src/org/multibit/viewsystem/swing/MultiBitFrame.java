@@ -946,6 +946,28 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         fireDataChanged();
     }
 
+    public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+        // print out transaction details
+        try {
+            TransactionInput input = transaction.getInputs().get(0);
+            Address from = input.getFromAddress();
+            BigInteger value = transaction.getValueSentToMe(wallet);
+            logger.debug("Received " + Localiser.bitcoinValueToFriendlyString(value, true, false) + " from "
+                    + from.toString());
+            wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
+        } catch (ScriptException e) {
+            // If we didn't understand the scriptSig, just crash.
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+        logger.debug("MultiBitFrame#onPendingCoinsReceived - wallet is currently:\n" + wallet.toString());
+        fireDataChanged();
+    }
+
     /**
      * update the UI after the model data has changed
      */

@@ -243,7 +243,7 @@ the MVC controller for Multibit - this is loosely based on the Apache Struts
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#onBlocksDownloaded(Peer, Block, int)">onBlocksDownloaded</A></B>(Peer&nbsp;peer,
+<TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#onBlocksDownloaded(com.google.bitcoin.core.Peer, Block, int)">onBlocksDownloaded</A></B>(<A HREF="../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>&nbsp;peer,
                    Block&nbsp;block,
                    int&nbsp;blocksLeft)</CODE>
 
@@ -254,7 +254,7 @@ the MVC controller for Multibit - this is loosely based on the Apache Struts
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#onChainDownloadStarted(Peer, int)">onChainDownloadStarted</A></B>(Peer&nbsp;peer,
+<TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#onChainDownloadStarted(com.google.bitcoin.core.Peer, int)">onChainDownloadStarted</A></B>(<A HREF="../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>&nbsp;peer,
                        int&nbsp;blocksLeft)</CODE>
 
 <BR>
@@ -274,7 +274,7 @@ the MVC controller for Multibit - this is loosely based on the Apache Struts
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#onPeerConnected(Peer, int)">onPeerConnected</A></B>(Peer&nbsp;peer,
+<TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#onPeerConnected(com.google.bitcoin.core.Peer, int)">onPeerConnected</A></B>(<A HREF="../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>&nbsp;peer,
                 int&nbsp;peerCount)</CODE>
 
 <BR>
@@ -283,8 +283,19 @@ the MVC controller for Multibit - this is loosely based on the Apache Struts
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#onPeerDisconnected(Peer, int)">onPeerDisconnected</A></B>(Peer&nbsp;peer,
+<TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#onPeerDisconnected(com.google.bitcoin.core.Peer, int)">onPeerDisconnected</A></B>(<A HREF="../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>&nbsp;peer,
                    int&nbsp;peerCount)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#onPendingCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)">onPendingCoinsReceived</A></B>(<A HREF="../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet,
+                       <A HREF="../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction,
+                       java.math.BigInteger&nbsp;prevBalance,
+                       java.math.BigInteger&nbsp;newBalance)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -609,10 +620,10 @@ public void <B>setLocaliser</B>(<A HREF="../../../org/multibit/Localiser.html" t
 </DL>
 <HR>
 
-<A NAME="onBlocksDownloaded(Peer, Block, int)"><!-- --></A><H3>
+<A NAME="onBlocksDownloaded(com.google.bitcoin.core.Peer, Block, int)"><!-- --></A><H3>
 onBlocksDownloaded</H3>
 <PRE>
-public void <B>onBlocksDownloaded</B>(Peer&nbsp;peer,
+public void <B>onBlocksDownloaded</B>(<A HREF="../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>&nbsp;peer,
                                Block&nbsp;block,
                                int&nbsp;blocksLeft)</PRE>
 <DL>
@@ -625,10 +636,10 @@ public void <B>onBlocksDownloaded</B>(Peer&nbsp;peer,
 </DL>
 <HR>
 
-<A NAME="onChainDownloadStarted(Peer, int)"><!-- --></A><H3>
+<A NAME="onChainDownloadStarted(com.google.bitcoin.core.Peer, int)"><!-- --></A><H3>
 onChainDownloadStarted</H3>
 <PRE>
-public void <B>onChainDownloadStarted</B>(Peer&nbsp;peer,
+public void <B>onChainDownloadStarted</B>(<A HREF="../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>&nbsp;peer,
                                    int&nbsp;blocksLeft)</PRE>
 <DL>
 <DD><DL>
@@ -637,10 +648,10 @@ public void <B>onChainDownloadStarted</B>(Peer&nbsp;peer,
 </DL>
 <HR>
 
-<A NAME="onPeerConnected(Peer, int)"><!-- --></A><H3>
+<A NAME="onPeerConnected(com.google.bitcoin.core.Peer, int)"><!-- --></A><H3>
 onPeerConnected</H3>
 <PRE>
-public void <B>onPeerConnected</B>(Peer&nbsp;peer,
+public void <B>onPeerConnected</B>(<A HREF="../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>&nbsp;peer,
                             int&nbsp;peerCount)</PRE>
 <DL>
 <DD><DL>
@@ -649,10 +660,10 @@ public void <B>onPeerConnected</B>(Peer&nbsp;peer,
 </DL>
 <HR>
 
-<A NAME="onPeerDisconnected(Peer, int)"><!-- --></A><H3>
+<A NAME="onPeerDisconnected(com.google.bitcoin.core.Peer, int)"><!-- --></A><H3>
 onPeerDisconnected</H3>
 <PRE>
-public void <B>onPeerDisconnected</B>(Peer&nbsp;peer,
+public void <B>onPeerDisconnected</B>(<A HREF="../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>&nbsp;peer,
                                int&nbsp;peerCount)</PRE>
 <DL>
 <DD><DL>
@@ -694,6 +705,20 @@ public void <B>onCoinsReceived</B>(<A HREF="../../../com/google/bitcoin/core/Wal
                             <A HREF="../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction,
                             java.math.BigInteger&nbsp;prevBalance,
                             java.math.BigInteger&nbsp;newBalance)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="onPendingCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)"><!-- --></A><H3>
+onPendingCoinsReceived</H3>
+<PRE>
+public void <B>onPendingCoinsReceived</B>(<A HREF="../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet,
+                                   <A HREF="../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;transaction,
+                                   java.math.BigInteger&nbsp;prevBalance,
+                                   java.math.BigInteger&nbsp;newBalance)</PRE>
 <DL>
 <DD><DL>
 </DL>

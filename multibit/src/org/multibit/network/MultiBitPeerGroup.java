@@ -6,13 +6,14 @@ import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.DownloadListener;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerGroup;
+import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.store.BlockStore;
 
 public class MultiBitPeerGroup extends PeerGroup {
     MultiBitController controller;
     
-    public MultiBitPeerGroup(MultiBitController controller, BlockStore blockStore, NetworkParameters params, BlockChain chain) {
-        super(blockStore, params, chain);
+    public MultiBitPeerGroup(MultiBitController controller, BlockStore blockStore, NetworkParameters params, BlockChain chain, Wallet wallet) {
+        super(blockStore, params, chain, wallet);
         this.controller = controller;
     }
     

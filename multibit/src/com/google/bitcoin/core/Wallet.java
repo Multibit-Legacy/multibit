@@ -190,6 +190,28 @@ public class Wallet implements Serializable {
     }
 
     /**
+     * Called by (@link Peer) when we receive a pending transaction that sends coins to one of our addresses.
+     * Note that these are unconfirmed transactions
+     * 
+     * @param transaction
+     * @throws VerificationException
+     * @throws ScriptException
+     */
+    synchronized void receivePendingTransaction(Transaction transaction) {
+        System.out.println("Wallet#receivePendingTransaction - received pending transaction: " + transaction);
+        // the main receive logic is not run yet - this is done when the block with this transaction is received
+        transaction.setUpdatedAt(new Date());
+        pending.put(transaction.getHash(), transaction);
+        
+        // notify listeners
+        for (WalletEventListener walletEventListener : eventListeners) {
+            synchronized (walletEventListener) {
+                walletEventListener.onPendingCoinsReceived(this, transaction);
+            }
+        }
+    }
+
+    /**
      * Called by the {@link BlockChain} when we receive a new block that sends coins to one of our addresses or
      * spends coins from one of our addresses (note that a single transaction can do both).<p>
      *

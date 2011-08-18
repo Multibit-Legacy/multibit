@@ -150,15 +150,21 @@ Method in class org.multibit.viewsystem.swing.watermark.<A HREF="./org/multibit/
 Method in class org.multibit.viewsystem.swing.watermark.<A HREF="./org/multibit/viewsystem/swing/watermark/WatermarkPainter.html" title="class in org.multibit.viewsystem.swing.watermark">WatermarkPainter</A>
 <DD>Perform the action given by the actionCommand
  of the specified <code>ActionEvent</code>.
-<DT><A HREF="./com/google/bitcoin/core/Wallet.html#addEventListener(WalletEventListener)"><B>addEventListener(WalletEventListener)</B></A> - 
+<DT><A HREF="./com/google/bitcoin/core/PeerGroup.html#addAddress(PeerAddress)"><B>addAddress(PeerAddress)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A>
+<DD>Add an address to the list of potential peers to connect to
+<DT><A HREF="./com/google/bitcoin/core/Peer.html#addEventListener(PeerEventListener)"><B>addEventListener(PeerEventListener)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>
+<DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/PeerGroup.html#addEventListener(PeerEventListener)"><B>addEventListener(PeerEventListener)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A>
+<DD>Callbacks to the listener are performed in the connection thread.
+<DT><A HREF="./com/google/bitcoin/core/Wallet.html#addEventListener(com.google.bitcoin.core.WalletEventListener)"><B>addEventListener(WalletEventListener)</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>
 <DD>Adds an event listener object.
 <DT><A HREF="./com/google/bitcoin/core/Transaction.html#addInput(TransactionOutput)"><B>addInput(TransactionOutput)</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>
 <DD>Adds an input to this transaction that imports value from the given output.
-<DT><A HREF="./com/google/bitcoin/core/Transaction.html#addInput(TransactionInput)"><B>addInput(TransactionInput)</B></A> - 
-Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>
-<DD>Adds an input directly, with no checking that it's valid.
 <DT><A HREF="./org/multibit/model/Data.html#addItem(java.lang.String, org.multibit.model.Item)"><B>addItem(String, Item)</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/Data.html" title="class in org.multibit.model">Data</A>
 <DD>&nbsp;
@@ -168,6 +174,9 @@ Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Walle
 <DT><A HREF="./com/google/bitcoin/core/Transaction.html#addOutput(TransactionOutput)"><B>addOutput(TransactionOutput)</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>
 <DD>Adds the given output to this transaction.
+<DT><A HREF="./com/google/bitcoin/core/PeerGroup.html#addPeerDiscovery(PeerDiscovery)"><B>addPeerDiscovery(PeerDiscovery)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A>
+<DD>Add addresses from a discovery source to the list of potential peers to connect to
 <DT><A HREF="./org/multibit/model/AddressBook.html#addReceivingAddress(org.multibit.model.AddressBookData, boolean)"><B>addReceivingAddress(AddressBookData, boolean)</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
 <DD>add a receiving address in the form of an AddressBookData, replacing the
@@ -213,7 +222,7 @@ Constructor for class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit
 <DT><A HREF="./org/multibit/model/AddressBook.html#addSendingAddress(org.multibit.model.AddressBookData)"><B>addSendingAddress(AddressBookData)</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/model/MultiBitModel.html#addWalletEventListener(WalletEventListener)"><B>addWalletEventListener(WalletEventListener)</B></A> - 
+<DT><A HREF="./org/multibit/model/MultiBitModel.html#addWalletEventListener(com.google.bitcoin.core.WalletEventListener)"><B>addWalletEventListener(WalletEventListener)</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/swing/StatusBar.html#addZone(java.lang.String, java.awt.Component, java.lang.String)"><B>addZone(String, Component, String)</B></A> - 
@@ -226,6 +235,9 @@ Method in class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem
 <DL>
 <DT><A HREF="./com/google/bitcoin/core/Transaction.html#bitcoinSerializeToStream(java.io.OutputStream)"><B>bitcoinSerializeToStream(OutputStream)</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>
+<DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/TransactionInput.html#bitcoinSerializeToStream(java.io.OutputStream)"><B>bitcoinSerializeToStream(OutputStream)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/TransactionInput.html" title="class in com.google.bitcoin.core">TransactionInput</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/Localiser.html#bitcoinValueToFriendlyString(java.math.BigInteger, boolean, boolean)"><B>bitcoinValueToFriendlyString(BigInteger, boolean, boolean)</B></A> - 
 Static method in class org.multibit.<A HREF="./org/multibit/Localiser.html" title="class in org.multibit">Localiser</A>
@@ -242,6 +254,9 @@ Method in class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem
 <DT><A HREF="./org/multibit/viewsystem/ViewSystem.html#blockDownloaded()"><B>blockDownloaded()</B></A> - 
 Method in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A>
 <DD>notification that a block has been downloaded
+<DT><A HREF="./com/google/bitcoin/core/PeerGroup.html#broadcastTransaction(com.google.bitcoin.core.Transaction)"><B>broadcastTransaction(Transaction)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A>
+<DD>Broadcast a transaction to all connected peers
 <DT><A HREF="./org/multibit/viewsystem/swing/view/Browser.html" title="class in org.multibit.viewsystem.swing.view"><B>Browser</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/view/package-summary.html">org.multibit.viewsystem.swing.view</A><DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/swing/view/Browser.html#Browser(javax.swing.JFrame, java.lang.String)"><B>Browser(JFrame, String)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/Browser.html" title="class in org.multibit.viewsystem.swing.view">Browser</A>
 <DD>&nbsp;
@@ -257,6 +272,9 @@ Constructor for class org.multibit.action.<A HREF="./org/multibit/action/CancelB
 <DT><A HREF="./org/multibit/viewsystem/swing/action/CancelBackToParentAction.html" title="class in org.multibit.viewsystem.swing.action"><B>CancelBackToParentAction</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/action/package-summary.html">org.multibit.viewsystem.swing.action</A><DD>This <CODE>Action</CODE> represents a cancel action to go back to the parent view<DT><A HREF="./org/multibit/viewsystem/swing/action/CancelBackToParentAction.html#CancelBackToParentAction(org.multibit.controller.MultiBitController)"><B>CancelBackToParentAction(MultiBitController)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.action.<A HREF="./org/multibit/viewsystem/swing/action/CancelBackToParentAction.html" title="class in org.multibit.viewsystem.swing.action">CancelBackToParentAction</A>
 <DD>Creates a new <A HREF="./org/multibit/viewsystem/swing/action/CancelBackToParentAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>CancelBackToParentAction</CODE></A>.
+<DT><A HREF="./org/multibit/action/Validator.html#clearValidationState()"><B>clearValidationState()</B></A> - 
+Method in class org.multibit.action.<A HREF="./org/multibit/action/Validator.html" title="class in org.multibit.action">Validator</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/controller/MultiBitController.html#clearViewStack()"><B>clearViewStack()</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
 <DD>&nbsp;
@@ -272,6 +290,9 @@ Constructor for class org.multibit.viewsystem.commandline.<A HREF="./org/multibi
 <DT><A HREF="./org/multibit/model/AddressBookData.html#compareTo(java.lang.Object)"><B>compareTo(Object)</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBookData.html" title="class in org.multibit.model">AddressBookData</A>
 <DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/Peer.html#connect()"><B>connect()</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>
+<DD>Connects to the peer.
 <DT><A HREF="./org/multibit/viewsystem/commandline/view/AbstractView.html#consoleReader"><B>consoleReader</B></A> - 
 Static variable in class org.multibit.viewsystem.commandline.view.<A HREF="./org/multibit/viewsystem/commandline/view/AbstractView.html" title="class in org.multibit.viewsystem.commandline.view">AbstractView</A>
 <DD>&nbsp;
@@ -355,6 +376,9 @@ Method in class org.multibit.controller.<A HREF="./org/multibit/controller/Multi
  
  this setActionForward should be used when the next view is a child of the
  current view
+<DT><A HREF="./com/google/bitcoin/core/Peer.html#disconnect()"><B>disconnect()</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>
+<DD>Terminates the network connection and stops the message handling loop.
 <DT><A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html#DISPLAY_MENU_OPTIONS_PREFIX"><B>DISPLAY_MENU_OPTIONS_PREFIX</B></A> - 
 Static variable in class org.multibit.viewsystem.commandline.<A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html" title="class in org.multibit.viewsystem.commandline">CommandLineViewSystem</A>
 <DD>&nbsp;
@@ -506,6 +530,9 @@ Method in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/V
 <DT><A HREF="./org/multibit/network/MultiBitDownloadListener.html#doneDownload()"><B>doneDownload()</B></A> - 
 Method in class org.multibit.network.<A HREF="./org/multibit/network/MultiBitDownloadListener.html" title="class in org.multibit.network">MultiBitDownloadListener</A>
 <DD>Called when we are done downloading the block chain.
+<DT><A HREF="./com/google/bitcoin/core/PeerGroup.html#downloadBlockChain()"><B>downloadBlockChain()</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A>
+<DD>Download the blockchain from peers.
 <DT><A HREF="./org/multibit/network/MultiBitPeerGroup.html#downloadBlockChain()"><B>downloadBlockChain()</B></A> - 
 Method in class org.multibit.network.<A HREF="./org/multibit/network/MultiBitPeerGroup.html" title="class in org.multibit.network">MultiBitPeerGroup</A>
 <DD>Download the blockchain from peers.
@@ -522,6 +549,9 @@ Static variable in interface org.multibit.viewsystem.<A HREF="./org/multibit/vie
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/View.html#EDIT_SENDING_ADDRESS_VIEW"><B>EDIT_SENDING_ADDRESS_VIEW</B></A> - 
 Static variable in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/View.html" title="interface in org.multibit.viewsystem">View</A>
+<DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/TransactionInput.html#EMPTY_ARRAY"><B>EMPTY_ARRAY</B></A> - 
+Static variable in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/TransactionInput.html" title="class in com.google.bitcoin.core">TransactionInput</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/commandline/ConsoleReadingThread.html#enableReaderFiring(boolean)"><B>enableReaderFiring(boolean)</B></A> - 
 Method in class org.multibit.viewsystem.commandline.<A HREF="./org/multibit/viewsystem/commandline/ConsoleReadingThread.html" title="class in org.multibit.viewsystem.commandline">ConsoleReadingThread</A>
@@ -676,6 +706,9 @@ Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Walle
 <DT><A HREF="./org/multibit/model/MultiBitModel.html#getBalance()"><B>getBalance()</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/Peer.html#getBlock(Sha256Hash)"><B>getBlock(Sha256Hash)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>
+<DD>Asks the connected peer for the block of the given hash, and returns a Future representing the answer.
 <DT><A HREF="./org/multibit/network/MultiBitService.html#getChain()"><B>getChain()</B></A> - 
 Method in class org.multibit.network.<A HREF="./org/multibit/network/MultiBitService.html" title="class in org.multibit.network">MultiBitService</A>
 <DD>&nbsp;
@@ -860,6 +893,9 @@ Method in class org.multibit.action.<A HREF="./org/multibit/action/ShowPreferenc
 <DT><A HREF="./org/multibit/viewsystem/swing/watermark/WatermarkViewport.html#getForegroundPainter()"><B>getForegroundPainter()</B></A> - 
 Method in class org.multibit.viewsystem.swing.watermark.<A HREF="./org/multibit/viewsystem/swing/watermark/WatermarkViewport.html" title="class in org.multibit.viewsystem.swing.watermark">WatermarkViewport</A>
 <DD>Return the painter that paints the foreground.
+<DT><A HREF="./com/google/bitcoin/core/TransactionInput.html#getFromAddress()"><B>getFromAddress()</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/TransactionInput.html" title="class in com.google.bitcoin.core">TransactionInput</A>
+<DD>Convenience method that returns the from address of this input by parsing the scriptSig.
 <DT><A HREF="./com/google/bitcoin/core/Transaction.html#getHash()"><B>getHash()</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>
 <DD>Returns the transaction hash as you see them in the block explorer.
@@ -892,6 +928,9 @@ Method in class org.multibit.<A HREF="./org/multibit/Localiser.html" title="clas
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/controller/MultiBitController.html#getLocaliser()"><B>getLocaliser()</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
+<DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/PeerGroup.html#getMaxConnections()"><B>getMaxConnections()</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/swing/view/Browser.html#getMaximumWindowBounds()"><B>getMaximumWindowBounds()</B></A> - 
 Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/Browser.html" title="class in org.multibit.viewsystem.swing.view">Browser</A>
@@ -938,6 +977,9 @@ Method in class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/views
 <DT><A HREF="./org/multibit/viewsystem/swing/WalletTableModel.html#getRowCount()"><B>getRowCount()</B></A> - 
 Method in class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem/swing/WalletTableModel.html" title="class in org.multibit.viewsystem.swing">WalletTableModel</A>
 <DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/TransactionInput.html#getScriptSig()"><B>getScriptSig()</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/TransactionInput.html" title="class in com.google.bitcoin.core">TransactionInput</A>
+<DD>Returns the input script.
 <DT><A HREF="./org/multibit/model/AddressBook.html#getSendingAddresses()"><B>getSendingAddresses()</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.html" title="class in org.multibit.model">AddressBook</A>
 <DD>&nbsp;
@@ -952,6 +994,9 @@ Method in class org.multibit.<A HREF="./org/multibit/Localiser.html" title="clas
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/model/WalletData.html#getTransaction()"><B>getTransaction()</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/WalletData.html" title="class in org.multibit.model">WalletData</A>
+<DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/Transaction.html#getUpdatedAt()"><B>getUpdatedAt()</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/model/MultiBitModel.html#getUserPreference(java.lang.String)"><B>getUserPreference(String)</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
@@ -995,6 +1040,12 @@ Method in class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem
 <A NAME="_H_"><!-- --></A><H2>
 <B>H</B></H2>
 <DL>
+<DT><A HREF="./com/google/bitcoin/core/PeerGroup.html#handleNewPeer(com.google.bitcoin.core.Peer)"><B>handleNewPeer(Peer)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A>
+<DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/PeerGroup.html#handlePeerDeath(com.google.bitcoin.core.Peer)"><B>handlePeerDeath(Peer)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A>
+<DD>&nbsp;
 <DT><A HREF="./com/google/bitcoin/core/Transaction.html#hashCode()"><B>hashCode()</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>
 <DD>&nbsp;
@@ -1061,6 +1112,15 @@ Static variable in class org.multibit.network.<A HREF="./org/multibit/network/Mu
 <DT><A HREF="./com/google/bitcoin/core/Transaction.html#isCoinBase()"><B>isCoinBase()</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>
 <DD>A coinbase transaction is one that creates a new coin.
+<DT><A HREF="./com/google/bitcoin/core/TransactionInput.html#isCoinBase()"><B>isCoinBase()</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/TransactionInput.html" title="class in com.google.bitcoin.core">TransactionInput</A>
+<DD>Coinbase transactions have special inputs with hashes of zero.
+<DT><A HREF="./com/google/bitcoin/core/Transaction.html#isMine(com.google.bitcoin.core.Wallet)"><B>isMine(Wallet)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>
+<DD>returns whether this transaction uses one of the wallet's keys
+<DT><A HREF="./com/google/bitcoin/core/TransactionInput.html#isMine(com.google.bitcoin.core.Wallet)"><B>isMine(Wallet)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/TransactionInput.html" title="class in com.google.bitcoin.core">TransactionInput</A>
+<DD>Mostly copied from transaction output
 <DT><A HREF="./com/google/bitcoin/core/Wallet.html#isPubKeyHashMine(byte[])"><B>isPubKeyHashMine(byte[])</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>
 <DD>Returns true if this wallet contains a public key which hashes to the given hash.
@@ -1169,7 +1229,7 @@ Constructor for class org.multibit.<A HREF="./org/multibit/MultiBitInExecutableJ
 <DT><A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model"><B>MultiBitModel</B></A> - Class in <A HREF="./org/multibit/model/package-summary.html">org.multibit.model</A><DD>model containing the MultiBit data<DT><A HREF="./org/multibit/model/MultiBitModel.html#MultiBitModel(org.multibit.controller.MultiBitController, java.util.Properties)"><B>MultiBitModel(MultiBitController, Properties)</B></A> - 
 Constructor for class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/network/MultiBitPeerGroup.html" title="class in org.multibit.network"><B>MultiBitPeerGroup</B></A> - Class in <A HREF="./org/multibit/network/package-summary.html">org.multibit.network</A><DD>&nbsp;<DT><A HREF="./org/multibit/network/MultiBitPeerGroup.html#MultiBitPeerGroup(org.multibit.controller.MultiBitController, BlockStore, NetworkParameters, BlockChain)"><B>MultiBitPeerGroup(MultiBitController, BlockStore, NetworkParameters, BlockChain)</B></A> - 
+<DT><A HREF="./org/multibit/network/MultiBitPeerGroup.html" title="class in org.multibit.network"><B>MultiBitPeerGroup</B></A> - Class in <A HREF="./org/multibit/network/package-summary.html">org.multibit.network</A><DD>&nbsp;<DT><A HREF="./org/multibit/network/MultiBitPeerGroup.html#MultiBitPeerGroup(org.multibit.controller.MultiBitController, BlockStore, NetworkParameters, BlockChain, com.google.bitcoin.core.Wallet)"><B>MultiBitPeerGroup(MultiBitController, BlockStore, NetworkParameters, BlockChain, Wallet)</B></A> - 
 Constructor for class org.multibit.network.<A HREF="./org/multibit/network/MultiBitPeerGroup.html" title="class in org.multibit.network">MultiBitPeerGroup</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/network/MultiBitService.html" title="class in org.multibit.network"><B>MultiBitService</B></A> - Class in <A HREF="./org/multibit/network/package-summary.html">org.multibit.network</A><DD>
@@ -1280,13 +1340,16 @@ Constructor for class org.multibit.action.<A HREF="./org/multibit/action/OkBackT
 <DT><A HREF="./org/multibit/viewsystem/swing/action/OkBackToParentAction.html" title="class in org.multibit.viewsystem.swing.action"><B>OkBackToParentAction</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/action/package-summary.html">org.multibit.viewsystem.swing.action</A><DD>This <CODE>Action</CODE> represents an ok action to go back to the parent view<DT><A HREF="./org/multibit/viewsystem/swing/action/OkBackToParentAction.html#OkBackToParentAction(org.multibit.controller.MultiBitController)"><B>OkBackToParentAction(MultiBitController)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.action.<A HREF="./org/multibit/viewsystem/swing/action/OkBackToParentAction.html" title="class in org.multibit.viewsystem.swing.action">OkBackToParentAction</A>
 <DD>Creates a new <A HREF="./org/multibit/viewsystem/swing/action/OkBackToParentAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>OkBackToParentAction</CODE></A>.
-<DT><A HREF="./org/multibit/controller/MultiBitController.html#onBlocksDownloaded(Peer, Block, int)"><B>onBlocksDownloaded(Peer, Block, int)</B></A> - 
+<DT><A HREF="./org/multibit/controller/MultiBitController.html#onBlocksDownloaded(com.google.bitcoin.core.Peer, Block, int)"><B>onBlocksDownloaded(Peer, Block, int)</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
 <DD>the controller listens for PeerGroup events and notifies interested
  parties
-<DT><A HREF="./org/multibit/controller/MultiBitController.html#onChainDownloadStarted(Peer, int)"><B>onChainDownloadStarted(Peer, int)</B></A> - 
+<DT><A HREF="./org/multibit/controller/MultiBitController.html#onChainDownloadStarted(com.google.bitcoin.core.Peer, int)"><B>onChainDownloadStarted(Peer, int)</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
 <DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/WalletEventListener.html#onCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)"><B>onCoinsReceived(Wallet, Transaction, BigInteger, BigInteger)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/WalletEventListener.html" title="class in com.google.bitcoin.core">WalletEventListener</A>
+<DD>This is called on a Peer thread when a block is received that sends some coins to you.
 <DT><A HREF="./org/multibit/controller/MultiBitController.html#onCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)"><B>onCoinsReceived(Wallet, Transaction, BigInteger, BigInteger)</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
 <DD>&nbsp;
@@ -1299,12 +1362,39 @@ Method in class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem
 <DT><A HREF="./org/multibit/viewsystem/ViewSystem.html#onCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)"><B>onCoinsReceived(Wallet, Transaction, BigInteger, BigInteger)</B></A> - 
 Method in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A>
 <DD>WalletEventListener callback method
-<DT><A HREF="./org/multibit/controller/MultiBitController.html#onPeerConnected(Peer, int)"><B>onPeerConnected(Peer, int)</B></A> - 
+<DT><A HREF="./com/google/bitcoin/core/WalletEventListener.html#onCoinsSent(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)"><B>onCoinsSent(Wallet, Transaction, BigInteger, BigInteger)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/WalletEventListener.html" title="class in com.google.bitcoin.core">WalletEventListener</A>
+<DD>This is called when a transaction you sent is confirmed in the blockchain.
+<DT><A HREF="./com/google/bitcoin/core/WalletEventListener.html#onDeadTransaction(com.google.bitcoin.core.Transaction, com.google.bitcoin.core.Transaction)"><B>onDeadTransaction(Transaction, Transaction)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/WalletEventListener.html" title="class in com.google.bitcoin.core">WalletEventListener</A>
+<DD>This is called on a Peer thread when a transaction becomes <i>dead</i>.
+<DT><A HREF="./org/multibit/controller/MultiBitController.html#onPeerConnected(com.google.bitcoin.core.Peer, int)"><B>onPeerConnected(Peer, int)</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/controller/MultiBitController.html#onPeerDisconnected(Peer, int)"><B>onPeerDisconnected(Peer, int)</B></A> - 
+<DT><A HREF="./org/multibit/controller/MultiBitController.html#onPeerDisconnected(com.google.bitcoin.core.Peer, int)"><B>onPeerDisconnected(Peer, int)</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
 <DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/WalletEventListener.html#onPendingCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)"><B>onPendingCoinsReceived(Wallet, Transaction, BigInteger, BigInteger)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/WalletEventListener.html" title="class in com.google.bitcoin.core">WalletEventListener</A>
+<DD>This is called on a Peer thread when a transaction is received that sends some coins to you.
+<DT><A HREF="./com/google/bitcoin/core/WalletEventListener.html#onPendingCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction)"><B>onPendingCoinsReceived(Wallet, Transaction)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/WalletEventListener.html" title="class in com.google.bitcoin.core">WalletEventListener</A>
+<DD>This is called when an unverified transaction is received that sends some coins to you.
+<DT><A HREF="./org/multibit/controller/MultiBitController.html#onPendingCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)"><B>onPendingCoinsReceived(Wallet, Transaction, BigInteger, BigInteger)</B></A> - 
+Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html#onPendingCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)"><B>onPendingCoinsReceived(Wallet, Transaction, BigInteger, BigInteger)</B></A> - 
+Method in class org.multibit.viewsystem.commandline.<A HREF="./org/multibit/viewsystem/commandline/CommandLineViewSystem.html" title="class in org.multibit.viewsystem.commandline">CommandLineViewSystem</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/viewsystem/swing/MultiBitFrame.html#onPendingCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)"><B>onPendingCoinsReceived(Wallet, Transaction, BigInteger, BigInteger)</B></A> - 
+Method in class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem/swing/MultiBitFrame.html" title="class in org.multibit.viewsystem.swing">MultiBitFrame</A>
+<DD>&nbsp;
+<DT><A HREF="./org/multibit/viewsystem/ViewSystem.html#onPendingCoinsReceived(com.google.bitcoin.core.Wallet, com.google.bitcoin.core.Transaction, java.math.BigInteger, java.math.BigInteger)"><B>onPendingCoinsReceived(Wallet, Transaction, BigInteger, BigInteger)</B></A> - 
+Method in interface org.multibit.viewsystem.<A HREF="./org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A>
+<DD>WalletEventListener callback method
+<DT><A HREF="./com/google/bitcoin/core/WalletEventListener.html#onReorganize()"><B>onReorganize()</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/WalletEventListener.html" title="class in com.google.bitcoin.core">WalletEventListener</A>
+<DD>This is called on a Peer thread when a block is received that triggers a block chain re-organization.
 <DT><A HREF="./org/multibit/action/Action.html#OPEN_WALLET_ACTION"><B>OPEN_WALLET_ACTION</B></A> - 
 Static variable in interface org.multibit.action.<A HREF="./org/multibit/action/Action.html" title="interface in org.multibit.action">Action</A>
 <DD>&nbsp;
@@ -1367,6 +1457,15 @@ Constructor for class org.multibit.action.<A HREF="./org/multibit/action/PasteAd
 <DT><A HREF="./org/multibit/viewsystem/swing/action/PasteAddressAction.html" title="class in org.multibit.viewsystem.swing.action"><B>PasteAddressAction</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/action/package-summary.html">org.multibit.viewsystem.swing.action</A><DD>This <CODE>Action</CODE> represents the swing paste address action<DT><A HREF="./org/multibit/viewsystem/swing/action/PasteAddressAction.html#PasteAddressAction(org.multibit.controller.MultiBitController)"><B>PasteAddressAction(MultiBitController)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.action.<A HREF="./org/multibit/viewsystem/swing/action/PasteAddressAction.html" title="class in org.multibit.viewsystem.swing.action">PasteAddressAction</A>
 <DD>Creates a new <A HREF="./org/multibit/viewsystem/swing/action/PasteAddressAction.html" title="class in org.multibit.viewsystem.swing.action"><CODE>PasteAddressAction</CODE></A>.
+<DT><A HREF="./com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core"><B>Peer</B></A> - Class in <A HREF="./com/google/bitcoin/core/package-summary.html">com.google.bitcoin.core</A><DD>A Peer handles the high level communication with a BitCoin node.<DT><A HREF="./com/google/bitcoin/core/Peer.html#Peer(NetworkParameters, PeerAddress, int, BlockChain, com.google.bitcoin.core.Wallet)"><B>Peer(NetworkParameters, PeerAddress, int, BlockChain, Wallet)</B></A> - 
+Constructor for class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>
+<DD>Construct a peer that handles the given network connection and reads/writes from the given block chain.
+<DT><A HREF="./com/google/bitcoin/core/Peer.html#Peer(NetworkParameters, PeerAddress, BlockChain, com.google.bitcoin.core.Wallet)"><B>Peer(NetworkParameters, PeerAddress, BlockChain, Wallet)</B></A> - 
+Constructor for class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>
+<DD>Construct a peer that handles the given network connection and reads/writes from the given block chain.
+<DT><A HREF="./com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core"><B>PeerGroup</B></A> - Class in <A HREF="./com/google/bitcoin/core/package-summary.html">com.google.bitcoin.core</A><DD>Maintain a number of connections to peers.<DT><A HREF="./com/google/bitcoin/core/PeerGroup.html#PeerGroup(BlockStore, NetworkParameters, BlockChain, com.google.bitcoin.core.Wallet)"><B>PeerGroup(BlockStore, NetworkParameters, BlockChain, Wallet)</B></A> - 
+Constructor for class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A>
+<DD>Create a PeerGroup
 <DT><A HREF="./com/google/bitcoin/core/Wallet.html#pendingTransactions()"><B>pendingTransactions()</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>
 <DD>Returns an immutable view of the transactions currently waiting for network confirmations.
@@ -1465,12 +1564,21 @@ Constructor for class org.multibit.viewsystem.swing.<A HREF="./org/multibit/view
 <DT><A HREF="./org/multibit/controller/MultiBitController.html#registerViewSystem(org.multibit.viewsystem.ViewSystem)"><B>registerViewSystem(ViewSystem)</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
 <DD>register a new MultiBitViewSystem from the list of views that are managed
-<DT><A HREF="./com/google/bitcoin/core/Wallet.html#removeEventListener(WalletEventListener)"><B>removeEventListener(WalletEventListener)</B></A> - 
+<DT><A HREF="./com/google/bitcoin/core/Peer.html#removeEventListener(PeerEventListener)"><B>removeEventListener(PeerEventListener)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>
+<DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/PeerGroup.html#removeEventListener(PeerEventListener)"><B>removeEventListener(PeerEventListener)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A>
+<DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/Wallet.html#removeEventListener(com.google.bitcoin.core.WalletEventListener)"><B>removeEventListener(WalletEventListener)</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>
 <DD>Removes the given event listener object.
-<DT><A HREF="./org/multibit/model/MultiBitModel.html#removeWalletEventListener(WalletEventListener)"><B>removeWalletEventListener(WalletEventListener)</B></A> - 
+<DT><A HREF="./org/multibit/model/MultiBitModel.html#removeWalletEventListener(com.google.bitcoin.core.WalletEventListener)"><B>removeWalletEventListener(WalletEventListener)</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/Peer.html#run()"><B>run()</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>
+<DD>Runs in the peers network loop and manages communication with the peer.
 <DT><A HREF="./org/multibit/viewsystem/commandline/ConsoleReadingThread.html#run()"><B>run()</B></A> - 
 Method in class org.multibit.viewsystem.commandline.<A HREF="./org/multibit/viewsystem/commandline/ConsoleReadingThread.html" title="class in org.multibit.viewsystem.commandline">ConsoleReadingThread</A>
 <DD>&nbsp;
@@ -1570,18 +1678,21 @@ Constructor for class org.multibit.viewsystem.commandline.view.<A HREF="./org/mu
 <DT><A HREF="./org/multibit/viewsystem/swing/view/SendBitcoinView.html" title="class in org.multibit.viewsystem.swing.view"><B>SendBitcoinView</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/view/package-summary.html">org.multibit.viewsystem.swing.view</A><DD>The send bitcoin view<DT><A HREF="./org/multibit/viewsystem/swing/view/SendBitcoinView.html#SendBitcoinView(org.multibit.controller.MultiBitController, org.multibit.Localiser, org.multibit.viewsystem.swing.MultiBitFrame)"><B>SendBitcoinView(MultiBitController, Localiser, MultiBitFrame)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/SendBitcoinView.html" title="class in org.multibit.viewsystem.swing.view">SendBitcoinView</A>
 <DD>Creates a new <A HREF="./org/multibit/viewsystem/swing/view/SendBitcoinView.html" title="class in org.multibit.viewsystem.swing.view"><CODE>SendBitcoinView</CODE></A>.
-<DT><A HREF="./com/google/bitcoin/core/Wallet.html#sendCoins(PeerGroup, Address, java.math.BigInteger)"><B>sendCoins(PeerGroup, Address, BigInteger)</B></A> - 
+<DT><A HREF="./com/google/bitcoin/core/Wallet.html#sendCoins(com.google.bitcoin.core.PeerGroup, Address, java.math.BigInteger)"><B>sendCoins(PeerGroup, Address, BigInteger)</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>
-<DD>Sends coins to the given address, via the given <CODE>PeerGroup</CODE>.
-<DT><A HREF="./com/google/bitcoin/core/Wallet.html#sendCoins(Peer, Address, java.math.BigInteger)"><B>sendCoins(Peer, Address, BigInteger)</B></A> - 
+<DD>Sends coins to the given address, via the given <A HREF="./com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core"><CODE>PeerGroup</CODE></A>.
+<DT><A HREF="./com/google/bitcoin/core/Wallet.html#sendCoins(com.google.bitcoin.core.Peer, Address, java.math.BigInteger)"><B>sendCoins(Peer, Address, BigInteger)</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>
-<DD>Sends coins to the given address, via the given <CODE>Peer</CODE>.
+<DD>Sends coins to the given address, via the given <A HREF="./com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core"><CODE>Peer</CODE></A>.
 <DT><A HREF="./org/multibit/controller/MultiBitController.html#sendCoins(java.lang.String, java.lang.String, java.lang.String)"><B>sendCoins(String, String, String)</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/network/MultiBitService.html#sendCoins(java.lang.String, java.lang.String)"><B>sendCoins(String, String)</B></A> - 
 Method in class org.multibit.network.<A HREF="./org/multibit/network/MultiBitService.html" title="class in org.multibit.network">MultiBitService</A>
 <DD>send bitcoins
+<DT><A HREF="./com/google/bitcoin/core/Transaction.html#sent(com.google.bitcoin.core.Wallet)"><B>sent(Wallet)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>
+<DD>returns whether this transaction was sent by this wallet
 <DT><A HREF="./org/multibit/Localiser.html#SEPARATOR"><B>SEPARATOR</B></A> - 
 Static variable in class org.multibit.<A HREF="./org/multibit/Localiser.html" title="class in org.multibit">Localiser</A>
 <DD>&nbsp;
@@ -1653,6 +1764,9 @@ Method in class org.multibit.<A HREF="./org/multibit/Localiser.html" title="clas
 <DT><A HREF="./org/multibit/controller/MultiBitController.html#setLocaliser(org.multibit.Localiser)"><B>setLocaliser(Localiser)</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
 <DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/PeerGroup.html#setMaxConnections(int)"><B>setMaxConnections(int)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A>
+<DD>Depending on the environment, this should normally be between 1 and 10, default is 4.
 <DT><A HREF="./org/multibit/controller/MultiBitController.html#setModel(org.multibit.model.MultiBitModel)"><B>setModel(MultiBitModel)</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
 <DD>&nbsp;
@@ -1719,6 +1833,9 @@ Method in class org.multibit.model.<A HREF="./org/multibit/model/AddressBook.htm
 <DT><A HREF="./org/multibit/model/WalletData.html#setTransaction(com.google.bitcoin.core.Transaction)"><B>setTransaction(Transaction)</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/WalletData.html" title="class in org.multibit.model">WalletData</A>
 <DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/Transaction.html#setUpdatedAt(java.util.Date)"><B>setUpdatedAt(Date)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/model/MultiBitModel.html#setUserPreference(java.lang.String, java.lang.String)"><B>setUserPreference(String, String)</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>set a user preference
@@ -1783,15 +1900,27 @@ Static variable in class org.multibit.viewsystem.swing.<A HREF="./org/multibit/v
 <DT><A HREF="./com/google/bitcoin/core/Wallet.html#spentTransactions()"><B>spentTransactions()</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>
 <DD>Returns an immutable view of the spent transactions.
+<DT><A HREF="./com/google/bitcoin/core/PeerGroup.html#start()"><B>start()</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A>
+<DD>Starts the background thread that makes connections.
 <DT><A HREF="./org/multibit/viewsystem/swing/watermark/WatermarkPainter.html#start()"><B>start()</B></A> - 
 Method in class org.multibit.viewsystem.swing.watermark.<A HREF="./org/multibit/viewsystem/swing/watermark/WatermarkPainter.html" title="class in org.multibit.viewsystem.swing.watermark">WatermarkPainter</A>
 <DD>Starts any animation that this painter might perform.
+<DT><A HREF="./com/google/bitcoin/core/Peer.html#startBlockChainDownload()"><B>startBlockChainDownload()</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>
+<DD>Starts an asynchronous download of the block chain.
+<DT><A HREF="./com/google/bitcoin/core/PeerGroup.html#startBlockChainDownload(PeerEventListener)"><B>startBlockChainDownload(PeerEventListener)</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A>
+<DD>Start downloading the blockchain from the first available peer.
 <DT><A HREF="./org/multibit/network/MultiBitDownloadListener.html#startDownload(int)"><B>startDownload(int)</B></A> - 
 Method in class org.multibit.network.<A HREF="./org/multibit/network/MultiBitDownloadListener.html" title="class in org.multibit.network">MultiBitDownloadListener</A>
 <DD>Called when download is initiated.
 <DT><A HREF="./org/multibit/viewsystem/swing/StatusBar.html" title="class in org.multibit.viewsystem.swing"><B>StatusBar</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/package-summary.html">org.multibit.viewsystem.swing</A><DD>StatusBar.<DT><A HREF="./org/multibit/viewsystem/swing/StatusBar.html#StatusBar()"><B>StatusBar()</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem/swing/StatusBar.html" title="class in org.multibit.viewsystem.swing">StatusBar</A>
 <DD>Construct a new StatusBar
+<DT><A HREF="./com/google/bitcoin/core/PeerGroup.html#stop()"><B>stop()</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/PeerGroup.html" title="class in com.google.bitcoin.core">PeerGroup</A>
+<DD>Stop this PeerGroup
 <DT><A HREF="./org/multibit/viewsystem/swing/watermark/WatermarkPainter.html#stop()"><B>stop()</B></A> - 
 Method in class org.multibit.viewsystem.swing.watermark.<A HREF="./org/multibit/viewsystem/swing/watermark/WatermarkPainter.html" title="class in org.multibit.viewsystem.swing.watermark">WatermarkPainter</A>
 <DD>Stops any animation that this painter might be performing.
@@ -1818,9 +1947,15 @@ Constructor for class org.multibit.action.<A HREF="./org/multibit/action/TextTra
 <DT><A HREF="./org/multibit/viewsystem/swing/view/ToDoView.html" title="class in org.multibit.viewsystem.swing.view"><B>ToDoView</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/view/package-summary.html">org.multibit.viewsystem.swing.view</A><DD>The a placeholder view<DT><A HREF="./org/multibit/viewsystem/swing/view/ToDoView.html#ToDoView(org.multibit.controller.MultiBitController, org.multibit.Localiser, org.multibit.viewsystem.swing.MultiBitFrame)"><B>ToDoView(MultiBitController, Localiser, MultiBitFrame)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/ToDoView.html" title="class in org.multibit.viewsystem.swing.view">ToDoView</A>
 <DD>Creates a new <A HREF="./org/multibit/viewsystem/swing/view/ToDoView.html" title="class in org.multibit.viewsystem.swing.view"><CODE>ToDoView</CODE></A>.
+<DT><A HREF="./com/google/bitcoin/core/Peer.html#toString()"><B>toString()</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>
+<DD>&nbsp;
 <DT><A HREF="./com/google/bitcoin/core/Transaction.html#toString()"><B>toString()</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>
 <DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/TransactionInput.html#toString()"><B>toString()</B></A> - 
+Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/TransactionInput.html" title="class in com.google.bitcoin.core">TransactionInput</A>
+<DD>Returns a human readable debug string.
 <DT><A HREF="./com/google/bitcoin/core/Wallet.html#toString()"><B>toString()</B></A> - 
 Method in class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>
 <DD>&nbsp;
@@ -1833,7 +1968,11 @@ Constructor for class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core
 <DT><A HREF="./com/google/bitcoin/core/Transaction.html#Transaction(NetworkParameters, byte[], int)"><B>Transaction(NetworkParameters, byte[], int)</B></A> - 
 Constructor for class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>
 <DD>Creates a transaction by reading payload starting from offset bytes in.
-<DT><A HREF="./com/google/bitcoin/core/Transaction.SigHash.html" title="enum in com.google.bitcoin.core"><B>Transaction.SigHash</B></A> - Enum in <A HREF="./com/google/bitcoin/core/package-summary.html">com.google.bitcoin.core</A><DD>These constants are a part of a scriptSig signature on the inputs.</DL>
+<DT><A HREF="./com/google/bitcoin/core/Transaction.SigHash.html" title="enum in com.google.bitcoin.core"><B>Transaction.SigHash</B></A> - Enum in <A HREF="./com/google/bitcoin/core/package-summary.html">com.google.bitcoin.core</A><DD>These constants are a part of a scriptSig signature on the inputs.<DT><A HREF="./com/google/bitcoin/core/TransactionInput.html" title="class in com.google.bitcoin.core"><B>TransactionInput</B></A> - Class in <A HREF="./com/google/bitcoin/core/package-summary.html">com.google.bitcoin.core</A><DD>A transfer of coins from one address to another creates a transaction in which the outputs
+ can be claimed by the recipient in the input of another transaction.<DT><A HREF="./com/google/bitcoin/core/TransactionInput.html#TransactionInput(NetworkParameters, com.google.bitcoin.core.Transaction, byte[], int)"><B>TransactionInput(NetworkParameters, Transaction, byte[], int)</B></A> - 
+Constructor for class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/TransactionInput.html" title="class in com.google.bitcoin.core">TransactionInput</A>
+<DD>Deserializes an input message.
+</DL>
 <HR>
 <A NAME="_U_"><!-- --></A><H2>
 <B>U</B></H2>
@@ -1873,6 +2012,9 @@ Static variable in class org.multibit.model.<A HREF="./org/multibit/model/MultiB
 <DT><A HREF="./org/multibit/action/Validator.html#validate(java.lang.String, java.lang.String)"><B>validate(String, String)</B></A> - 
 Method in class org.multibit.action.<A HREF="./org/multibit/action/Validator.html" title="class in org.multibit.action">Validator</A>
 <DD>Validate a String address and amount
+<DT><A HREF="./org/multibit/action/Validator.html#validate(java.lang.String)"><B>validate(String)</B></A> - 
+Method in class org.multibit.action.<A HREF="./org/multibit/action/Validator.html" title="class in org.multibit.action">Validator</A>
+<DD>Validate a String address
 <DT><A HREF="./org/multibit/model/MultiBitModel.html#VALIDATION_ADDRESS_IS_INVALID"><B>VALIDATION_ADDRESS_IS_INVALID</B></A> - 
 Static variable in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>&nbsp;
@@ -1891,7 +2033,7 @@ Static variable in interface org.multibit.viewsystem.<A HREF="./org/multibit/vie
 <DT><A HREF="./org/multibit/model/MultiBitModel.html#VALIDATION_NOT_ENOUGH_FUNDS"><B>VALIDATION_NOT_ENOUGH_FUNDS</B></A> - 
 Static variable in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>&nbsp;
-<DT><A HREF="./org/multibit/viewsystem/swing/view/ValidationErrorView.html" title="class in org.multibit.viewsystem.swing.view"><B>ValidationErrorView</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/view/package-summary.html">org.multibit.viewsystem.swing.view</A><DD>The validation error view - used to tell the user their input is invalid<DT><A HREF="./org/multibit/viewsystem/swing/view/ValidationErrorView.html#ValidationErrorView(org.multibit.controller.MultiBitController, org.multibit.Localiser, org.multibit.viewsystem.swing.MultiBitFrame)"><B>ValidationErrorView(MultiBitController, Localiser, MultiBitFrame)</B></A> - 
+<DT><A HREF="./org/multibit/viewsystem/swing/view/ValidationErrorView.html" title="class in org.multibit.viewsystem.swing.view"><B>ValidationErrorView</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/view/package-summary.html">org.multibit.viewsystem.swing.view</A><DD>The validation error view - used to tell the user their input is invalid<DT><A HREF="./org/multibit/viewsystem/swing/view/ValidationErrorView.html#ValidationErrorView(org.multibit.controller.MultiBitController, org.multibit.viewsystem.swing.MultiBitFrame)"><B>ValidationErrorView(MultiBitController, MultiBitFrame)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/ValidationErrorView.html" title="class in org.multibit.viewsystem.swing.view">ValidationErrorView</A>
 <DD>Creates a new <A HREF="./org/multibit/viewsystem/swing/view/ValidationErrorView.html" title="class in org.multibit.viewsystem.swing.view"><CODE>ValidationErrorView</CODE></A>.
 <DT><A HREF="./org/multibit/action/Validator.html" title="class in org.multibit.action"><B>Validator</B></A> - Class in <A HREF="./org/multibit/action/package-summary.html">org.multibit.action</A><DD>a class to validate String addresses and amounts<DT><A HREF="./org/multibit/action/Validator.html#Validator(org.multibit.controller.MultiBitController)"><B>Validator(MultiBitController)</B></A> - 
@@ -1960,6 +2102,10 @@ Constructor for class org.multibit.model.<A HREF="./org/multibit/model/WalletDat
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/model/WalletData.html#WalletData(com.google.bitcoin.core.Transaction)"><B>WalletData(Transaction)</B></A> - 
 Constructor for class org.multibit.model.<A HREF="./org/multibit/model/WalletData.html" title="class in org.multibit.model">WalletData</A>
+<DD>&nbsp;
+<DT><A HREF="./com/google/bitcoin/core/WalletEventListener.html" title="class in com.google.bitcoin.core"><B>WalletEventListener</B></A> - Class in <A HREF="./com/google/bitcoin/core/package-summary.html">com.google.bitcoin.core</A><DD>Implementing a subclass WalletEventListener allows you to learn when the contents of the wallet changes due to
+ receiving money or a block chain re-organize.<DT><A HREF="./com/google/bitcoin/core/WalletEventListener.html#WalletEventListener()"><B>WalletEventListener()</B></A> - 
+Constructor for class com.google.bitcoin.core.<A HREF="./com/google/bitcoin/core/WalletEventListener.html" title="class in com.google.bitcoin.core">WalletEventListener</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/swing/WalletTableModel.html" title="class in org.multibit.viewsystem.swing"><B>WalletTableModel</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/package-summary.html">org.multibit.viewsystem.swing</A><DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/swing/WalletTableModel.html#WalletTableModel(org.multibit.model.MultiBitModel, org.multibit.controller.MultiBitController)"><B>WalletTableModel(MultiBitModel, MultiBitController)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem/swing/WalletTableModel.html" title="class in org.multibit.viewsystem.swing">WalletTableModel</A>

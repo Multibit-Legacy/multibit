@@ -299,6 +299,12 @@ public class CommandLineViewSystem implements ViewSystem {
         printStream.println(TEXT_VIEW_OUTPUT_PREFIX + MESSAGE_PREFIX + "onCoinsReceived, previous balance = " + prevBalance + ", new balance = " + newBalance);        
     }
 
+    public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
+            BigInteger newBalance) {
+
+        printStream.println(TEXT_VIEW_OUTPUT_PREFIX + MESSAGE_PREFIX + "onPendingCoinsReceived, previous balance = " + prevBalance + ", new balance = " + newBalance);        
+    }
+
     public void blockDownloaded() {
        // do nothing
     }
