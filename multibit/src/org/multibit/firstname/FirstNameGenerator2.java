@@ -7,6 +7,8 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.multibit.firstname.FirstNameGenerator.FirstNameData;
+
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Base58;
@@ -63,16 +65,18 @@ public class FirstNameGenerator2 {
 
         int numberOfKeysTried = 0;
 
+       NetworkParameters productionNet = NetworkParameters.prodNet();
+        
         while (!foundFirstName && numberOfKeysTried <= keyLimit) {
             // create a new key
             ECKey key = new ECKey();
-            Address address = key.toAddress(NetworkParameters.prodNet());
+            Address address = key.toAddress(productionNet);
             String addressString = address.toString();
 
             // chop down to numberOfAddressCharactersInBase58 - this is our
             // candidate first bits address
             String candidateString = addressString.substring(0, numberOfAddressCharactersInBase58);
-
+ 
             try {
                 // convert candidate string to an int in base 58
                 BigInteger candidateCode = Base58.decodeToBigInteger(candidateString);
@@ -80,15 +84,12 @@ public class FirstNameGenerator2 {
                 // see what the offset is
                 BigInteger offset = candidateCode.add(targetCode.negate());
 
-                if (offset.compareTo(BigInteger.ZERO) < 0) {
-                    // we are not interested in a candidate with code less than
-                    // the target
-                    continue;
-                } else {
+                // we are not interested in a candidate with code less than
+                // the target
+                if (offset.compareTo(BigInteger.ZERO) > 0) {
                     if (bestOffsetSoFar == null || offset.compareTo(bestOffsetSoFar) < 0) {
                         String firstName = targetFirstNamePrefix + offset.toString();
                         FirstNameData firstNameData = new FirstNameData();
-                        ;
                         firstNameData.key = key;
                         firstNameData.firstName = firstName;
                         firstNameData.firstBits = convertFirstNameToFirstBits(firstName);
@@ -109,7 +110,7 @@ public class FirstNameGenerator2 {
 
                 if (numberOfKeysTried == keyLimit) {
                     System.out
-                            .println("FirstNameGenerator2#searchForFirstName - Stopping - limit of keys tried.\nBest FirstName found was:\n");
+                            .println("FirstNameGenerator2#searchForFirstName - Stopping - limit of keys tried.\n\nBest FirstName found was:");
                     outputCurrentStatus(bestFirstNameSoFar);
                 }
                 numberOfKeysTried++;
@@ -180,6 +181,7 @@ public class FirstNameGenerator2 {
 
     private String convertFirstNameToFirstBits(String firstName) {
         // split the name into the alpha part and the numeric part;
+        firstName = firstName.toLowerCase();
         String alphaPart = "";
         String numericPart = "";
 
@@ -233,10 +235,10 @@ public class FirstNameGenerator2 {
 
     public static void main(String[] args) {
         // get the target firstname prefix - arg 0
-        String targetFirstNamePrefix = "jim.burton";
+        String targetFirstNamePrefix = "MultiBit";
 
-        BigInteger targetOffsetLimit = new BigInteger("99999");
-        int keysLimit = 5000;
+        BigInteger targetOffsetLimit = new BigInteger("9999");
+        int keysLimit = 10000;
 
         FirstNameGenerator2 firstNameGenerator2 = new FirstNameGenerator2(targetFirstNamePrefix, targetOffsetLimit, keysLimit);
     }
