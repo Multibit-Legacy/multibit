@@ -306,9 +306,9 @@ public class FirstNameGenerator3 {
 
     public static void main(String[] args) {
         // get the target firstname prefix - arg 0
-        String targetFirstNamePrefix = "MultiBit";
+        String targetFirstNamePrefix = "JimBur";
 
-        BigInteger targetOffsetLimit = new BigInteger("100000");
+        BigInteger targetOffsetLimit = new BigInteger("30000");
         int keyLimitPerFirstBitsLength = 8000;
         int maxScrapesPerFirstBitsLength = 6;
 
