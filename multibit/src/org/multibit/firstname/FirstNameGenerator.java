@@ -197,15 +197,15 @@ public class FirstNameGenerator {
         if (foundFirstBits) {
             String firstName = targetFirstNamePrefix + SEPARATOR
                     + addressStringLowerCase.substring(numberOfCharactersToMatch + 1, numberOfFirstBitsToTry);
-            System.out.println("\nSUCCESS - found firstName of : " + firstName);
-            System.out.println("To claim this firstName you need to send some bitcoin\nto this address " + addressString
+            System.out.println("\nSUCCESS - found firstname of : " + firstName);
+            System.out.println("To claim this firstname you need to send some bitcoin\nto this address " + addressString
                     + " to get it onto the blockchain.");
             String firstBitsEquivalent = addressStringLowerCase.substring(0, numberOfFirstBitsToTry);
-            System.out.println("The firstBits equivalent to this firstName is '" + firstBitsEquivalent + "'.");
+            System.out.println("The firstbits equivalent to this firstname is '" + firstBitsEquivalent + "'.");
             java.awt.Toolkit.getDefaultToolkit().beep();
             return firstName;
         } else {
-            System.out.println("\nFAILURE - could not find firstName that was short enough.");
+            System.out.println("\nFAILURE - could not find firstname that was short enough.");
             return null;
         }
     }
@@ -271,7 +271,7 @@ public class FirstNameGenerator {
 
         try {
             wallet.saveToFile(walletFile);
-            System.out.println("Saved key for firstName to wallet named :" + walletFile.getAbsolutePath());
+            System.out.println("Saved key for firstname to wallet named :" + walletFile.getAbsolutePath());
 
         } catch (IOException e) {
             e.printStackTrace();
