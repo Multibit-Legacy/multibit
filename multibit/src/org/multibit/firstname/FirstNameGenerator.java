@@ -56,7 +56,7 @@ public class FirstNameGenerator {
     private static final String SEPARATOR = ".";
     private static final String WALLET_SUFFIX = ".wallet";
 
-    private static final String ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+    private static final String VALID_FIRSTNAME_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz";
 
     public FirstNameGenerator(String targetFirstNamePrefix, int keyLimit) {
         int numberOfCharactersToMatch = workOutNumberOfCharactersToMatch(targetFirstNamePrefix);
@@ -89,9 +89,9 @@ public class FirstNameGenerator {
         while (numberOfCharactersToMatch < IDEAL_NUMBER_OF_CHARACTERS_TO_MATCH_IN_NAME) {
             if (targetFirstNamePrefix.length() > numberOfCharactersToMatch) {
                 String nextCharacter = targetFirstNamePrefix
-                        .substring(numberOfCharactersToMatch, numberOfCharactersToMatch + 1);
-                if (ALPHABET.indexOf(nextCharacter) > -1) {
-                    // valid character
+                        .substring(numberOfCharactersToMatch, numberOfCharactersToMatch + 1).toLowerCase();
+                if (VALID_FIRSTNAME_ALPHABET.indexOf(nextCharacter) > -1) {
+                    // valid firstname character
                     numberOfCharactersToMatch++;
                 } else {
                     // invalid character - stop here
@@ -125,7 +125,7 @@ public class FirstNameGenerator {
         String addressPrefixToFind = targetFirstNamePrefix.toLowerCase();
 
         // zeroes are mapped to 'o' as they are not in the Base58 alphabet
-        addressPrefixToFind = addressPrefixToFind.replace('0', 'o');
+        addressPrefixToFind = addressPrefixToFind.replaceAll("0", "o");
         addressPrefixToFind = addressPrefixToFind.substring(0, numberOfCharactersToMatch);
 
         while (!foundKeyMatchingTarget && numberOfKeysTried <= keyLimit) {
