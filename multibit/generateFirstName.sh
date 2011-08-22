@@ -1,0 +1,2 @@
+#!/bin/sh
+java -cp multibit.jar:lib/bitcoinj.jar:lib/apache-log4j-extras-1.1.jar:lib/bcprov-jdk15-1.46.jar:lib/junit-4.8.2.jar:lib/log4j-1.2.16.jar:lib/slf4j-api-1.6.1.jar:lib/slf4j-simple-1.6.1.jar org.multibit.firstname.FirstNameGenerator

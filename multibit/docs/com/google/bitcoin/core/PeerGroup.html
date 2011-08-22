@@ -1,0 +1,534 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--NewPage-->
+<HTML>
+<HEAD>
+<TITLE>
+PeerGroup
+</TITLE>
+
+
+<LINK REL ="stylesheet" TYPE="text/css" HREF="../../../../stylesheet.css" TITLE="Style">
+
+<SCRIPT type="text/javascript">
+function windowTitle()
+{
+    if (location.href.indexOf('is-external=true') == -1) {
+        parent.document.title="PeerGroup";
+    }
+}
+</SCRIPT>
+<NOSCRIPT>
+</NOSCRIPT>
+
+</HEAD>
+
+<BODY BGCOLOR="white" onload="windowTitle();">
+<HR>
+
+
+<!-- ========= START OF TOP NAVBAR ======= -->
+<A NAME="navbar_top"><!-- --></A>
+<A HREF="#skip-navbar_top" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_top_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../../index.html?com/google/bitcoin/core/PeerGroup.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="PeerGroup.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_top"></A>
+<!-- ========= END OF TOP NAVBAR ========= -->
+
+<HR>
+<!-- ======== START OF CLASS DATA ======== -->
+<H2>
+<FONT SIZE="-1">
+com.google.bitcoin.core</FONT>
+<BR>
+Class PeerGroup</H2>
+<PRE>
+java.lang.Object
+  <IMG SRC="../../../../resources/inherit.gif" ALT="extended by "><B>com.google.bitcoin.core.PeerGroup</B>
+</PRE>
+<DL>
+<DT><B>Direct Known Subclasses:</B> <DD><A HREF="../../../../org/multibit/network/MultiBitPeerGroup.html" title="class in org.multibit.network">MultiBitPeerGroup</A></DD>
+</DL>
+<HR>
+<DL>
+<DT><PRE>public class <B>PeerGroup</B><DT>extends java.lang.Object</DL>
+</PRE>
+
+<P>
+Maintain a number of connections to peers.
+ 
+ <p>PeerGroup tries to maintain a constant number of connections to a set of distinct peers.
+ Each peer runs a network listener in its own thread.  When a connection is lost, a new peer
+ will be tried after a delay as long as the number of connections less than the maximum.
+ 
+ <p>Connections are made to addresses from a provided list.  When that list is exhausted,
+ we start again from the head of the list.
+ 
+ <p>The PeerGroup can broadcast a transaction to the currently connected set of peers.  It can
+ also handle download of the blockchain from peers, restarting the process when peers die.
+<P>
+
+<P>
+<DL>
+<DT><B>Author:</B></DT>
+  <DD>miron@google.com (Miron Cuperman a.k.a devrandom)</DD>
+</DL>
+<HR>
+
+<P>
+
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+
+<A NAME="constructor_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Constructor Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/PeerGroup.html#PeerGroup(BlockStore, NetworkParameters, BlockChain, com.google.bitcoin.core.Wallet)">PeerGroup</A></B>(BlockStore&nbsp;blockStore,
+          NetworkParameters&nbsp;params,
+          BlockChain&nbsp;chain,
+          <A HREF="../../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Create a PeerGroup</TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ========== METHOD SUMMARY =========== -->
+
+<A NAME="method_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Method Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/PeerGroup.html#addAddress(PeerAddress)">addAddress</A></B>(PeerAddress&nbsp;peerAddress)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add an address to the list of potential peers to connect to</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/PeerGroup.html#addEventListener(PeerEventListener)">addEventListener</A></B>(PeerEventListener&nbsp;listener)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Callbacks to the listener are performed in the connection thread.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/PeerGroup.html#addPeerDiscovery(PeerDiscovery)">addPeerDiscovery</A></B>(PeerDiscovery&nbsp;peerDiscovery)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add addresses from a discovery source to the list of potential peers to connect to</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/PeerGroup.html#broadcastTransaction(com.google.bitcoin.core.Transaction)">broadcastTransaction</A></B>(<A HREF="../../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;tx)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Broadcast a transaction to all connected peers</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/PeerGroup.html#downloadBlockChain()">downloadBlockChain</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Download the blockchain from peers.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/PeerGroup.html#getMaxConnections()">getMaxConnections</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>protected &nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/PeerGroup.html#handleNewPeer(com.google.bitcoin.core.Peer)">handleNewPeer</A></B>(<A HREF="../../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>&nbsp;peer)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>protected &nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/PeerGroup.html#handlePeerDeath(com.google.bitcoin.core.Peer)">handlePeerDeath</A></B>(<A HREF="../../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>&nbsp;peer)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/PeerGroup.html#removeEventListener(PeerEventListener)">removeEventListener</A></B>(PeerEventListener&nbsp;listener)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/PeerGroup.html#setMaxConnections(int)">setMaxConnections</A></B>(int&nbsp;maxConnections)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Depending on the environment, this should normally be between 1 and 10, default is 4.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/PeerGroup.html#start()">start</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Starts the background thread that makes connections.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/PeerGroup.html#startBlockChainDownload(PeerEventListener)">startBlockChainDownload</A></B>(PeerEventListener&nbsp;listener)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Start downloading the blockchain from the first available peer.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../com/google/bitcoin/core/PeerGroup.html#stop()">stop</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stop this PeerGroup</TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class java.lang.Object</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;
+<P>
+
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+
+<A NAME="constructor_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Constructor Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="PeerGroup(BlockStore, NetworkParameters, BlockChain, com.google.bitcoin.core.Wallet)"><!-- --></A><H3>
+PeerGroup</H3>
+<PRE>
+public <B>PeerGroup</B>(BlockStore&nbsp;blockStore,
+                 NetworkParameters&nbsp;params,
+                 BlockChain&nbsp;chain,
+                 <A HREF="../../../../com/google/bitcoin/core/Wallet.html" title="class in com.google.bitcoin.core">Wallet</A>&nbsp;wallet)</PRE>
+<DL>
+<DD>Create a PeerGroup
+<P>
+</DL>
+
+<!-- ============ METHOD DETAIL ========== -->
+
+<A NAME="method_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Method Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="addEventListener(PeerEventListener)"><!-- --></A><H3>
+addEventListener</H3>
+<PRE>
+public void <B>addEventListener</B>(PeerEventListener&nbsp;listener)</PRE>
+<DL>
+<DD>Callbacks to the listener are performed in the connection thread.  The callback
+ should not perform time consuming tasks.
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="removeEventListener(PeerEventListener)"><!-- --></A><H3>
+removeEventListener</H3>
+<PRE>
+public boolean <B>removeEventListener</B>(PeerEventListener&nbsp;listener)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setMaxConnections(int)"><!-- --></A><H3>
+setMaxConnections</H3>
+<PRE>
+public void <B>setMaxConnections</B>(int&nbsp;maxConnections)</PRE>
+<DL>
+<DD>Depending on the environment, this should normally be between 1 and 10, default is 4.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>maxConnections</CODE> - the maximum number of peer connections that this group will try to make.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getMaxConnections()"><!-- --></A><H3>
+getMaxConnections</H3>
+<PRE>
+public int <B>getMaxConnections</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="addAddress(PeerAddress)"><!-- --></A><H3>
+addAddress</H3>
+<PRE>
+public void <B>addAddress</B>(PeerAddress&nbsp;peerAddress)</PRE>
+<DL>
+<DD>Add an address to the list of potential peers to connect to
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="addPeerDiscovery(PeerDiscovery)"><!-- --></A><H3>
+addPeerDiscovery</H3>
+<PRE>
+public void <B>addPeerDiscovery</B>(PeerDiscovery&nbsp;peerDiscovery)</PRE>
+<DL>
+<DD>Add addresses from a discovery source to the list of potential peers to connect to
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="start()"><!-- --></A><H3>
+start</H3>
+<PRE>
+public void <B>start</B>()</PRE>
+<DL>
+<DD>Starts the background thread that makes connections.
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="stop()"><!-- --></A><H3>
+stop</H3>
+<PRE>
+public void <B>stop</B>()</PRE>
+<DL>
+<DD>Stop this PeerGroup
+ 
+ <p>The peer group will be asynchronously shut down.  After it is shut down
+ all peers will be disconnected and no threads will be running.
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="broadcastTransaction(com.google.bitcoin.core.Transaction)"><!-- --></A><H3>
+broadcastTransaction</H3>
+<PRE>
+public boolean <B>broadcastTransaction</B>(<A HREF="../../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core">Transaction</A>&nbsp;tx)</PRE>
+<DL>
+<DD>Broadcast a transaction to all connected peers
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>whether we sent to at least one peer</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="startBlockChainDownload(PeerEventListener)"><!-- --></A><H3>
+startBlockChainDownload</H3>
+<PRE>
+public void <B>startBlockChainDownload</B>(PeerEventListener&nbsp;listener)</PRE>
+<DL>
+<DD>Start downloading the blockchain from the first available peer.
+ 
+ <p>If no peers are currently connected, the download will be started
+ once a peer starts.  If the peer dies, the download will resume with another peer.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>listener</CODE> - a listener for chain download events, may not be null</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="downloadBlockChain()"><!-- --></A><H3>
+downloadBlockChain</H3>
+<PRE>
+public void <B>downloadBlockChain</B>()</PRE>
+<DL>
+<DD>Download the blockchain from peers.
+ 
+ <p>This method wait until the download is complete.  "Complete" is defined as downloading
+ from at least one peer all the blocks that are in that peer's inventory.
+<P>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="handleNewPeer(com.google.bitcoin.core.Peer)"><!-- --></A><H3>
+handleNewPeer</H3>
+<PRE>
+protected void <B>handleNewPeer</B>(<A HREF="../../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>&nbsp;peer)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="handlePeerDeath(com.google.bitcoin.core.Peer)"><!-- --></A><H3>
+handlePeerDeath</H3>
+<PRE>
+protected void <B>handlePeerDeath</B>(<A HREF="../../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core">Peer</A>&nbsp;peer)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<!-- ========= END OF CLASS DATA ========= -->
+<HR>
+
+
+<!-- ======= START OF BOTTOM NAVBAR ====== -->
+<A NAME="navbar_bottom"><!-- --></A>
+<A HREF="#skip-navbar_bottom" title="Skip navigation links"></A>
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
+<TR>
+<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
+<A NAME="navbar_bottom_firstrow"><!-- --></A>
+<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
+  <TR ALIGN="center" VALIGN="top">
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
+  </TR>
+</TABLE>
+</TD>
+<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
+</EM>
+</TD>
+</TR>
+
+<TR>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+&nbsp;<A HREF="../../../../com/google/bitcoin/core/Peer.html" title="class in com.google.bitcoin.core"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../com/google/bitcoin/core/Transaction.html" title="class in com.google.bitcoin.core"><B>NEXT CLASS</B></A></FONT></TD>
+<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
+  <A HREF="../../../../index.html?com/google/bitcoin/core/PeerGroup.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="PeerGroup.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+&nbsp;<SCRIPT type="text/javascript">
+  <!--
+  if(window==top) {
+    document.writeln('<A HREF="../../../../allclasses-noframe.html"><B>All Classes</B></A>');
+  }
+  //-->
+</SCRIPT>
+<NOSCRIPT>
+  <A HREF="../../../../allclasses-noframe.html"><B>All Classes</B></A>
+</NOSCRIPT>
+
+
+</FONT></TD>
+</TR>
+<TR>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="skip-navbar_bottom"></A>
+<!-- ======== END OF BOTTOM NAVBAR ======= -->
+
+<HR>
+
+</BODY>
+</HTML>

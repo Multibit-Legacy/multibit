@@ -318,6 +318,9 @@ Static variable in interface org.multibit.viewsystem.<A HREF="./org/multibit/vie
 <DT><A HREF="./org/multibit/model/MultiBitModel.html#createAddressBookReceivingAddresses()"><B>createAddressBookReceivingAddresses()</B></A> - 
 Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.html" title="class in org.multibit.model">MultiBitModel</A>
 <DD>add the receiving addresses of all the keys in this wallet
+<DT><A HREF="./org/multibit/firstname/FirstNameGenerator.html#createFirstNameFromKey(java.lang.String, int, ECKey)"><B>createFirstNameFromKey(String, int, ECKey)</B></A> - 
+Method in class org.multibit.firstname.<A HREF="./org/multibit/firstname/FirstNameGenerator.html" title="class in org.multibit.firstname">FirstNameGenerator</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/viewsystem/swing/WalletTableModel.html#createHeaders()"><B>createHeaders()</B></A> - 
 Method in class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem/swing/WalletTableModel.html" title="class in org.multibit.viewsystem.swing">WalletTableModel</A>
 <DD>&nbsp;
@@ -673,6 +676,19 @@ Method in class org.multibit.controller.<A HREF="./org/multibit/controller/Multi
 <DT><A HREF="./org/multibit/controller/MultiBitController.html#fireWalletDataChanged()"><B>fireWalletDataChanged()</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
 <DD>the wallet data has been changed
+<DT><A HREF="./org/multibit/firstname/FirstNameGenerator.html" title="class in org.multibit.firstname"><B>FirstNameGenerator</B></A> - Class in <A HREF="./org/multibit/firstname/package-summary.html">org.multibit.firstname</A><DD>class to generate firstNames
+ 
+ firstNames are of the format:
+ 
+ Jim Burton.lk2 
+ ^^^ first NUMBER_OF_CHARACTERS_TO_MATCH_IN_NAME chars are used
+ in first bits address + chars after the final dot
+ 
+ thus the first bits from this firstName is '1jimlk2'
+ 
+ The target string (e.g.<DT><A HREF="./org/multibit/firstname/FirstNameGenerator.html#FirstNameGenerator(java.lang.String, int)"><B>FirstNameGenerator(String, int)</B></A> - 
+Constructor for class org.multibit.firstname.<A HREF="./org/multibit/firstname/FirstNameGenerator.html" title="class in org.multibit.firstname">FirstNameGenerator</A>
+<DD>&nbsp;
 </DL>
 <HR>
 <A NAME="_G_"><!-- --></A><H2>
@@ -1189,6 +1205,9 @@ Method in class org.multibit.action.<A HREF="./org/multibit/action/TextTransfer.
 <DT><A HREF="./org/multibit/action/TextTransfer.html#main(java.lang.String...)"><B>main(String...)</B></A> - 
 Static method in class org.multibit.action.<A HREF="./org/multibit/action/TextTransfer.html" title="class in org.multibit.action">TextTransfer</A>
 <DD>&nbsp;
+<DT><A HREF="./org/multibit/firstname/FirstNameGenerator.html#main(java.lang.String[])"><B>main(String[])</B></A> - 
+Static method in class org.multibit.firstname.<A HREF="./org/multibit/firstname/FirstNameGenerator.html" title="class in org.multibit.firstname">FirstNameGenerator</A>
+<DD>&nbsp;
 <DT><A HREF="./org/multibit/MultiBit.html#main(java.lang.String[])"><B>main(String[])</B></A> - 
 Static method in class org.multibit.<A HREF="./org/multibit/MultiBit.html" title="class in org.multibit">MultiBit</A>
 <DD>start multibit user interface
@@ -1425,7 +1444,7 @@ Constructor for class org.multibit.viewsystem.swing.action.<A HREF="./org/multib
 <DT><A HREF="./org/multibit/viewsystem/swing/view/OpenWalletView.html" title="class in org.multibit.viewsystem.swing.view"><B>OpenWalletView</B></A> - Class in <A HREF="./org/multibit/viewsystem/swing/view/package-summary.html">org.multibit.viewsystem.swing.view</A><DD>The view of open wallet screen<DT><A HREF="./org/multibit/viewsystem/swing/view/OpenWalletView.html#OpenWalletView(org.multibit.controller.MultiBitController, org.multibit.Localiser, org.multibit.viewsystem.swing.MultiBitFrame)"><B>OpenWalletView(MultiBitController, Localiser, MultiBitFrame)</B></A> - 
 Constructor for class org.multibit.viewsystem.swing.view.<A HREF="./org/multibit/viewsystem/swing/view/OpenWalletView.html" title="class in org.multibit.viewsystem.swing.view">OpenWalletView</A>
 <DD>Creates a new <A HREF="./org/multibit/viewsystem/swing/view/OpenWalletView.html" title="class in org.multibit.viewsystem.swing.view"><CODE>OpenWalletView</CODE></A>.
-<DT><A HREF="./org/multibit/package-summary.html"><B>org.multibit</B></A> - package org.multibit<DD>&nbsp;<DT><A HREF="./org/multibit/action/package-summary.html"><B>org.multibit.action</B></A> - package org.multibit.action<DD>&nbsp;<DT><A HREF="./org/multibit/controller/package-summary.html"><B>org.multibit.controller</B></A> - package org.multibit.controller<DD>&nbsp;<DT><A HREF="./org/multibit/model/package-summary.html"><B>org.multibit.model</B></A> - package org.multibit.model<DD>&nbsp;<DT><A HREF="./org/multibit/network/package-summary.html"><B>org.multibit.network</B></A> - package org.multibit.network<DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/package-summary.html"><B>org.multibit.viewsystem</B></A> - package org.multibit.viewsystem<DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/commandline/package-summary.html"><B>org.multibit.viewsystem.commandline</B></A> - package org.multibit.viewsystem.commandline<DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/commandline/view/package-summary.html"><B>org.multibit.viewsystem.commandline.view</B></A> - package org.multibit.viewsystem.commandline.view<DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/swing/package-summary.html"><B>org.multibit.viewsystem.swing</B></A> - package org.multibit.viewsystem.swing<DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/swing/action/package-summary.html"><B>org.multibit.viewsystem.swing.action</B></A> - package org.multibit.viewsystem.swing.action<DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/swing/view/package-summary.html"><B>org.multibit.viewsystem.swing.view</B></A> - package org.multibit.viewsystem.swing.view<DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/swing/watermark/package-summary.html"><B>org.multibit.viewsystem.swing.watermark</B></A> - package org.multibit.viewsystem.swing.watermark<DD>&nbsp;<DT><A HREF="./org/multibit/MultiBitInExecutableJar.html#OUTPUT_DIRECTORY"><B>OUTPUT_DIRECTORY</B></A> - 
+<DT><A HREF="./org/multibit/package-summary.html"><B>org.multibit</B></A> - package org.multibit<DD>&nbsp;<DT><A HREF="./org/multibit/action/package-summary.html"><B>org.multibit.action</B></A> - package org.multibit.action<DD>&nbsp;<DT><A HREF="./org/multibit/controller/package-summary.html"><B>org.multibit.controller</B></A> - package org.multibit.controller<DD>&nbsp;<DT><A HREF="./org/multibit/firstname/package-summary.html"><B>org.multibit.firstname</B></A> - package org.multibit.firstname<DD>&nbsp;<DT><A HREF="./org/multibit/model/package-summary.html"><B>org.multibit.model</B></A> - package org.multibit.model<DD>&nbsp;<DT><A HREF="./org/multibit/network/package-summary.html"><B>org.multibit.network</B></A> - package org.multibit.network<DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/package-summary.html"><B>org.multibit.viewsystem</B></A> - package org.multibit.viewsystem<DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/commandline/package-summary.html"><B>org.multibit.viewsystem.commandline</B></A> - package org.multibit.viewsystem.commandline<DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/commandline/view/package-summary.html"><B>org.multibit.viewsystem.commandline.view</B></A> - package org.multibit.viewsystem.commandline.view<DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/swing/package-summary.html"><B>org.multibit.viewsystem.swing</B></A> - package org.multibit.viewsystem.swing<DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/swing/action/package-summary.html"><B>org.multibit.viewsystem.swing.action</B></A> - package org.multibit.viewsystem.swing.action<DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/swing/view/package-summary.html"><B>org.multibit.viewsystem.swing.view</B></A> - package org.multibit.viewsystem.swing.view<DD>&nbsp;<DT><A HREF="./org/multibit/viewsystem/swing/watermark/package-summary.html"><B>org.multibit.viewsystem.swing.watermark</B></A> - package org.multibit.viewsystem.swing.watermark<DD>&nbsp;<DT><A HREF="./org/multibit/MultiBitInExecutableJar.html#OUTPUT_DIRECTORY"><B>OUTPUT_DIRECTORY</B></A> - 
 Static variable in class org.multibit.<A HREF="./org/multibit/MultiBitInExecutableJar.html" title="class in org.multibit">MultiBitInExecutableJar</A>
 <DD>&nbsp;
 <DT><A HREF="./org/multibit/MultiBitInExecutableJar.html#OUTPUT_FILENAME"><B>OUTPUT_FILENAME</B></A> - 
