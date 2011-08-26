@@ -50,6 +50,7 @@ import org.multibit.viewsystem.swing.action.ShowPreferencesAction;
 import org.multibit.viewsystem.swing.action.ShowTransactionsAction;
 import org.multibit.viewsystem.swing.view.AddressBookView;
 import org.multibit.viewsystem.swing.view.CreateOrEditAddressView;
+import org.multibit.viewsystem.swing.view.HeaderPanel;
 import org.multibit.viewsystem.swing.view.HelpAboutPanel;
 import org.multibit.viewsystem.swing.view.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.MultiBitButton;
@@ -85,6 +86,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private static final String MULTIBIT_SMALL_ICON_FILE = "/images/multibit-small.jpg";
     private static final String MULTIBIT_ICON_FILE = "/images/multibit.gif";
     private static final String TRANSACTIONS_ICON_FILE = "/images/information.jpg";
+    private static final String WALLET_ICON_FILE = "/images/wallet.png";
 
     public static final String MULTIBIT_FONT_NAME = "Dialog";
     public static final int MULTIBIT_FONT_STYLE = Font.PLAIN;
@@ -160,6 +162,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         updateStatusLabel("");
 
         balanceTextLabel.setText(Localiser.bitcoinValueToFriendlyString(model.getBalance(), true, false));
+        balanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.text", new Object[]{Localiser.bitcoinValueToFriendlyString(model.getBalance(), true, false)}));
 
         pack();
         setVisible(true);
@@ -196,6 +199,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             setIconImage(imageIcon.getImage());
         }
 
+        JPanel headerPanel = new HeaderPanel();
+        headerPanel.setLayout(new GridBagLayout());
+        
         JPanel balancePanel = createBalancePanel();
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -205,12 +211,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         constraints.weighty = 0.01;
         constraints.anchor = GridBagConstraints.LINE_START;
 
-        contentPane.add(balancePanel, constraints);
+        headerPanel.add(balancePanel, constraints);
 
         JToolBar toolBar = addMenuBarAndCreateToolBar(constraints, contentPane);
         toolBar.setMaximumSize(new Dimension(A_SMALL_NUMBER_OF_PIXELS, TOOLBAR_HEIGHT));
- 
-        constraints.fill = GridBagConstraints.NONE;
+        toolBar.setOpaque(false);
+        
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.weightx = 0.85;
@@ -218,7 +225,18 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
 
-        contentPane.add(toolBar, constraints);
+        headerPanel.add(toolBar, constraints);
+
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 0.15;
+        constraints.weighty = 0.01;
+        constraints.anchor = GridBagConstraints.LINE_START;
+
+        contentPane.add(headerPanel, constraints);
 
         viewPanel = new JPanel(new BorderLayout()); // initally blank
         constraints.fill = GridBagConstraints.BOTH;
@@ -247,55 +265,55 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     }
 
     private JPanel createBalancePanel() {
-        JPanel compositePanel = new JPanel(new BorderLayout());
         JPanel balancePanel = new JPanel();
 
-        compositePanel.add(balancePanel, BorderLayout.CENTER);
-
-        balancePanel.setMinimumSize(new Dimension(180, 30));
-        balancePanel.setPreferredSize(new Dimension(180, 30));
-        balancePanel.setOpaque(true);
-        Border border = BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(2, 2, 2, 2),
-                BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK),
-                        BorderFactory.createEmptyBorder(0, 2, 0, 2)));
-        balancePanel.setBorder(border);
-        // balancePanel.setBackground(Color.WHITE);
+        balancePanel.setMinimumSize(new Dimension(600, 60));
+        balancePanel.setPreferredSize(new Dimension(600, 60));
+        balancePanel.setOpaque(false);
+        balancePanel.setBackground(this.getBackground());
 
         balancePanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
-        JLabel balanceLabel = new JLabel(localiser.getString("multiBitFrame.balanceLabel"));
-
-        balanceLabel.setFont(balanceLabel.getFont().deriveFont(java.awt.Font.BOLD));
-        balanceLabel.setToolTipText(localiser.getString("multiBitFrame.balanceLabel.tooltip"));
-        balanceLabel.setHorizontalAlignment(JLabel.RIGHT);
-
+        JPanel filler1 = new JPanel();
+        filler1.setOpaque(false);
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.weightx = 0.2;
-        constraints.anchor = GridBagConstraints.LINE_END;
-
-        balancePanel.add(balanceLabel, constraints);
-
-        balanceTextLabel = new JLabel();
-        balanceTextLabel.setHorizontalAlignment(JTextField.RIGHT);
-        balanceTextLabel.setBorder(BorderFactory.createEmptyBorder());
-        // balanceTextField.setBackground(Color.WHITE);
+        constraints.weightx = 0.1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        balancePanel.add(filler1, constraints);
+        
+        JLabel walletIconLabel = new JLabel();
+        walletIconLabel.setIcon(createImageIcon(WALLET_ICON_FILE));
+        walletIconLabel.setOpaque(false);
         constraints.gridx = 1;
         constraints.gridy = 0;
-        constraints.weightx = 0.8;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        balancePanel.add(balanceTextLabel, constraints);
+        constraints.weightx = 0.2;
+        constraints.anchor = GridBagConstraints.LINE_START;
 
+        balancePanel.add(walletIconLabel, constraints);
+
+        balanceTextLabel = new JLabel();
+        balanceTextLabel.setHorizontalAlignment(JTextField.LEFT);
+        balanceTextLabel.setBorder(BorderFactory.createEmptyBorder());
+        Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE, MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 3);
+        balanceTextLabel.setFont(font);
+
+        constraints.gridx = 2;
+        constraints.gridy = 0;
+        constraints.weightx = 0.2;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        balancePanel.add(balanceTextLabel, constraints);
         walletNameLabel = new JLabel();
         walletNameLabel.setFont(walletNameLabel.getFont().deriveFont(12.0F));
-
-        Border walletNameBorder = BorderFactory.createEmptyBorder(0, 2, 0, 2);
-        walletNameLabel.setBorder(walletNameBorder);
-
-        compositePanel.add(walletNameLabel, BorderLayout.EAST);
-        return compositePanel;
+      
+        constraints.gridx = 3;
+        constraints.gridy = 0;
+        constraints.weightx = 1.4;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        balancePanel.add(walletNameLabel, constraints);
+        
+        return balancePanel;
     }
 
 
@@ -329,7 +347,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
         // open wallet action
         JPanel openWalletPanel = new JPanel(new BorderLayout());
-        openWalletPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 4));
+        openWalletPanel.setBorder(BorderFactory.createEmptyBorder(0, 4, 3, 4));
+        openWalletPanel.setOpaque(false);
 
         OpenWalletAction openWalletAction = new OpenWalletAction(controller, createImageIcon(OPEN_WALLET_ICON_FILE));
         JMenuItem menuItem = new JMenuItem(openWalletAction);
@@ -362,7 +381,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
         // show transactions action
         JPanel showTransactionsPanel = new JPanel(new BorderLayout());
-        showTransactionsPanel.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
+        showTransactionsPanel.setBorder(BorderFactory.createEmptyBorder(0, 4, 3, 4));
+        showTransactionsPanel.setOpaque(false);
         ShowTransactionsAction showTransactionsAction = new ShowTransactionsAction(controller, createImageIcon(TRANSACTIONS_ICON_FILE));
         menuItem = new JMenuItem(showTransactionsAction);
         viewMenu.add(menuItem);
@@ -371,13 +391,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
         // receive bitcoin action
         JPanel receiveBitcoinPanel = new JPanel(new BorderLayout());
-        receiveBitcoinPanel.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
+        receiveBitcoinPanel.setBorder(BorderFactory.createEmptyBorder(0, 4, 3, 4));
+        receiveBitcoinPanel.setOpaque(false);
+
         ReceiveBitcoinAction receiveBitcoinAction = new ReceiveBitcoinAction(controller, localiser,
                 createImageIcon(RECEIVE_BITCOIN_ICON_FILE), this);
         tradeMenu.add(receiveBitcoinAction);
         JButton receiveBitcoinButton = new MultiBitButton(receiveBitcoinAction);
 
-         receiveBitcoinPanel.add(receiveBitcoinButton);
+        receiveBitcoinPanel.add(receiveBitcoinButton);
         toolBar.add(receiveBitcoinPanel);
 
         // send bitcoin action
@@ -386,7 +408,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         tradeMenu.add(menuItem);
 
         JPanel sendBitcoinPanel = new JPanel(new BorderLayout());
-        sendBitcoinPanel.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
+        sendBitcoinPanel.setBorder(BorderFactory.createEmptyBorder(0, 4, 3, 4));
+        sendBitcoinPanel.setOpaque(false);
         JButton sendBitcoinButton = new MultiBitButton(sendBitcoinAction);
         sendBitcoinPanel.add(sendBitcoinButton);
         toolBar.add(sendBitcoinPanel);
@@ -443,6 +466,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         }
         updateOnlineStatusText();
         balanceTextLabel.setText(Localiser.bitcoinValueToFriendlyString(model.getBalance(), true, false));
+        balanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.text", new Object[]{Localiser.bitcoinValueToFriendlyString(model.getBalance(), true, false)}));
 
         String walletFilename = model.getWalletFilename();
         if (walletFilename == null) {
@@ -478,7 +502,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     }
 
     public void setWalletFilename(String walletFilename) {
-        walletNameLabel.setText(localiser.getString("multiBitFrame.walletNameLabel.text") + new File(walletFilename).getName());
+        walletNameLabel.setText(localiser.getString("multiBitFrame.walletNameLabel.text", new Object[] {new File(walletFilename).getName()}));
         walletNameLabel.setToolTipText(walletFilename);
     }
 
@@ -740,6 +764,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             public void run() {
                 balanceTextLabel.setText(Localiser
                         .bitcoinValueToFriendlyString(controller.getModel().getBalance(), true, false));
+                balanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.text", new Object[]{Localiser.bitcoinValueToFriendlyString(model.getBalance(), true, false)}));
 
                 // update wallet table model
                 //walletTableModel.recreateWalletData();

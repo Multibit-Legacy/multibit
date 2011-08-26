@@ -23,5 +23,6 @@ public class MultiBitButton extends JButton {
         // setHorizontalTextPosition(AbstractButton.CENTER);
         Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE, MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE);
         setFont(font);
+        setOpaque(false);
     }
 }
