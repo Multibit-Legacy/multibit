@@ -49,16 +49,16 @@ import org.multibit.viewsystem.swing.action.ShowHelpContentsAction;
 import org.multibit.viewsystem.swing.action.ShowPreferencesAction;
 import org.multibit.viewsystem.swing.action.ShowTransactionsAction;
 import org.multibit.viewsystem.swing.view.AddressBookView;
-import org.multibit.viewsystem.swing.view.Browser;
 import org.multibit.viewsystem.swing.view.CreateOrEditAddressView;
-import org.multibit.viewsystem.swing.view.HelpAboutView;
+import org.multibit.viewsystem.swing.view.HelpAboutPanel;
+import org.multibit.viewsystem.swing.view.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.MultiBitButton;
 import org.multibit.viewsystem.swing.view.OpenWalletView;
 import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel2;
 import org.multibit.viewsystem.swing.view.SaveWalletAsView;
 import org.multibit.viewsystem.swing.view.SendBitcoinConfirmView;
 import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
-import org.multibit.viewsystem.swing.view.ShowPreferencesView;
+import org.multibit.viewsystem.swing.view.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.ValidationErrorView;
 
@@ -459,8 +459,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         viewMap = new HashMap<Integer, View>();
 
         viewMap.put(View.TRANSACTIONS_VIEW, new ShowTransactionsPanel(this, controller));
-        viewMap.put(View.HELP_ABOUT_VIEW, new HelpAboutView(controller, localiser, this));
-        viewMap.put(View.HELP_CONTENTS_VIEW, new Browser(this));
+        viewMap.put(View.HELP_ABOUT_VIEW, new HelpAboutPanel(controller, this));
+        viewMap.put(View.HELP_CONTENTS_VIEW, new HelpContentsPanel(this));
         viewMap.put(View.OPEN_WALLET_VIEW, new OpenWalletView(controller, localiser, this));
         viewMap.put(View.SAVE_WALLET_AS_VIEW, new SaveWalletAsView(controller, localiser, this));
         viewMap.put(View.RECEIVE_BITCOIN_VIEW, new ReceiveBitcoinPanel2(this, controller));
@@ -473,7 +473,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         viewMap.put(View.EDIT_SENDING_ADDRESS_VIEW, new CreateOrEditAddressView(controller, localiser, this, false, false));
         viewMap.put(View.ADDRESS_BOOK_RECEIVING_VIEW, new AddressBookView(controller, localiser, this, true));
         viewMap.put(View.ADDRESS_BOOK_SENDING_VIEW, new AddressBookView(controller, localiser, this, false));
-        viewMap.put(View.PREFERENCES_VIEW, new ShowPreferencesView(controller, this));
+        viewMap.put(View.PREFERENCES_VIEW, new ShowPreferencesPanel(controller, this));
         viewMap.put(View.VALIDATION_ERROR_VIEW, new ValidationErrorView(controller, this));
     }
 

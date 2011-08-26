@@ -1,7 +1,6 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
@@ -18,7 +17,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -28,10 +26,10 @@ import org.multibit.action.Action;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
-public class Browser extends JPanel implements View {
+public class HelpContentsPanel extends JPanel implements View {
 
     private static final long serialVersionUID = 4921443778446348403L;
-    //private JTextField statusLabel;
+    
     private JEditorPane contents;
     private String currentUrl;
 
@@ -39,20 +37,13 @@ public class Browser extends JPanel implements View {
 
     private static final String SPACER = "   "; // 3 spaces
 
-    public Browser(MultiBitFrame mainFrame) {
+    public HelpContentsPanel(MultiBitFrame mainFrame) {
         this.mainFrame = mainFrame;
         this.currentUrl =  "http://www.multibit.org/help_contents.html";
 
         setLayout(new BorderLayout());
         // text field is used so that user can copy the url
         mainFrame.updateStatusLabel(SPACER + currentUrl);
-//        statusLabel = new JTextField(SPACER + currentUrl);
-//        statusLabel.setEditable(false);
-//        statusLabel.setBorder(null);
-//        statusLabel.setDisabledTextColor(Color.black);
-//        statusLabel.setBackground(Color.LIGHT_GRAY);
-//
-//        add(statusLabel, BorderLayout.SOUTH);
 
         contents = new JEditorPane();
 
@@ -214,6 +205,5 @@ public class Browser extends JPanel implements View {
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
         // TODO Auto-generated method stub
-        
     }
 }

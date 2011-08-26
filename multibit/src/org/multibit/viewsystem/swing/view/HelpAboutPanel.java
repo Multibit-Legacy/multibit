@@ -1,7 +1,7 @@
 package org.multibit.viewsystem.swing.view;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.Collection;
@@ -10,20 +10,18 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.multibit.Localiser;
 import org.multibit.action.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
-import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
  * The help about view
  */
-public class HelpAboutView extends JPanel implements View {
+public class HelpAboutPanel extends JPanel implements View {
 
     private static final long serialVersionUID = 191352212345057705L;
 
@@ -35,54 +33,68 @@ public class HelpAboutView extends JPanel implements View {
 
     private MultiBitController controller;
 
-    private Localiser localiser;
-
     private ImageIcon imageIcon;
 
     private JDialog messageDialog;
 
     /**
-     * Creates a new {@link HelpAboutView}.
+     * Creates a new {@link HelpAboutPanel}.
      */
-    public HelpAboutView(MultiBitController controller, Localiser localiser, MultiBitFrame mainFrame) {
+    public HelpAboutPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
-        this.localiser = localiser;
         this.mainFrame = mainFrame;
-
-    }
-
-    public String getDescription() {
-        return localiser.getString("helpAboutAction.messageBoxTitle");
-    }
-
-    /**
-     * show help about message box
-     */
-    public void displayView() {
+        
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
         
-        String versionNumber = localiser.getVersionNumber();
+        String versionNumber = controller.getLocaliser().getVersionNumber();
 
-        String versionText = localiser.getString("helpAboutAction.versionText",
+        String versionText = controller.getLocaliser().getString("helpAboutAction.versionText",
                 new Object[] { versionNumber });
 
         GridBagConstraints constraints = new GridBagConstraints();
-        this.setLayout(new GridBagLayout());
-        imageIcon = createImageIcon(SPLASH_ICON_FILE);
-        JLabel splashLabel = new JLabel();
-        splashLabel.setIcon(imageIcon);
+        setLayout(new GridBagLayout());
+        
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
-        constraints.weighty = 0.94;
+        constraints.weighty = 0.12;
+        constraints.anchor = GridBagConstraints.CENTER;
+        JPanel fillerPanel1 = new JPanel();
+        add(fillerPanel1, constraints);
+
+
+        JLabel titleLabel = new JLabel();
+        titleLabel.setHorizontalTextPosition(JLabel.CENTER);
+        titleLabel.setText(getDescription());
+        Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE, MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
+        titleLabel.setFont(font);
+ 
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.06;
+        constraints.anchor = GridBagConstraints.CENTER;
+        add(titleLabel, constraints);
+
+        imageIcon = createImageIcon(SPLASH_ICON_FILE);
+        JLabel splashLabel = new JLabel();
+        splashLabel.setIcon(imageIcon);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.64;
         constraints.anchor = GridBagConstraints.CENTER;
         add(splashLabel, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 1;
+        constraints.gridy = 3;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 0.06;
@@ -92,7 +104,7 @@ public class HelpAboutView extends JPanel implements View {
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 2;
+        constraints.gridy = 4;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 0.06;
@@ -102,13 +114,25 @@ public class HelpAboutView extends JPanel implements View {
         
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 5;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 0.12;
         constraints.anchor = GridBagConstraints.CENTER;
-        JPanel fillerPanel = new JPanel();
-        add(fillerPanel, constraints);
+        JPanel fillerPanel2 = new JPanel();
+        add(fillerPanel2, constraints);
+
+    }
+
+    public String getDescription() {
+        return controller.getLocaliser().getString("helpAboutAction.messageBoxTitle");
+    }
+
+    /**
+     * show help about message box
+     */
+    public void displayView() {
+ 
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {

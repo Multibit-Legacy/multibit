@@ -1,5 +1,6 @@
 package org.multibit.action;
 
+import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
@@ -35,7 +36,7 @@ public class ShowPreferencesSubmitAction implements Action {
         }
         
         // return to parent view
-        controller.setActionForwardToParent();       
+        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);       
     }
     
     public String getDisplayText() {
