@@ -1,10 +1,12 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.Collection;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -16,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import org.multibit.action.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBook;
 import org.multibit.model.AddressBookData;
@@ -23,12 +26,14 @@ import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
+import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyAddressAction;
 import org.multibit.viewsystem.swing.action.CreateOrEditAddressAction;
 import org.multibit.viewsystem.swing.action.OpenAddressBookAction;
 import org.multibit.viewsystem.swing.action.ReceiveBitcoinSubmitAction;
 
-public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider {
+public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
     private static final long serialVersionUID = -2065108865497842662L;
 
@@ -42,21 +47,19 @@ public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider
 
     private JButton copyAddressButton;
 
-    public ReceiveBitcoinDialog(JFrame mainFrame, MultiBitController controller) {
-        super(mainFrame);
+    public ReceiveBitcoinPanel(JFrame mainFrame, MultiBitController controller) {
         this.controller = controller;
 
         initUI();
 
         loadForm();
-        pack();
         labelTextField.requestFocusInWindow();
     }
 
     private void initUI() {
-        positionDialogRelativeToParent(this, 0.25D, 0.25D);
         setMinimumSize(new Dimension(550, 220));
-        setTitle(controller.getLocaliser().getString("receiveBitcoinDialog.title"));
+        // setTitle(controller.getLocaliser().getString("receiveBitcoinDialog.title"));
+        setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
         setLayout(new BorderLayout());
         add(createReceiveBitcoinsPanel(), BorderLayout.CENTER);
         add(createButtonPanel(), BorderLayout.SOUTH);
@@ -240,12 +243,14 @@ public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider
             if (addressBook != null) {
                 Set<AddressBookData> receivingAddresses = addressBook.getReceivingAddresses();
                 if (receivingAddresses != null) {
-                    AddressBookData addressBookData = receivingAddresses.iterator().next();
-                    if (addressBookData != null) {
-                        receiveAddress = addressBookData.getAddress();
-                        receiveLabel = addressBookData.getLabel();
-                        controller.getModel().setUserPreference(MultiBitModel.RECEIVE_ADDRESS, receiveAddress);
-                        controller.getModel().setUserPreference(MultiBitModel.RECEIVE_LABEL, receiveLabel);
+                    if (receivingAddresses.iterator().hasNext()) {
+                        AddressBookData addressBookData = receivingAddresses.iterator().next();
+                        if (addressBookData != null) {
+                            receiveAddress = addressBookData.getAddress();
+                            receiveLabel = addressBookData.getLabel();
+                            controller.getModel().setUserPreference(MultiBitModel.RECEIVE_ADDRESS, receiveAddress);
+                            controller.getModel().setUserPreference(MultiBitModel.RECEIVE_LABEL, receiveLabel);
+                        }
                     }
                 }
             }
@@ -257,5 +262,40 @@ public class ReceiveBitcoinDialog extends MultiBitDialog implements DataProvider
         if (receiveLabel != null) {
             labelTextField.setText(receiveLabel);
         }
+    }
+
+    /** Returns an ImageIcon, or null if the path was invalid. */
+    protected ImageIcon createImageIcon(String path) {
+        java.net.URL imgURL = MultiBitFrame.class.getResource(path);
+        if (imgURL != null) {
+            return new ImageIcon(imgURL);
+        } else {
+            System.err.println("Browser#createImageIcon: Could not find file: " + path);
+            return null;
+        }
+    }
+
+    public String getDescription() {
+        return controller.getLocaliser().getString("receiveBitcoinsDialog.title");
+    }
+
+    public void setPossibleActions(Collection<Action> possibleActions) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void displayView() {
+        loadForm();
+
+    }
+
+    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
+        // TODO Auto-generated method stub
+
     }
 }

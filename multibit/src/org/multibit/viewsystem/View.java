@@ -13,7 +13,7 @@ import org.multibit.action.Action;
  */
 public interface View {
     public static final int UNKNOWN_VIEW = 0;
-    public static final int HOME_PAGE_VIEW = 1;
+    public static final int TRANSACTIONS_VIEW = 1;
     public static final int SEND_BITCOIN_VIEW = 2;
     public static final int SEND_BITCOIN_CONFIRM_VIEW = 3;
     public static final int RECEIVE_BITCOIN_VIEW = 4;

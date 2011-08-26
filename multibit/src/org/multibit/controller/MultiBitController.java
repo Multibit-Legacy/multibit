@@ -71,13 +71,13 @@ public class MultiBitController implements PeerEventListener {
     public MultiBitController() {
         viewSystems = new ArrayList<ViewSystem>();
 
-        // initialise everything to look at the home page
+        // initialise everything to look at the transactions view
         viewStack = new Stack<Integer>();
-        viewStack.push(View.HOME_PAGE_VIEW);
+        viewStack.push(View.TRANSACTIONS_VIEW);
 
-        previousView = View.HOME_PAGE_VIEW;
-        currentView = View.HOME_PAGE_VIEW;
-        nextView = View.HOME_PAGE_VIEW;
+        previousView = View.TRANSACTIONS_VIEW;
+        currentView = View.TRANSACTIONS_VIEW;
+        nextView = View.TRANSACTIONS_VIEW;
     }
 
     /**
@@ -121,8 +121,8 @@ public class MultiBitController implements PeerEventListener {
             nextView = viewStack.pop();
         } catch (EmptyStackException ese) {
             ese.printStackTrace();
-            // go to the home page anyhow
-            nextView = View.HOME_PAGE_VIEW;
+            // go to the transactions page anyhow
+            nextView = View.TRANSACTIONS_VIEW;
             viewStack.push(nextView);
         }
         displayNextView(ViewSystem.newViewIsParentOfPrevious);
@@ -232,9 +232,9 @@ public class MultiBitController implements PeerEventListener {
             break;
         }
 
-        case FORWARD_TO_HOME_PAGE: {
-            // show the home page
-            nextView = View.HOME_PAGE_VIEW;
+        case FORWARD_TO_TRANSACTIONS: {
+            // show the transactions page
+            nextView = View.TRANSACTIONS_VIEW;
             break;
         }
 
@@ -245,7 +245,7 @@ public class MultiBitController implements PeerEventListener {
         }
 
         default: {
-            nextView = View.HOME_PAGE_VIEW;
+            nextView = View.TRANSACTIONS_VIEW;
             break;
         }
         }
@@ -266,9 +266,9 @@ public class MultiBitController implements PeerEventListener {
             System.out
                     .println("MultiBitController - could not determine next view to display, previousView = "
                             + previousView + ", currentView = " + currentView);
-            System.out.println("MultiBitController - displaying the home page anyhow");
+            System.out.println("MultiBitController - displaying the transaction view anyhow");
             previousView = currentView;
-            currentView = View.HOME_PAGE_VIEW;
+            currentView = View.TRANSACTIONS_VIEW;
         }
 
         // tell all views to close the previous view
@@ -279,7 +279,7 @@ public class MultiBitController implements PeerEventListener {
         
         // for the top level views, clear the view stack
         // this makes the UI behaviour a bit more 'normal'
-        if (currentView == View.HOME_PAGE_VIEW || currentView == View.OPEN_WALLET_VIEW || currentView == View.SAVE_WALLET_AS_VIEW ||
+        if (currentView == View.TRANSACTIONS_VIEW || currentView == View.OPEN_WALLET_VIEW || currentView == View.SAVE_WALLET_AS_VIEW ||
                 currentView == View.RECEIVE_BITCOIN_VIEW || currentView == View.SEND_BITCOIN_VIEW || currentView == View.HELP_ABOUT_VIEW ||
                 currentView == View.HELP_CONTENTS_VIEW || currentView == View.PREFERENCES_VIEW) {
             clearViewStack();
@@ -425,7 +425,7 @@ public class MultiBitController implements PeerEventListener {
      */
     public void updateDownloadStatus(String downloadStatus) {
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.updateDownloadStatus(downloadStatus);
+            viewSystem.updateStatusLabel(downloadStatus);
         }
     }
 
@@ -468,8 +468,8 @@ public class MultiBitController implements PeerEventListener {
     
     public void clearViewStack() {
         viewStack.clear();
-        viewStack.push(View.HOME_PAGE_VIEW);
-        previousView = View.HOME_PAGE_VIEW;
+        viewStack.push(View.TRANSACTIONS_VIEW);
+        previousView = View.TRANSACTIONS_VIEW;
     }
     
     public MultiBitService getMultiBitService() {

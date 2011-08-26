@@ -101,7 +101,7 @@ public class MultiBit {
         System.out.println("MultiBit#main - checkpoint 10");
         
         // show the home page
-        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_HOME_PAGE);
+        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_TRANSACTIONS);
 
         System.out.println("MultiBit#main - checkpoint 11");
         

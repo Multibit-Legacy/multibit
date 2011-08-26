@@ -1,11 +1,14 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.Collection;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -13,16 +16,18 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.multibit.action.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
+import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.OpenAddressBookAction;
 import org.multibit.viewsystem.swing.action.PasteAddressAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
  
-public class SendBitcoinDialog extends MultiBitDialog implements DataProvider {
+public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
     private static final long serialVersionUID = -2065108657497842662L;
 
@@ -38,8 +43,7 @@ public class SendBitcoinDialog extends MultiBitDialog implements DataProvider {
 
     private Data data;
     
-    public SendBitcoinDialog(JFrame mainFrame, MultiBitController controller) {
-        super(mainFrame);
+    public SendBitcoinPanel(JFrame mainFrame, MultiBitController controller) {
         this.controller = controller;
 
         data = new Data();
@@ -47,8 +51,7 @@ public class SendBitcoinDialog extends MultiBitDialog implements DataProvider {
         initUI();
 
         loadForm();
-      
-        pack();
+
         addressTextField.requestFocusInWindow();
 
     }
@@ -71,9 +74,10 @@ public class SendBitcoinDialog extends MultiBitDialog implements DataProvider {
     }
     
     private void initUI() {
-        positionDialogRelativeToParent(this, 0.10D, 0.25D);
         setMinimumSize(new Dimension(780, 240));
-        setTitle(controller.getLocaliser().getString("sendBitcoinDialog.title"));
+        //setTitle(controller.getLocaliser().getString("sendBitcoinDialog.title"));
+        setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
+
         setLayout(new BorderLayout());
         add(createSendBitcoinsPanel(), BorderLayout.CENTER);
         add(createButtonsPanel(), BorderLayout.SOUTH);
@@ -248,15 +252,23 @@ public class SendBitcoinDialog extends MultiBitDialog implements DataProvider {
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonsPanel.setLayout(flowLayout);
 
-        CancelBackToParentAction cancelBackToParentAction = new CancelBackToParentAction(controller);
-        JButton cancelButton = new JButton(cancelBackToParentAction);
-        buttonsPanel.add(cancelButton);
-
         SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, this);
         JButton sendButton = new JButton(sendBitcoinConfirmAction);
         buttonsPanel.add(sendButton);
 
         return buttonsPanel;
+    }
+    
+
+    /** Returns an ImageIcon, or null if the path was invalid. */
+    protected ImageIcon createImageIcon(String path) {
+        java.net.URL imgURL = MultiBitFrame.class.getResource(path);
+        if (imgURL != null) {
+            return new ImageIcon(imgURL);
+        } else {
+            System.err.println("Browser#createImageIcon: Could not find file: " + path);
+            return null;
+        }
     }
 
     public Data getData() {        
@@ -266,5 +278,29 @@ public class SendBitcoinDialog extends MultiBitDialog implements DataProvider {
         controller.getModel().setUserPreference(MultiBitModel.SEND_AMOUNT, amountTextField.getText());
 
         return data;
+    }
+
+    public String getDescription() {
+        return controller.getLocaliser().getString("sendBitcoinDialog.title");
+    }
+
+    public void setPossibleActions(Collection<Action> possibleActions) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void displayView() {
+        loadForm();
+        
+    }
+
+    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
+        // TODO Auto-generated method stub
+        
     }
 }

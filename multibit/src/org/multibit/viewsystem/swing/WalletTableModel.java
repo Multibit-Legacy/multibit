@@ -31,13 +31,13 @@ public class WalletTableModel extends AbstractTableModel {
 
     SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm");
 
-    public WalletTableModel(MultiBitModel model, MultiBitController controller) {
-        this.multiBitModel = model;
+    public WalletTableModel(MultiBitController controller) {
+        this.multiBitModel = controller.getModel();
         this.controller = controller;
 
         createHeaders();
 
-        walletData = model.createWalletData();
+        walletData = multiBitModel.createWalletData();
     }
 
     public int getColumnCount() {

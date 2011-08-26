@@ -57,7 +57,7 @@ public interface ViewSystem {
      * update download status
      * @param updateDownloadStatus
      */
-    public void updateDownloadStatus(String updateDownloadStatus);
+    public void updateStatusLabel(String updateDownloadStatus);
   
     /**
      * notification that a block has been downloaded

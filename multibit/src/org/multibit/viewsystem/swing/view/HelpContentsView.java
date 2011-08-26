@@ -45,7 +45,7 @@ public class HelpContentsView implements View {
      * show help contents message box
      */
     public void displayView() {
-        browser = new Browser(mainFrame, "http://www.multibit.org/help_contents.html");
+        browser = new Browser(mainFrame);
 
         controller.setActionForwardToParent();
     }

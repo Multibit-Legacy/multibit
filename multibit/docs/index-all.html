@@ -320,7 +320,9 @@ Method in class org.multibit.model.<A HREF="./org/multibit/model/MultiBitModel.h
 <DD>add the receiving addresses of all the keys in this wallet
 <DT><A HREF="./org/multibit/firstname/FirstNameGenerator.html#createFirstNameFromKey(java.lang.String, int, ECKey)"><B>createFirstNameFromKey(String, int, ECKey)</B></A> - 
 Method in class org.multibit.firstname.<A HREF="./org/multibit/firstname/FirstNameGenerator.html" title="class in org.multibit.firstname">FirstNameGenerator</A>
-<DD>&nbsp;
+<DD>work out what the firstname is for a key
+ 
+ the main thing to determine is the length of the firstbits - this is scraped from firstbit.com
 <DT><A HREF="./org/multibit/viewsystem/swing/WalletTableModel.html#createHeaders()"><B>createHeaders()</B></A> - 
 Method in class org.multibit.viewsystem.swing.<A HREF="./org/multibit/viewsystem/swing/WalletTableModel.html" title="class in org.multibit.viewsystem.swing">WalletTableModel</A>
 <DD>&nbsp;
@@ -676,15 +678,15 @@ Method in class org.multibit.controller.<A HREF="./org/multibit/controller/Multi
 <DT><A HREF="./org/multibit/controller/MultiBitController.html#fireWalletDataChanged()"><B>fireWalletDataChanged()</B></A> - 
 Method in class org.multibit.controller.<A HREF="./org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A>
 <DD>the wallet data has been changed
-<DT><A HREF="./org/multibit/firstname/FirstNameGenerator.html" title="class in org.multibit.firstname"><B>FirstNameGenerator</B></A> - Class in <A HREF="./org/multibit/firstname/package-summary.html">org.multibit.firstname</A><DD>class to generate firstNames
+<DT><A HREF="./org/multibit/firstname/FirstNameGenerator.html" title="class in org.multibit.firstname"><B>FirstNameGenerator</B></A> - Class in <A HREF="./org/multibit/firstname/package-summary.html">org.multibit.firstname</A><DD>class to generate firstnames from a target string
  
- firstNames are of the format:
+ firstnames are of the format:
  
- Jim Burton.lk2 
- ^^^ first NUMBER_OF_CHARACTERS_TO_MATCH_IN_NAME chars are used
- in first bits address + chars after the final dot
+ Jim Burton.lk2 - first NUMBER_OF_CHARACTERS_TO_MATCH_IN_NAME chars are used
+ The first bits address is created with the first characters of the target
+ string appended with the characters after the final dot
  
- thus the first bits from this firstName is '1jimlk2'
+ thus the first bits from this first name is '1jimlk2'
  
  The target string (e.g.<DT><A HREF="./org/multibit/firstname/FirstNameGenerator.html#FirstNameGenerator(java.lang.String, int)"><B>FirstNameGenerator(String, int)</B></A> - 
 Constructor for class org.multibit.firstname.<A HREF="./org/multibit/firstname/FirstNameGenerator.html" title="class in org.multibit.firstname">FirstNameGenerator</A>

@@ -98,18 +98,18 @@ java.lang.Object
 </PRE>
 
 <P>
-class to generate firstNames
+class to generate firstnames from a target string
  
- firstNames are of the format:
+ firstnames are of the format:
  
- Jim Burton.lk2 
- ^^^ first NUMBER_OF_CHARACTERS_TO_MATCH_IN_NAME chars are used
- in first bits address + chars after the final dot
+ Jim Burton.lk2 - first NUMBER_OF_CHARACTERS_TO_MATCH_IN_NAME chars are used
+ The first bits address is created with the first characters of the target
+ string appended with the characters after the final dot
  
- thus the first bits from this firstName is '1jimlk2'
+ thus the first bits from this first name is '1jimlk2'
  
- The target string (e.g. "Jim Burton") is lower cased and illegal chars mapped to their
- legal equivalents
+ The target string (e.g. "Jim Burton") is lower cased and illegal chars mapped
+ to their legal equivalents
 <P>
 
 <P>
@@ -148,13 +148,15 @@ class to generate firstNames
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
+<CODE>&nbsp;java.lang.String</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/multibit/firstname/FirstNameGenerator.html#createFirstNameFromKey(java.lang.String, int, ECKey)">createFirstNameFromKey</A></B>(java.lang.String&nbsp;targetFirstNamePrefix,
                        int&nbsp;numberOfCharactersToMatch,
                        ECKey&nbsp;key)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;work out what the firstname is for a key
+ 
+ the main thing to determine is the length of the firstbits - this is scraped from firstbit.com</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -208,12 +210,17 @@ public <B>FirstNameGenerator</B>(java.lang.String&nbsp;targetFirstNamePrefix,
 <A NAME="createFirstNameFromKey(java.lang.String, int, ECKey)"><!-- --></A><H3>
 createFirstNameFromKey</H3>
 <PRE>
-public void <B>createFirstNameFromKey</B>(java.lang.String&nbsp;targetFirstNamePrefix,
-                                   int&nbsp;numberOfCharactersToMatch,
-                                   ECKey&nbsp;key)</PRE>
+public java.lang.String <B>createFirstNameFromKey</B>(java.lang.String&nbsp;targetFirstNamePrefix,
+                                               int&nbsp;numberOfCharactersToMatch,
+                                               ECKey&nbsp;key)</PRE>
 <DL>
+<DD>work out what the firstname is for a key
+ 
+ the main thing to determine is the length of the firstbits - this is scraped from firstbit.com
+<P>
 <DD><DL>
-</DL>
+<DT><B>Parameters:</B><DD><CODE>targetFirstNamePrefix</CODE> - <DD><CODE>numberOfCharactersToMatch</CODE> - <DD><CODE>key</CODE> - 
+<DT><B>Returns:</B><DD>firstname</DL>
 </DD>
 </DL>
 <HR>

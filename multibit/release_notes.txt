@@ -3,6 +3,7 @@ MultiBit release notes.
 Version 0.1.3alpha
 Enhancements
 +  Added validation of addresses and amounts in Send Bitcoin dialog and address book.
++  Added generateFirstName.sh and .bat for firstname generation using the command line
 
 Bug fixes
 +  On send bitcoin status was incorrectly showing 'confirmed' icon rather than 'unconfirmed(0)'. Fixed.

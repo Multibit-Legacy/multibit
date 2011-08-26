@@ -16,6 +16,8 @@ o extend log4j logging to all important classes
 
 Outstanding Bugs
 ----------------
+o if you close the 'open wallet' dialog with the window close button, then reopen it is tiny
+o wallet listeners don't seem to work when you open another wallet
 
 Improvements
 ------------

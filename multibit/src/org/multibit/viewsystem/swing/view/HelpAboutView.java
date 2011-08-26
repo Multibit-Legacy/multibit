@@ -1,14 +1,20 @@
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.Collection;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import org.multibit.Localiser;
 import org.multibit.action.Action;
-import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
@@ -17,12 +23,14 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 /**
  * The help about view
  */
-public class HelpAboutView implements View {
+public class HelpAboutView extends JPanel implements View {
 
     private static final long serialVersionUID = 191352212345057705L;
 
     private static final String SPLASH_ICON_FILE = "/images/splash.jpg";
 
+    private static final String MULTIBIT_URL = "http://multibit.org";
+    
     private MultiBitFrame mainFrame;
 
     private MultiBitController controller;
@@ -41,8 +49,6 @@ public class HelpAboutView implements View {
         this.localiser = localiser;
         this.mainFrame = mainFrame;
 
-        // messageBox icon
-        imageIcon = createImageIcon(SPLASH_ICON_FILE);
     }
 
     public String getDescription() {
@@ -52,21 +58,57 @@ public class HelpAboutView implements View {
     /**
      * show help about message box
      */
-    @SuppressWarnings("deprecation")
     public void displayView() {
-        // JOptionPane.showMessageDialog(mainFrame,
-        // "HelpAboutView#displayView called");
+        setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
+        
         String versionNumber = localiser.getVersionNumber();
 
-        JOptionPane optionPane = new JOptionPane(localiser.getString("helpAboutAction.messageText",
-                new Object[] { versionNumber }), JOptionPane.INFORMATION_MESSAGE,
-                JOptionPane.DEFAULT_OPTION, imageIcon);
+        String versionText = localiser.getString("helpAboutAction.versionText",
+                new Object[] { versionNumber });
 
-        messageDialog = optionPane.createDialog(mainFrame,
-                localiser.getString("helpAboutAction.messageBoxTitle"));
-        messageDialog.show();
+        GridBagConstraints constraints = new GridBagConstraints();
+        this.setLayout(new GridBagLayout());
+        imageIcon = createImageIcon(SPLASH_ICON_FILE);
+        JLabel splashLabel = new JLabel();
+        splashLabel.setIcon(imageIcon);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.94;
+        constraints.anchor = GridBagConstraints.CENTER;
+        add(splashLabel, constraints);
 
-        controller.setActionForwardToParent();
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.06;
+        constraints.anchor = GridBagConstraints.CENTER;
+        JLabel urlLabel = new JLabel(MULTIBIT_URL);
+        add(urlLabel, constraints);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.06;
+        constraints.anchor = GridBagConstraints.CENTER;
+        JLabel versionLabel = new JLabel(versionText);
+        add(versionLabel, constraints);
+        
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.12;
+        constraints.anchor = GridBagConstraints.CENTER;
+        JPanel fillerPanel = new JPanel();
+        add(fillerPanel, constraints);
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
@@ -86,12 +128,6 @@ public class HelpAboutView implements View {
     }
 
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
-        if (ViewSystem.newViewIsParentOfPrevious == relationshipOfNewViewToPrevious) {
-            if (messageDialog != null) {
-                messageDialog.setVisible(false);
-                messageDialog.dispose();
-            }
-        }
     }
 
     public void setPossibleActions(Collection<Action> possibleActions) {

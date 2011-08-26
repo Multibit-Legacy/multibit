@@ -80,7 +80,7 @@ public class CommandLineViewSystem implements ViewSystem {
     public CommandLineViewSystem(MultiBitController controller) {
         this.controller = controller;
 
-        currentViewId = View.HOME_PAGE_VIEW;
+        currentViewId = View.TRANSACTIONS_VIEW;
 
         inputStream = System.in;
         printStream = System.out;
@@ -112,7 +112,7 @@ public class CommandLineViewSystem implements ViewSystem {
         homePageActions.add(new HelpAboutAction(controller));
         homePageActions.add(new ExitAction(controller));
         homePageView.setPossibleActions(homePageActions);
-        viewMap.put(View.HOME_PAGE_VIEW, homePageView);
+        viewMap.put(View.TRANSACTIONS_VIEW, homePageView);
 
         // Send bitcoin
         View sendBitcoinView = new SendBitcoinView(localiser, "Send Bitcoin", inputStream, printStream);
@@ -289,7 +289,7 @@ public class CommandLineViewSystem implements ViewSystem {
         printStream.println(TEXT_VIEW_OUTPUT_PREFIX + MESSAGE_PREFIX + "Multibit is now online");        
     }
 
-    public void updateDownloadStatus(String updateDownloadStatus) {
+    public void updateStatusLabel(String updateDownloadStatus) {
         printStream.println(TEXT_VIEW_OUTPUT_PREFIX + MESSAGE_PREFIX + updateDownloadStatus);        
     }
     

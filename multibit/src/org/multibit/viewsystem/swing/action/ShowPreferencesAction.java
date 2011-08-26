@@ -10,7 +10,7 @@ import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 
 /**
- * This {@link Action} views the BitCoinJ preferences
+ * This {@link Action} views the MultiBit preferences
  */
 public class ShowPreferencesAction extends AbstractAction {
 
