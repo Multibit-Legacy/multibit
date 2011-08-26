@@ -37,8 +37,6 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyAddressAction;
 import org.multibit.viewsystem.swing.action.CreateOrEditAddressAction;
-import org.multibit.viewsystem.swing.action.OkBackToParentAction;
-import org.multibit.viewsystem.swing.action.OpenAddressBookAction;
 import org.multibit.viewsystem.swing.action.ReceiveBitcoinSubmitAction;
 
 public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
@@ -52,6 +50,8 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
     private JTextArea addressTextArea;
 
     private JTextField labelTextField;
+
+    private JTextField amountTextField;
 
     private JButton copyAddressButton;
 
@@ -74,7 +74,6 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
 
     private void initUI() {
         setMinimumSize(new Dimension(550, 220));
-        // setTitle(controller.getLocaliser().getString("receiveBitcoinDialog.title"));
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
         setLayout(new GridBagLayout());
 
@@ -82,7 +81,7 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.weightx = 0.5;
+        constraints.weightx = 1.5;
         constraints.weighty = 0.4;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createReceiveBitcoinsPanel(), constraints);
@@ -103,12 +102,11 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
         constraints.weighty = 1.2;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createReceivingAddressesPanel(), constraints);
-
-        // add(createButtonPanel(), BorderLayout.SOUTH);
     }
 
     private JPanel createReceiveBitcoinsPanel() {
         JPanel receiveBitcoinsPanel = new JPanel();
+        //receiveBitcoinsPanel.setMinimumSize(new Dimension(300,300));
 
         JPanel buttonPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
@@ -122,7 +120,7 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 0.05;
-        constraints.weighty = 0.1;
+        constraints.weighty = 0.10;
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveBitcoinsPanel.add(filler1, constraints);
 
@@ -131,20 +129,43 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
         constraints.gridx = 1;
         constraints.gridy = 1;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.15;
+        constraints.weighty = 0.08;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
+        constraints.anchor = GridBagConstraints.SOUTHWEST;
         receiveBitcoinsPanel.add(new JLabel(receiveBigIcon), constraints);
 
-        JLabel helpLabel1 = new JLabel(controller.getLocaliser().getString("receiveBitcoinDialog.helpLabel1.message"));
+        JLabel helpLabel1 = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel1.message"));
         helpLabel1.setHorizontalAlignment(JLabel.LEFT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
         constraints.gridy = 1;
         constraints.weightx = 0.3;
+        constraints.weighty = 0.08;
         constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveBitcoinsPanel.add(helpLabel1, constraints);
+
+        JLabel helpLabel2 = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel2.message"));
+        helpLabel2.setHorizontalAlignment(JLabel.LEFT);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 2;
+        constraints.gridy = 2;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.08;
+        constraints.gridwidth = 2;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        receiveBitcoinsPanel.add(helpLabel2, constraints);
+
+        JLabel helpLabel3 = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel3.message"));
+        helpLabel3.setHorizontalAlignment(JLabel.LEFT);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 2;
+        constraints.gridy = 3;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.08;
+        constraints.gridwidth = 2;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        receiveBitcoinsPanel.add(helpLabel3, constraints);
 
         JPanel filler2 = new JPanel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -158,21 +179,22 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
         JPanel filler3 = new JPanel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
-        constraints.gridy = 2;
+        constraints.gridy = 4;
         constraints.weightx = 0.3;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveBitcoinsPanel.add(filler3, constraints);
 
-        JLabel addressLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinDialog.addressLabel"));
-        addressLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinDialog.addressLabel.tooltip"));
+        JLabel addressLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel"));
+        addressLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel.tooltip"));
         addressLabel.setHorizontalAlignment(JLabel.RIGHT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
-        constraints.gridy = 3;
+        constraints.gridy = 5;
         constraints.weightx = 0.3;
         constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         receiveBitcoinsPanel.add(addressLabel, constraints);
 
@@ -181,45 +203,72 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
         addressTextArea.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
 
         constraints.gridx = 2;
-        constraints.gridy = 3;
+        constraints.gridy = 5;
         constraints.weightx = 3;
+        constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveBitcoinsPanel.add(addressTextArea, constraints);
 
-//        OpenAddressBookAction openAddressBookReceivingAction = new OpenAddressBookAction(controller, true, true);
-//        JButton addressBookButton = new JButton(openAddressBookReceivingAction);
-//        constraints.fill = GridBagConstraints.NONE;
-//        constraints.gridx = 3;
-//        constraints.gridy = 3;
-//        constraints.weightx = 0.1;
-//        constraints.anchor = GridBagConstraints.LINE_START;
-//        receiveBitcoinsPanel.add(addressBookButton, constraints);
-
-        JLabel labelLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinDialog.labelLabel"));
-        labelLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinDialog.labelLabel.tooltip"));
+        JLabel labelLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel"));
+        labelLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel.tooltip"));
         labelLabel.setHorizontalAlignment(JLabel.RIGHT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
-        constraints.gridy = 4;
+        constraints.gridy = 6;
         constraints.weightx = 0.3;
         constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         receiveBitcoinsPanel.add(labelLabel, constraints);
 
         labelTextField = new JTextField();
         labelTextField.setHorizontalAlignment(JTextField.LEFT);
         constraints.gridx = 2;
-        constraints.gridy = 4;
+        constraints.gridy = 6;
         constraints.weightx = 3;
+        constraints.gridwidth=2;
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveBitcoinsPanel.add(labelTextField, constraints);
+    
+        JLabel amountLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel"));
+        amountLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel.tooltip"));
+        amountLabel.setHorizontalAlignment(JLabel.RIGHT);
+        constraints.gridx = 1;
+        constraints.gridy = 7;
+        constraints.gridwidth = 1;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        receiveBitcoinsPanel.add(amountLabel, constraints);
+
+        amountTextField = new JTextField();
+        amountTextField.setHorizontalAlignment(JTextField.RIGHT);
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 2;
+        constraints.gridy = 7;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        receiveBitcoinsPanel.add(amountTextField, constraints);
+
+        JLabel amountUnitLabel = new JLabel(
+                controller.getLocaliser().getString("receiveBitcoinPanel.amountUnitLabel"));
+        amountUnitLabel.setToolTipText(controller.getLocaliser()
+                .getString("receiveBitcoinPanel.amountUnitLabel.tooltip"));
+        constraints.gridx = 3;
+        constraints.gridy = 7;
+        constraints.weightx = 0.4;
+        constraints.weighty = 0.1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        receiveBitcoinsPanel.add(amountUnitLabel, constraints);
 
         JLabel filler4 = new JLabel("");
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 1;
-        constraints.gridy = 5;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.2;
+        constraints.gridx = 4;
+        constraints.gridy = 8;
+        constraints.weightx = 2.5;
+        constraints.weighty = 0.6;
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveBitcoinsPanel.add(filler4, constraints);
 
@@ -295,7 +344,6 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
         constraints.weightx = 1;
         constraints.weighty = 1;
         receiveAddressPanel.add(scrollPane, constraints);
-
 
         // add on a selection listener
         receivingAddressesListener = new SelectionListener(receivingAddressesTable, true);
@@ -407,17 +455,17 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {
-            System.err.println("Browser#createImageIcon: Could not find file: " + path);
+            System.err.println("ReceiveBitcoinPanel#createImageIcon: Could not find file: " + path);
             return null;
         }
     }
 
     public String getDescription() {
-        return controller.getLocaliser().getString("receiveBitcoinsDialog.title");
+        return controller.getLocaliser().getString("receiveBitcoinPanel.title");
     }
 
     public void setPossibleActions(Collection<Action> possibleActions) {
-        // TODO Auto-generated method stub
+        // not used in this viewSystem
 
     }
 
@@ -432,8 +480,6 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
-        // TODO Auto-generated method stub
-
     }
 
     class SelectionListener implements ListSelectionListener {
