@@ -33,7 +33,7 @@ import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.swing.action.CopyAddressAction;
+import org.multibit.viewsystem.swing.action.CopyQRCodeTextAction;
 import org.multibit.viewsystem.swing.action.CreateOrEditAddressAction;
 import org.multibit.viewsystem.swing.action.OkBackToParentAction;
 
@@ -261,7 +261,7 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider {
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        CopyAddressAction copyAddressAction = new CopyAddressAction(controller, this, true);
+        CopyQRCodeTextAction copyAddressAction = new CopyQRCodeTextAction(controller, this);
         JButton copyAddressButton = new JButton(copyAddressAction);
         buttonPanel.add(copyAddressButton);
 
@@ -287,7 +287,7 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider {
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        CopyAddressAction copyAddressAction = new CopyAddressAction(controller, this, false);
+        CopyQRCodeTextAction copyAddressAction = new CopyQRCodeTextAction(controller, this);
         JButton copyAddressButton = new JButton(copyAddressAction);
         buttonPanel.add(copyAddressButton);
 

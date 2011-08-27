@@ -61,6 +61,8 @@ public class MultiBitModel {
     public static final String RECEIVE_ADDRESS = "receiveAddress";
     public static final String RECEIVE_LABEL = "receiveLabel";
     public static final String RECEIVE_NEW_KEY = "receiveNewKey";
+    public static final String RECEIVE_URI_TEXT = "receiveUriText";
+    public static final String RECEIVE_URI_IMAGE = "receiveUriImage";
     
     // validation
     public static final String VALIDATION_ADDRESS_IS_INVALID = "validationAddressIsInvalid";
