@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.Set;
 
@@ -33,6 +34,8 @@ import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
+import org.multibit.qrcode.BitcoinURI;
+import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyAddressAction;
@@ -62,6 +65,13 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
     private SelectionListener receivingAddressesListener;
 
     private int selectedReceivingRow;
+    
+    private JLabel qrCodeLabel;
+    private JTextArea qrCodeTextArea;
+    private QRCodeEncoderDecoder qrCodeEncoderDecoder;
+    private static final int QRCODE_WIDTH = 150;
+    private static final int QRCODE_HEIGHT = 150;
+    
 
     public ReceiveBitcoinPanel2(JFrame mainFrame, MultiBitController controller) {
         this.controller = controller;
@@ -106,7 +116,6 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
 
     private JPanel createReceiveBitcoinsPanel() {
         JPanel receiveBitcoinsPanel = new JPanel();
-        //receiveBitcoinsPanel.setMinimumSize(new Dimension(300,300));
 
         JPanel buttonPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
@@ -198,13 +207,17 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
         constraints.anchor = GridBagConstraints.LINE_END;
         receiveBitcoinsPanel.add(addressLabel, constraints);
 
-        addressTextArea = new JTextArea();
+        addressTextArea = new JTextArea("", 35, 1);
         addressTextArea.setEditable(false);
-        addressTextArea.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
+        addressTextArea.setBorder(BorderFactory.createMatteBorder(0, 4, 0, 4, this.getBackground()));
+        //addressTextArea.setOpaque(false);
+        addressTextArea.setMinimumSize(new Dimension(110,18));
+        addressTextArea.setMaximumSize(new Dimension(110,18));
+
 
         constraints.gridx = 2;
         constraints.gridy = 5;
-        constraints.weightx = 3;
+        constraints.weightx = 2;
         constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveBitcoinsPanel.add(addressTextArea, constraints);
@@ -221,11 +234,11 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
         constraints.anchor = GridBagConstraints.LINE_END;
         receiveBitcoinsPanel.add(labelLabel, constraints);
 
-        labelTextField = new JTextField();
+        labelTextField = new JTextField("", 35);
         labelTextField.setHorizontalAlignment(JTextField.LEFT);
         constraints.gridx = 2;
         constraints.gridy = 6;
-        constraints.weightx = 3;
+        constraints.weightx = 2;
         constraints.gridwidth=2;
         constraints.anchor = GridBagConstraints.LINE_START;
         receiveBitcoinsPanel.add(labelTextField, constraints);
@@ -241,7 +254,7 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
         constraints.anchor = GridBagConstraints.LINE_END;
         receiveBitcoinsPanel.add(amountLabel, constraints);
 
-        amountTextField = new JTextField();
+        amountTextField = new JTextField("", 20);
         amountTextField.setHorizontalAlignment(JTextField.RIGHT);
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -279,7 +292,72 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
         JPanel qrCodePanel = new JPanel();
         qrCodePanel.setMinimumSize(new Dimension(200, 200));
         qrCodePanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.LIGHT_GRAY));
-        //qrCodePanel.setBackground(Color.WHITE);
+        qrCodePanel.setLayout(new GridBagLayout());
+        qrCodeLabel = new JLabel("", null, JLabel.CENTER);
+        qrCodeLabel.setVerticalTextPosition(JLabel.BOTTOM);
+        qrCodeLabel.setHorizontalTextPosition(JLabel.CENTER);
+      
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        JPanel filler1 = new JPanel();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth=1;
+        constraints.gridheight=1;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        qrCodePanel.add(filler1, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        constraints.weightx = 1;
+        constraints.gridwidth=1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        qrCodePanel.add(qrCodeLabel, constraints);
+
+        JPanel filler2 = new JPanel();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth=1;
+        constraints.gridheight=1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        qrCodePanel.add(filler2, constraints);
+
+
+        qrCodeTextArea = new JTextArea(4, 40);
+        qrCodeTextArea.setEditable(false);
+        qrCodeTextArea.setLineWrap(true);
+        qrCodeTextArea.setMinimumSize(new Dimension (200,60));
+//        JScrollPane scrollPane = new JScrollPane(qrCodeTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+//                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+//        scrollPane.setMinimumSize(new Dimension (200,60));
+        
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 1;
+        constraints.gridy = 3;
+        constraints.weightx = 1;
+        constraints.weighty = 5;
+        constraints.gridwidth=1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        qrCodePanel.add(qrCodeTextArea, constraints);
+        
+        JPanel filler3 = new JPanel();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 4;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth=1;
+        constraints.gridheight=1;
+        constraints.anchor = GridBagConstraints.SOUTHEAST;
+        qrCodePanel.add(filler3, constraints);
+       
         return qrCodePanel;
     }
 
@@ -312,7 +390,7 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
 
         JLabel titleLabel = new JLabel();
         titleLabel.setHorizontalTextPosition(JLabel.CENTER);
-        titleLabel.setText("Your receiving addresses");
+        titleLabel.setText(controller.getLocaliser().getString("receiveBitcoinPanel.receivingAddressesTitle"));
         Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE, MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
         titleLabel.setFont(font);
  
@@ -471,7 +549,7 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
 
     public void displayView() {
         loadForm();
-
+        selectRows();
     }
 
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
@@ -481,6 +559,41 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
     }
+
+    /**
+     * select the rows that correspond to the current receiving and sending data
+     */
+    public void selectRows() {
+        // stop listener firing
+        receivingAddressesTable.getSelectionModel().removeListSelectionListener(receivingAddressesListener);
+
+        String receiveAddress = controller.getModel().getUserPreference(MultiBitModel.RECEIVE_ADDRESS);
+        displayQRCode(BitcoinURI.convertToBitcoinURI(receiveAddress, amountTextField.getText(), labelTextField.getText()));
+
+        // see if the current receive address is on the table and select it
+        int receivingRowToSelect = receivingAddressesTableModel.findRowByAddress(receiveAddress, true);
+        if (receivingRowToSelect >= 0) {
+            receivingAddressesTable.getSelectionModel().setSelectionInterval(receivingRowToSelect, receivingRowToSelect);
+            selectedReceivingRow = receivingRowToSelect;
+        }
+
+        // put the listeners back
+        receivingAddressesTable.getSelectionModel().addListSelectionListener(receivingAddressesListener);
+    }
+    
+    /**
+     * display the specified string as a QRCode
+     */
+    private void displayQRCode(String stringToDisplay) {
+        if (qrCodeEncoderDecoder == null) {
+            qrCodeEncoderDecoder = new QRCodeEncoderDecoder(QRCODE_WIDTH, QRCODE_HEIGHT);
+        }
+        BufferedImage image = qrCodeEncoderDecoder.encode(stringToDisplay);
+        ImageIcon icon = new ImageIcon(image);
+        qrCodeLabel.setIcon(icon);
+        qrCodeTextArea.setText(stringToDisplay);
+    }
+
 
     class SelectionListener implements ListSelectionListener {
         JTable table;
@@ -510,6 +623,9 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
                 if (rowData != null) {
                     controller.getModel().setUserPreference(MultiBitModel.RECEIVE_ADDRESS, rowData.getAddress());
                     controller.getModel().setUserPreference(MultiBitModel.RECEIVE_LABEL, rowData.getLabel());
+                    addressTextArea.setText(rowData.getAddress());
+                    labelTextField.setText(rowData.getLabel());
+                    displayQRCode(BitcoinURI.convertToBitcoinURI(rowData.getAddress(), amountTextField.getText(), labelTextField.getText()));
                 }
             }
         }

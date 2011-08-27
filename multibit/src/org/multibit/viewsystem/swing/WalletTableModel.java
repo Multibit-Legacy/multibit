@@ -29,8 +29,6 @@ public class WalletTableModel extends AbstractTableModel {
 
     private MultiBitController controller;
 
-    SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm");
-
     public WalletTableModel(MultiBitController controller) {
         this.multiBitModel = controller.getModel();
         this.controller = controller;

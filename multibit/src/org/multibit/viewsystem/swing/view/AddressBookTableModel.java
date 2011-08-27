@@ -140,4 +140,12 @@ public class AddressBookTableModel extends DefaultTableModel {
         }
         return null;
     }
+    
+
+    @Override
+    public boolean isCellEditable(int row, int column) {
+       //all cells false
+       return false;
+    }
+
 }

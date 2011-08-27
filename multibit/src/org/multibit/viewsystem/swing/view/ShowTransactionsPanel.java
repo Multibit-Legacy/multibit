@@ -267,7 +267,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         private static final long serialVersionUID = 1549545L;
 
         JLabel label = new JLabel();
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm");
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {

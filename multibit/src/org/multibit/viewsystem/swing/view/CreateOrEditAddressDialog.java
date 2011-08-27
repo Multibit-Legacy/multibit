@@ -105,8 +105,8 @@ public class CreateOrEditAddressDialog extends MultiBitDialog implements DataPro
             }
         }
 
-        positionDialogRelativeToParent(this, 0.25D, 0.3D);
-        setMinimumSize(new Dimension(550, 200));
+        positionDialogRelativeToParent(this, 0.18D, 0.3D);
+        setMinimumSize(new Dimension(550, 240));
         setTitle(controller.getLocaliser().getString(titleLocaliserKey));
         setLayout(new BorderLayout());
         add(createAddressLabelPanel(helpTextKey1, helpTextKey2, isCreate, isReceiving), BorderLayout.CENTER);
