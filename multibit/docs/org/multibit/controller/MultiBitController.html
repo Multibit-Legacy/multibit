@@ -120,7 +120,7 @@ the MVC controller for Multibit - this is loosely based on the Apache Struts
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#MultiBitController()">MultiBitController</A></B>()</CODE>
+<TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#MultiBitController(java.util.Properties)">MultiBitController</A></B>(java.util.Properties&nbsp;userPreferences)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -180,6 +180,14 @@ the MVC controller for Multibit - this is loosely based on the Apache Struts
 <CODE>&nbsp;void</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#displayMessage(java.lang.String, java.lang.String)">displayMessage</A></B>(java.lang.String&nbsp;messageKey,
                java.lang.String&nbsp;titleKey)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../org/multibit/controller/MultiBitController.html#displayNextView(int)">displayNextView</A></B>(int&nbsp;relationshipOfNewViewToPrevious)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -404,10 +412,10 @@ the MVC controller for Multibit - this is loosely based on the Apache Struts
 </TR>
 </TABLE>
 
-<A NAME="MultiBitController()"><!-- --></A><H3>
+<A NAME="MultiBitController(java.util.Properties)"><!-- --></A><H3>
 MultiBitController</H3>
 <PRE>
-public <B>MultiBitController</B>()</PRE>
+public <B>MultiBitController</B>(java.util.Properties&nbsp;userPreferences)</PRE>
 <DL>
 </DL>
 
@@ -482,6 +490,17 @@ public void <B>determineNextView</B>(<A HREF="../../../org/multibit/controller/A
 <P>
 <DD><DL>
 <DT><B>Parameters:</B><DD><CODE>actionForward</CODE> - </DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="displayNextView(int)"><!-- --></A><H3>
+displayNextView</H3>
+<PRE>
+public void <B>displayNextView</B>(int&nbsp;relationshipOfNewViewToPrevious)</PRE>
+<DL>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>relationshipOfNewViewToPrevious</CODE> - - one of ViewSystem relationship constants</DL>
 </DD>
 </DL>
 <HR>

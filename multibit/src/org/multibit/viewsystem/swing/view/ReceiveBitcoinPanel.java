@@ -63,6 +63,8 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
     private JTextField amountTextField;
 
+    private JPanel formPanel;
+    
     private JButton copyQRCodeTextButton;
 
     private AddressBookTableModel addressesTableModel;
@@ -121,7 +123,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
     }
 
     private JPanel createFormPanel() {
-        JPanel formPanel = new JPanel();
+        formPanel = new JPanel();
 
         JPanel buttonPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
@@ -410,31 +412,14 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         tableColumn = addressesTable.getColumnModel().getColumn(1); // address
         tableColumn.setPreferredWidth(120);
 
-        JLabel titleLabel = new JLabel();
-        titleLabel.setHorizontalTextPosition(JLabel.CENTER);
-        titleLabel.setText(controller.getLocaliser().getString("receiveBitcoinPanel.receivingAddressesTitle"));
-        Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE,
-                MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
-        titleLabel.setFont(font);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0.06;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        addressPanel.add(titleLabel, constraints);
-
-        JComponent buttonPanel = createAddressesButtonPanel();
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.06;
+        constraints.weightx = 1;
+        constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        addressPanel.add(buttonPanel, constraints);
+        addressPanel.add(createAddressesHeaderPanel(), constraints);
 
         JScrollPane scrollPane = new JScrollPane(addressesTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -453,17 +438,43 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         return addressPanel;
     }
 
-    private JPanel createAddressesButtonPanel() {
-        JPanel buttonPanel = new JPanel();
-        FlowLayout flowLayout = new FlowLayout();
-        flowLayout.setAlignment(FlowLayout.RIGHT);
-        buttonPanel.setLayout(flowLayout);
+    private JPanel createAddressesHeaderPanel() {
+        JPanel addressesHeaderPanel = new AddressesPanel();
+//        FlowLayout flowLayout = new FlowLayout();
+//        flowLayout.setAlignment(FlowLayout.RIGHT);
+//        buttonPanel.setLayout(flowLayout);
 
-        CreateNewReceivingAddressAction createNewReceivingAddressAction = new CreateNewReceivingAddressAction(controller);
+        addressesHeaderPanel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        CreateNewReceivingAddressAction createNewReceivingAddressAction = new CreateNewReceivingAddressAction(controller, this);
         JButton createNewButton = new JButton(createNewReceivingAddressAction);
-        buttonPanel.add(createNewButton);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 0.3;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        addressesHeaderPanel.add(createNewButton, constraints);
 
-        return buttonPanel;
+        JLabel titleLabel = new JLabel();
+        titleLabel.setHorizontalTextPosition(JLabel.CENTER);
+        titleLabel.setText(controller.getLocaliser().getString("receiveBitcoinPanel.receivingAddressesTitle"));
+        Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE,
+                MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
+        titleLabel.setFont(font);
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        addressesHeaderPanel.add(titleLabel, constraints);
+        
+        return addressesHeaderPanel;
     }
 
     private JPanel createQRCodeButtonPanel() {
@@ -677,5 +688,13 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
             displayQRCode(BitcoinURI.convertToBitcoinURI(address, amount, label));
         }
+    }
+
+    public JTextField getLabelTextField() {
+        return labelTextField;
+    }
+
+    public JPanel getFormPanel() {
+        return formPanel;
     }
 }

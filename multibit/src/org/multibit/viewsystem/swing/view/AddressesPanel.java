@@ -8,7 +8,7 @@ import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
-public class HeaderPanel extends JPanel {
+public class AddressesPanel extends JPanel {
 
     private static final long serialVersionUID = 1992327373249499976L;
 

@@ -502,9 +502,9 @@ int <B>currentView</B></PRE>
 </DL>
 <HR>
 <H3>
-viewMap</H3>
+viewFactory</H3>
 <PRE>
-java.util.Map&lt;K,V&gt; <B>viewMap</B></PRE>
+<A HREF="org/multibit/viewsystem/swing/view/ViewFactory.html" title="class in org.multibit.viewsystem.swing.view">ViewFactory</A> <B>viewFactory</B></PRE>
 <DL>
 <DL>
 </DL>
@@ -728,6 +728,36 @@ controller</H3>
 dataProvider</H3>
 <PRE>
 <A HREF="org/multibit/model/DataProvider.html" title="interface in org.multibit.model">DataProvider</A> <B>dataProvider</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
+
+<P>
+<A NAME="org.multibit.viewsystem.swing.action.CreateNewReceivingAddressAction"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Class <A HREF="org/multibit/viewsystem/swing/action/CreateNewReceivingAddressAction.html" title="class in org.multibit.viewsystem.swing.action">org.multibit.viewsystem.swing.action.CreateNewReceivingAddressAction</A> extends javax.swing.AbstractAction implements Serializable</B></FONT></TH>
+</TR>
+</TABLE>
+
+<P>
+<B>serialVersionUID:&nbsp;</B>200152235465875405L
+
+<P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+controller</H3>
+<PRE>
+<A HREF="org/multibit/controller/MultiBitController.html" title="class in org.multibit.controller">MultiBitController</A> <B>controller</B></PRE>
 <DL>
 <DL>
 </DL>
@@ -1853,11 +1883,11 @@ javax.swing.JFrame <B>mainFrame</B></PRE>
 </DL>
 
 <P>
-<A NAME="org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel"><!-- --></A>
+<A NAME="org.multibit.viewsystem.swing.view.ObseleteReceiveBitcoinPanel"><!-- --></A>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
 <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B>Class <A HREF="org/multibit/viewsystem/swing/view/ReceiveBitcoinPanel.html" title="class in org.multibit.viewsystem.swing.view">org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel</A> extends javax.swing.JPanel implements Serializable</B></FONT></TH>
+<B>Class <A HREF="org/multibit/viewsystem/swing/view/ObseleteReceiveBitcoinPanel.html" title="class in org.multibit.viewsystem.swing.view">org.multibit.viewsystem.swing.view.ObseleteReceiveBitcoinPanel</A> extends javax.swing.JPanel implements Serializable</B></FONT></TH>
 </TR>
 </TABLE>
 
@@ -1910,11 +1940,11 @@ javax.swing.JButton <B>copyAddressButton</B></PRE>
 </DL>
 
 <P>
-<A NAME="org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel2"><!-- --></A>
+<A NAME="org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel"><!-- --></A>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
 <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B>Class <A HREF="org/multibit/viewsystem/swing/view/ReceiveBitcoinPanel2.html" title="class in org.multibit.viewsystem.swing.view">org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel2</A> extends javax.swing.JPanel implements Serializable</B></FONT></TH>
+<B>Class <A HREF="org/multibit/viewsystem/swing/view/ReceiveBitcoinPanel.html" title="class in org.multibit.viewsystem.swing.view">org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel</A> extends javax.swing.JPanel implements Serializable</B></FONT></TH>
 </TR>
 </TABLE>
 
@@ -1976,36 +2006,36 @@ javax.swing.JButton <B>copyQRCodeTextButton</B></PRE>
 </DL>
 <HR>
 <H3>
-receivingAddressesTableModel</H3>
+addressesTableModel</H3>
 <PRE>
-<A HREF="org/multibit/viewsystem/swing/view/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing.view">AddressBookTableModel</A> <B>receivingAddressesTableModel</B></PRE>
+<A HREF="org/multibit/viewsystem/swing/view/AddressBookTableModel.html" title="class in org.multibit.viewsystem.swing.view">AddressBookTableModel</A> <B>addressesTableModel</B></PRE>
 <DL>
 <DL>
 </DL>
 </DL>
 <HR>
 <H3>
-receivingAddressesTable</H3>
+addressesTable</H3>
 <PRE>
-javax.swing.JTable <B>receivingAddressesTable</B></PRE>
+javax.swing.JTable <B>addressesTable</B></PRE>
 <DL>
 <DL>
 </DL>
 </DL>
 <HR>
 <H3>
-receivingAddressesListener</H3>
+addressesListener</H3>
 <PRE>
-org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel2.SelectionListener <B>receivingAddressesListener</B></PRE>
+org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel.SelectionListener <B>addressesListener</B></PRE>
 <DL>
 <DL>
 </DL>
 </DL>
 <HR>
 <H3>
-selectedReceivingRow</H3>
+selectedAddressRow</H3>
 <PRE>
-int <B>selectedReceivingRow</B></PRE>
+int <B>selectedAddressRow</B></PRE>
 <DL>
 <DL>
 </DL>

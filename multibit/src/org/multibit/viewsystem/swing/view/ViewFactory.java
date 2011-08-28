@@ -1,0 +1,122 @@
+package org.multibit.viewsystem.swing.view;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.multibit.controller.MultiBitController;
+import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.MultiBitFrame;
+
+/**
+ * a factory class that lazy loads views
+ * 
+ * @author jim
+ * 
+ */
+public class ViewFactory {
+    private Map<Integer, View> viewMap;
+
+    MultiBitController controller;
+    MultiBitFrame mainFrame;
+
+    public ViewFactory(MultiBitController controller, MultiBitFrame mainFrame) {
+        this.controller = controller;
+        this.mainFrame = mainFrame;
+        viewMap = new HashMap<Integer, View>();
+    }
+
+    public View getView(int viewNumber) {
+        View viewToReturn = viewMap.get(new Integer(viewNumber));
+
+        if (viewToReturn == null) {
+            viewToReturn = createView(viewNumber);
+        }
+
+        return viewToReturn;
+    }
+
+    private View createView(int viewNumber) {
+        View viewToReturn = null;
+
+        switch (viewNumber) {
+
+        case View.TRANSACTIONS_VIEW: {
+            viewToReturn = new ShowTransactionsPanel(mainFrame, controller);
+            break;
+        }
+
+        case View.HELP_ABOUT_VIEW: {
+            viewToReturn = new HelpAboutPanel(controller, mainFrame);
+            break;
+        }
+
+        case View.HELP_CONTENTS_VIEW: {
+            viewToReturn = new HelpContentsPanel(mainFrame);
+            break;
+        }
+
+        case View.OPEN_WALLET_VIEW: {
+            viewToReturn = new OpenWalletView(controller, controller.getLocaliser(), mainFrame);
+            break;
+        }
+        
+        case View.SAVE_WALLET_AS_VIEW: {
+            viewToReturn = new SaveWalletAsView(controller, controller.getLocaliser(), mainFrame);
+            break;
+        }
+        
+        case View.RECEIVE_BITCOIN_VIEW: {
+            viewToReturn = new ReceiveBitcoinPanel(mainFrame, controller);
+            break;
+        }
+        
+        case View.SEND_BITCOIN_VIEW: {
+            viewToReturn = new SendBitcoinPanel(mainFrame, controller);
+            break;
+        }
+        
+        case View.SEND_BITCOIN_CONFIRM_VIEW: {
+            viewToReturn = new SendBitcoinConfirmView(controller, controller.getLocaliser(), mainFrame);
+            break;
+        }
+        
+        case View.CREATE_NEW_SENDING_ADDRESS_VIEW: {
+            viewToReturn = new CreateOrEditAddressView(controller, controller.getLocaliser(), mainFrame, true, false);
+            break;
+        }
+        
+        case View.EDIT_SENDING_ADDRESS_VIEW: {
+            viewToReturn = new CreateOrEditAddressView(controller, controller.getLocaliser(), mainFrame, false, false);
+            break;
+        }
+        
+        case View.ADDRESS_BOOK_RECEIVING_VIEW: {
+            viewToReturn = new AddressBookView(controller, controller.getLocaliser(), mainFrame, true);
+            break;
+        }
+        
+        case View.ADDRESS_BOOK_SENDING_VIEW: {
+            viewToReturn = new AddressBookView(controller, controller.getLocaliser(), mainFrame, false);
+            break;
+        }
+        
+        case View.PREFERENCES_VIEW: {
+            viewToReturn = new ShowPreferencesPanel(controller, mainFrame);
+            break;
+        }
+        
+        case View.VALIDATION_ERROR_VIEW: {
+            viewToReturn = new ValidationErrorView(controller, mainFrame);
+            break;
+        }
+
+        default: {
+        }
+        }
+
+        if (viewToReturn != null) {
+            viewMap.put(viewNumber, viewToReturn);
+        }
+        return viewToReturn;
+    }
+}
