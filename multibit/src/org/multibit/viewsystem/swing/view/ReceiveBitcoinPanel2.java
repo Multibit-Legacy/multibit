@@ -6,6 +6,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -88,7 +90,7 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
 
     private void initUI() {
         setMinimumSize(new Dimension(550, 220));
-        setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
+        setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
         setLayout(new GridBagLayout());
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -206,7 +208,7 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
         constraints.gridx = 1;
         constraints.gridy = 5;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.1;
+        constraints.weighty = 0.15;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         receiveBitcoinsPanel.add(addressLabel, constraints);
@@ -214,7 +216,6 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
         addressTextArea = new JTextArea("", 35, 1);
         addressTextArea.setEditable(false);
         addressTextArea.setBorder(BorderFactory.createMatteBorder(0, 4, 0, 4, this.getBackground()));
-        // addressTextArea.setOpaque(false);
         addressTextArea.setMinimumSize(new Dimension(110, 18));
         addressTextArea.setMaximumSize(new Dimension(110, 18));
 
@@ -239,6 +240,7 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
 
         labelTextField = new JTextField("", 35);
         labelTextField.setHorizontalAlignment(JTextField.LEFT);
+        labelTextField.addKeyListener(new QRCodeKeyListener());
         constraints.gridx = 2;
         constraints.gridy = 6;
         constraints.weightx = 2;
@@ -259,7 +261,8 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
 
         amountTextField = new JTextField("", 20);
         amountTextField.setHorizontalAlignment(JTextField.RIGHT);
-
+        amountTextField.addKeyListener(new QRCodeKeyListener());
+        
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
         constraints.gridy = 7;
@@ -292,7 +295,7 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
     private JPanel createQRCodePanel() {
         JPanel qrCodePanel = new JPanel();
         qrCodePanel.setMinimumSize(new Dimension(240, 200));
-        qrCodePanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.LIGHT_GRAY));
+        qrCodePanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY));
         qrCodePanel.setLayout(new GridBagLayout());
         qrCodeLabel = new JLabel("", null, JLabel.CENTER);
         qrCodeLabel.setVerticalTextPosition(JLabel.BOTTOM);
@@ -384,7 +387,7 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
         JPanel receiveAddressPanel = new JPanel();
         receiveAddressPanel.setOpaque(false);
 
-        receiveAddressPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
+        receiveAddressPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
 
         // get the stored previously selected receive address
 
@@ -653,5 +656,69 @@ public class ReceiveBitcoinPanel2 extends JPanel implements DataProvider, View {
                 }
             }
         }
+    } 
+    
+    class QRCodeKeyListener implements KeyListener {
+
+        /** Handle the key typed event from the text field. */
+        public void keyTyped(KeyEvent e) {
+
+        }
+
+        /** Handle the key-pressed event from the text field. */
+        public void keyPressed(KeyEvent e) {
+            // do nothing
+        }
+
+        /** Handle the key-released event from the text field. */
+        public void keyReleased(KeyEvent e) {
+            displayQRCode(BitcoinURI.convertToBitcoinURI(addressTextArea.getText(), amountTextField.getText(),
+                    labelTextField.getText()));
+
+        }
+
+//        private void displayInfo(KeyEvent e, String keyStatus) {
+//            // You should only rely on the key char if the event
+//            // is a key typed event.
+//            int id = e.getID();
+//            String keyString;
+//            if (id == KeyEvent.KEY_TYPED) {
+//                char c = e.getKeyChar();
+//                keyString = "key character = '" + c + "'";
+//            } else {
+//                int keyCode = e.getKeyCode();
+//                keyString = "key code = " + keyCode + " (" + KeyEvent.getKeyText(keyCode) + ")";
+//            }
+//
+//            int modifiersEx = e.getModifiersEx();
+//            String modString = "extended modifiers = " + modifiersEx;
+//            String tmpString = KeyEvent.getModifiersExText(modifiersEx);
+//            if (tmpString.length() > 0) {
+//                modString += " (" + tmpString + ")";
+//            } else {
+//                modString += " (no extended modifiers)";
+//            }
+//
+//            String actionString = "action key? ";
+//            if (e.isActionKey()) {
+//                actionString += "YES";
+//            } else {
+//                actionString += "NO";
+//            }
+//
+//            String locationString = "key location: ";
+//            int location = e.getKeyLocation();
+//            if (location == KeyEvent.KEY_LOCATION_STANDARD) {
+//                locationString += "standard";
+//            } else if (location == KeyEvent.KEY_LOCATION_LEFT) {
+//                locationString += "left";
+//            } else if (location == KeyEvent.KEY_LOCATION_RIGHT) {
+//                locationString += "right";
+//            } else if (location == KeyEvent.KEY_LOCATION_NUMPAD) {
+//                locationString += "numpad";
+//            } else { // (location == KeyEvent.KEY_LOCATION_UNKNOWN)
+//                locationString += "unknown";
+//            }
+//        }
     }
 }

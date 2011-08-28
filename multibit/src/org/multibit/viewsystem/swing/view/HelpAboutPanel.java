@@ -44,7 +44,7 @@ public class HelpAboutPanel extends JPanel implements View {
         this.controller = controller;
         this.mainFrame = mainFrame;
         
-        setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
+        setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
         
         String versionNumber = controller.getLocaliser().getVersionNumber();
 

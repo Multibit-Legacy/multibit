@@ -189,7 +189,23 @@ java.lang.Object
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#SPACER">SPACER</A></B></CODE>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#MULTIBIT_FONT_NAME">MULTIBIT_FONT_NAME</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#MULTIBIT_FONT_STYLE">MULTIBIT_FONT_STYLE</A></B></CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#MULTIBIT_LARGE_FONT_SIZE">MULTIBIT_LARGE_FONT_SIZE</A></B></CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -377,10 +393,10 @@ java.lang.Object
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#updateDownloadStatus(java.lang.String)">updateDownloadStatus</A></B>(java.lang.String&nbsp;updateDownloadStatus)</CODE>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#setWalletFilename(java.lang.String)">setWalletFilename</A></B>(java.lang.String&nbsp;walletFilename)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;update download status</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -389,6 +405,14 @@ java.lang.Object
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../org/multibit/viewsystem/swing/MultiBitFrame.html#updateStatusLabel(java.lang.String)">updateStatusLabel</A></B>(java.lang.String&nbsp;newStatusLabel)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;update download status</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_javax.swing.JFrame"><!-- --></A>
@@ -467,13 +491,33 @@ java.lang.Object
 </TR>
 </TABLE>
 
-<A NAME="SPACER"><!-- --></A><H3>
-SPACER</H3>
+<A NAME="MULTIBIT_FONT_NAME"><!-- --></A><H3>
+MULTIBIT_FONT_NAME</H3>
 <PRE>
-public static final java.lang.String <B>SPACER</B></PRE>
+public static final java.lang.String <B>MULTIBIT_FONT_NAME</B></PRE>
 <DL>
 <DL>
-<DT><B>See Also:</B><DD><A HREF="../../../../constant-values.html#org.multibit.viewsystem.swing.MultiBitFrame.SPACER">Constant Field Values</A></DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../constant-values.html#org.multibit.viewsystem.swing.MultiBitFrame.MULTIBIT_FONT_NAME">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="MULTIBIT_FONT_STYLE"><!-- --></A><H3>
+MULTIBIT_FONT_STYLE</H3>
+<PRE>
+public static final int <B>MULTIBIT_FONT_STYLE</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../constant-values.html#org.multibit.viewsystem.swing.MultiBitFrame.MULTIBIT_FONT_STYLE">Constant Field Values</A></DL>
+</DL>
+<HR>
+
+<A NAME="MULTIBIT_LARGE_FONT_SIZE"><!-- --></A><H3>
+MULTIBIT_LARGE_FONT_SIZE</H3>
+<PRE>
+public static final int <B>MULTIBIT_LARGE_FONT_SIZE</B></PRE>
+<DL>
+<DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../constant-values.html#org.multibit.viewsystem.swing.MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE">Constant Field Values</A></DL>
 </DL>
 <HR>
 
@@ -536,6 +580,20 @@ public void <B>recreateAllViews</B>(boolean&nbsp;initUI)</PRE>
 <DL>
 <DD>recreate all views
 <P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setWalletFilename(java.lang.String)"><!-- --></A><H3>
+setWalletFilename</H3>
+<PRE>
+public void <B>setWalletFilename</B>(java.lang.String&nbsp;walletFilename)</PRE>
+<DL>
 <DD><DL>
 </DL>
 </DD>
@@ -648,16 +706,16 @@ public void <B>updateOnlineStatusText</B>()</PRE>
 </DL>
 <HR>
 
-<A NAME="updateDownloadStatus(java.lang.String)"><!-- --></A><H3>
-updateDownloadStatus</H3>
+<A NAME="updateStatusLabel(java.lang.String)"><!-- --></A><H3>
+updateStatusLabel</H3>
 <PRE>
-public void <B>updateDownloadStatus</B>(java.lang.String&nbsp;updateDownloadStatus)</PRE>
+public void <B>updateStatusLabel</B>(java.lang.String&nbsp;newStatusLabel)</PRE>
 <DL>
-<DD><B>Description copied from interface: <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#updateDownloadStatus(java.lang.String)">ViewSystem</A></CODE></B></DD>
+<DD><B>Description copied from interface: <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#updateStatusLabel(java.lang.String)">ViewSystem</A></CODE></B></DD>
 <DD>update download status
 <P>
 <DD><DL>
-<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#updateDownloadStatus(java.lang.String)">updateDownloadStatus</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
+<DT><B>Specified by:</B><DD><CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html#updateStatusLabel(java.lang.String)">updateStatusLabel</A></CODE> in interface <CODE><A HREF="../../../../org/multibit/viewsystem/ViewSystem.html" title="interface in org.multibit.viewsystem">ViewSystem</A></CODE></DL>
 </DD>
 <DD><DL>
 </DL>

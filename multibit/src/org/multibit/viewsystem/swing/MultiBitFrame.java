@@ -92,7 +92,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     public static final int MULTIBIT_FONT_STYLE = Font.PLAIN;
     public static final int MULTIBIT_LARGE_FONT_SIZE = 14;
     
-    private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.7D;
+    private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.75D;
 
     private static final long serialVersionUID = 7621813615342923041L;
 

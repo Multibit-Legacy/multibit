@@ -141,11 +141,36 @@ public class AddressBookTableModel extends DefaultTableModel {
         return null;
     }
     
+    /**
+     * set a AddressBookData into a row
+     */
+    public void setAddressBookDataByRow(AddressBookData addressBookData, int row, boolean isReceiving) {
+//        Set<AddressBookData> addresses;
+//        if (isReceiving) {
+//            addresses = addressBook.getReceivingAddresses();
+//        } else {
+//            addresses = addressBook.getSendingAddresses();
+//        }
+//        
+//        int loopRow = 0;
+//        if (addresses != null) {
+//            for (AddressBookData loopAddress : addresses) {
+//                if (loopRow == row) {
+//                    // return this row
+//                    //System.out.println("AddressBookModel#getAddressBookDataByRow, row = " + row + ", isReceiving = " + isReceiving + ", addressBookData = " + loopAddress);
+//                    return loopAddress;
+//                }
+//                loopRow++;
+//            }
+//        }
+//        return null;
+
+    }
+    
 
     @Override
     public boolean isCellEditable(int row, int column) {
        //all cells false
        return false;
     }
-
 }
