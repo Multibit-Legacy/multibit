@@ -98,8 +98,6 @@ public class MultiBitService {
                 walletFile = new File(walletFilename);
                 wallet = Wallet.loadFromFile(walletFile);
 
-                System.out.println("MultiBitService#MultiBitService wallet = \n" + wallet.toString());
-
                 // set the new wallet into the model
                 controller.getModel().setWallet(wallet);
 
@@ -122,11 +120,27 @@ public class MultiBitService {
         }
 
         if (wallet == null || walletFilename == null) {
-            // create new empty wallet
+            // use default wallet name - create if does not exist
             walletFilename = filePrefix + WALLET_SUFFIX;
             walletFile = new File(walletFilename);
-            wallet = new Wallet(networkParameters);
-
+            
+            boolean needToSaveNewFile = false;
+            
+            if (walletFile.exists()) {
+                // wallet file exists with default name
+                try {
+                    wallet = Wallet.loadFromFile(walletFile);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            } else {
+                wallet = new Wallet(networkParameters);
+                ECKey newKey = new ECKey();
+                wallet.keychain.add(newKey);
+                needToSaveNewFile = true;
+            }
+            
             // set the new wallet and wallet filename on the model
             controller.getModel().setWalletFilename(walletFilename);
             controller.getModel().setWallet(wallet);
@@ -143,17 +157,13 @@ public class MultiBitService {
                     finalController.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
                 }
             });
-
-            ECKey newKey = new ECKey();
-            wallet.keychain.add(newKey);
-            System.out.println("MultiBitService#MultiBitService - Send coins to: " + newKey.toAddress(networkParameters).toString());
-            
+           
             try {
-                // TODO need to make sure dont overwrite an existing wallet
-                wallet.saveToFile(walletFile);
+                if (needToSaveNewFile) {
+                    wallet.saveToFile(walletFile);
+                }
                 // ensure title on frame is updated
                 controller.fireWalletDataChanged();
-
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
