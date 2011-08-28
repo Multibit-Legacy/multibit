@@ -76,7 +76,7 @@ public class CreateOrEditAddressView implements View {
     }
 
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
-        if (ViewSystem.newViewIsParentOfPrevious == relationshipOfNewViewToPrevious) {
+        if (ViewSystem.NEW_VIEW_IS_PARENT_OF_PREVIOUS == relationshipOfNewViewToPrevious) {
             if (createOrEditAddressDialog != null) {
                 createOrEditAddressDialog.setVisible(false);
                 createOrEditAddressDialog.dispose();

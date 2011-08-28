@@ -10,7 +10,7 @@ import org.multibit.Localiser;
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
+import org.multibit.viewsystem.swing.view.ObseleteReceiveBitcoinPanel;
 
 /**
  * This {@link Action} receives bitcoin

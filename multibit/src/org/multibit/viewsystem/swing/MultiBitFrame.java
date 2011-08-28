@@ -31,7 +31,6 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
 
 import org.apache.log4j.Logger;
 import org.multibit.Localiser;
@@ -55,7 +54,7 @@ import org.multibit.viewsystem.swing.view.HelpAboutPanel;
 import org.multibit.viewsystem.swing.view.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.MultiBitButton;
 import org.multibit.viewsystem.swing.view.OpenWalletView;
-import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel2;
+import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
 import org.multibit.viewsystem.swing.view.SaveWalletAsView;
 import org.multibit.viewsystem.swing.view.SendBitcoinConfirmView;
 import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
@@ -152,11 +151,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
         recreateAllViews(false);
         
-        // put the transactions view in the viewPanel
-        ShowTransactionsPanel transactionsPanel = (ShowTransactionsPanel)(viewMap.get(View.TRANSACTIONS_VIEW));
-        transactionsPanel.displayView();
-        viewPanel.add(transactionsPanel, BorderLayout.CENTER);
-
         // initialise status bar settings
         nowOffline();
         updateStatusLabel("");
@@ -450,7 +444,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     public void recreateAllViews(boolean initUI) {
         // close down current view
         if (currentView != 0) {
-            navigateAwayFromView(currentView, View.TRANSACTIONS_VIEW, ViewSystem.newViewIsParentOfPrevious); // home
+            navigateAwayFromView(currentView, View.TRANSACTIONS_VIEW, ViewSystem.NEW_VIEW_IS_PARENT_OF_PREVIOUS); // home
                                                                                                              // page
             // choice
             // here is
@@ -488,13 +482,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         viewMap.put(View.HELP_CONTENTS_VIEW, new HelpContentsPanel(this));
         viewMap.put(View.OPEN_WALLET_VIEW, new OpenWalletView(controller, localiser, this));
         viewMap.put(View.SAVE_WALLET_AS_VIEW, new SaveWalletAsView(controller, localiser, this));
-        viewMap.put(View.RECEIVE_BITCOIN_VIEW, new ReceiveBitcoinPanel2(this, controller));
+        viewMap.put(View.RECEIVE_BITCOIN_VIEW, new ReceiveBitcoinPanel(this, controller));
         viewMap.put(View.SEND_BITCOIN_VIEW, new SendBitcoinPanel(this, controller));
         viewMap.put(View.SEND_BITCOIN_CONFIRM_VIEW, new SendBitcoinConfirmView(controller, localiser, this));
-        viewMap.put(View.CREATE_NEW_RECEIVING_ADDRESS_VIEW,
-                new CreateOrEditAddressView(controller, localiser, this, true, true));
+//        viewMap.put(View.CREATE_NEW_RECEIVING_ADDRESS_VIEW,
+//                new CreateOrEditAddressView(controller, localiser, this, true, true));
         viewMap.put(View.CREATE_NEW_SENDING_ADDRESS_VIEW, new CreateOrEditAddressView(controller, localiser, this, true, false));
-        viewMap.put(View.EDIT_RECEIVING_ADDRESS_VIEW, new CreateOrEditAddressView(controller, localiser, this, false, true));
+//        viewMap.put(View.EDIT_RECEIVING_ADDRESS_VIEW, new CreateOrEditAddressView(controller, localiser, this, false, true));
         viewMap.put(View.EDIT_SENDING_ADDRESS_VIEW, new CreateOrEditAddressView(controller, localiser, this, false, false));
         viewMap.put(View.ADDRESS_BOOK_RECEIVING_VIEW, new AddressBookView(controller, localiser, this, true));
         viewMap.put(View.ADDRESS_BOOK_SENDING_VIEW, new AddressBookView(controller, localiser, this, false));
@@ -700,7 +694,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
     public void blockDownloaded() {
         logger.debug("blockDownloaded");
-        ;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 // update screen in case status bars have changed

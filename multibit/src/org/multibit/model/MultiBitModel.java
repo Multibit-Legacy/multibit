@@ -46,6 +46,7 @@ public class MultiBitModel {
     public static final String WALLET_FILENAME = "walletFilename";
 
     // user preferences
+    public static final String SELECTED_VIEW = "selectedView";
     public static final String USER_LANGUAGE_CODE = "languageCode";
     public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
 
@@ -60,7 +61,8 @@ public class MultiBitModel {
     // receive bitcoin
     public static final String RECEIVE_ADDRESS = "receiveAddress";
     public static final String RECEIVE_LABEL = "receiveLabel";
-    public static final String RECEIVE_NEW_KEY = "receiveNewKey";
+    public static final String RECEIVE_AMOUNT = "receiveAmount";
+    public static final String RECEIVE_NEW_KEY = "receiveNewKey";  //to delete
     public static final String RECEIVE_URI_TEXT = "receiveUriText";
     public static final String RECEIVE_URI_IMAGE = "receiveUriImage";
     

@@ -56,7 +56,6 @@ public class HelpContentsPanel extends JPanel implements View {
         add(scrollPane, BorderLayout.CENTER);
 
         setVisible(true);
-        getThePage(currentUrl);
     }
 
     private void getThePage(String location) {
@@ -195,8 +194,7 @@ public class HelpContentsPanel extends JPanel implements View {
     }
 
     public void displayView() {
-        // TODO Auto-generated method stub
-        
+        getThePage(currentUrl);
     }
 
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {

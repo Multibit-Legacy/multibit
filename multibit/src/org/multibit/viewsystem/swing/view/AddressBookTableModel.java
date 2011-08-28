@@ -55,7 +55,7 @@ public class AddressBookTableModel extends DefaultTableModel {
     }
 
     public Object getValueAt(int row, int column) {
-        Set<AddressBookData> addresses;
+        Vector<AddressBookData> addresses;
         if (isReceiving) {
             addresses = addressBook.getReceivingAddresses();
         } else {
@@ -96,7 +96,7 @@ public class AddressBookTableModel extends DefaultTableModel {
         if (address == null) {
             return -1;
         }
-        Set<AddressBookData> addresses;
+        Vector<AddressBookData> addresses;
         if (isReceiving) {
             addresses = addressBook.getReceivingAddresses();
         } else {
@@ -120,23 +120,15 @@ public class AddressBookTableModel extends DefaultTableModel {
      * given a row, return the AddressBookData on this row
      */
     public AddressBookData getAddressBookDataByRow(int row, boolean isReceiving) {
-        Set<AddressBookData> addresses;
+        Vector<AddressBookData> addresses;
         if (isReceiving) {
             addresses = addressBook.getReceivingAddresses();
         } else {
             addresses = addressBook.getSendingAddresses();
         }
         
-        int loopRow = 0;
         if (addresses != null) {
-            for (AddressBookData loopAddress : addresses) {
-                if (loopRow == row) {
-                    // return this row
-                    //System.out.println("AddressBookModel#getAddressBookDataByRow, row = " + row + ", isReceiving = " + isReceiving + ", addressBookData = " + loopAddress);
-                    return loopAddress;
-                }
-                loopRow++;
-            }
+            return addresses.get(row);
         }
         return null;
     }
@@ -145,26 +137,17 @@ public class AddressBookTableModel extends DefaultTableModel {
      * set a AddressBookData into a row
      */
     public void setAddressBookDataByRow(AddressBookData addressBookData, int row, boolean isReceiving) {
-//        Set<AddressBookData> addresses;
-//        if (isReceiving) {
-//            addresses = addressBook.getReceivingAddresses();
-//        } else {
-//            addresses = addressBook.getSendingAddresses();
-//        }
-//        
-//        int loopRow = 0;
-//        if (addresses != null) {
-//            for (AddressBookData loopAddress : addresses) {
-//                if (loopRow == row) {
-//                    // return this row
-//                    //System.out.println("AddressBookModel#getAddressBookDataByRow, row = " + row + ", isReceiving = " + isReceiving + ", addressBookData = " + loopAddress);
-//                    return loopAddress;
-//                }
-//                loopRow++;
-//            }
-//        }
-//        return null;
-
+        Vector<AddressBookData> addresses;
+        if (isReceiving) {
+            addresses = addressBook.getReceivingAddresses();
+        } else {
+            addresses = addressBook.getSendingAddresses();
+        }
+        
+        if (addresses != null) {
+            addresses.set(row, addressBookData);
+        }
+        fireTableRowsUpdated(row, row);
     }
     
 

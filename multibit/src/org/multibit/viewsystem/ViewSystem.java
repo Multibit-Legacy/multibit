@@ -12,9 +12,9 @@ import com.google.bitcoin.core.Wallet;
  *
  */
 public interface ViewSystem { 
-    public static final int newViewIsChildOfPrevious = 10000;
-    public static final int newViewIsParentOfPrevious = 10001;
-    public static final int newViewIsSiblingOfPrevious = 10002;
+    public static final int NEW_VIEW_IS_CHILD_OF_PREVIOUS = 10000;
+    public static final int NEW_VIEW_IS_PARENT_OF_PREVIOUS = 10001;
+    public static final int NEW_VIEW_IS_SIBLING_OF_PREVIOUS = 10002;
        
     /**
      * display the view specified

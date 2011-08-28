@@ -67,7 +67,7 @@ public class AddressBookView implements View {
     }
 
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
-        if (ViewSystem.newViewIsParentOfPrevious == relationshipOfNewViewToPrevious) {
+        if (ViewSystem.NEW_VIEW_IS_PARENT_OF_PREVIOUS == relationshipOfNewViewToPrevious) {
             if (addressBookDialog != null) {
                 addressBookDialog.setVisible(false);
                 addressBookDialog.dispose();

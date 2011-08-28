@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EmptyStackException;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.Stack;
 
 import org.multibit.Localiser;
@@ -68,16 +69,27 @@ public class MultiBitController implements PeerEventListener {
      */
     private MultiBitService multiBitService;
 
-    public MultiBitController() {
+    public MultiBitController(Properties userPreferences) {
         viewSystems = new ArrayList<ViewSystem>();
 
-        // initialise everything to look at the transactions view
+        // initialise everything to look at the previously opened view or failing that the transactions view
+        int initialView = View.TRANSACTIONS_VIEW;
+        if (userPreferences != null) {
+            String viewString = (String)userPreferences.get(MultiBitModel.SELECTED_VIEW);
+            if (viewString != null) {
+                try {
+                    initialView = Integer.parseInt(viewString);
+                } catch (NumberFormatException nfe) {
+                    // carry on
+                }
+            }
+        }
         viewStack = new Stack<Integer>();
-        viewStack.push(View.TRANSACTIONS_VIEW);
+        viewStack.push(initialView);
 
-        previousView = View.TRANSACTIONS_VIEW;
-        currentView = View.TRANSACTIONS_VIEW;
-        nextView = View.TRANSACTIONS_VIEW;
+        previousView = initialView;
+        currentView = initialView;
+        nextView =initialView;
     }
 
     /**
@@ -95,7 +107,7 @@ public class MultiBitController implements PeerEventListener {
         // push current view onto the stack
         viewStack.push(currentView);
         determineNextView(actionForward);
-        displayNextView(ViewSystem.newViewIsChildOfPrevious);
+        displayNextView(ViewSystem.NEW_VIEW_IS_CHILD_OF_PREVIOUS);
     }
 
     /**
@@ -108,7 +120,7 @@ public class MultiBitController implements PeerEventListener {
         determineNextView(actionForward);
 
         // do not change the call stack
-        displayNextView(ViewSystem.newViewIsSiblingOfPrevious);
+        displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
     }
 
     /**
@@ -125,7 +137,7 @@ public class MultiBitController implements PeerEventListener {
             nextView = View.TRANSACTIONS_VIEW;
             viewStack.push(nextView);
         }
-        displayNextView(ViewSystem.newViewIsParentOfPrevious);
+        displayNextView(ViewSystem.NEW_VIEW_IS_PARENT_OF_PREVIOUS);
     }
 
     /**
@@ -255,7 +267,7 @@ public class MultiBitController implements PeerEventListener {
      * @param relationshipOfNewViewToPrevious
      *            - one of ViewSystem relationship constants
      */
-    private void displayNextView(int relationshipOfNewViewToPrevious) {
+    public void displayNextView(int relationshipOfNewViewToPrevious) {
         if (nextView != 0) {
             // cycle the previous / current / next views
             previousView = currentView;
@@ -284,6 +296,10 @@ public class MultiBitController implements PeerEventListener {
                 currentView == View.HELP_CONTENTS_VIEW || currentView == View.PREFERENCES_VIEW) {
             clearViewStack();
         }
+        
+        // remember the view in the preferences
+        model.setUserPreference(MultiBitModel.SELECTED_VIEW, "" + currentView);
+
         // tell all views which view to display
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.displayView(currentView);

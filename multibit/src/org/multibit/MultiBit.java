@@ -41,29 +41,24 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
  */
 public class MultiBit {
     public static final String PROPERTIES_FILE_NAME = "multibit.properties";
-    public static final String PROPERTIES_HEADER_TEXT= "multibit";
-    
+    public static final String PROPERTIES_HEADER_TEXT = "multibit";
+
     private static Logger logger;
 
-    
     /**
      * start multibit user interface
      */
     public static void main(String args[]) {
-        System.out.println("MultiBit#main - checkpoint 1");
         // initialise log4j
         DOMConfigurator.configure("log4j.xml");
         logger = Logger.getLogger(MultiBit.class.getName());
-        System.out.println("MultiBit#main - checkpoint 2");
-               
-        // create the controller
-        MultiBitController controller = new MultiBitController();
-        System.out.println("MultiBit#main - checkpoint 3");
-        
+
         // load up the user preferences
         Properties userPreferences = loadUserPreferences();
-        System.out.println("MultiBit#main - checkpoint 4");
-        
+
+        // create the controller
+        MultiBitController controller = new MultiBitController(userPreferences);
+
         // if test or production is not specified, default to production
         String testOrProduction = userPreferences.getProperty(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
         if (testOrProduction == null) {
@@ -72,49 +67,37 @@ public class MultiBit {
         }
         boolean useTestNet = MultiBitModel.TEST_NETWORK_VALUE.equals(testOrProduction);
         logger.debug("useTestNet = " + useTestNet);
-        System.out.println("MultiBit#main - checkpoint 5");
-        
+
         Localiser localiser;
         String userLanguageCode = userPreferences.getProperty(MultiBitModel.USER_LANGUAGE_CODE);
         logger.debug("userLanguageCode = " + userLanguageCode);
-        System.out.println("MultiBit#main - checkpoint 6");
-        
+
         if (userLanguageCode == null || MultiBitModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
             localiser = new Localiser(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, Locale.getDefault());
         } else {
-            localiser = new Localiser(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, new Locale(userLanguageCode));       
+            localiser = new Localiser(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, new Locale(userLanguageCode));
         }
         controller.setLocaliser(localiser);
-        System.out.println("MultiBit#main - checkpoint 7");
-        
+
         // create the model and put it in the controller
         MultiBitModel model = new MultiBitModel(controller, userPreferences);
         controller.setModel(model);
-                
-        System.out.println("MultiBit#main - checkpoint 8");
-        
+
         // create the view systems
         // add the swing view system
         ViewSystem swingView = new MultiBitFrame(controller);
-        System.out.println("MultiBit#main - checkpoint 9");
         controller.registerViewSystem(swingView);
-        System.out.println("MultiBit#main - checkpoint 10");
-        
-        // show the home page
-        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_TRANSACTIONS);
 
-        System.out.println("MultiBit#main - checkpoint 11");
-        
         // create the MultiBitService that connects to the bitcoin network
         MultiBitService multiBitService = new MultiBitService(useTestNet, controller);
         controller.setMultiBitService(multiBitService);
-        System.out.println("MultiBit#main - checkpoint 12");
-        
-        // TODO make more generic
-        ((MultiBitFrame)swingView).fireDataChanged();
+
+        // display the next view
+        controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
+
         multiBitService.downloadBlockChain();
     }
-    
+
     private static Properties loadUserPreferences() {
         Properties userPreferences = new Properties();
         try {
@@ -126,7 +109,7 @@ public class MultiBit {
         } catch (IOException e) {
             // ok may not be written yet
         }
-        
+
         return userPreferences;
     }
 }
