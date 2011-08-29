@@ -65,7 +65,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
     private JPanel formPanel;
     
-    private JButton copyQRCodeTextButton;
+    //private JButton copyQRCodeTextButton;
 
     private AddressBookTableModel addressesTableModel;
 
@@ -124,6 +124,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
     private JPanel createFormPanel() {
         formPanel = new JPanel();
+        formPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
 
         JPanel buttonPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
@@ -308,7 +309,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
     private JPanel createQRCodePanel() {
         JPanel qrCodePanel = new JPanel();
         qrCodePanel.setMinimumSize(new Dimension(240, 200));
-        qrCodePanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY));
         qrCodePanel.setLayout(new GridBagLayout());
         qrCodeLabel = new JLabel("", null, JLabel.CENTER);
         qrCodeLabel.setVerticalTextPosition(JLabel.BOTTOM);
@@ -330,14 +330,14 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         GridBagConstraints constraints = new GridBagConstraints();
 
         JPanel filler1 = new JPanel();
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 0.02;
         constraints.weighty = 0.02;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.anchor = GridBagConstraints.CENTER;
         qrCodePanel.add(filler1, constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -363,6 +363,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         qrCodeTextArea.setEditable(false);
         qrCodeTextArea.setLineWrap(true);
         qrCodeTextArea.setMinimumSize(new Dimension(220, 60));
+        qrCodeTextArea.setText("Drag bitcoin QRCode to target above to fill Send Form");
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
@@ -372,15 +373,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.CENTER;
         qrCodePanel.add(qrCodeTextArea, constraints);
-
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 1;
-        constraints.gridy = 5;
-        constraints.weightx = 1;
-        constraints.weighty = 0.4;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        qrCodePanel.add(createQRCodeButtonPanel(), constraints);
 
         JPanel filler3 = new JPanel();
         constraints.fill = GridBagConstraints.NONE;
@@ -484,22 +476,22 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         return addressesHeaderPanel;
     }
 
-    private JPanel createQRCodeButtonPanel() {
-        JPanel buttonPanel = new JPanel();
-        FlowLayout flowLayout = new FlowLayout();
-        flowLayout.setAlignment(FlowLayout.LEFT);
-        buttonPanel.setLayout(flowLayout);
-
-        CopyQRCodeTextAction copyQRCodeTextAction = new CopyQRCodeTextAction(controller, this);
-        copyQRCodeTextButton = new JButton(copyQRCodeTextAction);
-        buttonPanel.add(copyQRCodeTextButton);
-
-        CopyQRCodeImageAction copyQRCodeImageAction = new CopyQRCodeImageAction(controller, this);
-        JButton copyQRCodeImageButton = new JButton(copyQRCodeImageAction);
-        buttonPanel.add(copyQRCodeImageButton);
-
-        return buttonPanel;
-    }
+//    private JPanel createQRCodeButtonPanel() {
+//        JPanel buttonPanel = new JPanel();
+//        FlowLayout flowLayout = new FlowLayout();
+//        flowLayout.setAlignment(FlowLayout.LEFT);
+//        buttonPanel.setLayout(flowLayout);
+//
+//        CopyQRCodeTextAction copyQRCodeTextAction = new CopyQRCodeTextAction(controller, this);
+//        copyQRCodeTextButton = new JButton(copyQRCodeTextAction);
+//        buttonPanel.add(copyQRCodeTextButton);
+//
+//        CopyQRCodeImageAction copyQRCodeImageAction = new CopyQRCodeImageAction(controller, this);
+//        JButton copyQRCodeImageButton = new JButton(copyQRCodeImageAction);
+//        buttonPanel.add(copyQRCodeImageButton);
+//
+//        return buttonPanel;
+//    }
 
     public Data getData() {
         Data data = new Data();
@@ -581,7 +573,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         addressesTable.getSelectionModel().removeListSelectionListener(addressesListener);
 
         String address = controller.getModel().getUserPreference(MultiBitModel.SEND_ADDRESS);
-        displayQRCode(BitcoinURI.convertToBitcoinURI(address, amountTextField.getText(), labelTextField.getText()));
+        //displayQRCode(BitcoinURI.convertToBitcoinURI(address, amountTextField.getText(), labelTextField.getText()));
 
         // see if the current address is on the table and select it
         int rowToSelect = addressesTableModel.findRowByAddress(address, false);
@@ -599,15 +591,15 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
     /**
      * display the specified string as a QRCode
      */
-    private void displayQRCode(String stringToDisplay) {
-        if (qrCodeEncoderDecoder == null) {
-            qrCodeEncoderDecoder = new QRCodeEncoderDecoder(QRCODE_WIDTH, QRCODE_HEIGHT);
-        }
-        BufferedImage image = qrCodeEncoderDecoder.encode(stringToDisplay);
-        ImageIcon icon = new ImageIcon(image);
-        qrCodeLabel.setIcon(icon);
-        qrCodeTextArea.setText(stringToDisplay);
-    }
+//    private void displayQRCode(String stringToDisplay) {
+//        if (qrCodeEncoderDecoder == null) {
+//            qrCodeEncoderDecoder = new QRCodeEncoderDecoder(QRCODE_WIDTH, QRCODE_HEIGHT);
+//        }
+//        BufferedImage image = qrCodeEncoderDecoder.encode(stringToDisplay);
+//        ImageIcon icon = new ImageIcon(image);
+//        qrCodeLabel.setIcon(icon);
+//        qrCodeTextArea.setText(stringToDisplay);
+//    }
 
     class SelectionListener implements ListSelectionListener {
         SelectionListener() {
@@ -632,8 +624,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                     controller.getModel().setUserPreference(MultiBitModel.SEND_LABEL, rowData.getLabel());
                     addressTextField.setText(rowData.getAddress());
                     labelTextField.setText(rowData.getLabel());
-                    displayQRCode(BitcoinURI.convertToBitcoinURI(rowData.getAddress(), amountTextField.getText(),
-                            labelTextField.getText()));
+                    //displayQRCode(BitcoinURI.convertToBitcoinURI(rowData.getAddress(), amountTextField.getText(),
+                    //        labelTextField.getText()));
                 }
             }
         }
@@ -660,7 +652,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
             controller.getModel().setUserPreference(MultiBitModel.SEND_LABEL, label);
             controller.getModel().setUserPreference(MultiBitModel.SEND_AMOUNT, amount);
 
-            displayQRCode(BitcoinURI.convertToBitcoinURI(address, amount, label));
+            //displayQRCode(BitcoinURI.convertToBitcoinURI(address, amount, label));
         }
     }
 

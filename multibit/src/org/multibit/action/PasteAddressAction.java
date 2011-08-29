@@ -25,7 +25,7 @@ public class PasteAddressAction implements Action {
         controller.getModel().setUserPreference(MultiBitModel.SEND_ADDRESS, stringToPaste);
         
         // forward back to the view currently being displayed
-        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);       
+        //controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);       
     }
     
     public String getDisplayText() {

@@ -124,6 +124,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
     private JPanel createFormPanel() {
         formPanel = new JPanel();
+        formPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
 
         JPanel buttonPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
@@ -297,7 +298,6 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
     private JPanel createQRCodePanel() {
         JPanel qrCodePanel = new JPanel();
         qrCodePanel.setMinimumSize(new Dimension(240, 200));
-        qrCodePanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY));
         qrCodePanel.setLayout(new GridBagLayout());
         qrCodeLabel = new JLabel("", null, JLabel.CENTER);
         qrCodeLabel.setVerticalTextPosition(JLabel.BOTTOM);
