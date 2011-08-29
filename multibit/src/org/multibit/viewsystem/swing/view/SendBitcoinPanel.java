@@ -32,6 +32,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 
 import org.multibit.action.Action;
+import org.multibit.action.TextTransfer;
+import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.Data;
@@ -229,7 +231,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(addressTextField, constraints);
 
-        PasteAddressAction pasteAddressAction = new PasteAddressAction(controller);
+        PasteAddressAction pasteAddressAction = new PasteAddressAction(controller, this);
         JButton pasteAddressButton = new JButton(pasteAddressAction);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 4;
@@ -363,7 +365,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         qrCodeTextArea.setEditable(false);
         qrCodeTextArea.setLineWrap(true);
         qrCodeTextArea.setMinimumSize(new Dimension(220, 60));
-        qrCodeTextArea.setText("Drag bitcoin QRCode to target above to fill Send Form");
+        qrCodeTextArea.setText("Drag bitcoin QRCode to target above to fill\nSend Form.");
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
@@ -654,6 +656,14 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
             //displayQRCode(BitcoinURI.convertToBitcoinURI(address, amount, label));
         }
+    }
+    
+    public void setAddressBookDataByRow(AddressBookData addressBookData) {
+        TextTransfer textTransfer = new TextTransfer();
+        String stringToPaste = textTransfer.getClipboardContents();
+        
+        addressTextField.setText(addressBookData.getAddress());
+        addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRow, false);
     }
 
     public JTextField getLabelTextField() {

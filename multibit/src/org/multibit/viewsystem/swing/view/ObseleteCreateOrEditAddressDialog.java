@@ -30,7 +30,7 @@ import com.google.bitcoin.core.ECKey;
  * @author jim
  * 
  */
-public class CreateOrEditAddressDialog extends MultiBitDialog implements DataProvider {
+public class ObseleteCreateOrEditAddressDialog extends MultiBitDialog implements DataProvider {
 
     private static final long serialVersionUID = -209834865497842662L;
 
@@ -54,7 +54,7 @@ public class CreateOrEditAddressDialog extends MultiBitDialog implements DataPro
      * @param isReceiving
      *            true = receiving address, false = sending
      */
-    public CreateOrEditAddressDialog(JFrame mainFrame, MultiBitController controller, boolean isCreate, boolean isReceiving) {
+    public ObseleteCreateOrEditAddressDialog(JFrame mainFrame, MultiBitController controller, boolean isCreate, boolean isReceiving) {
         super(mainFrame);
         this.controller = controller;
         this.isCreate = isCreate;

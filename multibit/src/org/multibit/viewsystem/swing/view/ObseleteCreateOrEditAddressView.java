@@ -13,7 +13,7 @@ import org.multibit.viewsystem.ViewSystem;
 /**
  * The create new receiving address view
  */
-public class CreateOrEditAddressView implements View {
+public class ObseleteCreateOrEditAddressView implements View {
 
     private static final long serialVersionUID = 191435655543457705L;
 
@@ -26,12 +26,12 @@ public class CreateOrEditAddressView implements View {
     private boolean isCreate;
     private boolean isReceiving;
 
-    private CreateOrEditAddressDialog createOrEditAddressDialog;
+    private ObseleteCreateOrEditAddressDialog createOrEditAddressDialog;
 
     /**
-     * Creates a new {@link CreateOrEditAddressView}.
+     * Creates a new {@link ObseleteCreateOrEditAddressView}.
      */
-    public CreateOrEditAddressView(MultiBitController controller, Localiser localiser,
+    public ObseleteCreateOrEditAddressView(MultiBitController controller, Localiser localiser,
             JFrame mainFrame, boolean isCreate, boolean isReceiving) {
         this.controller = controller;
         this.localiser = localiser;
@@ -61,7 +61,7 @@ public class CreateOrEditAddressView implements View {
      */
     public void displayView() {
         if (createOrEditAddressDialog == null) {
-            createOrEditAddressDialog = new CreateOrEditAddressDialog(mainFrame, controller,
+            createOrEditAddressDialog = new ObseleteCreateOrEditAddressDialog(mainFrame, controller,
                     isCreate, isReceiving);
         }
         createOrEditAddressDialog.loadForm();

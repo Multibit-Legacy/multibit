@@ -163,7 +163,7 @@ public class ObseleteSendBitcoinPanel extends JPanel implements DataProvider, Vi
         constraints.anchor = GridBagConstraints.LINE_START;
         sendBitcoinsPanel.add(addressTextField, constraints);
 
-        PasteAddressAction pasteAddressAction = new PasteAddressAction(controller);
+        PasteAddressAction pasteAddressAction = new PasteAddressAction(controller, null);
         JButton pasteAddressButton = new JButton(pasteAddressAction);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;

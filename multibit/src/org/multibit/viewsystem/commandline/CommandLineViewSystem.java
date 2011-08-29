@@ -117,7 +117,7 @@ public class CommandLineViewSystem implements ViewSystem {
         // Send bitcoin
         View sendBitcoinView = new SendBitcoinView(localiser, "Send Bitcoin", inputStream, printStream);
         Collection<Action> sendBitcoinActions = new ArrayList<Action>();
-        sendBitcoinActions.add(new PasteAddressAction(controller));
+        sendBitcoinActions.add(new PasteAddressAction(controller, null));
         sendBitcoinActions.add(new OpenAddressBookAction(controller, true, false));
         sendBitcoinActions.add(new CancelBackToParentAction(controller));
         sendBitcoinActions.add(new SendBitcoinConfirmAction(controller));

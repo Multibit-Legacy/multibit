@@ -12,7 +12,7 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 /**
  * The view of the address book
  */
-public class AddressBookView implements View {
+public class ObseleteAddressBookView implements View {
 
     private static final long serialVersionUID = 191435612343457705L;
 
@@ -22,14 +22,14 @@ public class AddressBookView implements View {
 
     private Localiser localiser;
 
-    private static AddressBookDialog addressBookDialog;
+    private static ObseleteAddressBookDialog addressBookDialog;
 
     private boolean isReceiving;
 
     /**
-     * Creates a new {@link AddressBookView}.
+     * Creates a new {@link ObseleteAddressBookView}.
      */
-    public AddressBookView(MultiBitController controller, Localiser localiser,
+    public ObseleteAddressBookView(MultiBitController controller, Localiser localiser,
             MultiBitFrame mainFrame, boolean isReceiving) {
         this.controller = controller;
         this.localiser = localiser;
@@ -46,7 +46,7 @@ public class AddressBookView implements View {
      */
     public void displayView() {
         if (addressBookDialog == null) {
-            addressBookDialog = new AddressBookDialog(controller, mainFrame, isReceiving);
+            addressBookDialog = new ObseleteAddressBookDialog(controller, mainFrame, isReceiving);
         }
         addressBookDialog.displayTab(isReceiving);
         addressBookDialog.setVisible(true);

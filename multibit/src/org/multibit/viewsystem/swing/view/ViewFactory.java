@@ -81,22 +81,22 @@ public class ViewFactory {
         }
         
         case View.CREATE_NEW_SENDING_ADDRESS_VIEW: {
-            viewToReturn = new CreateOrEditAddressView(controller, controller.getLocaliser(), mainFrame, true, false);
+            viewToReturn = new ObseleteCreateOrEditAddressView(controller, controller.getLocaliser(), mainFrame, true, false);
             break;
         }
         
         case View.EDIT_SENDING_ADDRESS_VIEW: {
-            viewToReturn = new CreateOrEditAddressView(controller, controller.getLocaliser(), mainFrame, false, false);
+            viewToReturn = new ObseleteCreateOrEditAddressView(controller, controller.getLocaliser(), mainFrame, false, false);
             break;
         }
         
         case View.ADDRESS_BOOK_RECEIVING_VIEW: {
-            viewToReturn = new AddressBookView(controller, controller.getLocaliser(), mainFrame, true);
+            viewToReturn = new ObseleteAddressBookView(controller, controller.getLocaliser(), mainFrame, true);
             break;
         }
         
         case View.ADDRESS_BOOK_SENDING_VIEW: {
-            viewToReturn = new AddressBookView(controller, controller.getLocaliser(), mainFrame, false);
+            viewToReturn = new ObseleteAddressBookView(controller, controller.getLocaliser(), mainFrame, false);
             break;
         }
         

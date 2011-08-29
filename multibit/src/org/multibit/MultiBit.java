@@ -85,13 +85,16 @@ public class MultiBit {
 
         // create the view systems
         // add the swing view system
-        ViewSystem swingView = new MultiBitFrame(controller);
+        MultiBitFrame swingView = new MultiBitFrame(controller);
         controller.registerViewSystem(swingView);
 
         // create the MultiBitService that connects to the bitcoin network
         MultiBitService multiBitService = new MultiBitService(useTestNet, controller);
         controller.setMultiBitService(multiBitService);
 
+        // make sure the total is updated
+        swingView.fireDataChanged();
+        
         // display the next view
         controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
 

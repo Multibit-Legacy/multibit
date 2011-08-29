@@ -40,7 +40,7 @@ import org.multibit.viewsystem.swing.action.OkBackToParentAction;
 /*
  * dialog displaying the address book
  */
-public class AddressBookDialog extends MultiBitDialog implements DataProvider {
+public class ObseleteAddressBookDialog extends MultiBitDialog implements DataProvider {
     private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.4D;
 
     private static final long serialVersionUID = 7123413615342923041L;
@@ -61,11 +61,11 @@ public class AddressBookDialog extends MultiBitDialog implements DataProvider {
     private int selectedReceivingRow;
     private int selectedSendingRow;
 
-    public AddressBookDialog(MultiBitController controller, JFrame mainFrame) {
+    public ObseleteAddressBookDialog(MultiBitController controller, JFrame mainFrame) {
         this(controller, mainFrame, true);
     }
 
-    public AddressBookDialog(MultiBitController controller, JFrame mainFrame, boolean isReceiving) {
+    public ObseleteAddressBookDialog(MultiBitController controller, JFrame mainFrame, boolean isReceiving) {
         super(mainFrame);
         this.controller = controller;
 
