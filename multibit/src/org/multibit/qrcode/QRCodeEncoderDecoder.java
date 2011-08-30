@@ -1,15 +1,23 @@
 package org.multibit.qrcode;
 
 import java.awt.image.BufferedImage;
+import java.util.Hashtable;
 
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.ReaderException;
+import com.google.zxing.Result;
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.qrcode.QRCodeReader;
 import com.google.zxing.qrcode.QRCodeWriter;
 
 public class QRCodeEncoderDecoder {
 
     private int width;
     private int height;
-    
+
     public QRCodeEncoderDecoder(int width, int height) {
         this.width = width;
         this.height = height;
@@ -45,5 +53,26 @@ public class QRCodeEncoderDecoder {
         // ImageIO.write(image, "png", outputStream);
 
         return image;
+    }
+
+    public String decode(BufferedImage image) {
+
+        // convert the image to a binary bitmap source
+        LuminanceSource source = new BufferedImageLuminanceSource(image);
+        BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+
+        // decode the barcode
+        QRCodeReader reader = new QRCodeReader();
+
+        try {
+            Hashtable hints = new Hashtable();
+            Result result = reader.decode(bitmap, hints);
+            return result.getText();
+        } catch (ReaderException e) {
+            // the data is improperly formatted
+            e.printStackTrace();
+        }
+
+        return "";
     }
 }

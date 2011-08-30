@@ -4,9 +4,15 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.HeadlessException;
 import java.awt.Image;
+import java.awt.Transparency;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -17,6 +23,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 
 import javax.swing.AbstractButton;
@@ -38,6 +47,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 
+import org.multibit.Localiser;
 import org.multibit.action.Action;
 import org.multibit.action.TextTransfer;
 import org.multibit.controller.ActionForward;
@@ -57,6 +67,8 @@ import org.multibit.viewsystem.swing.action.CopyQRCodeTextAction;
 import org.multibit.viewsystem.swing.action.CreateNewSendingAddressAction;
 import org.multibit.viewsystem.swing.action.PasteAddressAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
+
+import com.google.bitcoin.core.Address;
 
 public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
@@ -357,7 +369,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         JPanel qrCodeWithArrows = new JPanel();
         qrCodeWithArrows.setBackground(Color.WHITE);
         qrCodeWithArrows.setLayout(new GridBagLayout());
-        
+
         JLabel pointSouthEastLabel = new JLabel("", createImageIcon(POINT_SOUTH_EAST_ICON_FILE), JLabel.CENTER);
         pointSouthEastLabel.setVerticalTextPosition(JLabel.BOTTOM);
         pointSouthEastLabel.setHorizontalTextPosition(JLabel.CENTER);
@@ -369,7 +381,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.CENTER;
         qrCodePanel.add(qrCodeWithArrows, constraints);
-        
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -686,9 +698,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
             controller.getModel().setUserPreference(MultiBitModel.SEND_ADDRESS, address);
             controller.getModel().setUserPreference(MultiBitModel.SEND_LABEL, label);
             controller.getModel().setUserPreference(MultiBitModel.SEND_AMOUNT, amount);
-
-            // displayQRCode(BitcoinURI.convertToBitcoinURI(address, amount,
-            // label));
         }
     }
 
@@ -760,9 +769,37 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                         image = (Image) t.getTransferData(flavors[0]);
                         ImageIcon icon = new ImageIcon(image);
                         label.setIcon(icon);
-                        return true;
+
+                        // decode the QRCode to a String
+                        QRCodeEncoderDecoder qrCodeEncoderDecoder = new QRCodeEncoderDecoder(image.getWidth(qrCodeLabel),
+                                image.getHeight(qrCodeLabel));
+                        String decodedString = qrCodeEncoderDecoder.decode(toBufferedImage(image));
+                        System.out.println("SendBitcoinPanel#imageSelection#importData = decodedString = " + decodedString);
+
+                        // decode the string to an AddressBookData
+                        URI decodedStringURI = new URI(decodedString);
+                        BitcoinURI bitcoinURI = new BitcoinURI(controller, decodedStringURI);
+
+                        Address address = bitcoinURI.getAddress();
+                        String addressString = address.toString();
+                        String amountString = Localiser.bitcoinValueToString(bitcoinURI.getAmount(), false, false);
+                        String decodedLabel = bitcoinURI.getLabel();
+                        System.out.println("SendBitcoinPanel#imageSelection#importData = addressString = " + addressString
+                                + ", amountString = " + amountString + ", label = " + decodedLabel);
+                        AddressBookData addressBookData = new AddressBookData(decodedLabel, addressString);
+                        addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRow, false);
+                        controller.getModel().setUserPreference(MultiBitModel.SEND_ADDRESS, addressString);
+                        controller.getModel().setUserPreference(MultiBitModel.SEND_LABEL, decodedLabel);
+                        controller.getModel().setUserPreference(MultiBitModel.SEND_AMOUNT, amountString);
+                        addressTextField.setText(addressString);
+                        amountTextField.setText(amountString);
+                        labelTextField.setText(decodedLabel);
+
                     } catch (UnsupportedFlavorException ignored) {
                     } catch (IOException ignored) {
+                    } catch (URISyntaxException e) {
+
+                        e.printStackTrace();
                     }
                 }
             } else if (comp instanceof AbstractButton) {
@@ -795,6 +832,47 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
         public boolean isDataFlavorSupported(DataFlavor flavor) {
             return flavors[0].equals(flavor);
+        }
+
+        // This method returns a buffered image with the contents of an image
+        public BufferedImage toBufferedImage(Image image) {
+            if (image instanceof BufferedImage) {
+                return (BufferedImage) image;
+            }
+
+            // This code ensures that all the pixels in the image are loaded
+            image = new ImageIcon(image).getImage();
+
+            // Create a buffered image with a format that's compatible with the
+            // screen
+            BufferedImage bimage = null;
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            try {
+                // Determine the type of transparency of the new buffered image
+                int transparency = Transparency.OPAQUE;
+
+                // Create the buffered image
+                GraphicsDevice gs = ge.getDefaultScreenDevice();
+                GraphicsConfiguration gc = gs.getDefaultConfiguration();
+                bimage = gc.createCompatibleImage(image.getWidth(null), image.getHeight(null), transparency);
+            } catch (HeadlessException e) {
+                // The system does not have a screen
+            }
+
+            if (bimage == null) {
+                // Create a buffered image using the default color model
+                int type = BufferedImage.TYPE_INT_RGB;
+                bimage = new BufferedImage(image.getWidth(null), image.getHeight(null), type);
+            }
+
+            // Copy image to buffered image
+            Graphics g = bimage.createGraphics();
+
+            // Paint the image onto the buffered image
+            g.drawImage(image, 0, 0, null);
+            g.dispose();
+
+            return bimage;
         }
     }
 }
