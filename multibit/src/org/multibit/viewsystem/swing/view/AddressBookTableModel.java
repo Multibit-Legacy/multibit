@@ -1,6 +1,5 @@
 package org.multibit.viewsystem.swing.view;
 
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;

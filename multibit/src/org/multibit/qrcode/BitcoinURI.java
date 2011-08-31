@@ -59,7 +59,7 @@ public class BitcoinURI {
         // initialise the result variables
         address = null;
         amount = null;
-        label = null;
+        label = "";
         
         parsedOk = false;
 

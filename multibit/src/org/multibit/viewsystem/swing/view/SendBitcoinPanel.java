@@ -247,8 +247,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
         addressTextField = new JTextField();
         addressTextField.setHorizontalAlignment(JTextField.LEFT);
-        // addressTextField.setMinimumSize(new Dimension(80, 18));
-        // addressTextField.setMaximumSize(new Dimension(80, 18));
         addressTextField.addKeyListener(new QRCodeKeyListener());
 
         constraints.gridx = 2;
@@ -635,8 +633,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         addressesTable.getSelectionModel().removeListSelectionListener(addressesListener);
 
         String address = controller.getModel().getUserPreference(MultiBitModel.SEND_ADDRESS);
-        // displayQRCode(BitcoinURI.convertToBitcoinURI(address,
-        // amountTextField.getText(), labelTextField.getText()));
 
         // see if the current address is on the table and select it
         int rowToSelect = addressesTableModel.findRowByAddress(address, false);
@@ -674,9 +670,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                     controller.getModel().setUserPreference(MultiBitModel.SEND_LABEL, rowData.getLabel());
                     addressTextField.setText(rowData.getAddress());
                     labelTextField.setText(rowData.getLabel());
-                    // displayQRCode(BitcoinURI.convertToBitcoinURI(rowData.getAddress(),
-                    // amountTextField.getText(),
-                    // labelTextField.getText()));
                 }
             }
         }
@@ -801,17 +794,42 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                                 amountString = Localiser.bitcoinValueToString(bitcoinURI.getAmount(), false, false);
                             }
                             System.out.println("SendBitcoinPanel - ping 4");
-                            String decodedLabel = labelTextField.getText();
-                            if (bitcoinURI.getLabel() != null) {
-                                decodedLabel = bitcoinURI.getLabel();
-                            }
+                            String decodedLabel = bitcoinURI.getLabel();
+
                             System.out.println("SendBitcoinPanel#imageSelection#importData = addressString = " + addressString
                                     + ", amountString = " + amountString + ", label = " + decodedLabel);
                             System.out.println("SendBitcoinPanel - ping 5");
 
                             AddressBookData addressBookData = new AddressBookData(decodedLabel, addressString);
                             System.out.println("SendBitcoinPanel - ping 6");
-                            addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRow, false);
+                            // see if the address is already in the address book
+                            // see if the current address is on the table and
+                            // select it
+                            int rowToSelect = addressesTableModel.findRowByAddress(addressBookData.getAddress(), false);
+                            if (rowToSelect >= 0) {
+                                addressesTableModel.setAddressBookDataByRow(addressBookData, rowToSelect, false);
+                                addressesTable.getSelectionModel().setSelectionInterval(rowToSelect, rowToSelect);
+                                selectedAddressRow = rowToSelect;
+                            } else {
+                                // add a new row to the table
+                                controller.getModel().getAddressBook().addSendingAddress(addressBookData);
+
+                                // select new row
+                                rowToSelect = addressesTableModel.findRowByAddress(addressBookData.getAddress(), false);
+                                if (rowToSelect >= 0) {
+                                    addressesTable.getSelectionModel().setSelectionInterval(rowToSelect, rowToSelect);
+                                    selectedAddressRow = rowToSelect;
+                                }
+                            }
+                            // scroll to visible
+                            addressesTable.scrollRectToVisible(addressesTable.getCellRect(rowToSelect, 0, false));
+                            addressesTable.invalidate();
+                            addressesTable.validate();
+                            addressesTable.repaint();
+                            mainFrame.invalidate();
+                            mainFrame.validate();
+                            mainFrame.repaint();
+
                             System.out.println("SendBitcoinPanel - ping 7");
                             controller.getModel().setUserPreference(MultiBitModel.SEND_ADDRESS, addressString);
                             System.out.println("SendBitcoinPanel - ping 8");
@@ -828,6 +846,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                             System.out.println("SendBitcoinPanel - ping 13");
                             mainFrame.updateStatusLabel("");
                             label.setIcon(icon);
+                            label.setToolTipText(decodedString);
 
                             return true;
                         } else {
@@ -836,20 +855,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                             return false;
                         }
 
-                    } catch (UnsupportedFlavorException ignored) {
-                        ignored.printStackTrace();
-                    } catch (IOException ignored) {
-                        ignored.printStackTrace();
-                    }
-                }
-            } else if (comp instanceof AbstractButton) {
-                AbstractButton button = (AbstractButton) comp;
-                if (t.isDataFlavorSupported(flavors[0])) {
-                    try {
-                        image = (Image) t.getTransferData(flavors[0]);
-                        ImageIcon icon = new ImageIcon(image);
-                        button.setIcon(icon);
-                        return true;
                     } catch (UnsupportedFlavorException ignored) {
                     } catch (IOException ignored) {
                     }
@@ -913,7 +918,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
             // Paint the image onto the buffered image
             // g.drawImage(image, 0, 0, null);
-            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            // g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+            // RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             g.drawImage(image, 0, 0, width, height, null);
 
             g.dispose();

@@ -20,11 +20,20 @@ public class ImageSelection extends TransferHandler implements Transferable {
 
     private Image image;
 
+    private boolean canImport;
+    public ImageSelection(boolean canImport) {
+        this.canImport = canImport;
+    }
+    
     public int getSourceActions(JComponent c) {
         return TransferHandler.COPY;
     }
 
     public boolean canImport(JComponent comp, DataFlavor flavor[]) {
+        if (!canImport) {
+            return false;
+        }
+        
         if (!(comp instanceof JLabel)) {
             return false;
         }

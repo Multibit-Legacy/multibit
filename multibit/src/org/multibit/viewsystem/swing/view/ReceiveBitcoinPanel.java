@@ -304,7 +304,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         qrCodeLabel.setHorizontalTextPosition(JLabel.CENTER);
 
         // copy image support
-        qrCodeLabel.setTransferHandler(new ImageSelection());
+        qrCodeLabel.setTransferHandler(new ImageSelection(false));
 
         // drag support
         MouseListener listener = new MouseAdapter() {
@@ -440,9 +440,6 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
     private JPanel createAddressesHeaderPanel() {
         JPanel addressesHeaderPanel = new AddressesPanel();
-//        FlowLayout flowLayout = new FlowLayout();
-//        flowLayout.setAlignment(FlowLayout.RIGHT);
-//        buttonPanel.setLayout(flowLayout);
 
         addressesHeaderPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
