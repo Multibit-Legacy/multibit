@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -12,6 +13,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -21,6 +23,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -81,6 +84,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
     private static final String POINT_NORTH_EAST_ICON_FILE = "/images/pointNorthEast.png";
     private static final String POINT_NORTH_WEST_ICON_FILE = "/images/pointNorthWest.png";
 
+    private MultiBitFrame mainFrame;
     private MultiBitController controller;
 
     private JTextField addressTextField;
@@ -90,8 +94,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
     private JTextField amountTextField;
 
     private JPanel formPanel;
-
-    // private JButton copyQRCodeTextButton;
 
     private AddressBookTableModel addressesTableModel;
 
@@ -107,7 +109,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
     private static final int QRCODE_WIDTH = 140;
     private static final int QRCODE_HEIGHT = 140;
 
-    public SendBitcoinPanel(JFrame mainFrame, MultiBitController controller) {
+    public SendBitcoinPanel(MultiBitFrame mainFrame, MultiBitController controller) {
+        this.mainFrame = mainFrame;
         this.controller = controller;
 
         initUI();
@@ -360,7 +363,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 0.02;
-        constraints.weighty = 0.02;
+        constraints.weighty = 0.4;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.CENTER;
@@ -378,6 +381,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridx = 1;
         constraints.gridy = 1;
         constraints.weightx = 1;
+        constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.CENTER;
         qrCodePanel.add(qrCodeWithArrows, constraints);
@@ -452,7 +456,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridx = 1;
         constraints.gridy = 3;
         constraints.weightx = 1;
-        constraints.weighty = 6;
+        constraints.weighty = 1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.CENTER;
         qrCodePanel.add(qrCodeExplainLabel, constraints);
@@ -767,39 +771,75 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                 if (t.isDataFlavorSupported(flavors[0])) {
                     try {
                         image = (Image) t.getTransferData(flavors[0]);
-                        ImageIcon icon = new ImageIcon(image);
-                        label.setIcon(icon);
+                        BufferedImage bufferedImage;
+                        if (image.getWidth(qrCodeLabel) > QRCODE_WIDTH || image.getHeight(qrCodeLabel) > QRCODE_HEIGHT) {
+                            // scale image
+                            bufferedImage = toBufferedImage(image, QRCODE_WIDTH, QRCODE_HEIGHT);
+                        } else {
+                            // no resize
+                            bufferedImage = toBufferedImage(image, -1, -1);
+                        }
+                        ImageIcon icon = new ImageIcon(bufferedImage);
 
                         // decode the QRCode to a String
                         QRCodeEncoderDecoder qrCodeEncoderDecoder = new QRCodeEncoderDecoder(image.getWidth(qrCodeLabel),
                                 image.getHeight(qrCodeLabel));
-                        String decodedString = qrCodeEncoderDecoder.decode(toBufferedImage(image));
+                        String decodedString = qrCodeEncoderDecoder.decode(toBufferedImage(image, -1, -1));
                         System.out.println("SendBitcoinPanel#imageSelection#importData = decodedString = " + decodedString);
 
                         // decode the string to an AddressBookData
-                        URI decodedStringURI = new URI(decodedString);
-                        BitcoinURI bitcoinURI = new BitcoinURI(controller, decodedStringURI);
+                        BitcoinURI bitcoinURI = new BitcoinURI(controller, decodedString);
 
-                        Address address = bitcoinURI.getAddress();
-                        String addressString = address.toString();
-                        String amountString = Localiser.bitcoinValueToString(bitcoinURI.getAmount(), false, false);
-                        String decodedLabel = bitcoinURI.getLabel();
-                        System.out.println("SendBitcoinPanel#imageSelection#importData = addressString = " + addressString
-                                + ", amountString = " + amountString + ", label = " + decodedLabel);
-                        AddressBookData addressBookData = new AddressBookData(decodedLabel, addressString);
-                        addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRow, false);
-                        controller.getModel().setUserPreference(MultiBitModel.SEND_ADDRESS, addressString);
-                        controller.getModel().setUserPreference(MultiBitModel.SEND_LABEL, decodedLabel);
-                        controller.getModel().setUserPreference(MultiBitModel.SEND_AMOUNT, amountString);
-                        addressTextField.setText(addressString);
-                        amountTextField.setText(amountString);
-                        labelTextField.setText(decodedLabel);
+                        if (bitcoinURI.isParsedOk()) {
+                            System.out.println("SendBitcoinPanel - ping 1");
+                            Address address = bitcoinURI.getAddress();
+                            System.out.println("SendBitcoinPanel - ping 2");
+                            String addressString = address.toString();
+                            System.out.println("SendBitcoinPanel - ping 3");
+                            String amountString = amountTextField.getText();
+                            if (bitcoinURI.getAmount() != null) {
+                                amountString = Localiser.bitcoinValueToString(bitcoinURI.getAmount(), false, false);
+                            }
+                            System.out.println("SendBitcoinPanel - ping 4");
+                            String decodedLabel = labelTextField.getText();
+                            if (bitcoinURI.getLabel() != null) {
+                                decodedLabel = bitcoinURI.getLabel();
+                            }
+                            System.out.println("SendBitcoinPanel#imageSelection#importData = addressString = " + addressString
+                                    + ", amountString = " + amountString + ", label = " + decodedLabel);
+                            System.out.println("SendBitcoinPanel - ping 5");
+
+                            AddressBookData addressBookData = new AddressBookData(decodedLabel, addressString);
+                            System.out.println("SendBitcoinPanel - ping 6");
+                            addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRow, false);
+                            System.out.println("SendBitcoinPanel - ping 7");
+                            controller.getModel().setUserPreference(MultiBitModel.SEND_ADDRESS, addressString);
+                            System.out.println("SendBitcoinPanel - ping 8");
+                            controller.getModel().setUserPreference(MultiBitModel.SEND_LABEL, decodedLabel);
+                            System.out.println("SendBitcoinPanel - ping 9");
+
+                            controller.getModel().setUserPreference(MultiBitModel.SEND_AMOUNT, amountString);
+                            System.out.println("SendBitcoinPanel - ping 10");
+                            addressTextField.setText(addressString);
+                            System.out.println("SendBitcoinPanel - ping 11");
+                            amountTextField.setText(amountString);
+                            System.out.println("SendBitcoinPanel - ping 12");
+                            labelTextField.setText(decodedLabel);
+                            System.out.println("SendBitcoinPanel - ping 13");
+                            mainFrame.updateStatusLabel("");
+                            label.setIcon(icon);
+
+                            return true;
+                        } else {
+                            mainFrame.updateStatusLabel(controller.getLocaliser().getString(
+                                    "sendBitcoinPanel.couldNotUnderstandQRcode", new Object[] { decodedString }));
+                            return false;
+                        }
 
                     } catch (UnsupportedFlavorException ignored) {
+                        ignored.printStackTrace();
                     } catch (IOException ignored) {
-                    } catch (URISyntaxException e) {
-
-                        e.printStackTrace();
+                        ignored.printStackTrace();
                     }
                 }
             } else if (comp instanceof AbstractButton) {
@@ -835,9 +875,12 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         }
 
         // This method returns a buffered image with the contents of an image
-        public BufferedImage toBufferedImage(Image image) {
-            if (image instanceof BufferedImage) {
-                return (BufferedImage) image;
+        public BufferedImage toBufferedImage(Image image, int width, int height) {
+            if (width == -1) {
+                width = image.getWidth(null);
+            }
+            if (height == -1) {
+                height = image.getHeight(null);
             }
 
             // This code ensures that all the pixels in the image are loaded
@@ -854,7 +897,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                 // Create the buffered image
                 GraphicsDevice gs = ge.getDefaultScreenDevice();
                 GraphicsConfiguration gc = gs.getDefaultConfiguration();
-                bimage = gc.createCompatibleImage(image.getWidth(null), image.getHeight(null), transparency);
+                bimage = gc.createCompatibleImage(width, height, transparency);
             } catch (HeadlessException e) {
                 // The system does not have a screen
             }
@@ -862,14 +905,17 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
             if (bimage == null) {
                 // Create a buffered image using the default color model
                 int type = BufferedImage.TYPE_INT_RGB;
-                bimage = new BufferedImage(image.getWidth(null), image.getHeight(null), type);
+                bimage = new BufferedImage(width, height, type);
             }
 
             // Copy image to buffered image
-            Graphics g = bimage.createGraphics();
+            Graphics2D g = bimage.createGraphics();
 
             // Paint the image onto the buffered image
-            g.drawImage(image, 0, 0, null);
+            // g.drawImage(image, 0, 0, null);
+            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g.drawImage(image, 0, 0, width, height, null);
+
             g.dispose();
 
             return bimage;

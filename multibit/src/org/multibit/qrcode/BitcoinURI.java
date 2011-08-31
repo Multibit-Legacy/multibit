@@ -41,63 +41,108 @@ public class BitcoinURI {
     private Address address;
     private BigInteger amount;
     private String label;
-
+      
+    private boolean parsedOk;
+    
     private static final Pattern AMOUNT_PATTERN = Pattern.compile("([\\d.]+)(?:X(\\d+))?");
 
-    public BitcoinURI(MultiBitController controller, URI uri)  {
-        String scheme = uri.getScheme();
+    private static final String BITCOIN_PREFIX = "bitcoin:";
+    
+    public BitcoinURI(MultiBitController controller, String uriString) {
+        // the uri strings accepted are:
+        // <an address>
+        // bitcoin:<an address>
+        // bitcoin:<an address>?amount=<an amount>
+        // bitcoin:<an address>?amount=<an amount>&label=<a label>
+        // bitcoin:<an address>?label=<a label>&amount=<an amount>
+        
+        // initialise the result variables
+        address = null;
+        amount = null;
+        label = null;
+        
+        parsedOk = false;
 
-        if ("bitcoin".equals(scheme)) {
-            URI u;
-            try {
-                u = new URI("bitcoin://" + uri.getSchemeSpecificPart());
-            } catch (URISyntaxException e) {
-                throw new IllegalArgumentException("Cannot understand uri " + uri.toASCIIString());
-            }
+        if (uriString == null || uriString.equals("")) {
+            return;
+        }
+        
+        // see if the string is an address (this format is used by Instawallet)
+        try {
+            address = new Address(controller.getMultiBitService().getNetworkParameters(), uriString);
+            parsedOk = true; // we are done
+        } catch (final AddressFormatException x) {
+            // do nothing
+        }
 
-            String addressString =  u.getHost();
-            try {
-                address = new Address(controller.getMultiBitService().getNetworkParameters(), addressString);
-            } catch (final AddressFormatException x) {
-                x.printStackTrace();
-            }
-
-            String query = u.getQuery();
-            StringTokenizer queryTokenizer = new StringTokenizer(query, "&");
-            
-            while(queryTokenizer.hasMoreTokens()) {
-                // get the next nameValue pair - these are of format "<name>=<value>:
-                String nameValuePair = queryTokenizer.nextToken();
+        if (!parsedOk) {
+            // see if the string is a bitcon uri
+            if (uriString.startsWith(BITCOIN_PREFIX)) {
+                // remove the bitcoin prefix
+                uriString = uriString.substring(BITCOIN_PREFIX.length());
                 
-                // parse nameValuePair
-                StringTokenizer nameValueTokenizer = new StringTokenizer(nameValuePair, "=");
-                String name = null;
-                String value = null;
+                // see if what remains is an address
+                try {
+                    address = new Address(controller.getMultiBitService().getNetworkParameters(), uriString);
+                    parsedOk = true; // we are done
+                    System.out.println("BitcoinURI - Ping 1");
+                } catch (final AddressFormatException x) {
+                    // do nothing
+                }
                 
-                if (nameValueTokenizer.hasMoreTokens()) {
-                    name = nameValueTokenizer.nextToken();
-                }
-                if (nameValueTokenizer.hasMoreTokens()) {
-                    value = nameValueTokenizer.nextToken();
-                }
-                if ("amount".equalsIgnoreCase(name)) {
-                    // amount to parse
-                    if (value != null) {
-                        Matcher matcher = AMOUNT_PATTERN.matcher(value);
-                        if (matcher.matches()) {
-                            amount = Utils.toNanoCoins(matcher.group(1));
-                            if (matcher.group(2) != null)
-                                amount.multiply(BigInteger.valueOf(10).pow(Integer.parseInt(matcher.group(2)) - 8));
+                if (!parsedOk) {
+                    // split by question mark
+                    StringTokenizer addressTokenizer = new StringTokenizer(uriString, "?");
+                    if (addressTokenizer.countTokens() == 2) {
+                        String addressString = addressTokenizer.nextToken();
+                        String queryString = addressTokenizer.nextToken();
+                        try {
+                            address = new Address(controller.getMultiBitService().getNetworkParameters(), addressString);
+                            parsedOk = true;
+                        } catch (final AddressFormatException x) {
+                            // do nothing
+                        }                        
+
+                        StringTokenizer queryTokenizer = new StringTokenizer(queryString, "&");
+                        
+                        while(queryTokenizer.hasMoreTokens()) {
+                            // get the next nameValue pair - these are of format "<name>=<value>:
+                            String nameValuePair = queryTokenizer.nextToken();
+                            
+                            // parse nameValuePair
+                            StringTokenizer nameValueTokenizer = new StringTokenizer(nameValuePair, "=");
+                            String name = null;
+                            String value = null;
+                            
+                            if (nameValueTokenizer.hasMoreTokens()) {
+                                name = nameValueTokenizer.nextToken();
+                            }
+                            if (nameValueTokenizer.hasMoreTokens()) {
+                                value = nameValueTokenizer.nextToken();
+                            }
+                            if ("amount".equalsIgnoreCase(name)) {
+                                // amount to parse
+                                if (value != null) {
+                                    Matcher matcher = AMOUNT_PATTERN.matcher(value);
+                                    if (matcher.matches()) {
+                                        amount = Utils.toNanoCoins(matcher.group(1));
+                                        if (matcher.group(2) != null)
+                                            amount.multiply(BigInteger.valueOf(10).pow(Integer.parseInt(matcher.group(2)) - 8));
+                                    }
+                                }
+                            } else if ("label".equalsIgnoreCase(name)) {
+                                // label 
+                                label = value;   
+                            }
+                            // we ignore any other name value pairs
                         }
+                    } else {
+                        // we cannot parse this                       
                     }
-                } else if ("label".equalsIgnoreCase(name)) {
-                    // label 
-                    label = value;   
                 }
-                // we ignore any other name value pairs
+            } else {
+                // we cannot parse this
             }
-        } else {
-            throw new IllegalArgumentException("unknown scheme: " + scheme);
         }
     }
 
@@ -141,5 +186,9 @@ public class BitcoinURI {
     @Override
     public String toString() {
         return "BitcoinURI[" + address + "," + amount + "," + label + "]";
+    }
+
+    public boolean isParsedOk() {
+        return parsedOk;
     }
 }

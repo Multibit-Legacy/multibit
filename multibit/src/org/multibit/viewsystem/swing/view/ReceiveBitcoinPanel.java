@@ -362,7 +362,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.anchor = GridBagConstraints.CENTER;
         qrCodePanel.add(qrCodeTextArea, constraints);
 
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 5;
         constraints.weightx = 1;
