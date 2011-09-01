@@ -602,7 +602,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             throw new RuntimeException(e);
         }
 
-        logger.debug("MultiBitFrame#onCoinsReceived - wallet is currently:\n" + wallet.toString());
+        //logger.debug("MultiBitFrame#onCoinsReceived - wallet is currently:\n" + wallet.toString());
         fireDataChanged();
     }
 
@@ -623,7 +623,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             throw new RuntimeException(e);
         }
 
-        logger.debug("MultiBitFrame#onPendingCoinsReceived - wallet is currently:\n" + wallet.toString());
+        //logger.debug("MultiBitFrame#onPendingCoinsReceived - wallet is currently:\n" + wallet.toString());
         fireDataChanged();
     }
 

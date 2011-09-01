@@ -1,16 +1,12 @@
 TODO for minimal viable product
 --------------------------------
 add wallet encryption
-add in support for fees
-make sure right icons are used - no coffee cups including help
 test it works on the test network
 check switching of wallets hooks up all listeners correctly
 ensure switch from test to prod does not confuse which wallet is open. (last test/prod wallet setting ?)
 
 Logging and errors
 ------------------
-o no error message in MultiBitService#sendCoins when not enough money
-o no error message when cannot connect to peer
 o client does not go offline if you disconnect from network
 o extend log4j logging to all important classes
 
@@ -18,6 +14,7 @@ Outstanding Bugs
 ----------------
 o if you close the 'open wallet' dialog with the window close button, then reopen it is tiny
 o wallet listeners don't seem to work when you open another wallet
+o if you have two multibit open on the same wallet addressbook and wallet can be overwritten one by the other
 
 Improvements
 ------------

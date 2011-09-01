@@ -12,6 +12,8 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
+import com.google.bitcoin.core.Utils;
+
 /**
  * The validation error view - used to tell the user their input is invalid
  */
@@ -83,7 +85,11 @@ public class ValidationErrorView implements View {
             if (!"".equals(completeMessage)) {
                 completeMessage = completeMessage + "\n";
             }
-            completeMessage = completeMessage + controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage", new String[] {amountValue});
+            String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+            if (fee == null || fee == "") {
+                fee = Utils.bitcoinValueToFriendlyString3(MultiBitModel.SEND_FEE_DEFAULT);
+            }
+            completeMessage = completeMessage + controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage", new String[] {amountValue, fee});
         }
  
         

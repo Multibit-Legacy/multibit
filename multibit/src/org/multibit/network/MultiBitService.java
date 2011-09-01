@@ -61,7 +61,7 @@ public class MultiBitService {
 
     public static final String BLOCKCHAIN_SUFFIX = ".blockchain";
     public static final String WALLET_SUFFIX = ".wallet";
-    
+
     public static final String IRC_CHANNEL_TEST = "#bitcoinTEST";;
 
     private String walletFilename;
@@ -109,6 +109,7 @@ public class MultiBitService {
                             BigInteger newBalance) {
                         finalController.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
                     }
+
                     public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
                             BigInteger newBalance) {
                         finalController.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
@@ -123,9 +124,9 @@ public class MultiBitService {
             // use default wallet name - create if does not exist
             walletFilename = filePrefix + WALLET_SUFFIX;
             walletFile = new File(walletFilename);
-            
+
             boolean needToSaveNewFile = false;
-            
+
             if (walletFile.exists()) {
                 // wallet file exists with default name
                 try {
@@ -140,7 +141,7 @@ public class MultiBitService {
                 wallet.keychain.add(newKey);
                 needToSaveNewFile = true;
             }
-            
+
             // set the new wallet and wallet filename on the model
             controller.getModel().setWalletFilename(walletFilename);
             controller.getModel().setWallet(wallet);
@@ -152,12 +153,13 @@ public class MultiBitService {
                         BigInteger newBalance) {
                     finalController.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
                 }
+
                 public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
                         BigInteger newBalance) {
                     finalController.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
                 }
             });
-           
+
             try {
                 if (needToSaveNewFile) {
                     wallet.saveToFile(walletFile);
@@ -169,7 +171,8 @@ public class MultiBitService {
             }
         }
 
-        // add the keys for this wallet to the address book as receiving addresses
+        // add the keys for this wallet to the address book as receiving
+        // addresses
         ArrayList<ECKey> keys = wallet.keychain;
         if (keys != null) {
             AddressBook addressBook = controller.getModel().getAddressBook();
@@ -195,12 +198,15 @@ public class MultiBitService {
             chain = new BlockChain(networkParameters, wallet, blockStore);
 
             peerGroup = new MultiBitPeerGroup(controller, blockStore, networkParameters, chain, wallet);
-            // peerGroup.addAddress(new PeerAddress(InetAddress.getLocalHost(), 8333));
-            //peerGroup.addAddress(new PeerAddress(InetAddress.getByName("98.143.152.19"), 8333)); // production fall back node
-            
+            // peerGroup.addAddress(new PeerAddress(InetAddress.getLocalHost(),
+            // 8333));
+            // peerGroup.addAddress(new
+            // PeerAddress(InetAddress.getByName("98.143.152.19"), 8333)); //
+            // production fall back node
+
             // use DNS for production, IRC for test
             if (useTestNet) {
-                peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST)); 
+                peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
             } else {
                 peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
             }
@@ -214,9 +220,11 @@ public class MultiBitService {
             // The PeerGroup thread keeps us alive until something kills the
             // process.
         } catch (BlockStoreException e) {
-            controller.displayMessage("multiBitService.errorText", new Object[]{e.getClass().getName() + " " + e.getMessage()}, "multiBitService.errorTitleText");
+            controller.displayMessage("multiBitService.errorText",
+                    new Object[] { e.getClass().getName() + " " + e.getMessage() }, "multiBitService.errorTitleText");
         } catch (Exception e) {
-            controller.displayMessage("multiBitService.errorText", new Object[]{e.getClass().getName() + " " + e.getMessage()}, "multiBitService.errorTitleText");
+            controller.displayMessage("multiBitService.errorText",
+                    new Object[] { e.getClass().getName() + " " + e.getMessage() }, "multiBitService.errorTitleText");
         }
     }
 
@@ -231,21 +239,26 @@ public class MultiBitService {
      * send bitcoins
      * 
      * @param sendAddressString
-     *            - the address to send to, as a String
+     *            the address to send to, as a String
+     * @param fee
+     *            fee to pay in nanocoin
      * @param amount
-     *            - the amount to send to, in BTC, as a String
+     *            the amount to send to, in BTC, as a String
      */
 
-    public Transaction sendCoins(String sendAddressString, String amount) throws java.io.IOException, AddressFormatException {
+    public Transaction sendCoins(String sendAddressString, String amount, BigInteger fee) throws java.io.IOException,
+            AddressFormatException {
         // send the coins
         Address sendAddress = new Address(networkParameters, sendAddressString);
-        Transaction sendTransaction = wallet.sendCoins(peerGroup, sendAddress, Utils.toNanoCoins(amount));
+        Transaction sendTransaction = wallet.sendCoins(peerGroup, sendAddress, Utils.toNanoCoins(amount), fee);
         assert sendTransaction != null; // We should never try to send more
         // coins than we have!
         // throw an exception if sendTransaction is null - no money
-        System.out.println("MultiBitService#sendCoins - Sent coins. Transaction hash is " + sendTransaction.getHashAsString());
-        wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
-
+        if (sendTransaction != null) {
+            System.out.println("MultiBitService#sendCoins - Sent coins. Transaction hash is "
+                    + sendTransaction.getHashAsString());
+            wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
+        }
         return sendTransaction;
     }
 

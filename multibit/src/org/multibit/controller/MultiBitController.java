@@ -470,10 +470,10 @@ public class MultiBitController implements PeerEventListener {
         }
     }
 
-    public void sendCoins(String sendAddressString, String sendLabel, String amount) {
+    public void sendCoins(String sendAddressString, String sendLabel, String amount, BigInteger fee) {
         try {
             // send the coins
-            Transaction sendTransaction = multiBitService.sendCoins(sendAddressString, amount);
+            Transaction sendTransaction = multiBitService.sendCoins(sendAddressString, amount, fee);
             fireWalletDataChanged();
         } catch (java.io.IOException ioe) {
             ioe.printStackTrace();

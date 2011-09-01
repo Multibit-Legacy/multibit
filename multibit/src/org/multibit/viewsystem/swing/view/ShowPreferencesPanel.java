@@ -8,6 +8,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +21,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 
 import org.multibit.action.Action;
 import org.multibit.controller.MultiBitController;
@@ -31,14 +33,14 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ShowPreferencesSubmitAction;
 
+import com.google.bitcoin.core.Utils;
+
 /**
  * The help about view
  */
 public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
     private static final long serialVersionUID = 191352298245057705L;
-
-    private ImageIcon imageIcon;
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
@@ -47,6 +49,10 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     private Map<String, String> languageCodeToLanguageMap;
     private JRadioButton useDefaultLocale;
     private JComboBox languageComboBox;
+    
+    private JTextField feeTextField;
+    private String originalFee;
+    
 
     private Data data;
 
@@ -67,112 +73,27 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         data = new Data();
 
         initUI();
-
-        // String versionNumber = localiser.getVersionNumber();
-        //
-        // String versionText =
-        // localiser.getString("helpAboutAction.versionText",
-        // new Object[] { versionNumber });
-        //
-        // GridBagConstraints constraints = new GridBagConstraints();
-        // setLayout(new GridBagLayout());
-        //
-        // constraints.fill = GridBagConstraints.NONE;
-        // constraints.gridx = 0;
-        // constraints.gridy = 0;
-        // constraints.gridwidth = 1;
-        // constraints.weightx = 1;
-        // constraints.weighty = 0.12;
-        // constraints.anchor = GridBagConstraints.CENTER;
-        // JPanel fillerPanel1 = new JPanel();
-        // add(fillerPanel1, constraints);
-        //
-        //
-        // JLabel titleLabel = new JLabel();
-        // titleLabel.setHorizontalTextPosition(JLabel.CENTER);
-        // titleLabel.setText(getDescription());
-        // Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME,
-        // MultiBitFrame.MULTIBIT_FONT_STYLE,
-        // MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
-        // titleLabel.setFont(font);
-        //
-        // constraints.fill = GridBagConstraints.NONE;
-        // constraints.gridx = 0;
-        // constraints.gridy = 1;
-        // constraints.gridwidth = 1;
-        // constraints.weightx = 1;
-        // constraints.weighty = 0.06;
-        // constraints.anchor = GridBagConstraints.CENTER;
-        // add(titleLabel, constraints);
-        //
-        // imageIcon = createImageIcon(SPLASH_ICON_FILE);
-        // JLabel splashLabel = new JLabel();
-        // splashLabel.setIcon(imageIcon);
-        // constraints.fill = GridBagConstraints.NONE;
-        // constraints.gridx = 0;
-        // constraints.gridy = 2;
-        // constraints.gridwidth = 1;
-        // constraints.weightx = 1;
-        // constraints.weighty = 0.64;
-        // constraints.anchor = GridBagConstraints.CENTER;
-        // add(splashLabel, constraints);
-        //
-        // constraints.fill = GridBagConstraints.NONE;
-        // constraints.gridx = 0;
-        // constraints.gridy = 3;
-        // constraints.gridwidth = 1;
-        // constraints.weightx = 1;
-        // constraints.weighty = 0.06;
-        // constraints.anchor = GridBagConstraints.CENTER;
-        // JLabel urlLabel = new JLabel(MULTIBIT_URL);
-        // add(urlLabel, constraints);
-        //
-        // constraints.fill = GridBagConstraints.NONE;
-        // constraints.gridx = 0;
-        // constraints.gridy = 4;
-        // constraints.gridwidth = 1;
-        // constraints.weightx = 1;
-        // constraints.weighty = 0.06;
-        // constraints.anchor = GridBagConstraints.CENTER;
-        // JLabel versionLabel = new JLabel(versionText);
-        // add(versionLabel, constraints);
-        //
-        // constraints.fill = GridBagConstraints.NONE;
-        // constraints.gridx = 0;
-        // constraints.gridy = 5;
-        // constraints.gridwidth = 1;
-        // constraints.weightx = 1;
-        // constraints.weighty = 0.12;
-        // constraints.anchor = GridBagConstraints.CENTER;
-        // JPanel fillerPanel2 = new JPanel();
-        // add(fillerPanel2, constraints);
-
     }
 
     public String getDescription() {
-        return controller.getLocaliser().getString("showPreferencesDialog.title");
+        return controller.getLocaliser().getString("showPreferencesPanel.title");
     }
 
     /**
      * show help about message box
      */
     public void displayView() {
-
+       String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+        
+        if (sendFeeString == null || sendFeeString == "") {
+            sendFeeString = Utils.bitcoinValueToFriendlyString3(MultiBitModel.SEND_FEE_DEFAULT);
+        }
+        originalFee = sendFeeString;
+        feeTextField.setText(sendFeeString);
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
         // not implemented on this view
-    }
-
-    /** Returns an ImageIcon, or null if the path was invalid. */
-    private ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = MultiBitFrame.class.getResource(path);
-        if (imgURL != null) {
-            return new ImageIcon(imgURL);
-        } else {
-            System.err.println("org.multibit.ViewerFrame#createImageIcon: Could not find file: " + path);
-            return null;
-        }
     }
 
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
@@ -229,23 +150,39 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.weightx = 1;
         constraints.weighty = 1.6;
         constraints.anchor = GridBagConstraints.NORTHWEST;
-        add(createPreferencesPanel(), constraints);
-     }
+        add(createLanguagePanel(), constraints);
+        
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.gridwidth = 2;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        add(createFeePanel(), constraints);
 
-    private JPanel createPreferencesPanel() {
-        JPanel preferencesPanel = new JPanel();
-        preferencesPanel.setLayout(new GridBagLayout());
+        JLabel filler1 = new JLabel();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        constraints.gridwidth = 2;
+        constraints.weightx = 1;
+        constraints.weighty = 20;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        add(filler1, constraints);
+    }
 
+    private JPanel createLanguagePanel() {
         // language radios
         JPanel languagePanel = new JPanel(new GridBagLayout());
         languagePanel.setBorder(BorderFactory.createTitledBorder(controller.getLocaliser().getString(
-                "showPreferencesDialog.languageTitle")));
+                "showPreferencesPanel.languageTitle")));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
         ButtonGroup languageUsageGroup = new ButtonGroup();
-        useDefaultLocale = new JRadioButton(controller.getLocaliser().getString("showPreferencesDialog.useDefault"));
-        JRadioButton useSpecific = new JRadioButton(controller.getLocaliser().getString("showPreferencesDialog.useSpecific"));
+        useDefaultLocale = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.useDefault"));
+        JRadioButton useSpecific = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.useSpecific"));
         ItemListener itemListener = new ChangeLanguageUsageItemListener();
         useDefaultLocale.addItemListener(itemListener);
         useSpecific.addItemListener(itemListener);
@@ -272,10 +209,10 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         // language combo box
         languageComboBox = new JComboBox();
         int numberOfLanguages = Integer
-                .parseInt(controller.getLocaliser().getString("showPreferencesDialog.numberOfLanguages"));
+                .parseInt(controller.getLocaliser().getString("showPreferencesPanel.numberOfLanguages"));
         for (int i = 1; i <= numberOfLanguages; i++) {
-            String languageCode = controller.getLocaliser().getString("showPreferencesDialog.languageCode." + i);
-            String language = controller.getLocaliser().getString("showPreferencesDialog.language." + i);
+            String languageCode = controller.getLocaliser().getString("showPreferencesPanel.languageCode." + i);
+            String language = controller.getLocaliser().getString("showPreferencesPanel.language." + i);
             languageToLanguageCodeMap.put(language, languageCode);
             languageCodeToLanguageMap.put(languageCode, language);
             languageComboBox.addItem(language);
@@ -313,9 +250,58 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.weighty = 0.15;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
-        preferencesPanel.add(languagePanel, constraints);
 
-        return preferencesPanel;
+        return languagePanel;
+    }
+
+    private JPanel createFeePanel() {
+        JPanel feePanel = new JPanel(new GridBagLayout());
+        feePanel.setBorder(BorderFactory.createTitledBorder(controller.getLocaliser().getString(
+                "showPreferencesPanel.feeTitle")));
+
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        JLabel feeLabel = new JLabel(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"));
+        feeLabel.setToolTipText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.tooltip"));
+        JLabel feeCurrencyLabel = new JLabel("BTC");
+        
+        String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+        
+        if (sendFeeString == null || sendFeeString == "") {
+            sendFeeString = Utils.bitcoinValueToFriendlyString3(MultiBitModel.SEND_FEE_DEFAULT);
+        }
+        originalFee = sendFeeString;
+
+        feeTextField = new JTextField(10);
+        feeTextField.setHorizontalAlignment(JLabel.RIGHT);
+
+        feeTextField.setText(sendFeeString);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        feePanel.add(feeLabel, constraints);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        feePanel.add(feeTextField, constraints);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 0;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        feePanel.add(feeCurrencyLabel, constraints);
+
+        return feePanel;
     }
 
     private JPanel createButtonPanel() {
@@ -324,7 +310,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(controller, this);
+        ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(controller, mainFrame, this);
         JButton submitButton = new JButton(submitAction);
         buttonPanel.add(submitButton);
 
@@ -353,6 +339,10 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
             languageItem.setNewValue(languageToLanguageCodeMap.get(languageComboBox.getSelectedItem()));
         }
 
+        Item feeItem = new Item(MultiBitModel.SEND_FEE);
+        feeItem.setOriginalValue(originalFee);
+        feeItem.setNewValue(feeTextField.getText());
+        data.addItem(MultiBitModel.SEND_FEE, feeItem);
         return data;
     }
 }

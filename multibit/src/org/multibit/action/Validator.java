@@ -64,7 +64,15 @@ public class Validator {
         
         Boolean notEnoughFunds = Boolean.FALSE;
         if (amountBigInteger != null) {
-            if (amountBigInteger.compareTo(controller.getModel().getWallet().getBalance()) <= 0) {
+            String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+            BigInteger feeBigInteger;
+            if (fee == null || fee == "") {
+                feeBigInteger = MultiBitModel.SEND_FEE_DEFAULT;
+            } else {
+                feeBigInteger = Utils.toNanoCoins(fee);
+            }
+            BigInteger totalSpend = amountBigInteger.add(feeBigInteger);
+            if (totalSpend.compareTo(controller.getModel().getWallet().getBalance()) <= 0) {
                 // there is enough money 
             } else {
                 // not enough funds
