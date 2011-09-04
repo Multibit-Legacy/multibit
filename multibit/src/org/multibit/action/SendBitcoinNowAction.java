@@ -45,7 +45,7 @@ public class SendBitcoinNowAction implements Action {
         controller.sendCoins(sendAddress, sendLabel, sendAmount, fee);
 
         controller.fireWalletDataChanged();
-        controller.setActionForwardToChild(ActionForward.FORWARD_TO_TRANSACTIONS);
+        controller.setActionForwardToParent();
     }
 
     public String getDisplayText() {

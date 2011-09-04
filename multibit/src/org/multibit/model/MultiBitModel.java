@@ -72,6 +72,7 @@ public class MultiBitModel {
     public static final String VALIDATION_ADDRESS_IS_INVALID = "validationAddressIsInvalid";
     public static final String VALIDATION_AMOUNT_IS_INVALID = "validationAmountIsInvalid";
     public static final String VALIDATION_NOT_ENOUGH_FUNDS = "validationNotEnoughFunds";
+    public static final String VALIDATION_NOT_ENOUGH_FUNDS_BUT_ESTIMATED_OK = "validationNotEnoughFundsButEstimatedOk";
     public static final String VALIDATION_ADDRESS_VALUE = "validationAddressValue";
     public static final String VALIDATION_AMOUNT_VALUE = "validationAmountValue";
 
