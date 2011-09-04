@@ -90,14 +90,14 @@ public class WalletTableModel extends AbstractTableModel {
             if (debitAmount == null) {
                 return null;
             } else {
-                return Localiser.bitcoinValueToFriendlyString(debitAmount, false, true);
+                return Localiser.bitcoinValueToFriendlyString3(debitAmount, false, true);
             }
         case 4:
             BigInteger creditAmount = walletDataRow.getCredit();
             if (creditAmount == null) {
                 return null;
             } else {
-                return Localiser.bitcoinValueToFriendlyString(creditAmount, false, true);
+                return Localiser.bitcoinValueToFriendlyString3(creditAmount, false, true);
             }
         default:
             return null;

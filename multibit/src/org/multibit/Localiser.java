@@ -182,7 +182,9 @@ public class Localiser {
         return version;
     }
 
-    /** Returns the given value in nanocoins as a 0.12 type string. */
+    /** 
+     * Returns the given value in nanocoins as a 0.12 type string - 2 sig figs
+     **/
     public static String bitcoinValueToFriendlyString(BigInteger value, boolean addUnit, boolean blankZero) {
         if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
             return "";
@@ -201,7 +203,30 @@ public class Localiser {
         return toReturn;
     }
     
-    /** Returns the given value in nanocoins as a 0.12 type string. */
+    /** 
+     * Returns the given value in nanocoins as a 0.123 type string - three sig figs
+     **/
+    public static String bitcoinValueToFriendlyString3(BigInteger value, boolean addUnit, boolean blankZero) {
+        if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
+            return "";
+        }
+
+        boolean negative = value.compareTo(BigInteger.ZERO) < 0;
+        if (negative) {
+            value = value.negate();
+        }
+        BigInteger coins = value.divide(Utils.COIN);
+        BigInteger millis = value.remainder(Utils.COIN);
+        String toReturn = String.format("%s%d.%03d", negative ? "-" : "", coins.intValue(), millis.intValue() / 100000);
+        if (addUnit) {
+            toReturn = toReturn + " " + "BTC";
+        }
+        return toReturn;
+    }
+    
+    /** 
+     * Returns the given value in nanocoins as a 0.1234 type string with no truncation 
+     **/
     public static String bitcoinValueToString(BigInteger value, boolean addUnit, boolean blankZero) {
         if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
             return "";
@@ -219,7 +244,6 @@ public class Localiser {
             toReturn = "-";
         }
         toReturn = toReturn + (coins.floatValue() + ((float)cents.intValue()) / Utils.COIN.intValue());
-        //String toReturn = String.format("%s%d.%02d", negative ? "-" : "", coins.intValue(), cents.intValue() / 1000000);
         if (addUnit) {
             toReturn = toReturn + " " + "BTC";
         }

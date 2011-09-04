@@ -18,7 +18,6 @@ import java.util.Timer;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -153,9 +152,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         nowOffline();
         updateStatusLabel("");
 
-        balanceTextLabel.setText(Localiser.bitcoinValueToFriendlyString(model.getBalance(), true, false));
+        balanceTextLabel.setText(Localiser.bitcoinValueToFriendlyString3(model.getBalance(), true, false));
         balanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.text",
-                new Object[] { Localiser.bitcoinValueToFriendlyString(model.getBalance(), true, false) }));
+                new Object[] { Localiser.bitcoinValueToString(model.getBalance(), true, false) }));
         balanceTextLabel.setFocusable(true);
         balanceTextLabel.requestFocusInWindow();
         
@@ -462,9 +461,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             initUI();
         }
         updateOnlineStatusText();
-        balanceTextLabel.setText(Localiser.bitcoinValueToFriendlyString(model.getBalance(), true, false));
+        balanceTextLabel.setText(Localiser.bitcoinValueToFriendlyString3(model.getBalance(), true, false));
         balanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.text",
-                new Object[] { Localiser.bitcoinValueToFriendlyString(model.getBalance(), true, false) }));
+                new Object[] { Localiser.bitcoinValueToString(model.getBalance(), true, false) }));
 
         String walletFilename = model.getWalletFilename();
         if (walletFilename == null) {
@@ -627,7 +626,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             TransactionInput input = transaction.getInputs().get(0);
             Address from = input.getFromAddress();
             BigInteger value = transaction.getValueSentToMe(wallet);
-            logger.debug("Received " + Localiser.bitcoinValueToFriendlyString(value, true, false) + " from " + from.toString());
+            logger.debug("Received " + Localiser.bitcoinValueToString(value, true, false) + " from " + from.toString());
             wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
         } catch (ScriptException e) {
             // If we didn't understand the scriptSig, just crash.
@@ -649,7 +648,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             TransactionInput input = transaction.getInputs().get(0);
             Address from = input.getFromAddress();
             BigInteger value = transaction.getValueSentToMe(wallet);
-            logger.debug("Received " + Localiser.bitcoinValueToFriendlyString(value, true, false) + " from " + from.toString());
+            logger.debug("Received " + Localiser.bitcoinValueToString(value, true, false) + " from " + from.toString());
             wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
         } catch (ScriptException e) {
             // If we didn't understand the scriptSig, just crash.
@@ -672,9 +671,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 balanceTextLabel.setText(Localiser
-                        .bitcoinValueToFriendlyString(controller.getModel().getBalance(), true, false));
+                        .bitcoinValueToFriendlyString3(controller.getModel().getBalance(), true, false));
                 balanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.text",
-                        new Object[] { Localiser.bitcoinValueToFriendlyString(model.getBalance(), true, false) }));
+                        new Object[] { Localiser.bitcoinValueToString(model.getBalance(), true, false) }));
 
                 viewPanel.invalidate();
                 viewPanel.validate();
