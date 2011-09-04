@@ -291,7 +291,7 @@ public class MultiBitController implements PeerEventListener {
         
         // for the top level views, clear the view stack
         // this makes the UI behaviour a bit more 'normal'
-        if (currentView == View.TRANSACTIONS_VIEW || currentView == View.OPEN_WALLET_VIEW || currentView == View.SAVE_WALLET_AS_VIEW ||
+        if (currentView == View.TRANSACTIONS_VIEW ||
                 currentView == View.RECEIVE_BITCOIN_VIEW || currentView == View.SEND_BITCOIN_VIEW || currentView == View.HELP_ABOUT_VIEW ||
                 currentView == View.HELP_CONTENTS_VIEW || currentView == View.PREFERENCES_VIEW) {
             clearViewStack();

@@ -66,6 +66,7 @@ public class OpenWalletSubmitAction implements Action {
                     }
 
                     controller.fireWalletChanged();
+                    controller.setActionForwardToParent();
                 }
             }
         } else {

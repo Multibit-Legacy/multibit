@@ -74,6 +74,7 @@ public class OpenWalletView implements View, DataProvider {
             submitAction.execute(this);
         } else {
             selectedWalletFilename = null;
+            fileChooser = null;
             controller.setActionForwardToParent();
         }
     }
