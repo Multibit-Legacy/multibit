@@ -11,10 +11,10 @@
       <src path="src"/>
       <src path="tests"/>
       <classpath path="lib/junit-4.8.2.jar"/>
-      <classpath path="lib/bitcoinj.jar"/>
       <classpath path="lib/slf4j-api-1.6.1.jar"/>
       <classpath path="lib/slf4j-simple-1.6.1.jar"/>
       <classpath path="lib/log4j-1.2.16.jar"/>
+      <classpath path="lib/bcprov-jdk15-1.46.jar"/>
       <classpath path="lib/apache-log4j-extras-1.1.jar"/>    	
     </javac>
   </target>
@@ -29,7 +29,6 @@
 
   <target name="test" depends="compile">
     <junit showoutput="false">
-      <classpath path="lib/bitcoinj.jar"/>
       <classpath path="lib/junit-4.8.2.jar:out"/>
       <classpath path="lib/slf4j-api-1.6.1.jar"/>
       <classpath path="lib/slf4j-simple-1.6.1.jar"/>
@@ -52,7 +51,7 @@
     <jar jarfile="dist/multibit.jar" basedir="out">
     	 <manifest>
     	 	<attribute name="Main-Class" value="org.multibit.MultiBitInExecutableJar"/>
-    	 	<attribute name="Class-Path" value="lib/bitcoinj.jar lib/bcprov-jdk15-1.46.jar lib/junit-4.8.2.jar lib/slf4j-api-1.6.1.jar lib/slf4j-simple-1.6.1.jar lib/log4j-1.2.16.jar lib/apache-log4j-extras-1.1.jar"/>
+    	 	<attribute name="Class-Path" value="lib/bcprov-jdk15-1.46.jar lib/junit-4.8.2.jar lib/slf4j-api-1.6.1.jar lib/slf4j-simple-1.6.1.jar lib/log4j-1.2.16.jar lib/apache-log4j-extras-1.1.jar"/>
     	 	 <section name="org.multibit/">
     	 	 	<attribute name="Sealed" value="true"/>
     	 	 </section>
@@ -67,7 +66,6 @@
  	<copy file="log4j.xml" todir="dist"/>
  	<copy file="generateFirstName.sh" todir="dist"/>
  	<copy file="generateFirstName.bat" todir="dist"/>
-	<copy file="lib/bitcoinj.jar" todir="dist/lib"/>
 	<copy file="lib/junit-4.8.2.jar" todir="dist/lib"/>
  	<copy file="lib/slf4j-api-1.6.1.jar" todir="dist/lib"/>
  	<copy file="lib/slf4j-simple-1.6.1.jar" todir="dist/lib"/>

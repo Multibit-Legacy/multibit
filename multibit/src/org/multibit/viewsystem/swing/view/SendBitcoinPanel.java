@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
@@ -13,7 +12,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -23,12 +21,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
 
 import javax.swing.AbstractButton;
@@ -38,12 +32,10 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
@@ -52,8 +44,6 @@ import javax.swing.table.TableColumn;
 
 import org.multibit.Localiser;
 import org.multibit.action.Action;
-import org.multibit.action.TextTransfer;
-import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.Data;
@@ -61,12 +51,9 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.qrcode.BitcoinURI;
-import org.multibit.qrcode.ImageSelection;
 import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
-import org.multibit.viewsystem.swing.action.CopyQRCodeTextAction;
 import org.multibit.viewsystem.swing.action.CreateNewSendingAddressAction;
 import org.multibit.viewsystem.swing.action.PasteAddressAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
@@ -105,7 +92,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
     private JLabel qrCodeLabel;
     private JLabel qrCodeExplainLabel;
-    private QRCodeEncoderDecoder qrCodeEncoderDecoder;
     private static final int QRCODE_WIDTH = 140;
     private static final int QRCODE_HEIGHT = 140;
 
@@ -128,7 +114,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.weightx = 1.4;
+        constraints.weightx = 0.7;
         constraints.weighty = 0.4;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createFormPanel(), constraints);
@@ -136,7 +122,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 0;
-        constraints.weightx = 0.6;
+        constraints.weightx = 0.3;
         constraints.weighty = 0.4;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createQRCodePanel(), constraints);
@@ -245,7 +231,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(addressLabel, constraints);
 
-        addressTextField = new JTextField();
+        addressTextField = new JTextField(35);
         addressTextField.setHorizontalAlignment(JTextField.LEFT);
         addressTextField.addKeyListener(new QRCodeKeyListener());
 
@@ -261,7 +247,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 4;
         constraints.gridy = 5;
-        constraints.weightx = 0.1;
+        constraints.weightx = 2.5;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(pasteAddressButton, constraints);
@@ -325,7 +311,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 4;
         constraints.gridy = 8;
-        constraints.weightx = 2.0;
+        constraints.weightx = 2.5;
         constraints.weighty = 0.4;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(sendButton, constraints);
@@ -335,7 +321,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
     private JPanel createQRCodePanel() {
         JPanel qrCodePanel = new JPanel();
-        qrCodePanel.setMinimumSize(new Dimension(240, 200));
+        qrCodePanel.setMinimumSize(new Dimension(280, 200));
         qrCodePanel.setLayout(new GridBagLayout());
         qrCodeLabel = new JLabel("", createImageIcon(DRAG_HERE_ICON_FILE), JLabel.CENTER);
         qrCodeLabel.setVerticalTextPosition(JLabel.BOTTOM);
@@ -448,7 +434,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         qrCodePanel.add(filler2, constraints);
 
         qrCodeExplainLabel = new JLabel();
-        qrCodeExplainLabel.setText("Drag bitcoin QRCode to target above");
+        qrCodeExplainLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabel.text"));
+        qrCodeExplainLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabel.tooltip"));
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;

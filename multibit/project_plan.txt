@@ -1,20 +1,18 @@
 MultiBit Project Plan
 
 Version 0.1.x
-Do encrypted wallets
+QR codes for payments/ bitcoin URIs
+Drag and drop support for bitcoin URIs
+Support encrypted wallets
 Ask for beta testers to test functionality
-Ask for more I18n - French german portugese Chinese hangul Japanese 
+Ask for more I18n - French German Portugese Italian Chinese Hangul Japanese 
 
 Version 0.2.x
-Add advanced mode option
 Private key import export to support bit bills
-Qrcodes for payments/ bitcoin uris
-Drag and drop support for bitcoin Uris
 
 Version 0.3.x
-Add subscriptions
+Add web rendering - needs a proper back end host for running VM on server.
 
 Version 0.4.x
-Add web rendering - would need a proper back end host
-Complete command line rendering / scriptable / ssh
+Add subscriptions
 

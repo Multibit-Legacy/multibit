@@ -99,7 +99,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.weightx = 1.4;
+        constraints.weightx = 0.7;
         constraints.weighty = 0.4;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createFormPanel(), constraints);
@@ -107,7 +107,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 0;
-        constraints.weightx = 0.6;
+        constraints.weightx = 0.3;
         constraints.weighty = 0.4;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createQRCodePanel(), constraints);
@@ -222,6 +222,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         addressTextArea.setMinimumSize(new Dimension(110, 18));
         addressTextArea.setMaximumSize(new Dimension(110, 18));
 
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
         constraints.gridy = 5;
         constraints.weightx = 2;
@@ -244,6 +245,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         labelTextField = new JTextField("", 35);
         labelTextField.setHorizontalAlignment(JTextField.LEFT);
         labelTextField.addKeyListener(new QRCodeKeyListener());
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
         constraints.gridy = 6;
         constraints.weightx = 2;
@@ -254,6 +256,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         JLabel amountLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel"));
         amountLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel.tooltip"));
         amountLabel.setHorizontalAlignment(JLabel.RIGHT);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 7;
         constraints.gridwidth = 1;
@@ -276,6 +279,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
         JLabel amountUnitLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountUnitLabel"));
         amountUnitLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountUnitLabel.tooltip"));
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 3;
         constraints.gridy = 7;
         constraints.weightx = 0.4;
@@ -297,7 +301,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
     private JPanel createQRCodePanel() {
         JPanel qrCodePanel = new JPanel();
-        qrCodePanel.setMinimumSize(new Dimension(240, 200));
+        qrCodePanel.setMinimumSize(new Dimension(280, 200));
         qrCodePanel.setLayout(new GridBagLayout());
         qrCodeLabel = new JLabel("", null, JLabel.CENTER);
         qrCodeLabel.setVerticalTextPosition(JLabel.BOTTOM);
