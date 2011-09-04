@@ -64,8 +64,8 @@
 	<copy file="multibit-testnet.blockchain" todir="dist" failOnError = "false"/>
  	<copy file="release_notes.txt" todir="dist"/>
  	<copy file="log4j.xml" todir="dist"/>
- 	<copy file="generateFirstName.sh" todir="dist"/>
- 	<copy file="generateFirstName.bat" todir="dist"/>
+ 	<copy file="runMultiBit.sh" todir="dist"/>
+ 	<copy file="runMultiBit.bat" todir="dist"/>
 	<copy file="lib/junit-4.8.2.jar" todir="dist/lib"/>
  	<copy file="lib/slf4j-api-1.6.1.jar" todir="dist/lib"/>
  	<copy file="lib/slf4j-simple-1.6.1.jar" todir="dist/lib"/>
@@ -73,7 +73,7 @@
  	<copy file="lib/apache-log4j-extras-1.1.jar" todir="dist/lib"/>
  	<copy file="lib/bcprov-jdk15-1.46.jar" todir="dist/lib"/>
     <zip destfile="dist/multibit-${DSTAMP}.zip" basedir="dist"
-	       includes="multibit.jar, lib/**/*.jar, multibit.properties, multibit.blockchain, multibit-testnet.blockchain, log4j.xml, release_notes.txt, generateFirstName.sh, generateFirstName.bat"
+	       includes="multibit.jar, lib/**/*.jar, multibit.properties, multibit.blockchain, multibit-testnet.blockchain, log4j.xml, release_notes.txt, runMultiBit.sh, runMultiBit.bat"
     />
   </target>
 
