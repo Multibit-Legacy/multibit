@@ -6,7 +6,7 @@ receive,1JDovcfYyyVAjKxKVAjs5vaqnzZg9wohCp,Visa cashbacks
 receive,1JiM1UyTGqpLqgayxTPbWbcdVeoepmY6pK,Jim.1
 receive,123YJiovS5uwcF2ZT7vm9VCwW5rWksfa42,
 receive,1B6qRM5orkNiuZuLkaCjstzvdWDtepoDQY,
-receive,1JiM42Y2UQRF9rBHHYQfwUX2Uo4udiz1iy,Jim.42
+receive,1JiM42Y2UQRF9rBHHYQfwUX2Uo4udiz1iy,
 receive,19m2BL6iRG5F1E3Fr1EXrDqAK7VuDBuCR4,
 receive,18ZiSh2ctzE1Un4BF5ppdZzi9Xyk1qqWKY,
 receive,17MNoucNjXx2UkTus7iBJBstpC8GLJz3FV,Donation fund
@@ -15,4 +15,5 @@ receive,1DJtChT5WbGvR7hjGxN8vcn7GMkpHA1xyr,
 receive,17ABnA4GvELdZ2YmgSh98GeuynQiPkneML,
 receive,1Kv33ATHhtZ6yutqKamdMB5a47ZtEnReAk,
 receive,1HCu9x38ZPiQ1U4U4RFU19WWWUvtC5E4Hp,
-send,1M7qAsXrE2dye8cHmT5DaiCXx24dQS3UsE,Instawallet
+send,1JiM1UyTGqpLqgayxTPbWbcdVeoepmY6pK,Jim.1
+send,1JiM42Y2UQRF9rBHHYQfwUX2Uo4udiz1iy,Jim.42
