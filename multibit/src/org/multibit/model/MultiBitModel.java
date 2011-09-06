@@ -78,7 +78,7 @@ public class MultiBitModel {
 
     private Wallet wallet;
 
-    private MultiBitController controller;
+    private final MultiBitController controller;
 
     // user preferences
     // note - all the preferences (for all viewsystems are stored in one
@@ -156,6 +156,25 @@ public class MultiBitModel {
 
     public void setWallet(Wallet wallet) {
         this.wallet = wallet;
+
+        // wire up the controller as a wallet event listener
+        wallet.addEventListener(new WalletEventListener() {
+            public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
+                    BigInteger newBalance) {
+                controller.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
+            }
+
+            public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
+                    BigInteger newBalance) {
+                controller.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
+            }
+            
+            public void onPendingCoinsReceived(Wallet wallet, Transaction transaction) {
+                controller.onPendingCoinsReceived(wallet, transaction, null, null);
+            }
+
+        });
+        
         createWalletData();
         createAddressBookReceivingAddresses();
     }
@@ -292,7 +311,7 @@ public class MultiBitModel {
         }
     }
 
-    private String createDescription(List<TransactionInput> transactionInputs, List<TransactionOutput> transactionOutputs,
+    public String createDescription(List<TransactionInput> transactionInputs, List<TransactionOutput> transactionOutputs,
             BigInteger credit, BigInteger debit) {
         String toReturn = "";
 
@@ -401,14 +420,6 @@ public class MultiBitModel {
             }
         }
         return -1; // -1 = we do not know
-    }
-
-    public void addWalletEventListener(WalletEventListener walletEventListener) {
-        wallet.addEventListener(walletEventListener);
-    }
-
-    public void removeWalletEventListener(WalletEventListener walletEventListener) {
-        wallet.removeEventListener(walletEventListener);
     }
 
     public void saveWallet() {

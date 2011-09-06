@@ -81,6 +81,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     public static final int MULTIBIT_FONT_STYLE = Font.PLAIN;
     public static final int MULTIBIT_LARGE_FONT_SIZE = 14;
 
+    public static final Color GOLD_COLOR = new Color(212, 160, 23);
+
     private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.75D;
 
     private static final long serialVersionUID = 7621813615342923041L;
@@ -157,7 +159,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
                 new Object[] { Localiser.bitcoinValueToString(model.getBalance(), true, false) }));
         balanceTextLabel.setFocusable(true);
         balanceTextLabel.requestFocusInWindow();
-        
+
         pack();
         setVisible(true);
 
@@ -531,17 +533,17 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
                             if (showTransactionsButton != null) {
                                 showTransactionsButton.requestFocusInWindow();
                             }
-                        }   
+                        }
                     }
                 }
-                
+
                 if (nextViewFinal instanceof JPanel) {
                     viewPanel.removeAll();
                     viewPanel.add((JPanel) nextViewFinal, BorderLayout.CENTER);
                 }
 
                 nextViewFinal.displayView();
-                
+
                 if (nextViewFinal instanceof JPanel) {
                     viewPanel.invalidate();
                     viewPanel.validate();
@@ -596,10 +598,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     }
 
     public void updateStatusLabel(String newStatusLabel) {
-        final String finalUpdateDownloadStatus = newStatusLabel;
+        final String finalNewStatusLabel = newStatusLabel;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                statusLabel.setText(finalUpdateDownloadStatus);
+                statusLabel.setText(finalNewStatusLabel);
             }
         });
     }
@@ -627,6 +629,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             Address from = input.getFromAddress();
             BigInteger value = transaction.getValueSentToMe(wallet);
             logger.debug("Received " + Localiser.bitcoinValueToString(value, true, false) + " from " + from.toString());
+            String description = model.createDescription(transaction.getInputs(), transaction.getOutputs(),
+                    transaction.getValueSentToMe(wallet), transaction.getValueSentFromMe(wallet));
+            updateStatusLabel(description);
             wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
         } catch (ScriptException e) {
             // If we didn't understand the scriptSig, just crash.
@@ -635,10 +640,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
-        }
+        } 
 
-        // logger.debug("MultiBitFrame#onCoinsReceived - wallet is currently:\n"
-        // + wallet.toString());
+        ShowTransactionsPanel transactionsView = (ShowTransactionsPanel)viewFactory.getView(View.TRANSACTIONS_VIEW);
+        WalletTableModel walletTableModel = transactionsView.getWalletTableModel();
+        if (walletTableModel != null) {
+            walletTableModel.recreateWalletData();
+        }
+        
         fireDataChanged();
     }
 
@@ -649,6 +658,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             Address from = input.getFromAddress();
             BigInteger value = transaction.getValueSentToMe(wallet);
             logger.debug("Received " + Localiser.bitcoinValueToString(value, true, false) + " from " + from.toString());
+            String description = model.createDescription(transaction.getInputs(), transaction.getOutputs(),
+                    transaction.getValueSentToMe(wallet), transaction.getValueSentFromMe(wallet));
+            updateStatusLabel(description);
             wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
         } catch (ScriptException e) {
             // If we didn't understand the scriptSig, just crash.
@@ -659,8 +671,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             throw new RuntimeException(e);
         }
 
-        // logger.debug("MultiBitFrame#onPendingCoinsReceived - wallet is currently:\n"
-        // + wallet.toString());
+        ShowTransactionsPanel transactionsView = (ShowTransactionsPanel)viewFactory.getView(View.TRANSACTIONS_VIEW);
+        WalletTableModel walletTableModel = transactionsView.getWalletTableModel();
+        if (walletTableModel != null) {
+            walletTableModel.recreateWalletData();
+        }
+        
         fireDataChanged();
     }
 
@@ -670,11 +686,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     public void fireDataChanged() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                balanceTextLabel.setText(Localiser
-                        .bitcoinValueToFriendlyString3(controller.getModel().getBalance(), true, false));
+                balanceTextLabel.setText(Localiser.bitcoinValueToFriendlyString3(controller.getModel().getBalance(), true,
+                        false));
                 balanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.text",
                         new Object[] { Localiser.bitcoinValueToString(model.getBalance(), true, false) }));
-
+                
                 viewPanel.invalidate();
                 viewPanel.validate();
                 viewPanel.repaint();

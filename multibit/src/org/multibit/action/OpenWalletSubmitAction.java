@@ -9,6 +9,7 @@ import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
+import org.multibit.network.MultiBitService;
 
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
@@ -36,34 +37,14 @@ public class OpenWalletSubmitAction implements Action {
             if (data != null) {
                 Item item = data.getItem(MultiBitModel.SELECTED_WALLET_FILENAME);
                 if (item != null && item.getNewValue() != null && !item.getNewValue().equals(item.getOriginalValue())) {
-                    try {
-                        File file = new File((String) (item.getNewValue()));
-                        Wallet wallet = Wallet.loadFromFile(file);
-                        controller.getModel().setWalletFilename(file.getAbsolutePath());
-                        controller.getModel().setWallet(wallet);
 
-                        // wire up the controller as a wallet event listener
-                        final MultiBitController finalController = controller;
-                        controller.getModel().addWalletEventListener(new WalletEventListener() {
-                            public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
-                                    BigInteger newBalance) {
-                                finalController.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
-                            }
+                    String walletFilename = (String) (item.getNewValue());
 
-                            public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
-                                    BigInteger newBalance) {
-                                finalController.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
-                            }
-                        });
-
-                    } catch (IOException ioe) {
-                        controller
-                                .displayMessage(
-                                        "openWalletSubmitAction.walletNotLoaded",
-                                        new Object[] { (String) item.getNewValue(),
-                                                ioe.getClass().getName() + ": " + ioe.getMessage() },
-                                        "openWalletSubmitAction.walletNotLoadedMessageBoxTitle");
-                    }
+                    MultiBitService oldMultiBitService = controller.getMultiBitService();
+                    oldMultiBitService.getPeerGroup().stop();
+                    MultiBitService multiBitService = new MultiBitService(oldMultiBitService.isUseTestNet(),
+                            walletFilename, controller);
+                    controller.setMultiBitService(multiBitService);
 
                     controller.fireWalletChanged();
                     controller.setActionForwardToParent();

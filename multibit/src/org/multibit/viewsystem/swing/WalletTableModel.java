@@ -63,7 +63,13 @@ public class WalletTableModel extends AbstractTableModel {
         case 0: {
             // work out the difference between the wallet data height and the
             // current head
-            StoredBlock currentHead = controller.getMultiBitService().getChain().getChainHead();
+            StoredBlock currentHead;
+            if (controller.getMultiBitService() != null && controller.getMultiBitService().getChain() != null
+                    && controller.getMultiBitService().getChain().getChainHead() != null) {
+                currentHead = controller.getMultiBitService().getChain().getChainHead();
+            } else {
+                return 0; // we do not know yet
+            }
             int currentHeight = Integer.MIN_VALUE;
             if (currentHead != null) {
                 currentHeight = currentHead.getHeight();
@@ -72,13 +78,14 @@ public class WalletTableModel extends AbstractTableModel {
                 int numberOfBlocksEmbedded = currentHeight - walletDataRow.getHeight() + 1;
                 return numberOfBlocksEmbedded;
             } else {
-                // do not know the height - probably a send that is not confirmed
+                // do not know the height - probably a send that is not
+                // confirmed
                 return 0; // not confirmed yet
             }
         }
         case 1: {
             if (walletDataRow.getDate() == null) {
-                return new Date(0);   // the earliest date (for sorting)
+                return new Date(0); // the earliest date (for sorting)
             } else {
             }
             return walletDataRow.getDate();

@@ -34,7 +34,6 @@ import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletEventListener;
 import com.google.bitcoin.discovery.DnsDiscovery;
 import com.google.bitcoin.discovery.IrcDiscovery;
 import com.google.bitcoin.store.BlockStore;
@@ -64,12 +63,13 @@ public class MultiBitService {
 
     public static final String IRC_CHANNEL_TEST = "#bitcoinTEST";;
 
-    private String walletFilename;
     private Wallet wallet;
 
     private PeerGroup peerGroup;
 
     private BlockChain chain;
+
+    private boolean useTestNet;
 
     private MultiBitController controller;
 
@@ -79,18 +79,28 @@ public class MultiBitService {
      * 
      * @param useTestNet
      *            true = test net, false = production
-     * @param wallet
-     *            filename current wallet filename
+     * @param controller
+     *            MutliBitController
      */
     public MultiBitService(boolean useTestNet, MultiBitController controller) {
+        this(useTestNet, controller.getModel().getUserPreference(MultiBitModel.WALLET_FILENAME), controller);
+    }
+
+    /**
+     * 
+     * @param useTestNet
+     *            true = test net, false = production
+     * @param walletFilename
+     *            filename of current wallet
+     * @param controller
+     *            MutliBitController
+     */
+    public MultiBitService(boolean useTestNet, String walletFilename, MultiBitController controller) {
+        this.useTestNet = useTestNet;
         this.controller = controller;
 
         networkParameters = useTestNet ? NetworkParameters.testNet() : NetworkParameters.prodNet();
         String filePrefix = useTestNet ? MULTIBIT_PREFIX + SEPARATOR + TEST_NET_PREFIX : MULTIBIT_PREFIX;
-
-        // Try to read the wallet from storage, create a new one if not
-        // possible.
-        walletFilename = controller.getModel().getUserPreference(MultiBitModel.WALLET_FILENAME);
 
         File walletFile;
         if (walletFilename != null) {
@@ -100,21 +110,7 @@ public class MultiBitService {
 
                 // set the new wallet into the model
                 controller.getModel().setWallet(wallet);
-
-                final MultiBitController finalController = controller;
-
-                // wire up the controller as a wallet event listener
-                controller.getModel().addWalletEventListener(new WalletEventListener() {
-                    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
-                            BigInteger newBalance) {
-                        finalController.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
-                    }
-
-                    public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
-                            BigInteger newBalance) {
-                        finalController.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
-                    }
-                });
+                controller.getModel().setWalletFilename(walletFilename);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -145,20 +141,6 @@ public class MultiBitService {
             // set the new wallet and wallet filename on the model
             controller.getModel().setWalletFilename(walletFilename);
             controller.getModel().setWallet(wallet);
-
-            // wire up the controller as a wallet event listener
-            final MultiBitController finalController = controller;
-            controller.getModel().addWalletEventListener(new WalletEventListener() {
-                public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
-                        BigInteger newBalance) {
-                    finalController.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
-                }
-
-                public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
-                        BigInteger newBalance) {
-                    finalController.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
-                }
-            });
 
             try {
                 if (needToSaveNewFile) {
@@ -198,11 +180,6 @@ public class MultiBitService {
             chain = new BlockChain(networkParameters, wallet, blockStore);
 
             peerGroup = new MultiBitPeerGroup(controller, blockStore, networkParameters, chain, wallet);
-            // peerGroup.addAddress(new PeerAddress(InetAddress.getLocalHost(),
-            // 8333));
-            // peerGroup.addAddress(new
-            // PeerAddress(InetAddress.getByName("98.143.152.19"), 8333)); //
-            // production fall back node
 
             // use DNS for production, IRC for test
             if (useTestNet) {
@@ -213,12 +190,6 @@ public class MultiBitService {
             // add the controller as a PeerEventListener
             peerGroup.addEventListener(controller);
             peerGroup.start();
-
-            // System.out.println("MultiBitService constructor - Send coins to: "
-            // + key.toAddress(networkParameters).toString());
-
-            // The PeerGroup thread keeps us alive until something kills the
-            // process.
         } catch (BlockStoreException e) {
             controller.displayMessage("multiBitService.errorText",
                     new Object[] { e.getClass().getName() + " " + e.getMessage() }, "multiBitService.errorTitleText");
@@ -262,14 +233,6 @@ public class MultiBitService {
         return sendTransaction;
     }
 
-    public String getWalletFilename() {
-        return walletFilename;
-    }
-
-    public Wallet getWallet() {
-        return wallet;
-    }
-
     public PeerGroup getPeerGroup() {
         return peerGroup;
     }
@@ -280,5 +243,9 @@ public class MultiBitService {
 
     public NetworkParameters getNetworkParameters() {
         return networkParameters;
+    }
+
+    public boolean isUseTestNet() {
+        return useTestNet;
     }
 }

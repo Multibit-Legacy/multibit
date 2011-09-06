@@ -457,6 +457,7 @@ public class MultiBitController implements PeerEventListener {
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
             BigInteger newBalance) {
 
+        System.out.println("MultiBitController#onCoinsReceived called");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
         }
@@ -464,7 +465,8 @@ public class MultiBitController implements PeerEventListener {
 
     public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
             BigInteger newBalance) {
-
+        System.out.println("MultiBitController#onPendingCoinsReceived called");
+        
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
         }
