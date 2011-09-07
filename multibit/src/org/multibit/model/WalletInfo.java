@@ -44,7 +44,7 @@ public class WalletInfo {
     private Vector<AddressBookData> receivingAddresses;
     private Vector<AddressBookData> sendingAddresses;
 
-    private static final String INFO_FILENAME_SUFFIX = ".info";
+    public static final String INFO_FILENAME_SUFFIX = ".info";
     private static final String RECEIVE_ADDRESS_MARKER = "receive";
     private static final  String SEND_ADDRESS_MARKER = "send";
     private static final  String PROPERTY_MARKER = "property";

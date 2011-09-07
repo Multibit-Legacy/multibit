@@ -119,6 +119,17 @@ public class FileHandler {
         return backupFilename;
     }
 
+    public String createInfoFilenameFromWalletFilename(File file) throws IOException {
+        String filename = file.getAbsolutePath();
+        DateFormat dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
+        String backupFilename = filename + SEPARATOR + dateFormat.format(new Date());
+        
+        File backupFile = new File(backupFilename);
+        copyFile(file, backupFile);
+
+        return backupFilename;
+    }
+
     public void copyFile(File sourceFile, File destinationFile) throws IOException {
         if (!destinationFile.exists()) {
             destinationFile.createNewFile();

@@ -8,6 +8,7 @@ import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.WalletInfo;
 import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
 
@@ -54,17 +55,22 @@ public class SaveWalletAsSubmitAction implements Action {
                             backupFileName = fileHandler.createBackupFile(newWalletFile);
                         }
                         fileHandler.saveWalletToFile(wallet, newWalletFile);
+
+                        // also copy the info file so that the address labels get
+                        // kept
+                        if (item.getOriginalValue() != null) {
+                            String sourceInfoFile = (String) (item.getOriginalValue()) + WalletInfo.INFO_FILENAME_SUFFIX;
+                            String destinationInfoFile = newWalletFilename + WalletInfo.INFO_FILENAME_SUFFIX;
+                            fileHandler.copyFile(new File(sourceInfoFile), new File(destinationInfoFile));
+                        }
                         if (backupFileName == null) {
                             controller.displayMessage("saveWalletAsSubmitAction.walletSaved",
-                                    new Object[] { newWalletFile.getAbsolutePath() },
-                                    "saveWalletAsSubmitAction.title");
+                                    new Object[] { newWalletFile.getAbsolutePath() }, "saveWalletAsSubmitAction.title");
                         } else {
-                            controller.displayMessage(
-                                    "saveWalletAsSubmitAction.walletSavedWithBackup", new Object[] {
-                                            newWalletFile.getAbsolutePath(), backupFileName },
-                                    "saveWalletAsSubmitAction.title");
+                            controller.displayMessage("saveWalletAsSubmitAction.walletSavedWithBackup", new Object[] {
+                                    newWalletFile.getAbsolutePath(), backupFileName }, "saveWalletAsSubmitAction.title");
                         }
-                        
+
                         // start using the new file as the wallet
                         MultiBitService oldMultiBitService = controller.getMultiBitService();
                         oldMultiBitService.getPeerGroup().stop();
@@ -78,7 +84,7 @@ public class SaveWalletAsSubmitAction implements Action {
                     }
                 }
             }
-            controller.setActionForwardToParent();          
+            controller.setActionForwardToParent();
         } else {
             // should never happen return to parent view
             controller.setActionForwardToParent();
@@ -89,5 +95,5 @@ public class SaveWalletAsSubmitAction implements Action {
         // would not normally be seen
         return "saveWalletAsSubmit";
     }
- 
+
 }
