@@ -15,6 +15,7 @@ import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBook;
 import org.multibit.model.DataProvider;
+import org.multibit.network.FileHandler;
 
 
 
@@ -35,26 +36,17 @@ public class ExitAction implements Action{
         controller.getModel().saveWallet();
 
         // write the user properties
-        Properties userPreferences = controller.getModel().getAllUserPreferences();
-        OutputStream outputStream;
-        try {
-            outputStream = new FileOutputStream(MultiBit.PROPERTIES_FILE_NAME);
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(bufferedOutputStream, "UTF8");
-            userPreferences.store(outputStreamWriter, MultiBit.PROPERTIES_HEADER_TEXT);
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        FileHandler fileHandler = new FileHandler(controller);
+        fileHandler.writeUserPreferences();
         
         // write the address book
         AddressBook addressBook = controller.getModel().getAddressBook();
         addressBook.writeToFile();
         
-        // write the wallet file
+        // TODO write the wallet file
+        
+        // shut down the PeerGroup
+        controller.getMultiBitService().getPeerGroup().stop();
         
         System.exit(0);     
     }

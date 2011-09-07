@@ -14,6 +14,8 @@ import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
+import org.multibit.network.FileHandler;
+import org.multibit.network.MultiBitService;
 
 import com.google.bitcoin.core.Wallet;
 
@@ -25,9 +27,6 @@ import com.google.bitcoin.core.Wallet;
  */
 public class SaveWalletAsSubmitAction implements Action {
 
-    private static final String SEPARATOR = "-";
-    private static final String BACKUP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
-    
     private MultiBitController controller;
 
     public SaveWalletAsSubmitAction(MultiBitController controller) {
@@ -50,28 +49,36 @@ public class SaveWalletAsSubmitAction implements Action {
                         return;
                     }
 
-                    File file = new File((String) item.getNewValue());
+                    String newWalletFilename = (String) item.getNewValue();
+                    File newWalletFile = new File(newWalletFilename);
 
+                    FileHandler fileHandler = new FileHandler(controller);
                     try {
                         // create backup file if file exists
                         String backupFileName = null;
-                        if (file.exists()) {
-                            backupFileName = createBackupFilename(file.getAbsolutePath());
-
-                            File backupFile = new File(backupFileName);
-                            copyFile(file, backupFile);
+                        if (newWalletFile.exists()) {
+                            backupFileName = fileHandler.createBackupFile(newWalletFile);
                         }
-                        wallet.saveToFile(file);
+                        fileHandler.saveWalletToFile(wallet, newWalletFile);
                         if (backupFileName == null) {
                             controller.displayMessage("saveWalletAsSubmitAction.walletSaved",
-                                    new Object[] { file.getAbsolutePath() },
+                                    new Object[] { newWalletFile.getAbsolutePath() },
                                     "saveWalletAsSubmitAction.title");
                         } else {
                             controller.displayMessage(
                                     "saveWalletAsSubmitAction.walletSavedWithBackup", new Object[] {
-                                            file.getAbsolutePath(), backupFileName },
+                                            newWalletFile.getAbsolutePath(), backupFileName },
                                     "saveWalletAsSubmitAction.title");
                         }
+                        
+                        // start using the new file as the wallet
+                        MultiBitService oldMultiBitService = controller.getMultiBitService();
+                        oldMultiBitService.getPeerGroup().stop();
+                        MultiBitService multiBitService = new MultiBitService(oldMultiBitService.isUseTestNet(),
+                                newWalletFilename, controller);
+                        controller.setMultiBitService(multiBitService);
+
+                        controller.fireWalletChanged();
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
@@ -88,44 +95,5 @@ public class SaveWalletAsSubmitAction implements Action {
         // would not normally be seen
         return "saveWalletAsSubmit";
     }
-    
-    private String createBackupFilename(String filename) {
-        DateFormat dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
-        String backupFilename = filename + SEPARATOR + dateFormat.format(new Date());
-        
-        return backupFilename;
-    }
-
-    private void copyFile(File sourceFile, File destinationFile) throws IOException {
-        if (!destinationFile.exists()) {
-            destinationFile.createNewFile();
-        }
-        FileInputStream fileInputStream = null;
-        FileOutputStream fileOutpurStream = null;
-        FileChannel source = null;
-        FileChannel destination = null;
-        try {
-            fileInputStream = new FileInputStream(sourceFile);
-            source = fileInputStream.getChannel();
-            fileOutpurStream = new FileOutputStream(destinationFile);
-            destination = fileOutpurStream.getChannel();
-            long transfered = 0;
-            long bytes = source.size();
-            while (transfered < bytes) {
-                transfered += destination.transferFrom(source, 0, source.size());
-                destination.position(transfered);
-            }
-        } finally {
-            if (source != null) {
-                source.close();
-            } else if (fileInputStream != null) {
-                fileInputStream.close();
-            }
-            if (destination != null) {
-                destination.close();
-            } else if (fileOutpurStream != null) {
-                fileOutpurStream.close();
-            }
-        }
-    }
+ 
 }

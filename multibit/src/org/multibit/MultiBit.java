@@ -26,9 +26,9 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
+import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -40,9 +40,6 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
  * 
  */
 public class MultiBit {
-    public static final String PROPERTIES_FILE_NAME = "multibit.properties";
-    public static final String PROPERTIES_HEADER_TEXT = "multibit";
-
     private static Logger logger;
 
     /**
@@ -54,7 +51,7 @@ public class MultiBit {
         logger = Logger.getLogger(MultiBit.class.getName());
 
         // load up the user preferences
-        Properties userPreferences = loadUserPreferences();
+        Properties userPreferences = FileHandler.loadUserPreferences();
 
         // create the controller
         MultiBitController controller = new MultiBitController(userPreferences);
@@ -99,20 +96,5 @@ public class MultiBit {
         controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
 
         multiBitService.downloadBlockChain();
-    }
-
-    private static Properties loadUserPreferences() {
-        Properties userPreferences = new Properties();
-        try {
-            InputStream inputStream = new FileInputStream(MultiBit.PROPERTIES_FILE_NAME);
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF8");
-            userPreferences.load(inputStreamReader);
-        } catch (FileNotFoundException e) {
-            // ok - may not have been created yet
-        } catch (IOException e) {
-            // ok may not be written yet
-        }
-
-        return userPreferences;
     }
 }

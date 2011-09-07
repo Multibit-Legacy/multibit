@@ -17,7 +17,6 @@
 package org.multibit.network;
 
 import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
@@ -74,6 +73,8 @@ public class MultiBitService {
     private MultiBitController controller;
 
     private final NetworkParameters networkParameters;
+    
+    private FileHandler fileHandler;
 
     /**
      * 
@@ -102,18 +103,11 @@ public class MultiBitService {
         networkParameters = useTestNet ? NetworkParameters.testNet() : NetworkParameters.prodNet();
         String filePrefix = useTestNet ? MULTIBIT_PREFIX + SEPARATOR + TEST_NET_PREFIX : MULTIBIT_PREFIX;
 
+        fileHandler = new FileHandler(controller);
         File walletFile;
         if (walletFilename != null) {
-            try {
-                walletFile = new File(walletFilename);
-                wallet = Wallet.loadFromFile(walletFile);
-
-                // set the new wallet into the model
-                controller.getModel().setWallet(wallet);
-                controller.getModel().setWalletFilename(walletFilename);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            walletFile = new File(walletFilename);
+            wallet = fileHandler.loadWalletFromFile(walletFile);
         }
 
         if (wallet == null || walletFilename == null) {
@@ -121,35 +115,15 @@ public class MultiBitService {
             walletFilename = filePrefix + WALLET_SUFFIX;
             walletFile = new File(walletFilename);
 
-            boolean needToSaveNewFile = false;
-
             if (walletFile.exists()) {
                 // wallet file exists with default name
-                try {
-                    wallet = Wallet.loadFromFile(walletFile);
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                wallet = fileHandler.loadWalletFromFile(walletFile);
             } else {
                 wallet = new Wallet(networkParameters);
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
-                needToSaveNewFile = true;
-            }
-
-            // set the new wallet and wallet filename on the model
-            controller.getModel().setWalletFilename(walletFilename);
-            controller.getModel().setWallet(wallet);
-
-            try {
-                if (needToSaveNewFile) {
-                    wallet.saveToFile(walletFile);
-                }
-                // ensure title on frame is updated
-                controller.fireWalletDataChanged();
-            } catch (IOException e1) {
-                e1.printStackTrace();
+                
+                fileHandler.saveWalletToFile(wallet, walletFile);
             }
         }
 
@@ -228,7 +202,7 @@ public class MultiBitService {
         if (sendTransaction != null) {
             System.out.println("MultiBitService#sendCoins - Sent coins. Transaction hash is "
                     + sendTransaction.getHashAsString());
-            wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
+            fileHandler.saveWalletToFile(wallet, new File(controller.getModel().getWalletFilename()));
         }
         return sendTransaction;
     }

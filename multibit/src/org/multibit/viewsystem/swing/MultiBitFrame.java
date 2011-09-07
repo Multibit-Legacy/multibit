@@ -14,10 +14,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Timer;
-import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -37,7 +34,6 @@ import org.apache.log4j.Logger;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.WalletData;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
