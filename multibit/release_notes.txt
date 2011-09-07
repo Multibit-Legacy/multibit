@@ -5,12 +5,13 @@ Enhancements
 +  Added QRcode support, including drag and drop.
 +  Added transaction fee support.
 +  Added validation of addresses and amounts in Send Bitcoin panel.
-+  Added generateFirstName.sh and .bat for firstname generation using the command line.
++  Various user interface improvements.
 
 Bug fixes
 +  On send bitcoin status was incorrectly showing 'confirmed' icon rather than 'unconfirmed(0)'. Fixed.
 +  multibit.properties and addressBook.csv now stored in UTF8.
 +  Receive address in Receive bitcoin panel is now copiable.
+
 
 Version 0.1.2
 Enhancements:

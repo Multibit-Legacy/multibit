@@ -2,12 +2,11 @@ package org.multibit.action;
 
 import java.math.BigInteger;
 
-import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.WalletInfo;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.WalletInfo;
 
 import com.google.bitcoin.core.Utils;
 
@@ -26,7 +25,7 @@ public class SendBitcoinNowAction implements Action {
     }
 
     public void execute(DataProvider dataProvider) {
-        // get the data out of the user preferences
+        // get the data out of the wallet preferences
         String sendAddress = controller.getModel().getWalletPreference(MultiBitModel.SEND_ADDRESS);
         String sendLabel = controller.getModel().getWalletPreference(MultiBitModel.SEND_LABEL);
         String sendAmount = controller.getModel().getWalletPreference(MultiBitModel.SEND_AMOUNT);
