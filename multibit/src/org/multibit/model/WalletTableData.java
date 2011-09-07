@@ -7,9 +7,9 @@ import com.google.bitcoin.core.Transaction;
 
 /**
  * class used to store the data in the table in a quick to access form
- * TODO - this will be replaced by something driven by the wallet
+ * for use in tables mainly
  */
-public class WalletData {
+public class WalletTableData {
     
     /**
      * keys that give column header text for output formatting
@@ -30,7 +30,7 @@ public class WalletData {
     private BigInteger debit;
     private BigInteger credit;
 
-    public WalletData(Transaction transaction, int height, Date date, String description,
+    public WalletTableData(Transaction transaction, int height, Date date, String description,
             BigInteger debit, BigInteger credit) {
         this.transaction = transaction;
         this.height = height;
@@ -40,7 +40,7 @@ public class WalletData {
         this.credit = credit;
     }
 
-    public WalletData(Transaction transaction) {
+    public WalletTableData(Transaction transaction) {
         this.transaction = transaction;
     }
 

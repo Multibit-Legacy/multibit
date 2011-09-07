@@ -471,8 +471,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         addressPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
-        addressesTableModel = new AddressBookTableModel(controller.getLocaliser(), controller.getModel().getAddressBook(),
-                false);
+        addressesTableModel = new AddressBookTableModel(controller, false);
         addressesTable = new JTable(addressesTableModel);
         addressesTable.setOpaque(false);
         addressesTable.setShowGrid(false);
@@ -567,9 +566,9 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
     public void loadForm() {
         // get the current address, label and amount from the model
-        String address = controller.getModel().getUserPreference(MultiBitModel.SEND_ADDRESS);
-        String label = controller.getModel().getUserPreference(MultiBitModel.SEND_LABEL);
-        String amount = controller.getModel().getUserPreference(MultiBitModel.SEND_AMOUNT);
+        String address = controller.getModel().getWalletPreference(MultiBitModel.SEND_ADDRESS);
+        String label = controller.getModel().getWalletPreference(MultiBitModel.SEND_LABEL);
+        String amount = controller.getModel().getWalletPreference(MultiBitModel.SEND_AMOUNT);
 
         if (address != null) {
             addressTextField.setText(address);
@@ -619,7 +618,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         // stop listener firing
         addressesTable.getSelectionModel().removeListSelectionListener(addressesListener);
 
-        String address = controller.getModel().getUserPreference(MultiBitModel.SEND_ADDRESS);
+        String address = controller.getModel().getWalletPreference(MultiBitModel.SEND_ADDRESS);
 
         // see if the current address is on the table and select it
         int rowToSelect = addressesTableModel.findRowByAddress(address, false);
@@ -653,8 +652,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                 }
                 AddressBookData rowData = addressesTableModel.getAddressBookDataByRow(selectedAddressRow, false);
                 if (rowData != null) {
-                    controller.getModel().setUserPreference(MultiBitModel.SEND_ADDRESS, rowData.getAddress());
-                    controller.getModel().setUserPreference(MultiBitModel.SEND_LABEL, rowData.getLabel());
+                    controller.getModel().setWalletPreference(MultiBitModel.SEND_ADDRESS, rowData.getAddress());
+                    controller.getModel().setWalletPreference(MultiBitModel.SEND_LABEL, rowData.getLabel());
                     addressTextField.setText(rowData.getAddress());
                     labelTextField.setText(rowData.getLabel());
                 }
@@ -679,9 +678,9 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
             String label = labelTextField.getText();
             AddressBookData addressBookData = new AddressBookData(label, address);
             addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRow, false);
-            controller.getModel().setUserPreference(MultiBitModel.SEND_ADDRESS, address);
-            controller.getModel().setUserPreference(MultiBitModel.SEND_LABEL, label);
-            controller.getModel().setUserPreference(MultiBitModel.SEND_AMOUNT, amount);
+            controller.getModel().setWalletPreference(MultiBitModel.SEND_ADDRESS, address);
+            controller.getModel().setWalletPreference(MultiBitModel.SEND_LABEL, label);
+            controller.getModel().setWalletPreference(MultiBitModel.SEND_AMOUNT, amount);
         }
     }
 
@@ -799,7 +798,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                                 selectedAddressRow = rowToSelect;
                             } else {
                                 // add a new row to the table
-                                controller.getModel().getAddressBook().addSendingAddress(addressBookData);
+                                controller.getModel().getWalletInfo().addSendingAddress(addressBookData);
 
                                 // select new row
                                 rowToSelect = addressesTableModel.findRowByAddress(addressBookData.getAddress(), false);
@@ -818,12 +817,12 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                             mainFrame.repaint();
 
                             System.out.println("SendBitcoinPanel - ping 7");
-                            controller.getModel().setUserPreference(MultiBitModel.SEND_ADDRESS, addressString);
+                            controller.getModel().setWalletPreference(MultiBitModel.SEND_ADDRESS, addressString);
                             System.out.println("SendBitcoinPanel - ping 8");
-                            controller.getModel().setUserPreference(MultiBitModel.SEND_LABEL, decodedLabel);
+                            controller.getModel().setWalletPreference(MultiBitModel.SEND_LABEL, decodedLabel);
                             System.out.println("SendBitcoinPanel - ping 9");
 
-                            controller.getModel().setUserPreference(MultiBitModel.SEND_AMOUNT, amountString);
+                            controller.getModel().setWalletPreference(MultiBitModel.SEND_AMOUNT, amountString);
                             System.out.println("SendBitcoinPanel - ping 10");
                             addressTextField.setText(addressString);
                             System.out.println("SendBitcoinPanel - ping 11");

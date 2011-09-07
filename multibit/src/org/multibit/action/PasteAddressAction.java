@@ -32,7 +32,7 @@ public class PasteAddressAction implements Action {
         sendBitcoinPanel.setAddressBookDataByRow(addressBookData);
        
         // put it in the user preferences - will then get loaded when view form loads
-        controller.getModel().setUserPreference(MultiBitModel.SEND_ADDRESS, stringToPaste);
+        controller.getModel().setWalletPreference(MultiBitModel.SEND_ADDRESS, stringToPaste);
         
         // forward back to the view currently being displayed
         controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);       

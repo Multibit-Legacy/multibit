@@ -46,10 +46,10 @@ public class SendBitcoinConfirmView implements View {
      * show send bitcoin confirm view
      */
     public void displayView() {
-        // get the data out of the user preferences
-        String sendAddress = controller.getModel().getUserPreference(MultiBitModel.SEND_ADDRESS);
-        String sendLabel = controller.getModel().getUserPreference(MultiBitModel.SEND_LABEL);
-        String sendAmount = controller.getModel().getUserPreference(MultiBitModel.SEND_AMOUNT);
+        // get the data out of the wallet preferences
+        String sendAddress = controller.getModel().getWalletPreference(MultiBitModel.SEND_ADDRESS);
+        String sendLabel = controller.getModel().getWalletPreference(MultiBitModel.SEND_LABEL);
+        String sendAmount = controller.getModel().getWalletPreference(MultiBitModel.SEND_AMOUNT);
 
         // ask for confirmation of send bitcoin
         Object[] options = { localiser.getString("sendBitcoinConfirmView.sendOption"),

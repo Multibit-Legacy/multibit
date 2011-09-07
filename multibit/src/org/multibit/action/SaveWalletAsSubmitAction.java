@@ -1,13 +1,7 @@
 package org.multibit.action;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;

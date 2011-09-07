@@ -40,7 +40,7 @@ public class CreateNewSendingAddressAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         
         //String addressString = "";
-        controller.getModel().getAddressBook().addSendingAddress(new AddressBookData("", ""));
+        controller.getModel().getWalletInfo().addSendingAddress(new AddressBookData("", ""));
         
         controller.getModel().setUserPreference(MultiBitModel.SEND_ADDRESS, "");
         controller.getModel().setUserPreference(MultiBitModel.SEND_LABEL, "");

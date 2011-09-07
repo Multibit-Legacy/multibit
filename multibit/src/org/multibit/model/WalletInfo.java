@@ -12,14 +12,24 @@ import java.io.OutputStreamWriter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import com.google.bitcoin.core.Address;
 
-public class AddressBook {
+/**
+ * wallet info is the companion info to the bitcoinj that multibit uses
+ * it contains the sending and receiving addresses 
+ * and the wallet version
+ * 
+ * it is stored in the same directory as the wallet and has the suffix ".info"
+ * 
+ * @author jim
+ *
+ */
+public class WalletInfo {
 
     /**
      * the total receiving addresses known - from the address book (will include
@@ -34,28 +44,49 @@ public class AddressBook {
     private Vector<AddressBookData> receivingAddresses;
     private Vector<AddressBookData> sendingAddresses;
 
-    private String ADDRESS_BOOK_FILENAME = "addressBook.csv";
-    private String RECEIVE_ADDRESS_MARKER = "receive";
-    private String SEND_ADDRESS_MARKER = "send";
-    private String SEPARATOR = ",";
+    private static final String INFO_FILENAME_SUFFIX = ".info";
+    private static final String RECEIVE_ADDRESS_MARKER = "receive";
+    private static final  String SEND_ADDRESS_MARKER = "send";
+    private static final  String PROPERTY_MARKER = "property";
+    private static final String SEPARATOR = ",";
 
-    private String ADDRESSBOOK_MAGIC_TEXT = "multiBit.addressBook";
-    private String VERSION_TEXT = "1";
+    private static final String INFO_MAGIC_TEXT = "multiBit.info";
+    private static final String INFO_VERSION_TEXT = "1";
+    
+    private static final String WALLET_VERSION_MARKER = "walletVersion";
+    private static final String WALLET_VERSION_TEXT = "1";
+    
+    private String walletFilename;
+    private String walletVersion;
+    
+    private Properties walletPreferences;
 
-    public AddressBook() {
+    /**
+     * 
+     * @param walletFilename the filename for the wallet this is the info for
+     */
+    public WalletInfo(String walletFilename) {
+        this.walletFilename = walletFilename;
+        
         candidateReceivingAddresses = new HashSet<AddressBookData>();
         receivingAddresses = new Vector<AddressBookData>();
         sendingAddresses = new Vector<AddressBookData>();
+        
+        walletPreferences = new Properties();
 
         loadFromFile();
     }
 
+    public void put(String key, String value) {
+        walletPreferences.put(key, value);
+    }
+    
+    public String getProperty(String key) {
+        return (String)walletPreferences.getProperty(key);
+    }
+    
     public Vector<AddressBookData> getReceivingAddresses() {
         return receivingAddresses;
-    }
-
-    public void setReceivingAddresses(Vector<AddressBookData> receivingAddresses) {
-        this.receivingAddresses = receivingAddresses;
     }
 
     public Vector<AddressBookData> getSendingAddresses() {
@@ -184,7 +215,6 @@ public class AddressBook {
 
     /**
      * write out the address book - a simple comma separated file format is used
-     * - should probably be something like JSON
      */
     public void writeToFile() {
         try {
@@ -203,11 +233,14 @@ public class AddressBook {
             
             // Create file
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter
-                    (new FileOutputStream(ADDRESS_BOOK_FILENAME),"UTF8"));
+                    (new FileOutputStream(walletFilename + INFO_FILENAME_SUFFIX),"UTF8"));
 
             // write out the multibit addressbook identifier
-            out.write(ADDRESSBOOK_MAGIC_TEXT + SEPARATOR + VERSION_TEXT + "\n");
-
+            out.write(INFO_MAGIC_TEXT + SEPARATOR + INFO_VERSION_TEXT + "\n");
+            
+            // write out the wallet version
+            out.write(WALLET_VERSION_MARKER + SEPARATOR + WALLET_VERSION_TEXT + "\n");
+            
             Collection<AddressBookData> receiveAddressValues = allReceivingAddresses.values();
             for (AddressBookData addressBookData : receiveAddressValues) {
                 String columnOne = RECEIVE_ADDRESS_MARKER;
@@ -229,6 +262,16 @@ public class AddressBook {
                 out.write(columnOne + SEPARATOR + columnTwo + SEPARATOR + columnThree + "\n");
             }
 
+            for (Object key : walletPreferences.keySet()) {
+                String columnOne = PROPERTY_MARKER;
+                String columnTwo = (String)key;
+                String columnThree = (String)walletPreferences.get(key);
+                if (columnTwo == null) {
+                    columnTwo = "";
+                }
+                out.write(columnOne + SEPARATOR + columnTwo + SEPARATOR + columnThree + "\n");
+            }
+
             // Close the output stream
             out.close();
         } catch (IOException ioe) {
@@ -238,8 +281,10 @@ public class AddressBook {
 
     public void loadFromFile() {
         try {
+            walletPreferences = new Properties();
+            
             // Read in the address book data
-            FileInputStream fileInputStream = new FileInputStream(ADDRESS_BOOK_FILENAME);
+            FileInputStream fileInputStream = new FileInputStream(walletFilename + INFO_FILENAME_SUFFIX);
             // Get the object of DataInputStream
             InputStream inputStream = new DataInputStream(fileInputStream);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF8"));
@@ -252,7 +297,7 @@ public class AddressBook {
             if (numberOfTokens == 2) {
                 String magicText = tokenizer.nextToken();
                 String versionNumber = tokenizer.nextToken();
-                if (!ADDRESSBOOK_MAGIC_TEXT.equals(magicText) || !VERSION_TEXT.equals(versionNumber)) {
+                if (!INFO_MAGIC_TEXT.equals(magicText) || !INFO_VERSION_TEXT.equals(versionNumber)) {
                     // this is not an multibit address book
                     return;
                 }
@@ -260,29 +305,53 @@ public class AddressBook {
                 // this is not an multibit address book
                 return;
             }
+            
+            // read the wallet version
+            String secondLine = bufferedReader.readLine();
+            StringTokenizer walletVersionTokenizer = new StringTokenizer(secondLine, SEPARATOR);
+            int walletVersionTokenNumber = walletVersionTokenizer.countTokens();
+            if (walletVersionTokenNumber == 2) {
+                String walletVersionMarker = walletVersionTokenizer.nextToken();
+                String walletVersionString = walletVersionTokenizer.nextToken();
+                if (!WALLET_VERSION_MARKER.equals(walletVersionMarker) || !WALLET_VERSION_TEXT.equals(walletVersionString)) {
+                    // this refers  to a version of the wallet we do not know about
+                    
+                    //TODO throw exception
+                    return;
+                } else {
+                    walletVersion = walletVersionString;
+                }
+            } else {
+                // the format of the info format is wrong
+                return;
+            }
 
-            // read the addresses
+            // read the addresses and general properties
             while ((inputLine = bufferedReader.readLine()) != null) {
                 StringTokenizer tokenizer2 = new StringTokenizer(inputLine, SEPARATOR);
                 int numberOfTokens2 = tokenizer2.countTokens();
-                String addressType = null;
-                String address = null;
-                String label = "";
+                String columnOne = null;
+                String columnTwo = null;
+                String columnThree = "";
                 if (numberOfTokens2 == 2) {
-                    addressType = tokenizer2.nextToken();
-                    address = tokenizer2.nextToken();
+                    columnOne = tokenizer2.nextToken();
+                    columnTwo = tokenizer2.nextToken();
                 } else {
                     if (numberOfTokens2 == 3) {
-                        addressType = tokenizer2.nextToken();
-                        address = tokenizer2.nextToken();
-                        label = tokenizer2.nextToken();
+                        columnOne = tokenizer2.nextToken();
+                        columnTwo = tokenizer2.nextToken();
+                        columnThree = tokenizer2.nextToken();
                     }
                 }
-                if (RECEIVE_ADDRESS_MARKER.equals(addressType)) {
-                    addReceivingAddress(new AddressBookData(label, address), true);
+                if (RECEIVE_ADDRESS_MARKER.equals(columnOne)) {
+                    addReceivingAddress(new AddressBookData(columnThree, columnTwo), true);
                 } else {
-                    if (SEND_ADDRESS_MARKER.equals(addressType)) {
-                        addSendingAddress(new AddressBookData(label, address));
+                    if (SEND_ADDRESS_MARKER.equals(columnOne)) {
+                        addSendingAddress(new AddressBookData(columnThree, columnTwo));
+                    } else {
+                        if (PROPERTY_MARKER.equals(columnOne)) {
+                            walletPreferences.put(columnTwo, columnThree);
+                        }
                     }
                 }
             }
@@ -292,5 +361,9 @@ public class AddressBook {
             // Catch exception if any
             // may well not be a file - absorb exception
         }
+    }
+
+    public String getWalletVersion() {
+        return walletVersion;
     }
 }

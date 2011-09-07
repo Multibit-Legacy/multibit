@@ -21,7 +21,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.AddressBook;
+import org.multibit.model.WalletInfo;
 import org.multibit.model.MultiBitModel;
 
 import com.google.bitcoin.core.Address;
@@ -110,7 +110,7 @@ public class MultiBitService {
             wallet = fileHandler.loadWalletFromFile(walletFile);
         }
 
-        if (wallet == null || walletFilename == null) {
+        if (wallet == null || walletFilename == null || walletFilename.equals("")) {
             // use default wallet name - create if does not exist
             walletFilename = filePrefix + WALLET_SUFFIX;
             walletFile = new File(walletFilename);
@@ -118,12 +118,14 @@ public class MultiBitService {
             if (walletFile.exists()) {
                 // wallet file exists with default name
                 wallet = fileHandler.loadWalletFromFile(walletFile);
+                controller.fireWalletChanged();
             } else {
                 wallet = new Wallet(networkParameters);
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
                 
                 fileHandler.saveWalletToFile(wallet, walletFile);
+                controller.fireWalletChanged();
             }
         }
 
@@ -131,12 +133,12 @@ public class MultiBitService {
         // addresses
         ArrayList<ECKey> keys = wallet.keychain;
         if (keys != null) {
-            AddressBook addressBook = controller.getModel().getAddressBook();
-            if (addressBook != null) {
+            WalletInfo walletInfo = controller.getModel().getWalletInfo();
+            if (walletInfo != null) {
                 for (ECKey key : keys) {
                     if (key != null) {
                         Address address = key.toAddress(networkParameters);
-                        addressBook.addReceivingAddressOfKey(address);
+                        walletInfo.addReceivingAddressOfKey(address);
                     }
                 }
             }

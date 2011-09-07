@@ -10,7 +10,7 @@ import javax.swing.table.AbstractTableModel;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.WalletData;
+import org.multibit.model.WalletTableData;
 
 import com.google.bitcoin.core.StoredBlock;
 
@@ -20,7 +20,7 @@ public class WalletTableModel extends AbstractTableModel {
 
     private Vector<String> headers;
 
-    private Vector<WalletData> walletData;
+    private Vector<WalletTableData> walletData;
 
     /**
      * the MultiBit model
@@ -39,7 +39,7 @@ public class WalletTableModel extends AbstractTableModel {
     }
 
     public int getColumnCount() {
-        return WalletData.COLUMN_HEADER_KEYS.length;
+        return WalletTableData.COLUMN_HEADER_KEYS.length;
     }
 
     public int getRowCount() {
@@ -51,7 +51,7 @@ public class WalletTableModel extends AbstractTableModel {
     }
 
     public Object getValueAt(int row, int column) {
-        WalletData walletDataRow = null;
+        WalletTableData walletDataRow = null;
         if (row >= 0 && row < walletData.size()) {
             walletDataRow = walletData.get(row);
         }
@@ -126,8 +126,8 @@ public class WalletTableModel extends AbstractTableModel {
 
     public void createHeaders() {
         headers = new Vector<String>();
-        for (int j = 0; j < WalletData.COLUMN_HEADER_KEYS.length; j++) {
-            headers.add(controller.getLocaliser().getString(WalletData.COLUMN_HEADER_KEYS[j]));
+        for (int j = 0; j < WalletTableData.COLUMN_HEADER_KEYS.length; j++) {
+            headers.add(controller.getLocaliser().getString(WalletTableData.COLUMN_HEADER_KEYS[j]));
         }
     }
 }

@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
 
 import org.multibit.Localiser;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.WalletData;
+import org.multibit.model.WalletTableData;
 import org.multibit.viewsystem.commandline.CommandLineViewSystem;
 
 /**
@@ -50,19 +50,19 @@ public class HomePageView extends AbstractView{
         // output transaction headers
         String printfFormat = "%10s %-19s %-90s %10s %10s %n";
         
-        if (WalletData.COLUMN_HEADER_KEYS.length >= 5) {
+        if (WalletTableData.COLUMN_HEADER_KEYS.length >= 5) {
             printStream.format(printfFormat, 
-                    localiser.getString(WalletData.COLUMN_HEADER_KEYS[0]),
-                    localiser.getString(WalletData.COLUMN_HEADER_KEYS[1]),
-                    localiser.getString(WalletData.COLUMN_HEADER_KEYS[2]),
-                    localiser.getString(WalletData.COLUMN_HEADER_KEYS[3]),
-                    localiser.getString(WalletData.COLUMN_HEADER_KEYS[4]));
+                    localiser.getString(WalletTableData.COLUMN_HEADER_KEYS[0]),
+                    localiser.getString(WalletTableData.COLUMN_HEADER_KEYS[1]),
+                    localiser.getString(WalletTableData.COLUMN_HEADER_KEYS[2]),
+                    localiser.getString(WalletTableData.COLUMN_HEADER_KEYS[3]),
+                    localiser.getString(WalletTableData.COLUMN_HEADER_KEYS[4]));
         }
         
         // output the transaction data
          SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy hh:mm");
 
-         for (WalletData walletData : model.getWalletData()) {
+         for (WalletTableData walletData : model.getWalletData()) {
              String creditText = "";
              if (walletData.getCredit() != null) {
                  creditText = walletData.getCredit().toString();

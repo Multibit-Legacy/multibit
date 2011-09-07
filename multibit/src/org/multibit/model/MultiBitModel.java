@@ -60,16 +60,28 @@ public class MultiBitModel {
     public static final String SEND_LABEL = "sendLabel";
     public static final String SEND_AMOUNT = "sendAmount";
     public static final String SEND_FEE = "sendFee";
-    public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("100000");  // = 0.001 BTC = twice the minimum fee as of 1 sep 2011
-    
+    public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("100000"); // =
+                                                                                // 0.001
+                                                                                // BTC
+                                                                                // =
+                                                                                // twice
+                                                                                // the
+                                                                                // minimum
+                                                                                // fee
+                                                                                // as
+                                                                                // of
+                                                                                // 1
+                                                                                // sep
+                                                                                // 2011
+
     // receive bitcoin
     public static final String RECEIVE_ADDRESS = "receiveAddress";
     public static final String RECEIVE_LABEL = "receiveLabel";
     public static final String RECEIVE_AMOUNT = "receiveAmount";
-    public static final String RECEIVE_NEW_KEY = "receiveNewKey";  //to delete
+    public static final String RECEIVE_NEW_KEY = "receiveNewKey"; // to delete
     public static final String RECEIVE_URI_TEXT = "receiveUriText";
     public static final String RECEIVE_URI_IMAGE = "receiveUriImage";
-    
+
     // validation
     public static final String VALIDATION_ADDRESS_IS_INVALID = "validationAddressIsInvalid";
     public static final String VALIDATION_AMOUNT_IS_INVALID = "validationAmountIsInvalid";
@@ -87,17 +99,17 @@ public class MultiBitModel {
     // properties object for simplicity
     private Properties userPreferences;
 
-    private Vector<WalletData> walletData;
+    private Vector<WalletTableData> walletData;
 
-    // address book
-    private AddressBook addressBook;
+    // wallet info including address labelling
+    private WalletInfo walletInfo;
 
     public MultiBitModel(MultiBitController controller, Properties userPreferences) {
         this.controller = controller;
         this.userPreferences = userPreferences;
 
-        walletData = new Vector<WalletData>();
-        addressBook = new AddressBook();
+        walletData = new Vector<WalletTableData>();
+        walletInfo = null;
     }
 
     /**
@@ -136,6 +148,32 @@ public class MultiBitModel {
         userPreferences = properties;
     }
 
+    /**
+     * get a wallet preference
+     * 
+     * @param key
+     *            String key of property
+     * @return String property value
+     */
+    public String getWalletPreference(String key) {
+        if (walletInfo != null) {
+            return walletInfo.getProperty(key);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * set a wallet preference
+     * 
+     * @return
+     */
+    public void setWalletPreference(String key, String value) {
+        if (walletInfo != null) {
+            walletInfo.put(key, value);
+        }
+    }
+
     public BigInteger getBalance() {
         if (wallet == null) {
             return new BigInteger("0");
@@ -144,12 +182,12 @@ public class MultiBitModel {
         }
     }
 
-    public Vector<WalletData> getWalletData() {
+    public Vector<WalletTableData> getWalletData() {
         return walletData;
     }
 
-    public AddressBook getAddressBook() {
-        return addressBook;
+    public WalletInfo getWalletInfo() {
+        return walletInfo;
     }
 
     public Wallet getWallet() {
@@ -161,8 +199,7 @@ public class MultiBitModel {
 
         // wire up the controller as a wallet event listener
         wallet.addEventListener(new WalletEventListener() {
-            public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
-                    BigInteger newBalance) {
+            public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
                 controller.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
             }
 
@@ -170,13 +207,13 @@ public class MultiBitModel {
                     BigInteger newBalance) {
                 controller.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
             }
-            
+
             public void onPendingCoinsReceived(Wallet wallet, Transaction transaction) {
                 controller.onPendingCoinsReceived(wallet, transaction, null, null);
             }
 
         });
-        
+
         createWalletData();
         createAddressBookReceivingAddresses();
     }
@@ -191,10 +228,10 @@ public class MultiBitModel {
 
     /**
      * convert the wallet info into walletdata records as they are easier to
-     * show to the user
+     * show to the user in tabular form
      */
-    public Vector<WalletData> createWalletData() {
-        Vector<WalletData> walletData = new Vector<WalletData>();
+    public Vector<WalletTableData> createWalletData() {
+        Vector<WalletTableData> walletData = new Vector<WalletTableData>();
 
         if (wallet == null) {
             return walletData;
@@ -205,7 +242,7 @@ public class MultiBitModel {
 
         if (pendingTransactions != null) {
             for (Transaction pendingTransaction : pendingTransactions) {
-                WalletData walletDataRow = new WalletData(pendingTransaction);
+                WalletTableData walletDataRow = new WalletTableData(pendingTransaction);
                 walletData.add(walletDataRow);
                 walletDataRow.setCredit(pendingTransaction.getValueSentToMe(wallet));
                 try {
@@ -229,7 +266,7 @@ public class MultiBitModel {
 
         if (unspentTransactions != null) {
             for (Transaction unspentTransaction : unspentTransactions) {
-                WalletData walletDataRow = new WalletData(unspentTransaction);
+                WalletTableData walletDataRow = new WalletTableData(unspentTransaction);
                 walletData.add(walletDataRow);
                 walletDataRow.setCredit(unspentTransaction.getValueSentToMe(wallet));
                 try {
@@ -253,7 +290,7 @@ public class MultiBitModel {
 
         if (spentTransactions != null) {
             for (Transaction spentTransaction : spentTransactions) {
-                WalletData walletDataRow = new WalletData(spentTransaction);
+                WalletTableData walletDataRow = new WalletTableData(spentTransaction);
                 walletData.add(walletDataRow);
                 walletDataRow.setCredit(spentTransaction.getValueSentToMe(wallet));
                 try {
@@ -271,18 +308,19 @@ public class MultiBitModel {
                 walletDataRow.setHeight(workOutHeight(spentTransaction));
             }
         }
-        
-        // run through all the walletdata to see if both credit and debit are set (this means change was received)
-        for (WalletData walletDataRow : walletData) {
-            if (walletDataRow.getCredit() != null && (walletDataRow.getCredit().compareTo(BigInteger.ZERO) > 0) && 
-                    (walletDataRow.getDebit() != null) && walletDataRow.getDebit().compareTo(BigInteger.ZERO)  > 0) {
+
+        // run through all the walletdata to see if both credit and debit are
+        // set (this means change was received)
+        for (WalletTableData walletDataRow : walletData) {
+            if (walletDataRow.getCredit() != null && (walletDataRow.getCredit().compareTo(BigInteger.ZERO) > 0)
+                    && (walletDataRow.getDebit() != null) && walletDataRow.getDebit().compareTo(BigInteger.ZERO) > 0) {
                 BigInteger net = walletDataRow.getCredit().subtract(walletDataRow.getDebit());
                 if (net.compareTo(BigInteger.ZERO) >= 0) {
                     walletDataRow.setCredit(net);
                     walletDataRow.setDebit(BigInteger.ZERO);
                 } else {
                     walletDataRow.setCredit(BigInteger.ZERO);
-                    walletDataRow.setDebit(net.negate());                    
+                    walletDataRow.setDebit(net.negate());
                 }
             }
         }
@@ -301,11 +339,13 @@ public class MultiBitModel {
                 if (multiBitService != null) {
                     NetworkParameters networkParameters = multiBitService.getNetworkParameters();
                     if (networkParameters != null) {
-                        // clear the existing receiving addresses
-                        addressBook.getReceivingAddresses().clear();
-                        for (ECKey key : keyChain) {
-                            Address address = key.toAddress(controller.getMultiBitService().getNetworkParameters());
-                            addressBook.addReceivingAddressOfKey(address);
+                        if (walletInfo != null) {
+                            // clear the existing receiving addresses
+                            walletInfo.getReceivingAddresses().clear();
+                            for (ECKey key : keyChain) {
+                                Address address = key.toAddress(controller.getMultiBitService().getNetworkParameters());
+                                walletInfo.addReceivingAddressOfKey(address);
+                            }
                         }
                     }
                 }
@@ -347,7 +387,10 @@ public class MultiBitModel {
                 }
 
                 // String addressString = input.getFromAddress().toString();
-                String label = addressBook.lookupLabelForReceivingAddress(addressString);
+                String label = null;
+                if (walletInfo != null) {
+                    label = walletInfo.lookupLabelForReceivingAddress(addressString);
+                }
                 if (label != null && label != "") {
                     toReturn = controller.getLocaliser().getString("multiBitModel.creditDescriptionWithLabel",
                             new Object[] { addressString, label });
@@ -366,7 +409,10 @@ public class MultiBitModel {
                 // see if the address is a known sending address
                 if (theirOutput != null) {
                     String addressString = theirOutput.getScriptPubKey().getToAddress().toString();
-                    String label = addressBook.lookupLabelForSendingAddress(addressString);
+                    String label = null;
+                    if (walletInfo != null) {
+                        label = walletInfo.lookupLabelForSendingAddress(addressString);
+                    }
                     if (label != null && label != "") {
                         toReturn = controller.getLocaliser().getString("multiBitModel.debitDescriptionWithLabel",
                                 new Object[] { addressString, label });
@@ -388,7 +434,7 @@ public class MultiBitModel {
         if (transaction.getUpdatedAt() != null) {
             return transaction.getUpdatedAt();
         }
-        
+
         // other wise return the date of the block it first appeared in
         Set<StoredBlock> appearsIn = transaction.getAppearsIn();
         if (appearsIn != null) {
@@ -400,7 +446,7 @@ public class MultiBitModel {
                     Block appearsInBlock = appearsInStoredBlock.getHeader();
                     // set the time of the block to be the time of the
                     // transaction - TODO get transaction time
-                    return new Date(appearsInBlock.getTimeSeconds()* 1000);
+                    return new Date(appearsInBlock.getTimeSeconds() * 1000);
                 }
             }
         }
@@ -424,15 +470,7 @@ public class MultiBitModel {
         return -1; // -1 = we do not know
     }
 
-    public void saveWallet() {
-        File file = new File(getWalletFilename());
-        if (file != null) {
-            try {
-                wallet.saveToFile(file);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
+    public void setWalletInfo(WalletInfo walletInfo) {
+        this.walletInfo = walletInfo;
     }
 }

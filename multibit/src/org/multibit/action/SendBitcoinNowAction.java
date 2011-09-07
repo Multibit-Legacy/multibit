@@ -4,7 +4,7 @@ import java.math.BigInteger;
 
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.AddressBook;
+import org.multibit.model.WalletInfo;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
@@ -39,7 +39,7 @@ public class SendBitcoinNowAction implements Action {
         }
 
         if (sendLabel != null && sendLabel != "") {
-            AddressBook addressBook = controller.getModel().getAddressBook();
+            WalletInfo addressBook = controller.getModel().getWalletInfo();
             addressBook.addSendingAddress(new AddressBookData(sendLabel, sendAddress));
         }
         controller.sendCoins(sendAddress, sendLabel, sendAmount, fee);

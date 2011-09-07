@@ -1,5 +1,7 @@
 package org.multibit.action;
 
+import java.io.File;
+
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
@@ -7,9 +9,9 @@ import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
+import org.multibit.network.FileHandler;
 
 import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Wallet;
 
 /**
  * an action to process the submit of the CreateOrEditAddress view
@@ -30,8 +32,7 @@ public class CreateOrEditAddressSubmitAction implements Action {
     }
 
     public void execute(DataProvider dataProvider) {
-        // get the receive address and label and put it in the user preferences
-        // and address book
+        // get the receive address and label and put it in the user preferences wallet info
         
         if (dataProvider != null) {
             if (isReceiving) {
@@ -44,12 +45,12 @@ public class CreateOrEditAddressSubmitAction implements Action {
                     Item receiveAddressItem = data.getItem(MultiBitModel.RECEIVE_ADDRESS);
                     if (receiveAddressItem != null && receiveAddressItem.getNewValue() != null) {
                         receiveAddress = (String) receiveAddressItem.getNewValue();
-                        controller.getModel().setUserPreference(MultiBitModel.RECEIVE_ADDRESS, receiveAddress);
+                        controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_ADDRESS, receiveAddress);
                     }
                     Item receiveLabelItem = data.getItem(MultiBitModel.RECEIVE_LABEL);
                     if (receiveLabelItem != null && receiveLabelItem.getNewValue() != null) {
                         receiveLabel = (String) receiveLabelItem.getNewValue();
-                        controller.getModel().setUserPreference(MultiBitModel.RECEIVE_LABEL, receiveLabel);
+                        controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_LABEL, receiveLabel);
                     }
                 }
 
@@ -57,7 +58,7 @@ public class CreateOrEditAddressSubmitAction implements Action {
                     if (receiveLabel == null) {
                         receiveLabel = "";
                     }
-                    controller.getModel().getAddressBook()
+                    controller.getModel().getWalletInfo()
                             .addReceivingAddress(new AddressBookData(receiveLabel, receiveAddress), false);
                 }
                 
@@ -66,7 +67,8 @@ public class CreateOrEditAddressSubmitAction implements Action {
                     if (receiveNewKeyItem != null) {
                         ECKey newKey = (ECKey)receiveNewKeyItem.getNewValue();
                         controller.getModel().getWallet().keychain.add(newKey);
-                        controller.getModel().saveWallet();
+                        FileHandler fileHandler = new FileHandler(controller);
+                        fileHandler.saveWalletToFile(controller.getModel().getWallet(), new File(controller.getModel().getWalletFilename()));
                     }
                 }
             } else {
@@ -79,12 +81,12 @@ public class CreateOrEditAddressSubmitAction implements Action {
                     Item sendAddressItem = data.getItem(MultiBitModel.SEND_ADDRESS);
                     if (sendAddressItem != null && sendAddressItem.getNewValue() != null) {
                         sendAddress = (String) sendAddressItem.getNewValue();
-                        controller.getModel().setUserPreference(MultiBitModel.SEND_ADDRESS, sendAddress);
+                        controller.getModel().setWalletPreference(MultiBitModel.SEND_ADDRESS, sendAddress);
                     }
                     Item sendLabelItem = data.getItem(MultiBitModel.SEND_LABEL);
                     if (sendLabelItem != null && sendLabelItem.getNewValue() != null) {
                         sendLabel = (String) sendLabelItem.getNewValue();
-                        controller.getModel().setUserPreference(MultiBitModel.SEND_LABEL, sendLabel);
+                        controller.getModel().setWalletPreference(MultiBitModel.SEND_LABEL, sendLabel);
                     }
                     
                     String sendAddressString = (String)sendAddressItem.getNewValue();
@@ -101,7 +103,7 @@ public class CreateOrEditAddressSubmitAction implements Action {
                     if (sendLabel == null) {
                         sendLabel = "";
                     }
-                    controller.getModel().getAddressBook()
+                    controller.getModel().getWalletInfo()
                             .addSendingAddress(new AddressBookData(sendLabel, sendAddress));
                 }
                 

@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.Properties;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.WalletInfo;
 
 import com.google.bitcoin.core.Wallet;
 
@@ -47,8 +48,10 @@ public class FileHandler {
             // set the new wallet into the model
             controller.getModel().setWallet(wallet);
             controller.getModel().setWalletFilename(walletFile.getAbsolutePath());
+            
+            WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath());
+            controller.getModel().setWalletInfo(walletInfo);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         
@@ -57,6 +60,11 @@ public class FileHandler {
     
     public void saveWalletToFile(Wallet wallet, File walletFile) {
         try {
+            // save the companion wallet info
+            WalletInfo walletInfo = controller.getModel().getWalletInfo();
+            if (walletInfo != null) {
+                walletInfo.writeToFile();
+            }
             // set the new wallet and wallet filename on the model
             controller.getModel().setWalletFilename(walletFile.getAbsolutePath());
             controller.getModel().setWallet(wallet);
@@ -68,7 +76,7 @@ public class FileHandler {
     }
     
     public void writeUserPreferences() {
-        // write the user properties
+        // write the user preference properties
         Properties userPreferences = controller.getModel().getAllUserPreferences();
         OutputStream outputStream;
         try {

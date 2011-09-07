@@ -51,8 +51,8 @@ public class Validator {
     }
 
     private boolean validateAmount(String amount) {
-        // copy amount to user preferences
-        controller.getModel().setUserPreference(MultiBitModel.VALIDATION_AMOUNT_VALUE, amount);
+        // copy amount to wallet preferences
+        controller.getModel().setWalletPreference(MultiBitModel.VALIDATION_AMOUNT_VALUE, amount);
 
         // see if the amount is a number
         Boolean amountIsInvalid = Boolean.TRUE;
@@ -94,9 +94,9 @@ public class Validator {
                 }
             }
         }
-        controller.getModel().setUserPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID, amountIsInvalid.toString());
-        controller.getModel().setUserPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS, notEnoughFunds.toString());
-        controller.getModel().setUserPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS_BUT_ESTIMATED_OK,
+        controller.getModel().setWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID, amountIsInvalid.toString());
+        controller.getModel().setWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS, notEnoughFunds.toString());
+        controller.getModel().setWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS_BUT_ESTIMATED_OK,
                 notEnoughFundsButEstimatedOk.toString());
 
         return !amountIsInvalid.booleanValue() && !notEnoughFunds.booleanValue()
@@ -104,8 +104,8 @@ public class Validator {
     }
 
     private boolean validateAddress(String address) {
-        // copy address to user preferences
-        controller.getModel().setUserPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE, address);
+        // copy address to wallet preferences
+        controller.getModel().setWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE, address);
 
         Boolean addressIsInvalid = Boolean.TRUE;
         try {
@@ -114,14 +114,14 @@ public class Validator {
         } catch (AddressFormatException afe) {
             // carry on
         }
-        controller.getModel().setUserPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID, addressIsInvalid.toString());
+        controller.getModel().setWalletPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID, addressIsInvalid.toString());
 
         return !addressIsInvalid.booleanValue();
     }
 
     public void clearValidationState() {
-        controller.getModel().setUserPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID, Boolean.FALSE.toString());
-        controller.getModel().setUserPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS, Boolean.FALSE.toString());
-        controller.getModel().setUserPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID, Boolean.FALSE.toString());
+        controller.getModel().setWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID, Boolean.FALSE.toString());
+        controller.getModel().setWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS, Boolean.FALSE.toString());
+        controller.getModel().setWalletPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID, Boolean.FALSE.toString());
     }
 }

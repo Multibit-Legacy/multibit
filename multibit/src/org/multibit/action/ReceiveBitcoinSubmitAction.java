@@ -33,13 +33,13 @@ public class ReceiveBitcoinSubmitAction implements Action {
                 Item receiveAddressItem = data.getItem(MultiBitModel.RECEIVE_ADDRESS);
                 if (receiveAddressItem != null && receiveAddressItem.getNewValue() != null) {
                     receiveAddress = (String) receiveAddressItem.getNewValue();
-                    controller.getModel().setUserPreference(MultiBitModel.RECEIVE_ADDRESS,
+                    controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_ADDRESS,
                             receiveAddress);
                 }
                 Item receiveLabelItem = data.getItem(MultiBitModel.RECEIVE_LABEL);
                 if (receiveLabelItem != null && receiveLabelItem.getNewValue() != null) {
                     receiveLabel = (String) receiveLabelItem.getNewValue();
-                    controller.getModel().setUserPreference(MultiBitModel.RECEIVE_LABEL,
+                    controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_LABEL,
                             receiveLabel);
                 }
             }
@@ -48,7 +48,7 @@ public class ReceiveBitcoinSubmitAction implements Action {
                 if (receiveLabel == null) {
                     receiveLabel = "";
                 }
-                controller.getModel().getAddressBook().addReceivingAddress(new AddressBookData(receiveLabel, receiveAddress), false);
+                controller.getModel().getWalletInfo().addReceivingAddress(new AddressBookData(receiveLabel, receiveAddress), false);
             }
         }
         controller.setActionForwardToParent();
