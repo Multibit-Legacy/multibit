@@ -34,7 +34,7 @@ public class FileHandler {
 
     private static final String SEPARATOR = "-";
     private static final String BACKUP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
-    
+
     private MultiBitController controller;
 
     public FileHandler(MultiBitController controller) {
@@ -48,23 +48,28 @@ public class FileHandler {
             // set the new wallet into the model
             controller.getModel().setWallet(wallet);
             controller.getModel().setWalletFilename(walletFile.getAbsolutePath());
-            
+
             WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath());
             controller.getModel().setWalletInfo(walletInfo);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         return wallet;
     }
-    
+
     public void saveWalletToFile(Wallet wallet, File walletFile) {
         try {
             // save the companion wallet info
             WalletInfo walletInfo = controller.getModel().getWalletInfo();
             if (walletInfo != null) {
                 walletInfo.writeToFile();
+            } else {
+                WalletInfo newWalletInfo = new WalletInfo(walletFile.getAbsolutePath());
+                controller.getModel().setWalletInfo(newWalletInfo);
+                newWalletInfo.writeToFile();
             }
+
             // set the new wallet and wallet filename on the model
             controller.getModel().setWalletFilename(walletFile.getAbsolutePath());
             controller.getModel().setWallet(wallet);
@@ -74,7 +79,7 @@ public class FileHandler {
             e.printStackTrace();
         }
     }
-    
+
     public void writeUserPreferences() {
         // write the user preference properties
         Properties userPreferences = controller.getModel().getAllUserPreferences();
@@ -107,12 +112,12 @@ public class FileHandler {
 
         return userPreferences;
     }
-     
+
     public String createBackupFile(File file) throws IOException {
         String filename = file.getAbsolutePath();
         DateFormat dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
         String backupFilename = filename + SEPARATOR + dateFormat.format(new Date());
-        
+
         File backupFile = new File(backupFilename);
         copyFile(file, backupFile);
 
@@ -123,7 +128,7 @@ public class FileHandler {
         String filename = file.getAbsolutePath();
         DateFormat dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
         String backupFilename = filename + SEPARATOR + dateFormat.format(new Date());
-        
+
         File backupFile = new File(backupFilename);
         copyFile(file, backupFile);
 

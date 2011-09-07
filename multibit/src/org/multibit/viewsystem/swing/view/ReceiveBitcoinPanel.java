@@ -629,10 +629,16 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         if (qrCodeEncoderDecoder == null) {
             qrCodeEncoderDecoder = new QRCodeEncoderDecoder(QRCODE_WIDTH, QRCODE_HEIGHT);
         }
-        BufferedImage image = qrCodeEncoderDecoder.encode(stringToDisplay);
-        ImageIcon icon = new ImageIcon(image);
-        qrCodeLabel.setIcon(icon);
-        qrCodeTextArea.setText(stringToDisplay);
+        if (stringToDisplay != null && !stringToDisplay.equals("")) {
+            try {
+                BufferedImage image = qrCodeEncoderDecoder.encode(stringToDisplay);
+                ImageIcon icon = new ImageIcon(image);
+                qrCodeLabel.setIcon(icon);
+                qrCodeTextArea.setText(stringToDisplay);
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+            }
+        }
     }
 
     class SelectionListener implements ListSelectionListener {
