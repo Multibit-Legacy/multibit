@@ -45,32 +45,32 @@ public class ValidationErrorView implements View {
      */
     public void displayView() {
         // get the data out of the user preferences
-        String addressValue = controller.getModel().getUserPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE);
-        String amountValue = controller.getModel().getUserPreference(MultiBitModel.VALIDATION_AMOUNT_VALUE);
+        String addressValue = controller.getModel().getWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE);
+        String amountValue = controller.getModel().getWalletPreference(MultiBitModel.VALIDATION_AMOUNT_VALUE);
        
         // invalid address
-        String addressIsInvalid = controller.getModel().getUserPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID);
+        String addressIsInvalid = controller.getModel().getWalletPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID);
         boolean addressIsInvalidBoolean = false;
         if (Boolean.TRUE.toString().equals(addressIsInvalid)) {
             addressIsInvalidBoolean = true;           
         }
         
         // invalid amount i.e. not a number or could not parse
-        String amountIsInvalid = controller.getModel().getUserPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID);
+        String amountIsInvalid = controller.getModel().getWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID);
         boolean amountIsInvalidBoolean = false; 
         if (Boolean.TRUE.toString().equals(amountIsInvalid)) {
             amountIsInvalidBoolean = true;
         }
         
         // amount is more than available funds
-        String notEnoughFunds = controller.getModel().getUserPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS);
+        String notEnoughFunds = controller.getModel().getWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS);
         boolean notEnoughFundsBoolean = false; 
         if (Boolean.TRUE.toString().equals(notEnoughFunds)) {
             notEnoughFundsBoolean = true;
         }
 
         // amount is more than available funds
-        String notEnoughFundsButEstimatedOk = controller.getModel().getUserPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS_BUT_ESTIMATED_OK);
+        String notEnoughFundsButEstimatedOk = controller.getModel().getWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS_BUT_ESTIMATED_OK);
         boolean notEnoughFundsButEstimatedOkBoolean = false; 
         if (Boolean.TRUE.toString().equals(notEnoughFundsButEstimatedOk)) {
             notEnoughFundsButEstimatedOkBoolean = true;

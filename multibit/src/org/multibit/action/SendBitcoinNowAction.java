@@ -27,9 +27,9 @@ public class SendBitcoinNowAction implements Action {
 
     public void execute(DataProvider dataProvider) {
         // get the data out of the user preferences
-        String sendAddress = controller.getModel().getUserPreference(MultiBitModel.SEND_ADDRESS);
-        String sendLabel = controller.getModel().getUserPreference(MultiBitModel.SEND_LABEL);
-        String sendAmount = controller.getModel().getUserPreference(MultiBitModel.SEND_AMOUNT);
+        String sendAddress = controller.getModel().getWalletPreference(MultiBitModel.SEND_ADDRESS);
+        String sendLabel = controller.getModel().getWalletPreference(MultiBitModel.SEND_LABEL);
+        String sendAmount = controller.getModel().getWalletPreference(MultiBitModel.SEND_AMOUNT);
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
         BigInteger fee;
         if (sendFeeString == null || sendFeeString == "") {
