@@ -777,7 +777,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                             System.out.println("SendBitcoinPanel - ping 3");
                             String amountString = amountTextField.getText();
                             if (bitcoinURI.getAmount() != null) {
-                                amountString = Localiser.bitcoinValueToString(bitcoinURI.getAmount(), false, false);
+                                amountString = Localiser.bitcoinValueToString4(bitcoinURI.getAmount(), false, false);
                             }
                             System.out.println("SendBitcoinPanel - ping 4");
                             String decodedLabel = bitcoinURI.getLabel();

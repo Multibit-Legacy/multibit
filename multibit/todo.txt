@@ -25,13 +25,13 @@ Spend
 
 Fees
 + Negative fee is accepted. (Nick).   Default fee should be 0.0005 (Nibor).
-  Will test for negative fee.   
-  Will test for fee less than minimum.
-  Will set default to 0.0005.
+  Have added test for negative fee.   
+  Have added test for fee less than minimum.
+  Have set default to 0.0005.
   
 UI 
 + Use of 3 sig figs in total misleading (Nibor).
-  Will change to show all sig figs.
+  Have changed to show 4 sig figs i.e down to 100 mikes.(approx 0.1 USD cents).
 
 Open Wallet
 + Folder can be selected in 'Open Wallet'.   Hangs app. (Nick).
@@ -54,6 +54,8 @@ Can be bumped to later releases
   Agreed.
 + More flexibility with downloading block chain would be good. (Nibor).
   Agreed.
++ Would be good to have Windows installer. (Nibor).
+  Agreed.   Plan to have installers for Win, Mac, Linux.
   
 
 Logging and errors

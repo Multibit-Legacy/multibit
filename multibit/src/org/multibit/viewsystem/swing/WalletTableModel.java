@@ -1,7 +1,6 @@
 package org.multibit.viewsystem.swing;
 
 import java.math.BigInteger;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Vector;
 
@@ -97,14 +96,14 @@ public class WalletTableModel extends AbstractTableModel {
             if (debitAmount == null) {
                 return null;
             } else {
-                return Localiser.bitcoinValueToFriendlyString3(debitAmount, false, true);
+                return Localiser.bitcoinValueToString4(debitAmount, false, true);
             }
         case 4:
             BigInteger creditAmount = walletDataRow.getCredit();
             if (creditAmount == null) {
                 return null;
             } else {
-                return Localiser.bitcoinValueToFriendlyString3(creditAmount, false, true);
+                return Localiser.bitcoinValueToString4(creditAmount, false, true);
             }
         default:
             return null;

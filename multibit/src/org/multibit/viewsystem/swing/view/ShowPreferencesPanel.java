@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
+import org.multibit.Localiser;
 import org.multibit.action.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
@@ -86,7 +87,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
        String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
         
         if (sendFeeString == null || sendFeeString == "") {
-            sendFeeString = Utils.bitcoinValueToFriendlyString3(MultiBitModel.SEND_FEE_DEFAULT);
+            sendFeeString = Localiser.bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
         }
         originalFee = sendFeeString;
         feeTextField.setText(sendFeeString);
@@ -268,7 +269,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
         
         if (sendFeeString == null || sendFeeString == "") {
-            sendFeeString = Utils.bitcoinValueToFriendlyString3(MultiBitModel.SEND_FEE_DEFAULT);
+            sendFeeString = Localiser.bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
         }
         originalFee = sendFeeString;
 

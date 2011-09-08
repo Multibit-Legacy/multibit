@@ -60,20 +60,11 @@ public class MultiBitModel {
     public static final String SEND_LABEL = "sendLabel";
     public static final String SEND_AMOUNT = "sendAmount";
     public static final String SEND_FEE = "sendFee";
-    public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("100000"); // =
-                                                                                // 0.001
-                                                                                // BTC
-                                                                                // =
-                                                                                // twice
-                                                                                // the
-                                                                                // minimum
-                                                                                // fee
-                                                                                // as
-                                                                                // of
-                                                                                // 1
-                                                                                // sep
-                                                                                // 2011
-
+    // default is min fee of 0.0005 BTC
+    public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("50000"); 
+    // min fee of 0.0005 BTC
+    public static final BigInteger SEND_MINIMUM_FEE = new BigInteger("50000");
+                                                   
     // receive bitcoin
     public static final String RECEIVE_ADDRESS = "receiveAddress";
     public static final String RECEIVE_LABEL = "receiveLabel";

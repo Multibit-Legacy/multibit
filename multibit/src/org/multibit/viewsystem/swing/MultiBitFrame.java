@@ -155,9 +155,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         nowOffline();
         updateStatusLabel("");
 
-        balanceTextLabel.setText(Localiser.bitcoinValueToFriendlyString3(model.getBalance(), true, false));
+        balanceTextLabel.setText(Localiser.bitcoinValueToString4(model.getBalance(), true, false));
         balanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.text",
-                new Object[] { Localiser.bitcoinValueToString(model.getBalance(), true, false) }));
+                new Object[] { Localiser.bitcoinValueToString4(model.getBalance(), true, false) }));
         balanceTextLabel.setFocusable(true);
         balanceTextLabel.requestFocusInWindow();
 
@@ -464,9 +464,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             initUI();
         }
         updateOnlineStatusText();
-        balanceTextLabel.setText(Localiser.bitcoinValueToFriendlyString3(model.getBalance(), true, false));
+        balanceTextLabel.setText(Localiser.bitcoinValueToString4(model.getBalance(), true, false));
         balanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.text",
-                new Object[] { Localiser.bitcoinValueToString(model.getBalance(), true, false) }));
+                new Object[] { Localiser.bitcoinValueToString4(model.getBalance(), true, false) }));
 
         String walletFilename = model.getWalletFilename();
         if (walletFilename == null) {
@@ -632,7 +632,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             BigInteger value = transaction.getValueSentToMe(wallet);
             if (value != null && value.compareTo(BigInteger.ZERO) > 0) {
 
-                logger.debug("Received " + Localiser.bitcoinValueToString(value, true, false) + " from " + from.toString());
+                logger.debug("Received " + Localiser.bitcoinValueToString4(value, true, false) + " from " + from.toString());
                 wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
 
                 ShowTransactionsPanel transactionsView = (ShowTransactionsPanel) viewFactory.getView(View.TRANSACTIONS_VIEW);
@@ -641,10 +641,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
                     walletTableModel.recreateWalletData();
                 }
 
-                balanceTextLabel.setText(Localiser.bitcoinValueToFriendlyString3(controller.getModel().getBalance(), true,
+                balanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel().getBalance(), true,
                         false));
                 balanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.text",
-                        new Object[] { Localiser.bitcoinValueToString(model.getBalance(), true, false) }));
+                        new Object[] { Localiser.bitcoinValueToString4(model.getBalance(), true, false) }));
 
                 fireDataChanged();
             }
@@ -666,7 +666,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             Address from = input.getFromAddress();
             BigInteger value = transaction.getValueSentToMe(wallet);
             if (value != null && value.compareTo(BigInteger.ZERO) > 0) {
-                logger.debug("Received " + Localiser.bitcoinValueToString(value, true, false) + " from " + from.toString());
+                logger.debug("Received " + Localiser.bitcoinValueToString4(value, true, false) + " from " + from.toString());
 
                 ShowTransactionsPanel transactionsView = (ShowTransactionsPanel) viewFactory.getView(View.TRANSACTIONS_VIEW);
                 WalletTableModel walletTableModel = transactionsView.getWalletTableModel();
@@ -677,8 +677,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
                 wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
 
                 balanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.text",
-                        new Object[] { Localiser.bitcoinValueToString(model.getBalance(), true, false) }));
-                balanceTextLabel.blink(Localiser.bitcoinValueToFriendlyString3(controller.getModel().getBalance(), true,
+                        new Object[] { Localiser.bitcoinValueToString4(model.getBalance(), true, false) }));
+                balanceTextLabel.blink(Localiser.bitcoinValueToString4(controller.getModel().getBalance(), true,
                         false));
 
                 fireDataChanged();
@@ -699,10 +699,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     public void fireDataChanged() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                balanceTextLabel.setText(Localiser.bitcoinValueToFriendlyString3(controller.getModel().getBalance(), true,
+                balanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel().getBalance(), true,
                         false));
                 balanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.text",
-                        new Object[] { Localiser.bitcoinValueToString(model.getBalance(), true, false) }));
+                        new Object[] { Localiser.bitcoinValueToString4(model.getBalance(), true, false) }));
                 viewPanel.invalidate();
                 viewPanel.validate();
                 viewPanel.repaint();

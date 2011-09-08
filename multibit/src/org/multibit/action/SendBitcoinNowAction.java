@@ -32,7 +32,7 @@ public class SendBitcoinNowAction implements Action {
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
         BigInteger fee;
         if (sendFeeString == null || sendFeeString == "") {
-            fee = MultiBitModel.SEND_FEE_DEFAULT;
+            fee = MultiBitModel.SEND_MINIMUM_FEE;
         } else {
             fee = Utils.toNanoCoins(sendFeeString);
         }

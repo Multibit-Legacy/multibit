@@ -335,8 +335,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     }
 
     public void setPossibleActions(Collection<Action> possibleActions) {
-        // not required in Swing view
-        
+        // not required in Swing view   
     }
 
     public void displayView() {
@@ -346,14 +345,10 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         table.repaint();
     }
 
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
-        // TODO Auto-generated method stub
-        
+    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {        
     }
 
-    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
-        // TODO Auto-generated method stub
-        
+    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {        
     }
 
     public WalletTableModel getWalletTableModel() {

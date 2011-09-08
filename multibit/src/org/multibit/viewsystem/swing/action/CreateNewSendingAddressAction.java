@@ -42,8 +42,8 @@ public class CreateNewSendingAddressAction extends AbstractAction {
         //String addressString = "";
         controller.getModel().getWalletInfo().addSendingAddress(new AddressBookData("", ""));
         
-        controller.getModel().setUserPreference(MultiBitModel.SEND_ADDRESS, "");
-        controller.getModel().setUserPreference(MultiBitModel.SEND_LABEL, "");
+        controller.getModel().setWalletPreference(MultiBitModel.SEND_ADDRESS, "");
+        controller.getModel().setWalletPreference(MultiBitModel.SEND_LABEL, "");
 
         controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME); 
         

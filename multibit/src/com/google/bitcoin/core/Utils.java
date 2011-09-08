@@ -215,16 +215,6 @@ public class Utils {
         return String.format("%s%d.%02d", negative ? "-" : "", coins.intValue(), cents.intValue() / 1000000);
     }
     
-    /** Returns the given value in nanocoins as a 0.123 type string. */
-    public static String bitcoinValueToFriendlyString3(BigInteger value) {
-        boolean negative = value.compareTo(BigInteger.ZERO) < 0;
-        if (negative)
-            value = value.negate();
-        BigInteger coins = value.divide(COIN);
-        BigInteger cents = value.remainder(COIN);
-        return String.format("%s%d.%03d", negative ? "-" : "", coins.intValue(), cents.intValue() / 100000);
-    }
-    
     /**
      * MPI encoded numbers are produced by the OpenSSL BN_bn2mpi function. They consist of
      * a 4 byte big endian length field, followed by the stated number of bytes representing

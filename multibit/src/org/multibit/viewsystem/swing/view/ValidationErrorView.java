@@ -5,6 +5,7 @@ import java.util.Collection;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
+import org.multibit.Localiser;
 import org.multibit.action.Action;
 import org.multibit.action.OkBackToParentAction;
 import org.multibit.controller.MultiBitController;
@@ -94,7 +95,7 @@ public class ValidationErrorView implements View {
             }
             String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
             if (fee == null || fee == "") {
-                fee = Utils.bitcoinValueToFriendlyString3(MultiBitModel.SEND_FEE_DEFAULT);
+                fee = Localiser.bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
             }
             completeMessage = completeMessage + controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage", new String[] {amountValue, fee});
         }
@@ -105,7 +106,7 @@ public class ValidationErrorView implements View {
             }
             String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
             if (fee == null || fee == "") {
-                fee = Utils.bitcoinValueToFriendlyString3(MultiBitModel.SEND_FEE_DEFAULT);
+                fee = Localiser.bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
             }
             completeMessage = completeMessage + controller.getLocaliser().getString("validationErrorView.notEnoughFundsButEstimatedOk", new String[] {amountValue, fee});
         }
