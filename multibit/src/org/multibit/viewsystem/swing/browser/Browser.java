@@ -1,0 +1,128 @@
+package org.multibit.viewsystem.swing.browser;
+
+/*
+ * Animation of loading of URLs:
+ * Copyright (c) 2000 David Flanagan.  All rights reserved.
+ * This code is from the book Java Examples in a Nutshell, 2nd Edition.
+ * It is provided AS-IS, WITHOUT ANY WARRANTY either expressed or implied.
+ * You may study, use, and modify it for any non-commercial purpose.
+ * You may distribute it non-commercially as long as you retain this notice.
+ * For a commercial use license, or to purchase the book (recommended),
+ * visit http://www.davidflanagan.com/javaexamples2.
+ */
+
+import java.awt.Cursor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.net.URL;
+
+import org.multibit.controller.MultiBitController;
+import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.HelpContentsPanel;
+
+public class Browser extends javax.swing.JEditorPane implements PropertyChangeListener {
+    private static final long serialVersionUID = 1L;
+
+    private MultiBitFrame mainFrame;
+
+    private String loadingMessage;
+    
+    /**
+     * Creates a new <code>JEditorPane</code>. The document model is set to
+     * <code>null</code>.
+     */
+    public Browser(MultiBitController controller, MultiBitFrame mainFrame, String currentHref) {
+        super();
+        this.mainFrame = mainFrame;
+
+        addHyperlinkListener(new ActivatedHyperlinkListener(mainFrame, this, currentHref));
+
+        loadingMessage = controller.getLocaliser().getString("browser.loadingMessage");
+        setEditable(false);
+        addPropertyChangeListener(this);
+
+        visit(currentHref);;
+    }
+
+    public static String getLoadingMessage(String href, String loadingMessage) {
+        return HelpContentsPanel.SPACER + href + HelpContentsPanel.SPACER + loadingMessage + "...";
+    }
+
+    /**
+     * This internal method attempts to load and display the specified URL. 
+     **/
+    public boolean visit(String newHref) {
+        try {
+            String currentHref = null;
+            URL currentUrl = getPage();
+            if (currentUrl != null) {
+                currentHref = currentUrl.toString();
+            }
+            // Start animating. Animation is stopped in propertyChanged()
+            if (!newHref.equals(currentHref)) {
+                startAnimation(getLoadingMessage(newHref, loadingMessage));
+            }
+            setPage(new URL(newHref)); // Load and display the URL
+            return true; // Return success
+        } catch (IOException ex) { // If page loading fails
+            stopAnimation();
+            mainFrame.updateStatusLabel("Cannot load page: " + ex.getMessage());
+            return false; // Return failure
+        }
+    }
+
+    /**
+     * This method implements java.beans.PropertyChangeListener. It is invoked
+     * whenever a bound property changes in the JEditorPane object. The property
+     * we are interested in is the "page" property, because it tells us when a
+     * page has finished loading.
+     **/
+    public void propertyChange(PropertyChangeEvent e) {
+        if (e.getPropertyName().equals("page")) // If the page property changed
+            stopAnimation(); // Then stop the loading... animation
+    }
+
+    /**
+     * The fields and methods below implement a simple animation in the web
+     * browser message line; they are used to provide user feedback while web
+     * pages are loading.
+     **/
+    String animationMessage; // The "loading..." message to display
+    int animationFrame = 0; // What "frame" of the animation are we on
+    String[] animationFrames = new String[] { // The content of each "frame"
+    "-", "\\", "|", "/", "-", "\\", "|", "/", ",", ".", "o", "0", "O", "#", "*", "+" };
+
+    /** This object calls the animate() method 8 times a second */
+    javax.swing.Timer animator = new javax.swing.Timer(125, new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            animate();
+        }
+    });
+
+    /** Display the next frame. Called by the animator timer */
+    void animate() {
+        String frame = animationFrames[animationFrame++]; // Get next frame
+        mainFrame.updateStatusLabel(animationMessage + " " + frame); // Update
+                                                                     // msgline
+        animationFrame = animationFrame % animationFrames.length;
+    }
+
+    /** Start the animation. Called by the visit() method. */
+    void startAnimation(String msg) {
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+        animationMessage = msg; // Save the message to display
+        animationFrame = 0; // Start with frame 0 of the animation
+        animator.start(); // Tell the timer to start firing.
+    }
+
+    /** Stop the animation. Called by propertyChanged() method. */
+    void stopAnimation() {
+        animator.stop(); // Tell the timer to stop firing events
+        mainFrame.updateStatusLabel(" "); // Clear the message line
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    }
+}

@@ -17,7 +17,7 @@ Start up
 
 Spend
 + Spend of 0 BTC not checked. (Nick).
-  Will validate.
+  Have added tests for missing, non-parsable, negative or zero amount.
 + Problems on spend (Mats).
   Have requested log file - may be Exception in send code.
 + Not enough feedback on Send. (Mats, Nibor).
@@ -27,7 +27,7 @@ Fees
 + Negative fee is accepted. (Nick).   Default fee should be 0.0005 (Nibor).
   Have added test for negative fee.   
   Have added test for fee less than minimum.
-  Have set default to 0.0005.
+  Have set default to 0.0005 BTC
   
 UI 
 + Use of 3 sig figs in total misleading (Nibor).

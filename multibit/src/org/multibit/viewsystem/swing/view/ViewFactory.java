@@ -51,7 +51,7 @@ public class ViewFactory {
         }
 
         case View.HELP_CONTENTS_VIEW: {
-            viewToReturn = new HelpContentsPanel(mainFrame);
+            viewToReturn = new HelpContentsPanel(controller, mainFrame);
             break;
         }
 
