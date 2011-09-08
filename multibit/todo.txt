@@ -7,7 +7,7 @@ Testers:
 + Jim Burton, Mac OSX.
 
 
-Needs fixing for release.
+Needs fixing prior to general release.
 
 Start up
 + Bat file fails when Java not on path. (Nick).
