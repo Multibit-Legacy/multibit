@@ -1,11 +1,11 @@
 MultiBit Project Plan
 
 Version 0.1.x
-QR codes for payments/ bitcoin URIs
-Drag and drop support for bitcoin URIs
+QR codes for payments/ bitcoin URIs. Done
+Drag and drop support for bitcoin URIs. Done
 Support encrypted wallets
-Ask for beta testers to test functionality
-Ask for more I18n - French German Portugese Italian Chinese Hangul Japanese 
+Ask for beta testers to test functionality. Done
+Ask for more I18n - French German Portugese Italian Swedish Chinese Hangul Japanese 
 
 Version 0.2.x
 Private key import export to support bit bills

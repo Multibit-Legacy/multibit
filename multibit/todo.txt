@@ -1,30 +1,87 @@
-TODO for minimal viable product
---------------------------------
-add wallet encryption
-test it works on the test network
-check switching of wallets hooks up all listeners correctly
-ensure switch from test to prod does not confuse which wallet is open. (last test/prod wallet setting ?)
+TODO from 0.1.3rc1 testing
+--------------------------
+Testers:
++ Nick Simpson, Windows 7 Ultimate x64.
++ Nibor, Unspecified Windows.
++ Mats Henricson, Linux/ Ubuntu
++ Jim Burton, Mac OSX.
+
+
+Needs fixing for release.
+
+Start up
++ Bat file fails when Java not on path. (Nick).
+  Will modify bat file to check JAVA_HOME.
++ Console is confusing on Send (Mats)
+  Will modify bat file to use javaw to hide console.
+
+Spend
++ Spend of 0 BTC not checked. (Nick).
+  Will validate.
++ Problems on spend (Mats).
+  Have requested log file - may be Exception in send code.
++ Not enough feedback on Send. (Mats, Nibor).
+  Will have more feedback on "Send" confirm message box, including send successful/ fail, cannot spend unconfimed, change still waiting, any errors.
+
+Fees
++ Negative fee is accepted. (Nick).   Default fee should be 0.0005 (Nibor).
+  Will test for negative fee.   
+  Will test for fee less than minimum.
+  Will set default to 0.0005.
+  
+UI 
++ Use of 3 sig figs in total misleading (Nibor).
+  Will change to show all sig figs.
+
+Open Wallet
++ Folder can be selected in 'Open Wallet'.   Hangs app. (Nick).
+  Will not allow dir selection.   
+  Will defend against dirs in code.
++ No default file extension on 'Open Wallet' (Nick).
+  Will add default file extension of '.wallet'.
+
+Help
++ Help page - no feedback whilst loading (Mats).
+  Will add 'Loading <page> ...' onto main panel.
+   
+  
+Can be bumped to later releases
++ Network label stays at 'Offline' too long.  Show number of blocks.(Nibor)
+  Will add in 'Connecting...' label.   Tooltip/message box/ panel with more network details including number of blocks.
++ Would be nice to drill down to transctions details/ look up in block explorer. (Nibor)
+  Agreed.
++ Prioritise encryption. (Nibor).
+  Agreed.
++ More flexibility with downloading block chain would be good. (Nibor).
+  Agreed.
+  
 
 Logging and errors
 ------------------
-o client does not go offline if you disconnect from network
-o extend log4j logging to all important classes
++ client does not go offline if you disconnect from network
++ extend log4j logging to all important classes
+
 
 Outstanding Bugs
 ----------------
-o if you close the 'open wallet' dialog with the window close button, then reopen it is tiny
-o wallet listeners don't seem to work when you open another wallet
-o if you have two multibit open on the same wallet addressbook and wallet can be overwritten one by the other
++ if you close the 'open wallet' dialog with the window close button, then reopen it is tiny. (Now only happens sometimes).
++ if you have two multibit open on the same wallet addressbook and wallet can be overwritten one by the other.
+  Will add open/ close times to info files and warn user.
+
 
 Improvements
 ------------
-o add in more test classes
-o add tests to check sending and receiving works reliably
-o Tidy up github - get rid of extra multibit directory
-o Add in proper jar bundling to exe and DMG - look at ProGuard
-o Improve UI - address can be on main screen rather than a key click away - too many windows - Eclipse style ?
++ add Swedish (Mats Henricson has volunteered)
++ test it works on the test network
++ ensure switch from test to prod does not confuse which wallet is open. (last test/prod wallet setting ?)
++ add wallet encryption
++ add in more test classes
++ add tests to check sending and receiving works reliably
++ Tidy up github - get rid of extra multibit directory
++ Add in proper jar bundling to exe and DMG - look at ProGuard.   See how Open-Transaction does it.
 
-Patches
--------
+
+Patches to Mike
+---------------
 + Provide patch with Wallet.java for fees
 + Provide patch with Peer, PeerGroup, Transaction, Transaction?input, Wallet, WalletEventListener for pending transactions
