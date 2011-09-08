@@ -42,7 +42,7 @@ Open Wallet
 
 Help
 + Help page - no feedback whilst loading (Mats).
-  Will add 'Loading <page> ...' onto main panel.
+  Have improved feedback to user whilst loading.   Cursor and little animation in status bar.
    
   
 Can be bumped to later releases
