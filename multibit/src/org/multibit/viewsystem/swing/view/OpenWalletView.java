@@ -62,6 +62,8 @@ public class OpenWalletView implements View, DataProvider {
                 fileChooser
                         .setCurrentDirectory(new File(controller.getModel().getWalletFilename()));
             }
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fileChooser.setFileFilter(new WalletFileFilter(controller));
         }
 
         int returnVal = fileChooser.showOpenDialog(mainFrame);

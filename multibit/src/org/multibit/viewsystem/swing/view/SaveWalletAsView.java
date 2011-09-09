@@ -59,6 +59,10 @@ public class SaveWalletAsView implements View, DataProvider {
         if (controller.getModel().getWalletFilename() != null) {
             fileChooser.setCurrentDirectory(new File(controller.getModel().getWalletFilename()));
         }
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setFileFilter(new WalletFileFilter(controller));
+        String defaultFileName = fileChooser.getCurrentDirectory().getAbsoluteFile()  + File.separator + controller.getLocaliser().getString("saveWalletAsView.untitled") + "." + MultiBitModel.WALLET_FILE_EXTENSION;
+        fileChooser.setSelectedFile(new File(defaultFileName));
 
         int returnVal = fileChooser.showSaveDialog(mainFrame);
 

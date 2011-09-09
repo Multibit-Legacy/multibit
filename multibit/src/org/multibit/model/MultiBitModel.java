@@ -82,6 +82,8 @@ public class MultiBitModel {
     public static final String VALIDATION_NOT_ENOUGH_FUNDS_BUT_ESTIMATED_OK = "validationNotEnoughFundsButEstimatedOk";
     public static final String VALIDATION_ADDRESS_VALUE = "validationAddressValue";
     public static final String VALIDATION_AMOUNT_VALUE = "validationAmountValue";
+    
+    public static final String WALLET_FILE_EXTENSION = "wallet";
 
     private Wallet wallet;
 
