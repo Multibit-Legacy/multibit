@@ -203,7 +203,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         headerPanel.setLayout(new GridBagLayout());
 
         JPanel balancePanel = createBalancePanel();
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
@@ -311,7 +311,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
         constraints.gridx = 3;
         constraints.gridy = 0;
-        constraints.weightx = 0.5;
+        constraints.weightx = 3.0;
         constraints.anchor = GridBagConstraints.LINE_START;
         balancePanel.add(availableBalanceTextLabel, constraints);
 
@@ -320,8 +320,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         constraints.gridx = 4;
         constraints.gridy = 0;
         constraints.weightx = 0.5;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.anchor = GridBagConstraints.LINE_END;
         balancePanel.add(walletNameLabel, constraints);
+        
+        JPanel filler2 = new JPanel();
+        filler2.setOpaque(false);
+        constraints.gridx = 5;
+        constraints.gridy = 0;
+        constraints.weightx = 0.05;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        balancePanel.add(filler2, constraints);
 
         return balancePanel;
     }
@@ -367,8 +375,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         fileMenu.add(menuItem);
         openWalletButton = new MultiBitButton(openWalletAction);
         openWalletPanel.add(openWalletButton);
-        toolBar.add(openWalletPanel);
-
+ 
         // save wallet as action
         SaveWalletAsAction saveWalletAsAction = new SaveWalletAsAction(controller, createImageIcon(SAVE_AS_ICON_FILE), this);
         menuItem = new JMenuItem(saveWalletAsAction);
@@ -413,8 +420,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         receiveBitcoinButton = new MultiBitButton(receiveBitcoinAction);
 
         receiveBitcoinPanel.add(receiveBitcoinButton);
-        toolBar.add(receiveBitcoinPanel);
-
+ 
         // send bitcoin action
         SendBitcoinAction sendBitcoinAction = new SendBitcoinAction(controller, createImageIcon(SEND_BITCOIN_ICON_FILE), this);
         menuItem = new JMenuItem(sendBitcoinAction);
@@ -425,10 +431,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         sendBitcoinPanel.setOpaque(false);
         sendBitcoinButton = new MultiBitButton(sendBitcoinAction);
         sendBitcoinPanel.add(sendBitcoinButton);
+ 
+        toolBar.add(openWalletPanel);
+        toolBar.add(receiveBitcoinPanel);
         toolBar.add(sendBitcoinPanel);
-
         toolBar.add(showTransactionsPanel);
-
+ 
         // show preferences
         ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller,
                 createImageIcon(PREFERENCES_ICON_FILE));
