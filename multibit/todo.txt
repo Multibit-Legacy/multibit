@@ -16,7 +16,7 @@ Start up
   Will modify bat file to use javaw to hide console.
 
 Spend
-+ Spend of 0 BTC not checked. (Nick).
+o Spend of 0 BTC not checked. (Nick).
   Have added tests for missing, non-parsable, negative or zero amount.
 + Problems on spend (Mats).
   Have requested log file - may be Exception in send code.
@@ -24,24 +24,24 @@ Spend
   Will have more feedback on "Send" confirm message box, including send successful/ fail, cannot spend unconfimed, change still waiting, any errors.
 
 Fees
-+ Negative fee is accepted. (Nick).   Default fee should be 0.0005 (Nibor).
+o Negative fee is accepted. (Nick).   Default fee should be 0.0005 (Nibor).
   Have added test for negative fee.   
   Have added test for fee less than minimum.
   Have set default to 0.0005 BTC
   
 UI 
-+ Use of 3 sig figs in total misleading (Nibor).
+o Use of 3 sig figs in total misleading (Nibor).
   Have changed to show 4 sig figs i.e down to 100 mikes.(approx 0.1 USD cents).
 
 Open Wallet
-+ Folder can be selected in 'Open Wallet'.   Hangs app. (Nick).
-  Will not allow dir selection.   
-  Will defend against dirs in code.
-+ No default file extension on 'Open Wallet' (Nick).
-  Will add default file extension of '.wallet'.
+o Folder can be selected in 'Open Wallet'.   Hangs app. (Nick).
+  Can now only select files.   
+  Have coded defensively against file being a dir (but should never happen)
+o No default file extension on 'Open Wallet' (Nick).
+  Have added ".wallet" file filter and added default file on save with file extension of '.wallet'.
 
 Help
-+ Help page - no feedback whilst loading (Mats).
+o Help page - no feedback whilst loading (Mats).
   Have improved feedback to user whilst loading.   Cursor and little animation in status bar.
    
   

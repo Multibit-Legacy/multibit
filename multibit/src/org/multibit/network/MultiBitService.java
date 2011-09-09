@@ -105,12 +105,18 @@ public class MultiBitService {
 
         fileHandler = new FileHandler(controller);
         File walletFile;
+        boolean walletFileIsADirectory = false;
+        
         if (walletFilename != null) {
             walletFile = new File(walletFilename);
-            wallet = fileHandler.loadWalletFromFile(walletFile);
+            if (walletFile.isDirectory()) {
+                walletFileIsADirectory = true;
+            } else {
+                wallet = fileHandler.loadWalletFromFile(walletFile);
+            }
         }
 
-        if (wallet == null || walletFilename == null || walletFilename.equals("")) {
+        if (wallet == null || walletFilename == null || walletFilename.equals("") || walletFileIsADirectory) {
             // use default wallet name - create if does not exist
             walletFilename = filePrefix + WALLET_SUFFIX;
             walletFile = new File(walletFilename);

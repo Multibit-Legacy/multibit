@@ -59,8 +59,8 @@ public class SaveWalletAsSubmitAction implements Action {
                         // also copy the info file so that the address labels get
                         // kept
                         if (item.getOriginalValue() != null) {
-                            String sourceInfoFile = (String) (item.getOriginalValue()) + WalletInfo.INFO_FILENAME_SUFFIX;
-                            String destinationInfoFile = newWalletFilename + WalletInfo.INFO_FILENAME_SUFFIX;
+                            String sourceInfoFile = WalletInfo.createWalletInfoFilename((String) (item.getOriginalValue()));
+                            String destinationInfoFile = WalletInfo.createWalletInfoFilename(newWalletFilename);
                             fileHandler.copyFile(new File(sourceInfoFile), new File(destinationInfoFile));
                         }
                         if (backupFileName == null) {

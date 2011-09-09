@@ -40,11 +40,14 @@ public class OpenWalletSubmitAction implements Action {
 
                     String walletFilename = (String) (item.getNewValue());
 
-                    MultiBitService oldMultiBitService = controller.getMultiBitService();
-                    oldMultiBitService.getPeerGroup().stop();
-                    MultiBitService multiBitService = new MultiBitService(oldMultiBitService.isUseTestNet(),
-                            walletFilename, controller);
-                    controller.setMultiBitService(multiBitService);
+                    // defensive check on file being a directory - should never happen
+                    if (!(new File(walletFilename).isDirectory())) {
+                        MultiBitService oldMultiBitService = controller.getMultiBitService();
+                        oldMultiBitService.getPeerGroup().stop();
+                        MultiBitService multiBitService = new MultiBitService(oldMultiBitService.isUseTestNet(),
+                                walletFilename, controller);
+                        controller.setMultiBitService(multiBitService);
+                    }
 
                     controller.fireWalletChanged();
                     controller.setActionForwardToParent();

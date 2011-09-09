@@ -44,7 +44,7 @@ public class WalletInfo {
     private Vector<AddressBookData> receivingAddresses;
     private Vector<AddressBookData> sendingAddresses;
 
-    public static final String INFO_FILENAME_SUFFIX = ".info";
+    private static final String INFO_FILE_EXTENSION = "info";
     private static final String RECEIVE_ADDRESS_MARKER = "receive";
     private static final  String SEND_ADDRESS_MARKER = "send";
     private static final  String PROPERTY_MARKER = "property";
@@ -233,7 +233,7 @@ public class WalletInfo {
             
             // Create file
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter
-                    (new FileOutputStream(walletFilename + INFO_FILENAME_SUFFIX),"UTF8"));
+                    (new FileOutputStream(createWalletInfoFilename(walletFilename)),"UTF8"));
 
             // write out the multibit addressbook identifier
             out.write(INFO_MAGIC_TEXT + SEPARATOR + INFO_VERSION_TEXT + "\n");
@@ -278,13 +278,13 @@ public class WalletInfo {
             ioe.printStackTrace();
         }
     }
-
+    
     public void loadFromFile() {
         try {
             walletPreferences = new Properties();
             
-            // Read in the address book data
-            FileInputStream fileInputStream = new FileInputStream(walletFilename + INFO_FILENAME_SUFFIX);
+            // Read in the wallet info data
+            FileInputStream fileInputStream = new FileInputStream(createWalletInfoFilename(walletFilename));
             // Get the object of DataInputStream
             InputStream inputStream = new DataInputStream(fileInputStream);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF8"));
@@ -361,6 +361,26 @@ public class WalletInfo {
             // Catch exception if any
             // may well not be a file - absorb exception
         }
+    }
+    
+
+    /**
+     * create wallet info filename
+     * @param walletFilename
+     */
+    public static String createWalletInfoFilename(String walletFilename) {
+        if (walletFilename == null) {
+            return INFO_FILE_EXTENSION;
+        }
+        
+        String walletInfoFilename = walletFilename;
+        if (walletFilename.endsWith(MultiBitModel.WALLET_FILE_EXTENSION)) {
+            walletInfoFilename = walletInfoFilename.substring(0, walletFilename.length() - MultiBitModel.WALLET_FILE_EXTENSION.length() - 1);
+            walletInfoFilename = walletInfoFilename +"." + INFO_FILE_EXTENSION;
+        } else {
+            walletInfoFilename = walletInfoFilename +"." + INFO_FILE_EXTENSION;           
+        }
+        return walletInfoFilename;
     }
 
     public String getWalletVersion() {
