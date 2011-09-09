@@ -1,5 +1,6 @@
 package org.multibit.controller;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -72,10 +73,11 @@ public class MultiBitController implements PeerEventListener {
     public MultiBitController(Properties userPreferences) {
         viewSystems = new ArrayList<ViewSystem>();
 
-        // initialise everything to look at the previously opened view or failing that the transactions view
+        // initialise everything to look at the previously opened view or
+        // failing that the transactions view
         int initialView = View.TRANSACTIONS_VIEW;
         if (userPreferences != null) {
-            String viewString = (String)userPreferences.get(MultiBitModel.SELECTED_VIEW);
+            String viewString = (String) userPreferences.get(MultiBitModel.SELECTED_VIEW);
             if (viewString != null) {
                 try {
                     initialView = Integer.parseInt(viewString);
@@ -89,7 +91,7 @@ public class MultiBitController implements PeerEventListener {
 
         previousView = initialView;
         currentView = initialView;
-        nextView =initialView;
+        nextView = initialView;
     }
 
     /**
@@ -275,9 +277,8 @@ public class MultiBitController implements PeerEventListener {
             nextView = View.UNKNOWN_VIEW;
 
         } else {
-            System.out
-                    .println("MultiBitController - could not determine next view to display, previousView = "
-                            + previousView + ", currentView = " + currentView);
+            System.out.println("MultiBitController - could not determine next view to display, previousView = " + previousView
+                    + ", currentView = " + currentView);
             System.out.println("MultiBitController - displaying the transaction view anyhow");
             previousView = currentView;
             currentView = View.TRANSACTIONS_VIEW;
@@ -285,18 +286,17 @@ public class MultiBitController implements PeerEventListener {
 
         // tell all views to close the previous view
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.navigateAwayFromView(previousView, currentView,
-                    relationshipOfNewViewToPrevious);
+            viewSystem.navigateAwayFromView(previousView, currentView, relationshipOfNewViewToPrevious);
         }
-        
+
         // for the top level views, clear the view stack
         // this makes the UI behaviour a bit more 'normal'
-        if (currentView == View.TRANSACTIONS_VIEW ||
-                currentView == View.RECEIVE_BITCOIN_VIEW || currentView == View.SEND_BITCOIN_VIEW || currentView == View.HELP_ABOUT_VIEW ||
-                currentView == View.HELP_CONTENTS_VIEW || currentView == View.PREFERENCES_VIEW) {
+        if (currentView == View.TRANSACTIONS_VIEW || currentView == View.RECEIVE_BITCOIN_VIEW
+                || currentView == View.SEND_BITCOIN_VIEW || currentView == View.HELP_ABOUT_VIEW
+                || currentView == View.HELP_CONTENTS_VIEW || currentView == View.PREFERENCES_VIEW) {
             clearViewStack();
         }
-        
+
         // remember the view in the preferences
         model.setUserPreference(MultiBitModel.SELECTED_VIEW, "" + currentView);
 
@@ -417,7 +417,8 @@ public class MultiBitController implements PeerEventListener {
 
     public void onPeerConnected(Peer peer, int peerCount) {
         // if now online, notify viewSystems
-        //System.out.println("MultiBitController#onPeerConnected called - peerCount = " + peerCount);
+        // System.out.println("MultiBitController#onPeerConnected called - peerCount = "
+        // + peerCount);
         if (peerCount == 1) {
             for (ViewSystem viewSystem : viewSystems) {
                 viewSystem.nowOnline();
@@ -426,8 +427,8 @@ public class MultiBitController implements PeerEventListener {
     }
 
     public void onPeerDisconnected(Peer peer, int peerCount) {
-        //System.out.println("MultiBitController#onPeerDisconnected called - peerCount = "
-        //        + peerCount);
+        // System.out.println("MultiBitController#onPeerDisconnected called - peerCount = "
+        // + peerCount);
         // if now offline, notify viewSystems
         if (peerCount == 0) {
             for (ViewSystem viewSystem : viewSystems) {
@@ -454,8 +455,7 @@ public class MultiBitController implements PeerEventListener {
         }
     }
 
-    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
-            BigInteger newBalance) {
+    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
 
         System.out.println("MultiBitController#onCoinsReceived called");
         for (ViewSystem viewSystem : viewSystems) {
@@ -463,33 +463,27 @@ public class MultiBitController implements PeerEventListener {
         }
     }
 
-    public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
-            BigInteger newBalance) {
+    public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
         System.out.println("MultiBitController#onPendingCoinsReceived called");
-        
+
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
         }
     }
 
-    public void sendCoins(String sendAddressString, String sendLabel, String amount, BigInteger fee) {
-        try {
-            // send the coins
-            Transaction sendTransaction = multiBitService.sendCoins(sendAddressString, amount, fee);
-            fireWalletDataChanged();
-        } catch (java.io.IOException ioe) {
-            ioe.printStackTrace();
-        } catch (AddressFormatException e) {
-            e.printStackTrace();
-        }
+    public void sendCoins(String sendAddressString, String sendLabel, String amount, BigInteger fee) throws IOException,
+            AddressFormatException {
+        // send the coins
+        Transaction sendTransaction = multiBitService.sendCoins(sendAddressString, amount, fee);
+        fireWalletDataChanged();
     }
-    
+
     public void clearViewStack() {
         viewStack.clear();
         viewStack.push(View.TRANSACTIONS_VIEW);
         previousView = View.TRANSACTIONS_VIEW;
     }
-    
+
     public MultiBitService getMultiBitService() {
         return multiBitService;
     }

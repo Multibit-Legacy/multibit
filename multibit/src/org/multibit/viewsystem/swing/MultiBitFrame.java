@@ -74,7 +74,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private static final String PREFERENCES_ICON_FILE = "/images/preferences.jpg";
     private static final String HELP_CONTENTS_ICON_FILE = "/images/helpContents.jpg";
     private static final String MULTIBIT_SMALL_ICON_FILE = "/images/multibit-small.jpg";
-    private static final String MULTIBIT_ICON_FILE = "/images/multibit.gif";
+    public static final String MULTIBIT_ICON_FILE = "/images/multibit.gif";
     private static final String TRANSACTIONS_ICON_FILE = "/images/information.png";
     private static final String WALLET_ICON_FILE = "/images/wallet.png";
 
@@ -448,6 +448,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
      * recreate all views
      */
     public void recreateAllViews(boolean initUI) {
+        // do nothing on send
+        if (View.SEND_BITCOIN_CONFIRM_VIEW == currentView) {
+            return;
+        }
+        
         // close down current view
         if (currentView != 0) {
             navigateAwayFromView(currentView, View.TRANSACTIONS_VIEW, ViewSystem.NEW_VIEW_IS_PARENT_OF_PREVIOUS); // home

@@ -64,7 +64,10 @@ public class MultiBitModel {
     public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("50000"); 
     // min fee of 0.0005 BTC
     public static final BigInteger SEND_MINIMUM_FEE = new BigInteger("50000");
-                                                   
+    
+    public static final String SEND_WAS_SUCCESSFUL = "sendWasSuccessful";
+    public static final String SEND_ERROR_MESSAGE = "sendErrorMessage";
+                                                      
     // receive bitcoin
     public static final String RECEIVE_ADDRESS = "receiveAddress";
     public static final String RECEIVE_LABEL = "receiveLabel";

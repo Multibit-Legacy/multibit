@@ -1,5 +1,6 @@
 package org.multibit.action;
 
+import java.io.IOException;
 import java.math.BigInteger;
 
 import org.multibit.controller.MultiBitController;
@@ -8,6 +9,7 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletInfo;
 
+import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Utils;
 
 /**
@@ -19,6 +21,8 @@ import com.google.bitcoin.core.Utils;
 public class SendBitcoinNowAction implements Action {
 
     private MultiBitController controller;
+    
+    private final int MAX_LENGTH_OF_ERROR_MESSAGE = 70;
 
     public SendBitcoinNowAction(MultiBitController controller) {
         this.controller = controller;
@@ -41,10 +45,28 @@ public class SendBitcoinNowAction implements Action {
             WalletInfo addressBook = controller.getModel().getWalletInfo();
             addressBook.addSendingAddress(new AddressBookData(sendLabel, sendAddress));
         }
-        controller.sendCoins(sendAddress, sendLabel, sendAmount, fee);
+        
+        Boolean sendWasSuccessful = Boolean.FALSE;
+        String errorMessage = " ";
+        try {
+            controller.sendCoins(sendAddress, sendLabel, sendAmount, fee);
+            sendWasSuccessful = Boolean.TRUE;
+        } catch (IOException e) {
+            e.printStackTrace();
+            errorMessage = e.getMessage();
+        } catch (AddressFormatException e) {
+            e.printStackTrace();
+            errorMessage = e.getMessage();
+        }
 
-        controller.fireWalletDataChanged();
-        controller.setActionForwardToParent();
+//        sendWasSuccessful = Boolean.FALSE;
+//        errorMessage = "snuibbnfjhsbfjlsfbjslfbnsjkfb";
+        
+        if (errorMessage != null && errorMessage.length() > MAX_LENGTH_OF_ERROR_MESSAGE) {
+            errorMessage = errorMessage.substring(0, MAX_LENGTH_OF_ERROR_MESSAGE) + "...";
+        }
+        controller.getModel().setUserPreference(MultiBitModel.SEND_WAS_SUCCESSFUL, sendWasSuccessful.toString());
+        controller.getModel().setUserPreference(MultiBitModel.SEND_ERROR_MESSAGE, errorMessage);
     }
 
     public String getDisplayText() {
