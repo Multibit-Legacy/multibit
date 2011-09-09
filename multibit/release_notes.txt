@@ -9,7 +9,7 @@ Enhancements
 
 Bug fixes
 +  On send bitcoin status was incorrectly showing 'confirmed' icon rather than 'unconfirmed(0)'. Fixed.
-+  multibit.properties and addressBook.csv now stored in UTF8.
++  multibit.properties and wallet info files are now stored in UTF8.
 +  Receive address in Receive bitcoin panel is now copiable.
 
 

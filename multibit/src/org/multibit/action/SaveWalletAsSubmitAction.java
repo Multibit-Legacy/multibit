@@ -45,6 +45,13 @@ public class SaveWalletAsSubmitAction implements Action {
                     }
 
                     String newWalletFilename = (String) item.getNewValue();
+                    
+                    // if the filename has no extension, put on the wallet extension
+                    if (newWalletFilename.indexOf(".") == -1) {
+                        // add wallet file extension
+                        newWalletFilename = newWalletFilename + "." + MultiBitModel.WALLET_FILE_EXTENSION;
+                    }
+                    
                     File newWalletFile = new File(newWalletFilename);
 
                     FileHandler fileHandler = new FileHandler(controller);
