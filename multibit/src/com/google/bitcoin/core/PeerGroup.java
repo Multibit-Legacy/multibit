@@ -250,7 +250,7 @@ public class PeerGroup {
                                 peer.run();
                             } catch (PeerException ex) {
                                 // do not propagate PeerException - log and try next peer
-                                log.error("error while talking to peer", ex);
+                                log.error("error while talking to peer : " + ex.getClass() + " " + ex.getMessage(), "");
                             } finally {
                                 // In all cases, disconnect and put the address back on the queue.
                                 // We will retry this peer after all other peers have been tried.

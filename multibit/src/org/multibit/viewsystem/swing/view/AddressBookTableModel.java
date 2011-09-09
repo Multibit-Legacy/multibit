@@ -4,10 +4,9 @@ import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
 
-import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.WalletInfo;
 import org.multibit.model.AddressBookData;
+import org.multibit.model.WalletInfo;
 
 public class AddressBookTableModel extends DefaultTableModel {
 
@@ -15,19 +14,19 @@ public class AddressBookTableModel extends DefaultTableModel {
 
     private Vector<String> headers = new Vector<String>();
 
-    private final String[] tableHeaderKeys = new String[] {
-            "addressBookTableModel.labelColumnHeader", "addressBookTableModel.addressColumnHeader" };
+    private final String[] tableHeaderKeys = new String[] { "addressBookTableModel.labelColumnHeader",
+            "addressBookTableModel.addressColumnHeader" };
 
     private boolean isReceiving;
-    
+
     private MultiBitController controller;
 
-    public AddressBookTableModel(MultiBitController controller,  boolean isReceiving) {
+    public AddressBookTableModel(MultiBitController controller, boolean isReceiving) {
         this.controller = controller;
         for (int j = 0; j < tableHeaderKeys.length; j++) {
             headers.add(controller.getLocaliser().getString(tableHeaderKeys[j]));
         }
-        
+
         this.isReceiving = isReceiving;
     }
 
@@ -61,11 +60,11 @@ public class AddressBookTableModel extends DefaultTableModel {
 
     public Object getValueAt(int row, int column) {
         WalletInfo walletInfo = controller.getModel().getWalletInfo();
-        
+
         if (walletInfo == null) {
             return null;
         }
-        
+
         Vector<AddressBookData> addresses;
         if (isReceiving) {
             addresses = walletInfo.getReceivingAddresses();
@@ -78,7 +77,7 @@ public class AddressBookTableModel extends DefaultTableModel {
         if (row >= 0 && row < addresses.size()) {
             addressBookData = addressesArray[row];
         }
-        
+
         if (addressBookData == null) {
             return null;
         }
@@ -99,7 +98,7 @@ public class AddressBookTableModel extends DefaultTableModel {
     public void setValueAt(Object value, int row, int column) {
         throw new UnsupportedOperationException();
     }
-    
+
     /**
      * find a row, given an address
      */
@@ -111,27 +110,29 @@ public class AddressBookTableModel extends DefaultTableModel {
         if (walletInfo == null) {
             return -1;
         }
-        
+
         Vector<AddressBookData> addresses;
         if (isReceiving) {
             addresses = walletInfo.getReceivingAddresses();
         } else {
             addresses = walletInfo.getSendingAddresses();
         }
-        
+
         int row = 0;
         if (addresses != null) {
             for (AddressBookData loopAddress : addresses) {
-                if (address.equals(loopAddress.getAddress())) {
-                    // select this row in the table
-                    return row;
+                if (loopAddress != null) {
+                    if (address.equals(loopAddress.getAddress())) {
+                        // select this row in the table
+                        return row;
+                    }
                 }
                 row++;
             }
         }
         return -1;
     }
-    
+
     /**
      * given a row, return the AddressBookData on this row
      */
@@ -140,20 +141,20 @@ public class AddressBookTableModel extends DefaultTableModel {
         if (walletInfo == null) {
             return null;
         }
-        
+
         Vector<AddressBookData> addresses;
         if (isReceiving) {
             addresses = walletInfo.getReceivingAddresses();
         } else {
             addresses = walletInfo.getSendingAddresses();
         }
-        
-        if (addresses != null) {
+
+        if (addresses != null && addresses.size() > row) {
             return addresses.get(row);
         }
         return null;
     }
-    
+
     /**
      * set a AddressBookData into a row
      */
@@ -162,24 +163,23 @@ public class AddressBookTableModel extends DefaultTableModel {
         if (walletInfo == null) {
             return;
         }
-        
+
         Vector<AddressBookData> addresses;
         if (isReceiving) {
             addresses = walletInfo.getReceivingAddresses();
         } else {
             addresses = walletInfo.getSendingAddresses();
         }
-        
-        if (addresses != null) {
+
+        if (addresses != null && addresses.size() > row) {
             addresses.set(row, addressBookData);
+            fireTableRowsUpdated(row, row);
         }
-        fireTableRowsUpdated(row, row);
     }
-    
 
     @Override
     public boolean isCellEditable(int row, int column) {
-       //all cells false
-       return false;
+        // all cells false
+        return false;
     }
 }
