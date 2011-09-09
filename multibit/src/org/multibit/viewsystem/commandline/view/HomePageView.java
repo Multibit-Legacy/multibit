@@ -42,7 +42,7 @@ public class HomePageView extends AbstractView{
         printStream.println(filenameMessage);
 
         // output current balance
-        BigInteger balance = model.getBalance();
+        BigInteger balance = model.getEstimatedBalance();
         String balanceMessage = localiser.getString("homePageView.balanceText",
                 new Object[] { balance });   // TODO convert from nanocoins
         printStream.println(balanceMessage);

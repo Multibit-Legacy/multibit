@@ -92,7 +92,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private MultiBitModel model;
     private Localiser localiser;
 
-    private BlinkLabel balanceTextLabel;
+    private BlinkLabel estimatedBalanceTextLabel;
+    private JLabel availableBalanceTextLabel;
 
     private JLabel walletNameLabel;
 
@@ -155,11 +156,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         nowOffline();
         updateStatusLabel("");
 
-        balanceTextLabel.setText(Localiser.bitcoinValueToString4(model.getBalance(), true, false));
-        balanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.text",
-                new Object[] { Localiser.bitcoinValueToString4(model.getBalance(), true, false) }));
-        balanceTextLabel.setFocusable(true);
-        balanceTextLabel.requestFocusInWindow();
+        estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(model.getEstimatedBalance(), true, false));
+ 
+        availableBalanceTextLabel.setText(controller.getLocaliser().getString("multiBitFrame.availableToSpend",
+                new Object[] { Localiser.bitcoinValueToString4(model.getAvailableBalance(), true, false) }));
+
+        estimatedBalanceTextLabel.setFocusable(true);
+        estimatedBalanceTextLabel.requestFocusInWindow();
 
         pack();
         setVisible(true);
@@ -204,7 +207,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
-        constraints.weightx = 0.15;
+        constraints.weightx = 0.6;
         constraints.weighty = 0.01;
         constraints.anchor = GridBagConstraints.LINE_START;
 
@@ -217,7 +220,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 1;
-        constraints.weightx = 0.85;
+        constraints.weightx = 1;
         constraints.weighty = 0.01;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -263,8 +266,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private JPanel createBalancePanel() {
         JPanel balancePanel = new JPanel();
 
-        balancePanel.setMinimumSize(new Dimension(600, 60));
-        balancePanel.setPreferredSize(new Dimension(600, 60));
+        balancePanel.setMinimumSize(new Dimension(700, 60));
+        balancePanel.setPreferredSize(new Dimension(700, 60));
         balancePanel.setOpaque(false);
         balancePanel.setBackground(this.getBackground());
 
@@ -289,23 +292,34 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
         balancePanel.add(walletIconLabel, constraints);
 
-        balanceTextLabel = new BlinkLabel();
-        balanceTextLabel.setHorizontalAlignment(JTextField.LEFT);
+        estimatedBalanceTextLabel = new BlinkLabel();
+        estimatedBalanceTextLabel.setHorizontalAlignment(JTextField.LEFT);
         Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE,
                 MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 3);
-        balanceTextLabel.setFont(font);
-
+        estimatedBalanceTextLabel.setFont(font);
+        estimatedBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
+ 
         constraints.gridx = 2;
         constraints.gridy = 0;
-        constraints.weightx = 0.2;
+        constraints.weightx = 0.5;
         constraints.anchor = GridBagConstraints.LINE_START;
-        balancePanel.add(balanceTextLabel, constraints);
-        walletNameLabel = new JLabel();
-        walletNameLabel.setFont(walletNameLabel.getFont().deriveFont(12.0F));
+        balancePanel.add(estimatedBalanceTextLabel, constraints);
+
+        availableBalanceTextLabel = new JLabel();
+        availableBalanceTextLabel.setFont(availableBalanceTextLabel.getFont().deriveFont(12.0F));
+        availableBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.availableToSpend.tooltip"));
 
         constraints.gridx = 3;
         constraints.gridy = 0;
-        constraints.weightx = 1.4;
+        constraints.weightx = 0.5;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        balancePanel.add(availableBalanceTextLabel, constraints);
+
+        walletNameLabel = new JLabel();
+        walletNameLabel.setFont(walletNameLabel.getFont().deriveFont(12.0F));
+        constraints.gridx = 4;
+        constraints.gridy = 0;
+        constraints.weightx = 0.5;
         constraints.anchor = GridBagConstraints.LINE_START;
         balancePanel.add(walletNameLabel, constraints);
 
@@ -452,7 +466,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         if (View.SEND_BITCOIN_CONFIRM_VIEW == currentView) {
             return;
         }
-        
+
         // close down current view
         if (currentView != 0) {
             navigateAwayFromView(currentView, View.TRANSACTIONS_VIEW, ViewSystem.NEW_VIEW_IS_PARENT_OF_PREVIOUS); // home
@@ -469,9 +483,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             initUI();
         }
         updateOnlineStatusText();
-        balanceTextLabel.setText(Localiser.bitcoinValueToString4(model.getBalance(), true, false));
-        balanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.text",
-                new Object[] { Localiser.bitcoinValueToString4(model.getBalance(), true, false) }));
+        estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(model.getEstimatedBalance(), true, false));
+        availableBalanceTextLabel.setText(controller.getLocaliser().getString("multiBitFrame.availableToSpend",
+                new Object[] { Localiser.bitcoinValueToString4(model.getAvailableBalance(), true, false) }));
 
         String walletFilename = model.getWalletFilename();
         if (walletFilename == null) {
@@ -595,7 +609,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
                         .getString("multiBitFrame.offlineText");
                 if (isOnline) {
                     onlineLabel.setForeground(new Color(0, 100, 0));
-                    balanceTextLabel.setBlinkEnabled(true);
+                    estimatedBalanceTextLabel.setBlinkEnabled(true);
                 } else {
                     onlineLabel.setForeground(new Color(180, 0, 0));
                 }
@@ -646,10 +660,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
                     walletTableModel.recreateWalletData();
                 }
 
-                balanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel().getBalance(), true,
-                        false));
-                balanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.text",
-                        new Object[] { Localiser.bitcoinValueToString4(model.getBalance(), true, false) }));
+                estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel().getEstimatedBalance(),
+                        true, false));
+                availableBalanceTextLabel.setText(controller.getLocaliser().getString("multiBitFrame.availableToSpend",
+                        new Object[] { Localiser.bitcoinValueToString4(model.getAvailableBalance(), true, false) }));
 
                 fireDataChanged();
             }
@@ -681,10 +695,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
 
                 wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
 
-                balanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.text",
-                        new Object[] { Localiser.bitcoinValueToString4(model.getBalance(), true, false) }));
-                balanceTextLabel.blink(Localiser.bitcoinValueToString4(controller.getModel().getBalance(), true,
-                        false));
+                estimatedBalanceTextLabel.blink(Localiser.bitcoinValueToString4(controller.getModel().getEstimatedBalance(),
+                        true, false));
+                availableBalanceTextLabel.setText(controller.getLocaliser().getString("multiBitFrame.availableToSpend",
+                        new Object[] { Localiser.bitcoinValueToString4(model.getAvailableBalance(), true, false) }));
 
                 fireDataChanged();
             }
@@ -704,10 +718,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     public void fireDataChanged() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                balanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel().getBalance(), true,
-                        false));
-                balanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.text",
-                        new Object[] { Localiser.bitcoinValueToString4(model.getBalance(), true, false) }));
+                estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel().getEstimatedBalance(),
+                        true, false));
+                availableBalanceTextLabel.setText(controller.getLocaliser().getString("multiBitFrame.availableToSpend",
+                        new Object[] { Localiser.bitcoinValueToString4(model.getAvailableBalance(), true, false) }));
+
                 viewPanel.invalidate();
                 viewPanel.validate();
                 viewPanel.repaint();

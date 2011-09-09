@@ -8,6 +8,7 @@ import javax.swing.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.SendBitcoinConfirmView;
 
 /**
@@ -17,14 +18,16 @@ public class SendBitcoinNowAction extends AbstractAction {
 
     private static final long serialVersionUID = 1913592460523457765L;
 
+    private MultiBitFrame mainFrame;
     private MultiBitController controller;
     private DataProvider dataProvider;
     
     /**
      * Creates a new {@link SendBitcoinNowAction}.
      */
-    public SendBitcoinNowAction(MultiBitController controller, DataProvider dataProvider) {
+    public SendBitcoinNowAction(MultiBitFrame mainFrame, MultiBitController controller, DataProvider dataProvider) {
         super(controller.getLocaliser().getString("sendBitcoinConfirmAction.text"));
+        this.mainFrame = mainFrame;
         this.controller = controller;
         this.dataProvider = dataProvider;
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("sendBitcoinConfirmAction.tooltip"));
@@ -36,7 +39,9 @@ public class SendBitcoinNowAction extends AbstractAction {
      */
     public void actionPerformed(ActionEvent e) { 
         org.multibit.action.SendBitcoinNowAction sendBitcoinNowAction = new org.multibit.action.SendBitcoinNowAction(controller);
-        sendBitcoinNowAction.execute(dataProvider);    
+        sendBitcoinNowAction.execute(dataProvider);   
+        
+        mainFrame.fireDataChanged();
         
         // put confirmation on the view
         SendBitcoinConfirmView sendBitcoinConfirmView = (SendBitcoinConfirmView)dataProvider;

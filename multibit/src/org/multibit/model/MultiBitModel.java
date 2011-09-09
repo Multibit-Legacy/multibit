@@ -167,16 +167,24 @@ public class MultiBitModel {
      * @return
      */
     public void setWalletPreference(String key, String value) {
-        if (walletInfo != null) {
+        if (walletInfo != null && value != null) {
             walletInfo.put(key, value);
         }
     }
 
-    public BigInteger getBalance() {
+    public BigInteger getEstimatedBalance() {
         if (wallet == null) {
             return new BigInteger("0");
         } else {
             return wallet.getBalance(BalanceType.ESTIMATED);
+        }
+    }
+
+    public BigInteger getAvailableBalance() {
+        if (wallet == null) {
+            return new BigInteger("0");
+        } else {
+            return wallet.getBalance(BalanceType.AVAILABLE);
         }
     }
 

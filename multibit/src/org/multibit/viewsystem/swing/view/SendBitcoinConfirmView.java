@@ -195,14 +195,12 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         cancelButton = new JButton(cancelAction);
         buttonPanel.add(cancelButton);
 
-        SendBitcoinNowAction sendBitcoinNowAction = new SendBitcoinNowAction(controller, this);
+        SendBitcoinNowAction sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this);
         sendButton = new JButton(sendBitcoinNowAction);
         buttonPanel.add(sendButton);
 
         confirmText1 = new JLabel();
         confirmText1.setText(" ");
-//        confirmText1.setMinimumSize(new Dimension(100, 40));
-//        confirmText1.setMaximumSize(new Dimension(10000, 40));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 5;
@@ -214,8 +212,6 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
 
         confirmText2 = new JLabel();
         confirmText2.setText(" ");
-//        confirmText2.setMinimumSize(new Dimension(100, 40));
-//        confirmText2.setMaximumSize(new Dimension(10000, 40));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 6;
@@ -277,7 +273,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         sendLabelText.setText(sendLabel);
         sendAmountText.setText(sendAmount);
 
-        SendBitcoinNowAction sendBitcoinNowAction = new SendBitcoinNowAction(controller, this);
+        SendBitcoinNowAction sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this);
         sendButton.setAction(sendBitcoinNowAction);
         confirmText1.setText(" ");
         confirmText2.setText(" ");

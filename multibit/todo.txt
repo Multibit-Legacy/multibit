@@ -20,8 +20,8 @@ o Spend of 0 BTC not checked. (Nick).
   Have added tests for missing, non-parsable, negative or zero amount.
 o Problems on spend (Mats).
   Fixed - was index out of range in AddressBookTableModel.
-+ Not enough feedback on Send. (Mats, Nibor).
-  Will have more feedback on "Send" confirm message box, including send successful/ fail, cannot spend unconfimed, change still waiting, any errors.
+o Not enough feedback on Send. (Mats, Nibor).
+  New send screen gives more confirmation on sendWill have more feedback on "Send".
 
 Fees
 o Negative fee is accepted. (Nick).   Default fee should be 0.0005 (Nibor).
