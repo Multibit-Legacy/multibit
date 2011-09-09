@@ -10,10 +10,10 @@ Testers:
 Needs fixing prior to general release.
 
 Start up
-+ Bat file fails when Java not on path. (Nick).
-  Will modify bat file to check JAVA_HOME.
-+ Console is confusing on Send (Mats)
-  Will modify bat file to use javaw to hide console.
+o Bat file fails when Java not on path. (Nick).
+  Have removed runMultiBit.bat and sh - just double click jar as per download instructions
+o Console is confusing on Send (Mats)
+  Have removed runMultiBit.bat and sh - just double click jar as per download instructions
 
 Spend
 o Spend of 0 BTC not checked. (Nick).
