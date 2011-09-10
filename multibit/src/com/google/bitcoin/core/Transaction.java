@@ -340,7 +340,7 @@ public class Transaction extends Message implements Serializable {
                 Address toAddr = new Address(params, out.getScriptPubKey().getPubKeyHash());
                 s.append(toAddr.toString());
                 s.append(" ");
-                s.append(bitcoinValueToFriendlyString(out.getValue()));
+                s.append(bitcoinValueToFriendlyString4(out.getValue()));
                 s.append(" BTC");
             } catch (Exception e) {
                 s.append("[exception: ").append(e.getMessage()).append("]");

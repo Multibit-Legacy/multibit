@@ -187,7 +187,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.gridy = 4;
         constraints.weightx = 0.8;
         constraints.weighty = 0.1;
-        constraints.gridwidth = 3;
+        constraints.gridwidth = 4;
         constraints.anchor = GridBagConstraints.LINE_END;
         add(buttonPanel, constraints);
 
@@ -209,6 +209,16 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.gridwidth = 4;
         constraints.anchor = GridBagConstraints.LINE_END;
         add(confirmText1, constraints);
+        
+        JLabel filler2 = new JLabel();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 5;
+        constraints.gridy = 5;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(filler2, constraints);
 
         confirmText2 = new JLabel();
         confirmText2.setText(" ");
@@ -220,6 +230,18 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.gridwidth = 4;
         constraints.anchor = GridBagConstraints.LINE_END;
         add(confirmText2, constraints);
+        
+        JLabel filler3 = new JLabel();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 5;
+        constraints.gridy = 6;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(filler3, constraints);
+
+
 
         setVisible(true);
     }

@@ -57,6 +57,10 @@ public class SendBitcoinNowAction implements Action {
         } catch (AddressFormatException e) {
             e.printStackTrace();
             errorMessage = e.getMessage();
+        } catch (Throwable t) {
+            // really trying to catch anything that goes wrong
+            t.printStackTrace();
+            errorMessage = t.getMessage();
         }
 
 //        sendWasSuccessful = Boolean.FALSE;

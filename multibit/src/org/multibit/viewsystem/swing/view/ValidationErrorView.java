@@ -2,6 +2,7 @@ package org.multibit.viewsystem.swing.view;
 
 import java.util.Collection;
 
+import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
@@ -149,7 +150,7 @@ public class ValidationErrorView implements View {
         // tell user validation messages
         Object[] options = { controller.getLocaliser().getString("validationErrorView.okOption") };
 
-        JOptionPane optionPane = new JOptionPane(completeMessage, JOptionPane.ERROR_MESSAGE, JOptionPane.DEFAULT_OPTION, null,
+        JOptionPane optionPane = new JOptionPane(completeMessage, JOptionPane.ERROR_MESSAGE, JOptionPane.DEFAULT_OPTION, createImageIcon(MultiBitFrame.EXCLAMATION_MARK_ICON_FILE),
                 options, options[0]);
 
         messageDialog = optionPane.createDialog(mainFrame, controller.getLocaliser().getString("validationErrorView.title"));
@@ -179,5 +180,17 @@ public class ValidationErrorView implements View {
 
     public void setPossibleActions(Collection<Action> possibleActions) {
         // not required in swing view
+    }
+    
+
+    /** Returns an ImageIcon, or null if the path was invalid. */
+    protected ImageIcon createImageIcon(String path) {
+        java.net.URL imgURL = MultiBitFrame.class.getResource(path);
+        if (imgURL != null) {
+            return new ImageIcon(imgURL);
+        } else {
+            System.err.println("SendBitcoinPanel#createImageIcon: Could not find file: " + path);
+            return null;
+        }
     }
 }

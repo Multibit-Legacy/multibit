@@ -135,6 +135,7 @@ public class MultiBitService {
             }
         }
 
+        //System.out.println("MultiBitService#MultiBitService - wallet = " + wallet.toString());
         // add the keys for this wallet to the address book as receiving
         // addresses
         ArrayList<ECKey> keys = wallet.keychain;

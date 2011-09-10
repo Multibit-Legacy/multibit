@@ -77,6 +77,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     public static final String MULTIBIT_ICON_FILE = "/images/multibit.gif";
     private static final String TRANSACTIONS_ICON_FILE = "/images/information.png";
     private static final String WALLET_ICON_FILE = "/images/wallet.png";
+    public static final String EXCLAMATION_MARK_ICON_FILE = "/images/exclamationMark.png";
 
     public static final String MULTIBIT_FONT_NAME = "Dialog";
     public static final int MULTIBIT_FONT_STYLE = Font.PLAIN;
