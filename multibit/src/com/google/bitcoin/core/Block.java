@@ -540,4 +540,8 @@ public class Block extends Message {
     public Block createNextBlock(Address to) {
         return createNextBlock(to, System.currentTimeMillis() / 1000);
     }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
 }

@@ -301,7 +301,7 @@ public class BlockChain {
         return currentChainCursor;
     }
 
-    enum NewBlockType {
+    public enum NewBlockType {
         BEST_CHAIN,
         SIDE_CHAIN
     }

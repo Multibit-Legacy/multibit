@@ -229,7 +229,7 @@ public class Wallet implements Serializable {
      * inactive side chain. We must still record these transactions and the blocks they appear in because a future
      * block might change which chain is best causing a reorganize. A re-org can totally change our balance!
      */
-    synchronized void receive(Transaction tx, StoredBlock block, BlockChain.NewBlockType blockType) throws VerificationException, ScriptException {
+    public synchronized void receive(Transaction tx, StoredBlock block, BlockChain.NewBlockType blockType) throws VerificationException, ScriptException {
         receive(tx, block, blockType, false);
     }
 
@@ -535,6 +535,10 @@ public class Wallet implements Serializable {
             // happen, if it does it means the wallet has got into an inconsistent state.
             throw new RuntimeException(e);
         }
+        
+        // keep a track of the date the tx was created (used in MultiBitService to work out the block it appears in)
+        sendTx.setUpdatedAt(new Date());
+        
         log.info("  created {}", sendTx.getHashAsString());
         return sendTx;
     }
