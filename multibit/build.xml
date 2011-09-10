@@ -73,8 +73,11 @@
  	<copy file="lib/log4j-1.2.16.jar" todir="dist/lib"/>
  	<copy file="lib/apache-log4j-extras-1.1.jar" todir="dist/lib"/>
  	<copy file="lib/bcprov-jdk15-1.46.jar" todir="dist/lib"/>
-    <zip destfile="dist/multibit-${DSTAMP}.zip" basedir="dist"
+    <zip destfile="dist/multibit-${DSTAMP}-full.zip" basedir="dist"
 	       includes="multibit.jar, lib/**/*.jar, readme.txt, multibit.properties, multibit.blockchain, multibit-testnet.blockchain, log4j.xml, release_notes.txt"
+    />
+    <zip destfile="dist/multibit-${DSTAMP}-noblockchain.zip" basedir="dist"
+	       includes="multibit.jar, lib/**/*.jar, readme.txt, multibit.properties, log4j.xml, release_notes.txt"
     />
   </target>
 
