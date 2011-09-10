@@ -10,6 +10,7 @@ import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.WalletInfo;
 import org.multibit.network.FileHandler;
 import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
 
@@ -45,12 +46,13 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
         ECKey newKey = new ECKey();
         controller.getModel().getWallet().keychain.add(newKey);
         
-        FileHandler fileHandler = new FileHandler(controller);
-        fileHandler.saveWalletToFile(controller.getModel().getWallet(), new File(controller.getModel().getWalletFilename()));
-        
         String addressString = newKey.toAddress(controller.getMultiBitService().getNetworkParameters()).toString();
-        controller.getModel().getWalletInfo().addReceivingAddress(new AddressBookData("", addressString), false);
-        
+        WalletInfo walletInfo = controller.getModel().getWalletInfo();
+        if (walletInfo == null) {
+            walletInfo = new WalletInfo(controller.getModel().getWalletFilename());
+            controller.getModel().setWalletInfo(walletInfo);
+        }
+        controller.getModel().getWalletInfo().addReceivingAddress(new AddressBookData("", addressString), false);      
         controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_ADDRESS, addressString);
         controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
 

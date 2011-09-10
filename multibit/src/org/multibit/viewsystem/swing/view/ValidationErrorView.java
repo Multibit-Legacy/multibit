@@ -84,14 +84,6 @@ public class ValidationErrorView implements View {
             notEnoughFundsBoolean = true;
         }
 
-        // amount is more than available funds
-        String notEnoughFundsButEstimatedOk = controller.getModel().getWalletPreference(
-                MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS_BUT_ESTIMATED_OK);
-        boolean notEnoughFundsButEstimatedOkBoolean = false;
-        if (Boolean.TRUE.toString().equals(notEnoughFundsButEstimatedOk)) {
-            notEnoughFundsButEstimatedOkBoolean = true;
-        }
-
         // get localised validation messages;
         String completeMessage = "";
 
@@ -133,20 +125,7 @@ public class ValidationErrorView implements View {
                     + controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage",
                             new String[] { amountValue, fee });
         }
-
-        if (notEnoughFundsButEstimatedOkBoolean) {
-            if (!"".equals(completeMessage)) {
-                completeMessage = completeMessage + "\n";
-            }
-            String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
-            if (fee == null || fee == "") {
-                fee = Localiser.bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
-            }
-            completeMessage = completeMessage
-                    + controller.getLocaliser().getString("validationErrorView.notEnoughFundsButEstimatedOk",
-                            new String[] { amountValue, fee });
-        }
-
+        
         // tell user validation messages
         Object[] options = { controller.getLocaliser().getString("validationErrorView.okOption") };
 

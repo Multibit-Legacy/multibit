@@ -58,7 +58,6 @@ public class Validator {
 
         Boolean amountIsInvalid = Boolean.FALSE;
         Boolean notEnoughFunds = Boolean.FALSE;
-        Boolean notEnoughFundsButEstimatedOk = Boolean.FALSE;
         Boolean amountIsMissing = Boolean.FALSE;
         Boolean amountIsNegativeOrZero = Boolean.FALSE;
 
@@ -101,23 +100,9 @@ public class Validator {
                     if (totalSpend.compareTo(availableBalance) <= 0) {
                         // there is enough money
                     } else {
-                        // not enough funds - check if estimated balance
-                        // suggests
-                        // there
-                        // is (different error message)
+                        // not enough funds
                         amountValidatesOk = false;
-                        if (totalSpend.compareTo(controller.getModel().getWallet().getBalance(BalanceType.ESTIMATED)) <= 0) {
-                            // the UI shows enough money but there is not
-                            // enough
-                            // available
-                            notEnoughFundsButEstimatedOk = Boolean.TRUE;
-                        } else {
-                            // the total spend is less than both the
-                            // estimated
-                            // and
-                            // available - not confusing
-                            notEnoughFunds = Boolean.TRUE;
-                        }
+                        notEnoughFunds = Boolean.TRUE;
                     }
                 }
             }
@@ -127,8 +112,6 @@ public class Validator {
                 amountIsNegativeOrZero.toString());
         controller.getModel().setWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID, amountIsInvalid.toString());
         controller.getModel().setWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS, notEnoughFunds.toString());
-        controller.getModel().setWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS_BUT_ESTIMATED_OK,
-                notEnoughFundsButEstimatedOk.toString());
 
         return amountValidatesOk;
     }

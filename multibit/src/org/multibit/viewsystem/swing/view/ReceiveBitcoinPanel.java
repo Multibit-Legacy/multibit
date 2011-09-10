@@ -687,10 +687,17 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
             String amount = amountTextField.getText();
             String label = labelTextField.getText();
             AddressBookData addressBookData = new AddressBookData(label, address);
+
+            WalletInfo walletInfo = controller.getModel().getWalletInfo();
+            if (walletInfo == null) {
+                walletInfo = new WalletInfo(controller.getModel().getWalletFilename());
+                controller.getModel().setWalletInfo(walletInfo);
+            }
             addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRow, true);
             controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_ADDRESS, address);
             controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_LABEL, label);
             controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_AMOUNT, amount);
+
 
             displayQRCode(BitcoinURI.convertToBitcoinURI(address, amount, label));
         }
