@@ -119,7 +119,7 @@ public class Validator {
     private boolean validateAddress(String address) {
         Boolean addressIsInvalid = Boolean.TRUE;
 
-        if (address != null) {
+        if (address != null && address != "") {
             // copy address to wallet preferences
             controller.getModel().setWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE, address);
 
@@ -127,6 +127,8 @@ public class Validator {
                 Address parsedAddress = new Address(controller.getMultiBitService().getNetworkParameters(), address);
                 addressIsInvalid = Boolean.FALSE;
             } catch (AddressFormatException afe) {
+                // carry on
+            } catch (java.lang.StringIndexOutOfBoundsException e) {
                 // carry on
             }
         } else {
