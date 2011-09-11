@@ -106,6 +106,8 @@ public class Localiser {
                 return MISSING_RESOURCE_TEXT + key + " (cce)";
             } catch (MissingResourceException mre) {
                 return MISSING_RESOURCE_TEXT + key + " (mre)";
+            } catch (StringIndexOutOfBoundsException e) {
+                return MISSING_RESOURCE_TEXT + key + " (e)";
             }
         } else {
             return MISSING_RESOURCE_TEXT + key;

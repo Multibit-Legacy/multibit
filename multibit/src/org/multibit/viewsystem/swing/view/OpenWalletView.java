@@ -31,16 +31,14 @@ public class OpenWalletView implements View, DataProvider {
 
     private Localiser localiser;
 
-    private  JFileChooser fileChooser;
-    
+    private JFileChooser fileChooser;
+
     private String selectedWalletFilename;
-    
 
     /**
      * Creates a new {@link OpenWalletView}.
      */
-    public OpenWalletView(MultiBitController controller, Localiser localiser,
-            MultiBitFrame mainFrame) {
+    public OpenWalletView(MultiBitController controller, Localiser localiser, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.localiser = localiser;
         this.mainFrame = mainFrame;
@@ -58,22 +56,27 @@ public class OpenWalletView implements View, DataProvider {
             fileChooser = new JFileChooser();
             fileChooser.setLocale(localiser.getLocale());
 
-            if (controller.getModel().getWalletFilename() != null) {
-                fileChooser
-                        .setCurrentDirectory(new File(controller.getModel().getWalletFilename()));
+            if (controller.getModel() != null && controller.getModel().getWalletFilename() != null) {
+                fileChooser.setCurrentDirectory(new File(controller.getModel().getWalletFilename()));
             }
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fileChooser.setFileFilter(new WalletFileFilter(controller));
         }
 
         int returnVal = fileChooser.showOpenDialog(mainFrame);
-        
+
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
-            selectedWalletFilename = file.getAbsolutePath();
-            //delegate to open wallet submit action
-            OpenWalletSubmitAction submitAction = new OpenWalletSubmitAction(controller);
-            submitAction.execute(this);
+            if (file != null) {
+                selectedWalletFilename = file.getAbsolutePath();
+                // delegate to open wallet submit action
+                OpenWalletSubmitAction submitAction = new OpenWalletSubmitAction(controller);
+                submitAction.execute(this);
+            } else {
+                selectedWalletFilename = null;
+                fileChooser = null;
+                controller.setActionForwardToParent();
+            }
         } else {
             selectedWalletFilename = null;
             fileChooser = null;
@@ -82,10 +85,7 @@ public class OpenWalletView implements View, DataProvider {
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
-        JOptionPane.showMessageDialog(
-                mainFrame,
-                localiser.getString(messageKey, messageData),
-                localiser.getString(titleKey),
+        JOptionPane.showMessageDialog(mainFrame, localiser.getString(messageKey, messageData), localiser.getString(titleKey),
                 JOptionPane.INFORMATION_MESSAGE, new ImageIcon(mainFrame.getIconImage()));
     }
 
@@ -97,14 +97,14 @@ public class OpenWalletView implements View, DataProvider {
 
     public void setPossibleActions(Collection<Action> possibleActions) {
         // not required in swing view
-    } 
+    }
 
     public Data getData() {
         Data data = new Data();
         Item selectedWalletFilenameItem = new Item(MultiBitModel.SELECTED_WALLET_FILENAME);
         selectedWalletFilenameItem.setOriginalValue(controller.getModel().getWalletFilename());
         selectedWalletFilenameItem.setNewValue(selectedWalletFilename);
-  
+
         data.addItem(MultiBitModel.SELECTED_WALLET_FILENAME, selectedWalletFilenameItem);
         return data;
     }
