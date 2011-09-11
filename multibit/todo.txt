@@ -1,13 +1,11 @@
-TODO from 0.1.3rc1 testing
+Results from 0.1.3rc testing
 --------------------------
 Testers:
 + Nick Simpson, Windows 7 Ultimate x64.
 + Nibor, Unspecified Windows.
 + Mats Henricson, Linux/ Ubuntu
 + Jim Burton, Mac OSX.
-
-
-Needs fixing prior to general release.
++ Gar Rowe
 
 Start up
 o Bat file fails when Java not on path. (Nick).
@@ -34,6 +32,9 @@ o Use of 3 sig figs in total misleading (Nibor).
   Have changed to show 4 sig figs i.e down to 100 mikes.(approx 0.1 USD cents).
 o Network label stays at 'Offline' too long.  (Nibor)
   Have changed network status to 'Connecting...'.   
++ Have transactions image fainter, non repeating in top left (Gary)
++ Have language flag in preferences page for eas identification
+
 
 Open Wallet
 o Folder can be selected in 'Open Wallet'.   Hangs app. (Nick).
@@ -48,6 +49,7 @@ o Help page - no feedback whilst loading (Mats).
    
   
 Can be bumped to later releases
++ Produce a YouTube video of drag and drop with a mocked up website
 + Show number of blocks.(Nibor)
   Tooltip/message box/ panel with more network details including number of blocks.
 + Would be nice to drill down to transctions details/ look up in block explorer. (Nibor)
