@@ -49,6 +49,7 @@ o Help page - no feedback whilst loading (Mats).
    
   
 Can be bumped to later releases
++ Add the fee to the 'send confirm' text to make it clear. (Mats)
 + Produce a YouTube video of drag and drop with a mocked up website
 + Show number of blocks.(Nibor)
   Tooltip/message box/ panel with more network details including number of blocks.

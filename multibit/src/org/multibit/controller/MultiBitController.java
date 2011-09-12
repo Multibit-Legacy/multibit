@@ -476,6 +476,9 @@ public class MultiBitController implements PeerEventListener {
         // send the coins
         Transaction sendTransaction = multiBitService.sendCoins(sendAddressString, amount, fee);
         fireWalletDataChanged();
+        if (sendTransaction == null) {
+            throw new IllegalStateException("No transaction was created after send.   The send may have failed.");
+        }
     }
 
     public void clearViewStack() {

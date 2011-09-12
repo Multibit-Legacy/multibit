@@ -8,3 +8,9 @@ out
 /multibit.log
 /log
 /docs
+/multibit-prod.wallet
+/multibit-testnet.blockchain
+/multibit-testnet.wallet
+/multibit.blockchain
+/multibit.info
+/multibit.properties

@@ -358,6 +358,8 @@ public class MultiBitService {
             System.out.println("MultiBitService#sendCoins - Sent coins. Transaction hash is "
                     + sendTransaction.getHashAsString());
             fileHandler.saveWalletToFile(wallet, new File(controller.getModel().getWalletFilename()));
+        } else {
+            // transaction was null
         }
         return sendTransaction;
     }
