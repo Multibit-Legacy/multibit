@@ -12,12 +12,6 @@ import java.util.Properties;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
-import javax.swing.KeyStroke;
-
-//import javax.swing.KeyStroke;
-
-import org.multibit.viewsystem.swing.MultiBitFrame;
-
 import com.google.bitcoin.core.Utils;
 
 /**
@@ -108,7 +102,7 @@ public class Localiser {
         //System.out.println("Localiser#setLocale propertyFilenameBase = " + propertyFilenameBase);
         boolean foundIt = false;
         try {
-            InputStream inputStream = MultiBitFrame.class.getResourceAsStream(propertyFilename);
+            InputStream inputStream = Localiser.class.getResourceAsStream(propertyFilename);
             if (inputStream != null) {
                 resourceBundle = new PropertyResourceBundle(new InputStreamReader(inputStream, "UTF8"));
                 foundIt = true;
@@ -123,7 +117,7 @@ public class Localiser {
         if (!foundIt) {
             // just get the base version i.e. English
             try {
-                InputStream inputStream =  MultiBitFrame.class.getResourceAsStream(propertyFilenameBase);
+                InputStream inputStream =  Localiser.class.getResourceAsStream(propertyFilenameBase);
                 if (inputStream != null) {
                     resourceBundle = new PropertyResourceBundle(new InputStreamReader(inputStream, "UTF8"));
                 }
@@ -146,7 +140,7 @@ public class Localiser {
         if (versionProperties == null) {
             versionProperties = new Properties();
             try {
-                java.net.URL versionPropertiesURL = MultiBitFrame.class.getResource(VERSION_PROPERTIES_FILENAME);
+                java.net.URL versionPropertiesURL = Localiser.class.getResource(VERSION_PROPERTIES_FILENAME);
                 if (versionPropertiesURL != null) {
                     versionProperties.load(versionPropertiesURL.openStream());
                 }

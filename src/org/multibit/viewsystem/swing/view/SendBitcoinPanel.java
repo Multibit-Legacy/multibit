@@ -54,6 +54,7 @@ import org.multibit.qrcode.BitcoinURI;
 import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.action.CopySendAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewSendingAddressAction;
 import org.multibit.viewsystem.swing.action.PasteAddressAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
@@ -242,12 +243,24 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(addressTextField, constraints);
 
-        PasteAddressAction pasteAddressAction = new PasteAddressAction(controller, this);
-        JButton pasteAddressButton = new JButton(pasteAddressAction);
+        ImageIcon copyIcon = createImageIcon(MultiBitFrame.COPY_ICON_FILE);
+        CopySendAddressAction copyAddressAction = new CopySendAddressAction(controller, this, copyIcon);
+        JButton copyAddressButton = new JButton(copyAddressAction);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 4;
         constraints.gridy = 5;
-        constraints.weightx = 2.5;
+        constraints.weightx = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        formPanel.add(copyAddressButton, constraints);
+
+        ImageIcon pasteIcon = createImageIcon(MultiBitFrame.PASTE_ICON_FILE);
+        PasteAddressAction pasteAddressAction = new PasteAddressAction(controller, this, pasteIcon);
+        JButton pasteAddressButton = new JButton(pasteAddressAction);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 5;
+        constraints.gridy = 5;
+        constraints.weightx = 1.25;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(pasteAddressButton, constraints);
@@ -313,6 +326,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridy = 8;
         constraints.weightx = 2.5;
         constraints.weighty = 0.4;
+        constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(sendButton, constraints);
 

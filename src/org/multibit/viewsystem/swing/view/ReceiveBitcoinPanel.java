@@ -46,6 +46,8 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
 import org.multibit.viewsystem.swing.action.CopyQRCodeTextAction;
+import org.multibit.viewsystem.swing.action.CopyReceiveAddressAction;
+import org.multibit.viewsystem.swing.action.CopySendAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewReceivingAddressAction;
 
 public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
@@ -229,6 +231,18 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(addressTextArea, constraints);
 
+        ImageIcon copyIcon = createImageIcon(MultiBitFrame.COPY_ICON_FILE);
+        CopyReceiveAddressAction copyAddressAction = new CopyReceiveAddressAction(controller, this, copyIcon);
+        JButton copyAddressButton = new JButton(copyAddressAction);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 4;
+        constraints.gridy = 5;
+        constraints.weightx = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        formPanel.add(copyAddressButton, constraints);
+
+   
         JLabel labelLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel"));
         labelLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel.tooltip"));
         labelLabel.setHorizontalAlignment(JLabel.RIGHT);

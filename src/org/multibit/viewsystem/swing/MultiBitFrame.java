@@ -68,6 +68,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private static final int A_LARGE_NUMBER_OF_PIXELS = 1000000;
     private static final int STATUSBAR_HEIGHT = 30;
     private static final int TOOLBAR_HEIGHT = 120;
+    public static final String COPY_ICON_FILE = "/images/copy.png";
+    public static final String PASTE_ICON_FILE = "/images/paste.png";
     private static final String SAVE_AS_ICON_FILE = "/images/saveAs.jpg";
     private static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
     private static final String SEND_BITCOIN_ICON_FILE = "/images/send.jpg";

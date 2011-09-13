@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ImageIcon;
 
 import org.multibit.Localiser;
 import org.multibit.controller.ActionForward;
@@ -26,8 +27,9 @@ public class PasteAddressAction extends AbstractAction {
     /**
      * Creates a new {@link PasteAddressAction}.
      */
-    public PasteAddressAction(MultiBitController controller, SendBitcoinPanel sendBitcoinPanel) {
-        super(controller.getLocaliser().getString("pasteAddressAction.text"));
+    public PasteAddressAction(MultiBitController controller, SendBitcoinPanel sendBitcoinPanel, ImageIcon icon) {
+        super("", icon);
+        //super(controller.getLocaliser().getString("pasteAddressAction.text"));
         this.controller = controller;
         this.sendBitcoinPanel = sendBitcoinPanel;
         
@@ -55,4 +57,5 @@ public class PasteAddressAction extends AbstractAction {
         // forward back to the view currently being displayed
         controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);       
     }
+
 }

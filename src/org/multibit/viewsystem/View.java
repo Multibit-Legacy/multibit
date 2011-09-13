@@ -20,15 +20,9 @@ public interface View {
     public static final int HELP_CONTENTS_VIEW = 5;
     public static final int HELP_ABOUT_VIEW = 6;
     public static final int PREFERENCES_VIEW = 7;
-    public static final int ADDRESS_BOOK_RECEIVING_VIEW = 8;
-    public static final int ADDRESS_BOOK_SENDING_VIEW = 9;
-    public static final int CREATE_NEW_RECEIVING_ADDRESS_VIEW = 10;
-    public static final int CREATE_NEW_SENDING_ADDRESS_VIEW = 11;
-    public static final int EDIT_RECEIVING_ADDRESS_VIEW = 12;
-    public static final int EDIT_SENDING_ADDRESS_VIEW = 13;
-    public static final int OPEN_WALLET_VIEW = 14;
-    public static final int SAVE_WALLET_AS_VIEW = 15;
-    public static final int VALIDATION_ERROR_VIEW = 16;
+    public static final int OPEN_WALLET_VIEW = 8;
+    public static final int SAVE_WALLET_AS_VIEW = 9;
+    public static final int VALIDATION_ERROR_VIEW = 10;
  
     public String getDescription();
     

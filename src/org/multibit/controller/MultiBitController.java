@@ -196,36 +196,6 @@ public class MultiBitController implements PeerEventListener {
             nextView = View.SEND_BITCOIN_CONFIRM_VIEW;
             break;
         }
-        case FORWARD_TO_ADDRESS_BOOK_RECEIVING: {
-            // show the address book receiving view
-            nextView = View.ADDRESS_BOOK_RECEIVING_VIEW;
-            break;
-        }
-        case FORWARD_TO_ADDRESS_BOOK_SENDING: {
-            // show the address book sending view
-            nextView = View.ADDRESS_BOOK_SENDING_VIEW;
-            break;
-        }
-        case FORWARD_TO_CREATE_NEW_RECEIVING_ADDRESS: {
-            // create new receiving address view
-            nextView = View.CREATE_NEW_RECEIVING_ADDRESS_VIEW;
-            break;
-        }
-        case FORWARD_TO_EDIT_RECEIVING_ADDRESS: {
-            // edit receiving address view
-            nextView = View.EDIT_RECEIVING_ADDRESS_VIEW;
-            break;
-        }
-        case FORWARD_TO_CREATE_NEW_SENDING_ADDRESS: {
-            // create new sending address view
-            nextView = View.CREATE_NEW_SENDING_ADDRESS_VIEW;
-            break;
-        }
-        case FORWARD_TO_EDIT_SENDING_ADDRESS: {
-            // edit receiving address view
-            nextView = View.EDIT_SENDING_ADDRESS_VIEW;
-            break;
-        }
         case FORWARD_TO_HELP_ABOUT: {
             // show the help about view
             // should check actually on home page
@@ -465,16 +435,12 @@ public class MultiBitController implements PeerEventListener {
     }
 
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-
-        System.out.println("MultiBitController#onCoinsReceived called");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
         }
     }
 
     public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        System.out.println("MultiBitController#onPendingCoinsReceived called");
-
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
         }
