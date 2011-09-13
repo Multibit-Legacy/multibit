@@ -8,8 +8,6 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 
-import com.google.bitcoin.core.ECKey;
-
 /**
  * an action to create or edit an address
  * 
