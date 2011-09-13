@@ -8,7 +8,6 @@ import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.swing.MultiBitFrame;
 
 import com.google.bitcoin.core.Utils;
 
@@ -19,13 +18,10 @@ import com.google.bitcoin.core.Utils;
  * 
  */
 public class ShowPreferencesSubmitAction implements Action {
-
     private MultiBitController controller;
-    private MultiBitFrame mainFrame;
 
-    public ShowPreferencesSubmitAction(MultiBitController controller, MultiBitFrame mainFrame) {
+    public ShowPreferencesSubmitAction(MultiBitController controller) {
         this.controller = controller;
-        this.mainFrame = mainFrame;
     }
 
     public void execute(DataProvider dataProvider) {
@@ -93,7 +89,7 @@ public class ShowPreferencesSubmitAction implements Action {
         controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
 
         if (feeValidationError) {
-            mainFrame.updateStatusLabel(updateStatusText);
+            controller.updateDownloadStatus(updateStatusText);
         }
     }
 

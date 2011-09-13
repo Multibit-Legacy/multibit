@@ -14,6 +14,8 @@ import java.util.ResourceBundle;
 
 import javax.swing.KeyStroke;
 
+//import javax.swing.KeyStroke;
+
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 import com.google.bitcoin.core.Utils;
@@ -67,28 +69,6 @@ public class Localiser {
             }
         } else {
             return MISSING_RESOURCE_TEXT + key;
-        }
-    }
-
-    /**
-     * get the mnemonic key code for the passed in internationalisation key
-     * 
-     * @param key
-     * @return
-     */
-    public int getMnemonic(String key) {
-        if (resourceBundle != null) {
-            try {
-                return KeyStroke.getKeyStroke(getString(key)).getKeyCode();
-            } catch (NullPointerException npe) {
-                return 0;
-            } catch (ClassCastException cce) {
-                return 0;
-            } catch (MissingResourceException mre) {
-                return 0;
-            }
-        } else {
-            return 0;
         }
     }
 

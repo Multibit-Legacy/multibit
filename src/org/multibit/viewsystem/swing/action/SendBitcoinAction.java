@@ -24,8 +24,11 @@ public class SendBitcoinAction extends AbstractAction {
     public SendBitcoinAction(MultiBitController controller, ImageIcon icon, JFrame mainFrame) {
         super(controller.getLocaliser().getString("sendBitcoinAction.text"), icon);
         this.controller = controller;
+
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
+
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("sendBitcoinAction.tooltip"));
-        putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("sendBitcoinAction.mnemonicKey"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("sendBitcoinAction.mnemonicKey"));
     }
 
     /**

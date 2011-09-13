@@ -30,8 +30,9 @@ public class CreateOrEditAddressSubmitAction extends AbstractAction {
         this.isCreate = isCreate;
         this.isReceiver = isReceiver;
 
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createOrEditAddressSubmitAction.tooltip"));
-        putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("createOrEditAddressSubmitAction.mnemonicKey"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("createOrEditAddressSubmitAction.mnemonicKey"));
     }
 
     /**

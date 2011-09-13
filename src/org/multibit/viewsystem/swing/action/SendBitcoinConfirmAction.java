@@ -25,8 +25,10 @@ public class SendBitcoinConfirmAction extends AbstractAction {
         super(controller.getLocaliser().getString("sendBitcoinConfirmAction.text"));
         this.controller = controller;
         this.dataProvider = dataProvider;
+
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("sendBitcoinConfirmAction.tooltip"));
-        putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("sendBitcoinConfirmAction.mnemonicKey"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("sendBitcoinConfirmAction.mnemonicKey"));
     }
 
     /**

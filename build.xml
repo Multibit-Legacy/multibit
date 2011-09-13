@@ -48,25 +48,26 @@
   	   <fileset dir="resources"/>
   	</copy>
     <mkdir dir="dist"/>
-    <jar jarfile="dist/multibit.jar" basedir="out">
-    	 <manifest>
-    	 	<attribute name="Main-Class" value="org.multibit.MultiBitInExecutableJar"/>
-    	 	<attribute name="Class-Path" value="lib/bcprov-jdk15-1.46.jar lib/junit-4.8.2.jar lib/slf4j-api-1.6.1.jar lib/slf4j-simple-1.6.1.jar lib/log4j-1.2.16.jar lib/apache-log4j-extras-1.1.jar"/>
-    	 	 <section name="org.multibit/">
-    	 	 	<attribute name="Sealed" value="true"/>
-    	 	 </section>
-    	 	<attribute name="SplashScreen-Image" value="images/splash.jpg"/>
-    	 </manifest>
-    </jar>
     <mkdir dir="dist/lib"/>
- 	<copy file="standard-multibit.properties" tofile="dist/multibit.properties"/>
+    <mkdir dir="dist/target"/>
+    <jar jarfile="dist/target/multibit-core.jar" basedir="out" excludes="org/multibit/MultiBitInExecutableJar.class, org/multibit/viewsystem/swing/**">
+      </jar>
+    <jar jarfile="dist/target/multibit-swing.jar" basedir="out" includes="org/multibit/MultiBitInExecutableJar.class, org/multibit/viewsystem/swing/**">	      
+	 <manifest>
+	 	<attribute name="Main-Class" value="org.multibit.MultiBitInExecutableJar"/>
+	 	<attribute name="Class-Path" value="lib/multibit-core.jar lib/bcprov-jdk15-1.46.jar lib/junit-4.8.2.jar lib/slf4j-api-1.6.1.jar lib/slf4j-simple-1.6.1.jar lib/log4j-1.2.16.jar lib/apache-log4j-extras-1.1.jar"/>
+	 	<attribute name="SplashScreen-Image" value="images/splash.jpg"/>
+	 </manifest> 	      
+   </jar>
+  
+  	<copy file="dist/target/multibit-core.jar" tofile="dist/lib/multibit-core.jar"/>
+  	<copy file="dist/target/multibit-swing.jar" tofile="dist/multibit.jar"/>
+  	<copy file="standard-multibit.properties" tofile="dist/multibit.properties"/>
  	<copy file="standard-readme.txt" tofile="dist/readme.txt"/>
 	<copy file="multibit.blockchain" todir="dist" failOnError = "false"/>
 	<copy file="multibit-testnet.blockchain" todir="dist" failOnError = "false"/>
  	<copy file="release_notes.txt" todir="dist"/>
  	<copy file="log4j.xml" todir="dist"/>
- 	<copy file="runMultiBit.sh" todir="dist"/>
- 	<copy file="runMultiBit.bat" todir="dist"/>
 	<copy file="lib/junit-4.8.2.jar" todir="dist/lib"/>
  	<copy file="lib/slf4j-api-1.6.1.jar" todir="dist/lib"/>
  	<copy file="lib/slf4j-simple-1.6.1.jar" todir="dist/lib"/>

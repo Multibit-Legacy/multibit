@@ -22,8 +22,10 @@ public class ExitAction extends AbstractAction {
     public ExitAction(MultiBitController controller) {
         super(controller.getLocaliser().getString("exitAction.text"));
         this.controller = controller;
+
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("exitAction.tooltip"));
-        putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("exitAction.mnemonicKey"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("exitAction.mnemonicKey"));
     }
 
     /**

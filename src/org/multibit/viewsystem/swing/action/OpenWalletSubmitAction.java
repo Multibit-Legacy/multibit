@@ -26,8 +26,9 @@ public class OpenWalletSubmitAction extends AbstractAction {
         this.controller = controller;
         this.dataProvider = dataProvider;
 
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("openWalletSubmitAction.tooltip"));
-        putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("openWalletSubmitAction.mnemonicKey"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("openWalletSubmitAction.mnemonicKey"));
     }
 
     /**

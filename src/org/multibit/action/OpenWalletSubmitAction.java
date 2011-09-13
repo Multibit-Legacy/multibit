@@ -1,8 +1,6 @@
 package org.multibit.action;
 
 import java.io.File;
-import java.io.IOException;
-import java.math.BigInteger;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
@@ -10,10 +8,6 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.network.MultiBitService;
-
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletEventListener;
 
 /**
  * an action to process the submit of the Open Wallet view

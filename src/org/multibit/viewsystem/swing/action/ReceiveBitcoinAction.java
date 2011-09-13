@@ -20,7 +20,6 @@ public class ReceiveBitcoinAction extends AbstractAction {
 
     private MultiBitFrame mainFrame;
     private MultiBitController controller;
-    private Localiser localiser;
     
     /**
      * Creates a new {@link ReceiveBitcoinAction}.
@@ -29,9 +28,10 @@ public class ReceiveBitcoinAction extends AbstractAction {
             Localiser localiser, ImageIcon icon, MultiBitFrame mainFrame) {
         super(localiser.getString("receiveBitcoinAction.text"), icon);
         this.controller = controller;
-        this.localiser = localiser;
+
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, localiser.getString("receiveBitcoinAction.tooltip"));
-        putValue(MNEMONIC_KEY, localiser.getMnemonic("receiveBitcoinAction.mnemonicKey"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("receiveBitcoinAction.mnemonicKey"));
         
         this.mainFrame = mainFrame;
     }

@@ -29,16 +29,17 @@ public class OpenAddressBookAction extends AbstractAction {
         this.controller = controller;
         this.isChild = isChild;
         this.isReceiving = isReceiving;
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
 
         if (isReceiving) {
             putValue(SHORT_DESCRIPTION,
                     controller.getLocaliser().getString("openAddressBookAction.receiving.tooltip"));
             putValue(MNEMONIC_KEY,
-                    controller.getLocaliser().getMnemonic("openAddressBookAction.receiving.mnemonicKey"));
+                    mnemonicUtil.getMnemonic("openAddressBookAction.receiving.mnemonicKey"));
         } else {
             putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("openAddressBookAction.sending.tooltip"));
             putValue(MNEMONIC_KEY,
-                    controller.getLocaliser().getMnemonic("openAddressBookAction.sending.mnemonicKey"));
+                    mnemonicUtil.getMnemonic("openAddressBookAction.sending.mnemonicKey"));
         }
 
     }

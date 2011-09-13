@@ -25,8 +25,10 @@ public class ShowHelpContentsAction extends AbstractAction {
     public ShowHelpContentsAction(MultiBitController controller, Localiser localiser, ImageIcon icon) {
         super(localiser.getString("showHelpContentsAction.text"), icon);
         this.controller = controller;
+
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, localiser.getString("showHelpContentsAction.tooltip"));
-        putValue(MNEMONIC_KEY, localiser.getMnemonic("showHelpContentsAction.mnemonicKey"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("showHelpContentsAction.mnemonicKey"));
     }
 
     /**

@@ -38,6 +38,7 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.action.HelpAboutAction;
+import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.action.ReceiveBitcoinAction;
 import org.multibit.viewsystem.swing.action.SaveWalletAsAction;
@@ -346,24 +347,26 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         // Enable rollover mode
         toolBar.setRollover(true);
 
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
+
         // Build the File menu.
         JMenu fileMenu = new JMenu(localiser.getString("multiBitFrame.fileMenuText"));
-        fileMenu.setMnemonic(localiser.getMnemonic("multiBitFrame.fileMenuMnemonic"));
+        fileMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.fileMenuMnemonic"));
         menuBar.add(fileMenu);
 
         // Build the Trade menu.
         JMenu tradeMenu = new JMenu(localiser.getString("multiBitFrame.tradeMenuText"));
-        tradeMenu.setMnemonic(localiser.getMnemonic("multiBitFrame.tradeMenuMnemonic"));
+        tradeMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.tradeMenuMnemonic"));
         menuBar.add(tradeMenu);
 
         // Build the View menu.
         JMenu viewMenu = new JMenu(localiser.getString("multiBitFrame.viewMenuText"));
-        viewMenu.setMnemonic(localiser.getMnemonic("multiBitFrame.viewMenuMnemonic"));
+        viewMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.viewMenuMnemonic"));
         menuBar.add(viewMenu);
 
         // Build the Help menu.
         JMenu helpMenu = new JMenu(localiser.getString("multiBitFrame.helpMenuText"));
-        helpMenu.setMnemonic(localiser.getMnemonic("multiBitFrame.helpMenuMnemonic"));
+        helpMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.helpMenuMnemonic"));
         menuBar.add(helpMenu);
 
         // open wallet action

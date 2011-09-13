@@ -1,4 +1,4 @@
-package org.multibit.qrcode;
+package org.multibit.viewsystem.swing.view;
 
 import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;

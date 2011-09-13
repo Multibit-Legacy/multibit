@@ -379,16 +379,25 @@ public class MultiBitController implements PeerEventListener {
     public void fireWalletChanged() {
         // TODO rewire the blockchain etc to reference the new wallet
 
-        fireWalletDataChanged();
+        fireRecreateAllViews();
     }
 
     /**
-     * the wallet data has been changed
+     * fire that all the views need recreating
      */
-    public void fireWalletDataChanged() {
+    public void fireRecreateAllViews() {
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.recreateAllViews();
+        }
+    }
+
+    /**
+     * firethe model data has changed
+     */
+    public void fireDataChanged() {
+        for (ViewSystem viewSystem : viewSystems) {
+            viewSystem.fireDataChanged();
         }
     }
 
@@ -475,7 +484,7 @@ public class MultiBitController implements PeerEventListener {
             AddressFormatException {
         // send the coins
         Transaction sendTransaction = multiBitService.sendCoins(sendAddressString, amount, fee);
-        fireWalletDataChanged();
+        fireRecreateAllViews();
         if (sendTransaction == null) {
             throw new IllegalStateException("No transaction was created after send.   The send may have failed.");
         }

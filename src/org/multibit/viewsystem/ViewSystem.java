@@ -44,6 +44,11 @@ public interface ViewSystem {
     public void recreateAllViews();
     
     /**
+     * tells the view system that the model data has changed
+     */   
+    public void fireDataChanged();
+    
+    /**
      * a method called when MultiBit is now online i.e. now has a peer when it did not before
      */
     public void nowOnline();

@@ -24,8 +24,9 @@ public class CancelBackToParentAction extends AbstractAction {
         super(controller.getLocaliser().getString("cancelBackToParentAction.text"));
         this.controller = controller;
 
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("cancelBackToParentAction.tooltip"));
-        putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("canceBackToParentAction.mnemonicKey"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("canceBackToParentAction.mnemonicKey"));
     }
 
     /**

@@ -24,8 +24,10 @@ public class OkBackToParentAction extends AbstractAction {
         super(controller.getLocaliser().getString("okBackToParentAction.text"));
         this.controller = controller;
 
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
+
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("okBackToParentAction.tooltip"));
-        putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("okBackToParentAction.mnemonicKey"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("okBackToParentAction.mnemonicKey"));
     }
 
     /**

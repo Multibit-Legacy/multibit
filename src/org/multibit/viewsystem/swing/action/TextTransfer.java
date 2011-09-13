@@ -1,4 +1,4 @@
-package org.multibit.action;
+package org.multibit.viewsystem.swing.action;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;

@@ -31,21 +31,23 @@ public class CreateOrEditAddressAction extends AbstractAction {
         this.isReceiving = isReceiving;
         this.dataProvider = dataProvider;
         
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
+
         if (isCreate) {
             if (isReceiving) {
                 putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createOrEditAddressAction.createReceiving.tooltip"));
-                putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("createOrEditAddressAction.createReceiving.mnemonicKey"));
+                putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("createOrEditAddressAction.createReceiving.mnemonicKey"));
             } else {
                 putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createOrEditAddressAction.createSending.tooltip"));
-                putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("createOrEditAddressAction.createSending.mnemonicKey"));
+                putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("createOrEditAddressAction.createSending.mnemonicKey"));
             }
         } else {
             if (isReceiving) {
                 putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createOrEditAddressAction.editReceiving.tooltip"));
-                putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("createOrEditAddressAction.editReceiving.mnemonicKey"));
+                putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("createOrEditAddressAction.editReceiving.mnemonicKey"));
             } else {
                 putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createOrEditAddressAction.editSending.tooltip"));
-                putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("createOrEditAddressAction.editSending.mnemonicKey"));
+                putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("createOrEditAddressAction.editSending.mnemonicKey"));
             }
         }
     }

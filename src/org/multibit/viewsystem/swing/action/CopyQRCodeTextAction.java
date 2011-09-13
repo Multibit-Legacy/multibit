@@ -26,8 +26,9 @@ public class CopyQRCodeTextAction extends AbstractAction {
         this.controller = controller;
         this.dataProvider = dataProvider;
         
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("copyQRCodeTextAction.tooltip"));
-        putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("copyQRCodeTextAction.mnemonicKey"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("copyQRCodeTextAction.mnemonicKey"));
     }
 
     /**

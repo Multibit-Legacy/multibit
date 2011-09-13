@@ -27,8 +27,9 @@ public class SaveWalletAsAction extends AbstractAction {
         super(controller.getLocaliser().getString("saveWalletAsAction.text"), icon);
         this.controller = controller;
 
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("saveWalletAsAction.tooltip"));
-        putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("saveWalletAsAction.mnemonicKey"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("saveWalletAsAction.mnemonicKey"));
    }
 
     /**

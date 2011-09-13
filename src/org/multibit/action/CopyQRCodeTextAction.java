@@ -5,6 +5,7 @@ import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
+import org.multibit.viewsystem.swing.action.TextTransfer;
 
 /**
  * an action to copy the bitcoin URI in the supplied formbean to the system

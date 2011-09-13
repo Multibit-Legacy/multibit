@@ -25,9 +25,8 @@ import java.util.Stack;
 
 import org.apache.log4j.Logger;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.WalletInfo;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.model.WalletInfo;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
@@ -36,11 +35,9 @@ import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerGroup;
-import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.discovery.DnsDiscovery;
 import com.google.bitcoin.discovery.IrcDiscovery;

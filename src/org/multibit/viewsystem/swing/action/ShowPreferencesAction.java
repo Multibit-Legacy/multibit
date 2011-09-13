@@ -24,8 +24,10 @@ public class ShowPreferencesAction extends AbstractAction {
     public ShowPreferencesAction(MultiBitController controller, ImageIcon icon) {
         super(controller.getLocaliser().getString("showPreferencesAction.text"), icon);
         this.controller = controller;
+        
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("showPreferencesAction.tooltip"));
-        putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("showPreferencesAction.mnemonicKey"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("showPreferencesAction.mnemonicKey"));
     }
 
     /**

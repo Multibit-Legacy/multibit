@@ -35,8 +35,9 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
         this.controller = controller;
         this.receiveBitcoinPanel = receiveBitcoinPanel;
 
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createOrEditAddressAction.createReceiving.tooltip"));
-        putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("createOrEditAddressAction.createReceiving.mnemonicKey"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("createOrEditAddressAction.createReceiving.mnemonicKey"));
     }
 
     /**

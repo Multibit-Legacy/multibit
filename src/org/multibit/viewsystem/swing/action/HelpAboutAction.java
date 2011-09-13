@@ -27,8 +27,9 @@ public class HelpAboutAction extends AbstractAction {
         super(controller.getLocaliser().getString("helpAboutAction.text"), icon);
         this.controller = controller;
 
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("helpAboutAction.tooltip"));
-        putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("helpAboutAction.mnemonicKey"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("helpAboutAction.mnemonicKey"));
     }
 
     /**

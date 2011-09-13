@@ -16,6 +16,8 @@ package org.multibit;
  * limitations under the License.
  */
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -26,7 +28,6 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.ViewSystem;
-import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
  * Main MultiBit entry class
@@ -40,6 +41,7 @@ public class MultiBit {
     /**
      * start multibit user interface
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static void main(String args[]) {
         // initialise log4j
         DOMConfigurator.configure("log4j.xml");
@@ -77,19 +79,52 @@ public class MultiBit {
 
         // create the view systems
         // add the swing view system
-        MultiBitFrame swingView = new MultiBitFrame(controller);
-        controller.registerViewSystem(swingView);
-
+        // this is done by reflection just to keep it out the import
+        ViewSystem swingViewSystem = null;
+        try {
+            Class multiBitFrameClass = Class.forName("org.multibit.viewsystem.swing.MultiBitFrame");
+            Constructor controllerConstructor = multiBitFrameClass.getConstructor(new Class[] { MultiBitController.class});
+            
+            swingViewSystem = (ViewSystem) createObject(controllerConstructor, new Object[] {controller});
+            controller.registerViewSystem(swingViewSystem);
+         } catch (ClassNotFoundException e) {
+            System.out.println(e);
+          } catch (NoSuchMethodException e) {
+            System.out.println(e);
+          }
+ 
         // create the MultiBitService that connects to the bitcoin network
         MultiBitService multiBitService = new MultiBitService(useTestNet, controller);
         controller.setMultiBitService(multiBitService);
 
         // make sure the total is updated
-        swingView.fireDataChanged();
+        controller.fireDataChanged();
         
         // display the next view
         controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
 
         multiBitService.downloadBlockChain();
+    }
+    
+
+    @SuppressWarnings("rawtypes")
+    public static Object createObject(Constructor constructor,
+        Object[] arguments) {
+
+       Object object = null;
+
+      try {
+        object = constructor.newInstance(arguments);
+        return object;
+      } catch (InstantiationException e) {
+        System.out.println(e);
+      } catch (IllegalAccessException e) {
+        System.out.println(e);
+      } catch (IllegalArgumentException e) {
+        System.out.println(e);
+      } catch (InvocationTargetException e) {
+        System.out.println(e);
+      }
+      return object;
     }
 }

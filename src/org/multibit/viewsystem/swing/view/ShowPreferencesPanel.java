@@ -311,7 +311,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(controller, mainFrame, this);
+        ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(controller, this);
         JButton submitButton = new JButton(submitAction);
         buttonPanel.add(submitButton);
 

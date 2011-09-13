@@ -24,8 +24,10 @@ public class ShowTransactionsAction extends AbstractAction {
     public ShowTransactionsAction(MultiBitController controller, ImageIcon icon) {
         super(controller.getLocaliser().getString("showTransactionsAction.text"), icon);
         this.controller = controller;
+
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("showTransactionsAction.tooltip"));
-        putValue(MNEMONIC_KEY, controller.getLocaliser().getMnemonic("showTransactionsAction.mnemonicKey"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("showTransactionsAction.mnemonicKey"));
     }
 
     /**
