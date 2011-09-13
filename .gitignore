@@ -15,3 +15,6 @@ out
 /multibit.info
 /multibit.properties
 /multibit
+/.classpath
+/.DS_Store
+/.settings
