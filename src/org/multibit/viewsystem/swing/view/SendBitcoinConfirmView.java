@@ -7,7 +7,6 @@ import java.util.Collection;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -40,10 +39,12 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
     private JLabel sendAddressText;
     private JLabel sendLabelText;
     private JLabel sendAmountText;
+    private JLabel sendFeeText;
 
     private String sendAddress;
     private String sendLabel;
     private String sendAmount;
+    private String sendFee;
 
     private JLabel confirmText1, confirmText2;
     
@@ -79,6 +80,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         sendAddress = controller.getModel().getWalletPreference(MultiBitModel.SEND_ADDRESS);
         sendLabel = controller.getModel().getWalletPreference(MultiBitModel.SEND_LABEL);
         sendAmount = controller.getModel().getWalletPreference(MultiBitModel.SEND_AMOUNT) + " BTC";
+        sendFee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE) + " BTC";
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -181,10 +183,42 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.anchor = GridBagConstraints.LINE_START;
         add(sendAmountText, constraints);
 
+        JLabel filler2 = new JLabel();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 1;
+        constraints.gridy = 4;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.2;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(filler2, constraints);
+  
+        JLabel sendFeeLabel = new JLabel();
+        sendFeeLabel.setText(localiser.getString("showPreferencesPanel.feeLabel.text"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 5;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        add(sendFeeLabel, constraints);
+
+        sendFeeText = new JLabel();
+        sendFeeText.setText(sendFee);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 5;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(sendFeeText, constraints);
+
         JPanel buttonPanel = new JPanel();
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
-        constraints.gridy = 4;
+        constraints.gridy = 6;
         constraints.weightx = 0.8;
         constraints.weighty = 0.1;
         constraints.gridwidth = 4;
@@ -203,45 +237,43 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         confirmText1.setText(" ");
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 7;
         constraints.weightx = 0.8;
         constraints.weighty = 0.15;
         constraints.gridwidth = 4;
         constraints.anchor = GridBagConstraints.LINE_END;
         add(confirmText1, constraints);
         
-        JLabel filler2 = new JLabel();
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 5;
-        constraints.gridy = 5;
-        constraints.weightx = 0.05;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        add(filler2, constraints);
-
-        confirmText2 = new JLabel();
-        confirmText2.setText(" ");
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 6;
-        constraints.weightx = 0.8;
-        constraints.weighty = 0.15;
-        constraints.gridwidth = 4;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        add(confirmText2, constraints);
-        
         JLabel filler3 = new JLabel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 5;
-        constraints.gridy = 6;
+        constraints.gridy = 7;
         constraints.weightx = 0.05;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(filler3, constraints);
 
-
+        confirmText2 = new JLabel();
+        confirmText2.setText(" ");
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 8;
+        constraints.weightx = 0.8;
+        constraints.weighty = 0.15;
+        constraints.gridwidth = 4;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        add(confirmText2, constraints);
+        
+        JLabel filler4 = new JLabel();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 5;
+        constraints.gridy = 8;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(filler4, constraints);
 
         setVisible(true);
     }

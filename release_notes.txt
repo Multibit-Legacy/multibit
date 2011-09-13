@@ -1,5 +1,11 @@
 MultiBit release notes.
 
+Version 0.1.4alpha
+Enhancements
++  Copy and paste added to address field
++  Fee added to send confirm screen
+
+
 Version 0.1.3
 Enhancements
 +  Added QRcode support, including drag and drop.
