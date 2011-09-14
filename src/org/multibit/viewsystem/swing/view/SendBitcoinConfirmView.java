@@ -80,8 +80,12 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         sendAddress = controller.getModel().getWalletPreference(MultiBitModel.SEND_ADDRESS);
         sendLabel = controller.getModel().getWalletPreference(MultiBitModel.SEND_LABEL);
         sendAmount = controller.getModel().getWalletPreference(MultiBitModel.SEND_AMOUNT) + " BTC";
-        sendFee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE) + " BTC";
-
+        String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+        if (fee == null || fee == "") {
+            fee = Localiser.bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
+        }
+        sendFee = fee + " BTC";
+    
         GridBagConstraints constraints = new GridBagConstraints();
 
         ImageIcon bigIcon = createImageIcon(MultiBitFrame.MULTIBIT_ICON_FILE);
