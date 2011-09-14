@@ -45,6 +45,8 @@ public class MultiBitModel {
 
     // user preferences
     public static final String SELECTED_VIEW = "selectedView";
+    public static final String PREVIOUSLY_SELECTED_VIEW = "previousView";
+    
     public static final String USER_LANGUAGE_CODE = "languageCode";
     public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
 
@@ -88,14 +90,16 @@ public class MultiBitModel {
     private final MultiBitController controller;
 
     // user preferences
-    // note - all the preferences (for all viewsystems are stored in one
-    // properties object for simplicity
     private Properties userPreferences;
 
     private Vector<WalletTableData> walletData;
 
     // wallet info including address labelling
     private WalletInfo walletInfo;
+
+    public MultiBitModel(MultiBitController controller) {
+        this(controller, new Properties());
+    }
 
     public MultiBitModel(MultiBitController controller, Properties userPreferences) {
         this.controller = controller;

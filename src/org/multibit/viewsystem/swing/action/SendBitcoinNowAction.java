@@ -50,8 +50,8 @@ public class SendBitcoinNowAction extends AbstractAction {
         SendBitcoinConfirmView sendBitcoinConfirmView = (SendBitcoinConfirmView)dataProvider;
         
 
-        String sendWasSuccessfulText = controller.getModel().getUserPreference(MultiBitModel.SEND_WAS_SUCCESSFUL);
-        String errorMessage =controller.getModel().getUserPreference(MultiBitModel.SEND_ERROR_MESSAGE);
+        String sendWasSuccessfulText = controller.getModel().getWalletPreference(MultiBitModel.SEND_WAS_SUCCESSFUL);
+        String errorMessage =controller.getModel().getWalletPreference(MultiBitModel.SEND_ERROR_MESSAGE);
         
         if (Boolean.TRUE.toString().equals(sendWasSuccessfulText)) {
             sendBitcoinConfirmView.setSendConfirmText(controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk"), "");

@@ -70,11 +70,16 @@ public class MultiBitController implements PeerEventListener {
      */
     private MultiBitService multiBitService;
 
+    public MultiBitController() {
+        this(null);
+    }
+
     public MultiBitController(Properties userPreferences) {
         viewSystems = new ArrayList<ViewSystem>();
 
-        // initialise everything to look at the previously opened view or
-        // failing that the transactions view
+        // initialise everything to look at the stored opened view and previous view
+        // if no properties passed in just initialise to the transactions view
+        int previousView = View.TRANSACTIONS_VIEW;
         int initialView = View.TRANSACTIONS_VIEW;
         if (userPreferences != null) {
             String viewString = (String) userPreferences.get(MultiBitModel.SELECTED_VIEW);
@@ -85,11 +90,19 @@ public class MultiBitController implements PeerEventListener {
                     // carry on
                 }
             }
+            String previouslySelectedViewString = (String) userPreferences.get(MultiBitModel.PREVIOUSLY_SELECTED_VIEW);
+            if (previouslySelectedViewString != null) {
+                try {
+                    previousView = Integer.parseInt(previouslySelectedViewString);
+                } catch (NumberFormatException nfe) {
+                    // carry on
+                }
+            }
         }
         viewStack = new Stack<Integer>();
         viewStack.push(initialView);
 
-        previousView = initialView;
+        this.previousView = previousView;
         currentView = initialView;
         nextView = initialView;
     }

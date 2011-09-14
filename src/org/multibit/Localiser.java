@@ -38,6 +38,13 @@ public class Localiser {
     private final String MISSING_RESOURCE_TEXT = "Missing resource : ";
 
     /**
+     * Localiser hardwired to English - mainlt for testing
+     */
+    public Localiser() {
+        this(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, new Locale("en"));
+    }
+    
+    /**
      * create a Localiser using a ResourceBundle based on the specified
      * 'bundleName' with Locale 'locale'
      * 

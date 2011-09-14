@@ -69,8 +69,8 @@ public class SendBitcoinNowAction implements Action {
         if (errorMessage != null && errorMessage.length() > MAX_LENGTH_OF_ERROR_MESSAGE) {
             errorMessage = errorMessage.substring(0, MAX_LENGTH_OF_ERROR_MESSAGE) + "...";
         }
-        controller.getModel().setUserPreference(MultiBitModel.SEND_WAS_SUCCESSFUL, sendWasSuccessful.toString());
-        controller.getModel().setUserPreference(MultiBitModel.SEND_ERROR_MESSAGE, errorMessage);
+        controller.getModel().setWalletPreference(MultiBitModel.SEND_WAS_SUCCESSFUL, sendWasSuccessful.toString());
+        controller.getModel().setWalletPreference(MultiBitModel.SEND_ERROR_MESSAGE, errorMessage);
     }
 
     public String getDisplayText() {

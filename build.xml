@@ -37,7 +37,7 @@
       <classpath path=" lib/bcprov-jdk15-1.46.jar"/>    	
 
       <batchtest>
-	    <fileset dir="tests"><include name="**/*.java"/></fileset>
+	    <fileset dir="tests"><include name="**/*Test.java"/></fileset>
         <formatter type="brief" usefile="no"/> 
       </batchtest>
     </junit>

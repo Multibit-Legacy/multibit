@@ -1,0 +1,28 @@
+multiBit.info,1
+walletVersion,1
+receive,14P4K9VrmXD3yNWTzRwdNTr1D7zXzoiucZ,four
+receive,18oennawb3evRQn52RE1GwCKREG3kiKHRv,two
+receive,14381U2dpm3uprqRJG7VPxanCRyzJDtmEE,three
+receive,1CtGxgw7o86yaUmJWM4DfJaHqzj49d5rcb,
+receive,17YZpUZqiey1Hj82YJpsdrL5NYxX41iMBV,
+receive,1FtSH99hV8e1dhpofrHadkSdyGcVY3VX3X,
+receive,1EdyXyVfcf4qw2bEJAW4xYEFqGijkmqzfA,
+receive,1KRBrKnjntuoAMi9D9iYQ54bureVz8xrmz,
+receive,14MAsgDruZU4WubsGwwSfWPU1p8hWuLZkr,
+receive,1J2cobtt5Q4GP4ffAvTpEeymZMC9nuA4tU,
+receive,1MM1fsjn2AD3LEAdeb6vmmMurFmrohbX5D,
+receive,18kPWnfyDP9daqkZaN5XyVHbfMgLF4RGPW,one
+receive,1KXkrD91zNhsDB1U9b98m1vGofJUYyhRFN,
+property,validationNotEnoughFunds,false
+property,receiveAmount,
+property,sendAddress,  ssssssssssssssssssssssssssssssssssssssssssss
+property,receiveLabel,three
+property,validationAmountIsMissing,true
+property,sendLabel,
+property,validationAmountIsNegativeOrZero,false
+property,receiveAddress,14381U2dpm3uprqRJG7VPxanCRyzJDtmEE
+property,validationAmountValue,
+property,sendAmount,
+property,validationAddressValue,0011      ssssssssssssssssssssssssssssssssssssssssssss
+property,validationAmountIsInvalid,false
+property,validationAddressIsInvalid,true
