@@ -13,16 +13,17 @@ receive,1J2cobtt5Q4GP4ffAvTpEeymZMC9nuA4tU,
 receive,1MM1fsjn2AD3LEAdeb6vmmMurFmrohbX5D,
 receive,18kPWnfyDP9daqkZaN5XyVHbfMgLF4RGPW,one
 receive,1KXkrD91zNhsDB1U9b98m1vGofJUYyhRFN,
+send,1M7qAsXrE2dye8cHmT5DaiCXx24dQS3UsE,Instawallet
 property,validationNotEnoughFunds,false
 property,receiveAmount,
-property,sendAddress,  ssssssssssssssssssssssssssssssssssssssssssss
+property,sendAddress,1M7qAsXrE2dye8cHmT5DaiCXx24dQS3UsE
 property,receiveLabel,three
 property,validationAmountIsMissing,true
-property,sendLabel,
+property,sendLabel,Instawallet
 property,validationAmountIsNegativeOrZero,false
 property,receiveAddress,14381U2dpm3uprqRJG7VPxanCRyzJDtmEE
 property,validationAmountValue,
 property,sendAmount,
 property,validationAddressValue,0011      ssssssssssssssssssssssssssssssssssssssssssss
-property,validationAmountIsInvalid,false
 property,validationAddressIsInvalid,true
+property,validationAmountIsInvalid,false
