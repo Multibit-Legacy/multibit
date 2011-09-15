@@ -1,7 +1,10 @@
+Version 0.1.4alpha
+Enhancements
++  Copy and paste added to address field
++  Fee added to send confirm screen
   
 Outstanding from 0.1.3rc2 testing
 ---------------------------------
-+ Have transactions image fainter, non repeating in top left (Gary)
 + Produce a YouTube video of drag and drop with a mocked up website
 + Show number of blocks.(Nibor)
   Tooltip/message box/ panel with more network details including number of blocks.
@@ -15,11 +18,11 @@ Outstanding from 0.1.3rc2 testing
   Agreed.   Plan to have installers for Win, Mac, Linux.
   
 
-Logging and errors
+Logging, errors, virusscan
 ------------------
 + client does not go offline if you disconnect from network
 + extend log4j logging to all important classes
-
++ submit releases to virustotal.com and add to release notes.
 
 Outstanding Bugs
 ----------------
@@ -80,6 +83,7 @@ o Negative fee is accepted. (Nick).   Default fee should be 0.0005 (Nibor).
 o Add the fee to the 'send confirm' text to make it clear. (Mats)
   
 UI 
+o Have transactions image fainter, non repeating in top left (Gary)
 o Use of 3 sig figs in total misleading (Nibor).
   Have changed to show 4 sig figs i.e down to 100 mikes.(approx 0.1 USD cents).
 o Network label stays at 'Offline' too long.  (Nibor)
