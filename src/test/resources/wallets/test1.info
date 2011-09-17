@@ -25,5 +25,5 @@ property,receiveAddress,14381U2dpm3uprqRJG7VPxanCRyzJDtmEE
 property,validationAmountValue,
 property,sendAmount,
 property,validationAddressValue,0011      ssssssssssssssssssssssssssssssssssssssssssss
-property,validationAddressIsInvalid,true
 property,validationAmountIsInvalid,false
+property,validationAddressIsInvalid,true

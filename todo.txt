@@ -1,8 +1,3 @@
-Version 0.1.4alpha
-Enhancements
-+  Copy and paste added to address field
-+  Fee added to send confirm screen
-  
 Outstanding from 0.1.3rc2 testing
 ---------------------------------
 + Produce a YouTube video of drag and drop with a mocked up website
@@ -22,7 +17,7 @@ Logging, errors, virusscan
 ------------------
 + client does not go offline if you disconnect from network
 + extend log4j logging to all important classes
-+ submit releases to virustotal.com and add to release notes.
++ submit releases to virustotal.com and add to release notes. Make release notes HTML, not ASCII.
 
 Outstanding Bugs
 ----------------

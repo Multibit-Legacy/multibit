@@ -1,5 +1,12 @@
 MultiBit release notes.
 
+Version 0.1.4alpha
+Enhancements
++  Copy and paste added to address field
++  Fee added to send confirm screen
+  
+  
+  
 Version 0.1.3
 The virustotal.com report for: https://github.com/jim618/multibit/downloads/multibit-0.1.3.zip 
                            is: http://www.virustotal.com/file-scan/report.html?id=4f58c143006696ff34eb931d57d4fce2b0eef4fb90a683b512b75792fd329bc2-1316107981

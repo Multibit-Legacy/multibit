@@ -29,6 +29,7 @@ public class LocaliserTest extends TestCase {
     private String SUBSTITUTE_ONE_KEY = "localiserTest.substituteOne";
     private String SUBSTITUTE_TWO_KEY = "localiserTest.substituteTwo";
 
+    
     private String SUBSTITUTE_ONE_DATA="A";
     private String SUBSTITUTE_TWO_DATA="B";
        

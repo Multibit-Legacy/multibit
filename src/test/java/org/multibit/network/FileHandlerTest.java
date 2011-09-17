@@ -5,13 +5,14 @@
 package org.multibit.network;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
 
 import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.multibit.Localiser;
-import org.multibit.TestInfo;
+import org.multibit.Constants;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 
@@ -33,13 +34,22 @@ public class FileHandlerTest extends TestCase {
         controller.setLocaliser(localiser);
         controller.setModel(model);
 
-
         FileHandler fileHandler = new FileHandler(controller);
 
-        String walletName = TestInfo.TESTDATA_DIRECTORY + File.separator + WALLET_TESTDATA_DIRECTORY + File.separator
+        File directory = new File(".");
+        String currentPath = directory.getAbsolutePath();
+
+        String walletName = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator + WALLET_TESTDATA_DIRECTORY + File.separator
                 + WALLET_TEST1;
 
+        System.out.println(walletName);
         File walletFile = new File(walletName);
+        try {
+            walletFile.createNewFile();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         assertTrue(walletFile.exists());
         Wallet wallet = fileHandler.loadWalletFromFile(walletFile);
 

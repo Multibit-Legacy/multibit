@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<project default="jarChmodCompilerListener">
+    <property environment="env"/>
+    <condition property="IZPACK_HOME" value="${env.IZPACK_HOME}" else="../..">
+        <isset property="env.IZPACK_HOME"/>
+    </condition>
+    <property name="izPackDir" location="${IZPACK_HOME}"/>
+    <property name="buildDir" location="_build"/>
+    <target name="compileChmodCompilerListener">
+        <mkdir dir="${buildDir}"/>
+        <javac srcdir="${izPackDir}/sample/simple/src" includes="myCompany/tools/install/listener/ChmodCompilerListener.java" destdir="${buildDir}" debug="true" debuglevel="lines,source">
+            <classpath>
+                <fileset dir="${izPackDir}/lib">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+    <target name="jarChmodCompilerListener" depends="compileChmodCompilerListener">
+        <jar destfile="chmodCompilerListener.jar">
+            <fileset dir="${buildDir}" includes="myCompany/tools/install/listener/ChmodCompilerListener.class"/>
+        </jar>
+    </target>
+</project>

@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Main-Class: org.multibit.MultiBitInExecutableJar
+SplashScreen-Image: images/splash.jpg
+Class-Path: lib/apache-log4j-extras-1.0.jar
+ lib/asm-3.3.1.jar
+ lib/bcprov-jdk15-1.46.jar
+ lib/cglib-2.2.2.jar
+ lib/cglib-nodep-2.2.jar
+ lib/easymock-3.0.jar
+ lib/junit-4.8.2.jar 
+ lib/log4j-1.2.9.jar 
+ lib/slf4j-api-1.6.1.jar
+ lib/slf4j-simple-1.6.1.jar
+ 
+
+
