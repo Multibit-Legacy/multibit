@@ -8,7 +8,10 @@
   <url>http://www.multibit.org</url> 
     <!-- 
 
-       Use "mvn clean package" to build quickly without all the reports
+       Use "mvn clean package" to build the generic installer
+       Use "mvn clean install" to build the Mac installer
+ 
+ 
        Use "mvn clean verify" before submitting a patch
 
        Use "mvn site:site" to generate a complete website under target/site
@@ -63,28 +66,52 @@
               </execution>
             </executions>
           </plugin>
-          <plugin>
-              <artifactId>maven-dependency-plugin</artifactId>
-              <executions>
-                  <execution>
-                      <phase>package</phase>
-                      <goals>
-                          <goal>copy-dependencies</goal>
-                      </goals>
-                      <configuration>
-                          <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                          <includeScope>compile</includeScope>
-                      </configuration>
-                  </execution>
-              </executions>
-          </plugin>
         </plugins>
       </build>
     </profile>
+<profile>
+  <id>izpack-app-mac</id>
+  <activation>
+    <activeByDefault>false</activeByDefault>
+    <os>
+      <family>mac</family>
+    </os>
+  </activation>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>IzPack-Platform-Executable</id>
+            <phase>install</phase>
+            <configuration>
+              <tasks>
+                <exec executable="python" dir="${project.build.directory}">
+                  <arg value="${staging.dir}/izpack2app/izpack2app.py" />
+                  <arg value="${project.build.directory}/${project.build.finalName}-installer.jar" /> 
+                  <arg value="${project.build.directory}/${project.build.finalName}-installer.app" /> 
+                </exec>
+                <exec executable="chmod" dir="${project.build.directory}">
+                  <arg value="+x" />
+                  <arg value="${project.build.directory}/${project.build.finalName}-installer.app//Contents/macos/JavaApplicationStub" /> 
+                </exec>         
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</profile>
   </profiles>
   <build>  
     <plugins>
-      <plugin>
+       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven-site-plugin.version}.2</version>
         <configuration>
@@ -118,6 +145,51 @@
           </execution>
         </executions>
       </plugin>
+            <plugin>
+              <artifactId>maven-dependency-plugin</artifactId>
+              <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>copy-dependencies</goal>
+                    </goals>
+                    <configuration>
+                        <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        <includeScope>compile</includeScope>
+                    </configuration>
+                </execution>
+                <execution>
+                  <id>unpack-shared-resources-ipack2exe</id>
+                    <goals>
+                      <goal>unpack-dependencies</goal>
+                    </goals>
+                    <phase>package</phase>
+                    <configuration>
+                      <includeGroupIds>org.codehaus.izpack</includeGroupIds>
+                      <includeArtifacIds>izpack-standalone-compiler</includeArtifacIds>
+                      <classifier>izpack2exe</classifier>
+                      <type>zip</type>
+                      <excludeTransitive>true</excludeTransitive>
+                      <outputDirectory>${staging.dir}</outputDirectory>
+                    </configuration>
+                 </execution>
+               <execution>
+                  <id>unpack-shared-resources-ipack2app</id>
+                    <goals>
+                      <goal>unpack-dependencies</goal>
+                    </goals>
+                    <phase>package</phase>
+                    <configuration>
+                      <includeGroupIds>org.codehaus.izpack</includeGroupIds>
+                      <includeArtifacIds>izpack-standalone-compiler</includeArtifacIds>
+                      <classifier>izpack2app</classifier>
+                      <type>zip</type>
+                      <excludeTransitive>true</excludeTransitive>
+                      <outputDirectory>${staging.dir}</outputDirectory>
+                    </configuration>
+                 </execution>
+              </executions>
+          </plugin>
       <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
           <version>2.2.1</version>
@@ -152,10 +224,17 @@
              <phase>package</phase>
              <configuration>
                <tasks>
-               <!-- copy the executable jar to staging area, give it more user friendly name -->
-               <delete dir="target/staging"/>
-    		   <mkdir dir="target/staging"/>
-   	           <copy file="target/multibit-0.1.4-SNAPSHOT-jar-with-dependencies.jar" tofile="target/staging/multibit.jar"/>
+   	             <copy file="src/main/izpack/install.xml" toDir="target/staging"/>
+   	             <copy file="src/main/izpack/log4j.xml" toDir="target/staging"/>
+   	             <copy file="src/main/izpack/multibit.properties" toDir="target/staging"/>
+   	             <copy file="src/main/izpack/readme.txt" toDir="target/staging"/>
+   	             <copy file="multibit.blockchain" toDir="target/staging"/>
+   	             <copy file="release_notes.txt" toDir="target/staging"/>
+   	             <copy file="COPYING" toDir="target/staging"/>
+   	             <copy toDir="target/staging/lib">
+   	                <fileset dir="target/lib"/>
+   	             </copy>
+   	             <copy file="target/multibit-0.1.4-SNAPSHOT-jar-with-dependencies.jar" tofile="target/staging/multibit.jar"/>
                </tasks>
              </configuration>
              <goals>
@@ -163,7 +242,32 @@
              </goals>
            </execution>
          </executions>
-       </plugin>       
+       </plugin> 
+       <!-- Used to configure IzPack installer -->
+      <plugin>
+        <groupId>org.codehaus.izpack</groupId>
+        <artifactId>izpack-maven-plugin</artifactId>
+        <version>1.0-alpha-5</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>izpack</goal>
+            </goals>
+            <configuration>
+              <izpackBasedir>${staging.dir}</izpackBasedir>
+              <installerFile>target/${project.build.finalName}-installer.jar</installerFile>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.izpack</groupId>
+            <artifactId>izpack-standalone-compiler</artifactId>
+            <version>${izpack.standalone.compiler.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin> 
     </plugins>    
  </build>
   <dependencies>
@@ -212,6 +316,11 @@
         <version>1.0</version>
         <scope>compile</scope>
     </dependency>  
+    <dependency>
+      <groupId>org.codehaus.izpack</groupId>
+      <artifactId>izpack-standalone-compiler</artifactId>
+      <version>4.3.4</version>
+    </dependency>
   </dependencies>
   <reporting>
     <outputDirectory>${basedir}/target/site</outputDirectory>
@@ -334,5 +443,7 @@
     <cobertura-maven-plugin.version>2.3</cobertura-maven-plugin.version>
     <maven.compiler.source>1.5</maven.compiler.source>
     <maven.compiler.target>1.5</maven.compiler.target>
+    <staging.dir>${project.build.directory}/staging</staging.dir>
+    <izpack.standalone.compiler.version>4.3.4</izpack.standalone.compiler.version>   
   </properties>
 </project>

@@ -97,3 +97,5 @@ Help
 o Help page - no feedback whilst loading (Mats).
   Have improved feedback to user whilst loading.   Cursor and little animation in status bar.
    
+Address format
++ track Jon Waller's idea for Chrome extension of bitcoin addresses in a 'special page' on web sites.   Could do a look of of web address to bitcoin address.

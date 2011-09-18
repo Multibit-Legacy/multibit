@@ -20,6 +20,8 @@
         <appsubpath>MultiBit-0.1.4beta1</appsubpath>
         <appversion>0.1.4beta1</appversion>
         <url>http://multibit.org/</url>
+        <uninstaller write="no" />
+        <javaversion>1.6</javaversion>
     </info>
 
     <!-- 
@@ -41,8 +43,8 @@
         The ids must be these ones if you want to use the LicencePanel and/or the InfoPanel.
     -->
     <resources>
-        <res id="LicencePanel.licence" src="../../../COPYING"/>
-        <res id="InfoPanel.info" src="installerReadme.txt"/>
+        <res id="LicencePanel.licence" src="COPYING"/>
+        <res id="InfoPanel.info" src="readme.txt"/>
     </resources>
 
     <!-- 
@@ -68,12 +70,16 @@
             <description>MultiBit install files.</description>
             <file src="readme.txt" targetdir="$INSTALL_PATH"/>
             <file src="multibit.properties" targetdir="$INSTALL_PATH"/>
-            <file src="../../../log4j.xml" targetdir="$INSTALL_PATH"/>
-            <file src="../../../multibit.blockchain" targetdir="$INSTALL_PATH"/>
-            <file src="../../../release_notes.txt" targetdir="$INSTALL_PATH"/>
-            <file src="../../../COPYING" targetdir="$INSTALL_PATH"/>
-            <file src="../../../target/lib" targetdir="$INSTALL_PATH"/>
-            <file src="../../../target/staging/multibit.jar" targetdir="$INSTALL_PATH"/>
+            <file src="log4j.xml" targetdir="$INSTALL_PATH"/>
+            <file src="multibit.blockchain" targetdir="$INSTALL_PATH"/>
+            <file src="release_notes.txt" targetdir="$INSTALL_PATH"/>
+            <file src="COPYING" targetdir="$INSTALL_PATH"/>
+            <file src="lib/apache-log4j-extras-1.0.jar" targetdir="$INSTALL_PATH/lib"/>
+            <file src="lib/bcprov-jdk15-1.46.jar" targetdir="$INSTALL_PATH/lib"/>
+            <file src="lib/log4j-1.2.9.jar" targetdir="$INSTALL_PATH/lib"/>
+            <file src="lib/slf4j-api-1.6.1.jar" targetdir="$INSTALL_PATH/lib"/>
+            <file src="lib/slf4j-simple-1.6.1.jar" targetdir="$INSTALL_PATH/lib"/>
+            <file src="multibit.jar" targetdir="$INSTALL_PATH"/>
         </pack>
     </packs>
 </installation>
