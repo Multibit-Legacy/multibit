@@ -240,7 +240,24 @@
              <goals>
                <goal>run</goal>
              </goals>
-           </execution>
+           </execution>           
+           <execution>
+             <id>jsmooth-installer2exe</id>
+             <phase>install</phase>
+             <configuration>
+               <tasks>
+                 <path id="jsmooth-classpathref">
+                   <pathelement path="src/main/jsmooth/lib/jsmoothgen.jar"/>
+                   <pathelement path="src/main/jsmooth/lib/jsmoothgen-ant.jar"/>
+                 </path>
+                 <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpathref="jsmooth-classpathref"/>
+                 <jsmoothgen project="installer.jsmooth" skeletonroot="src/main/jsmooth/skeletons"/> 
+               </tasks>
+             </configuration>
+             <goals>
+               <goal>run</goal>
+             </goals>
+           </execution>         
          </executions>
        </plugin> 
        <!-- Used to configure IzPack installer -->
