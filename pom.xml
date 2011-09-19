@@ -10,6 +10,9 @@
 
        Use "mvn clean package" to build the generic installer
        Use "mvn clean install" to build the Mac installer
+       (The reason the Mac installer is in the wrong phase is that it is in a profile
+        and uses the generic installer as input.  
+        I cannot get it to run after the generic installer create in the 'package' phase as it appears first in the pom)
  
  
        Use "mvn clean verify" before submitting a patch
@@ -36,172 +39,238 @@
     <url>https://github.com/jim618/multibit</url>
   </scm>
   <profiles>
-<profile>
-  <id>izpack-app-mac</id>
-  <activation>
-    <activeByDefault>false</activeByDefault>
-    <os>
-      <family>mac</family>
-    </os>
-  </activation>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>IzPack-Platform-Executable</id>
-            <phase>install</phase>
-            <configuration>
-              <tasks>
-                <exec executable="python" dir="${project.build.directory}">
-                  <arg value="${staging.dir}/izpack2app/izpack2app.py" />
-                  <arg value="${project.build.directory}/${project.build.finalName}-installer.jar" /> 
-                  <arg value="${project.build.directory}/${project.build.finalName}-installer.app" /> 
-                </exec>
-                <exec executable="chmod" dir="${project.build.directory}">
-                  <arg value="+x" />
-                  <arg value="${project.build.directory}/${project.build.finalName}-installer.app//Contents/macos/JavaApplicationStub" /> 
-                </exec>         
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-</profile>
+    <profile>
+      <id>maven-3</id>
+      <activation>
+        <file>
+          <!-- This relies on basedir is only recognized by Maven 3.x (see MNG-2363) -->
+          <exists>${basedir}</exists>
+        </file>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-site-plugin</artifactId>
+              <version>3.0-beta-3</version>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+        <plugins>
+          <plugin>
+            <artifactId>maven-site-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-descriptor</id>
+                <goals>
+                  <goal>attach-descriptor</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <!-- create a Mac bundle from the generic IzPack installer - currently only working in a Mac profile -->
+    <profile>
+      <id>izpack-app-mac</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>IzPack-Platform-Executable</id>
+                <phase>install</phase>
+                <configuration>
+                  <tasks>
+                    <exec executable="python" dir="${project.build.directory}">
+                      <arg value="${staging.dir}/izpack2app/izpack2app.py" />
+                      <arg value="${project.build.directory}/${project.build.finalName}-installer.jar" /> 
+                      <arg value="${project.build.directory}/${project.build.finalName}-installer.app" /> 
+                    </exec>
+                    <exec executable="chmod" dir="${project.build.directory}">
+                      <arg value="+x" />
+                      <arg value="${project.build.directory}/${project.build.finalName}-installer.app//Contents/macos/JavaApplicationStub" /> 
+                    </exec>         
+                  </tasks>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
   <build>  
+    <finalName>multibit</finalName>
     <plugins>
-       <plugin>
+    
+      <!-- Compilation -->
+      <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>${maven-site-plugin.version}.2</version>
         <configuration>
           <source>1.5</source>
           <target>1.5</target>
         </configuration>
       </plugin>
-            <plugin>
-              <artifactId>maven-dependency-plugin</artifactId>
-              <executions>
-                <execution>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>copy-dependencies</goal>
-                    </goals>
-                    <configuration>
-                        <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                        <includeScope>compile</includeScope>
-                    </configuration>
-                </execution>
-                <execution>
-                  <id>unpack-shared-resources-ipack2exe</id>
-                    <goals>
-                      <goal>unpack-dependencies</goal>
-                    </goals>
-                    <phase>package</phase>
-                    <configuration>
-                      <includeGroupIds>org.codehaus.izpack</includeGroupIds>
-                      <includeArtifacIds>izpack-standalone-compiler</includeArtifacIds>
-                      <classifier>izpack2exe</classifier>
-                      <type>zip</type>
-                      <excludeTransitive>true</excludeTransitive>
-                      <outputDirectory>${staging.dir}</outputDirectory>
-                    </configuration>
-                 </execution>
-               <execution>
-                  <id>unpack-shared-resources-ipack2app</id>
-                    <goals>
-                      <goal>unpack-dependencies</goal>
-                    </goals>
-                    <phase>package</phase>
-                    <configuration>
-                      <includeGroupIds>org.codehaus.izpack</includeGroupIds>
-                      <includeArtifacIds>izpack-standalone-compiler</includeArtifacIds>
-                      <classifier>izpack2app</classifier>
-                      <type>zip</type>
-                      <excludeTransitive>true</excludeTransitive>
-                      <outputDirectory>${staging.dir}</outputDirectory>
-                    </configuration>
-                 </execution>
-              </executions>
-          </plugin>
+      
+      <!-- Unit testing -->
       <plugin>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <version>2.2.1</version>
-          <configuration>
-            <archive>
-              <manifest>                 
-                <mainClass>org.multibit.MultiBitInExecutableJar</mainClass>
-              </manifest>
-              <manifestEntries>
-    	        <SplashScreen-Image>images/splash.jpg</SplashScreen-Image>
-    	        <Class-Path>lib/apache-log4j-extras-1.0.jar lib/bcprov-jdk15-1.46.jar lib/log4j-1.2.9.jar lib/slf4j-api-1.6.1.jar lib/slf4j-simple-1.6.1.jar</Class-Path> 
-  			  </manifestEntries>
-            </archive>
-            <descriptorRefs>
-              <descriptorRef>jar-with-dependencies</descriptorRef>
-            </descriptorRefs>
-          </configuration>
-          <executions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven-surefire-plugin.version}</version>
+      </plugin>
+      
+      <!-- Unit test reporting -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>${maven-surefire-report-plugin.version}</version>
+       </plugin>
+       
+      <!-- Generates a source code JAR during package -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>${maven-source-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <!-- Put dependent jars into a target/lib directory for use later by the installer -->
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+              <includeScope>compile</includeScope>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-shared-resources-ipack2app</id>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <includeGroupIds>org.codehaus.izpack</includeGroupIds>
+              <includeArtifacIds>izpack-standalone-compiler</includeArtifacIds>
+              <classifier>izpack2app</classifier>
+              <type>zip</type>
+              <excludeTransitive>true</excludeTransitive>
+              <outputDirectory>${staging.dir}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>  
+            
+      <!-- Create executable jar -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2.1</version>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assemble/executable-jar.xml</descriptor>
+          </descriptors>
+          <archive>
+            <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+           </archive>
+         </configuration>
+         <executions>
             <execution>
-              <id>make-assembly</id> <!-- this is used for inheritance merges -->
-              <phase>package</phase> <!-- bind to the packaging phase -->
+              <id>make-assembly</id> 
+              <phase>package</phase>
               <goals>
                 <goal>single</goal>
               </goals>
           </execution>
          </executions>
        </plugin>
+       
+       <!-- Produce staging directory with all resources used in creation of the IzPack installer -->
        <plugin>
-         <artifactId>maven-antrun-plugin</artifactId>
+         <artifactId>maven-resources-plugin</artifactId>
+         <version>2.5</version>
          <executions>
            <execution>
+             <id>copy-resources-to-staging</id>
              <phase>package</phase>
-             <configuration>
-               <tasks>
-   	             <copy file="src/main/izpack/install.xml" toDir="target/staging"/>
-   	             <copy file="src/main/izpack/log4j.xml" toDir="target/staging"/>
-   	             <copy file="src/main/izpack/multibit.properties" toDir="target/staging"/>
-   	             <copy file="src/main/izpack/readme.txt" toDir="target/staging"/>
-   	             <copy file="multibit.blockchain" toDir="target/staging"/>
-   	             <copy file="release_notes.txt" toDir="target/staging"/>
-   	             <copy file="COPYING" toDir="target/staging"/>
-   	             <copy toDir="target/staging/lib">
-   	                <fileset dir="target/lib"/>
-   	             </copy>
-   	             <copy file="target/multibit-0.1.4-SNAPSHOT-jar-with-dependencies.jar" tofile="target/staging/multibit.jar"/>
-               </tasks>
-             </configuration>
              <goals>
-               <goal>run</goal>
+               <goal>copy-resources</goal>
              </goals>
-           </execution>           
+             <configuration>
+               <outputDirectory>${basedir}/target/staging</outputDirectory>
+               <resources>          
+                 <resource>
+                   <directory>src/main/izpack</directory>
+                   <includes>
+                     <include>readme.txt</include>
+                     <include>install.xml</include>
+                     <include>log4j.xml</include>
+                     <include>multibit.properties</include>
+                   </includes>
+                 </resource>
+                 <resource>
+                   <directory>.</directory>
+                   <includes>
+                     <include>multibit.blockchain</include>
+                     <include>release_notes.txt</include>
+                     <include>COPYING</include>
+                   </includes>
+                 </resource>
+                <resource>
+                   <directory>target</directory>
+                   <includes>
+                     <include>multibit-executableJar.jar</include>
+                   </includes>
+                 </resource>
+               </resources>              
+             </configuration>            
+           </execution>
            <execution>
-             <id>jsmooth-installer2exe</id>
-             <phase>install</phase>
-             <configuration>
-               <tasks>
-                 <path id="jsmooth-classpathref">
-                   <pathelement path="src/main/jsmooth/lib/jsmoothgen.jar"/>
-                   <pathelement path="src/main/jsmooth/lib/jsmoothgen-ant.jar"/>
-                 </path>
-                 <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpathref="jsmooth-classpathref"/>
-                 <jsmoothgen project="installer.jsmooth" skeletonroot="src/main/jsmooth/skeletons"/> 
-               </tasks>
-             </configuration>
+             <id>copy-resources-to-staging-lib</id>
+             <phase>package</phase>
              <goals>
-               <goal>run</goal>
+               <goal>copy-resources</goal>
              </goals>
-           </execution>         
+             <configuration>
+               <outputDirectory>${basedir}/target/staging/lib</outputDirectory>
+               <resources>
+                 <resource>
+                   <directory>target/lib</directory>
+                 </resource>
+               </resources>              
+             </configuration>            
+           </execution>
          </executions>
-       </plugin> 
-       <!-- Used to configure IzPack installer -->
+       </plugin>  
+          
+      <!-- Produce IzPack installer from contents of staging directory -->
       <plugin>
         <groupId>org.codehaus.izpack</groupId>
         <artifactId>izpack-maven-plugin</artifactId>
@@ -225,6 +294,30 @@
             <version>${izpack.standalone.compiler.version}</version>
           </dependency>
         </dependencies>
+      </plugin> 
+      
+      <!-- Produce a Win32 exe from the generic installer (no Maven plugin for JSmooth so drop down to ant -->
+      <plugin>
+         <artifactId>maven-antrun-plugin</artifactId>
+         <executions>
+           <execution>
+             <id>jsmooth-installer2exe</id>
+             <phase>package</phase>
+             <configuration>
+               <tasks>
+                 <path id="jsmooth-classpathref">
+                   <pathelement path="src/main/jsmooth/lib/jsmoothgen.jar"/>
+                   <pathelement path="src/main/jsmooth/lib/jsmoothgen-ant.jar"/>
+                 </path>
+                 <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpathref="jsmooth-classpathref"/>
+                 <jsmoothgen project="installer.jsmooth" skeletonroot="src/main/jsmooth/skeletons"/> 
+               </tasks>
+             </configuration>
+             <goals>
+               <goal>run</goal>
+             </goals>
+           </execution>         
+         </executions>
       </plugin> 
     </plugins>    
  </build>
@@ -269,10 +362,10 @@
       <scope>compile</scope>
      </dependency>
     <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>apache-log4j-extras</artifactId>
-        <version>1.0</version>
-        <scope>compile</scope>
+      <groupId>log4j</groupId>
+      <artifactId>apache-log4j-extras</artifactId>
+      <version>1.0</version>
+      <scope>compile</scope>
     </dependency>  
     <dependency>
       <groupId>org.codehaus.izpack</groupId>
