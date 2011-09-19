@@ -14,7 +14,6 @@
         and uses the generic installer as input.  
         I cannot get it to run after the generic installer create in the 'package' phase as it appears first in the pom)
  
- 
        Use "mvn clean verify" before submitting a patch
 
        Use "mvn site:site" to generate a complete website under target/site
@@ -39,40 +38,6 @@
     <url>https://github.com/jim618/multibit</url>
   </scm>
   <profiles>
-    <profile>
-      <id>maven-3</id>
-      <activation>
-        <file>
-          <!-- This relies on basedir is only recognized by Maven 3.x (see MNG-2363) -->
-          <exists>${basedir}</exists>
-        </file>
-      </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-site-plugin</artifactId>
-              <version>3.0-beta-3</version>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-        <plugins>
-          <plugin>
-            <artifactId>maven-site-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>attach-descriptor</id>
-                <goals>
-                  <goal>attach-descriptor</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    
     <!-- create a Mac bundle from the generic IzPack installer - currently only working in a Mac profile -->
     <profile>
       <id>izpack-app-mac</id>
@@ -117,46 +82,6 @@
   <build>  
     <finalName>multibit</finalName>
     <plugins>
-    
-      <!-- Compilation -->
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${maven-site-plugin.version}.2</version>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-      
-      <!-- Unit testing -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven-surefire-plugin.version}</version>
-      </plugin>
-      
-      <!-- Unit test reporting -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-report-plugin</artifactId>
-        <version>${maven-surefire-report-plugin.version}</version>
-       </plugin>
-       
-      <!-- Generates a source code JAR during package -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>${maven-source-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      
       <!-- Put dependent jars into a target/lib directory for use later by the installer -->
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -291,7 +216,7 @@
           <dependency>
             <groupId>org.codehaus.izpack</groupId>
             <artifactId>izpack-standalone-compiler</artifactId>
-            <version>${izpack.standalone.compiler.version}</version>
+            <version>4.3.4</version>
           </dependency>
         </dependencies>
       </plugin> 
@@ -376,7 +301,8 @@
   <properties>
     <!-- Source encoding -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    
+    <!-- Location of staging directory for creation of IzPack installer -->
     <staging.dir>${project.build.directory}/staging</staging.dir>
-    <izpack.standalone.compiler.version>4.3.4</izpack.standalone.compiler.version>   
   </properties>
 </project>
