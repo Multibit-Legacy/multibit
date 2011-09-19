@@ -7,12 +7,12 @@
 <JVMSearchPath>exepath</JVMSearchPath>
 <JVMSearchPath>jview</JVMSearchPath>
 <arguments></arguments>
-<classPath>target/multibit-0.1.4-SNAPSHOT-installer.jar</classPath>
+<classPath>target/multibit-installer.jar</classPath>
 <embeddedJar>true</embeddedJar>
-<executableName>target/multibit-0.1.4-SNAPSHOT-installer.exe</executableName>
+<executableName>target/multibit-installer.exe</executableName>
 <iconLocation>src/main/resources/images/multibit.gif</iconLocation>
 <initialMemoryHeap>-1</initialMemoryHeap>
-<jarLocation>target/multibit-0.1.4-SNAPSHOT-installer.jar</jarLocation>
+<jarLocation>target/multibit-installer.jar</jarLocation>
 <mainClassName>com.izforge.izpack.installer.Installer</mainClassName>
 <maximumMemoryHeap>-1</maximumMemoryHeap>
 <maximumVersion></maximumVersion>

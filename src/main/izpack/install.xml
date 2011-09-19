@@ -79,7 +79,7 @@
             <file src="lib/log4j-1.2.9.jar" targetdir="$INSTALL_PATH/lib"/>
             <file src="lib/slf4j-api-1.6.1.jar" targetdir="$INSTALL_PATH/lib"/>
             <file src="lib/slf4j-simple-1.6.1.jar" targetdir="$INSTALL_PATH/lib"/>
-            <file src="multibit.jar" targetdir="$INSTALL_PATH"/>
+            <file src="multibit-executableJar.jar" targetdir="$INSTALL_PATH"/>
         </pack>
     </packs>
 </installation>

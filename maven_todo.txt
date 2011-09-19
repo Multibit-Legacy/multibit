@@ -1,0 +1,10 @@
+Glad to see you are moving towards Maven. You're right, the POM file is very hack-y. About as ugly as I would expect coming from an Ant build. While I know a good bit about Maven, I never really learned Ant, so I tend to lose a lot when I try to do my own translations.
+
+From a Maven perspective, here's some places that could be improved:
+1. Jars or any build artifact really (sources, javadocs, site) shouldn't be in the source repo. These should be uploaded to a Maven repo as part of a deploy/release. There's ways to make the jars you're using available to the Ant parts of the build if that needs them. Perhaps you can use BitcoinJ's Artifactory as your Maven repo. If not I'll be making my Nexus repo available when I'm satisfied with how my dev box is setup (might take a while unfortunately, since my linux fu is a bit weak for the things I want to do).
+2. Resources should be handled by Maven if possible. I see in the build log that it is doing some odd stuff with the resources. If you need to do custom stuff, there is the Maven resources plugin and many others available
+3. The assembly plugin could be used more effectively. You should use an xml based component descriptor file and use inclusions/exclusions based on artifact groupId:artifactId.
+4. If you need things in the Maven classpath, you can use the Archiver plugin.
+5. Some of your comments indicate package vs install is being abused a bit, if you want a mac build vs generic build use different Maven profiles. You should be able to package/install/deploy either version. A lot of plugins lend themselves well to binding to certain parts of the build so you should read up a bit more on the Maven build life cycle.
+
+These aren't very high priority changes, but it'll make it easier for yourself and others to work with your project as you move towards Maven conventions.
