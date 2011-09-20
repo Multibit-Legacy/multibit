@@ -6,5 +6,4 @@ Build-Jdk: 1.6.0_26
 Main-Class: org.multibit.MultiBitInExecutableJar
 SplashScreen-Image: images/splash.jpg
 Class-Path: lib/apache-log4j-extras-1.0.jar lib/bcprov-jdk15-1.46.jar 
- lib/log4j-1.2.9.jar lib/slf4j-api-1.6.1.jar lib/slf4j-simple-1.6.1.jar
-
+ lib/log4j-1.2.16.jar lib/slf4j-api-1.6.2.jar
