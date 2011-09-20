@@ -23,7 +23,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Stack;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletInfo;
@@ -68,7 +69,7 @@ public class MultiBitService {
 
     public static final String IRC_CHANNEL_TEST = "#bitcoinTEST";;
 
-    public Logger logger = Logger.getLogger(MultiBitService.class.getName());
+    public Logger logger = LoggerFactory.getLogger(MultiBitService.class.getName());
 
     @SuppressWarnings("deprecation")
     private static final Date MULTIBIT_CREATION_DATE = new Date(111, 7, 22); // 22

@@ -30,7 +30,8 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
@@ -117,7 +118,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
      */
     private JPanel viewPanel;
 
-    public Logger logger = Logger.getLogger(MultiBitFrame.class.getName());
+    public Logger logger = LoggerFactory.getLogger(MultiBitFrame.class.getName());
 
     /**
      * the view that the controller is telling us to display an int - one of the

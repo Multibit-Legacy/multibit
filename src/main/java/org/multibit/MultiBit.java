@@ -21,8 +21,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.network.FileHandler;
@@ -45,7 +46,7 @@ public class MultiBit {
     public static void main(String args[]) {
         // initialise log4j
         DOMConfigurator.configure("log4j.xml");
-        logger = Logger.getLogger(MultiBit.class.getName());
+        logger = LoggerFactory.getLogger(MultiBit.class.getName());
 
         // load up the user preferences
         Properties userPreferences = FileHandler.loadUserPreferences();
