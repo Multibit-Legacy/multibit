@@ -74,10 +74,6 @@
             <file src="multibit.blockchain" targetdir="$INSTALL_PATH"/>
             <file src="release_notes.txt" targetdir="$INSTALL_PATH"/>
             <file src="COPYING" targetdir="$INSTALL_PATH"/>
-            <file src="lib/apache-log4j-extras-1.0.jar" targetdir="$INSTALL_PATH/lib"/>
-            <file src="lib/bcprov-jdk15-1.46.jar" targetdir="$INSTALL_PATH/lib"/>
-            <file src="lib/log4j-1.2.16.jar" targetdir="$INSTALL_PATH/lib"/>
-            <file src="lib/slf4j-api-1.6.2.jar" targetdir="$INSTALL_PATH/lib"/>
             <file src="multibit-executableJar.jar" targetdir="$INSTALL_PATH"/>
         </pack>
     </packs>

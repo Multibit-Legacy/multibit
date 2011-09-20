@@ -87,16 +87,6 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/lib</outputDirectory>
-              <includeScope>compile</includeScope>
-            </configuration>
-          </execution>
-          <execution>
             <id>unpack-shared-resources-ipack2app</id>
             <goals>
               <goal>unpack-dependencies</goal>
