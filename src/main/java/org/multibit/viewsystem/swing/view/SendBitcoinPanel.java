@@ -60,10 +60,14 @@ import org.multibit.viewsystem.swing.action.PasteAddressAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
 
 import com.google.bitcoin.core.Address;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
     private static final long serialVersionUID = -2065108865497111662L;
+
+    private final Logger log = LoggerFactory.getLogger(SendBitcoinPanel.class);
 
     private static final String SEND_BITCOIN_BIG_ICON_FILE = "/images/send-big.jpg";
     private static final String DRAG_HERE_ICON_FILE = "/images/dragHere.png";
@@ -778,30 +782,30 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                         QRCodeEncoderDecoder qrCodeEncoderDecoder = new QRCodeEncoderDecoder(image.getWidth(qrCodeLabel),
                                 image.getHeight(qrCodeLabel));
                         String decodedString = qrCodeEncoderDecoder.decode(toBufferedImage(image, -1, -1));
-                        System.out.println("SendBitcoinPanel#imageSelection#importData = decodedString = " + decodedString);
+                        log.info("SendBitcoinPanel#imageSelection#importData = decodedString = {}", decodedString);
 
                         // decode the string to an AddressBookData
                         BitcoinURI bitcoinURI = new BitcoinURI(controller, decodedString);
 
                         if (bitcoinURI.isParsedOk()) {
-                            System.out.println("SendBitcoinPanel - ping 1");
+                            log.debug("SendBitcoinPanel - ping 1");
                             Address address = bitcoinURI.getAddress();
-                            System.out.println("SendBitcoinPanel - ping 2");
+                            log.debug("SendBitcoinPanel - ping 2");
                             String addressString = address.toString();
-                            System.out.println("SendBitcoinPanel - ping 3");
+                            log.debug("SendBitcoinPanel - ping 3");
                             String amountString = amountTextField.getText();
                             if (bitcoinURI.getAmount() != null) {
                                 amountString = Localiser.bitcoinValueToString4(bitcoinURI.getAmount(), false, false);
                             }
-                            System.out.println("SendBitcoinPanel - ping 4");
+                            log.debug("SendBitcoinPanel - ping 4");
                             String decodedLabel = bitcoinURI.getLabel();
 
-                            System.out.println("SendBitcoinPanel#imageSelection#importData = addressString = " + addressString
-                                    + ", amountString = " + amountString + ", label = " + decodedLabel);
-                            System.out.println("SendBitcoinPanel - ping 5");
+                            log.info("SendBitcoinPanel#imageSelection#importData = addressString = {}"
+                                    + ", amountString = {}, label = {}", new Object[] {addressString, amountString, decodedLabel});
+                            log.debug("SendBitcoinPanel - ping 5");
 
                             AddressBookData addressBookData = new AddressBookData(decodedLabel, addressString);
-                            System.out.println("SendBitcoinPanel - ping 6");
+                            log.debug("SendBitcoinPanel - ping 6");
                             // see if the address is already in the address book
                             // see if the current address is on the table and
                             // select it
@@ -830,20 +834,20 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                             mainFrame.validate();
                             mainFrame.repaint();
 
-                            System.out.println("SendBitcoinPanel - ping 7");
+                            log.debug("SendBitcoinPanel - ping 7");
                             controller.getModel().setWalletPreference(MultiBitModel.SEND_ADDRESS, addressString);
-                            System.out.println("SendBitcoinPanel - ping 8");
+                            log.debug("SendBitcoinPanel - ping 8");
                             controller.getModel().setWalletPreference(MultiBitModel.SEND_LABEL, decodedLabel);
-                            System.out.println("SendBitcoinPanel - ping 9");
+                            log.debug("SendBitcoinPanel - ping 9");
 
                             controller.getModel().setWalletPreference(MultiBitModel.SEND_AMOUNT, amountString);
-                            System.out.println("SendBitcoinPanel - ping 10");
+                            log.debug("SendBitcoinPanel - ping 10");
                             addressTextField.setText(addressString);
-                            System.out.println("SendBitcoinPanel - ping 11");
+                            log.debug("SendBitcoinPanel - ping 11");
                             amountTextField.setText(amountString);
-                            System.out.println("SendBitcoinPanel - ping 12");
+                            log.debug("SendBitcoinPanel - ping 12");
                             labelTextField.setText(decodedLabel);
-                            System.out.println("SendBitcoinPanel - ping 13");
+                            log.debug("SendBitcoinPanel - ping 13");
                             mainFrame.updateStatusLabel("");
                             label.setIcon(icon);
                             label.setToolTipText(decodedString);
