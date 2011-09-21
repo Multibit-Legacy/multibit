@@ -286,7 +286,7 @@ public class MultiBitService {
                 logger.debug("Need to go back in time to block = " + currentBlock);
             }
         } catch (BlockStoreException e) {
-            e.printStackTrace();
+            logger.error("Error in sendMissedBlocksToWallet", e);
         }
 
         // send the blocks to the wallet so that it can resolve any pending tx

@@ -90,7 +90,7 @@ public class Validator {
                 } else {
                     String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
                     BigInteger feeBigInteger;
-                    if (fee == null || fee == "") {
+                    if (fee == null || fee.isEmpty()) {
                         feeBigInteger = MultiBitModel.SEND_MINIMUM_FEE;
                     } else {
                         feeBigInteger = Utils.toNanoCoins(fee);
@@ -119,7 +119,7 @@ public class Validator {
     private boolean validateAddress(String address) {
         Boolean addressIsInvalid = Boolean.TRUE;
 
-        if (address != null && address != "") {
+        if (address != null && !address.isEmpty()) {
             // copy address to wallet preferences
             controller.getModel().setWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE, address);
 

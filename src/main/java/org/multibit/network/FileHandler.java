@@ -20,6 +20,8 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.WalletInfo;
 
 import com.google.bitcoin.core.Wallet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * a class consolidating all the File IO in MultiBit
@@ -28,6 +30,8 @@ import com.google.bitcoin.core.Wallet;
  * 
  */
 public class FileHandler {
+
+    private Logger log = LoggerFactory.getLogger(FileHandler.class);
 
     public static final String USER_PROPERTIES_FILE_NAME = "multibit.properties";
     public static final String USER_PROPERTIES_HEADER_TEXT = "multibit";
@@ -52,7 +56,7 @@ public class FileHandler {
             WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath());
             controller.getModel().setWalletInfo(walletInfo);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Failed to load wallet", e);
         }
 
         return wallet;

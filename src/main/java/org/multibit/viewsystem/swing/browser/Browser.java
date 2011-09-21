@@ -44,7 +44,7 @@ public class Browser extends javax.swing.JEditorPane implements PropertyChangeLi
         setEditable(false);
         addPropertyChangeListener(this);
 
-        visit(currentHref);;
+        visit(currentHref);
     }
 
     public static String getLoadingMessage(String href, String loadingMessage) {
