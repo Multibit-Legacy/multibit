@@ -21,6 +21,8 @@ import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * the MVC controller for Multibit - this is loosely based on the Apache Struts
@@ -30,6 +32,9 @@ import com.google.bitcoin.core.Wallet;
  * 
  */
 public class MultiBitController implements PeerEventListener {
+
+    private Logger log = LoggerFactory.getLogger(MultiBitController.class);
+
     /**
      * the view systems under control of the MultiBitController
      */
@@ -147,7 +152,7 @@ public class MultiBitController implements PeerEventListener {
         try {
             nextView = viewStack.pop();
         } catch (EmptyStackException ese) {
-            ese.printStackTrace();
+            log.error("setActionForwardToParent failed", ese);
             // go to the transactions page anyhow
             nextView = View.TRANSACTIONS_VIEW;
             viewStack.push(nextView);
@@ -260,9 +265,9 @@ public class MultiBitController implements PeerEventListener {
             nextView = View.UNKNOWN_VIEW;
 
         } else {
-            System.out.println("MultiBitController - could not determine next view to display, previousView = " + previousView
-                    + ", currentView = " + currentView);
-            System.out.println("MultiBitController - displaying the transaction view anyhow");
+            log.warn("Could not determine next view to display, previousView = {}, currentView = {}",
+                    previousView, currentView);
+            log.info("Displaying the transaction view anyhow");
             previousView = currentView;
             currentView = View.TRANSACTIONS_VIEW;
         }
@@ -398,12 +403,12 @@ public class MultiBitController implements PeerEventListener {
      */
 
     public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
-        System.out.println("MultiBitController#onBlocksDownloaded called");
+        log.debug("onBlocksDownloaded called");
         fireBlockDownloaded();
     }
 
     public void onChainDownloadStarted(Peer peer, int blocksLeft) {
-        System.out.println("MultiBitController#onChainDownloadStarted called");
+        log.debug("onChainDownloadStarted called");
         fireBlockDownloaded();
     }
 
