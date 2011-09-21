@@ -82,6 +82,27 @@
   <build>  
     <finalName>multibit</finalName>
     <plugins>
+      <!-- Put izPack2app into staging dir for production of installer later -->
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-shared-resources-ipack2app</id>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <includeGroupIds>org.codehaus.izpack</includeGroupIds>
+              <includeArtifacIds>izpack-standalone-compiler</includeArtifacIds>
+              <classifier>izpack2app</classifier>
+              <type>zip</type>
+              <excludeTransitive>true</excludeTransitive>
+              <outputDirectory>${staging.dir}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>  
             
       <!-- Create executable jar -->
       <plugin>
