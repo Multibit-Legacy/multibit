@@ -82,27 +82,6 @@
   <build>  
     <finalName>multibit</finalName>
     <plugins>
-      <!-- Put dependent jars into a target/lib directory for use later by the installer -->
-      <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack-shared-resources-ipack2app</id>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <includeGroupIds>org.codehaus.izpack</includeGroupIds>
-              <includeArtifacIds>izpack-standalone-compiler</includeArtifacIds>
-              <classifier>izpack2app</classifier>
-              <type>zip</type>
-              <excludeTransitive>true</excludeTransitive>
-              <outputDirectory>${staging.dir}</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>  
             
       <!-- Create executable jar -->
       <plugin>
@@ -163,21 +142,6 @@
                    <includes>
                      <include>multibit-executableJar.jar</include>
                    </includes>
-                 </resource>
-               </resources>              
-             </configuration>            
-           </execution>
-           <execution>
-             <id>copy-resources-to-staging-lib</id>
-             <phase>package</phase>
-             <goals>
-               <goal>copy-resources</goal>
-             </goals>
-             <configuration>
-               <outputDirectory>${basedir}/target/staging/lib</outputDirectory>
-               <resources>
-                 <resource>
-                   <directory>target/lib</directory>
                  </resource>
                </resources>              
              </configuration>            
