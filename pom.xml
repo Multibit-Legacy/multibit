@@ -3,7 +3,7 @@
   <groupId>org.multibit</groupId>
   <artifactId>multibit</artifactId>
   <version>0.1.4-SNAPSHOT</version>
-  <name>org.multibit.MultiBit</name>
+  <name>MultiBit</name>
   <description>A Java swing client for bitcoin</description>
   <url>http://www.multibit.org</url> 
     <!-- 
