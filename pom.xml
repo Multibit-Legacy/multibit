@@ -79,6 +79,13 @@
       </build>
     </profile>
   </profiles>
+  <repositories>
+    <repository>
+      <id>bitcoinj-release</id>
+      <url>http://nexus.bitcoinj.org/content/repositories/releases</url>
+      <releases/>
+    </repository>
+  </repositories>
   <build>  
     <finalName>multibit</finalName>
     <plugins>
@@ -252,7 +259,12 @@
       <artifactId>apache-log4j-extras</artifactId>
       <version>1.0</version>
       <scope>compile</scope>
-    </dependency>  
+    </dependency>
+    <dependency>
+      <groupId>com.google.zxing</groupId>
+      <artifactId>zxing-javase</artifactId>
+      <version>1.7</version>
+    </dependency>
     <dependency>
       <groupId>org.codehaus.izpack</groupId>
       <artifactId>izpack-standalone-compiler</artifactId>
