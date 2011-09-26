@@ -156,7 +156,13 @@
              </goals>
              <configuration>
                <outputDirectory>${basedir}/target/staging</outputDirectory>
-               <resources>          
+               <resources> 
+               <resource>
+                   <directory>src/main/resources/ImageSnap-v0.2.5</directory>
+                   <includes>
+                     <include>imagesnap</include>
+                   </includes>
+                 </resource>         
                  <resource>
                    <directory>src/main/izpack</directory>
                    <includes>
