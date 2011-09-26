@@ -111,9 +111,4 @@ public class CreateOrEditAddressSubmitAction implements Action {
         }
         controller.setActionForwardToParent();
     }
-
-    public String getDisplayText() {
-        // would not normally be seen
-        return "createOrEditAddressSubmit";
-    }
 }

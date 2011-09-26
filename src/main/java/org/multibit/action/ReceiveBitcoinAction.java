@@ -22,9 +22,4 @@ public class ReceiveBitcoinAction implements Action {
         
         controller.setActionForwardToChild(ActionForward.FORWARD_TO_RECEIVE_BITCOIN);       
     }
-    
-    public String getDisplayText() {
-        // TODO localise
-        return "receiveBitcoin";
-    }
 }

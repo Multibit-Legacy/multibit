@@ -22,10 +22,4 @@ public class RedisplayViewAction implements Action {
         
         controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);       
     }
-    
-    public String getDisplayText() {
-        // TODO localise
-        return "redo";
-    }
-
 }

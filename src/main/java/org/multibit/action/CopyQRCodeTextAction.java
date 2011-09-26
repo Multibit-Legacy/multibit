@@ -39,8 +39,4 @@ public class CopyQRCodeTextAction implements Action {
             }
         }
     }
-
-    public String getDisplayText() {
-        return "copyQRCodeText";
-    }
 }

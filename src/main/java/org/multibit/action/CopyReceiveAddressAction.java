@@ -39,8 +39,4 @@ public class CopyReceiveAddressAction implements Action {
             }
         }
     }
-
-    public String getDisplayText() {
-        return "copyReceiveAddressText";
-    }
 }

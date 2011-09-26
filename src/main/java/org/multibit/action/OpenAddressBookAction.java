@@ -38,17 +38,4 @@ public class OpenAddressBookAction implements Action {
             }
         }
     }
-    
-    public String getDisplayText() {
-        // TODO localise
-        if (isChild) {
-            return "addressBook";
-        } else {
-            if (isReceiving) {
-                return "receivingAddressBook";   
-            } else {
-                return "sendingAddressBook";
-            }
-        }
-    }
 }

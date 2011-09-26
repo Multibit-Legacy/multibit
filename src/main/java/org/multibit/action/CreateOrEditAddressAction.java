@@ -124,14 +124,4 @@ public class CreateOrEditAddressAction implements Action {
             }
         }
     }
-
-    public String getDisplayText() {
-        // TODO localise
-        if (isCreate) {
-            return "createNew";
-
-        } else {
-            return "edit";
-        }
-    }
 }

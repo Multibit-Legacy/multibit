@@ -39,8 +39,4 @@ public class CopySendAddressAction implements Action {
             }
         }
     }
-
-    public String getDisplayText() {
-        return "copySendAddressText";
-    }
 }

@@ -32,9 +32,4 @@ public class SendBitcoinConfirmAction implements Action {
             controller.setActionForwardToChild(ActionForward.FORWARD_TO_VALIDATION_ERROR);           
         }
     }
-    
-    public String getDisplayText() {
-        // TODO localise
-        return "send";
-    }
 }

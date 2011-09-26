@@ -53,9 +53,4 @@ public class ReceiveBitcoinSubmitAction implements Action {
         }
         controller.setActionForwardToParent();
     }
-
-    public String getDisplayText() {
-        // would not normally be seen
-        return "receiveBitcoinSubmit";
-    }
 }

@@ -21,9 +21,4 @@ public class SaveWalletAsAction implements Action {
     public void execute(DataProvider dataProvider) {
         controller.setActionForwardToChild(ActionForward.FORWARD_TO_SAVE_WALLET_AS);       
     }
-    
-    public String getDisplayText() {
-        // TODO localise
-        return "saveWallet";
-    }
 }

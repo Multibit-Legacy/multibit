@@ -22,9 +22,4 @@ public class HelpAboutAction implements Action {
         
         controller.setActionForwardToChild(ActionForward.FORWARD_TO_HELP_ABOUT);       
     }
-    
-    public String getDisplayText() {
-        // TODO localise
-        return "aboutMultiBit";
-    }
 }

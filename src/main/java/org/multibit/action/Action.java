@@ -17,9 +17,4 @@ public interface Action {
      * execute the action using data from the data provider
      */
     public void execute(DataProvider dataProvider);
-    
-    /**
-     * the text to display for this action's visual representation
-     */
-    public String getDisplayText();
 }

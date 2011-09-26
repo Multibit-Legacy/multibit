@@ -23,9 +23,4 @@ public class ShowPreferencesAction implements Action {
         
         controller.setActionForwardToChild(ActionForward.FORWARD_TO_PREFERENCES);       
     }
-    
-    public String getDisplayText() {
-        // TODO localise
-        return "preferences";
-    }
 }

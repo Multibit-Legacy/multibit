@@ -97,10 +97,4 @@ public class SaveWalletAsSubmitAction implements Action {
             controller.setActionForwardToParent();
         }
     }
-
-    public String getDisplayText() {
-        // would not normally be seen
-        return "saveWalletAsSubmit";
-    }
-
 }

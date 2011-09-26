@@ -72,9 +72,4 @@ public class SendBitcoinNowAction implements Action {
         controller.getModel().setWalletPreference(MultiBitModel.SEND_WAS_SUCCESSFUL, sendWasSuccessful.toString());
         controller.getModel().setWalletPreference(MultiBitModel.SEND_ERROR_MESSAGE, errorMessage);
     }
-
-    public String getDisplayText() {
-        // TODO localise
-        return "sendNow";
-    }
 }

@@ -23,9 +23,4 @@ public class OkBackToParentAction implements Action {
         
         controller.setActionForwardToParent();       
     }
-    
-    public String getDisplayText() {
-        // TODO localise
-        return "ok";
-    }
 }

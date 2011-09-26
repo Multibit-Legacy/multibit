@@ -92,9 +92,4 @@ public class ShowPreferencesSubmitAction implements Action {
             controller.updateDownloadStatus(updateStatusText);
         }
     }
-
-    public String getDisplayText() {
-        // would not normally be seen
-        return "preferencesSubmit";
-    }
 }

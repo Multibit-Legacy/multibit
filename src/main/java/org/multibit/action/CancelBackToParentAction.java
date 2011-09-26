@@ -24,9 +24,4 @@ public class CancelBackToParentAction implements Action {
         
         controller.setActionForwardToParent();       
     }
-    
-    public String getDisplayText() {
-        // TODO localise
-        return "cancel";
-    }
 }

@@ -23,8 +23,4 @@ public class ShowTransactionsAction implements Action {
         
         controller.setActionForwardToChild(ActionForward.FORWARD_TO_TRANSACTIONS);       
     }
-    
-    public String getDisplayText() {
-        return "transactions";
-    }
 }

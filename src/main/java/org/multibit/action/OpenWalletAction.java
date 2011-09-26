@@ -23,9 +23,4 @@ public class OpenWalletAction implements Action {
         
         controller.setActionForwardToChild(ActionForward.FORWARD_TO_OPEN_WALLET);       
     }
-    
-    public String getDisplayText() {
-        // TODO localise
-        return "openWallet";
-    }
 }

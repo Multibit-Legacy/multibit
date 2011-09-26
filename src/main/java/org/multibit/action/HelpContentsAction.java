@@ -23,9 +23,4 @@ public class HelpContentsAction implements Action {
         
         controller.setActionForwardToChild(ActionForward.FORWARD_TO_HELP_CONTENTS);       
     }
-    
-    public String getDisplayText() {
-        // TODO localise
-        return "help";
-    }
 }

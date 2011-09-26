@@ -34,9 +34,4 @@ public class ExitAction implements Action {
 
         System.exit(0);
     }
-
-    public String getDisplayText() {
-        // TODO localise
-        return "exit";
-    }
 }
