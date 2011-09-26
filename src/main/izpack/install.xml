@@ -75,6 +75,9 @@
             <file src="release_notes.txt" targetdir="$INSTALL_PATH"/>
             <file src="COPYING" targetdir="$INSTALL_PATH"/>
             <file src="multibit-executableJar.jar" targetdir="$INSTALL_PATH"/>
+
+           <file src="imagesnap" targetdir="$INSTALL_PATH" os="mac"/>
+           <executable type="bin" stage="never" targetfile="$INSTALL_PATH/imagesnap" os="mac"/>
         </pack>
     </packs>
 </installation>

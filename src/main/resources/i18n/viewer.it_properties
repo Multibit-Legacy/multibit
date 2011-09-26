@@ -1,5 +1,5 @@
 # localisation properties file for multibit
-# Swedish
+# English
 localiserTest.capitalCity=London
 localiserTest.substituteOne=first = {0}
 localiserTest.substituteTwo=first = {0}, second = {1}
@@ -26,6 +26,7 @@ showPreferencesPanel.language.5=Norsk
 showPreferencesPanel.language.6=Italian
 showPreferencesPanel.language.7=French
 
+
 showPreferencesPanel.feeTitle=Transaction fee
 showPreferencesPanel.feeLabel.text=Fee
 showPreferencesPanel.feeLabel.tooltip=The fee added to each transaction you send
@@ -33,6 +34,7 @@ showPreferencesPanel.couldNotUnderstandFee=MultiBit could not understand the fee
 showPreferencesPanel.aFeeMustBeSet=You must set a transaction fee.  Keeping the old fee.
 showPreferencesPanel.feeCannotBeSmallerThanMinimumFee=The fee must be at least 0.0005 BTC.   Keeping the old fee.
 
+multiBitFrame.title=MultiBit
 multiBitFrame.balanceLabel=Balance
 
 walletData.statusText=Status 
@@ -55,7 +57,6 @@ multiBitFrame.viewMenuMnemonic=V
 multiBitFrame.helpMenuText=Help
 multiBitFrame.helpMenuMnemonic=H
 
-multiBitFrame.title=MultiBit
 multiBitFrame.onlineText=Online
 multiBitFrame.offlineText=Connecting...
 multiBitFrame.status.notConfirmed=This transaction is not yet confirmed

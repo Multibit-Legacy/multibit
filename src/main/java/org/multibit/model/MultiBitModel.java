@@ -85,6 +85,10 @@ public class MultiBitModel {
     
     public static final String WALLET_FILE_EXTENSION = "wallet";
 
+    // scanner
+    public static final String ENABLE_SCANNER = "enableScanner";
+    public static final String SCANNER_DIRECTORY = "scannerDirectory";
+    
     private Wallet wallet;
 
     private final MultiBitController controller;
