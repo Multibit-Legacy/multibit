@@ -124,7 +124,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
     private JPanel createFormPanel() {
         formPanel = new JPanel();
-        formPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
+        formPanel.setBorder(new DashedBorder());
         formPanel.setBackground(MultiBitFrame.BACKGROUND_COLOR);
 
         JPanel buttonPanel = new JPanel();
