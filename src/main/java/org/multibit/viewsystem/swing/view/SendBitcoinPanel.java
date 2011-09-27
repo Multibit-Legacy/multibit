@@ -77,11 +77,9 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
 
     private static final String SEND_BITCOIN_BIG_ICON_FILE = "/images/send-big.jpg";
     private static final String DRAG_HERE_ICON_FILE = "/images/dragHere.png";
-    private static final String POINT_SOUTH_EAST_ICON_FILE = "/images/pointSouthEast.png";
-    private static final String POINT_SOUTH_WEST_ICON_FILE = "/images/pointSouthWest.png";
-    private static final String POINT_NORTH_EAST_ICON_FILE = "/images/pointNorthEast.png";
-    private static final String POINT_NORTH_WEST_ICON_FILE = "/images/pointNorthWest.png";
-
+    private static final String POINT_EAST_ICON_FILE = "/images/pointEast.png";
+    private static final String POINT_WEST_ICON_FILE = "/images/pointWest.png";
+    
     private MultiBitFrame mainFrame;
     private MultiBitController controller;
 
@@ -157,7 +155,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
     private JPanel createFormPanel() {
         formPanel = new JPanel();
         formPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
-
+        formPanel.setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        
         JPanel buttonPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
         flowLayout.setAlignment(FlowLayout.LEFT);
@@ -166,6 +165,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
         formPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         JPanel filler1 = new JPanel();
+        filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -218,6 +218,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
         formPanel.add(helpLabel3, constraints);
 
         JPanel filler2 = new JPanel();
+        filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 3;
         constraints.gridy = 0;
@@ -227,6 +228,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
         formPanel.add(filler2, constraints);
 
         JPanel filler3 = new JPanel();
+        filler3.setOpaque(false);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 4;
@@ -351,6 +353,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
 
     private JPanel createQRCodePanel() {
         JPanel qrCodePanel = new JPanel();
+        qrCodePanel.setBackground(MultiBitFrame.BACKGROUND_COLOR);
+
         qrCodePanel.setMinimumSize(new Dimension(280, 200));
         qrCodePanel.setLayout(new GridBagLayout());
         qrCodeLabel = new JLabel("", createImageIcon(DRAG_HERE_ICON_FILE), JLabel.CENTER);
@@ -373,6 +377,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
         GridBagConstraints constraints = new GridBagConstraints();
 
         JPanel filler1 = new JPanel();
+        filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -383,13 +388,33 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
         constraints.anchor = GridBagConstraints.CENTER;
         qrCodePanel.add(filler1, constraints);
 
-        JPanel qrCodeWithArrows = new JPanel();
-        qrCodeWithArrows.setBackground(Color.WHITE);
-        qrCodeWithArrows.setLayout(new GridBagLayout());
+        JLabel pointEastLabel = new JLabel("", createImageIcon(POINT_EAST_ICON_FILE), JLabel.CENTER);
+        pointEastLabel.setVerticalTextPosition(JLabel.CENTER);
+        pointEastLabel.setHorizontalTextPosition(JLabel.RIGHT);
+        pointEastLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabel.text"));
 
-        JLabel pointSouthEastLabel = new JLabel("", createImageIcon(POINT_SOUTH_EAST_ICON_FILE), JLabel.CENTER);
-        pointSouthEastLabel.setVerticalTextPosition(JLabel.BOTTOM);
-        pointSouthEastLabel.setHorizontalTextPosition(JLabel.CENTER);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.EAST;
+        qrCodePanel.add(pointEastLabel, constraints);
+
+        JLabel pointWestLabel = new JLabel("", createImageIcon(POINT_WEST_ICON_FILE), JLabel.CENTER);
+        pointWestLabel.setVerticalTextPosition(JLabel.CENTER);
+        pointWestLabel.setHorizontalTextPosition(JLabel.LEFT);
+        pointWestLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabel.text"));
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.WEST;
+        qrCodePanel.add(pointWestLabel, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
@@ -398,61 +423,10 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        qrCodePanel.add(qrCodeWithArrows, constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.SOUTHEAST;
-        qrCodeWithArrows.add(pointSouthEastLabel, constraints);
-
-        JLabel pointSouthWestLabel = new JLabel("", createImageIcon(POINT_SOUTH_WEST_ICON_FILE), JLabel.CENTER);
-        pointSouthWestLabel.setVerticalTextPosition(JLabel.BOTTOM);
-        pointSouthWestLabel.setHorizontalTextPosition(JLabel.CENTER);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 0;
-        constraints.weightx = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.SOUTHWEST;
-        qrCodeWithArrows.add(pointSouthWestLabel, constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 1;
-        constraints.weightx = 0.1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        qrCodeWithArrows.add(qrCodeLabel, constraints);
-
-        JLabel pointNorthEastLabel = new JLabel("", createImageIcon(POINT_NORTH_EAST_ICON_FILE), JLabel.CENTER);
-        pointNorthEastLabel.setVerticalTextPosition(JLabel.BOTTOM);
-        pointNorthEastLabel.setHorizontalTextPosition(JLabel.CENTER);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        constraints.weightx = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.NORTHEAST;
-        qrCodeWithArrows.add(pointNorthEastLabel, constraints);
-
-        JLabel pointNorthWestLabel = new JLabel("", createImageIcon(POINT_NORTH_WEST_ICON_FILE), JLabel.CENTER);
-        pointNorthWestLabel.setVerticalTextPosition(JLabel.BOTTOM);
-        pointNorthWestLabel.setHorizontalTextPosition(JLabel.CENTER);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 2;
-        constraints.weightx = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
-        qrCodeWithArrows.add(pointNorthWestLabel, constraints);
-
+        qrCodePanel.add(qrCodeLabel, constraints);
+        
         JPanel filler2 = new JPanel();
+        filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 2;
@@ -463,24 +437,15 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
         constraints.anchor = GridBagConstraints.CENTER;
         qrCodePanel.add(filler2, constraints);
 
-        qrCodeExplainLabel = new JLabel();
-        qrCodeExplainLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabel.text"));
-        qrCodeExplainLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabel.tooltip"));
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 3;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        qrCodePanel.add(qrCodeExplainLabel, constraints);
-
         int bumpDown = 0;
         if (scanner != null && scanner.isScannerSupported()) {
             bumpDown = 1;
             JPanel buttonPanel = new JPanel(new FlowLayout());
+            buttonPanel.setOpaque(false);
+            
             JButton startScanButton = new JButton("Start scan");
+            startScanButton.setOpaque(false);
+            
             startScanButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     if (scanner != null) {
@@ -494,7 +459,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
 
             constraints.fill = GridBagConstraints.NONE;
             constraints.gridx = 1;
-            constraints.gridy = 4;
+            constraints.gridy = 3;
             constraints.weightx = 0.05;
             constraints.weighty = 0.02;
             constraints.gridwidth = 1;
@@ -505,9 +470,10 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
         }
 
         JPanel filler3 = new JPanel();
+        filler3.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
-        constraints.gridy = 4 + bumpDown;
+        constraints.gridy = 3 + bumpDown;
         constraints.weightx = 0.05;
         constraints.weighty = 0.02;
         constraints.gridwidth = 1;

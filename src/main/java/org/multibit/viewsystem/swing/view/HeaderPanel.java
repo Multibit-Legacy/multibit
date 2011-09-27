@@ -1,12 +1,13 @@
 package org.multibit.viewsystem.swing.view;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
+
+import org.multibit.viewsystem.swing.MultiBitFrame;
 
 public class HeaderPanel extends JPanel {
 
@@ -17,10 +18,8 @@ public class HeaderPanel extends JPanel {
         Graphics2D g2d = (Graphics2D)g;
         Dimension d = this.getSize();
 
-        Color lighter = new Color(240, 240, 240);
-        Color darker = new Color(210, 210, 210);
-        g2d.setPaint(new GradientPaint(0, 0, lighter,
-            0, d.height, darker, true));
+        g2d.setPaint(new GradientPaint(0, 0, MultiBitFrame.BACKGROUND_COLOR,
+            0, d.height, MultiBitFrame.DARK_BACKGROUND_COLOR, true));
         g2d.fillRect(0, 0, d.width , d.height);
     }
 }
