@@ -358,6 +358,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
         qrCodePanel.setLayout(new GridBagLayout());
         qrCodeLabel = new JLabel("", createImageIcon(DRAG_HERE_ICON_FILE), JLabel.CENTER);
         qrCodeLabel.setMinimumSize(new Dimension(QRCODE_WIDTH, QRCODE_HEIGHT));
+        qrCodeLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabel.tooltip"));
+
         
         qrCodeLabel.setVerticalTextPosition(JLabel.BOTTOM);
         qrCodeLabel.setHorizontalTextPosition(JLabel.CENTER);
