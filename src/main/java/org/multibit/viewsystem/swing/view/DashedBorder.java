@@ -32,7 +32,7 @@ class DashedBorder implements Border {
     public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
         Insets insets = getBorderInsets(c);
         g.setColor(color);
-        int numWide = (int) Math.round(width / dashWidth);
+//        int numWide = (int) Math.round(width / dashWidth);
         int numHigh = (int) Math.round(height / dashHeight);
         int startPoint;
 //        for (int i = 0; i <= numWide; i += 2) {

@@ -367,11 +367,6 @@ public class MultiBitModel {
             BigInteger credit, BigInteger debit) {
         String toReturn = "";
 
-        TransactionInput input = null;
-        if (transactionInputs != null) {
-            input = transactionInputs.get(0);
-        }
-
         TransactionOutput myOutput = null;
         TransactionOutput theirOutput = null;
         if (transactionOutputs != null) {

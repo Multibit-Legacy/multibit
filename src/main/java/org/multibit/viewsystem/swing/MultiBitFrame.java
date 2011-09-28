@@ -555,6 +555,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         final MultiBitFrame thisFrame = this;
 
         SwingUtilities.invokeLater(new Runnable() {
+            @SuppressWarnings("deprecation")
             public void run() {
 
                 if (nextViewFinal instanceof SendBitcoinPanel) {

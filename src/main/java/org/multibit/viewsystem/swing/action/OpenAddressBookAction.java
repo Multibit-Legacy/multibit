@@ -6,7 +6,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
-import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 
 /**

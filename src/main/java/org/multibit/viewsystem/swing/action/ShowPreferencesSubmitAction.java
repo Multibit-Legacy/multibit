@@ -7,7 +7,6 @@ import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
-import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
  * This {@link Action} views the BitCoinJ preferences

@@ -1,8 +1,5 @@
 package org.multibit.viewsystem;
 
-import java.util.Collection;
-
-import org.multibit.action.Action;
 
 /**
  * an interface describing the views that are being presented in this MVC

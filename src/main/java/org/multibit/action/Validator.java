@@ -124,7 +124,7 @@ public class Validator {
             controller.getModel().setWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE, address);
 
             try {
-                Address parsedAddress = new Address(controller.getMultiBitService().getNetworkParameters(), address);
+                new Address(controller.getMultiBitService().getNetworkParameters(), address);
                 addressIsInvalid = Boolean.FALSE;
             } catch (AddressFormatException afe) {
                 // carry on

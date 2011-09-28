@@ -1,7 +1,6 @@
 package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
-import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -11,7 +10,6 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletInfo;
-import org.multibit.network.FileHandler;
 import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
 
 import com.google.bitcoin.core.ECKey;

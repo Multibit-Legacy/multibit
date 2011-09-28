@@ -18,7 +18,6 @@ public class ReceiveBitcoinAction extends AbstractAction {
 
     private static final long serialVersionUID = 1913592460523457765L;
 
-    private MultiBitFrame mainFrame;
     private MultiBitController controller;
     
     /**
@@ -32,8 +31,6 @@ public class ReceiveBitcoinAction extends AbstractAction {
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, localiser.getString("receiveBitcoinAction.tooltip"));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("receiveBitcoinAction.mnemonicKey"));
-        
-        this.mainFrame = mainFrame;
     }
 
     /**

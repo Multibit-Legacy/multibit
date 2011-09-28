@@ -1,20 +1,15 @@
 package org.multibit.viewsystem.swing.view;
 
-import java.util.Collection;
-
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import org.multibit.Localiser;
-import org.multibit.action.Action;
 import org.multibit.action.OkBackToParentAction;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-
-import com.google.bitcoin.core.Utils;
 
 /**
  * The validation error view - used to tell the user their input is invalid

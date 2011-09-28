@@ -120,7 +120,6 @@ public class MultiBitService {
         fileHandler = new FileHandler(controller);
         File walletFile = null;
         boolean walletFileIsADirectory = false;
-        boolean walletIsNew = false;
 
         if (walletFilename != null) {
             walletFile = new File(walletFilename);
@@ -143,7 +142,6 @@ public class MultiBitService {
             } else {
                 // create a brand new wallet
                 wallet = new Wallet(networkParameters);
-                walletIsNew = true;
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
 
@@ -302,18 +300,6 @@ public class MultiBitService {
             }
             if (blockTransactions != null) {
                 logger.debug("StoredBlock height = " + storedBlock.getHeight() + " contains a header with " + blockTransactions.size() + " transactions.");
-
-                for (Transaction loopTransaction : blockTransactions) {
-                    // try {
-                    // wallet.receive(loopTransaction, storedBlock,
-                    // BlockChain.NewBlockType.BEST_CHAIN);
-                    // } catch (VerificationException e) {
-                    //
-                    // e.printStackTrace();
-                    // } catch (ScriptException e) {
-                    // e.printStackTrace();
-                    // }
-                }
             } else {
                 logger.debug("StoredBlock height = " + storedBlock.getHeight() + " contains a header with 0 transactions.");
             }

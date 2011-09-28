@@ -4,16 +4,12 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.util.Collection;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.multibit.Localiser;
-import org.multibit.action.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -28,21 +24,16 @@ public class HelpAboutPanel extends JPanel implements View {
     private static final String SPLASH_ICON_FILE = "/images/splash.jpg";
 
     private static final String MULTIBIT_URL = "http://multibit.org";
-    
-    private MultiBitFrame mainFrame;
 
     private MultiBitController controller;
 
     private ImageIcon imageIcon;
-
-    private JDialog messageDialog;
 
     /**
      * Creates a new {@link HelpAboutPanel}.
      */
     public HelpAboutPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
-        this.mainFrame = mainFrame;
         
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
         

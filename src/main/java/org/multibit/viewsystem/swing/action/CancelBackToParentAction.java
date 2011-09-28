@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 
 /**

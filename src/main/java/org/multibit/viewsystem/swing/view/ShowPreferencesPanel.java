@@ -11,7 +11,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,7 +27,6 @@ import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 
 import org.multibit.Localiser;
-import org.multibit.action.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
@@ -46,7 +44,6 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     private static final long serialVersionUID = 191352298245057705L;
 
     private MultiBitController controller;
-    private MultiBitFrame mainFrame;
 
     private Map<String, Integer> languageCodeToIndexMap;
 
@@ -68,7 +65,6 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
      */
     public ShowPreferencesPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
-        this.mainFrame = mainFrame;
 
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
 

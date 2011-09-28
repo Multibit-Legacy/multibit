@@ -72,7 +72,7 @@ public class ScreenScannerImpl implements Scanner {
     public static void main(String args[]) {
         BasicConfigurator.configure();
 
-        ScreenScannerImpl screenScanner = new ScreenScannerImpl();
+        new ScreenScannerImpl();
     }
 
     /**
