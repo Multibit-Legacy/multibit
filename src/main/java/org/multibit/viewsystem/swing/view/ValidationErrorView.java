@@ -157,11 +157,6 @@ public class ValidationErrorView implements View {
         }
     }
 
-    public void setPossibleActions(Collection<Action> possibleActions) {
-        // not required in swing view
-    }
-    
-
     /** Returns an ImageIcon, or null if the path was invalid. */
     protected ImageIcon createImageIcon(String path) {
         java.net.URL imgURL = MultiBitFrame.class.getResource(path);

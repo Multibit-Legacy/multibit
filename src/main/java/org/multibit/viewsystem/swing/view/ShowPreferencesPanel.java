@@ -105,10 +105,6 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
     }
 
-    public void setPossibleActions(Collection<Action> possibleActions) {
-        // not required in swing view
-    }
-
     private void initUI() {
         setMinimumSize(new Dimension(550, 160));
 

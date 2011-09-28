@@ -608,10 +608,6 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         return controller.getLocaliser().getString("receiveBitcoinPanel.title");
     }
 
-    public void setPossibleActions(Collection<Action> possibleActions) {
-        // not used in this viewSystem
-    }
-
     public void displayView() {
         loadForm();
         selectRows();

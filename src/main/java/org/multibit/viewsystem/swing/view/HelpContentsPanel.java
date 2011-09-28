@@ -60,7 +60,4 @@ public class HelpContentsPanel extends JPanel implements View {
     public String getDescription() {
         return null;
     }
-
-    public void setPossibleActions(Collection<Action> possibleActions) {
-    }
 }

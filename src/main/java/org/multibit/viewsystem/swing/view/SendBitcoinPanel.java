@@ -644,10 +644,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
         return controller.getLocaliser().getString("sendBitcoinPanel.title");
     }
 
-    public void setPossibleActions(Collection<Action> possibleActions) {
-        // not used in this viewSystem
-    }
-
     public void displayView() {
         loadForm();
         selectRows();

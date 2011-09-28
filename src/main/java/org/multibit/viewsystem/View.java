@@ -25,9 +25,7 @@ public interface View {
     public static final int VALIDATION_ERROR_VIEW = 10;
  
     public String getDescription();
-    
-    public void setPossibleActions(Collection<Action> possibleActions);
-    
+   
     public void displayView();
     
     /**

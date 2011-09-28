@@ -300,10 +300,6 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         setVisible(false);
     }
 
-    public void setPossibleActions(Collection<Action> possibleActions) {
-        // not required in swing view
-    }
-
     public Data getData() {
         Data data = new Data();
         Item addressItem = new Item(MultiBitModel.SEND_ADDRESS);

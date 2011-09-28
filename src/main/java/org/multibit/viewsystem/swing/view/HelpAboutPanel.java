@@ -153,8 +153,4 @@ public class HelpAboutPanel extends JPanel implements View {
 
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
     }
-
-    public void setPossibleActions(Collection<Action> possibleActions) {
-        // not required in swing view
-    }
 }

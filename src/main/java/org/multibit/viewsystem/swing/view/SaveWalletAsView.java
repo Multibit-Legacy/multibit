@@ -97,10 +97,6 @@ public class SaveWalletAsView implements View, DataProvider {
         }
     }
 
-    public void setPossibleActions(Collection<Action> possibleActions) {
-        // not required in swing view
-    }
-
     public Data getData() {
         Data data = new Data();
         Item selectedWalletFilenameItem = new Item(MultiBitModel.SELECTED_WALLET_FILENAME);

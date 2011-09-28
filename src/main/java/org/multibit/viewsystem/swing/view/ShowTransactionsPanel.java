@@ -334,10 +334,6 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         return null;
     }
 
-    public void setPossibleActions(Collection<Action> possibleActions) {
-        // not required in Swing view   
-    }
-
     public void displayView() {
         walletTableModel.recreateWalletData();
         table.invalidate();
