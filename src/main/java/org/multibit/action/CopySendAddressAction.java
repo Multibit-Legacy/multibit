@@ -1,6 +1,5 @@
 package org.multibit.action;
 
-import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
@@ -15,10 +14,8 @@ import org.multibit.viewsystem.swing.action.TextTransfer;
  * 
  */
 public class CopySendAddressAction implements Action {
-    private MultiBitController controller;
 
-    public CopySendAddressAction(MultiBitController controller) {
-        this.controller = controller;
+    public CopySendAddressAction() {
     }
 
     public void execute(DataProvider dataProvider) {

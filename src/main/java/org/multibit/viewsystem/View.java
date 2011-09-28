@@ -1,8 +1,5 @@
 package org.multibit.viewsystem;
 
-import java.util.Collection;
-
-import org.multibit.action.Action;
 
 /**
  * an interface describing the views that are being presented in this MVC
@@ -25,9 +22,7 @@ public interface View {
     public static final int VALIDATION_ERROR_VIEW = 10;
  
     public String getDescription();
-    
-    public void setPossibleActions(Collection<Action> possibleActions);
-    
+   
     public void displayView();
     
     /**

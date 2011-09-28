@@ -5,7 +5,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -24,7 +23,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import org.multibit.action.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
@@ -332,10 +330,6 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     public String getDescription() {
         // not required in Swing View
         return null;
-    }
-
-    public void setPossibleActions(Collection<Action> possibleActions) {
-        // not required in Swing view   
     }
 
     public void displayView() {

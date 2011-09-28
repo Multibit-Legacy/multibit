@@ -25,7 +25,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Collection;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
@@ -45,7 +44,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 
 import org.multibit.Localiser;
-import org.multibit.action.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.Data;
@@ -58,6 +56,7 @@ import org.multibit.scanner.EmptyScannerImpl;
 import org.multibit.scanner.MacScannerImpl;
 import org.multibit.scanner.Scanner;
 import org.multibit.scanner.ScannerCallBack;
+import org.multibit.scanner.ScreenScannerImpl;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopySendAddressAction;
@@ -79,7 +78,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
     private static final String DRAG_HERE_ICON_FILE = "/images/dragHere.png";
     private static final String POINT_EAST_ICON_FILE = "/images/pointEast.png";
     private static final String POINT_WEST_ICON_FILE = "/images/pointWest.png";
-    
+
     private MultiBitFrame mainFrame;
     private MultiBitController controller;
 
@@ -100,7 +99,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
     private int selectedAddressRow;
 
     private JLabel qrCodeLabel;
-    private JLabel qrCodeExplainLabel;
     private static final int QRCODE_WIDTH = 140;
     private static final int QRCODE_HEIGHT = 140;
 
@@ -154,9 +152,9 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
 
     private JPanel createFormPanel() {
         formPanel = new JPanel();
-        formPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
+        formPanel.setBorder(new DashedBorder());
         formPanel.setBackground(MultiBitFrame.BACKGROUND_COLOR);
-        
+
         JPanel buttonPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
         flowLayout.setAlignment(FlowLayout.LEFT);
@@ -358,6 +356,9 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
         qrCodePanel.setMinimumSize(new Dimension(280, 200));
         qrCodePanel.setLayout(new GridBagLayout());
         qrCodeLabel = new JLabel("", createImageIcon(DRAG_HERE_ICON_FILE), JLabel.CENTER);
+        qrCodeLabel.setMinimumSize(new Dimension(QRCODE_WIDTH, QRCODE_HEIGHT));
+        qrCodeLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabel.tooltip"));
+
         qrCodeLabel.setVerticalTextPosition(JLabel.BOTTOM);
         qrCodeLabel.setHorizontalTextPosition(JLabel.CENTER);
 
@@ -424,7 +425,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.CENTER;
         qrCodePanel.add(qrCodeLabel, constraints);
-        
+
         JPanel filler2 = new JPanel();
         filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
@@ -442,10 +443,10 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
             bumpDown = 1;
             JPanel buttonPanel = new JPanel(new FlowLayout());
             buttonPanel.setOpaque(false);
-            
+
             JButton startScanButton = new JButton("Start scan");
             startScanButton.setOpaque(false);
-            
+
             startScanButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     if (scanner != null) {
@@ -488,17 +489,20 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
         Scanner scannerToReturn = new EmptyScannerImpl();
 
         String enableScannerString = controller.getModel().getUserPreference(MultiBitModel.ENABLE_SCANNER);
+        String useISightString = controller.getModel().getUserPreference(MultiBitModel.USE_ISIGHT);
         String scannerDirectory = null;
         String operatingSystem = System.getProperty("os.name");
-        if ("Mac OS X".equals(operatingSystem)) {
-            if (enableScannerString != null && Boolean.TRUE.toString().equalsIgnoreCase(enableScannerString)) {
+        if (enableScannerString != null && Boolean.TRUE.toString().equalsIgnoreCase(enableScannerString)) {
+            if ("Mac OS X".equals(operatingSystem) && Boolean.TRUE.toString().equalsIgnoreCase(useISightString)) {
                 scannerDirectory = controller.getModel().getUserPreference(MultiBitModel.SCANNER_DIRECTORY);
                 scannerToReturn = new MacScannerImpl(scannerDirectory);
+            } else {
+                scannerToReturn = new ScreenScannerImpl();
             }
         }
 
-        log.info("SendBitcoinPanel#loadScanner - operating system = " + operatingSystem + ", scanner = " + scannerToReturn + ",  scannerDirectory = "
-                + scannerDirectory);
+        log.info("SendBitcoinPanel#loadScanner - operating system = " + operatingSystem + ", scanner = " + scannerToReturn
+                + ",  scannerDirectory = " + scannerDirectory);
         return scannerToReturn;
     }
 
@@ -636,10 +640,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
 
     public String getDescription() {
         return controller.getLocaliser().getString("sendBitcoinPanel.title");
-    }
-
-    public void setPossibleActions(Collection<Action> possibleActions) {
-        // not used in this viewSystem
     }
 
     public void displayView() {
@@ -803,8 +803,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
                 log.debug("SendBitcoinPanel - ping 4");
                 String decodedLabel = bitcoinURI.getLabel();
 
-                log.debug("SendBitcoinPanel#imageSelection#importData = addressString = " + addressString
-                        + ", amountString = " + amountString + ", label = " + decodedLabel);
+                log.debug("SendBitcoinPanel#imageSelection#importData = addressString = " + addressString + ", amountString = "
+                        + amountString + ", label = " + decodedLabel);
                 log.debug("SendBitcoinPanel - ping 5");
 
                 AddressBookData addressBookData = new AddressBookData(decodedLabel, addressString);
@@ -983,7 +983,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
         // decode the string to an AddressBookData
         BitcoinURI bitcoinURI = new BitcoinURI(controller, decodedString);
 
-
         if (bitcoinURI.isParsedOk()) {
             log.debug("SendBitcoinPanel - ping 1");
             Address address = bitcoinURI.getAddress();
@@ -997,8 +996,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
             log.debug("SendBitcoinPanel - ping 4");
             String decodedLabel = bitcoinURI.getLabel();
 
-            log.info("SendBitcoinPanel#imageSelection#importData = addressString = {}"
-                    + ", amountString = {}, label = {}", new Object[] {addressString, amountString, decodedLabel});
+            log.info("SendBitcoinPanel#imageSelection#importData = addressString = {}" + ", amountString = {}, label = {}",
+                    new Object[] { addressString, amountString, decodedLabel });
             log.debug("SendBitcoinPanel - ping 5");
 
             AddressBookData addressBookData = new AddressBookData(decodedLabel, addressString);
@@ -1051,8 +1050,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
 
             return true;
         } else {
-            mainFrame.updateStatusLabel(controller.getLocaliser().getString(
-                    "sendBitcoinPanel.couldNotUnderstandQRcode", new Object[] { decodedString }));
+            mainFrame.updateStatusLabel(controller.getLocaliser().getString("sendBitcoinPanel.couldNotUnderstandQRcode",
+                    new Object[] { decodedString }));
             return false;
         }
     }

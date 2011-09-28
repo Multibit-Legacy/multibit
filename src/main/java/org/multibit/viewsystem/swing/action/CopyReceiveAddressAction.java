@@ -16,7 +16,6 @@ public class CopyReceiveAddressAction extends AbstractAction {
 
     private static final long serialVersionUID = 191352235465057705L;
 
-    private MultiBitController controller;
     private DataProvider dataProvider;
 
     /**
@@ -25,7 +24,6 @@ public class CopyReceiveAddressAction extends AbstractAction {
      */
     public CopyReceiveAddressAction(MultiBitController controller, DataProvider dataProvider, ImageIcon copyIcon) {
         super("", copyIcon);
-        this.controller = controller;
         this.dataProvider = dataProvider;
         
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
@@ -37,7 +35,7 @@ public class CopyReceiveAddressAction extends AbstractAction {
      * delegate to generic copy receive address text action
      */
     public void actionPerformed(ActionEvent e) {
-        org.multibit.action.CopyReceiveAddressAction genericCopyReceiveAddressAction = new org.multibit.action.CopyReceiveAddressAction(controller);
+        org.multibit.action.CopyReceiveAddressAction genericCopyReceiveAddressAction = new org.multibit.action.CopyReceiveAddressAction();
         genericCopyReceiveAddressAction.execute(dataProvider);
     }
 }

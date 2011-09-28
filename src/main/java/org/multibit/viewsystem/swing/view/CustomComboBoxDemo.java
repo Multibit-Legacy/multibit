@@ -4,10 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.Toolkit;
-import java.awt.image.BufferedImage;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -89,31 +85,9 @@ public class CustomComboBoxDemo extends JPanel {
         }
     }
 
-    private ImageIcon createimageIcon(String text) {
-        Font f = new Font("Serif", Font.BOLD, 12);
-        Image image;
-
-        JLabel textLabel = new JLabel(text);
-        textLabel.setFont(f);
-
-        MediaTracker mt = new MediaTracker(this);
-        image = Toolkit.getDefaultToolkit().createImage("test.jpg");
-        mt.addImage(image, 0);
-        try {
-            mt.waitForID(0);
-        } catch (InterruptedException ie) {
-        }
-        int width = image.getWidth(null);
-        int height = image.getHeight(null);
-        BufferedImage bimg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        bimg.createGraphics().drawImage(image, 0, 0, this);
-        bimg.getGraphics().setFont(f);
-        bimg.getGraphics().drawString(text, 250, 100);
-
-        return new ImageIcon(bimg);
-    }
-
     class ComboBoxRenderer extends JLabel implements ListCellRenderer {
+
+        private static final long serialVersionUID = -7171955207288157985L;
         private Font uhOhFont;
 
         public ComboBoxRenderer() {

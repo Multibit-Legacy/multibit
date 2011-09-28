@@ -87,6 +87,7 @@ public class MultiBitModel {
 
     // scanner
     public static final String ENABLE_SCANNER = "enableScanner";
+    public static final String USE_ISIGHT = "useISight";
     public static final String SCANNER_DIRECTORY = "scannerDirectory";
     
     private Wallet wallet;
@@ -365,11 +366,6 @@ public class MultiBitModel {
     public String createDescription(List<TransactionInput> transactionInputs, List<TransactionOutput> transactionOutputs,
             BigInteger credit, BigInteger debit) {
         String toReturn = "";
-
-        TransactionInput input = null;
-        if (transactionInputs != null) {
-            input = transactionInputs.get(0);
-        }
 
         TransactionOutput myOutput = null;
         TransactionOutput theirOutput = null;

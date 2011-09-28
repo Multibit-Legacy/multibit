@@ -12,7 +12,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.util.Collection;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -32,7 +31,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 
-import org.multibit.action.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.Data;
@@ -124,7 +122,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
     private JPanel createFormPanel() {
         formPanel = new JPanel();
-        formPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
+        formPanel.setBorder(new DashedBorder());
         formPanel.setBackground(MultiBitFrame.BACKGROUND_COLOR);
 
         JPanel buttonPanel = new JPanel();
@@ -606,10 +604,6 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
     public String getDescription() {
         return controller.getLocaliser().getString("receiveBitcoinPanel.title");
-    }
-
-    public void setPossibleActions(Collection<Action> possibleActions) {
-        // not used in this viewSystem
     }
 
     public void displayView() {

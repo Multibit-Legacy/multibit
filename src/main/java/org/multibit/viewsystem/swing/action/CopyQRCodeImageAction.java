@@ -21,7 +21,6 @@ public class CopyQRCodeImageAction extends AbstractAction {
 
     private static final long serialVersionUID = 191352235465057705L;
 
-    private MultiBitController controller;
     private DataProvider dataProvider;
 
     /**
@@ -29,7 +28,6 @@ public class CopyQRCodeImageAction extends AbstractAction {
      */
     public CopyQRCodeImageAction(MultiBitController controller, DataProvider dataProvider) {
         super(controller.getLocaliser().getString("copyQRCodeImageAction.text"));
-        this.controller = controller;
         this.dataProvider = dataProvider;
  
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());

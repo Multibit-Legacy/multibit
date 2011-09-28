@@ -38,12 +38,10 @@
 
 package org.multibit.viewsystem.swing.watermark;
 
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Graphics;
 
-
-
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.JViewport;
 
 /**
  * An extension of <code>javax.swing.JViewport</code>
@@ -77,6 +75,8 @@ import java.awt.event.*;
  */
 public class WatermarkViewport extends JViewport {
     
+    private static final long serialVersionUID = -2551126151376191210L;
+
     /** The background painter */
     private WatermarkPainter bgPainter;
     

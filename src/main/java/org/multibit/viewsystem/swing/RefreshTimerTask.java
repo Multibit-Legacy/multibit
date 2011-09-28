@@ -1,8 +1,6 @@
 package org.multibit.viewsystem.swing;
 
 import java.util.TimerTask;
-import java.util.Date;
-import java.text.SimpleDateFormat;
 
 
 /**

@@ -2,12 +2,10 @@ package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.util.Collection;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.multibit.action.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -59,8 +57,5 @@ public class HelpContentsPanel extends JPanel implements View {
 
     public String getDescription() {
         return null;
-    }
-
-    public void setPossibleActions(Collection<Action> possibleActions) {
     }
 }

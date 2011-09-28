@@ -14,9 +14,9 @@ import javax.swing.TransferHandler;
 
 public class ImageSelection extends TransferHandler implements Transferable {
 
-    private static final DataFlavor flavors[] = { DataFlavor.imageFlavor };
+    private static final long serialVersionUID = 8659153379261699446L;
 
-    private JLabel source;
+    private static final DataFlavor flavors[] = { DataFlavor.imageFlavor };
 
     private Image image;
 
@@ -49,7 +49,6 @@ public class ImageSelection extends TransferHandler implements Transferable {
 
     public Transferable createTransferable(JComponent comp) {
         // Clear
-        source = null;
         image = null;
 
         if (comp instanceof JLabel) {
@@ -57,7 +56,6 @@ public class ImageSelection extends TransferHandler implements Transferable {
             Icon icon = label.getIcon();
             if (icon instanceof ImageIcon) {
                 image = ((ImageIcon) icon).getImage();
-                source = label;
                 return this;
             }
         }

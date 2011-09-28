@@ -1,14 +1,12 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.io.File;
-import java.util.Collection;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.multibit.Localiser;
-import org.multibit.action.Action;
 import org.multibit.action.SaveWalletAsSubmitAction;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
@@ -95,10 +93,6 @@ public class SaveWalletAsView implements View, DataProvider {
         if (fileChooser != null) {
             fileChooser.setVisible(false);
         }
-    }
-
-    public void setPossibleActions(Collection<Action> possibleActions) {
-        // not required in swing view
     }
 
     public Data getData() {

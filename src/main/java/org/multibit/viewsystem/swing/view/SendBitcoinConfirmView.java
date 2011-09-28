@@ -3,7 +3,6 @@ package org.multibit.viewsystem.swing.view;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.util.Collection;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -11,7 +10,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.multibit.Localiser;
-import org.multibit.action.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
@@ -298,10 +296,6 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
 
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
         setVisible(false);
-    }
-
-    public void setPossibleActions(Collection<Action> possibleActions) {
-        // not required in swing view
     }
 
     public Data getData() {

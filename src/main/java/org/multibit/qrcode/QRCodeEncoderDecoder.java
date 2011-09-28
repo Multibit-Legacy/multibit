@@ -68,6 +68,7 @@ public class QRCodeEncoderDecoder {
         QRCodeReader reader = new QRCodeReader();
 
         try {
+            @SuppressWarnings("rawtypes")
             Hashtable hints = new Hashtable();
             Result result = reader.decode(bitmap, hints);
             return result.getText();
