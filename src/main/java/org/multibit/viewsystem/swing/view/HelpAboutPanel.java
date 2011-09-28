@@ -35,8 +35,9 @@ public class HelpAboutPanel extends JPanel implements View {
     public HelpAboutPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         
-        setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
-        
+        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0), BorderFactory.createMatteBorder(1, 0, 1, 0, Color.GRAY)));
+        setBackground(MultiBitFrame.BACKGROUND_COLOR);
+
         String versionNumber = controller.getLocaliser().getVersionNumber();
 
         String versionText = controller.getLocaliser().getString("helpAboutAction.versionText",
@@ -53,6 +54,7 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.weighty = 0.12;
         constraints.anchor = GridBagConstraints.CENTER;
         JPanel fillerPanel1 = new JPanel();
+        fillerPanel1.setOpaque(false);
         add(fillerPanel1, constraints);
 
 
@@ -111,6 +113,7 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.weighty = 0.12;
         constraints.anchor = GridBagConstraints.CENTER;
         JPanel fillerPanel2 = new JPanel();
+        fillerPanel2.setOpaque(false);
         add(fillerPanel2, constraints);
 
     }

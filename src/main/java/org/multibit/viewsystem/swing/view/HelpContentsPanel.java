@@ -1,8 +1,10 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -30,6 +32,9 @@ public class HelpContentsPanel extends JPanel implements View {
 
         setLayout(new BorderLayout());
         firstTimeLoaded = true;
+
+        setBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0));
+        setBackground(MultiBitFrame.BACKGROUND_COLOR);
 
         browser = new Browser(controller, mainFrame, initialUrl);
  

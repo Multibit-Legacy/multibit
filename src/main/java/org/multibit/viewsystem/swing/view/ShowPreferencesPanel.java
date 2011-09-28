@@ -13,6 +13,8 @@ import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -47,10 +49,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
     private Map<String, Integer> languageCodeToIndexMap;
 
-    ImageIcon[] images;
-    private Integer[] indexArray;
-    private String[] languageCodeArray;
-    private String[] languageArray;
+    SortedSet<LanguageData> languageDataSet;
 
     private JRadioButton useDefaultLocale;
     private JComboBox languageComboBox;
@@ -66,7 +65,9 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     public ShowPreferencesPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
 
-        setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
+        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
+                BorderFactory.createMatteBorder(1, 0, 1, 0, Color.LIGHT_GRAY)));
+        setBackground(MultiBitFrame.BACKGROUND_COLOR);
 
         this.controller = controller;
 
@@ -115,6 +116,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.weighty = 0.06;
         constraints.anchor = GridBagConstraints.CENTER;
         JPanel fillerPanel1 = new JPanel();
+        fillerPanel1.setOpaque(false);
         add(fillerPanel1, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -161,6 +163,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         add(createFeePanel(), constraints);
 
         JLabel filler1 = new JLabel();
+        filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 4;
@@ -174,8 +177,9 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     private JPanel createLanguagePanel() {
         // language radios
         JPanel languagePanel = new JPanel(new GridBagLayout());
-        languagePanel.setBorder(BorderFactory.createTitledBorder(controller.getLocaliser().getString(
-                "showPreferencesPanel.languageTitle")));
+        languagePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0),
+                BorderFactory.createTitledBorder(controller.getLocaliser().getString("showPreferencesPanel.languageTitle"))));
+        languagePanel.setOpaque(false);
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -207,25 +211,28 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         // language combo box
         int numberOfLanguages = Integer.parseInt(controller.getLocaliser().getString("showPreferencesPanel.numberOfLanguages"));
-        indexArray = new Integer[numberOfLanguages];
-        images = new ImageIcon[numberOfLanguages];
 
-        languageCodeArray = new String[numberOfLanguages];
-        languageArray = new String[numberOfLanguages];
+        // languages are added to the combo box in alphabetic order
+        languageDataSet = new TreeSet<LanguageData>();
+
         for (int i = 0; i < numberOfLanguages; i++) {
             String languageCode = controller.getLocaliser().getString("showPreferencesPanel.languageCode." + (i + 1));
             String language = controller.getLocaliser().getString("showPreferencesPanel.language." + (i + 1));
-            indexArray[i] = new Integer(i);
-            languageCodeToIndexMap.put(languageCode, indexArray[i]);
 
-            languageCodeArray[i] = languageCode;
-            languageArray[i] = language;
-            images[i] = createImageIcon(languageCode);
-            if (images[i] != null) {
-                images[i].setDescription(language);
-            }
+            LanguageData languageData = new LanguageData();
+            languageData.languageCode = languageCode;
+            languageData.language = language;
+            languageData.image = createImageIcon(languageCode);
+            languageData.image.setDescription(language);
+            languageDataSet.add(languageData);
         }
 
+        Integer[] indexArray = new Integer[languageDataSet.size()];
+        int index = 0;
+        for (LanguageData languageData : languageDataSet) {
+            indexArray[index] = new Integer(index);
+            index++;
+        }
         languageComboBox = new JComboBox(indexArray);
         ComboBoxRenderer renderer = new ComboBoxRenderer();
         renderer.setPreferredSize(new Dimension(150, 30));
@@ -238,10 +245,19 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
             languageComboBox.setEnabled(false);
         } else {
             useSpecific.setSelected(true);
-            Integer languageCodeIndex = languageCodeToIndexMap.get(userLanguageCode);
-            if (languageCodeIndex != 0)
-            languageComboBox.setSelectedItem(languageCodeIndex.intValue());
-            languageComboBox.setEnabled(true);
+            int startingIndex = 0;
+            Integer languageCodeIndex = 0;
+            for (LanguageData languageData : languageDataSet) {
+                if (languageData.languageCode.equals(userLanguageCode)) {
+                    languageCodeIndex = startingIndex;
+                    break;
+                }
+                startingIndex++;
+            }
+            if (languageCodeIndex != 0) {
+                languageComboBox.setSelectedItem(languageCodeIndex.intValue());
+                languageComboBox.setEnabled(true);
+            }
         }
 
         // store original value for use by submit action
@@ -271,8 +287,9 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
     private JPanel createFeePanel() {
         JPanel feePanel = new JPanel(new GridBagLayout());
-        feePanel.setBorder(BorderFactory.createTitledBorder(controller.getLocaliser()
-                .getString("showPreferencesPanel.feeTitle")));
+        feePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0),
+                BorderFactory.createTitledBorder(controller.getLocaliser().getString("showPreferencesPanel.feeTitle"))));
+        feePanel.setOpaque(false);
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -321,6 +338,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
         FlowLayout flowLayout = new FlowLayout();
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
@@ -349,12 +367,16 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     private ImageIcon createImageIcon(String text) {
         Font font = new Font("Dialog", Font.PLAIN, 16);
 
-        BufferedImage bimg = new BufferedImage(25, 17, BufferedImage.TYPE_INT_RGB);
+        BufferedImage bimg = new BufferedImage(26, 17, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = bimg.createGraphics();
 
         g2.setColor(Color.WHITE);
         g2.setFont(font);
-        g2.drawString(text, 3, 14);
+        int downOne = 0;
+        if ("fr".equals(text)) {
+            downOne = 1;
+        }
+        g2.drawString(text, 3, 14 + downOne);
 
         return new ImageIcon(bimg);
     }
@@ -365,8 +387,17 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
             languageItem.setNewValue(MultiBitModel.USER_LANGUAGE_IS_DEFAULT);
         } else {
             Integer selectedLanguageIndex = (Integer) languageComboBox.getSelectedItem();
-            String newLanguageCode = languageCodeArray[selectedLanguageIndex.intValue()];
-            languageItem.setNewValue(newLanguageCode);
+            if (selectedLanguageIndex != null) {
+                int loopIndex = 0;
+                for (LanguageData languageData : languageDataSet) {
+                    if (selectedLanguageIndex.intValue() == loopIndex) {
+                        String newLanguageCode = languageData.languageCode;
+                        languageItem.setNewValue(newLanguageCode);
+                        break;
+                    }
+                    loopIndex++;
+                }
+            }
         }
 
         Item feeItem = new Item(MultiBitModel.SEND_FEE);
@@ -406,14 +437,32 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
             }
 
             // Set the icon and text. If icon was null, say so.
-            ImageIcon icon = images[selectedIndex];
-            String language = languageArray[selectedIndex];
-            setIcon(icon);
-            setText(language);
+            int loopIndex = 0;
+            for (LanguageData languageData : languageDataSet) {
+                if (selectedIndex == loopIndex) {
+                    ImageIcon icon = languageData.image;
+                    String language =languageData.language;
+                    setIcon(icon);
+                    setText(language);
+                    break;
+                }
+                loopIndex++;
+            }
+
             setFont(list.getFont());
 
             return this;
         }
     }
 
+    class LanguageData implements Comparable<LanguageData> {
+        public String languageCode;
+        public String language;
+        public ImageIcon image;
+
+        @Override
+        public int compareTo(LanguageData other) {
+            return languageCode.compareTo(other.languageCode);
+        }
+    }
 }
