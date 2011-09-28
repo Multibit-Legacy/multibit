@@ -240,7 +240,7 @@ public class MacScannerImpl implements Scanner {
                                     BufferedImage scannedBufferedImage = toBufferedImage(image, label.getWidth(),
                                             label.getHeight());
 
-                                    // flip image horizonatally
+                                    // flip image horizonatally - easier to move object relative to camera
                                     AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
                                     tx.translate(-scannedBufferedImage.getWidth(null), 0);
                                     AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
@@ -260,7 +260,7 @@ public class MacScannerImpl implements Scanner {
                                         scannedBufferedImageFullSize.getHeight(null));
                                 decodedResult = qrEncoderDecoder.decode(scannedBufferedImageFullSize);
 
-                                if (decodedResult != null && !decodedResult.equals("") && decodedResult.startsWith("bitcoin:")) {
+                                if (decodedResult != null && !decodedResult.equals("")) {
                                     // scan was successful
                                     Toolkit.getDefaultToolkit().beep();
                                     scanSuccessful = true;
