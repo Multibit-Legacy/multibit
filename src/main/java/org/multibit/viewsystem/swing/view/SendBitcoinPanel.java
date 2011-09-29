@@ -319,7 +319,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
         constraints.gridy = 7;
         constraints.gridwidth = 1;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.15;
+        constraints.weighty = 0.30;
         constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(amountLabel, constraints);
 
@@ -333,7 +333,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
         constraints.gridx = 2;
         constraints.gridy = 7;
         constraints.weightx = 0.1;
-        constraints.weighty = 0.15;
+        constraints.weighty = 0.30;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(amountTextField, constraints);
 
@@ -342,7 +342,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
         constraints.gridx = 3;
         constraints.gridy = 7;
         constraints.weightx = 2.0;
-        constraints.weighty = 0.15;
+        constraints.weighty = 0.30;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(amountUnitLabel, constraints);
 

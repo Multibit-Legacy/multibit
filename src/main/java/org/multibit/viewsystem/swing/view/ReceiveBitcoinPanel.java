@@ -26,6 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -280,7 +281,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridy = 7;
         constraints.gridwidth = 1;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.1;
+        constraints.weighty = 0.30;
         constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(amountLabel, constraints);
 
@@ -295,7 +296,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridx = 2;
         constraints.gridy = 7;
         constraints.weightx = 0.1;
-        constraints.weighty = 0.15;
+        constraints.weighty = 0.30;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(amountTextField, constraints);
 
@@ -305,7 +306,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridx = 3;
         constraints.gridy = 7;
         constraints.weightx = 2.0;
-        constraints.weighty = 0.1;
+        constraints.weighty = 0.30;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(amountUnitLabel, constraints);
 
@@ -378,19 +379,23 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.anchor = GridBagConstraints.CENTER;
         qrCodePanel.add(filler2, constraints);
 
-        qrCodeTextArea = new JTextArea(3, 40);
+        qrCodeTextArea = new JTextArea(2, 40);
         qrCodeTextArea.setEditable(false);
         qrCodeTextArea.setLineWrap(true);
-        qrCodeTextArea.setMinimumSize(new Dimension(220, 60));
-
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+         qrCodeTextArea.setFont(qrCodeTextArea.getFont().deriveFont(12.0F));
+        JScrollPane scrollPane = new JScrollPane(qrCodeTextArea);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setMinimumSize(new Dimension(220, 40));
+       
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 3;
         constraints.weightx = 1;
-        constraints.weighty = 6;
+        constraints.weighty = 2;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        qrCodePanel.add(qrCodeTextArea, constraints);
+        qrCodePanel.add(scrollPane, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
