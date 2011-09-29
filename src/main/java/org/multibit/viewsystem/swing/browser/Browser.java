@@ -19,6 +19,8 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.URL;
 
+import javax.swing.BorderFactory;
+
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.HelpContentsPanel;
@@ -38,7 +40,7 @@ public class Browser extends javax.swing.JEditorPane implements PropertyChangeLi
         super();
         this.mainFrame = mainFrame;
 
-        addHyperlinkListener(new ActivatedHyperlinkListener(mainFrame, this, currentHref));
+         addHyperlinkListener(new ActivatedHyperlinkListener(mainFrame, this, currentHref));
 
         loadingMessage = controller.getLocaliser().getString("browser.loadingMessage");
         setEditable(false);

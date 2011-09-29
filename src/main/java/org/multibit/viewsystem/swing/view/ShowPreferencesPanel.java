@@ -64,7 +64,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         this.controller = controller;
 
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
-                BorderFactory.createMatteBorder(1, 0, 1, 0, Color.LIGHT_GRAY)));
+                BorderFactory.createMatteBorder(1, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
         setBackground(MultiBitFrame.BACKGROUND_COLOR);
 
         this.controller = controller;

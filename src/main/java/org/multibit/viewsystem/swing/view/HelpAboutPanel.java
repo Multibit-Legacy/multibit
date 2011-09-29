@@ -35,7 +35,7 @@ public class HelpAboutPanel extends JPanel implements View {
     public HelpAboutPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         
-        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0), BorderFactory.createMatteBorder(1, 0, 1, 0, Color.GRAY)));
+        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0), BorderFactory.createMatteBorder(1, 0, 1, 0,  MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
         setBackground(MultiBitFrame.BACKGROUND_COLOR);
 
         String versionNumber = controller.getLocaliser().getVersionNumber();

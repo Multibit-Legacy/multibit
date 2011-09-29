@@ -386,6 +386,8 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         JScrollPane scrollPane = new JScrollPane(qrCodeTextArea);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, MultiBitFrame.DARK_BACKGROUND_COLOR.darker()));
+
         scrollPane.setMinimumSize(new Dimension(220, 40));
        
         constraints.fill = GridBagConstraints.BOTH;
