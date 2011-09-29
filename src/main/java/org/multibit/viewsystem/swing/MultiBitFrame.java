@@ -261,9 +261,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         onlineLabel = new JLabel();
         onlineLabel.setHorizontalAlignment(SwingConstants.CENTER);
         statusLabel = new JLabel();
-        statusBar.setZones(new String[] { "filler1", "online", "network", "filler2" },
-                new JComponent[] { new JPanel(), onlineLabel, statusLabel, new JPanel() }, 
-                new String[] {"0", "12%", "*", "0" });
+        statusBar.addZone("filler1", new JPanel(), "0", "left");
+        statusBar.addZone("online", onlineLabel, "12%", "");
+        statusBar.addZone("network", statusLabel, "*", "");
+        statusBar.addZone("filler2", new JPanel(), "0", "right");
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 3;

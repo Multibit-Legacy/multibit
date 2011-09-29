@@ -86,7 +86,7 @@ public class StatusBar extends JComponent {
      *            one of the constraint support by the
      *            {@link com.l2fprod.common.swing.PercentLayout}
      */
-    public void addZone(String id, Component zone, String constraints) {
+    public void addZone(String id, Component zone, String constraints, String tweak) {
         // is there already a zone with this id?
         Component previousZone = getZone(id);
         if (previousZone != null) {
@@ -98,7 +98,16 @@ public class StatusBar extends JComponent {
             JComponent jc = (JComponent) zone;
             if (jc.getBorder() == null || jc.getBorder() instanceof UIResource) {
                 if (jc instanceof JLabel) {
-                    jc.setBorder(new CompoundBorder(zoneBorder, new EmptyBorder(0, 2, 0, 2)));
+                    if ("left".equals(tweak)) {
+                        jc.setBorder(new CompoundBorder(zoneBorder, new EmptyBorder(0, 1, 0, 2)));
+                        
+                    } else {
+                        if ("right".equals(tweak)) {
+                            jc.setBorder(new CompoundBorder(zoneBorder, new EmptyBorder(0, 2, 0, 1)));
+                        } else {
+                            jc.setBorder(new CompoundBorder(zoneBorder, new EmptyBorder(0, 2, 0, 2)));                           
+                        }
+                    }
                     ((JLabel) jc).setText(" ");
                 } else {
                     if (jc instanceof JPanel) {
@@ -142,7 +151,7 @@ public class StatusBar extends JComponent {
         removeAll();
         idToZones.clear();
         for (int i = 0, c = zones.length; i < c; i++) {
-            addZone(ids[i], zones[i], constraints[i]);
+            addZone(ids[i], zones[i], constraints[i], "");
         }
     }
 

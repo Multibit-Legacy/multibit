@@ -47,8 +47,6 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
     private MultiBitController controller;
 
-    private Map<String, Integer> languageCodeToIndexMap;
-
     SortedSet<LanguageData> languageDataSet;
 
     private JRadioButton useDefaultLocale;
@@ -70,8 +68,6 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         setBackground(MultiBitFrame.BACKGROUND_COLOR);
 
         this.controller = controller;
-
-        languageCodeToIndexMap = new HashMap<String, Integer>();
 
         data = new Data();
 
