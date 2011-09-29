@@ -92,7 +92,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     public static final Color BACKGROUND_COLOR = new Color(244, 244, 246);
     public static final Color DARK_BACKGROUND_COLOR = new Color(230, 230, 232);
 
-    private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.75D;
+    private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.7D;
+    
+    public static final int WIDTH_OF_LONG_FIELDS = 320;
+    public static final int WIDTH_OF_AMOUNT_FIELD = 160;
+    
 
     private static final long serialVersionUID = 7621813615342923041L;
 

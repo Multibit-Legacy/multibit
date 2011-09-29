@@ -135,54 +135,54 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         JPanel filler1 = new JPanel();
         filler1.setOpaque(false);
         
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.weightx = 0.05;
+        constraints.weightx = 1;
         constraints.weighty = 0.10;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(filler1, constraints);
 
         ImageIcon bigIcon = createImageIcon(RECEIVE_BITCOIN_BIG_ICON_FILE);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 1;
         constraints.weightx = 0.3;
         constraints.weighty = 0.08;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.SOUTHWEST;
+        constraints.anchor = GridBagConstraints.CENTER;
         formPanel.add(new JLabel(bigIcon), constraints);
 
         JLabel helpLabel1 = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel1.message"));
         helpLabel1.setHorizontalAlignment(JLabel.LEFT);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 1;
         constraints.weightx = 0.3;
         constraints.weighty = 0.08;
-        constraints.gridwidth = 2;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(helpLabel1, constraints);
 
         JLabel helpLabel2 = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel2.message"));
         helpLabel2.setHorizontalAlignment(JLabel.LEFT);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 2;
         constraints.weightx = 0.3;
         constraints.weighty = 0.08;
-        constraints.gridwidth = 2;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(helpLabel2, constraints);
 
         JLabel helpLabel3 = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel3.message"));
         helpLabel3.setHorizontalAlignment(JLabel.LEFT);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 3;
         constraints.weightx = 0.3;
         constraints.weighty = 0.08;
-        constraints.gridwidth = 2;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(helpLabel3, constraints);
 
@@ -213,7 +213,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 5;
-        constraints.weightx = 0.3;
+        constraints.weightx = 1;
         constraints.weighty = 0.15;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
@@ -222,13 +222,13 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         addressTextArea = new JTextArea("", 35, 1);
         addressTextArea.setEditable(false);
         addressTextArea.setBorder(BorderFactory.createMatteBorder(0, 4, 0, 4, this.getBackground()));
-        addressTextArea.setMinimumSize(new Dimension(110, 18));
-        addressTextArea.setMaximumSize(new Dimension(110, 18));
+        addressTextArea.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 18));
+        addressTextArea.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 18));
 
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 5;
-        constraints.weightx = 2;
+        constraints.weightx = 0.15;
         constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(addressTextArea, constraints);
@@ -239,7 +239,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 4;
         constraints.gridy = 5;
-        constraints.weightx = 1;
+        constraints.weightx = 10;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(copyAddressButton, constraints);
@@ -259,11 +259,14 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
         labelTextField = new JTextField("", 35);
         labelTextField.setHorizontalAlignment(JTextField.LEFT);
+        labelTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 18));
+        labelTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 18));
+
         labelTextField.addKeyListener(new QRCodeKeyListener());
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 6;
-        constraints.weightx = 2;
+        constraints.weightx = 0.15;
         constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(labelTextField, constraints);
@@ -271,44 +274,48 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         JLabel amountLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel"));
         amountLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel.tooltip"));
         amountLabel.setHorizontalAlignment(JLabel.RIGHT);
+        
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 7;
         constraints.gridwidth = 1;
-        constraints.weightx = 0.5;
+        constraints.weightx = 0.3;
         constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(amountLabel, constraints);
 
         amountTextField = new JTextField("", 20);
         amountTextField.setHorizontalAlignment(JTextField.RIGHT);
+        amountTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_AMOUNT_FIELD, 18));
+        amountTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_AMOUNT_FIELD, 18));
+
         amountTextField.addKeyListener(new QRCodeKeyListener());
 
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 7;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.1;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.15;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(amountTextField, constraints);
 
         JLabel amountUnitLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountUnitLabel"));
         amountUnitLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountUnitLabel.tooltip"));
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 7;
-        constraints.weightx = 0.4;
+        constraints.weightx = 2.0;
         constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(amountUnitLabel, constraints);
 
         JLabel filler4 = new JLabel("");
         filler4.setOpaque(false);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 4;
         constraints.gridy = 8;
-        constraints.weightx = 2.5;
-        constraints.weighty = 0.6;
+        constraints.weightx = 10;
+        constraints.weighty = 1.0;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(filler4, constraints);
 
