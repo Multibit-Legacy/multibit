@@ -71,6 +71,8 @@ public class QRCodeEncoderDecoder {
             @SuppressWarnings("rawtypes")
             Hashtable hints = new Hashtable();
             Result result = reader.decode(bitmap, hints);
+            log.info("Decoded image successfully, result was : '" + result.getText() + "'");
+
             return result.getText();
         } catch (ReaderException e) {
             // the data is improperly formatted
