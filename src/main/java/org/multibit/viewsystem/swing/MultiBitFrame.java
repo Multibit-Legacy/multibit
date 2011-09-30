@@ -18,7 +18,6 @@ import java.util.Timer;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -30,8 +29,6 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
@@ -54,6 +51,8 @@ import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
 import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
 import org.multibit.viewsystem.swing.view.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.ViewFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.ScriptException;

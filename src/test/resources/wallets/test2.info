@@ -1,0 +1,13 @@
+multiBit.info,1
+walletVersion,1
+receive,1BSnDsA3pnRUeMLeHKFRs7N8wQsA76st9Z,three
+receive,18ZiSh2ctzE1Un4BF5ppdZzi9Xyk1qqWKY,seven
+receive,1JhHFU22b4ec1jop6TsF2zWpacwaUoCPeA,four
+receive,1QAnV6BfSJjZtLL1C6LVGQWTNitrUnYvqF,six
+receive,1DJtChT5WbGvR7hjGxN8vcn7GMkpHA1xyr,five
+receive,17ABnA4GvELdZ2YmgSh98GeuynQiPkneML,eight
+receive,1Kv33ATHhtZ6yutqKamdMB5a47ZtEnReAk,two
+receive,1HCu9x38ZPiQ1U4U4RFU19WWWUvtC5E4Hp,one
+property,receiveAddress,17ABnA4GvELdZ2YmgSh98GeuynQiPkneML
+property,receiveAmount,
+property,receiveLabel,eight

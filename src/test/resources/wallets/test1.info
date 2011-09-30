@@ -18,12 +18,14 @@ property,validationNotEnoughFunds,false
 property,receiveAmount,
 property,sendAddress,1M7qAsXrE2dye8cHmT5DaiCXx24dQS3UsE
 property,receiveLabel,three
-property,validationAmountIsMissing,true
+property,validationAmountIsMissing,false
 property,sendLabel,Instawallet
 property,validationAmountIsNegativeOrZero,false
 property,receiveAddress,14381U2dpm3uprqRJG7VPxanCRyzJDtmEE
-property,validationAmountValue,
-property,sendAmount,
-property,validationAddressValue,0011      ssssssssssssssssssssssssssssssssssssssssssss
+property,sendErrorMessage, 
+property,validationAmountValue,0.011
+property,sendAmount,0.011
+property,sendWasSuccessful,true
+property,validationAddressValue,1M7qAsXrE2dye8cHmT5DaiCXx24dQS3UsE
 property,validationAmountIsInvalid,false
-property,validationAddressIsInvalid,true
+property,validationAddressIsInvalid,false

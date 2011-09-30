@@ -361,20 +361,22 @@ public class Wallet implements Serializable {
                 //     \-> spent by C [chain]
                 Transaction doubleSpent = input.outpoint.fromTx;   // == A
                 int index = (int) input.outpoint.index;
-                TransactionOutput output = doubleSpent.outputs.get(index);
-                TransactionInput spentBy = output.getSpentBy();
-                Transaction connected = spentBy.parentTransaction;
-                if (pending.containsKey(connected.getHash())) {
-                    log.info("Saw double spend from chain override pending tx {}", connected.getHashAsString());
-                    log.info("  <-pending ->dead");
-                    pending.remove(connected.getHash());
-                    dead.put(connected.getHash(), connected);
-                    // Now forcibly change the connection.
-                    input.connect(unspent, true);
-                    // Inform the event listeners of the newly dead tx.
-                    for (WalletEventListener listener : eventListeners) {
-                        synchronized (listener) {
-                            listener.onDeadTransaction(connected, tx);
+                if (doubleSpent.outputs != null) {
+                    TransactionOutput output = doubleSpent.outputs.get(index);
+                    TransactionInput spentBy = output.getSpentBy();
+                    Transaction connected = spentBy.parentTransaction;
+                    if (pending.containsKey(connected.getHash())) {
+                        log.info("Saw double spend from chain override pending tx {}", connected.getHashAsString());
+                        log.info("  <-pending ->dead");
+                        pending.remove(connected.getHash());
+                        dead.put(connected.getHash(), connected);
+                        // Now forcibly change the connection.
+                        input.connect(unspent, true);
+                        // Inform the event listeners of the newly dead tx.
+                        for (WalletEventListener listener : eventListeners) {
+                            synchronized (listener) {
+                                listener.onDeadTransaction(connected, tx);
+                            }
                         }
                     }
                 }

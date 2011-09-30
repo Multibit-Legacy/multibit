@@ -82,10 +82,16 @@
   <repositories>
     <repository>
       <id>bitcoinj-release</id>
-      <url>http://nexus.bitcoinj.org/content/repositories/releases</url>
       <releases/>
+      <url>http://nexus.bitcoinj.org/content/repositories/releases</url>
+    </repository>
+    <repository>
+      <id>bitcoinj-snapshot</id>
+      <snapshots/>
+      <url>http://nexus.bitcoinj.org/content/repositories/snapshots</url>
     </repository>
   </repositories>
+  
   <build>  
     <finalName>multibit</finalName>
     <plugins>
@@ -97,7 +103,6 @@
           <target>1.6</target>
         </configuration>
       </plugin>
-
       <!-- Put izPack2app into staging dir for production of installer later -->
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -244,6 +249,12 @@
     </plugins>    
  </build>
   <dependencies>
+    <dependency>
+    <groupId>com.google</groupId>
+    <artifactId>bitcoinj</artifactId>
+    <version>0.3-SNAPSHOT</version>
+    <scope>compile</scope>
+  </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
