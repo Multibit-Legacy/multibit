@@ -211,106 +211,106 @@ public class MultiBitService {
      * or pending tx and sends them the tx as if they saw them for the first
      * time
      */
-    public void sendMissedBlocksToWallet(BlockStore blockStore, Wallet wallet, File walletFile) {
-
-        if (blockStore == null || wallet == null || walletFile == null) {
-            return;
-        }
-
-        // work out how far back on the block chain we need to go
-        Collection<Transaction> pendingTransactions = wallet.getPendingTransactions();
-        Date now = new Date();
-        Date earliestPendingTransactionDate = now;
-        boolean updatedAtDatesWereIncomplete = false;
-        if (pendingTransactions != null) {
-            for (Transaction pendingTransaction : pendingTransactions) {
-                Date updatedAtDate = pendingTransaction.getUpdatedAt();
-                if (updatedAtDate == null) {
-                    // if there is data missing we go back to MultiBit creation
-                    // date
-                    updatedAtDatesWereIncomplete = true;
-                    break;
-                } else {
-                    if (updatedAtDate.before(earliestPendingTransactionDate)) {
-                        earliestPendingTransactionDate = updatedAtDate;
-                    }
-                }
-            }
-        }
-
-        if (updatedAtDatesWereIncomplete) {
-            // there is some updatedAt dates missing so we go back to the
-            // creation of MultiBit
-            earliestPendingTransactionDate = MULTIBIT_CREATION_DATE;
-        }
-        logger.debug("Earliest pending transaction date = " + earliestPendingTransactionDate);
-
-        // get the blocks out the block chain - a stack is used so that they are
-        // given to the wallet in time increasing order
-        Stack<StoredBlock> blockStack = new Stack<StoredBlock>();
-        long earliestPendingTransactionTime = earliestPendingTransactionDate.getTime() / 1000;
-
-        try {
-            StoredBlock currentBlock = blockStore.getChainHead();
-
-            boolean haveGoneBackInTimeEnough = false;
-
-            if (currentBlock != null) {
-                long broadcastTime = currentBlock.getHeader().getTimeSeconds();
-                if (broadcastTime >= earliestPendingTransactionTime) {
-                    // we need to give this block to the wallet
-                    blockStack.push(currentBlock);
-                } else {
-                    haveGoneBackInTimeEnough = true;
-                }
-
-                while (!haveGoneBackInTimeEnough) {
-                    StoredBlock previousBlock = currentBlock.getPrev(blockStore);
-
-                    if (previousBlock == null) {
-                        // not true but run out of blocks to go back
-                        haveGoneBackInTimeEnough = true;
-                    } else {
-                        System.out.println("MultiBitService - time delta = "
-                                + (previousBlock.getHeader().getTimeSeconds() - earliestPendingTransactionTime));
-                        if (previousBlock.getHeader().getTimeSeconds() >= earliestPendingTransactionTime) {
-                            blockStack.push(previousBlock);
-                        } else {
-                            haveGoneBackInTimeEnough = true;
-                        }
-                    }
-                    currentBlock = previousBlock;
-                }
-                logger.debug("Need to go back in time to block = " + currentBlock);
-            }
-        } catch (BlockStoreException e) {
-            logger.error("Error in sendMissedBlocksToWallet", e);
-        }
-
-        // send the blocks to the wallet so that it can resolve any pending tx
-        boolean blocksWereAddedToWallet = false;
-        while (!blockStack.isEmpty()) {
-            blocksWereAddedToWallet = true;
-
-            StoredBlock storedBlock = blockStack.pop();
-            Block headerBlock = storedBlock.getHeader();
-            Collection<Transaction> blockTransactions = null;
-            if (headerBlock != null) {
-                blockTransactions = headerBlock.getTransactions();
-            }
-            if (blockTransactions != null) {
-                logger.debug("StoredBlock height = " + storedBlock.getHeight() + " contains a header with " + blockTransactions.size() + " transactions.");
-            } else {
-                logger.debug("StoredBlock height = " + storedBlock.getHeight() + " contains a header with 0 transactions.");
-            }
-        }
-
-        // save the wallet
-        if (blocksWereAddedToWallet) {
-            FileHandler fileHandler = new FileHandler(controller);
-            fileHandler.saveWalletToFile(wallet, walletFile);
-        }
-    }
+//    private void sendMissedBlocksToWallet(BlockStore blockStore, Wallet wallet, File walletFile) {
+//
+//        if (blockStore == null || wallet == null || walletFile == null) {
+//            return;
+//        }
+//
+//        // work out how far back on the block chain we need to go
+//        Collection<Transaction> pendingTransactions = wallet.getPendingTransactions();
+//        Date now = new Date();
+//        Date earliestPendingTransactionDate = now;
+//        boolean updatedAtDatesWereIncomplete = false;
+//        if (pendingTransactions != null) {
+//            for (Transaction pendingTransaction : pendingTransactions) {
+//                Date updatedAtDate = pendingTransaction.getUpdatedAt();
+//                if (updatedAtDate == null) {
+//                    // if there is data missing we go back to MultiBit creation
+//                    // date
+//                    updatedAtDatesWereIncomplete = true;
+//                    break;
+//                } else {
+//                    if (updatedAtDate.before(earliestPendingTransactionDate)) {
+//                        earliestPendingTransactionDate = updatedAtDate;
+//                    }
+//                }
+//            }
+//        }
+//
+//        if (updatedAtDatesWereIncomplete) {
+//            // there is some updatedAt dates missing so we go back to the
+//            // creation of MultiBit
+//            earliestPendingTransactionDate = MULTIBIT_CREATION_DATE;
+//        }
+//        logger.debug("Earliest pending transaction date = " + earliestPendingTransactionDate);
+//
+//        // get the blocks out the block chain - a stack is used so that they are
+//        // given to the wallet in time increasing order
+//        Stack<StoredBlock> blockStack = new Stack<StoredBlock>();
+//        long earliestPendingTransactionTime = earliestPendingTransactionDate.getTime() / 1000;
+//
+//        try {
+//            StoredBlock currentBlock = blockStore.getChainHead();
+//
+//            boolean haveGoneBackInTimeEnough = false;
+//
+//            if (currentBlock != null) {
+//                long broadcastTime = currentBlock.getHeader().getTimeSeconds();
+//                if (broadcastTime >= earliestPendingTransactionTime) {
+//                    // we need to give this block to the wallet
+//                    blockStack.push(currentBlock);
+//                } else {
+//                    haveGoneBackInTimeEnough = true;
+//                }
+//
+//                while (!haveGoneBackInTimeEnough) {
+//                    StoredBlock previousBlock = currentBlock.getPrev(blockStore);
+//
+//                    if (previousBlock == null) {
+//                        // not true but run out of blocks to go back
+//                        haveGoneBackInTimeEnough = true;
+//                    } else {
+//                        System.out.println("MultiBitService - time delta = "
+//                                + (previousBlock.getHeader().getTimeSeconds() - earliestPendingTransactionTime));
+//                        if (previousBlock.getHeader().getTimeSeconds() >= earliestPendingTransactionTime) {
+//                            blockStack.push(previousBlock);
+//                        } else {
+//                            haveGoneBackInTimeEnough = true;
+//                        }
+//                    }
+//                    currentBlock = previousBlock;
+//                }
+//                logger.debug("Need to go back in time to block = " + currentBlock);
+//            }
+//        } catch (BlockStoreException e) {
+//            logger.error("Error in sendMissedBlocksToWallet", e);
+//        }
+//
+//        // send the blocks to the wallet so that it can resolve any pending tx
+//        boolean blocksWereAddedToWallet = false;
+//        while (!blockStack.isEmpty()) {
+//            blocksWereAddedToWallet = true;
+//
+//            StoredBlock storedBlock = blockStack.pop();
+//            Block headerBlock = storedBlock.getHeader();
+//            Collection<Transaction> blockTransactions = null;
+//            if (headerBlock != null) {
+//                blockTransactions = headerBlock.getTransactions();
+//            }
+//            if (blockTransactions != null) {
+//                logger.debug("StoredBlock height = " + storedBlock.getHeight() + " contains a header with " + blockTransactions.size() + " transactions.");
+//            } else {
+//                logger.debug("StoredBlock height = " + storedBlock.getHeight() + " contains a header with 0 transactions.");
+//            }
+//        }
+//
+//        // save the wallet
+//        if (blocksWereAddedToWallet) {
+//            FileHandler fileHandler = new FileHandler(controller);
+//            fileHandler.saveWalletToFile(wallet, walletFile);
+//        }
+//    }
 
     /**
      * download the block chain

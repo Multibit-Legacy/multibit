@@ -57,7 +57,9 @@ public class Peer {
     /**
      * the wallet that will be notified of pending transactions
      */
-    private final Wallet wallet;
+    public static boolean MOBILE_OPTIMIZED = true;
+    
+    private Wallet wallet;
 
     /**
      * Construct a peer that handles the given network connection and reads/writes from the given block chain. Note that
@@ -104,7 +106,7 @@ public class Peer {
      */
     public synchronized void connect() throws PeerException {
         try {
-            conn = new NetworkConnection(address, params, bestHeight, 60000);
+            conn = new NetworkConnection(address, params, bestHeight, 60000, MOBILE_OPTIMIZED);
         } catch (IOException ex) {
             throw new PeerException(ex);
         } catch (ProtocolException ex) {

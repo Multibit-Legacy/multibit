@@ -1,6 +1,5 @@
 package org.multibit.viewsystem.swing.view;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

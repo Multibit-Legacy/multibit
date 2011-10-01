@@ -111,7 +111,7 @@ public class TransactionInput extends Message implements Serializable {
     public boolean isCoinBase() {
         return outpoint.hash.equals(Sha256Hash.ZERO_HASH);
     }
- 
+
     /**
      * Returns the input script.
      */

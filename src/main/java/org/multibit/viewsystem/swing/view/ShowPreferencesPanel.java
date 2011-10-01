@@ -11,8 +11,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -225,7 +223,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         Integer[] indexArray = new Integer[languageDataSet.size()];
         int index = 0;
-        for (LanguageData languageData : languageDataSet) {
+        for (@SuppressWarnings("unused") LanguageData languageData : languageDataSet) {
             indexArray[index] = new Integer(index);
             index++;
         }

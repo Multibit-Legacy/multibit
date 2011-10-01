@@ -20,6 +20,8 @@ import org.bouncycastle.util.encoders.Hex;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 /**
@@ -27,9 +29,6 @@ import java.util.Arrays;
  * map. It also checks that the length is correct and provides a bit more type safety.
  */
 public class Sha256Hash implements Serializable {
-    /**
-     * 
-     */
     private static final long serialVersionUID = 4807494979333778890L;
 
     private byte[] bytes;
@@ -46,6 +45,16 @@ public class Sha256Hash implements Serializable {
     public Sha256Hash(String string) {
         assert string.length() == 64;
         this.bytes = Hex.decode(string);
+    }
+
+    /** Calculates the (one-time) hash of contents and returns it as a new wrapped hash. */
+    public static Sha256Hash create(byte[] contents) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            return new Sha256Hash(digest.digest(contents));
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);  // Cannot happen.
+        }
     }
 
     /** Returns true if the hashes are equal. */
