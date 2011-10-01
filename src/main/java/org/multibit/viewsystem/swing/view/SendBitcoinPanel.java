@@ -251,8 +251,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
 
         addressTextField = new JTextField(35);
         addressTextField.setHorizontalAlignment(JTextField.LEFT);
-        addressTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 18));
-        addressTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 18));
+        addressTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
+        addressTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
 
         addressTextField.addKeyListener(new QRCodeKeyListener());
         constraints.fill = GridBagConstraints.NONE;
@@ -299,8 +299,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
 
         labelTextField = new JTextField("", 35);
         labelTextField.setHorizontalAlignment(JTextField.LEFT);
-        labelTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 18));
-        labelTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 18));
+        labelTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
+        labelTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
 
         labelTextField.addKeyListener(new QRCodeKeyListener());
         constraints.fill = GridBagConstraints.NONE;
@@ -325,8 +325,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
 
         amountTextField = new JTextField("", 20);
         amountTextField.setHorizontalAlignment(JTextField.RIGHT);
-        amountTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_AMOUNT_FIELD, 18));
-        amountTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_AMOUNT_FIELD, 18));
+        amountTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_AMOUNT_FIELD, 24));
+        amountTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_AMOUNT_FIELD, 24));
         amountTextField.addKeyListener(new QRCodeKeyListener());
 
         constraints.fill = GridBagConstraints.NONE;

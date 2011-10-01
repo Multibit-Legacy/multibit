@@ -70,13 +70,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private static final int TOOLBAR_HEIGHT = 120;
     public static final String COPY_ICON_FILE = "/images/copy.png";
     public static final String PASTE_ICON_FILE = "/images/paste.png";
-    private static final String SAVE_AS_ICON_FILE = "/images/saveAs.jpg";
+    private static final String SAVE_AS_ICON_FILE = "/images/saveAs.png";
     private static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
     private static final String SEND_BITCOIN_ICON_FILE = "/images/send.jpg";
     private static final String RECEIVE_BITCOIN_ICON_FILE = "/images/receive.jpg";
-    private static final String PREFERENCES_ICON_FILE = "/images/preferences.jpg";
-    private static final String HELP_CONTENTS_ICON_FILE = "/images/helpContents.jpg";
-    private static final String MULTIBIT_SMALL_ICON_FILE = "/images/multibit-small.jpg";
+    private static final String PREFERENCES_ICON_FILE = "/images/preferences.png";
+    private static final String HELP_CONTENTS_ICON_FILE = "/images/helpContents.png";
+    private static final String MULTIBIT_SMALL_ICON_FILE = "/images/multibit-small.png";
     public static final String MULTIBIT_ICON_FILE = "/images/multibit.gif";
     private static final String TRANSACTIONS_ICON_FILE = "/images/information.png";
     private static final String WALLET_ICON_FILE = "/images/wallet.png";
@@ -91,12 +91,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     public static final Color BACKGROUND_COLOR = new Color(244, 244, 246);
     public static final Color DARK_BACKGROUND_COLOR = new Color(230, 230, 232);
 
-    private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.7D;
+    private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.72D;
     
     public static final int WIDTH_OF_LONG_FIELDS = 320;
     public static final int WIDTH_OF_AMOUNT_FIELD = 160;
     
-
     private static final long serialVersionUID = 7621813615342923041L;
 
     private MultiBitController controller;
@@ -231,7 +230,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 1;
-        constraints.weightx = 1;
+        constraints.weightx = 1.0;
         constraints.weighty = 0.01;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -279,8 +278,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private JPanel createBalancePanel() {
         JPanel balancePanel = new JPanel();
 
-        balancePanel.setMinimumSize(new Dimension(700, 60));
-        balancePanel.setPreferredSize(new Dimension(700, 60));
+        balancePanel.setMinimumSize(new Dimension(700, 66));
+        balancePanel.setPreferredSize(new Dimension(700, 66));
         balancePanel.setOpaque(false);
         balancePanel.setBackground(this.getBackground());
 
@@ -451,6 +450,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         toolBar.add(receiveBitcoinPanel);
         toolBar.add(sendBitcoinPanel);
         toolBar.add(showTransactionsPanel);
+        toolBar.setBorder(BorderFactory.createEmptyBorder());
  
         // show preferences
         ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller,

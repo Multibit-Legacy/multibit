@@ -30,6 +30,11 @@ import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.ViewSystem;
 
+import javax.swing.UIManager;
+import javax.swing.UIManager.*;
+
+
+
 /**
  * Main MultiBit entry class
  * 
@@ -78,6 +83,21 @@ public class MultiBit {
         MultiBitModel model = new MultiBitModel(controller, userPreferences);
         controller.setModel(model);
 
+        String operatingSystem = System.getProperty("os.name");
+        operatingSystem = "Jim";
+        try {
+            // Nimbus for everything other than the Mac
+            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if (("Mac OS X".equals(operatingSystem) && "Mac OS X".equals(info.getName())) ||
+                        (!"Mac OS X".equals(operatingSystem) && "Nimbus".equals(info.getName()))) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            // If Nimbus is not available, you can set the GUI to another look and feel.
+        }
+        
         // create the view systems
         // add the swing view system
         // this is done by reflection just to keep it out the import

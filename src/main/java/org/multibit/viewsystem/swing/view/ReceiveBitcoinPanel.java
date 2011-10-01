@@ -203,7 +203,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridx = 0;
         constraints.gridy = 4;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.1;
+        constraints.weighty = 0.15;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(filler3, constraints);
@@ -222,9 +222,11 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
         addressTextArea = new JTextArea("", 35, 1);
         addressTextArea.setEditable(false);
-        addressTextArea.setBorder(BorderFactory.createMatteBorder(0, 4, 0, 4, this.getBackground()));
-        addressTextArea.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 18));
-        addressTextArea.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 18));
+        addressTextArea.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 4, 0, 4, MultiBitFrame.BACKGROUND_COLOR),
+                BorderFactory.createMatteBorder(2, 0, 0, 0, Color.WHITE)));
+        addressTextArea.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
+        addressTextArea.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
+        
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
@@ -253,21 +255,22 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridx = 1;
         constraints.gridy = 6;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.1;
+        constraints.weighty = 0.15;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(labelLabel, constraints);
 
         labelTextField = new JTextField("", 35);
         labelTextField.setHorizontalAlignment(JTextField.LEFT);
-        labelTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 18));
-        labelTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 18));
+        labelTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
+        labelTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
 
         labelTextField.addKeyListener(new QRCodeKeyListener());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 6;
         constraints.weightx = 0.15;
+        constraints.weighty = 0.20;
         constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(labelTextField, constraints);
@@ -287,8 +290,8 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
         amountTextField = new JTextField("", 20);
         amountTextField.setHorizontalAlignment(JTextField.RIGHT);
-        amountTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_AMOUNT_FIELD, 18));
-        amountTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_AMOUNT_FIELD, 18));
+        amountTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_AMOUNT_FIELD, 24));
+        amountTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_AMOUNT_FIELD, 24));
 
         amountTextField.addKeyListener(new QRCodeKeyListener());
 
