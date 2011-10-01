@@ -84,6 +84,7 @@ public class MultiBit {
         controller.setModel(model);
 
         String operatingSystem = System.getProperty("os.name");
+        //operatingSystem="uncomment out to test non-Mac";
         try {
             // Nimbus for everything other than the Mac
             for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
