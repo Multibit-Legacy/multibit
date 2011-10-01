@@ -54,10 +54,11 @@ public class Peer {
 
     private List<PeerEventListener> eventListeners;
     
+    public static boolean MOBILE_OPTIMIZED = true;
+
     /**
      * the wallet that will be notified of pending transactions
      */
-    public static boolean MOBILE_OPTIMIZED = true;
     
     private Wallet wallet;
 
