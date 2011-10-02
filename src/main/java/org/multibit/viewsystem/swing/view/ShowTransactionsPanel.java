@@ -145,7 +145,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
         scrollPane.getViewport().setBackground(MultiBitFrame.BACKGROUND_COLOR);
         scrollPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0), 
-                BorderFactory.createMatteBorder(0, 0, 1, 0,  MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
+                BorderFactory.createMatteBorder(1, 0, 1, 0,  MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;

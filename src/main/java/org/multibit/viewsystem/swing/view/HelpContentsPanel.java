@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
@@ -47,6 +48,9 @@ public class HelpContentsPanel extends JPanel implements View {
                 
                 JScrollPane scrollPane = new JScrollPane(browser);
                 scrollPane.setPreferredSize(new Dimension(800, 400));
+                scrollPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0), 
+                        BorderFactory.createMatteBorder(1, 0, 1, 0,  MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
+
                 add(scrollPane, BorderLayout.CENTER);          
             }
             

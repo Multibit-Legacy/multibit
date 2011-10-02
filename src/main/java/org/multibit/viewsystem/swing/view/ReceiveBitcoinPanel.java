@@ -92,6 +92,8 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
     private void initUI() {
         setMinimumSize(new Dimension(550, 220));
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
+        setBackground(MultiBitFrame.BACKGROUND_COLOR);
+
         setLayout(new GridBagLayout());
 
         GridBagConstraints constraints = new GridBagConstraints();

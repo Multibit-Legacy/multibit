@@ -95,12 +95,9 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
     private static final int QRCODE_WIDTH = 140;
     private static final int QRCODE_HEIGHT = 140;
 
-    private SendBitcoinPanel thisSendBitcoinPanel;
-
     public SendBitcoinPanel(MultiBitFrame mainFrame, MultiBitController controller) {
         this.mainFrame = mainFrame;
         this.controller = controller;
-        thisSendBitcoinPanel = this;
 
         initUI();
         loadForm();
@@ -112,6 +109,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         setMinimumSize(new Dimension(550, 220));
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
         setLayout(new GridBagLayout());
+        setBackground(MultiBitFrame.BACKGROUND_COLOR);
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
@@ -457,7 +455,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
     private JPanel createAddressesPanel() {
         JPanel addressPanel = new JPanel();
         addressPanel.setBackground(MultiBitFrame.BACKGROUND_COLOR);
-
         addressPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
 
         // get the stored previously selected send address
@@ -492,9 +489,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         JScrollPane scrollPane = new JScrollPane(addressesTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getViewport().setBackground(MultiBitFrame.BACKGROUND_COLOR);
-
         scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker()));
-
+       
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 1;
