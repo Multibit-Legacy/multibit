@@ -519,7 +519,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
 
     private JPanel createAddressesPanel() {
         JPanel addressPanel = new JPanel();
-        addressPanel.setOpaque(false);
+        addressPanel.setBackground(MultiBitFrame.BACKGROUND_COLOR);
 
         addressPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
 
@@ -530,7 +530,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
 
         addressesTableModel = new AddressBookTableModel(controller, false);
         addressesTable = new JTable(addressesTableModel);
-        addressesTable.setOpaque(false);
+        addressesTable.setOpaque(true);
         addressesTable.setShowGrid(false);
         addressesTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         addressesTable.setRowSelectionAllowed(true);
@@ -554,6 +554,10 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View, Scan
 
         JScrollPane scrollPane = new JScrollPane(addressesTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.getViewport().setBackground(MultiBitFrame.BACKGROUND_COLOR);
+
+        scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker()));
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 1;

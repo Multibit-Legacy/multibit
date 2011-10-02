@@ -99,8 +99,11 @@ public class ScreenScannerImpl implements Scanner {
             // transparencies don't work with window decorators
             frame.setUndecorated(false);
             // we want to use per-pixel transparency
-            AWTUtilities.setWindowOpaque(frame, false);
-
+            try {
+                AWTUtilities.setWindowOpaque(frame, false);
+            } catch (Exception e) {
+                // not supported - window will not be transparent
+            }
             // creates window decorations without using a window decorator...
             frame.getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
         }

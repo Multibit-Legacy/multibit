@@ -361,16 +361,12 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     private ImageIcon createImageIcon(String text) {
         Font font = new Font("Dialog", Font.PLAIN, 16);
 
-        BufferedImage bimg = new BufferedImage(26, 17, BufferedImage.TYPE_INT_RGB);
+        BufferedImage bimg = new BufferedImage(26, 20, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = bimg.createGraphics();
 
         g2.setColor(Color.WHITE);
         g2.setFont(font);
-        int downOne = 0;
-        if ("fr".equals(text)) {
-            downOne = 1;
-        }
-        g2.drawString(text, 3, 14 + downOne);
+        g2.drawString(text, 3, 16);
 
         return new ImageIcon(bimg);
     }

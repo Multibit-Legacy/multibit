@@ -1,5 +1,6 @@
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -9,6 +10,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -29,34 +31,31 @@ import org.multibit.model.DataProvider;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.WalletTableModel;
-import org.multibit.viewsystem.swing.watermark.FillPainter;
-import org.multibit.viewsystem.swing.watermark.WatermarkPainter;
-import org.multibit.viewsystem.swing.watermark.WatermarkViewport;
 
 public class ShowTransactionsPanel extends JPanel implements DataProvider, View {
 
     private static final long serialVersionUID = 1235108897887842662L;
-    
+
     private MultiBitController controller;
-    
+
     private JTable table;
     private WalletTableModel walletTableModel;
 
     private Data data;
-       
+
     private static final String SPACER = "   "; // 3 spaces
 
-    private static final String PROGRESS_0_ICON_FILE = "/images/progress0.jpg";
-    private static final String PROGRESS_1_ICON_FILE = "/images/progress1.jpg";
-    private static final String PROGRESS_2_ICON_FILE = "/images/progress2.jpg";
-    private static final String PROGRESS_3_ICON_FILE = "/images/progress3.jpg";
-    private static final String PROGRESS_4_ICON_FILE = "/images/progress4.jpg";
-    private static final String PROGRESS_5_ICON_FILE = "/images/progress5.jpg";
-    private static final String TICK_ICON_FILE = "/images/tick.jpg";
+    private static final String PROGRESS_0_ICON_FILE = "/images/progress0.png";
+    private static final String PROGRESS_1_ICON_FILE = "/images/progress1.png";
+    private static final String PROGRESS_2_ICON_FILE = "/images/progress2.png";
+    private static final String PROGRESS_3_ICON_FILE = "/images/progress3.png";
+    private static final String PROGRESS_4_ICON_FILE = "/images/progress4.png";
+    private static final String PROGRESS_5_ICON_FILE = "/images/progress5.png";
+    private static final String TICK_ICON_FILE = "/images/tick.png";
 
     public ShowTransactionsPanel(JFrame mainFrame, MultiBitController controller) {
         this.controller = controller;
-     
+
         data = new Data();
 
         initUI();
@@ -66,17 +65,16 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         createWalletPanel();
     }
 
-
     private void createWalletPanel() {
-        setOpaque(false);
-
+        setBackground(MultiBitFrame.BACKGROUND_COLOR);
         setLayout(new GridBagLayout());
+        setOpaque(true);
         GridBagConstraints constraints = new GridBagConstraints();
 
         walletTableModel = new WalletTableModel(controller);
         table = new JTable(walletTableModel);
-        table.setOpaque(false);
-        table.setShowGrid(false);
+        table.setOpaque(true);
+        table.setBorder(BorderFactory.createEmptyBorder());
 
         // use status icons
         table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
@@ -144,6 +142,11 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
         JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        scrollPane.getViewport().setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        scrollPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0), 
+                BorderFactory.createMatteBorder(0, 0, 1, 0,  MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -151,18 +154,12 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         constraints.weightx = 1;
         constraints.weighty = 1;
 
-        WatermarkPainter bgPainter = new FillPainter();
-        WatermarkViewport vp = new WatermarkViewport(bgPainter, null);
-        vp.setView(table);
-        scrollPane.setViewport(vp);
-
         add(scrollPane, constraints);
     }
- 
+
     public Data getData() {
         return data;
     }
-
 
     class ImageRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 154545L;
@@ -180,7 +177,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
             label.setHorizontalAlignment(SwingConstants.CENTER);
-            label.setOpaque(false);
+            label.setOpaque(true);
 
             int numberOfBlocksEmbedded = ((Integer) value).intValue();
             if (numberOfBlocksEmbedded < 0) {
@@ -230,6 +227,11 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 label.setIcon(progress0Icon);
                 label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.notConfirmed"));
             }
+            
+            if (!label.getBackground().equals(table.getSelectionBackground())) {
+                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
+                label.setBackground(backgroundColor);
+            }
             return label;
         }
     }
@@ -244,7 +246,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             return null;
         }
     }
-    
+
     class RightJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
@@ -253,10 +255,13 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
             label.setHorizontalAlignment(SwingConstants.RIGHT);
-            label.setOpaque(false);
+            label.setOpaque(true);
 
             label.setText((String) value + SPACER);
-
+            if (!label.getBackground().equals(table.getSelectionBackground())) {
+                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
+                label.setBackground(backgroundColor);
+            }
             return label;
         }
     }
@@ -270,7 +275,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
             label.setHorizontalAlignment(SwingConstants.RIGHT);
-            label.setOpaque(false);
+            label.setOpaque(true);
 
             String formattedDate = "";
             if (value != null) {
@@ -291,6 +296,10 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
             label.setText(formattedDate + SPACER);
 
+            if (!label.getBackground().equals(table.getSelectionBackground())) {
+                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
+                label.setBackground(backgroundColor);
+            }
             return label;
         }
     }
@@ -303,10 +312,15 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
             label.setHorizontalAlignment(SwingConstants.LEFT);
-            label.setOpaque(false);
+            label.setBackground(MultiBitFrame.BACKGROUND_COLOR);
+            label.setOpaque(true);   
 
             label.setText((String) value);
 
+            if (!label.getBackground().equals(table.getSelectionBackground())) {
+                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
+                label.setBackground(backgroundColor);
+            }
             return label;
         }
     }
@@ -339,10 +353,10 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         table.repaint();
     }
 
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {        
+    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
     }
 
-    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {        
+    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
     }
 
     public WalletTableModel getWalletTableModel() {

@@ -49,6 +49,7 @@ import org.multibit.viewsystem.swing.view.HeaderPanel;
 import org.multibit.viewsystem.swing.view.MultiBitButton;
 import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
 import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
+import org.multibit.viewsystem.swing.view.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.slf4j.Logger;
@@ -117,6 +118,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private MultiBitButton receiveBitcoinButton;
     private MultiBitButton showTransactionsButton;
     private MultiBitButton openWalletButton;
+    private MultiBitButton showPreferencesButton;
 
     /**
      * the panel containing the main view
@@ -156,6 +158,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             }
         });
 
+        getContentPane().setBackground(MultiBitFrame.BACKGROUND_COLOR);
         sizeAndCenter();
 
         initUI();
@@ -267,7 +270,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         statusBar.addZone("online", onlineLabel, "12%", "");
         statusBar.addZone("network", statusLabel, "*", "");
         statusBar.addZone("filler2", new JPanel(), "0", "right");
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 3;
         constraints.weightx = 1;
@@ -446,16 +449,23 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         sendBitcoinButton = new MultiBitButton(sendBitcoinAction);
         sendBitcoinPanel.add(sendBitcoinButton);
  
+        // show preferences
+         ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller,
+                createImageIcon(PREFERENCES_ICON_FILE));
+        viewMenu.add(showPreferencesAction);
+        JPanel showPreferencesPanel = new JPanel(new BorderLayout());
+        showPreferencesPanel.setBorder(BorderFactory.createEmptyBorder(0, 4, 3, 4));
+        showPreferencesPanel.setOpaque(false);
+        showPreferencesButton = new MultiBitButton(showPreferencesAction);
+        showPreferencesPanel.add(showPreferencesButton);
+        
         toolBar.add(openWalletPanel);
         toolBar.add(receiveBitcoinPanel);
         toolBar.add(sendBitcoinPanel);
         toolBar.add(showTransactionsPanel);
+        toolBar.add(showPreferencesPanel);
         toolBar.setBorder(BorderFactory.createEmptyBorder());
  
-        // show preferences
-        ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller,
-                createImageIcon(PREFERENCES_ICON_FILE));
-        viewMenu.add(showPreferencesAction);
 
         setJMenuBar(menuBar);
 
@@ -576,6 +586,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
                         if (nextViewFinal instanceof ShowTransactionsPanel) {
                             if (showTransactionsButton != null) {
                                 showTransactionsButton.requestFocusInWindow();
+                            }
+                        } else {
+                            if (nextViewFinal instanceof ShowPreferencesPanel) {
+                                if (showPreferencesButton != null) {
+                                    showPreferencesButton.requestFocusInWindow();
+                                }
                             }
                         }
                     }

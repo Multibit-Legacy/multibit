@@ -29,11 +29,10 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.ViewSystem;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 
 import javax.swing.UIManager;
 import javax.swing.UIManager.*;
-
-
 
 /**
  * Main MultiBit entry class
@@ -83,69 +82,33 @@ public class MultiBit {
         MultiBitModel model = new MultiBitModel(controller, userPreferences);
         controller.setModel(model);
 
-        String operatingSystem = System.getProperty("os.name");
-        //operatingSystem="uncomment out to test non-Mac";
         try {
-            // Nimbus for everything other than the Mac
+            // Use Nimbus look and feel for everything
             for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if (("Mac OS X".equals(operatingSystem) && "Mac OS X".equals(info.getName())) ||
-                        (!"Mac OS X".equals(operatingSystem) && "Nimbus".equals(info.getName()))) {
+                if ("Nimbus".equals(info.getName())) {
                     UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
             }
         } catch (Exception e) {
-            // If Nimbus is not available, you can set the GUI to another look and feel.
+            // If Nimbus is not available use the default
         }
-        
+
         // create the view systems
         // add the swing view system
-        // this is done by reflection just to keep it out the import
-        ViewSystem swingViewSystem = null;
-        try {
-            Class multiBitFrameClass = Class.forName("org.multibit.viewsystem.swing.MultiBitFrame");
-            Constructor controllerConstructor = multiBitFrameClass.getConstructor(new Class[] { MultiBitController.class});
-            
-            swingViewSystem = (ViewSystem) createObject(controllerConstructor, new Object[] {controller});
-            controller.registerViewSystem(swingViewSystem);
-         } catch (ClassNotFoundException e) {
-            System.out.println(e);
-          } catch (NoSuchMethodException e) {
-            System.out.println(e);
-          }
- 
+        ViewSystem swingViewSystem = new MultiBitFrame(controller);
+        controller.registerViewSystem(swingViewSystem);
+
         // create the MultiBitService that connects to the bitcoin network
         MultiBitService multiBitService = new MultiBitService(useTestNet, controller);
         controller.setMultiBitService(multiBitService);
 
         // make sure the total is updated
         controller.fireDataChanged();
-        
+
         // display the next view
         controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
 
         multiBitService.downloadBlockChain();
-    }
-    
-
-    @SuppressWarnings("rawtypes")
-    public static Object createObject(Constructor constructor,
-        Object[] arguments) {
-
-       Object object = null;
-
-      try {
-        object = constructor.newInstance(arguments);
-        return object;
-      } catch (InstantiationException e) {
-        System.out.println(e);
-      } catch (IllegalAccessException e) {
-        System.out.println(e);
-      } catch (IllegalArgumentException e) {
-        System.out.println(e);
-      } catch (InvocationTargetException e) {
-        System.out.println(e);
-      }
-      return object;
     }
 }
