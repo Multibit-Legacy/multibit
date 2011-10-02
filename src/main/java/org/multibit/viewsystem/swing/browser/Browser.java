@@ -38,7 +38,7 @@ public class Browser extends javax.swing.JEditorPane implements PropertyChangeLi
         super();
         this.mainFrame = mainFrame;
 
-         addHyperlinkListener(new ActivatedHyperlinkListener(mainFrame, this, currentHref));
+        addHyperlinkListener(new ActivatedHyperlinkListener(mainFrame, this, currentHref));
 
         loadingMessage = controller.getLocaliser().getString("browser.loadingMessage");
         setEditable(false);

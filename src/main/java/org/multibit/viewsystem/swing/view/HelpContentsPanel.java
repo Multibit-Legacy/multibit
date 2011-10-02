@@ -1,10 +1,12 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
@@ -19,7 +21,7 @@ public class HelpContentsPanel extends JPanel implements View {
     private String initialUrl;
 
     private MultiBitFrame mainFrame;
-
+  
     public static final String SPACER = "   "; // 3 spaces
 
     boolean firstTimeLoaded = false;
@@ -31,13 +33,25 @@ public class HelpContentsPanel extends JPanel implements View {
         setLayout(new BorderLayout());
         firstTimeLoaded = true;
 
-       setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        setBackground(MultiBitFrame.BACKGROUND_COLOR);
 
-        browser = new Browser(controller, mainFrame, initialUrl);
- 
-        JScrollPane scrollPane = new JScrollPane(browser);
-        scrollPane.setPreferredSize(new Dimension(800, 400));
-        add(scrollPane, BorderLayout.CENTER);
+        final MultiBitController  finalController = controller;
+        final MultiBitFrame finalMainFrame = mainFrame;
+        
+        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                browser = new Browser(finalController, finalMainFrame, initialUrl);
+                
+                JScrollPane scrollPane = new JScrollPane(browser);
+                scrollPane.setPreferredSize(new Dimension(800, 400));
+                add(scrollPane, BorderLayout.CENTER);          
+            }
+            
+        });
+      
     }
 
     public void displayView() {
