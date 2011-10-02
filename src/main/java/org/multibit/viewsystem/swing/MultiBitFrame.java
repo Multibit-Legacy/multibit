@@ -78,7 +78,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private static final String PREFERENCES_ICON_FILE = "/images/preferences.png";
     private static final String HELP_CONTENTS_ICON_FILE = "/images/helpContents.png";
     private static final String MULTIBIT_SMALL_ICON_FILE = "/images/multibit-small.png";
-    public static final String MULTIBIT_ICON_FILE = "/images/multibit.gif";
+    public static final String MULTIBIT_ICON_FILE = "/images/multibit.png";
     private static final String TRANSACTIONS_ICON_FILE = "/images/information.png";
     private static final String WALLET_ICON_FILE = "/images/wallet.png";
     public static final String EXCLAMATION_MARK_ICON_FILE = "/images/exclamationMark.png";
@@ -478,7 +478,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {
-            System.err.println("org.multibit.ViewerFrame#createImageIcon: Could not find file: " + path);
+            System.err.println("org.multibit.MultiBitFrame#createImageIcon: Could not find file: " + path);
             return null;
         }
     }

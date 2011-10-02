@@ -1,7 +1,11 @@
 MultiBit release notes.
 
-Version 0.1.4alpha
+Version 0.2.0beta1
 Enhancements
++  Installers for Windows, Linux and Mac.
++  User interface now uses Java Nimbus look and feel
++  User preferences now shown in toolbar
++  Various user interface tidy ups
 +  Copy and paste added to address field
 +  Fee added to send confirm screen
   
