@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.multibit</groupId>
   <artifactId>multibit</artifactId>
-  <version>0.1.4-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <name>MultiBit</name>
   <description>A Java swing client for bitcoin</description>
   <url>http://www.multibit.org</url> 
@@ -91,7 +91,6 @@
       <url>http://nexus.bitcoinj.org/content/repositories/snapshots</url>
     </repository>
   </repositories>
-  
   <build>  
     <finalName>multibit</finalName>
     <plugins>
@@ -161,13 +160,7 @@
              </goals>
              <configuration>
                <outputDirectory>${basedir}/target/staging</outputDirectory>
-               <resources> 
-               <resource>
-                   <directory>src/main/resources/ImageSnap-v0.2.5</directory>
-                   <includes>
-                     <include>imagesnap</include>
-                   </includes>
-                 </resource>         
+               <resources>      
                  <resource>
                    <directory>src/main/izpack</directory>
                    <includes>
@@ -175,6 +168,12 @@
                      <include>install.xml</include>
                      <include>log4j.xml</include>
                      <include>multibit.properties</include>
+                   </includes>
+                 </resource>
+                 <resource>
+                   <directory>src/main/resources/images</directory>
+                   <includes>
+                     <include>installerLeft.png</include>
                    </includes>
                  </resource>
                  <resource>

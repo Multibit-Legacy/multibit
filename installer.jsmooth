@@ -10,7 +10,7 @@
 <classPath>target/multibit-installer.jar</classPath>
 <embeddedJar>true</embeddedJar>
 <executableName>target/multibit-installer.exe</executableName>
-<iconLocation>src/main/resources/images/multibit.gif</iconLocation>
+<iconLocation>src/main/resources/images/multibit.png</iconLocation>
 <initialMemoryHeap>-1</initialMemoryHeap>
 <jarLocation>target/multibit-installer.jar</jarLocation>
 <mainClassName>com.izforge.izpack.installer.Installer</mainClassName>

@@ -20,9 +20,13 @@
         <appsubpath>MultiBit-0.2.0beta1</appsubpath>
         <appversion>0.2.0beta1</appversion>
         <url>http://multibit.org/</url>
-        <uninstaller write="no" />
-        <javaversion>1.6</javaversion>
+        <uninstaller write="yes" />
+        <javaversion>1.6.0_10</javaversion>
     </info>
+
+<variables>
+  <variable name="ShowCreateDirectoryMessage" value="false"/>
+</variables>
 
     <!-- 
         The gui preferences indication.
@@ -45,6 +49,7 @@
     <resources>
         <res id="LicencePanel.licence" src="COPYING"/>
         <res id="InfoPanel.info" src="readme.txt"/>
+        <res id="Installer.image" src="installerLeft.png" />
     </resources>
 
     <!-- 
@@ -56,7 +61,6 @@
         <panel classname="InfoPanel"/>
         <panel classname="LicencePanel"/>
         <panel classname="TargetPanel"/>
-        <panel classname="PacksPanel"/>
         <panel classname="InstallPanel"/>
         <panel classname="FinishPanel"/>
     </panels>
@@ -75,9 +79,6 @@
             <file src="release_notes.txt" targetdir="$INSTALL_PATH"/>
             <file src="COPYING" targetdir="$INSTALL_PATH"/>
             <file src="multibit-executableJar.jar" targetdir="$INSTALL_PATH"/>
-
-           <file src="imagesnap" targetdir="$INSTALL_PATH" os="mac"/>
-           <executable type="bin" stage="never" targetfile="$INSTALL_PATH/imagesnap" os="mac"/>
         </pack>
     </packs>
 </installation>
