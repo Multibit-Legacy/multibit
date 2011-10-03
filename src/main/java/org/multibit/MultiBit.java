@@ -32,6 +32,7 @@ import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.UIManager.*;
 
 /**
@@ -83,15 +84,16 @@ public class MultiBit {
         controller.setModel(model);
 
         try {
-            // Use Nimbus look and feel for everything
-            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            // If Nimbus is not available use the default
+            // Set System L&F
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (UnsupportedLookAndFeelException e) {
+            // carry on
+        } catch (ClassNotFoundException e) {
+            // carry on
+        } catch (InstantiationException e) {
+            // carry on
+        } catch (IllegalAccessException e) {
+            // carry on
         }
 
         // create the view systems
