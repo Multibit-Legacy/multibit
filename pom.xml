@@ -68,7 +68,7 @@
             <phase>package</phase>
             <configuration>
               <includeGroupIds>org.codehaus.izpack</includeGroupIds>
-              <includeArtifacIds>izpack-standalone-compiler</includeArtifacIds>
+                <includeArtifactIds>izpack-standalone-compiler</includeArtifactIds>
               <classifier>izpack2app</classifier>
               <type>zip</type>
               <excludeTransitive>true</excludeTransitive>
@@ -131,9 +131,14 @@
                    </includes>
                  </resource>
                  <resource>
-                   <directory>.</directory>
+                   <directory>src/main/resources</directory>
                    <includes>
                      <include>multibit.blockchain</include>
+                   </includes>
+                 </resource>
+                 <resource>
+                   <directory>.</directory>
+                   <includes>
                      <include>release_notes.txt</include>
                      <include>COPYING</include>
                    </includes>
@@ -227,7 +232,6 @@
        </plugin>
            
       <plugin>
-        <!-- Make the JavaApplicationStub in the Mac application bundle executable (it loses its 'x' permission after the copy)  -->
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
@@ -235,8 +239,36 @@
              <phase>package</phase>
              <configuration>
                 <tasks>
+                  <!-- Make the JavaApplicationStub in the Mac application bundle executable (it loses its 'x' permission after the copy)  -->
                   <chmod file="${basedir}/target/MultiBit.app/Contents/MacOS/JavaApplicationStub" perm="777"/>
-                </tasks>
+                  
+                  <!-- Build a Mac .dmg -->
+                  <mkdir dir="${basedir}/target/dmg-tmp/MultiBit.app"/>  
+                  <copy todir="${basedir}/target/dmg-tmp/MultiBit.app" >  
+                    <fileset dir="${basedir}/target/MultiBit.app" includes="**"/>  
+ 				  </copy> 
+ 				  
+ 				  
+	              <!-- copy the Applications alias into the DMG-->      
+ 	              <!--
+ 	              <copy todir="${basedir}/target/dmg-tmp">
+	                 <fileset dir="${basedir}/src/app-resources">
+	                   <include name="Applications"/>
+	                 </fileset>
+	              </copy>
+	              -->
+	              
+	              <!-- Make the JavaApplicationStub in the temp_dmg executable (it loses its 'x' permission after the copy)  -->
+                  <chmod file="${basedir}/target/dmg-tmp/MultiBit.app/Contents/MacOS/JavaApplicationStub" perm="777"/>
+                  
+                  <!-- create a DMG file -->
+	              <exec executable="hdiutil">
+	                <arg value="create"/>
+	                <arg value="-srcfolder"/>
+	                <arg value="${basedir}/target/dmg-tmp"/>
+	                <arg path="${basedir}/target/MultiBit.dmg"/>
+	              </exec>
+	           </tasks>
              </configuration>
              <goals>
                  <goal>run</goal>
