@@ -1,21 +1,22 @@
-<project xmlns="http:/f/maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http:/f/maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.multibit</groupId>
   <artifactId>multibit</artifactId>
   <version>0.2.0-SNAPSHOT</version>
   <name>MultiBit</name>
   <description>A Java swing client for bitcoin</description>
-  <url>http://www.multibit.org</url> 
-    <!-- 
+  <url>http://www.multibit.org</url>
+  <!--
 
-       Use "mvn clean package" to build the generic installer 
-       Use "mvn clean verify" before submitting a patch
+  Use "mvn clean package" to build the generic installer
+  Use "mvn clean verify" before submitting a patch
 
-       Use "mvn site:site" to generate a complete website under target/site
-       Use "mvn site:run" to run a local webserver localhost:8080/index.html
+  Use "mvn site:site" to generate a complete website under target/site
+  Use "mvn site:run" to run a local webserver localhost:8080/index.html
 
-       -->
-  
+  -->
+
   <licenses>
     <license>
       <name>MIT</name>
@@ -23,7 +24,7 @@
       <distribution>repo</distribution>
       <comments>A business-friendly OSS license</comments>
     </license>
-  </licenses> 
+  </licenses>
   <issueManagement>
     <system>GitHub</system>
     <url>https://github.com/jim618/multibit/issues</url>
@@ -44,7 +45,7 @@
       <url>http://nexus.bitcoinj.org/content/repositories/snapshots</url>
     </repository>
   </repositories>
-  <build>  
+  <build>
     <finalName>multibit</finalName>
     <plugins>
       <plugin>
@@ -55,7 +56,7 @@
           <target>1.6</target>
         </configuration>
       </plugin>
-      
+
       <!-- Put izPack2app into staging dir for production of installer later -->
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -65,10 +66,10 @@
             <goals>
               <goal>unpack-dependencies</goal>
             </goals>
-            <phase>package</phase>
+            <phase>install</phase>
             <configuration>
               <includeGroupIds>org.codehaus.izpack</includeGroupIds>
-                <includeArtifactIds>izpack-standalone-compiler</includeArtifactIds>
+              <includeArtifactIds>izpack-standalone-compiler</includeArtifactIds>
               <classifier>izpack2app</classifier>
               <type>zip</type>
               <excludeTransitive>true</excludeTransitive>
@@ -76,8 +77,8 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>  
-            
+      </plugin>
+
       <!-- Create executable jar -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -88,73 +89,73 @@
           </descriptors>
           <archive>
             <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
-           </archive>
-         </configuration>
-         <executions>
-            <execution>
-              <id>make-assembly</id> 
-              <phase>package</phase>
-              <goals>
-                <goal>single</goal>
-              </goals>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
           </execution>
-         </executions>
-       </plugin>
-       
-       <!-- Produce staging directory with all resources used in creation of the IzPack installer and in creation of the Mac application bundle -->
-       <plugin>
-         <artifactId>maven-resources-plugin</artifactId>
-         <version>2.5</version>
-         <executions>
-           <execution>
-             <id>copy-resources-to-staging</id>
-             <phase>package</phase>
-             <goals>
-               <goal>copy-resources</goal>
-             </goals>
-             <configuration>
-               <outputDirectory>${basedir}/target/staging</outputDirectory>
-               <resources>      
-                 <resource>
-                   <directory>src/main/izpack</directory>
-                   <includes>
-                     <include>readme.txt</include>
-                     <include>install.xml</include>
-                     <include>log4j.xml</include>
-                     <include>multibit.properties</include>
-                   </includes>
-                 </resource>
-                 <resource>
-                   <directory>src/main/resources/images</directory>
-                   <includes>
-                     <include>installerLeft.png</include>
-                   </includes>
-                 </resource>
-                 <resource>
-                   <directory>src/main/resources</directory>
-                   <includes>
-                     <include>multibit.blockchain</include>
-                   </includes>
-                 </resource>
-                 <resource>
-                   <directory>.</directory>
-                   <includes>
-                     <include>release_notes.txt</include>
-                     <include>COPYING</include>
-                   </includes>
-                 </resource>
+        </executions>
+      </plugin>
+
+      <!-- Produce staging directory with all resources used in creation of the IzPack installer and in creation of the Mac application bundle -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.5</version>
+        <executions>
+          <execution>
+            <id>copy-resources-to-staging</id>
+            <phase>install</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/staging</outputDirectory>
+              <resources>
                 <resource>
-                   <directory>target</directory>
-                   <includes>
-                     <include>multibit-executableJar.jar</include>
-                   </includes>
-                 </resource>
-               </resources>              
-             </configuration>            
-           </execution>
-         </executions>
-       </plugin>  
-          
+                  <directory>src/main/izpack</directory>
+                  <includes>
+                    <include>readme.txt</include>
+                    <include>install.xml</include>
+                    <include>log4j.xml</include>
+                    <include>multibit.properties</include>
+                  </includes>
+                </resource>
+                <resource>
+                  <directory>src/main/resources/images</directory>
+                  <includes>
+                    <include>installerLeft.png</include>
+                  </includes>
+                </resource>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <includes>
+                    <include>multibit.blockchain</include>
+                  </includes>
+                </resource>
+                <resource>
+                  <directory>.</directory>
+                  <includes>
+                    <include>release_notes.txt</include>
+                    <include>COPYING</include>
+                  </includes>
+                </resource>
+                <resource>
+                  <directory>target</directory>
+                  <includes>
+                    <include>multibit-executableJar.jar</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <!-- Produce IzPack installer from contents of staging directory -->
       <plugin>
         <groupId>org.codehaus.izpack</groupId>
@@ -162,7 +163,7 @@
         <version>1.0-alpha-5</version>
         <executions>
           <execution>
-            <phase>package</phase>
+            <phase>install</phase>
             <goals>
               <goal>izpack</goal>
             </goals>
@@ -179,124 +180,125 @@
             <version>4.3.4</version>
           </dependency>
         </dependencies>
-      </plugin> 
-      
+      </plugin>
+
       <!-- produce a Mac application bundle -->
       <!-- this plugin copies a skeleton App and then copies in the resources from the staging directory -->
       <!-- Note I have tried using http://mojo.codehaus.org/osxappbundle-maven-plugin/ but cannot get extra resources into my Java directory in the app -->
       <plugin>
-         <artifactId>maven-resources-plugin</artifactId>
-         <version>2.5</version>
-         <executions>
-           <execution>
-             <id>create-skeleton-Mac-application-bundle</id>
-             <phase>package</phase>
-             <goals>
-               <goal>copy-resources</goal>
-             </goals>
-             <configuration>
-               <outputDirectory>${basedir}/target/MultiBit.app</outputDirectory>
-               <resources>      
-                 <resource>
-                   <!-- skeleton app -->
-                   <directory>src/app-resources/MultiBit.app</directory>
-                 </resource>
-               </resources>              
-             </configuration>            
-           </execution>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.5</version>
+        <executions>
           <execution>
-             <id>add-Java-resources-into-application-bundle</id>
-             <phase>package</phase>
-             <goals>
-               <goal>copy-resources</goal>
-             </goals>
-             <configuration>
-               <outputDirectory>${basedir}/target/MultiBit.app/Contents/Resources/Java</outputDirectory>
-               <resources>      
-                 <resource>
-                   <directory>${basedir}/target/staging</directory>
-                   <includes>
-                     <include>multibit-executableJar.jar</include>
-                     <include>readme.txt</include>
-                     <include>log4j.xml</include>
-                     <include>multibit.properties</include>
-                     <include>multibit.blockchain</include>
-					 <include>release_notes.txt</include>
-                     <include>COPYING</include>
-                   </includes>
-                 </resource>
-               </resources>              
-             </configuration>            
-           </execution>
-         </executions>
-       </plugin>
-           
+            <id>create-skeleton-Mac-application-bundle</id>
+            <phase>install</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/MultiBit.app</outputDirectory>
+              <resources>
+                <resource>
+                  <!-- skeleton app -->
+                  <directory>src/app-resources/MultiBit.app</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-Java-resources-into-application-bundle</id>
+            <phase>install</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/MultiBit.app/Contents/Resources/Java</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${basedir}/target/staging</directory>
+                  <includes>
+                    <include>multibit-executableJar.jar</include>
+                    <include>readme.txt</include>
+                    <include>log4j.xml</include>
+                    <include>multibit.properties</include>
+                    <include>multibit.blockchain</include>
+                    <include>release_notes.txt</include>
+                    <include>COPYING</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
-             <id>chmod-java-application-stub</id>
-             <phase>package</phase>
-             <configuration>
-                <tasks>
-                  <!-- Make the JavaApplicationStub in the Mac application bundle executable (it loses its 'x' permission after the copy)  -->
-                  <chmod file="${basedir}/target/MultiBit.app/Contents/MacOS/JavaApplicationStub" perm="777"/>
-                  
-                  <!-- Build a Mac .dmg -->
-                  <mkdir dir="${basedir}/target/dmg-tmp/MultiBit.app"/>  
-                  <copy todir="${basedir}/target/dmg-tmp/MultiBit.app" >  
-                    <fileset dir="${basedir}/target/MultiBit.app" includes="**"/>  
- 				  </copy> 
- 				  
- 				  
-	              <!-- copy the Applications alias into the DMG-->      
- 	              <!--
- 	              <copy todir="${basedir}/target/dmg-tmp">
-	                 <fileset dir="${basedir}/src/app-resources">
-	                   <include name="Applications"/>
-	                 </fileset>
-	              </copy>
-	              -->
-	              
-	              <!-- Make the JavaApplicationStub in the temp_dmg executable (it loses its 'x' permission after the copy)  -->
-                  <chmod file="${basedir}/target/dmg-tmp/MultiBit.app/Contents/MacOS/JavaApplicationStub" perm="777"/>
-                  
-                  <!-- create a DMG file -->
-	              <exec executable="hdiutil">
-	                <arg value="create"/>
-	                <arg value="-srcfolder"/>
-	                <arg value="${basedir}/target/dmg-tmp"/>
-	                <arg path="${basedir}/target/MultiBit.dmg"/>
-	              </exec>
-	           </tasks>
-             </configuration>
-             <goals>
-                 <goal>run</goal>
-             </goals>
-           </execution>
+            <id>chmod-java-application-stub</id>
+            <phase>install</phase>
+            <configuration>
+              <tasks>
+                <!-- Make the JavaApplicationStub in the Mac application bundle executable (it loses its 'x' permission after the copy)  -->
+                <chmod file="${basedir}/target/MultiBit.app/Contents/MacOS/JavaApplicationStub" perm="777"/>
 
-           <!-- Produce a Win32 exe from the generic IzPack installer (no Maven plugin for JSmooth so drop down to ant -->
-           <execution>
+                <!-- Build a Mac .dmg -->
+                <mkdir dir="${basedir}/target/dmg-tmp/MultiBit.app"/>
+                <copy todir="${basedir}/target/dmg-tmp/MultiBit.app">
+                  <fileset dir="${basedir}/target/MultiBit.app" includes="**"/>
+                </copy>
+
+
+                <!-- copy the Applications alias into the DMG-->
+                <!--
+                         <copy todir="${basedir}/target/dmg-tmp">
+                           <fileset dir="${basedir}/src/app-resources">
+                             <include name="Applications"/>
+                           </fileset>
+                        </copy>
+                        -->
+
+                <!-- Make the JavaApplicationStub in the temp_dmg executable (it loses its 'x' permission after the copy)  -->
+                <chmod file="${basedir}/target/dmg-tmp/MultiBit.app/Contents/MacOS/JavaApplicationStub" perm="777"/>
+
+                <!-- create a DMG file -->
+                <exec executable="hdiutil">
+                  <arg value="create"/>
+                  <arg value="-srcfolder"/>
+                  <arg value="${basedir}/target/dmg-tmp"/>
+                  <arg path="${basedir}/target/MultiBit.dmg"/>
+                </exec>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+
+          <!-- Produce a Win32 exe from the generic IzPack installer (no Maven plugin for JSmooth so drop down to ant -->
+          <execution>
             <id>jsmooth-installer2exe</id>
-            <phase>package</phase>
+            <phase>install</phase>
             <configuration>
               <tasks>
                 <path id="jsmooth-classpathref">
                   <pathelement path="src/main/jsmooth/lib/jsmoothgen.jar"/>
                   <pathelement path="src/main/jsmooth/lib/jsmoothgen-ant.jar"/>
                 </path>
-                <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpathref="jsmooth-classpathref"/>
-                <jsmoothgen project="installer.jsmooth" skeletonroot="src/main/jsmooth/skeletons"/> 
+                <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen"
+                         classpathref="jsmooth-classpathref"/>
+                <jsmoothgen project="installer.jsmooth" skeletonroot="src/main/jsmooth/skeletons"/>
               </tasks>
             </configuration>
             <goals>
               <goal>run</goal>
             </goals>
-          </execution>         
+          </execution>
         </executions>
-      </plugin>   
-    </plugins>    
- </build>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -322,7 +324,7 @@
       <version>1.46</version>
       <type>jar</type>
       <scope>compile</scope>
-     </dependency>
+    </dependency>
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>apache-log4j-extras</artifactId>
@@ -346,10 +348,38 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
+  <reporting>
+    <plugins>
+      <!-- PMD checking -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+          <linkXRef>true</linkXRef>
+          <sourceEncoding>utf-8</sourceEncoding>
+          <minimumTokens>100</minimumTokens>
+          <targetJdk>1.6</targetJdk>
+        </configuration>
+      </plugin>
+      <!-- Findbugs checking -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.3.2</version>
+      </plugin>
+      <!-- Generate cross-referenced HTML source code listing -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.1</version>
+      </plugin>
+    </plugins>
+  </reporting>
   <properties>
     <!-- Source encoding -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    
+
     <!-- Location of staging directory for creation of IzPack installer -->
     <staging.dir>${project.build.directory}/staging</staging.dir>
   </properties>
