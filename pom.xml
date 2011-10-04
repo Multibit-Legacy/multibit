@@ -9,8 +9,9 @@
   <url>http://www.multibit.org</url>
   <!--
 
-  Use "mvn clean package" to build the generic installer
+  Use "mvn clean package" to build the code packaged into a basic multibit.jar
   Use "mvn clean verify" before submitting a patch
+  Use "mvn clean install" to build the executable jar, installers and Mac DMG
 
   Use "mvn site:site" to generate a complete website under target/site
   Use "mvn site:run" to run a local webserver localhost:8080/index.html
@@ -85,7 +86,7 @@
         <version>2.2.1</version>
         <configuration>
           <descriptors>
-            <descriptor>src/assemble/executable-jar.xml</descriptor>
+            <descriptor>src/assemble/exe.xml</descriptor>
           </descriptors>
           <archive>
             <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
@@ -147,7 +148,51 @@
                 <resource>
                   <directory>target</directory>
                   <includes>
-                    <include>multibit-executableJar.jar</include>
+                    <include>multibit-exe.jar</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          
+          <!-- produce a Mac application bundle -->
+          <!-- this plugin copies a skeleton App and then copies in the resources from the staging directory -->
+          <!-- Note I have tried using http://mojo.codehaus.org/osxappbundle-maven-plugin/ but cannot get extra resources into my Java directory in the app -->
+          <execution>
+            <id>create-skeleton-Mac-application-bundle</id>
+            <phase>install</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/MultiBit.app</outputDirectory>
+              <resources>
+                <resource>
+                  <!-- skeleton app -->
+                  <directory>src/app-resources/MultiBit.app</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-Java-resources-into-application-bundle</id>
+            <phase>install</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/MultiBit.app/Contents/Resources/Java</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${basedir}/target/staging</directory>
+                  <includes>
+                    <include>multibit-exe.jar</include>
+                    <include>readme.txt</include>
+                    <include>log4j.xml</include>
+                    <include>multibit.properties</include>
+                    <include>multibit.blockchain</include>
+                    <include>release_notes.txt</include>
+                    <include>COPYING</include>
                   </includes>
                 </resource>
               </resources>
@@ -182,61 +227,11 @@
         </dependencies>
       </plugin>
 
-      <!-- produce a Mac application bundle -->
-      <!-- this plugin copies a skeleton App and then copies in the resources from the staging directory -->
-      <!-- Note I have tried using http://mojo.codehaus.org/osxappbundle-maven-plugin/ but cannot get extra resources into my Java directory in the app -->
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>2.5</version>
-        <executions>
-          <execution>
-            <id>create-skeleton-Mac-application-bundle</id>
-            <phase>install</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target/MultiBit.app</outputDirectory>
-              <resources>
-                <resource>
-                  <!-- skeleton app -->
-                  <directory>src/app-resources/MultiBit.app</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>add-Java-resources-into-application-bundle</id>
-            <phase>install</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target/MultiBit.app/Contents/Resources/Java</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${basedir}/target/staging</directory>
-                  <includes>
-                    <include>multibit-executableJar.jar</include>
-                    <include>readme.txt</include>
-                    <include>log4j.xml</include>
-                    <include>multibit.properties</include>
-                    <include>multibit.blockchain</include>
-                    <include>release_notes.txt</include>
-                    <include>COPYING</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
-            <id>chmod-java-application-stub</id>
+            <id>create-mac-dmg</id>
             <phase>install</phase>
             <configuration>
               <tasks>
@@ -244,31 +239,36 @@
                 <chmod file="${basedir}/target/MultiBit.app/Contents/MacOS/JavaApplicationStub" perm="777"/>
 
                 <!-- Build a Mac .dmg -->
-                <mkdir dir="${basedir}/target/dmg-tmp/MultiBit.app"/>
-                <copy todir="${basedir}/target/dmg-tmp/MultiBit.app">
+                <mkdir dir="${basedir}/target/MultiBit-mac/MultiBit.app"/>
+                <copy todir="${basedir}/target/MultiBit-mac/MultiBit.app">
                   <fileset dir="${basedir}/target/MultiBit.app" includes="**"/>
                 </copy>
 
 
                 <!-- copy the Applications alias into the DMG-->
                 <!--
-                         <copy todir="${basedir}/target/dmg-tmp">
+                         <copy todir="${basedir}/target/MultiBit-mac">
                            <fileset dir="${basedir}/src/app-resources">
                              <include name="Applications"/>
                            </fileset>
                         </copy>
                         -->
 
-                <!-- Make the JavaApplicationStub in the temp_dmg executable (it loses its 'x' permission after the copy)  -->
-                <chmod file="${basedir}/target/dmg-tmp/MultiBit.app/Contents/MacOS/JavaApplicationStub" perm="777"/>
+                <!-- Make the JavaApplicationStub in the MultiBit app (it loses its 'x' permission after the copy)  -->
+                <chmod file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/MacOS/JavaApplicationStub" perm="777"/>
 
                 <!-- create a DMG file -->
                 <exec executable="hdiutil">
                   <arg value="create"/>
                   <arg value="-srcfolder"/>
-                  <arg value="${basedir}/target/dmg-tmp"/>
+                  <arg value="${basedir}/target/MultiBit-mac"/>
                   <arg path="${basedir}/target/MultiBit.dmg"/>
                 </exec>
+                
+                <!-- get rid of assembly directory -->
+                <delete includeEmptyDirs="true">
+    			   <fileset dir="${basedir}/target/MultiBit-mac"/>
+                </delete>
               </tasks>
             </configuration>
             <goals>
@@ -276,7 +276,7 @@
             </goals>
           </execution>
 
-          <!-- Produce a Win32 exe from the generic IzPack installer (no Maven plugin for JSmooth so drop down to ant -->
+          <!-- Produce a Win32 exe from the generic IzPack installer (no Maven plugin for JSmooth so drop down to ant) -->
           <execution>
             <id>jsmooth-installer2exe</id>
             <phase>install</phase>

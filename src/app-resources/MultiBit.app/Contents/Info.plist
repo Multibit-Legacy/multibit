@@ -37,13 +37,12 @@
 		<key>JVMVersion</key>
 		<string>1.6+</string>
 		<key>ClassPath</key>
-		<string>$JAVAROOT/multibit-executableJar.jar</string>
+		<string>$JAVAROOT/multibit-exe.jar</string>
 		<key>Properties</key>
 		<dict>
 			<key>apple.laf.useScreenMenuBar</key>
 			<string>true</string>
 		</dict>
-
 	</dict>
 </dict>
 </plist>

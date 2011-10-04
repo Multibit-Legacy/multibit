@@ -1,0 +1,1 @@
+The exe.xml is used to assemble the executable jar: multibit-exe.jar

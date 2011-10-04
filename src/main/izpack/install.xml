@@ -21,7 +21,7 @@
         <appversion>0.2.0beta1</appversion>
         <url>http://multibit.org/</url>
         <uninstaller write="yes" />
-        <javaversion>1.6.0_10</javaversion>
+        <javaversion>1.6</javaversion>
     </info>
 
 <variables>
@@ -78,7 +78,7 @@
             <file src="multibit.blockchain" targetdir="$INSTALL_PATH"/>
             <file src="release_notes.txt" targetdir="$INSTALL_PATH"/>
             <file src="COPYING" targetdir="$INSTALL_PATH"/>
-            <file src="multibit-executableJar.jar" targetdir="$INSTALL_PATH"/>
+            <file src="multibit-exe.jar" targetdir="$INSTALL_PATH"/>
         </pack>
     </packs>
 </installation>

@@ -1,5 +1,5 @@
 <assembly>
-  <id>executableJar</id>
+  <id>exe</id>
   <formats>
     <format>jar</format>
   </formats>
