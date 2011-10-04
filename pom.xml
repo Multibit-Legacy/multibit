@@ -227,6 +227,7 @@
         </dependencies>
       </plugin>
 
+      <!-- Build a Mac DMG -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
@@ -238,34 +239,35 @@
                 <!-- Make the JavaApplicationStub in the Mac application bundle executable (it loses its 'x' permission after the copy)  -->
                 <chmod file="${basedir}/target/MultiBit.app/Contents/MacOS/JavaApplicationStub" perm="777"/>
 
-                <!-- Build a Mac .dmg -->
                 <mkdir dir="${basedir}/target/MultiBit-mac/MultiBit.app"/>
                 <copy todir="${basedir}/target/MultiBit-mac/MultiBit.app">
                   <fileset dir="${basedir}/target/MultiBit.app" includes="**"/>
                 </copy>
 
-
-                <!-- copy the Applications alias into the DMG-->
-                <!--
-                         <copy todir="${basedir}/target/MultiBit-mac">
-                           <fileset dir="${basedir}/src/app-resources">
-                             <include name="Applications"/>
-                           </fileset>
-                        </copy>
-                        -->
-
+ 	            <!-- Create Applications Symbolic link -->
+	            <!-- WARNING, do not remove this symbolic link by Java(ant) -->
+	            <exec executable="ln" os="'Mac OS X'">
+		          <arg line="-s /Applications ${basedir}/target/MultiBit-mac/Applications"/>
+	            </exec> 
+	                     
                 <!-- Make the JavaApplicationStub in the MultiBit app (it loses its 'x' permission after the copy)  -->
                 <chmod file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/MacOS/JavaApplicationStub" perm="777"/>
 
                 <!-- create a DMG file -->
-                <exec executable="hdiutil">
+                <exec executable="hdiutil" os="'Mac OS X'">
                   <arg value="create"/>
                   <arg value="-srcfolder"/>
                   <arg value="${basedir}/target/MultiBit-mac"/>
                   <arg path="${basedir}/target/MultiBit.dmg"/>
-                </exec>
+                </exec>      
                 
-                <!-- get rid of assembly directory -->
+                <!-- IMPORTANT! -->
+	            <!-- Remove symbolic link before deleting tmp dir -->
+	            <exec executable="rm" os="'Mac OS X'">
+		          <arg line="-R ${basedir}/target/MultiBit-mac/Applications"/>
+	            </exec>
+
+                <!-- get rid of temporary directory -->
                 <delete includeEmptyDirs="true">
     			   <fileset dir="${basedir}/target/MultiBit-mac"/>
                 </delete>
@@ -296,6 +298,13 @@
             </goals>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+             <groupId>ant</groupId>
+             <artifactId>ant-nodeps</artifactId>
+             <version>1.6.5</version>
+           </dependency>
+         </dependencies>
       </plugin>
     </plugins>
   </build>
