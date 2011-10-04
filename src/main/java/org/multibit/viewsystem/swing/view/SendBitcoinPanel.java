@@ -1,6 +1,7 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -36,9 +37,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.multibit.Localiser;
@@ -56,6 +59,7 @@ import org.multibit.viewsystem.swing.action.CopySendAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewSendingAddressAction;
 import org.multibit.viewsystem.swing.action.PasteAddressAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
+import org.multibit.viewsystem.swing.view.ShowTransactionsPanel.LeftJustifiedRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -473,9 +477,13 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
         TableColumn tableColumn = addressesTable.getColumnModel().getColumn(0); // label
         tableColumn.setPreferredWidth(40);
+        // label left justified
+        tableColumn.setCellRenderer(new LeftJustifiedRenderer());
 
         tableColumn = addressesTable.getColumnModel().getColumn(1); // address
         tableColumn.setPreferredWidth(120);
+        // addresses left justified
+        tableColumn.setCellRenderer(new LeftJustifiedRenderer());
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -685,6 +693,27 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
     public JPanel getFormPanel() {
         return formPanel;
+    }
+    
+    class LeftJustifiedRenderer extends DefaultTableCellRenderer {
+        private static final long serialVersionUID = 1549545L;
+
+        JLabel label = new JLabel();
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+                int row, int column) {
+            label.setHorizontalAlignment(SwingConstants.LEFT);
+            label.setBackground(MultiBitFrame.BACKGROUND_COLOR);
+            label.setOpaque(true);   
+
+            label.setText((String) value);
+
+            if (!label.getBackground().equals(table.getSelectionBackground())) {
+                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
+                label.setBackground(backgroundColor);
+            }
+            return label;
+        }
     }
 
     class ImageSelection extends TransferHandler implements Transferable {
