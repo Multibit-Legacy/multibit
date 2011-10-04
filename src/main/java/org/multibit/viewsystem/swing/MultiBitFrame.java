@@ -46,6 +46,7 @@ import org.multibit.viewsystem.swing.action.ShowPreferencesAction;
 import org.multibit.viewsystem.swing.action.ShowTransactionsAction;
 import org.multibit.viewsystem.swing.macos.MacOSAboutHandler;
 import org.multibit.viewsystem.swing.macos.MacOSPreferencesHandler;
+import org.multibit.viewsystem.swing.macos.MacOSQuitHandler;
 import org.multibit.viewsystem.swing.view.BlinkLabel;
 import org.multibit.viewsystem.swing.view.HeaderPanel;
 import org.multibit.viewsystem.swing.view.MultiBitButton;
@@ -407,7 +408,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             menuItem = new JMenuItem(new ExitAction(controller));
             fileMenu.add(menuItem);
          } else {                                               
-               // Macs have no Exit button        
+             // Macs have no Exit button        
+             // register QuitHandler
+             Application.getApplication().setQuitHandler(new MacOSQuitHandler(controller));
          }   
 
         // show help contents action
