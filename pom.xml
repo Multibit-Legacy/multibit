@@ -45,6 +45,11 @@
       <snapshots/>
       <url>http://nexus.bitcoinj.org/content/repositories/snapshots</url>
     </repository>
+    <repository>
+      <id>macify</id>
+      <name>org.simplericity.macify</name>
+      <url>http://simplericity.org/repository/</url>
+    </repository>
   </repositories>
   <build>
     <finalName>multibit</finalName>
@@ -355,6 +360,13 @@
       <artifactId>bitcoinj</artifactId>
       <version>0.3-SNAPSHOT</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.simplericity.macify</groupId>
+    	<artifactId>macify</artifactId>
+    	<version>1.6</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
     </dependency>
   </dependencies>
   <reporting>

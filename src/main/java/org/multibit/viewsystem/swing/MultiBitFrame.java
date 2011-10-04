@@ -44,6 +44,8 @@ import org.multibit.viewsystem.swing.action.SendBitcoinAction;
 import org.multibit.viewsystem.swing.action.ShowHelpContentsAction;
 import org.multibit.viewsystem.swing.action.ShowPreferencesAction;
 import org.multibit.viewsystem.swing.action.ShowTransactionsAction;
+import org.multibit.viewsystem.swing.macos.MacOSAboutHandler;
+import org.multibit.viewsystem.swing.macos.MacOSPreferencesHandler;
 import org.multibit.viewsystem.swing.view.BlinkLabel;
 import org.multibit.viewsystem.swing.view.HeaderPanel;
 import org.multibit.viewsystem.swing.view.MultiBitButton;
@@ -54,6 +56,7 @@ import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.apple.eawt.Application;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
@@ -396,22 +399,34 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         menuItem = new JMenuItem(saveWalletAsAction);
         fileMenu.add(menuItem);
 
-        fileMenu.addSeparator();
-
         // exit action
-        menuItem = new JMenuItem(new ExitAction(controller));
-        fileMenu.add(menuItem);
+        if (System.getProperty("mrj.version") == null) {  
+            // non Macs have an Exit Menu item
+            fileMenu.addSeparator();
+
+            menuItem = new JMenuItem(new ExitAction(controller));
+            fileMenu.add(menuItem);
+         } else {                                               
+               // Macs have no Exit button        
+         }   
 
         // show help contents action
         ShowHelpContentsAction showHelpContentsAction = new ShowHelpContentsAction(controller, localiser,
                 createImageIcon(HELP_CONTENTS_ICON_FILE));
         menuItem = new JMenuItem(showHelpContentsAction);
         helpMenu.add(menuItem);
-
-        // help about action
-        HelpAboutAction helpAboutAction = new HelpAboutAction(controller, createImageIcon(MULTIBIT_SMALL_ICON_FILE), this);
-        menuItem = new JMenuItem(helpAboutAction);
-        helpMenu.add(menuItem);
+        
+        if (System.getProperty("mrj.version") == null) {  
+            // non Macs have a Help About menu item
+            // help about action
+            HelpAboutAction helpAboutAction = new HelpAboutAction(controller, createImageIcon(MULTIBIT_SMALL_ICON_FILE), this);
+            menuItem = new JMenuItem(helpAboutAction);
+            helpMenu.add(menuItem);
+         } else {                                               
+             // Macs have no Help About menu button   
+             // register AboutBox handler
+             Application.getApplication().setAboutHandler(new MacOSAboutHandler(controller));
+         } 
 
         // show transactions action
         JPanel showTransactionsPanel = new JPanel(new BorderLayout());
@@ -448,10 +463,18 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         sendBitcoinPanel.add(sendBitcoinButton);
  
         // show preferences
-         ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller,
-                createImageIcon(PREFERENCES_ICON_FILE));
-        viewMenu.add(showPreferencesAction);
-        
+        if (System.getProperty("mrj.version") == null) {  
+            // non Macs have a Preferences menu item
+            // help about action
+            ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller,
+                    createImageIcon(PREFERENCES_ICON_FILE));
+            viewMenu.add(showPreferencesAction);
+         } else {                                               
+             // Macs have no View | Preferences menu button   
+             // register Preferences handler
+             Application.getApplication().setPreferencesHandler(new MacOSPreferencesHandler(controller));
+         } 
+
         toolBar.add(openWalletPanel);
         toolBar.add(receiveBitcoinPanel);
         toolBar.add(sendBitcoinPanel);
