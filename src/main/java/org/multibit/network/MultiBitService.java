@@ -58,6 +58,8 @@ import com.google.bitcoin.store.BoundedOverheadBlockStore;
  * </p>
  */
 public class MultiBitService {
+    private static final Logger log = LoggerFactory.getLogger(MultiBitService.class);
+
     public static final String MULTIBIT_PREFIX = "multibit";
     public static final String TEST_NET_PREFIX = "testnet";
     public static final String SEPARATOR = "-";
@@ -175,7 +177,8 @@ public class MultiBitService {
                     peerGroup.addAddress(new PeerAddress(InetAddress.getByName(singleNodeConnection)));
                     peerGroup.setMaxConnections(1);
                 } catch (UnknownHostException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage(),e);
+
                 }
             } else {
                 // use DNS for production, IRC for test

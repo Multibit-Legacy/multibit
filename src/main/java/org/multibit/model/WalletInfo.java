@@ -1,23 +1,11 @@
 package org.multibit.model;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.Vector;
-
 import com.google.bitcoin.core.Address;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.*;
 
 /**
  * wallet info is the companion info to the bitcoinj that multibit uses
@@ -30,6 +18,8 @@ import com.google.bitcoin.core.Address;
  *
  */
 public class WalletInfo {
+
+    private static final Logger log = LoggerFactory.getLogger(WalletInfo.class);
 
     /**
      * the total receiving addresses known - from the address book (will include
@@ -275,7 +265,8 @@ public class WalletInfo {
             // Close the output stream
             out.close();
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            log.error(ioe.getMessage(), ioe);
+
         }
     }
     

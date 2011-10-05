@@ -1,16 +1,17 @@
 package org.multibit.action;
 
-import java.io.IOException;
-import java.math.BigInteger;
-
+import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.Utils;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.Utils;
+import java.io.IOException;
+import java.math.BigInteger;
 
 /**
  * an action that actually sends bitcoin
@@ -19,6 +20,8 @@ import com.google.bitcoin.core.Utils;
  * 
  */
 public class SendBitcoinNowAction implements Action {
+
+    private static final Logger log = LoggerFactory.getLogger(SendBitcoinNowAction.class);
 
     private MultiBitController controller;
     
@@ -52,10 +55,12 @@ public class SendBitcoinNowAction implements Action {
             controller.sendCoins(sendAddress, sendLabel, sendAmount, fee);
             sendWasSuccessful = Boolean.TRUE;
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
+
             errorMessage = e.getMessage();
         } catch (AddressFormatException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
+
             errorMessage = e.getMessage();
         } catch (Throwable t) {
             // really trying to catch anything that goes wrong

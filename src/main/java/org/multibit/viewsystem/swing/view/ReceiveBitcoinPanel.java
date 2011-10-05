@@ -1,47 +1,7 @@
 package org.multibit.viewsystem.swing.view;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.util.Vector;
-
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListSelectionModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.TransferHandler;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.AddressBookData;
-import org.multibit.model.Data;
-import org.multibit.model.DataProvider;
-import org.multibit.model.Item;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.*;
 import org.multibit.qrcode.BitcoinURI;
 import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.viewsystem.View;
@@ -50,9 +10,22 @@ import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
 import org.multibit.viewsystem.swing.action.CopyQRCodeTextAction;
 import org.multibit.viewsystem.swing.action.CopyReceiveAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewReceivingAddressAction;
-import org.multibit.viewsystem.swing.view.SendBitcoinPanel.LeftJustifiedRenderer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.util.Vector;
 
 public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
+
+    private static final Logger log = LoggerFactory.getLogger(ReceiveBitcoinPanel.class);
 
     private static final long serialVersionUID = -2065108865497842662L;
 
@@ -686,7 +659,8 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
                 qrCodeLabel.setIcon(icon);
                 qrCodeTextArea.setText(stringToDisplay);
             } catch (IllegalArgumentException iae) {
-                iae.printStackTrace();
+                log.error(iae.getMessage(), iae);
+
             }
         }
     }

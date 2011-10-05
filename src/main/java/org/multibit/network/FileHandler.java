@@ -1,27 +1,17 @@
 package org.multibit.network;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import com.google.bitcoin.core.Wallet;
+import org.multibit.controller.MultiBitController;
+import org.multibit.model.WalletInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 import java.nio.channels.FileChannel;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
-
-import org.multibit.controller.MultiBitController;
-import org.multibit.model.WalletInfo;
-
-import com.google.bitcoin.core.Wallet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * a class consolidating all the File IO in MultiBit
@@ -80,7 +70,7 @@ public class FileHandler {
 
             wallet.saveToFile(walletFile);
         } catch (IOException e) {
-            e.printStackTrace();
+           log.error(e.getMessage(),e);
         }
     }
 
@@ -94,11 +84,9 @@ public class FileHandler {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(bufferedOutputStream, "UTF8");
             userPreferences.store(outputStreamWriter, USER_PROPERTIES_HEADER_TEXT);
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+          log.error(e.getMessage(),e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+          log.error(e.getMessage(),e);
         }
     }
 

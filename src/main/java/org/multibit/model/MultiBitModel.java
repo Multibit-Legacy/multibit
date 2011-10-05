@@ -1,30 +1,14 @@
 package org.multibit.model;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Vector;
-
+import com.google.bitcoin.core.*;
+import com.google.bitcoin.core.Wallet.BalanceType;
 import org.multibit.controller.MultiBitController;
 import org.multibit.network.MultiBitService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.Block;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.ScriptException;
-import com.google.bitcoin.core.StoredBlock;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionInput;
-import com.google.bitcoin.core.TransactionOutput;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.Wallet.BalanceType;
-import com.google.bitcoin.core.WalletEventListener;
+import java.math.BigInteger;
+import java.util.*;
 
 /**
  * model containing the MultiBit data
@@ -33,6 +17,8 @@ import com.google.bitcoin.core.WalletEventListener;
  * 
  */
 public class MultiBitModel {
+
+    private static final Logger log = LoggerFactory.getLogger(MultiBitModel.class);
 
     // constants used in the multibit.properties and in data provider data
     // payloads
@@ -256,7 +242,8 @@ public class MultiBitModel {
                 try {
                     walletDataRow.setDebit(pendingTransaction.getValueSentFromMe(wallet));
                 } catch (ScriptException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage(), e);
+
                 }
                 List<TransactionInput> transactionInputs = pendingTransaction.getInputs();
                 List<TransactionOutput> transactionOutputs = pendingTransaction.getOutputs();
@@ -280,7 +267,8 @@ public class MultiBitModel {
                 try {
                     walletDataRow.setDebit(unspentTransaction.getValueSentFromMe(wallet));
                 } catch (ScriptException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage(), e);
+
                 }
                 List<TransactionInput> transactionInputs = unspentTransaction.getInputs();
                 List<TransactionOutput> transactionOutputs = unspentTransaction.getOutputs();
@@ -304,7 +292,8 @@ public class MultiBitModel {
                 try {
                     walletDataRow.setDebit(spentTransaction.getValueSentFromMe(wallet));
                 } catch (ScriptException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage(), e);
+
                 }
                 List<TransactionInput> transactionInputs = spentTransaction.getInputs();
                 List<TransactionOutput> transactionOutputs = spentTransaction.getOutputs();
@@ -402,7 +391,8 @@ public class MultiBitModel {
                             new Object[] { addressString });
                 }
             } catch (ScriptException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
+
             }
         }
 
@@ -425,7 +415,8 @@ public class MultiBitModel {
                     }
                 }
             } catch (ScriptException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
+
             }
         }
 

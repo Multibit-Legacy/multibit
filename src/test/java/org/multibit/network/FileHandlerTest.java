@@ -4,21 +4,23 @@
 
 package org.multibit.network;
 
+import com.google.bitcoin.core.Wallet;
+import junit.framework.TestCase;
+import org.junit.Test;
+import org.multibit.Constants;
+import org.multibit.Localiser;
+import org.multibit.controller.MultiBitController;
+import org.multibit.model.MultiBitModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 
-import junit.framework.TestCase;
-
-import org.junit.Test;
-import org.multibit.Localiser;
-import org.multibit.Constants;
-import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
-
-import com.google.bitcoin.core.Wallet;
-
 public class FileHandlerTest extends TestCase {
+
+    private static final Logger log = LoggerFactory.getLogger(FileHandlerTest.class);
 
     public static final String WALLET_TESTDATA_DIRECTORY = "wallets";
 
@@ -50,7 +52,8 @@ public class FileHandlerTest extends TestCase {
             walletFile.createNewFile();
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
+
         }
         assertTrue(walletFile.exists());
         Wallet wallet = fileHandler.loadWalletFromFile(walletFile);
@@ -82,7 +85,8 @@ public class FileHandlerTest extends TestCase {
             walletFile.createNewFile();
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
+
         }
         assertTrue(walletFile.exists());
         Wallet wallet = fileHandler.loadWalletFromFile(walletFile);

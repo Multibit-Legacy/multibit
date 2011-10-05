@@ -1,15 +1,13 @@
 package org.multibit.viewsystem.swing.view;
 
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-
 import org.multibit.Localiser;
 import org.multibit.action.OkBackToParentAction;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+
+import javax.swing.*;
 
 /**
  * The validation error view - used to tell the user their input is invalid
@@ -26,6 +24,8 @@ public class ValidationErrorView implements View {
 
     /**
      * Creates a new {@link ValidationErrorView}.
+     * @param controller The controller
+     * @param mainFrame The frame
      */
     public ValidationErrorView(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
@@ -113,7 +113,7 @@ public class ValidationErrorView implements View {
                 completeMessage = completeMessage + "\n";
             }
             String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
-            if (fee == null || fee == "") {
+            if (fee == null || fee.equals("")) {
                 fee = Localiser.bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
             }
             completeMessage = completeMessage
@@ -134,7 +134,7 @@ public class ValidationErrorView implements View {
         // action forward else cancel
         Object returnValue = optionPane.getValue();
         // JOptionPane.showMessageDialog(mainFrame, optionPane.getValue());
-        if (returnValue instanceof String && options[0].equals((String) returnValue)) {
+        if (returnValue instanceof String && options[0].equals(returnValue)) {
             org.multibit.action.OkBackToParentAction okBackToParentAction = new OkBackToParentAction(controller);
             okBackToParentAction.execute(null);
         }
@@ -152,7 +152,10 @@ public class ValidationErrorView implements View {
         }
     }
 
-    /** Returns an ImageIcon, or null if the path was invalid. */
+    /** Returns an ImageIcon, or null if the path was invalid.
+     * @param path The resource path
+     * @return The image icon
+     */
     protected ImageIcon createImageIcon(String path) {
         java.net.URL imgURL = MultiBitFrame.class.getResource(path);
         if (imgURL != null) {

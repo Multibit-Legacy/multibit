@@ -1,58 +1,14 @@
 package org.multibit.viewsystem.swing;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Toolkit;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.Timer;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-
+import com.google.bitcoin.core.*;
 import org.multibit.Localiser;
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
-import org.multibit.viewsystem.swing.action.ExitAction;
-import org.multibit.viewsystem.swing.action.HelpAboutAction;
-import org.multibit.viewsystem.swing.action.MnemonicUtil;
-import org.multibit.viewsystem.swing.action.OpenWalletAction;
-import org.multibit.viewsystem.swing.action.ReceiveBitcoinAction;
-import org.multibit.viewsystem.swing.action.SaveWalletAsAction;
-import org.multibit.viewsystem.swing.action.SendBitcoinAction;
-import org.multibit.viewsystem.swing.action.ShowHelpContentsAction;
-import org.multibit.viewsystem.swing.action.ShowPreferencesAction;
-import org.multibit.viewsystem.swing.action.ShowTransactionsAction;
-import org.multibit.viewsystem.swing.view.BlinkLabel;
-import org.multibit.viewsystem.swing.view.HeaderPanel;
-import org.multibit.viewsystem.swing.view.MultiBitButton;
-import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
-import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
-import org.multibit.viewsystem.swing.view.ShowTransactionsPanel;
-import org.multibit.viewsystem.swing.view.ViewFactory;
+import org.multibit.viewsystem.swing.action.*;
+import org.multibit.viewsystem.swing.view.*;
 import org.simplericity.macify.eawt.Application;
 import org.simplericity.macify.eawt.ApplicationEvent;
 import org.simplericity.macify.eawt.ApplicationListener;
@@ -60,16 +16,22 @@ import org.simplericity.macify.eawt.DefaultApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.ScriptException;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionInput;
-import com.google.bitcoin.core.Wallet;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.Timer;
 
 /*
  * JFrame displaying Swing version of MultiBit
  */
 public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationListener {
+
+    private static final Logger log = LoggerFactory.getLogger(MultiBitFrame.class);
+
     private static final int A_SMALL_NUMBER_OF_PIXELS = 100;
     private static final int A_LARGE_NUMBER_OF_PIXELS = 1000000;
     private static final int STATUSBAR_HEIGHT = 30;
@@ -726,10 +688,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
         } catch (ScriptException e) {
             // If we didn't understand the scriptSig, just crash.
-            e.printStackTrace();
+            log.error(e.getMessage(),e);
+
             throw new RuntimeException(e);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(),e);
+
             throw new RuntimeException(e);
         }
 
@@ -761,10 +725,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
         } catch (ScriptException e) {
             // If we didn't understand the scriptSig, just crash.
-            e.printStackTrace();
+            log.error(e.getMessage(),e);
+
             throw new RuntimeException(e);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(),e);
+
             throw new RuntimeException(e);
         }
     }

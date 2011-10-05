@@ -1,18 +1,16 @@
 package org.multibit;
 
+import com.google.bitcoin.core.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.text.MessageFormat;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.Properties;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
-
-import com.google.bitcoin.core.Utils;
+import java.util.*;
 
 /**
  * class used for producing localised messages it contains a resource bundle and
@@ -22,6 +20,9 @@ import com.google.bitcoin.core.Utils;
  * 
  */
 public class Localiser {
+
+    private static final Logger log = LoggerFactory.getLogger(Localiser.class);
+
     public static final String VIEWER_RESOURCE_BUNDLE_NAME = "/i18n/viewer";
     public static final String SEPARATOR = "_";
     public static final String PROPERTY_NAME_SUFFIX = ".properties";
@@ -116,9 +117,9 @@ public class Localiser {
             }
             // ResourceBundle.getBundle(bundleName, locale);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+          log.error(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
+          log.error(e.getMessage(), e);
         }
 
         if (!foundIt) {
@@ -129,9 +130,11 @@ public class Localiser {
                     resourceBundle = new PropertyResourceBundle(new InputStreamReader(inputStream, "UTF8"));
                 }
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
+
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
+
             }
         }
     }
@@ -152,7 +155,7 @@ public class Localiser {
                     versionProperties.load(versionPropertiesURL.openStream());
                 }
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+                log.error(ioe.getMessage(), ioe);
             }
         }
 

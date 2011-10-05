@@ -18,6 +18,9 @@ package org.multibit.viewsystem.swing;
  * limitations under the License.
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -84,7 +87,7 @@ public class StatusBar extends JComponent {
      * @param zone
      * @param constraints
      *            one of the constraint support by the
-     *            {@link com.l2fprod.common.swing.PercentLayout}
+     *            com.l2fprod.common.swing.PercentLayout
      */
     public void addZone(String id, Component zone, String constraints, String tweak) {
         // is there already a zone with this id?
@@ -502,6 +505,8 @@ class PercentLayout implements LayoutManager2 {
  */
 class LookAndFeelTweaks {
 
+    private static final Logger log = LoggerFactory.getLogger(LookAndFeelTweaks.class);
+
     public final static Border PANEL_BORDER = BorderFactory.createEmptyBorder(3, 3, 3, 3);
 
     public final static Border WINDOW_BORDER = BorderFactory.createEmptyBorder(4, 10, 10, 10);
@@ -579,7 +584,8 @@ class LookAndFeelTweaks {
                 doc.getStyleSheet().loadRules(new java.io.StringReader(stylesheet), null);
             } // end of if (doc != null)
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
+
         }
     }
 
