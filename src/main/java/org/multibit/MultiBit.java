@@ -18,6 +18,8 @@ package org.multibit;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -30,6 +32,8 @@ import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+
+import com.google.bitcoin.core.PeerAddress;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -111,6 +115,7 @@ public class MultiBit {
         // display the next view
         controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
 
+        // see if the user wants to connect to a single node
         multiBitService.downloadBlockChain();
     }
 }

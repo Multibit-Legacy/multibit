@@ -18,6 +18,8 @@ package org.multibit.network;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import org.multibit.controller.MultiBitController;
@@ -31,6 +33,7 @@ import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
@@ -166,11 +169,21 @@ public class MultiBitService {
 
             peerGroup = new MultiBitPeerGroup(controller, blockStore, networkParameters, chain, wallet);
 
-            // use DNS for production, IRC for test
-            if (useTestNet) {
-                peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
+            String singleNodeConnection = controller.getModel().getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
+            if (singleNodeConnection != null && !singleNodeConnection.equals("")) {
+                try {
+                    peerGroup.addAddress(new PeerAddress(InetAddress.getByName(singleNodeConnection)));
+                    peerGroup.setMaxConnections(1);
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
             } else {
-                peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
+                // use DNS for production, IRC for test
+                if (useTestNet) {
+                    peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
+                } else {
+                    peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
+                }
             }
             // add the controller as a PeerEventListener
             peerGroup.addEventListener(controller);

@@ -85,10 +85,8 @@ public class MultiBitModel {
     
     public static final String WALLET_FILE_EXTENSION = "wallet";
 
-    // scanner
-    public static final String ENABLE_SCANNER = "enableScanner";
-    public static final String USE_ISIGHT = "useISight";
-    public static final String SCANNER_DIRECTORY = "scannerDirectory";
+    // connect to single node
+    public static final String SINGLE_NODE_CONNECTION = "singleNodeConnection";
     
     private Wallet wallet;
 
