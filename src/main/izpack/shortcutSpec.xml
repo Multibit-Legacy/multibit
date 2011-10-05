@@ -1,0 +1,23 @@
+<shortcuts> 
+   <programGroup defaultName="MultiBit" location="applications"/> 
+   <shortcut name="MultiBit" 
+             target="$INSTALL_PATH/multibit-exe.jar" 
+             description="MultiBit" 
+             workingDirectory="$INSTALL_PATH"
+             iconFile="$INSTALL_PATH/multibit.bmp" 
+             initialState="normal" 
+             programGroup="yes"
+             desktop="yes" 
+             applications="no" 
+             startMenu="no" 
+             startup="no">
+    </shortcut>    <shortcut name="Uninstall MultiBit" 
+             target="$INSTALL_PATH/uninstaller/uninstaller.jar" 
+             description="Uninstall MultiBit" 
+             initialState="normal" 
+             programGroup="yes"
+             desktop="no" 
+             applications="no" 
+             startMenu="no" 
+             startup="no">
+    </shortcut></shortcuts>

@@ -50,6 +50,7 @@
         <res id="LicencePanel.licence" src="COPYING"/>
         <res id="InfoPanel.info" src="readme.txt"/>
         <res id="Installer.image" src="installerLeft.png" />
+        <res src="shortcutSpec.xml" id="shortcutSpec.xml"/>
     </resources>
 
     <!-- 
@@ -61,6 +62,7 @@
         <panel classname="InfoPanel"/>
         <panel classname="LicencePanel"/>
         <panel classname="TargetPanel"/>
+        <panel classname="ShortcutPanel"/>
         <panel classname="InstallPanel"/>
         <panel classname="FinishPanel"/>
     </panels>
@@ -74,6 +76,7 @@
             <description>MultiBit install files.</description>
             <file src="readme.txt" targetdir="$INSTALL_PATH"/>
             <file src="multibit.properties" targetdir="$INSTALL_PATH"/>
+            <file src="multibit.bmp" targetdir="$INSTALL_PATH"/>
             <file src="log4j.xml" targetdir="$INSTALL_PATH"/>
             <file src="multibit.blockchain" targetdir="$INSTALL_PATH"/>
             <file src="release_notes.txt" targetdir="$INSTALL_PATH"/>
@@ -81,4 +84,5 @@
             <file src="multibit-exe.jar" targetdir="$INSTALL_PATH"/>
         </pack>
     </packs>
+    <native type="izpack" name="ShellLink.dll"/>
 </installation>

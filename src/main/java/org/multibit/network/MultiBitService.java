@@ -19,24 +19,19 @@ package org.multibit.network;
 import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Stack;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerGroup;
-import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
@@ -70,11 +65,6 @@ public class MultiBitService {
     public static final String IRC_CHANNEL_TEST = "#bitcoinTEST";;
 
     public Logger logger = LoggerFactory.getLogger(MultiBitService.class.getName());
-
-    @SuppressWarnings("deprecation")
-    private static final Date MULTIBIT_CREATION_DATE = new Date(111, 7, 22); // 22
-                                                                             // Aug
-                                                                             // 2011
 
     private Wallet wallet;
 
@@ -150,8 +140,6 @@ public class MultiBitService {
             }
         }
 
-        // System.out.println("MultiBitService#MultiBitService - wallet = " +
-        // wallet.toString());
         // add the keys for this wallet to the address book as receiving
         // addresses
         ArrayList<ECKey> keys = wallet.keychain;
@@ -194,123 +182,7 @@ public class MultiBitService {
             controller.displayMessage("multiBitService.errorText",
                     new Object[] { e.getClass().getName() + " " + e.getMessage() }, "multiBitService.errorTitleText");
         }
-
-        // ensure that the wallet receives any transactions from blocks it is
-        // unaware of
-//        if (!walletIsNew) {
-//            sendMissedBlocksToWallet(blockStore, wallet, walletFile);
-//        }
     }
-
-    /**
-     * because in MultiBit you can switch wallets, you can have a wallet file
-     * that was not connected to the bitcon network when tx relevant to it were
-     * received
-     * 
-     * this method gets all the blocks received relevant for any unconfirmed tx
-     * or pending tx and sends them the tx as if they saw them for the first
-     * time
-     */
-//    private void sendMissedBlocksToWallet(BlockStore blockStore, Wallet wallet, File walletFile) {
-//
-//        if (blockStore == null || wallet == null || walletFile == null) {
-//            return;
-//        }
-//
-//        // work out how far back on the block chain we need to go
-//        Collection<Transaction> pendingTransactions = wallet.getPendingTransactions();
-//        Date now = new Date();
-//        Date earliestPendingTransactionDate = now;
-//        boolean updatedAtDatesWereIncomplete = false;
-//        if (pendingTransactions != null) {
-//            for (Transaction pendingTransaction : pendingTransactions) {
-//                Date updatedAtDate = pendingTransaction.getUpdatedAt();
-//                if (updatedAtDate == null) {
-//                    // if there is data missing we go back to MultiBit creation
-//                    // date
-//                    updatedAtDatesWereIncomplete = true;
-//                    break;
-//                } else {
-//                    if (updatedAtDate.before(earliestPendingTransactionDate)) {
-//                        earliestPendingTransactionDate = updatedAtDate;
-//                    }
-//                }
-//            }
-//        }
-//
-//        if (updatedAtDatesWereIncomplete) {
-//            // there is some updatedAt dates missing so we go back to the
-//            // creation of MultiBit
-//            earliestPendingTransactionDate = MULTIBIT_CREATION_DATE;
-//        }
-//        logger.debug("Earliest pending transaction date = " + earliestPendingTransactionDate);
-//
-//        // get the blocks out the block chain - a stack is used so that they are
-//        // given to the wallet in time increasing order
-//        Stack<StoredBlock> blockStack = new Stack<StoredBlock>();
-//        long earliestPendingTransactionTime = earliestPendingTransactionDate.getTime() / 1000;
-//
-//        try {
-//            StoredBlock currentBlock = blockStore.getChainHead();
-//
-//            boolean haveGoneBackInTimeEnough = false;
-//
-//            if (currentBlock != null) {
-//                long broadcastTime = currentBlock.getHeader().getTimeSeconds();
-//                if (broadcastTime >= earliestPendingTransactionTime) {
-//                    // we need to give this block to the wallet
-//                    blockStack.push(currentBlock);
-//                } else {
-//                    haveGoneBackInTimeEnough = true;
-//                }
-//
-//                while (!haveGoneBackInTimeEnough) {
-//                    StoredBlock previousBlock = currentBlock.getPrev(blockStore);
-//
-//                    if (previousBlock == null) {
-//                        // not true but run out of blocks to go back
-//                        haveGoneBackInTimeEnough = true;
-//                    } else {
-//                        System.out.println("MultiBitService - time delta = "
-//                                + (previousBlock.getHeader().getTimeSeconds() - earliestPendingTransactionTime));
-//                        if (previousBlock.getHeader().getTimeSeconds() >= earliestPendingTransactionTime) {
-//                            blockStack.push(previousBlock);
-//                        } else {
-//                            haveGoneBackInTimeEnough = true;
-//                        }
-//                    }
-//                    currentBlock = previousBlock;
-//                }
-//                logger.debug("Need to go back in time to block = " + currentBlock);
-//            }
-//        } catch (BlockStoreException e) {
-//            logger.error("Error in sendMissedBlocksToWallet", e);
-//        }
-//
-//        // send the blocks to the wallet so that it can resolve any pending tx
-//        boolean blocksWereAddedToWallet = false;
-//        while (!blockStack.isEmpty()) {
-//            blocksWereAddedToWallet = true;
-//
-//            StoredBlock storedBlock = blockStack.pop();
-//            Block headerBlock = storedBlock.getHeader();
-//            Collection<Transaction> blockTransactions = null;
-//            if (headerBlock != null) {
-//                blockTransactions = headerBlock.getTransactions();
-//            }
-//            if (blockTransactions != null) {
-//                logger.debug("StoredBlock height = " + storedBlock.getHeight() + " contains a header with " + blockTransactions.size() + " transactions.");
-//            } else {
-//                logger.debug("StoredBlock height = " + storedBlock.getHeight() + " contains a header with 0 transactions.");
-//            }
-//        }
-//
-//        // save the wallet
-//        if (blocksWereAddedToWallet) {
-//            FileHandler fileHandler = new FileHandler(controller);
-//            fileHandler.saveWalletToFile(wallet, walletFile);
-//        }
-//    }
 
     /**
      * download the block chain

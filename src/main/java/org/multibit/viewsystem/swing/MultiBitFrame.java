@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
@@ -30,6 +31,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import org.multibit.Localiser;
+import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
@@ -44,9 +46,6 @@ import org.multibit.viewsystem.swing.action.SendBitcoinAction;
 import org.multibit.viewsystem.swing.action.ShowHelpContentsAction;
 import org.multibit.viewsystem.swing.action.ShowPreferencesAction;
 import org.multibit.viewsystem.swing.action.ShowTransactionsAction;
-import org.multibit.viewsystem.swing.macos.MacOSAboutHandler;
-import org.multibit.viewsystem.swing.macos.MacOSPreferencesHandler;
-import org.multibit.viewsystem.swing.macos.MacOSQuitHandler;
 import org.multibit.viewsystem.swing.view.BlinkLabel;
 import org.multibit.viewsystem.swing.view.HeaderPanel;
 import org.multibit.viewsystem.swing.view.MultiBitButton;
@@ -54,10 +53,13 @@ import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
 import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
 import org.multibit.viewsystem.swing.view.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.ViewFactory;
+import org.simplericity.macify.eawt.Application;
+import org.simplericity.macify.eawt.ApplicationEvent;
+import org.simplericity.macify.eawt.ApplicationListener;
+import org.simplericity.macify.eawt.DefaultApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.apple.eawt.Application;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
@@ -67,7 +69,7 @@ import com.google.bitcoin.core.Wallet;
 /*
  * JFrame displaying Swing version of MultiBit
  */
-public class MultiBitFrame extends JFrame implements ViewSystem {
+public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationListener {
     private static final int A_SMALL_NUMBER_OF_PIXELS = 100;
     private static final int A_LARGE_NUMBER_OF_PIXELS = 1000000;
     private static final int STATUSBAR_HEIGHT = 30;
@@ -121,6 +123,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
     private MultiBitButton receiveBitcoinButton;
     private MultiBitButton showTransactionsButton;
     private MultiBitButton openWalletButton;
+    
+    /**
+     * Macify integration on a Mac
+     */
+    private Application application;
 
     /**
      * the panel containing the main view
@@ -160,6 +167,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
             }
         });
 
+        /**
+         * initialise Macify application (Mac integration
+         */
+        application = new DefaultApplication();
+        
         getContentPane().setBackground(MultiBitFrame.BACKGROUND_COLOR);
         sizeAndCenter();
 
@@ -401,34 +413,26 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         fileMenu.add(menuItem);
 
         // exit action
-        if (System.getProperty("mrj.version") == null) {  
+        if (!application.isMac()) {  
             // non Macs have an Exit Menu item
             fileMenu.addSeparator();
 
             menuItem = new JMenuItem(new ExitAction(controller));
             fileMenu.add(menuItem);
-         } else {                                               
-             // Macs have no Exit button        
-             // register QuitHandler
-             Application.getApplication().setQuitHandler(new MacOSQuitHandler(controller));
-         }   
-
+         } 
+        
         // show help contents action
         ShowHelpContentsAction showHelpContentsAction = new ShowHelpContentsAction(controller, localiser,
                 createImageIcon(HELP_CONTENTS_ICON_FILE));
         menuItem = new JMenuItem(showHelpContentsAction);
         helpMenu.add(menuItem);
         
-        if (System.getProperty("mrj.version") == null) {  
+        if (!application.isMac()) {  
             // non Macs have a Help About menu item
             // help about action
             HelpAboutAction helpAboutAction = new HelpAboutAction(controller, createImageIcon(MULTIBIT_SMALL_ICON_FILE), this);
             menuItem = new JMenuItem(helpAboutAction);
             helpMenu.add(menuItem);
-         } else {                                               
-             // Macs have no Help About menu button   
-             // register AboutBox handler
-             Application.getApplication().setAboutHandler(new MacOSAboutHandler(controller));
          } 
 
         // show transactions action
@@ -466,16 +470,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         sendBitcoinPanel.add(sendBitcoinButton);
  
         // show preferences
-        if (System.getProperty("mrj.version") == null) {  
+        if (!application.isMac()) {  
             // non Macs have a Preferences menu item
             // help about action
             ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller,
                     createImageIcon(PREFERENCES_ICON_FILE));
             viewMenu.add(showPreferencesAction);
-         } else {                                               
-             // Macs have no View | Preferences menu button   
-             // register Preferences handler
-             Application.getApplication().setPreferencesHandler(new MacOSPreferencesHandler(controller));
          } 
 
         toolBar.add(openWalletPanel);
@@ -484,9 +484,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
         toolBar.add(showTransactionsPanel);
         toolBar.setBorder(BorderFactory.createEmptyBorder());
  
-
         setJMenuBar(menuBar);
 
+        if (application.isMac()) {                                                  
+            // register Preferences handler
+            application.addApplicationListener(this);
+            application.addPreferencesMenuItem();
+            application.setEnabledPreferencesMenu(true);
+       } 
         return toolBar;
     }
 
@@ -783,5 +788,45 @@ public class MultiBitFrame extends JFrame implements ViewSystem {
                 thisFrame.repaint();
             }
         });
+    }
+    
+    // Macify application methods
+
+    @Override
+    public void handleAbout(ApplicationEvent event) {
+        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_HELP_ABOUT);        
+        event.setHandled(true);        
+    }
+
+    @Override
+    public void handleOpenApplication(ApplicationEvent event) {
+        // Ok, we know our application started
+        // Not much to do about that..
+    }
+
+    @Override
+    public void handleOpenFile(ApplicationEvent event) {
+        JOptionPane.showMessageDialog(this, "Sorry, opening of files with double click is not yet implemented.  Wallet was " + event.getFilename());
+    }
+
+    @Override
+    public void handlePreferences(ApplicationEvent event) {
+        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_PREFERENCES);                
+    }
+
+    @Override
+    public void handlePrintFile(ApplicationEvent event) {
+        JOptionPane.showMessageDialog(this, "Sorry, printing not implemented");
+    }
+
+    @Override
+    public void handleQuit(ApplicationEvent event) {
+        ExitAction exitAction = new ExitAction(controller);
+        exitAction.actionPerformed(null);
+    }
+
+    @Override
+    public void handleReOpenApplication(ApplicationEvent event) {
+        setVisible(true);
     }
 }
