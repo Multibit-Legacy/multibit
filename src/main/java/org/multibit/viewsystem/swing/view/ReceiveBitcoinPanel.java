@@ -77,7 +77,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.weightx = 0.7;
+        constraints.weightx = 0.55;
         constraints.weighty = 0.4;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createFormPanel(), constraints);
@@ -85,7 +85,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 0;
-        constraints.weightx = 0.3;
+        constraints.weightx = 0.45;
         constraints.weighty = 0.4;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createQRCodePanel(), constraints);
@@ -103,7 +103,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
     private JPanel createFormPanel() {
         formPanel = new JPanel();
         formPanel.setBorder(new DashedBorder());
-        formPanel.setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        formPanel.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
 
         JPanel buttonPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
@@ -201,7 +201,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
         addressTextArea = new JTextArea("", 35, 1);
         addressTextArea.setEditable(false);
-        addressTextArea.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 4, 0, 4, MultiBitFrame.BACKGROUND_COLOR),
+        addressTextArea.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 4, 0, 4, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR),
                 BorderFactory.createMatteBorder(2, 0, 0, 0, Color.WHITE)));
         addressTextArea.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
         addressTextArea.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
@@ -307,7 +307,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
     private JPanel createQRCodePanel() {
         JPanel qrCodePanel = new JPanel();
-        qrCodePanel.setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        qrCodePanel.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
         qrCodePanel.setMinimumSize(new Dimension(280, 200));
         qrCodePanel.setLayout(new GridBagLayout());
         qrCodeLabel = new JLabel("", null, JLabel.CENTER);

@@ -23,7 +23,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ListIterator;
+import java.util.StringTokenizer;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
@@ -59,7 +63,6 @@ import org.multibit.viewsystem.swing.action.CopySendAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewSendingAddressAction;
 import org.multibit.viewsystem.swing.action.PasteAddressAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
-import org.multibit.viewsystem.swing.view.ShowTransactionsPanel.LeftJustifiedRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,8 +76,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
     private static final String SEND_BITCOIN_BIG_ICON_FILE = "/images/send-big.jpg";
     private static final String DRAG_HERE_ICON_FILE = "/images/dragHere.png";
-    private static final String POINT_EAST_ICON_FILE = "/images/pointEast.png";
-    private static final String POINT_WEST_ICON_FILE = "/images/pointWest.png";
 
     private MultiBitFrame mainFrame;
     private MultiBitController controller;
@@ -99,6 +100,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
     private static final int QRCODE_WIDTH = 140;
     private static final int QRCODE_HEIGHT = 140;
 
+    private static final int MAXIMUM_SWATCH_TEXT_WIDTH = 200;
+    
     public SendBitcoinPanel(MultiBitFrame mainFrame, MultiBitController controller) {
         this.mainFrame = mainFrame;
         this.controller = controller;
@@ -119,7 +122,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.weightx = 0.7;
+        constraints.weightx = 0.55;
         constraints.weighty = 0.4;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createFormPanel(), constraints);
@@ -127,7 +130,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 0;
-        constraints.weightx = 0.3;
+        constraints.weightx = 0.45;
         constraints.weighty = 0.4;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createQRCodePanel(), constraints);
@@ -145,7 +148,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
     private JPanel createFormPanel() {
         formPanel = new JPanel();
         formPanel.setBorder(new DashedBorder());
-        formPanel.setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        formPanel.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
 
         JPanel buttonPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
@@ -155,7 +158,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         formPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
-        JPanel filler1 = new JPanel();        
+        JPanel filler1 = new JPanel();
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -349,12 +352,12 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(sendButton, constraints);
 
-        return formPanel; 
+        return formPanel;
     }
 
     private JPanel createQRCodePanel() {
         JPanel qrCodePanel = new JPanel();
-        qrCodePanel.setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        qrCodePanel.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
 
         qrCodePanel.setMinimumSize(new Dimension(280, 200));
         qrCodePanel.setLayout(new GridBagLayout());
@@ -386,41 +389,13 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 0.02;
-        constraints.weighty = 0.4;
+        constraints.weighty = 0.2;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.CENTER;
         qrCodePanel.add(filler1, constraints);
 
-        JLabel pointEastLabel = new JLabel("", createImageIcon(POINT_EAST_ICON_FILE), JLabel.CENTER);
-        pointEastLabel.setVerticalTextPosition(JLabel.CENTER);
-        pointEastLabel.setHorizontalTextPosition(JLabel.RIGHT);
-        pointEastLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabel.text"));
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.EAST;
-        qrCodePanel.add(pointEastLabel, constraints);
-
-        JLabel pointWestLabel = new JLabel("", createImageIcon(POINT_WEST_ICON_FILE), JLabel.CENTER);
-        pointWestLabel.setVerticalTextPosition(JLabel.CENTER);
-        pointWestLabel.setHorizontalTextPosition(JLabel.LEFT);
-        pointWestLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabel.text"));
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.WEST;
-        qrCodePanel.add(pointWestLabel, constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 1;
         constraints.weightx = 1;
@@ -428,30 +403,18 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.CENTER;
         qrCodePanel.add(qrCodeLabel, constraints);
-
+        
         JPanel filler2 = new JPanel();
         filler2.setOpaque(false);
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        constraints.weightx = 0.02;
-        constraints.weighty = 0.02;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        qrCodePanel.add(filler2, constraints);
-
-        JPanel filler3 = new JPanel();
-        filler3.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 3;
         constraints.weightx = 0.05;
-        constraints.weighty = 0.02;
+        constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
-        qrCodePanel.add(filler3, constraints);
+        qrCodePanel.add(filler2, constraints);
 
         return qrCodePanel;
     }
@@ -498,7 +461,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getViewport().setBackground(MultiBitFrame.BACKGROUND_COLOR);
         scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker()));
-       
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 1;
@@ -694,7 +657,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
     public JPanel getFormPanel() {
         return formPanel;
     }
-    
+
     class LeftJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
@@ -704,7 +667,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                 int row, int column) {
             label.setHorizontalAlignment(SwingConstants.LEFT);
             label.setBackground(MultiBitFrame.BACKGROUND_COLOR);
-            label.setOpaque(true);   
+            label.setOpaque(true);
 
             label.setText((String) value);
 
@@ -719,7 +682,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
     class ImageSelection extends TransferHandler implements Transferable {
         private static final long serialVersionUID = 756395092284264645L;
 
-        private final DataFlavor flavors[] = { DataFlavor.imageFlavor };
+        private DataFlavor flavors[];
+        private DataFlavor urlFlavor, uriListFlavor;
 
         private Image image;
 
@@ -731,6 +695,18 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
             if (!(comp instanceof JLabel) && !(comp instanceof AbstractButton)) {
                 return false;
             }
+
+            if (flavors == null) {
+                flavors = new DataFlavor[] { DataFlavor.imageFlavor };
+                try {
+                    urlFlavor = new DataFlavor("application/x-java-url; class=java.net.URL");
+                    uriListFlavor = new DataFlavor("text/uri-list; class=java.lang.String");
+                    flavors = new DataFlavor[] { DataFlavor.imageFlavor, urlFlavor, uriListFlavor };
+                } catch (ClassNotFoundException cnfe) {
+                    cnfe.printStackTrace();
+                }
+            }
+
             for (int i = 0, n = flavor.length; i < n; i++) {
                 for (int j = 0, m = flavors.length; j < m; j++) {
                     if (flavor[i].equals(flavors[j])) {
@@ -840,34 +816,88 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
         }
 
-        public boolean importData(JComponent comp, Transferable t) {
+        public boolean importData(JComponent comp, Transferable transferable) {
             if (comp instanceof JLabel) {
                 JLabel label = (JLabel) comp;
-                if (t.isDataFlavorSupported(flavors[0])) {
-                    try {
-                        image = (Image) t.getTransferData(flavors[0]);
-                        BufferedImage bufferedImage;
-                        if (image.getWidth(qrCodeLabel) > QRCODE_WIDTH || image.getHeight(qrCodeLabel) > QRCODE_HEIGHT) {
-                            // scale image
-                            bufferedImage = toBufferedImage(image, QRCODE_WIDTH, QRCODE_HEIGHT);
-                        } else {
-                            // no resize
-                            bufferedImage = toBufferedImage(image, -1, -1);
-                        }
-                        ImageIcon icon = new ImageIcon(bufferedImage);
-
-                        // decode the QRCode to a String
-                        QRCodeEncoderDecoder qrCodeEncoderDecoder = new QRCodeEncoderDecoder(image.getWidth(qrCodeLabel),
-                                image.getHeight(qrCodeLabel));
-                        String decodedString = qrCodeEncoderDecoder.decode(toBufferedImage(image, -1, -1));
-                        log.info("SendBitcoinPanel#imageSelection#importData = decodedString = {}", decodedString);
-                        return processDecodedString(decodedString, label, icon);
-                    } catch (UnsupportedFlavorException ignored) {
-                    } catch (IOException ignored) {
+                image = getDropData(transferable);
+                if (image != null) {
+                    BufferedImage bufferedImage;
+                    if (image.getWidth(qrCodeLabel) > QRCODE_WIDTH + MAXIMUM_SWATCH_TEXT_WIDTH || image.getHeight(qrCodeLabel) > QRCODE_HEIGHT) {
+                        // scale image
+                        double xScale = (QRCODE_WIDTH + MAXIMUM_SWATCH_TEXT_WIDTH) / image.getWidth(qrCodeLabel); 
+                        double yScale = (QRCODE_HEIGHT) / image.getHeight(qrCodeLabel); 
+                        double scaleFactor = Math.min(xScale, yScale);
+                        bufferedImage = toBufferedImage(image, (int)(image.getWidth(qrCodeLabel) * scaleFactor), (int)(image.getHeight(qrCodeLabel) * scaleFactor));
+                    } else {
+                        // no resize
+                        bufferedImage = toBufferedImage(image, -1, -1);
                     }
+                    ImageIcon icon = new ImageIcon(bufferedImage);
+
+                    // decode the QRCode to a String
+                    QRCodeEncoderDecoder qrCodeEncoderDecoder = new QRCodeEncoderDecoder(image.getWidth(qrCodeLabel),
+                            image.getHeight(qrCodeLabel));
+                    String decodedString = qrCodeEncoderDecoder.decode(toBufferedImage(image, -1, -1));
+                    log.info("SendBitcoinPanel#imageSelection#importData = decodedString = {}", decodedString);
+                    return processDecodedString(decodedString, label, icon);
                 }
             }
             return false;
+        }
+
+        @SuppressWarnings("rawtypes")
+        public Image getDropData(Transferable transferable) {
+            try {
+                // try to get an image
+                if (transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
+                    System.out.println("image flavor is supported");
+                    Image img = (Image) transferable.getTransferData(DataFlavor.imageFlavor);
+                    return img;
+                } else if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                    System.out.println("javaFileList is supported");
+                    java.util.List list = (java.util.List) transferable.getTransferData(DataFlavor.javaFileListFlavor);
+                    ListIterator it = list.listIterator();
+                    while (it.hasNext()) {
+                        File f = (File) it.next();
+                        ImageIcon icon = new ImageIcon(f.getAbsolutePath());
+                        if (icon != null) {
+                            return icon.getImage();
+                        } else {
+                            return null;
+                        }
+                    }
+                } else if (transferable.isDataFlavorSupported(uriListFlavor)) {
+                    String uris = (String) transferable.getTransferData(uriListFlavor);
+
+                    // url-lists are defined by rfc 2483 as crlf-delimited
+                    // TODO iterate over list for all of them
+                    StringTokenizer izer = new StringTokenizer(uris, "\r\n");
+                    if (izer.hasMoreTokens()) {
+                        String uri = izer.nextToken();
+                        ImageIcon icon = new ImageIcon(uri);
+                        if (icon != null) {
+                            return icon.getImage();
+                        } else {
+                            return null;
+                        }
+                    }
+
+                } else if (transferable.isDataFlavorSupported(urlFlavor)) {
+                    URL url = (URL) transferable.getTransferData(urlFlavor);
+                    ImageIcon icon = new ImageIcon(url);
+                    if (icon != null) {
+                        return icon.getImage();
+                    } else {
+                        return null;
+                    }
+                }
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            } catch (UnsupportedFlavorException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return null;
         }
 
         // Transferable

@@ -57,6 +57,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final Color GOLD_COLOR = new Color(212, 160, 23);
 
     public static final Color BACKGROUND_COLOR = new Color(244, 244, 246);
+    public static final Color VERY_LIGHT_BACKGROUND_COLOR = new Color(254, 254, 255);
     public static final Color DARK_BACKGROUND_COLOR = new Color(230, 230, 232);
 
     private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.72D;

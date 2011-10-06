@@ -66,7 +66,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     }
 
     private void createWalletPanel() {
-        setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
         setLayout(new GridBagLayout());
         setOpaque(true);
         GridBagConstraints constraints = new GridBagConstraints();
