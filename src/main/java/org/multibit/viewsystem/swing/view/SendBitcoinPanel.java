@@ -13,6 +13,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -25,6 +26,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
@@ -101,7 +103,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
     private static final int QRCODE_HEIGHT = 140;
 
     private static final int MAXIMUM_SWATCH_TEXT_WIDTH = 200;
-    
+
     public SendBitcoinPanel(MultiBitFrame mainFrame, MultiBitController controller) {
         this.mainFrame = mainFrame;
         this.controller = controller;
@@ -403,7 +405,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.CENTER;
         qrCodePanel.add(qrCodeLabel, constraints);
-        
+
         JPanel filler2 = new JPanel();
         filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
@@ -818,26 +820,37 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
         public boolean importData(JComponent comp, Transferable transferable) {
             if (comp instanceof JLabel) {
+                System.out.println("importData - 1");
+
                 JLabel label = (JLabel) comp;
                 image = getDropData(transferable);
+                System.out.println("importData - 2 - image = " + image);
+
                 if (image != null) {
                     BufferedImage bufferedImage;
-                    if (image.getWidth(qrCodeLabel) > QRCODE_WIDTH + MAXIMUM_SWATCH_TEXT_WIDTH || image.getHeight(qrCodeLabel) > QRCODE_HEIGHT) {
+                    System.out.println("importData - 2.1");
+                    if (image.getWidth(qrCodeLabel) > QRCODE_WIDTH + MAXIMUM_SWATCH_TEXT_WIDTH
+                            || image.getHeight(qrCodeLabel) > QRCODE_HEIGHT) {
                         // scale image
-                        double xScale = (QRCODE_WIDTH + MAXIMUM_SWATCH_TEXT_WIDTH) / image.getWidth(qrCodeLabel); 
-                        double yScale = (QRCODE_HEIGHT) / image.getHeight(qrCodeLabel); 
+                        double xScale = (QRCODE_WIDTH + MAXIMUM_SWATCH_TEXT_WIDTH) / image.getWidth(qrCodeLabel);
+                        double yScale = (QRCODE_HEIGHT) / image.getHeight(qrCodeLabel);
                         double scaleFactor = Math.min(xScale, yScale);
-                        bufferedImage = toBufferedImage(image, (int)(image.getWidth(qrCodeLabel) * scaleFactor), (int)(image.getHeight(qrCodeLabel) * scaleFactor));
+                        bufferedImage = toBufferedImage(image, (int) (image.getWidth(qrCodeLabel) * scaleFactor),
+                                (int) (image.getHeight(qrCodeLabel) * scaleFactor));
                     } else {
                         // no resize
                         bufferedImage = toBufferedImage(image, -1, -1);
                     }
+                    System.out.println("importData - 2.2");
                     ImageIcon icon = new ImageIcon(bufferedImage);
 
                     // decode the QRCode to a String
                     QRCodeEncoderDecoder qrCodeEncoderDecoder = new QRCodeEncoderDecoder(image.getWidth(qrCodeLabel),
                             image.getHeight(qrCodeLabel));
+                    System.out.println("importData - 2.3");
+
                     String decodedString = qrCodeEncoderDecoder.decode(toBufferedImage(image, -1, -1));
+                    System.out.println("importData - 3 - decodedResult = " + decodedString);
                     log.info("SendBitcoinPanel#imageSelection#importData = decodedString = {}", decodedString);
                     return processDecodedString(decodedString, label, icon);
                 }
@@ -846,7 +859,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         }
 
         @SuppressWarnings("rawtypes")
-        public Image getDropData(Transferable transferable) {
+        private Image getDropData(Transferable transferable) {
             try {
                 // try to get an image
                 if (transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
@@ -913,11 +926,73 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         }
 
         public boolean isDataFlavorSupported(DataFlavor flavor) {
-            return flavors[0].equals(flavor);
+            for (int j = 0, m = flavors.length; j < m; j++) {
+                if (flavor.equals(flavors[j])) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        public BufferedImage toBufferedImage(Image image, int width, int height) {
+            System.out.println("SendBitCoinPanel#toBufferedImage - 1");
+            if (image == null) {
+                return null;
+            }
+            if (width == -1) {
+                width = image.getWidth(null);
+            }
+            if (height == -1) {
+                height = image.getHeight(null);
+            }
+            // draw original image to thumbnail image object and
+            // scale it to the new size on-the-fly
+            System.out.println("SendBitCoinPanel#toBufferedImage - 2.2, image = " + image + ",width = " + width + ", height = "
+                    + height);
+            BufferedImage bufferedImage = null;
+            // MacOS is not very good with large images so I call
+            // getBufferedImage on it if it is an OSXimage
+            // this is done by reflection so there is no import (for windows and
+            // linux machines
+            boolean conversionSuccess = false;
+            if (image instanceof BufferedImage) {
+                bufferedImage = (BufferedImage) image;
+                conversionSuccess = true;
+            }
+            if (!conversionSuccess) {
+                try {
+                    System.out.println("SendBitCoinPanel#toBufferedImage - 2.2.1");
+                    Class clazz = image.getClass();
+                    System.out.println("SendBitCoinPanel#toBufferedImage - 2.2.2 - clazz = " + clazz);
+                    java.lang.reflect.Method method = clazz.getMethod("getBufferedImage");
+                    System.out.println("SendBitCoinPanel#toBufferedImage - 2.2.3 - method = " + method);
+                    bufferedImage = (BufferedImage) method.invoke(image);
+                    System.out.println("SendBitCoinPanel#toBufferedImage - 2.2.4 - bufferedImage = " + bufferedImage);
+                    conversionSuccess = true;
+                } catch (IllegalArgumentException e) {
+                } catch (IllegalAccessException e) {
+                } catch (InvocationTargetException e) {
+                } catch (SecurityException e) {
+                } catch (NoSuchMethodException e) {
+                }
+            }
+            if (!conversionSuccess) {
+                bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            }
+            System.out.println("SendBitCoinPanel#toBufferedImage - 2.3, bufferedImage = " + bufferedImage);
+
+            Graphics2D g2 = bufferedImage.createGraphics();
+            System.out.println("SendBitCoinPanel#toBufferedImage - 3");
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2.drawImage(image, 0, 0, width, height, null);
+            System.out.println("SendBitCoinPanel#toBufferedImage - 4");
+            g2.dispose();
+            return bufferedImage;
         }
 
         // This method returns a buffered image with the contents of an image
-        public BufferedImage toBufferedImage(Image image, int width, int height) {
+        public BufferedImage toBufferedImage2(Image image, int width, int height) {
             if (width == -1) {
                 width = image.getWidth(null);
             }
@@ -927,22 +1002,32 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
             // This code ensures that all the pixels in the image are loaded
             image = new ImageIcon(image).getImage();
+            System.out.println("SendBitCoinPanel#toBufferedImage - 2");
 
             // Create a buffered image with a format that's compatible with the
             // screen
             BufferedImage bimage = null;
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            System.out.println("SendBitCoinPanel#toBufferedImage - 2.1");
             try {
                 // Determine the type of transparency of the new buffered image
                 int transparency = Transparency.OPAQUE;
 
                 // Create the buffered image
                 GraphicsDevice gs = ge.getDefaultScreenDevice();
+                System.out.println("SendBitCoinPanel#toBufferedImage - 2.2");
+
                 GraphicsConfiguration gc = gs.getDefaultConfiguration();
+                System.out.println("SendBitCoinPanel#toBufferedImage - 2.3, image = " + image + ",width = " + width
+                        + ", height = " + height);
+
                 bimage = gc.createCompatibleImage(width, height, transparency);
+                System.out.println("SendBitCoinPanel#toBufferedImage - 2.4");
+
             } catch (HeadlessException e) {
                 // The system does not have a screen
             }
+            System.out.println("SendBitCoinPanel#toBufferedImage - 3 - bimage = " + bimage);
 
             if (bimage == null) {
                 // Create a buffered image using the default color model
@@ -957,6 +1042,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
             g.drawImage(image, 0, 0, width, height, null);
 
             g.dispose();
+
+            System.out.println("SendBitCoinPanel#toBufferedImage - 4 - bimage = " + bimage);
 
             return bimage;
         }

@@ -76,6 +76,7 @@ public class QRCodeEncoderDecoder {
             return result.getText();
         } catch (ReaderException e) {
             // the data is improperly formatted
+            System.out.println(e.getMessage());
             log.error("Error while decoding image", e);
         }
 
