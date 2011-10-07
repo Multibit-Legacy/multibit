@@ -46,6 +46,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static final String HELP_CONTENTS_ICON_FILE = "/images/helpContents.png";
     private static final String MULTIBIT_SMALL_ICON_FILE = "/images/multibit-small.png";
     public static final String MULTIBIT_ICON_FILE = "/images/multibit.png";
+    public static final String MULTIBIT_128_ICON_FILE = "/images/multibit128.png";
     private static final String TRANSACTIONS_ICON_FILE = "/images/information.png";
     private static final String WALLET_ICON_FILE = "/images/wallet.png";
     public static final String EXCLAMATION_MARK_ICON_FILE = "/images/exclamationMark.png";
