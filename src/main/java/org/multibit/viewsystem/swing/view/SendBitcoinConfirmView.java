@@ -70,7 +70,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
      */
     public void initUI() {
         setMinimumSize(new Dimension(680, 320));
-        positionDialogRelativeToParent(this, 0.5D, 0.4D);
+        positionDialogRelativeToParent(this, 0.5D, 0.47D);
         setTitle(localiser.getString("sendBitcoinConfirmView.title"));
 
         setLayout(new GridBagLayout());
