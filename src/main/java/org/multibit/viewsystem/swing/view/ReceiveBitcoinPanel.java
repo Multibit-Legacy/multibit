@@ -77,7 +77,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.weightx = 0.55;
+        constraints.weightx = 0.5;
         constraints.weighty = 0.4;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createFormPanel(), constraints);
@@ -85,7 +85,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 0;
-        constraints.weightx = 0.45;
+        constraints.weightx = 0.5;
         constraints.weighty = 0.4;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createQRCodePanel(), constraints);

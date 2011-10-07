@@ -71,7 +71,7 @@ public class StatusBar extends JComponent {
     public StatusBar() {
         setLayout(LookAndFeelTweaks.createHorizontalPercentLayout());
         idToZones = new Hashtable<String, Component>();
-        setZoneBorder(BorderFactory.createLineBorder(Color.lightGray));
+        setZoneBorder(BorderFactory.createEmptyBorder());
         setBackground(MultiBitFrame.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
     }
@@ -102,8 +102,7 @@ public class StatusBar extends JComponent {
             if (jc.getBorder() == null || jc.getBorder() instanceof UIResource) {
                 if (jc instanceof JLabel) {
                     if ("left".equals(tweak)) {
-                        jc.setBorder(new CompoundBorder(zoneBorder, new EmptyBorder(0, 1, 0, 2)));
-                        
+                        jc.setBorder(new CompoundBorder(BorderFactory.createLineBorder(Color.lightGray), new EmptyBorder(0, 1, 0, 2)));       
                     } else {
                         if ("right".equals(tweak)) {
                             jc.setBorder(new CompoundBorder(zoneBorder, new EmptyBorder(0, 2, 0, 1)));
