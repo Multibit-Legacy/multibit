@@ -1,16 +1,12 @@
 package org.multibit.viewsystem.swing.view;
 
-import java.awt.Dimension;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.lang.reflect.Method;
-
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.*;
+import java.lang.reflect.Method;
 /**
  * JDialog with some utility methods to position on screen
 
@@ -18,6 +14,8 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
  *
  */
 abstract public class MultiBitDialog extends JDialog {
+
+    private static final Logger log = LoggerFactory.getLogger(MultiBitDialog.class);
 
     private static final long serialVersionUID = -917160539607329862L;
 
@@ -88,9 +86,7 @@ abstract public class MultiBitDialog extends JDialog {
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {
-            System.err
-                    .println("MultiBitDialog#createImageIcon: Could not find file: "
-                            + path);
+            log.error("MultiBitDialog#createImageIcon: Could not find file: '{}'", path);
             return null;
         }
     } 

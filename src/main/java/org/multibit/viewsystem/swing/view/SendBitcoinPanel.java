@@ -1,62 +1,9 @@
 package org.multibit.viewsystem.swing.view;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.HeadlessException;
-import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.Transparency;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ListIterator;
-import java.util.StringTokenizer;
-
-import javax.imageio.ImageIO;
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListSelectionModel;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.TransferHandler;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-
+import com.google.bitcoin.core.Address;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.AddressBookData;
-import org.multibit.model.Data;
-import org.multibit.model.DataProvider;
-import org.multibit.model.Item;
-import org.multibit.model.MultiBitModel;
+import org.multibit.model.*;
 import org.multibit.qrcode.BitcoinURI;
 import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.viewsystem.View;
@@ -68,7 +15,22 @@ import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.StringTokenizer;
 
 public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
@@ -815,15 +777,15 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
         public boolean importData(JComponent comp, Transferable transferable) {
             if (comp instanceof JLabel) {
-                System.out.println("importData - 1");
+                log.debug("importData - 1");
 
                 JLabel label = (JLabel) comp;
                 image = getDropData(transferable, label);
-                System.out.println("importData - 2 - image = " + image);
+                log.debug("importData - 2 - image = " + image);
 
                 if (image != null) {
                     BufferedImage bufferedImage;
-                    System.out.println("importData - 2.1");
+                    log.debug("importData - 2.1");
                     if (image.getWidth(qrCodeLabel) + MINIMUM_QRCODE_PANEL_HORIZONTAL_SPACING > qrCodePanel.getWidth()
                             || image.getHeight(qrCodeLabel) + MINIMUM_QRCODE_PANEL_VERTICAL_SPACING > qrCodePanel.getHeight()) {
                         // scale image
@@ -838,16 +800,16 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                         // no resize
                         bufferedImage = toBufferedImage(image, -1, -1);
                     }
-                    System.out.println("importData - 2.2");
+                    log.debug("importData - 2.2");
                     ImageIcon icon = new ImageIcon(bufferedImage);
 
                     // decode the QRCode to a String
                     QRCodeEncoderDecoder qrCodeEncoderDecoder = new QRCodeEncoderDecoder(image.getWidth(qrCodeLabel),
                             image.getHeight(qrCodeLabel));
-                    System.out.println("importData - 2.3");
+                    log.debug("importData - 2.3");
 
                     String decodedString = qrCodeEncoderDecoder.decode(toBufferedImage(image, -1, -1));
-                    System.out.println("importData - 3 - decodedResult = " + decodedString);
+                    log.debug("importData - 3 - decodedResult = " + decodedString);
                     log.info("SendBitcoinPanel#imageSelection#importData = decodedString = {}", decodedString);
                     return processDecodedString(decodedString, label, icon);
                 }
@@ -860,29 +822,26 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
             try {
                 // try to get an image
                 if (transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
-                    System.out.println("image flavor is supported");
+                    log.debug("image flavor is supported");
                     Image img = (Image) transferable.getTransferData(DataFlavor.imageFlavor);
                     if (img != null && img.getWidth(null) != -1) {
                         return img;
                     }
                 }
                 if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-                    System.out.println("javaFileList is supported");
+                    log.debug("javaFileList is supported");
                     java.util.List list = (java.util.List) transferable.getTransferData(DataFlavor.javaFileListFlavor);
-                    ListIterator it = list.listIterator();
-                    while (it.hasNext()) {
-                        File f = (File) it.next();
-                        ImageIcon icon = new ImageIcon(f.getAbsolutePath());
-                        if (icon != null) {
-                            if (icon.getImage() != null) {
-                                return icon.getImage();
-                            }
-                        }
+                    for (Object aList : list) {
+                    File f = (File) aList;
+                    ImageIcon icon = new ImageIcon(f.getAbsolutePath());
+                    if (icon.getImage() != null) {
+                      return icon.getImage();
                     }
+                  }
                 }
                 
                 if (transferable.isDataFlavorSupported(uriListFlavor)) {
-                    System.out.println("uriListFlavor is supported");
+                    log.debug("uriListFlavor is supported");
                     String uris = (String) transferable.getTransferData(uriListFlavor);
 
                     // url-lists are defined by rfc 2483 as crlf-delimited
@@ -890,7 +849,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                     StringTokenizer izer = new StringTokenizer(uris, "\r\n");
                     if (izer.hasMoreTokens()) {
                         String uri = izer.nextToken();
-                        System.out.println("uri = " + uri);
+                        log.debug("uri = " + uri);
                         java.awt.Image image = getURLImage(new URL(uri), label);
 
                         if (image != null) {
@@ -898,18 +857,16 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                         }
                         
                         ImageIcon uriIcon = new ImageIcon(uri);
-                        if (uriIcon != null) {
-                            if(uriIcon.getImage() != null) {
-                                return uriIcon.getImage();
-                            }
-                        }
+                      if(uriIcon.getImage() != null) {
+                          return uriIcon.getImage();
+                      }
                     }
                 }
                 
                 if (transferable.isDataFlavorSupported(urlFlavor)) {
-                    System.out.println("urlFlavor is supported");
+                    log.debug("urlFlavor is supported");
                     URL url = (URL) transferable.getTransferData(urlFlavor);
-                    System.out.println("url = " + url);
+                    log.debug("url = " + url);
                     java.awt.Image image = getURLImage(url, label);
 
                     if (image != null) {
@@ -917,11 +874,9 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                     }
                     
                     ImageIcon urlIcon = new ImageIcon(url);
-                    if (urlIcon != null) {
-                        if (urlIcon.getImage() != null) {
-                            return urlIcon.getImage();
-                        }
-                    } 
+                  if (urlIcon.getImage() != null) {
+                      return urlIcon.getImage();
+                  }
                 }
             } catch (IOException ioe) {
                 ioe.printStackTrace();
@@ -932,6 +887,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
             return null;
         }
 
+        // TODO Consider removing label parameter
         private Image getURLImage(URL url, JComponent label) {
             Image imageToReturn = null;
             
@@ -966,7 +922,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
         @SuppressWarnings({ "rawtypes", "unchecked" })
         public BufferedImage toBufferedImage(Image image, int width, int height) {
-            System.out.println("SendBitCoinPanel#toBufferedImage - 1");
+            log.debug("SendBitCoinPanel#toBufferedImage - 1");
             if (image == null) {
                 return null;
             }
@@ -978,7 +934,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
             }
             // draw original image to thumbnail image object and
             // scale it to the new size on-the-fly
-            System.out.println("SendBitCoinPanel#toBufferedImage - 2.2, image = " + image + ",width = " + width + ", height = "
+            log.debug("SendBitCoinPanel#toBufferedImage - 2.2, image = " + image + ",width = " + width + ", height = "
                     + height);
 //            BufferedImage bufferedImage = null;
 //            // MacOS is not very good with large images so I call
@@ -992,13 +948,13 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 //            }
 //            if (!conversionSuccess) {
 //                try {
-//                    System.out.println("SendBitCoinPanel#toBufferedImage - 2.2.1");
+//                    log.debug("SendBitCoinPanel#toBufferedImage - 2.2.1");
 //                    Class clazz = image.getClass();
-//                    System.out.println("SendBitCoinPanel#toBufferedImage - 2.2.2 - clazz = " + clazz);
+//                    log.debug("SendBitCoinPanel#toBufferedImage - 2.2.2 - clazz = " + clazz);
 //                    java.lang.reflect.Method method = clazz.getMethod("getBufferedImage");
-//                    System.out.println("SendBitCoinPanel#toBufferedImage - 2.2.3 - method = " + method);
+//                    log.debug("SendBitCoinPanel#toBufferedImage - 2.2.3 - method = " + method);
 //                    bufferedImage = (BufferedImage) method.invoke(image);
-//                    System.out.println("SendBitCoinPanel#toBufferedImage - 2.2.4 - bufferedImage = " + bufferedImage);
+//                    log.debug("SendBitCoinPanel#toBufferedImage - 2.2.4 - bufferedImage = " + bufferedImage);
 //                    conversionSuccess = true;
 //                } catch (IllegalArgumentException e) {
 //                } catch (IllegalAccessException e) {
@@ -1010,14 +966,14 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
             //if (!conversionSuccess) {
             BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             //}
-            System.out.println("SendBitCoinPanel#toBufferedImage - 2.3, bufferedImage = " + bufferedImage);
+            log.debug("SendBitCoinPanel#toBufferedImage - 2.3, bufferedImage = " + bufferedImage);
 
             Graphics2D g2 = bufferedImage.createGraphics();
             
-            System.out.println("SendBitCoinPanel#toBufferedImage - 3");
+            log.debug("SendBitCoinPanel#toBufferedImage - 3");
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             g2.drawImage(image, 0, 0, width, height, null);
-            System.out.println("SendBitCoinPanel#toBufferedImage - 4");
+            log.debug("SendBitCoinPanel#toBufferedImage - 4");
             g2.dispose();
             return bufferedImage;
         }
@@ -1033,32 +989,32 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
             // This code ensures that all the pixels in the image are loaded
             image = new ImageIcon(image).getImage();
-            System.out.println("SendBitCoinPanel#toBufferedImage - 2");
+            log.debug("SendBitCoinPanel#toBufferedImage - 2");
 
             // Create a buffered image with a format that's compatible with the
             // screen
             BufferedImage bimage = null;
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            System.out.println("SendBitCoinPanel#toBufferedImage - 2.1");
+            log.debug("SendBitCoinPanel#toBufferedImage - 2.1");
             try {
                 // Determine the type of transparency of the new buffered image
                 int transparency = Transparency.OPAQUE;
 
                 // Create the buffered image
                 GraphicsDevice gs = ge.getDefaultScreenDevice();
-                System.out.println("SendBitCoinPanel#toBufferedImage - 2.2");
+                log.debug("SendBitCoinPanel#toBufferedImage - 2.2");
 
                 GraphicsConfiguration gc = gs.getDefaultConfiguration();
-                System.out.println("SendBitCoinPanel#toBufferedImage - 2.3, image = " + image + ",width = " + width
+                log.debug("SendBitCoinPanel#toBufferedImage - 2.3, image = " + image + ",width = " + width
                         + ", height = " + height);
 
                 bimage = gc.createCompatibleImage(width, height, transparency);
-                System.out.println("SendBitCoinPanel#toBufferedImage - 2.4");
+                log.debug("SendBitCoinPanel#toBufferedImage - 2.4");
 
             } catch (HeadlessException e) {
                 // The system does not have a screen
             }
-            System.out.println("SendBitCoinPanel#toBufferedImage - 3 - bimage = " + bimage);
+            log.debug("SendBitCoinPanel#toBufferedImage - 3 - bimage = " + bimage);
 
             if (bimage == null) {
                 // Create a buffered image using the default color model
@@ -1074,7 +1030,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
             g.dispose();
 
-            System.out.println("SendBitCoinPanel#toBufferedImage - 4 - bimage = " + bimage);
+            log.debug("SendBitCoinPanel#toBufferedImage - 4 - bimage = " + bimage);
 
             return bimage;
         }

@@ -1,18 +1,15 @@
 package org.multibit.action;
 
-import java.io.File;
-import java.io.IOException;
-
+import com.google.bitcoin.core.Wallet;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.Data;
-import org.multibit.model.DataProvider;
-import org.multibit.model.Item;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.*;
 import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Wallet;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * an action to process the submit of the Save Wallet As view
@@ -21,6 +18,8 @@ import com.google.bitcoin.core.Wallet;
  * 
  */
 public class SaveWalletAsSubmitAction implements Action {
+
+    private static final Logger log = LoggerFactory.getLogger(SaveWalletAsSubmitAction.class);
 
     private MultiBitController controller;
 
@@ -47,7 +46,7 @@ public class SaveWalletAsSubmitAction implements Action {
                     String newWalletFilename = (String) item.getNewValue();
                     
                     // if the filename has no extension, put on the wallet extension
-                    if (newWalletFilename.indexOf(".") == -1) {
+                    if (!newWalletFilename.contains(".")) {
                         // add wallet file extension
                         newWalletFilename = newWalletFilename + "." + MultiBitModel.WALLET_FILE_EXTENSION;
                     }
@@ -86,8 +85,8 @@ public class SaveWalletAsSubmitAction implements Action {
                         controller.setMultiBitService(multiBitService);
 
                         controller.fireWalletChanged();
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
+                    } catch (IOException e) {
+                        log.error("IOException: {}", e.getMessage(), e);
                     }
                 }
             }

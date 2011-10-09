@@ -465,7 +465,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {
-            System.err.println("org.multibit.MultiBitFrame#createImageIcon: Could not find file: " + path);
+            log.error("org.multibit.MultiBitFrame#createImageIcon: Could not find file: " + path);
             return null;
         }
     }
@@ -536,11 +536,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             if (view != null) {
                 view.displayMessage(messageKey, messageData, titleKey);
             } else {
-                System.out.println("MultiBitFrame#displayMessage - no view with id " + currentView
+                log.debug("MultiBitFrame#displayMessage - no view with id " + currentView
                         + " to display message with key " + messageKey);
             }
         } else {
-            System.out.println("MultiBitFrame#displayMessage - no view on which to display message with key " + messageKey);
+            log.debug("MultiBitFrame#displayMessage - no view on which to display message with key " + messageKey);
         }
     }
 
@@ -691,12 +691,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         } catch (ScriptException e) {
             // If we didn't understand the scriptSig, just crash.
             log.error(e.getMessage(),e);
-
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         } catch (IOException e) {
             log.error(e.getMessage(),e);
-
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
 
     }
@@ -728,12 +726,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         } catch (ScriptException e) {
             // If we didn't understand the scriptSig, just crash.
             log.error(e.getMessage(),e);
-
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         } catch (IOException e) {
             log.error(e.getMessage(),e);
-
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

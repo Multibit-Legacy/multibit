@@ -1,5 +1,8 @@
 package org.multibit.viewsystem.swing.action;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -11,15 +14,17 @@ import java.io.IOException;
 
 public final class TextTransfer implements ClipboardOwner {
 
+    private final static Logger log = LoggerFactory.getLogger(TextTransfer.class);
+
     public static void main(String... aArguments) {
         TextTransfer textTransfer = new TextTransfer();
 
         // display what is currently on the clipboard
-        System.out.println("Clipboard contains:" + textTransfer.getClipboardContents());
+        log.debug("Clipboard contains:" + textTransfer.getClipboardContents());
 
         // change the contents and then re-display
         textTransfer.setClipboardContents("blah, blah, blah");
-        System.out.println("Clipboard contains:" + textTransfer.getClipboardContents());
+        log.debug("Clipboard contains:" + textTransfer.getClipboardContents());
     }
 
     /**
@@ -55,13 +60,11 @@ public final class TextTransfer implements ClipboardOwner {
         if (hasTransferableText) {
             try {
                 result = (String) contents.getTransferData(DataFlavor.stringFlavor);
-            } catch (UnsupportedFlavorException ex) {
+            } catch (UnsupportedFlavorException e) {
                 // highly unlikely since we are using a standard DataFlavor
-                System.out.println(ex);
-                ex.printStackTrace();
-            } catch (IOException ex) {
-                System.out.println(ex);
-                ex.printStackTrace();
+                log.error("UnsupportedFlavorException: {}", e.getMessage(), e);
+            } catch (IOException e) {
+                log.error("IOException: {}", e.getMessage(), e);
             }
         }
         return result;

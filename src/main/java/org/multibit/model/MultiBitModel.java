@@ -81,7 +81,7 @@ public class MultiBitModel {
     // user preferences
     private Properties userPreferences;
 
-    private Vector<WalletTableData> walletData;
+    private List<WalletTableData> walletData;
 
     // wallet info including address labelling
     private WalletInfo walletInfo;
@@ -94,7 +94,7 @@ public class MultiBitModel {
         this.controller = controller;
         this.userPreferences = userPreferences;
 
-        walletData = new Vector<WalletTableData>();
+        walletData = new ArrayList<WalletTableData>();
         walletInfo = null;
     }
 
@@ -162,7 +162,7 @@ public class MultiBitModel {
 
     public BigInteger getEstimatedBalance() {
         if (wallet == null) {
-            return new BigInteger("0");
+            return BigInteger.ZERO;
         } else {
             return wallet.getBalance(BalanceType.ESTIMATED);
         }
@@ -170,13 +170,13 @@ public class MultiBitModel {
 
     public BigInteger getAvailableBalance() {
         if (wallet == null) {
-            return new BigInteger("0");
+            return BigInteger.ZERO;
         } else {
             return wallet.getBalance(BalanceType.AVAILABLE);
         }
     }
 
-    public Vector<WalletTableData> getWalletData() {
+    public List<WalletTableData> getWalletData() {
         return walletData;
     }
 
@@ -225,6 +225,7 @@ public class MultiBitModel {
      * show to the user in tabular form
      */
     public Vector<WalletTableData> createWalletData() {
+        // TODO Consider an ArrayList if possible
         Vector<WalletTableData> walletData = new Vector<WalletTableData>();
 
         if (wallet == null) {

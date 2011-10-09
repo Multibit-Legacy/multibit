@@ -59,6 +59,7 @@ public class WalletInfo {
         this.walletFilename = walletFilename;
         
         candidateReceivingAddresses = new HashSet<AddressBookData>();
+        // TODO Consider an ArrayList if possible
         receivingAddresses = new Vector<AddressBookData>();
         sendingAddresses = new Vector<AddressBookData>();
         
@@ -170,7 +171,7 @@ public class WalletInfo {
         boolean done = false;
         // check the address is not already in the Vector
         for (AddressBookData addressBookData : sendingAddresses) {
-            if (addressBookData.getAddress().equals(sendingAddress.getAddress())) {
+            if (addressBookData.getAddress()!=null && addressBookData.getAddress().equals(sendingAddress.getAddress())) {
                 // just update label
                 addressBookData.setLabel(sendingAddress.getLabel());
                 done = true;
@@ -271,6 +272,7 @@ public class WalletInfo {
     }
     
     public void loadFromFile() {
+        // TODO Is this try/catch block too wide in scope?
         try {
             walletPreferences = new Properties();
             

@@ -1,20 +1,12 @@
 package org.multibit.viewsystem.swing.view;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.util.Map;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.ListCellRenderer;
-
 import org.multibit.controller.MultiBitController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Map;
 
 /*
  * CustomComboBoxDemo.java is a 1.4 application that uses the following files:
@@ -26,10 +18,13 @@ import org.multibit.controller.MultiBitController;
  */
 public class CustomComboBoxDemo extends JPanel {
 
+    private static final Logger log = LoggerFactory.getLogger(CustomComboBoxDemo.class);
+
     private static final long serialVersionUID = 1323L;
     ImageIcon[] images;
     String[] petStrings = { "Bird", "Cat", "Dog", "Rabbit", "Pig" };
 
+    // TODO Consider if these are required
     private Map<String, String> languageToLanguageCodeMap;
     private Map<String, String> languageCodeToLanguageMap;
 
@@ -55,7 +50,7 @@ public class CustomComboBoxDemo extends JPanel {
             languageToLanguageCodeMap.put(language, languageCode);
             languageCodeToLanguageMap.put(languageCode, language);
 
-            intArray[i] = new Integer(i);
+            intArray[i] = i;
             images[i] = createImageIcon(languageCode);
             if (images[i] != null) {
                 images[i].setDescription(petStrings[i]);
@@ -74,13 +69,17 @@ public class CustomComboBoxDemo extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     }
 
-    /** Returns an ImageIcon, or null if the path was invalid. */
+    /**
+     * TODO Consider refactoring this method into a static utility
+     * @param path The resource path
+     * @return an ImageIcon, or null if the path was invalid.
+     */
     protected static ImageIcon createImageIcon(String path) {
         java.net.URL imgURL = CustomComboBoxDemo.class.getResource(path);
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {
-            System.err.println("Couldn't find file: " + path);
+            log.error("Couldn't find file: " + path);
             return null;
         }
     }

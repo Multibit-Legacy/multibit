@@ -24,23 +24,30 @@ public class AddressBookData implements Comparable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         AddressBookData other = (AddressBookData) obj;
         if (address == null) {
-            if (other.address != null)
+            if (other.address != null) {
                 return false;
-        } else if (!address.equals(other.address))
+            }
+        } else if (!address.equals(other.address)) {
             return false;
+        }
         if (label == null) {
-            if (other.label != null)
+            if (other.label != null) {
                 return false;
-        } else if (!label.equals(other.label))
+            }
+        } else if (!label.equals(other.label)) {
             return false;
+        }
         return true;
     }
 

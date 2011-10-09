@@ -20,22 +20,26 @@
 
 package org.multibit.qrcode;
 
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.Utils;
+import org.multibit.controller.MultiBitController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.math.BigInteger;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.multibit.controller.MultiBitController;
-
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.Utils;
 
 /**
  * @author Andreas Schildbach
  * @author Jim Burton
  */
 public class BitcoinURI {
+
+    private static final Logger log = LoggerFactory.getLogger(BitcoinURI.class);
+
     private Address address;
     private BigInteger amount;
     private String label;
@@ -83,7 +87,7 @@ public class BitcoinURI {
                 try {
                     address = new Address(controller.getMultiBitService().getNetworkParameters(), uriString);
                     parsedOk = true; // we are done
-                    System.out.println("BitcoinURI - Ping 1");
+                    log.debug("BitcoinURI - Ping 1");
                 } catch (final AddressFormatException x) {
                     // do nothing
                 }
@@ -124,8 +128,10 @@ public class BitcoinURI {
                                     Matcher matcher = AMOUNT_PATTERN.matcher(value);
                                     if (matcher.matches()) {
                                         amount = Utils.toNanoCoins(matcher.group(1));
-                                        if (matcher.group(2) != null)
-                                            amount.multiply(BigInteger.valueOf(10).pow(Integer.parseInt(matcher.group(2)) - 8));
+                                        if (matcher.group(2) != null) {
+                                           // TODO Why is the result of this ignored?
+                                           amount.multiply(BigInteger.valueOf(10).pow(Integer.parseInt(matcher.group(2)) - 8));
+                                        }
                                     }
                                 }
                             } else if ("label".equalsIgnoreCase(name)) {

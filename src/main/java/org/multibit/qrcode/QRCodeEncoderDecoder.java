@@ -1,8 +1,5 @@
 package org.multibit.qrcode;
 
-import java.awt.image.BufferedImage;
-import java.util.Hashtable;
-
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.ReaderException;
@@ -14,6 +11,9 @@ import com.google.zxing.qrcode.QRCodeReader;
 import com.google.zxing.qrcode.QRCodeWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.awt.image.BufferedImage;
+import java.util.Hashtable;
 
 public class QRCodeEncoderDecoder {
     private final Logger log = LoggerFactory.getLogger(QRCodeEncoderDecoder.class);
@@ -76,7 +76,7 @@ public class QRCodeEncoderDecoder {
             return result.getText();
         } catch (ReaderException e) {
             // the data is improperly formatted
-            System.out.println(e.getMessage());
+            log.debug(e.getMessage());
             log.error("Error while decoding image", e);
         }
 

@@ -6,6 +6,8 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
@@ -13,6 +15,8 @@ import javax.swing.*;
  * The validation error view - used to tell the user their input is invalid
  */
 public class ValidationErrorView implements View {
+
+    private static final Logger log = LoggerFactory.getLogger(ValidationErrorView.class);
 
     private static final long serialVersionUID = 191499812345057705L;
 
@@ -152,16 +156,17 @@ public class ValidationErrorView implements View {
         }
     }
 
-    /** Returns an ImageIcon, or null if the path was invalid.
+    /**
+     * TODO Consider refactoring this method into a static utility
      * @param path The resource path
-     * @return The image icon
+     * @return an ImageIcon, or null if the path was invalid.
      */
     protected ImageIcon createImageIcon(String path) {
         java.net.URL imgURL = MultiBitFrame.class.getResource(path);
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {
-            System.err.println("SendBitcoinPanel#createImageIcon: Could not find file: " + path);
+            log.error("SendBitcoinPanel#createImageIcon: Could not find file: " + path);
             return null;
         }
     }

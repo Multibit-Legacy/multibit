@@ -1,38 +1,26 @@
 package org.multibit.viewsystem.swing.view;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.SortOrder;
-import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
-
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.WalletTableModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import javax.swing.table.*;
+import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 
 public class ShowTransactionsPanel extends JPanel implements DataProvider, View {
+
+    private static final Logger log = LoggerFactory.getLogger(ShowTransactionsPanel.class);
 
     private static final long serialVersionUID = 1235108897887842662L;
 
@@ -179,7 +167,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             label.setHorizontalAlignment(SwingConstants.CENTER);
             label.setOpaque(true);
 
-            int numberOfBlocksEmbedded = ((Integer) value).intValue();
+            int numberOfBlocksEmbedded = (Integer) value;
             if (numberOfBlocksEmbedded < 0) {
                 numberOfBlocksEmbedded = 0;
             }
@@ -236,13 +224,16 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         }
     }
 
-    /** Returns an ImageIcon, or null if the path was invalid. */
+    /**
+     * @param path The icon image path
+     * @return an ImageIcon, or null if the path was invalid
+     */
     private ImageIcon createImageIcon(String path) {
         java.net.URL imgURL = MultiBitFrame.class.getResource(path);
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {
-            System.err.println("org.multibit.ViewerFrame#createImageIcon: Could not find file: " + path);
+            log.error("org.multibit.ViewerFrame#createImageIcon: Could not find file: " + path);
             return null;
         }
     }
@@ -257,7 +248,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             label.setHorizontalAlignment(SwingConstants.RIGHT);
             label.setOpaque(true);
 
-            label.setText((String) value + SPACER);
+            label.setText(value + SPACER);
             if (!label.getBackground().equals(table.getSelectionBackground())) {
                 Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
@@ -325,6 +316,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         }
     }
 
+    // TODO Is this used?
     class CenterJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 

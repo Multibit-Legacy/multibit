@@ -1,17 +1,17 @@
 package org.multibit.viewsystem.swing.view;
 
-import java.util.Vector;
-
-import javax.swing.table.DefaultTableModel;
-
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.WalletInfo;
+
+import javax.swing.table.DefaultTableModel;
+import java.util.Vector;
 
 public class AddressBookTableModel extends DefaultTableModel {
 
     private static final long serialVersionUID = -937886012851116208L;
 
+    // TODO Consider an ArrayList if possible
     private Vector<String> headers = new Vector<String>();
 
     private final String[] tableHeaderKeys = new String[] { "addressBookTableModel.labelColumnHeader",
@@ -23,11 +23,11 @@ public class AddressBookTableModel extends DefaultTableModel {
 
     public AddressBookTableModel(MultiBitController controller, boolean isReceiving) {
         this.controller = controller;
-        for (int j = 0; j < tableHeaderKeys.length; j++) {
-            headers.add(controller.getLocaliser().getString(tableHeaderKeys[j]));
-        }
+      for (String tableHeaderKey : tableHeaderKeys) {
+        headers.add(controller.getLocaliser().getString(tableHeaderKey));
+      }
 
-        this.isReceiving = isReceiving;
+      this.isReceiving = isReceiving;
     }
 
     public int getColumnCount() {
@@ -72,7 +72,7 @@ public class AddressBookTableModel extends DefaultTableModel {
             addresses = walletInfo.getSendingAddresses();
         }
 
-        AddressBookData[] addressesArray = (AddressBookData[]) addresses.toArray(new AddressBookData[addresses.size()]);
+        AddressBookData[] addressesArray = addresses.toArray(new AddressBookData[addresses.size()]);
         AddressBookData addressBookData = null;
         if (row >= 0 && row < addresses.size()) {
             addressBookData = addressesArray[row];
@@ -101,6 +101,9 @@ public class AddressBookTableModel extends DefaultTableModel {
 
     /**
      * find a row, given an address
+     * @param address The address
+     * @param isReceiving true if receiving
+     * @return The row for the address
      */
     public int findRowByAddress(String address, boolean isReceiving) {
         if (address == null) {

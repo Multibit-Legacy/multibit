@@ -26,7 +26,7 @@ public class ViewFactory {
     }
 
     public View getView(int viewNumber) {
-        View viewToReturn = viewMap.get(new Integer(viewNumber));
+        View viewToReturn = viewMap.get(viewNumber);
 
         if (viewToReturn == null) {
             viewToReturn = createView(viewNumber);

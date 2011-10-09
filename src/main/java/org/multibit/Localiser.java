@@ -36,7 +36,7 @@ public class Localiser {
     private Locale locale;
     private String bundleName;
 
-    private final String MISSING_RESOURCE_TEXT = "Missing resource : ";
+    private final static String MISSING_RESOURCE_TEXT = "Missing resource : ";
 
     /**
      * Localiser hardwired to English - mainlt for testing
@@ -106,8 +106,8 @@ public class Localiser {
 
         String propertyFilename = bundleName + SEPARATOR + locale.getLanguage() + PROPERTY_NAME_SUFFIX;
         String propertyFilenameBase = bundleName + PROPERTY_NAME_SUFFIX;
-        //System.out.println("Localiser#setLocale propertyFilename = " + propertyFilename);
-        //System.out.println("Localiser#setLocale propertyFilenameBase = " + propertyFilenameBase);
+        //log.debug("Localiser#setLocale propertyFilename = " + propertyFilename);
+        //log.debug("Localiser#setLocale propertyFilenameBase = " + propertyFilenameBase);
         boolean foundIt = false;
         try {
             InputStream inputStream = Localiser.class.getResourceAsStream(propertyFilename);
@@ -169,8 +169,11 @@ public class Localiser {
     }
 
     /** 
-     * Returns the given value in nanocoins as a 0.12 type string - 2 sig figs
-     **/
+     * @param value The value
+     * @param addUnit True if a unit should be appended
+     * @param blankZero True if a zero value should be returned as blank
+     * @return the given value in nanocoins as a 0.12 type string - 2 sig figs
+     */
     public static String bitcoinValueToFriendlyString(BigInteger value, boolean addUnit, boolean blankZero) {
         if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
             return "";

@@ -25,7 +25,7 @@ public class SendBitcoinNowAction implements Action {
 
     private MultiBitController controller;
     
-    private final int MAX_LENGTH_OF_ERROR_MESSAGE = 70;
+    private final static int MAX_LENGTH_OF_ERROR_MESSAGE = 70;
 
     public SendBitcoinNowAction(MultiBitController controller) {
         this.controller = controller;
@@ -38,13 +38,13 @@ public class SendBitcoinNowAction implements Action {
         String sendAmount = controller.getModel().getWalletPreference(MultiBitModel.SEND_AMOUNT);
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
         BigInteger fee;
-        if (sendFeeString == null || sendFeeString == "") {
+        if (sendFeeString == null || sendFeeString.equals("")) {
             fee = MultiBitModel.SEND_MINIMUM_FEE;
         } else {
             fee = Utils.toNanoCoins(sendFeeString);
         }
 
-        if (sendLabel != null && sendLabel != "") {
+        if (sendLabel != null && !sendLabel.equals("")) {
             WalletInfo addressBook = controller.getModel().getWalletInfo();
             addressBook.addSendingAddress(new AddressBookData(sendLabel, sendAddress));
         }
@@ -64,7 +64,7 @@ public class SendBitcoinNowAction implements Action {
             errorMessage = e.getMessage();
         } catch (Throwable t) {
             // really trying to catch anything that goes wrong
-            t.printStackTrace();
+            log.error(t.getMessage(), t);
             errorMessage = t.getMessage();
         }
 

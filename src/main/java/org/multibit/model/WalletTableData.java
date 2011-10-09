@@ -1,9 +1,9 @@
 package org.multibit.model;
 
+import com.google.bitcoin.core.Transaction;
+
 import java.math.BigInteger;
 import java.util.Date;
-
-import com.google.bitcoin.core.Transaction;
 
 /**
  * class used to store the data in the table in a quick to access form
@@ -13,6 +13,7 @@ public class WalletTableData {
     
     /**
      * keys that give column header text for output formatting
+     * TODO Exposing mutable state consider cloning
      */
     public static final String[] COLUMN_HEADER_KEYS = new String[] { "walletData.statusText",
             "walletData.dateText", "walletData.descriptionText",
@@ -24,7 +25,8 @@ public class WalletTableData {
      * the height of the block this transaction appears in
      */
     private int height;
-    
+
+    // TODO Consider using Joda Time (java.util.Date is obsolete)
     private Date date;
     private String description;
     private BigInteger debit;
@@ -34,7 +36,8 @@ public class WalletTableData {
             BigInteger debit, BigInteger credit) {
         this.transaction = transaction;
         this.height = height;
-        this.date = date;
+        // Avoid exposing internal state
+        this.date = new Date(date.getTime());
         this.description = description;
         this.debit = debit;
         this.credit = credit;
@@ -61,11 +64,12 @@ public class WalletTableData {
     }
 
     public Date getDate() {
-        return date;
+        // Avoids exposing internal state
+        return new Date(date.getTime());
     }
 
     public void setDate(Date date) {
-        this.date = date;
+        this.date = new Date(date.getTime());
     }
 
     public String getDescription() {

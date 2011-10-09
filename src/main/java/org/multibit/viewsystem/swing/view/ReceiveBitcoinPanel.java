@@ -602,7 +602,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {
-            System.err.println("ReceiveBitcoinPanel#createImageIcon: Could not find file: " + path);
+            log.error("ReceiveBitcoinPanel#createImageIcon: Could not find file: " + path);
             return null;
         }
     }

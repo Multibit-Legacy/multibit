@@ -11,17 +11,17 @@ package org.multibit.viewsystem.swing.browser;
  * visit http://www.davidflanagan.com/javaexamples2.
  */
 
-import java.awt.Cursor;
+import org.multibit.controller.MultiBitController;
+import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.HelpContentsPanel;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.URL;
-
-import org.multibit.controller.MultiBitController;
-import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.HelpContentsPanel;
 
 public class Browser extends javax.swing.JEditorPane implements PropertyChangeListener {
     private static final long serialVersionUID = 1L;
@@ -81,8 +81,11 @@ public class Browser extends javax.swing.JEditorPane implements PropertyChangeLi
      * page has finished loading.
      **/
     public void propertyChange(PropertyChangeEvent e) {
-        if (e.getPropertyName().equals("page")) // If the page property changed
-            stopAnimation(); // Then stop the loading... animation
+        if (e.getPropertyName().equals("page")) {
+          // If the page property changed
+          // then stop the "loading..." animation
+          stopAnimation();
+        }
     }
 
     /**

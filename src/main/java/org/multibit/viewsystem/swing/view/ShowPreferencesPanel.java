@@ -1,31 +1,5 @@
 package org.multibit.viewsystem.swing.view;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.image.BufferedImage;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.ListCellRenderer;
-
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
@@ -35,6 +9,14 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ShowPreferencesSubmitAction;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.image.BufferedImage;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * The help about view
@@ -224,7 +206,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         Integer[] indexArray = new Integer[languageDataSet.size()];
         int index = 0;
         for (@SuppressWarnings("unused") LanguageData languageData : languageDataSet) {
-            indexArray[index] = new Integer(index);
+            indexArray[index] = index;
             index++;
         }
         languageComboBox = new JComboBox(indexArray);
@@ -416,7 +398,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
             // always valid, so just use the value.)
             int selectedIndex = 0;
             if (value != null) {
-                selectedIndex = ((Integer) value).intValue();
+                selectedIndex = (Integer) value;
             }
             if (isSelected) {
                 setBackground(list.getSelectionBackground());

@@ -30,7 +30,7 @@ public class MultiBitPeerGroup extends PeerGroup {
         try {
             listener.await();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

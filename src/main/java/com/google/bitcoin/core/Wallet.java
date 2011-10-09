@@ -198,7 +198,7 @@ public class Wallet implements Serializable {
      * @throws ScriptException
      */
     synchronized void receivePendingTransaction(Transaction transaction) {
-        System.out.println("Wallet#receivePendingTransaction - received pending transaction: " + transaction);
+        log.debug("Wallet#receivePendingTransaction - received pending transaction: " + transaction);
         // the main receive logic is not run yet - this is done when the block with this transaction is received
         transaction.setUpdatedAt(new Date());
         pending.put(transaction.getHash(), transaction);

@@ -1,22 +1,20 @@
 package org.multibit.viewsystem.swing.view;
 
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * The help about view
  */
 public class HelpAboutPanel extends JPanel implements View {
+
+    private static final Logger log = LoggerFactory.getLogger(HelpAboutPanel.class);
 
     private static final long serialVersionUID = 191352212345057705L;
 
@@ -26,9 +24,7 @@ public class HelpAboutPanel extends JPanel implements View {
 
     private MultiBitController controller;
 
-    private ImageIcon imageIcon;
-
-    /**
+  /**
      * Creates a new {@link HelpAboutPanel}.
      */
     public HelpAboutPanel(MultiBitController controller, MultiBitFrame mainFrame) {
@@ -72,7 +68,7 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.anchor = GridBagConstraints.CENTER;
         add(titleLabel, constraints);
 
-        imageIcon = createImageIcon(SPLASH_ICON_FILE);
+        ImageIcon imageIcon = createImageIcon(SPLASH_ICON_FILE);
         JLabel splashLabel = new JLabel();
         splashLabel.setIcon(imageIcon);
         constraints.fill = GridBagConstraints.NONE;
@@ -132,14 +128,18 @@ public class HelpAboutPanel extends JPanel implements View {
         // not implemented on this view
     }
 
-    /** Returns an ImageIcon, or null if the path was invalid. */
+    /**
+     * TODO Consider refactoring this method into a static utility
+     * @param path The image path
+     * @return an ImageIcon, or null if the path was invalid.
+     */
     private ImageIcon createImageIcon(String path) {
         java.net.URL imgURL = MultiBitFrame.class.getResource(path);
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {
-            System.err.println("org.multibit.ViewerFrame#createImageIcon: Could not find file: "
-                    + path);
+            log.error("org.multibit.ViewerFrame#createImageIcon: Could not find file: "
+              + path);
             return null;
         }
     }

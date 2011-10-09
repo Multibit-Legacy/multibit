@@ -161,12 +161,12 @@ public class MultiBitService {
         }
 
         // Load the block chain, if there is one stored locally.
-        System.out.println("Reading block store from disk");
+        log.debug("Reading block store from disk");
         BlockStore blockStore = null;
         try {
             blockStore = new BoundedOverheadBlockStore(networkParameters, new File(filePrefix + ".blockchain"));
 
-            System.out.println("Connecting ...");
+            log.debug("Connecting ...");
             chain = new BlockChain(networkParameters, wallet, blockStore);
 
             peerGroup = new MultiBitPeerGroup(controller, blockStore, networkParameters, chain, wallet);
@@ -227,7 +227,7 @@ public class MultiBitService {
         // coins than we have!
         // throw an exception if sendTransaction is null - no money
         if (sendTransaction != null) {
-            System.out.println("MultiBitService#sendCoins - Sent coins. Transaction hash is "
+            log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is "
                     + sendTransaction.getHashAsString());
             fileHandler.saveWalletToFile(wallet, new File(controller.getModel().getWalletFilename()));
         } else {

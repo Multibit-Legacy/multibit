@@ -1,17 +1,15 @@
 package org.multibit.viewsystem.swing;
 
-import java.math.BigInteger;
-import java.util.Date;
-import java.util.Vector;
-
-import javax.swing.table.AbstractTableModel;
-
+import com.google.bitcoin.core.StoredBlock;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletTableData;
 
-import com.google.bitcoin.core.StoredBlock;
+import javax.swing.table.AbstractTableModel;
+import java.math.BigInteger;
+import java.util.Date;
+import java.util.Vector;
 
 public class WalletTableModel extends AbstractTableModel {
 
@@ -74,8 +72,7 @@ public class WalletTableModel extends AbstractTableModel {
                 currentHeight = currentHead.getHeight();
             }
             if (walletDataRow.getHeight() != -1) {
-                int numberOfBlocksEmbedded = currentHeight - walletDataRow.getHeight() + 1;
-                return numberOfBlocksEmbedded;
+              return currentHeight - walletDataRow.getHeight() + 1;
             } else {
                 // do not know the height - probably a send that is not
                 // confirmed
@@ -124,6 +121,7 @@ public class WalletTableModel extends AbstractTableModel {
     }
 
     public void createHeaders() {
+        // TODO Consider an ArrayList if possible
         headers = new Vector<String>();
         for (int j = 0; j < WalletTableData.COLUMN_HEADER_KEYS.length; j++) {
             headers.add(controller.getLocaliser().getString(WalletTableData.COLUMN_HEADER_KEYS[j]));

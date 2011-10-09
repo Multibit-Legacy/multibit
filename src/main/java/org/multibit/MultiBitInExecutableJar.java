@@ -16,6 +16,9 @@ package org.multibit;
  * limitations under the License.
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -30,11 +33,14 @@ import java.io.PrintStream;
 public class MultiBitInExecutableJar {
     public static final String OUTPUT_DIRECTORY = "log";
     public static final String OUTPUT_FILENAME = "multibit_console.log";
-     
+
+    private static final Logger log = LoggerFactory.getLogger(MultiBitInExecutableJar.class);
+
     /**
      * start multibit user interface when running in a jar
      */
     public static void main(String args[]) {
+      // TODO Refactor this to work with a different Logger appender
         // redirect the console output to a file
        PrintStream orgStream   = null;
         PrintStream fileStream  = null;
@@ -56,20 +62,18 @@ public class MultiBitInExecutableJar {
             // call the main MultiBit code
             MultiBit.main(args);
         }
-        catch (FileNotFoundException fnfEx) {
-            System.out.println("Error in IO Redirection");
-            fnfEx.printStackTrace();
+        catch (FileNotFoundException e) {
+            log.error("Error in IO Redirection", e);
         }
-        catch (Exception ex) {
+        catch (Exception e) {
             //Gets printed in the file
-            System.out.println("Redirecting output & exceptions to file");
-            ex.printStackTrace();
+            log.debug("Redirecting output & exceptions to file", e);
         }
         finally {
             //Restoring back to console
             System.setOut(orgStream);
             //Gets printed in the console
-            System.out.println("Redirecting file output back to console");
+            log.debug("Redirecting file output back to console");
         }
     }
 }

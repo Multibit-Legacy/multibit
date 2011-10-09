@@ -1,14 +1,10 @@
 package org.multibit.viewsystem.swing.view;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Insets;
-
 import javax.swing.border.Border;
+import java.awt.*;
 
 class DashedBorder implements Border {
-    int THICKNESS = 2;
+    public static final int THICKNESS = 2;
     Color color;
     int dashWidth;
     int dashHeight;
@@ -33,7 +29,7 @@ class DashedBorder implements Border {
         Insets insets = getBorderInsets(c);
         g.setColor(color);
 //        int numWide = (int) Math.round(width / dashWidth);
-        int numHigh = (int) Math.round(height / dashHeight);
+        int numHigh = Math.round(height / dashHeight);
         int startPoint;
 //        for (int i = 0; i <= numWide; i += 2) {
 //            startPoint = x + dashWidth * i;

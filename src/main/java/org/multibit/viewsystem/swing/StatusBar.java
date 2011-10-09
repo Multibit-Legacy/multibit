@@ -21,25 +21,7 @@ package org.multibit.viewsystem.swing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.LayoutManager2;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -47,6 +29,9 @@ import javax.swing.plaf.UIResource;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.View;
 import javax.swing.text.html.HTMLDocument;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 /**
  * StatusBar. <BR>
@@ -61,6 +46,7 @@ public class StatusBar extends JComponent {
      */
     public final static String DEFAULT_ZONE = "default";
 
+    // TODO Consider using HashMap
     private Hashtable<String, Component> idToZones;
     private Border zoneBorder;
 
@@ -203,7 +189,7 @@ class PercentLayout implements LayoutManager2 {
 
     static class NumberConstraint extends Constraint {
         public NumberConstraint(int d) {
-            this(new Integer(d));
+            this(Integer.valueOf(d));
         }
 
         public NumberConstraint(Integer d) {
@@ -211,17 +197,17 @@ class PercentLayout implements LayoutManager2 {
         }
 
         public int intValue() {
-            return ((Integer) value).intValue();
+            return (Integer) value;
         }
     }
 
     static class PercentConstraint extends Constraint {
         public PercentConstraint(float d) {
-            super(new Float(d));
+            super(d);
         }
 
         public float floatValue() {
-            return ((Float) value).floatValue();
+            return (Float) value;
         }
     }
 
@@ -232,6 +218,7 @@ class PercentLayout implements LayoutManager2 {
     private int orientation;
     private int gap;
 
+    // Consider using HashMap
     private Hashtable<Component, Constraint> m_ComponentToConstraint;
 
     /**
@@ -274,7 +261,7 @@ class PercentLayout implements LayoutManager2 {
     }
 
     public Constraint getConstraint(Component component) {
-        return (Constraint) m_ComponentToConstraint.get(component);
+        return m_ComponentToConstraint.get(component);
     }
 
     public void setConstraint(Component component, Object constraints) {
@@ -289,9 +276,10 @@ class PercentLayout implements LayoutManager2 {
         } else if (constraints instanceof String) {
             String s = (String) constraints;
             if (s.endsWith("%")) {
-                float value = Float.valueOf(s.substring(0, s.length() - 1)).floatValue() / 100;
-                if (value > 1 || value < 0)
+                float value = Float.valueOf(s.substring(0, s.length() - 1)) / 100;
+                if (value > 1 || value < 0) {
                     throw new IllegalArgumentException("percent value must be >= 0 and <= 100");
+                }
                 setConstraint(component, new PercentConstraint(value));
             } else {
                 setConstraint(component, new NumberConstraint(Integer.valueOf(s)));
@@ -426,8 +414,7 @@ class PercentLayout implements LayoutManager2 {
         int[] sizes = new int[components.length];
 
         // calculate the available size
-        int totalSize = (HORIZONTAL == orientation ? d.width : d.height) - (components.length - 1) * gap;
-        int availableSize = totalSize;
+        int availableSize = (HORIZONTAL == orientation ? d.width : d.height) - (components.length - 1) * gap;
 
         // PENDING(fred): the following code iterates 4 times on the component
         // array, need to find something more efficient!
@@ -437,7 +424,7 @@ class PercentLayout implements LayoutManager2 {
         // have a predefined size
         for (int i = 0, c = components.length; i < c; i++) {
             if (components[i].isVisible()) {
-                Constraint constraint = (Constraint) m_ComponentToConstraint.get(components[i]);
+                Constraint constraint = m_ComponentToConstraint.get(components[i]);
                 if (constraint == null || constraint == PREFERRED_SIZE) {
                     sizes[i] = (HORIZONTAL == orientation ? components[i].getPreferredSize().width : components[i]
                             .getPreferredSize().height);
@@ -454,7 +441,7 @@ class PercentLayout implements LayoutManager2 {
         int remainingSize = availableSize;
         for (int i = 0, c = components.length; i < c; i++) {
             if (components[i].isVisible()) {
-                Constraint constraint = (Constraint) m_ComponentToConstraint.get(components[i]);
+                Constraint constraint = m_ComponentToConstraint.get(components[i]);
                 if (constraint instanceof PercentConstraint) {
                     sizes[i] = (int) (remainingSize * ((PercentConstraint) constraint).floatValue());
                     availableSize -= sizes[i];
@@ -466,9 +453,9 @@ class PercentLayout implements LayoutManager2 {
         ArrayList<Integer> remaining = new ArrayList<Integer>();
         for (int i = 0, c = components.length; i < c; i++) {
             if (components[i].isVisible()) {
-                Constraint constraint = (Constraint) m_ComponentToConstraint.get(components[i]);
+                Constraint constraint = m_ComponentToConstraint.get(components[i]);
                 if (constraint == REMAINING_SPACE) {
-                    remaining.add(new Integer(i));
+                    remaining.add(i);
                     sizes[i] = 0;
                 }
             }
@@ -476,9 +463,9 @@ class PercentLayout implements LayoutManager2 {
 
         if (remaining.size() > 0) {
             int rest = availableSize / remaining.size();
-            for (Iterator<Integer> iter = remaining.iterator(); iter.hasNext();) {
-                sizes[((Integer) iter.next()).intValue()] = rest;
-            }
+          for (Integer aRemaining : remaining) {
+            sizes[aRemaining] = rest;
+          }
         }
 
         // all calculations are done, apply the sizes
@@ -508,8 +495,8 @@ class LookAndFeelTweaks {
 
     public final static Border PANEL_BORDER = BorderFactory.createEmptyBorder(3, 3, 3, 3);
 
+    // TODO These are never used
     public final static Border WINDOW_BORDER = BorderFactory.createEmptyBorder(4, 10, 10, 10);
-
     public final static Border EMPTY_BORDER = BorderFactory.createEmptyBorder();
 
     public static void tweak() {
