@@ -2,7 +2,6 @@ package org.multibit.viewsystem.swing.view;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -27,7 +26,6 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
@@ -100,12 +98,14 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
     private int selectedAddressRow;
 
+    private JPanel qrCodePanel;
     private JLabel qrCodeLabel;
     private static final int QRCODE_WIDTH = 140;
     private static final int QRCODE_HEIGHT = 140;
 
-    private static final int MAXIMUM_SWATCH_TEXT_WIDTH = 200;
-
+    private static final int MINIMUM_QRCODE_PANEL_HORIZONTAL_SPACING = 30;
+    private static final int MINIMUM_QRCODE_PANEL_VERTICAL_SPACING = 80;
+    
     public SendBitcoinPanel(MultiBitFrame mainFrame, MultiBitController controller) {
         this.mainFrame = mainFrame;
         this.controller = controller;
@@ -360,7 +360,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
     }
 
     private JPanel createQRCodePanel() {
-        JPanel qrCodePanel = new JPanel();
+        qrCodePanel = new JPanel();
         qrCodePanel.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
 
         qrCodePanel.setMinimumSize(new Dimension(280, 200));
@@ -392,7 +392,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.weightx = 0.02;
+        constraints.weightx = 0.01;
         constraints.weighty = 0.2;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
@@ -413,7 +413,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 3;
-        constraints.weightx = 0.05;
+        constraints.weightx = 0.01;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
@@ -732,13 +732,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                     image = ((ImageIcon) icon).getImage();
                     return this;
                 }
-            } else if (comp instanceof AbstractButton) {
-                AbstractButton button = (AbstractButton) comp;
-                Icon icon = button.getIcon();
-                if (icon instanceof ImageIcon) {
-                    image = ((ImageIcon) icon).getImage();
-                    return this;
-                }
             }
             return null;
         }
@@ -831,11 +824,13 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                 if (image != null) {
                     BufferedImage bufferedImage;
                     System.out.println("importData - 2.1");
-                    if (image.getWidth(qrCodeLabel) > QRCODE_WIDTH + MAXIMUM_SWATCH_TEXT_WIDTH
-                            || image.getHeight(qrCodeLabel) > QRCODE_HEIGHT) {
+                    if (image.getWidth(qrCodeLabel) + MINIMUM_QRCODE_PANEL_HORIZONTAL_SPACING > qrCodePanel.getWidth()
+                            || image.getHeight(qrCodeLabel) + MINIMUM_QRCODE_PANEL_VERTICAL_SPACING > qrCodePanel.getHeight()) {
                         // scale image
-                        double xScale = (QRCODE_WIDTH + MAXIMUM_SWATCH_TEXT_WIDTH) / image.getWidth(qrCodeLabel);
-                        double yScale = (QRCODE_HEIGHT) / image.getHeight(qrCodeLabel);
+                        double qrCodeWidth = (double)qrCodePanel.getWidth();
+                        double qrCodeHeight = (double)qrCodePanel.getHeight();
+                        double xScale = qrCodeWidth / (double)(image.getWidth(qrCodeLabel) + MINIMUM_QRCODE_PANEL_HORIZONTAL_SPACING);
+                        double yScale = qrCodeHeight / (double)(image.getHeight(qrCodeLabel) + MINIMUM_QRCODE_PANEL_VERTICAL_SPACING);
                         double scaleFactor = Math.min(xScale, yScale);
                         bufferedImage = toBufferedImage(image, (int) (image.getWidth(qrCodeLabel) * scaleFactor),
                                 (int) (image.getHeight(qrCodeLabel) * scaleFactor));
@@ -985,39 +980,40 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
             // scale it to the new size on-the-fly
             System.out.println("SendBitCoinPanel#toBufferedImage - 2.2, image = " + image + ",width = " + width + ", height = "
                     + height);
-            BufferedImage bufferedImage = null;
-            // MacOS is not very good with large images so I call
-            // getBufferedImage on it if it is an OSXimage
-            // this is done by reflection so there is no import (for windows and
-            // linux machines
-            boolean conversionSuccess = false;
-            if (image instanceof BufferedImage) {
-                bufferedImage = (BufferedImage) image;
-                conversionSuccess = true;
-            }
-            if (!conversionSuccess) {
-                try {
-                    System.out.println("SendBitCoinPanel#toBufferedImage - 2.2.1");
-                    Class clazz = image.getClass();
-                    System.out.println("SendBitCoinPanel#toBufferedImage - 2.2.2 - clazz = " + clazz);
-                    java.lang.reflect.Method method = clazz.getMethod("getBufferedImage");
-                    System.out.println("SendBitCoinPanel#toBufferedImage - 2.2.3 - method = " + method);
-                    bufferedImage = (BufferedImage) method.invoke(image);
-                    System.out.println("SendBitCoinPanel#toBufferedImage - 2.2.4 - bufferedImage = " + bufferedImage);
-                    conversionSuccess = true;
-                } catch (IllegalArgumentException e) {
-                } catch (IllegalAccessException e) {
-                } catch (InvocationTargetException e) {
-                } catch (SecurityException e) {
-                } catch (NoSuchMethodException e) {
-                }
-            }
-            if (!conversionSuccess) {
-                bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-            }
+//            BufferedImage bufferedImage = null;
+//            // MacOS is not very good with large images so I call
+//            // getBufferedImage on it if it is an OSXimage
+//            // this is done by reflection so there is no import (for windows and
+//            // linux machines
+//            boolean conversionSuccess = false;
+//            if (image instanceof BufferedImage) {
+//                bufferedImage = (BufferedImage) image;
+//                conversionSuccess = true;
+//            }
+//            if (!conversionSuccess) {
+//                try {
+//                    System.out.println("SendBitCoinPanel#toBufferedImage - 2.2.1");
+//                    Class clazz = image.getClass();
+//                    System.out.println("SendBitCoinPanel#toBufferedImage - 2.2.2 - clazz = " + clazz);
+//                    java.lang.reflect.Method method = clazz.getMethod("getBufferedImage");
+//                    System.out.println("SendBitCoinPanel#toBufferedImage - 2.2.3 - method = " + method);
+//                    bufferedImage = (BufferedImage) method.invoke(image);
+//                    System.out.println("SendBitCoinPanel#toBufferedImage - 2.2.4 - bufferedImage = " + bufferedImage);
+//                    conversionSuccess = true;
+//                } catch (IllegalArgumentException e) {
+//                } catch (IllegalAccessException e) {
+//                } catch (InvocationTargetException e) {
+//                } catch (SecurityException e) {
+//                } catch (NoSuchMethodException e) {
+//                }
+//            }
+            //if (!conversionSuccess) {
+            BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            //}
             System.out.println("SendBitCoinPanel#toBufferedImage - 2.3, bufferedImage = " + bufferedImage);
 
             Graphics2D g2 = bufferedImage.createGraphics();
+            
             System.out.println("SendBitCoinPanel#toBufferedImage - 3");
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             g2.drawImage(image, 0, 0, width, height, null);
