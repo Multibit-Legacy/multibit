@@ -2,6 +2,7 @@ package org.multibit.viewsystem.swing.view;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -31,6 +32,7 @@ import java.net.URL;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListSelectionModel;
@@ -823,7 +825,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                 System.out.println("importData - 1");
 
                 JLabel label = (JLabel) comp;
-                image = getDropData(transferable);
+                image = getDropData(transferable, label);
                 System.out.println("importData - 2 - image = " + image);
 
                 if (image != null) {
@@ -859,14 +861,17 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         }
 
         @SuppressWarnings("rawtypes")
-        private Image getDropData(Transferable transferable) {
+        private Image getDropData(Transferable transferable, JComponent label) {
             try {
                 // try to get an image
                 if (transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
                     System.out.println("image flavor is supported");
                     Image img = (Image) transferable.getTransferData(DataFlavor.imageFlavor);
-                    return img;
-                } else if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                    if (img != null && img.getWidth(null) != -1) {
+                        return img;
+                    }
+                }
+                if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                     System.out.println("javaFileList is supported");
                     java.util.List list = (java.util.List) transferable.getTransferData(DataFlavor.javaFileListFlavor);
                     ListIterator it = list.listIterator();
@@ -874,12 +879,15 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                         File f = (File) it.next();
                         ImageIcon icon = new ImageIcon(f.getAbsolutePath());
                         if (icon != null) {
-                            return icon.getImage();
-                        } else {
-                            return null;
+                            if (icon.getImage() != null) {
+                                return icon.getImage();
+                            }
                         }
                     }
-                } else if (transferable.isDataFlavorSupported(uriListFlavor)) {
+                }
+                
+                if (transferable.isDataFlavorSupported(uriListFlavor)) {
+                    System.out.println("uriListFlavor is supported");
                     String uris = (String) transferable.getTransferData(uriListFlavor);
 
                     // url-lists are defined by rfc 2483 as crlf-delimited
@@ -887,32 +895,59 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                     StringTokenizer izer = new StringTokenizer(uris, "\r\n");
                     if (izer.hasMoreTokens()) {
                         String uri = izer.nextToken();
-                        ImageIcon icon = new ImageIcon(uri);
-                        if (icon != null) {
-                            return icon.getImage();
-                        } else {
-                            return null;
+                        System.out.println("uri = " + uri);
+                        java.awt.Image image = getURLImage(new URL(uri), label);
+
+                        if (image != null) {
+                            return image;
+                        }
+                        
+                        ImageIcon uriIcon = new ImageIcon(uri);
+                        if (uriIcon != null) {
+                            if(uriIcon.getImage() != null) {
+                                return uriIcon.getImage();
+                            }
                         }
                     }
-
-                } else if (transferable.isDataFlavorSupported(urlFlavor)) {
+                }
+                
+                if (transferable.isDataFlavorSupported(urlFlavor)) {
+                    System.out.println("urlFlavor is supported");
                     URL url = (URL) transferable.getTransferData(urlFlavor);
-                    ImageIcon icon = new ImageIcon(url);
-                    if (icon != null) {
-                        return icon.getImage();
-                    } else {
-                        return null;
+                    System.out.println("url = " + url);
+                    java.awt.Image image = getURLImage(url, label);
+
+                    if (image != null) {
+                        return image;
                     }
+                    
+                    ImageIcon urlIcon = new ImageIcon(url);
+                    if (urlIcon != null) {
+                        if (urlIcon.getImage() != null) {
+                            return urlIcon.getImage();
+                        }
+                    } 
                 }
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             } catch (UnsupportedFlavorException e) {
-                // TODO Auto-generated catch block
+
                 e.printStackTrace();
             }
             return null;
         }
 
+        private Image getURLImage(URL url, JComponent label) {
+            Image imageToReturn = null;
+            
+            try {
+               imageToReturn = ImageIO.read(url);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } 
+            return imageToReturn;
+        }
+        
         // Transferable
         public Object getTransferData(DataFlavor flavor) {
             if (isDataFlavorSupported(flavor)) {
