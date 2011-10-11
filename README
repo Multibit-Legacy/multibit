@@ -21,3 +21,17 @@ take the multibit.jar and create:
 
 To run MultiBit from the distributable, follow the instructions at:
 http://www.multibit.org/download.html
+
+
+Testnet
+-------
+To use the testnet set the property "testOrProductionNetwork" in the file multibit.properties to be "test".
+
+
+Connect to single node
+----------------------
+If you want to connect to a single node set the following property in multibit.properties:
+singleConnectionNode=<node to connect to>
+
+The node can be specified as either a domain name (www.myNode.com) or an IP address.
+

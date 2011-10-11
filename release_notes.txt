@@ -5,10 +5,11 @@ Enhancements
 +  More language work done - English, Russian, Spanish, Swedish complete.
    French, Italian, Norwegian coming along nicely.  
    Improved language picker in preferences screen.
-+  Installers for Windows, Linux and dmg file for Mac.
++  Installers for Windows, Linux and DMG file for Mac.
 +  Copy and paste added to address field.
 +  Fee added to send confirm screen.   Send confirm screen improved.
 +  User interface now uses system look and feel for better integration.
++  Added 'singleConnectionNode' option into multibit.properties.
 +  Various user interface tidy ups.
 
   

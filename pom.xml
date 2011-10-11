@@ -248,8 +248,10 @@
 
                 <mkdir dir="${basedir}/target/MultiBit-mac/MultiBit.app"/>
                 <copy todir="${basedir}/target/MultiBit-mac/MultiBit.app">
-                  <fileset dir="${basedir}/target/MultiBit.app" includes="**"/>
+                  <fileset dir="${basedir}/target/MultiBit.app" includes="**"/>                 
                 </copy>
+                <copy file="${basedir}/target/staging/readme.txt" todir="${basedir}/target/MultiBit-mac"/>
+ 
 
  	            <!-- Create Applications Symbolic link -->
 	            <!-- WARNING, do not remove this symbolic link by Java(ant) -->
