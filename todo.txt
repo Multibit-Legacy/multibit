@@ -8,36 +8,29 @@ Outstanding from 0.1.3rc2 testing
 + Prioritise encryption. (Nibor).
   Agreed.
 + More flexibility with downloading block chain would be good. (Nibor).
-  Agreed.
-+ Would be good to have Windows installer. (Nibor).
-  Agreed.   Plan to have installers for Win, Mac, Linux.
-  
+  Agreed. 
 
 Logging, errors, virusscan
 ------------------
 + client does not go offline if you disconnect from network
-+ extend log4j logging to all important classes
++ extend logging to all important classes
 + submit releases to virustotal.com and add to release notes. Make release notes HTML, not ASCII.
 
 Outstanding Bugs
 ----------------
-+ IF you have a wallet offline it does not know about any blocks downloaded onto the blockchain
-+ if you close the 'open wallet' dialog with the window close button, then reopen it is tiny. (Now only happens sometimes).
++ If you have a wallet offline it does not know about any blocks downloaded onto the blockchain
++ If you close the 'open wallet' dialog with the window close button, then reopen it is tiny. (Now only happens sometimes).
 + if you have two multibit open on the same wallet addressbook and wallet can be overwritten one by the other.
   Will add open/ close times to info files and warn user.
 
 
 Improvements
 ------------
-+ request connect to a specific node, specified by IP address or host name.
 + add ability to import/ export/ delete private keys.
-+ add Swedish (Mats Henricson has volunteered)
-+ test it works on the test network
 + ensure switch from test to prod does not confuse which wallet is open. (last test/prod wallet setting ?)
 + add wallet encryption
 + add in more test classes
 + add tests to check sending and receiving works reliably
-+ Add in proper jar bundling to exe and DMG - look at ProGuard/ IzPack   See how Open-Transaction does it.
 
 
 Patches to Mike
@@ -61,6 +54,7 @@ o Bat file fails when Java not on path. (Nick).
   Have removed runMultiBit.bat and sh - just double click jar as per download instructions
 o Console is confusing on Send (Mats)
   Have removed runMultiBit.bat and sh - just double click jar as per download instructions
+o Connect to a specific node, specified by IP address or host name.
 
 Spend
 o Spend of 0 BTC not checked. (Nick).
@@ -96,6 +90,9 @@ o No default file extension on 'Open Wallet' (Nick).
 Help
 o Help page - no feedback whilst loading (Mats).
   Have improved feedback to user whilst loading.   Cursor and little animation in status bar.
-   
+
+Packaging
++ Added in proper jar bundling to exe and DMG - look at ProGuard/ IzPack   See how Open-Transaction does it.
+  
 Address format
 + track Jon Waller's idea for Chrome extension of bitcoin addresses in a 'special page' on web sites.   Could do a look of of web address to bitcoin address.
