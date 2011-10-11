@@ -920,7 +920,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
             return false;
         }
 
-        @SuppressWarnings({ "rawtypes", "unchecked" })
         public BufferedImage toBufferedImage(Image image, int width, int height) {
             log.debug("SendBitCoinPanel#toBufferedImage - 1");
             if (image == null) {
@@ -936,36 +935,9 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
             // scale it to the new size on-the-fly
             log.debug("SendBitCoinPanel#toBufferedImage - 2.2, image = " + image + ",width = " + width + ", height = "
                     + height);
-//            BufferedImage bufferedImage = null;
-//            // MacOS is not very good with large images so I call
-//            // getBufferedImage on it if it is an OSXimage
-//            // this is done by reflection so there is no import (for windows and
-//            // linux machines
-//            boolean conversionSuccess = false;
-//            if (image instanceof BufferedImage) {
-//                bufferedImage = (BufferedImage) image;
-//                conversionSuccess = true;
-//            }
-//            if (!conversionSuccess) {
-//                try {
-//                    log.debug("SendBitCoinPanel#toBufferedImage - 2.2.1");
-//                    Class clazz = image.getClass();
-//                    log.debug("SendBitCoinPanel#toBufferedImage - 2.2.2 - clazz = " + clazz);
-//                    java.lang.reflect.Method method = clazz.getMethod("getBufferedImage");
-//                    log.debug("SendBitCoinPanel#toBufferedImage - 2.2.3 - method = " + method);
-//                    bufferedImage = (BufferedImage) method.invoke(image);
-//                    log.debug("SendBitCoinPanel#toBufferedImage - 2.2.4 - bufferedImage = " + bufferedImage);
-//                    conversionSuccess = true;
-//                } catch (IllegalArgumentException e) {
-//                } catch (IllegalAccessException e) {
-//                } catch (InvocationTargetException e) {
-//                } catch (SecurityException e) {
-//                } catch (NoSuchMethodException e) {
-//                }
-//            }
-            //if (!conversionSuccess) {
+
             BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-            //}
+
             log.debug("SendBitCoinPanel#toBufferedImage - 2.3, bufferedImage = " + bufferedImage);
 
             Graphics2D g2 = bufferedImage.createGraphics();

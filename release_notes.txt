@@ -3,18 +3,13 @@ MultiBit release notes.
 Version 0.2.0beta1
 Enhancements
 +  Installers for Windows, Linux and Mac.
-+  User interface now uses Java Nimbus look and feel
-+  User preferences now shown in toolbar
++  User interface now uses System look and feel
 +  Various user interface tidy ups
 +  Copy and paste added to address field
 +  Fee added to send confirm screen
-  
-  
+
   
 Version 0.1.3
-The virustotal.com report for: https://github.com/jim618/multibit/downloads/multibit-0.1.3.zip 
-                           is: http://www.virustotal.com/file-scan/report.html?id=4f58c143006696ff34eb931d57d4fce2b0eef4fb90a683b512b75792fd329bc2-1316107981
-
 Enhancements
 +  Added QRcode support, including drag and drop.
 +  Added transaction fee support.

@@ -161,7 +161,11 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         ButtonGroup languageUsageGroup = new ButtonGroup();
         useDefaultLocale = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.useDefault"));
+        useDefaultLocale.setOpaque(false);
+        
         JRadioButton useSpecific = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.useSpecific"));
+        useSpecific.setOpaque(false);
+        
         ItemListener itemListener = new ChangeLanguageUsageItemListener();
         useDefaultLocale.addItemListener(itemListener);
         useSpecific.addItemListener(itemListener);

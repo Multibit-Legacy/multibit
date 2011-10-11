@@ -38,6 +38,7 @@ import static com.google.bitcoin.core.Utils.*;
  * or UI purposes.
  */
 public class Transaction extends Message implements Serializable {
+    @SuppressWarnings("unused")
     private static final Logger log = LoggerFactory.getLogger(Transaction.class);
     private static final long serialVersionUID = -8567546957352643140L;
 
@@ -383,7 +384,6 @@ public class Transaction extends Message implements Serializable {
      * @param hashType This should always be set to SigHash.ALL currently. Other types are unused.
      * @param wallet A wallet is required to fetch the keys needed for signing.
      */
-    @SuppressWarnings({"SameParameterValue"})
     public void signInputs(SigHash hashType, Wallet wallet) throws ScriptException {
         assert inputs.size() > 0;
         assert outputs.size() > 0;
