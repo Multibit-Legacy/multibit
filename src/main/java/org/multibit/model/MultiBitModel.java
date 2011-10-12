@@ -206,6 +206,18 @@ public class MultiBitModel {
                 controller.onPendingCoinsReceived(wallet, transaction, null, null);
             }
 
+            @Override
+            public void onReorganize(Wallet wallet) {
+                // TODO Auto-generated method stub
+                
+            }
+
+            @Override
+            public void onDeadTransaction(Wallet wallet, Transaction deadTx, Transaction replacementTx) {
+                // TODO Auto-generated method stub
+                
+            }
+
         });
 
         createWalletData();
@@ -231,23 +243,21 @@ public class MultiBitModel {
         if (wallet == null) {
             return walletData;
         }
-        Collection<Transaction> pendingTransactions = wallet.pendingTransactions();
-        Collection<Transaction> unspentTransactions = wallet.unspentTransactions();
-        Collection<Transaction> spentTransactions = wallet.spentTransactions();
-
-        if (pendingTransactions != null) {
-            for (Transaction pendingTransaction : pendingTransactions) {
-                WalletTableData walletDataRow = new WalletTableData(pendingTransaction);
+        Set<Transaction> transactions = wallet.getTransactions(false, false);
+ 
+        if (transactions != null) {
+            for (Transaction loopTransaction : transactions) {
+                WalletTableData walletDataRow = new WalletTableData(loopTransaction);
                 walletData.add(walletDataRow);
-                walletDataRow.setCredit(pendingTransaction.getValueSentToMe(wallet));
+                walletDataRow.setCredit(loopTransaction.getValueSentToMe(wallet));
                 try {
-                    walletDataRow.setDebit(pendingTransaction.getValueSentFromMe(wallet));
+                    walletDataRow.setDebit(loopTransaction.getValueSentFromMe(wallet));
                 } catch (ScriptException e) {
                     log.error(e.getMessage(), e);
 
                 }
-                List<TransactionInput> transactionInputs = pendingTransaction.getInputs();
-                List<TransactionOutput> transactionOutputs = pendingTransaction.getOutputs();
+                List<TransactionInput> transactionInputs = loopTransaction.getInputs();
+                List<TransactionOutput> transactionOutputs = loopTransaction.getOutputs();
                 if (transactionInputs != null) {
                     TransactionInput firstInput = transactionInputs.get(0);
                     if (firstInput != null) {
@@ -255,55 +265,8 @@ public class MultiBitModel {
                                 walletDataRow.getCredit(), walletDataRow.getDebit()));
                     }
                 }
-                walletDataRow.setDate(createDate(pendingTransaction));
-                walletDataRow.setHeight(workOutHeight(pendingTransaction));
-            }
-        }
-
-        if (unspentTransactions != null) {
-            for (Transaction unspentTransaction : unspentTransactions) {
-                WalletTableData walletDataRow = new WalletTableData(unspentTransaction);
-                walletData.add(walletDataRow);
-                walletDataRow.setCredit(unspentTransaction.getValueSentToMe(wallet));
-                try {
-                    walletDataRow.setDebit(unspentTransaction.getValueSentFromMe(wallet));
-                } catch (ScriptException e) {
-                    log.error(e.getMessage(), e);
-
-                }
-                List<TransactionInput> transactionInputs = unspentTransaction.getInputs();
-                List<TransactionOutput> transactionOutputs = unspentTransaction.getOutputs();
-                if (transactionInputs != null) {
-                    TransactionInput firstInput = transactionInputs.get(0);
-                    if (firstInput != null) {
-                        walletDataRow.setDescription(createDescription(transactionInputs, transactionOutputs,
-                                walletDataRow.getCredit(), walletDataRow.getDebit()));
-                    }
-                }
-                walletDataRow.setDate(createDate(unspentTransaction));
-                walletDataRow.setHeight(workOutHeight(unspentTransaction));
-            }
-        }
-
-        if (spentTransactions != null) {
-            for (Transaction spentTransaction : spentTransactions) {
-                WalletTableData walletDataRow = new WalletTableData(spentTransaction);
-                walletData.add(walletDataRow);
-                walletDataRow.setCredit(spentTransaction.getValueSentToMe(wallet));
-                try {
-                    walletDataRow.setDebit(spentTransaction.getValueSentFromMe(wallet));
-                } catch (ScriptException e) {
-                    log.error(e.getMessage(), e);
-
-                }
-                List<TransactionInput> transactionInputs = spentTransaction.getInputs();
-                List<TransactionOutput> transactionOutputs = spentTransaction.getOutputs();
-
-                walletDataRow.setDescription(createDescription(transactionInputs, transactionOutputs,
-                        walletDataRow.getCredit(), walletDataRow.getDebit()));
-
-                walletDataRow.setDate(createDate(spentTransaction));
-                walletDataRow.setHeight(workOutHeight(spentTransaction));
+                walletDataRow.setDate(createDate(loopTransaction));
+                walletDataRow.setHeight(workOutHeight(loopTransaction));
             }
         }
 

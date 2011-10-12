@@ -97,7 +97,7 @@ public class Peer {
 
     @Override
     public String toString() {
-        return "Peer(" + address.addr + ":" + address.port + ")";
+        return "Peer(" + address.getAddr() + ":" + address.getPort() + ")";
     }
 
     /**
@@ -130,20 +130,18 @@ public class Peer {
     public void run() throws PeerException {
         // This should be called in the network loop thread for this peer
         if (conn == null)
-            throw new IllegalStateException("please call connect() first");
+            throw new RuntimeException("please call connect() first");
         
         running = true;
         
         try {
             while (true) {
                 Message m = conn.readMessage();
-                //log.debug("Peer#run - received message: " + m);
                 if (m instanceof InventoryMessage) {
                     processInv((InventoryMessage) m);
                 } else if (m instanceof Block) {
                     processBlock((Block) m);
                 } else if (m instanceof Transaction) {
-                    //log.debug("Peer#run - received transaction: " + (Transaction)m);
                     processPendingTransaction((Transaction) m);
                 }  else if (m  instanceof AddressMessage) {
                     // We don't care about addresses of the network right now. But in future,
