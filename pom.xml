@@ -54,10 +54,39 @@
   <build>
     <finalName>multibit</finalName>
     <plugins>
-      <!-- Put izPack2app into staging dir for production of installer later -->
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
+         <!-- Put bitcoinj classes into target dir for production of the executable jar later -->       
+            <execution>
+             <id>unpack-bitcoinj-classes</id>
+             <phase>process-resources</phase>
+             <goals>
+               <goal>unpack</goal>
+             </goals>
+             <configuration>
+               <artifactItems>
+                 <artifactItem>
+                   <groupId>com.google</groupId>
+                   <artifactId>bitcoinj</artifactId>
+                   <version>0.3-SNAPSHOT</version>
+                   <type>jar</type>
+                   <overWrite>false</overWrite>
+                   <outputDirectory>${basedir}/target/bitcoinj</outputDirectory>
+                   <includes>**/*.*</includes>
+                   <!-- excludes classes that are duplicated in multibit -->
+                   <excludes>**/Peer.class, **/Peer$*.class,**/PeerGroup*.class, 
+                             **/Sha256Hash.class, 
+                             **/Transaction.class, **/Transaction$*.class, 
+                             **/TransactionInput.class, **/TransactionInput$*.class,
+                             **/Wallet.class, **/Wallet$*.class,
+                             **/WalletEventListener.class</excludes>
+                 </artifactItem>
+               </artifactItems>
+              </configuration>
+           </execution>
+ 
+          <!-- Put izPack2app into staging dir for production of installer later -->
           <execution>
             <id>unpack-shared-resources-ipack2app</id>
             <goals>
@@ -73,7 +102,7 @@
               <outputDirectory>${staging.dir}</outputDirectory>
             </configuration>
           </execution>
-        </executions>
+         </executions>
       </plugin>
 
       <!-- Create executable jar -->
@@ -82,6 +111,7 @@
         <version>2.2.1</version>
         <configuration>
           <descriptors>
+            <!-- this assembly descriptor also includes the bitcoinj classes unpacked earlier -->
             <descriptor>src/assemble/exe.xml</descriptor>
           </descriptors>
           <archive>

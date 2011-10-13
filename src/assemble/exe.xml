@@ -12,12 +12,17 @@
       <scope>runtime</scope>
       <excludes>
         <exclude>org.codehaus.izpack:*</exclude>
+        <exclude>com.google:bitcoinj</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>
   <fileSets>
     <fileSet>
       <directory>target/classes</directory>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>target/bitcoinj</directory>
       <outputDirectory></outputDirectory>
     </fileSet>
   </fileSets>

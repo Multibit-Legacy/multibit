@@ -21,4 +21,9 @@
     <priority value="info"></priority>
     <appender-ref ref="file" />
   </root>
+
+  <logger name="com.google.bitcoin.core.Block" additivity="false">
+     <level value="error" />
+     <appender-ref ref="file" />
+  </logger>
 </log4j:configuration>
