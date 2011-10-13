@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.multibit.IsMultiBitClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * transaction as being a module which is wired up to others, the inputs of one have to be wired
  * to the outputs of another. The exceptions are coinbase transactions, which create new coins.
  */
-public class TransactionInput extends ChildMessage implements Serializable {
+public class TransactionInput extends ChildMessage implements Serializable, IsMultiBitClass {
     private static final Logger log = LoggerFactory.getLogger(TransactionInput.class);
     
     private static final long serialVersionUID = 2;

@@ -18,13 +18,15 @@ package com.google.bitcoin.core;
 
 import java.math.BigInteger;
 
+import org.multibit.IsMultiBitClass;
+
 /**
  * Implementing WalletEventListener allows you to learn when the contents of the wallet changes due to
  * receiving money or a block chain re-organize. Methods are called with the event listener object locked so your
  * implementation does not have to be thread safe. It may be convenient to derive from
  * {@link AbstractWalletEventListener} instead.
  */
-public interface WalletEventListener {
+public interface WalletEventListener extends IsMultiBitClass {
     /**
      * This is called on a Peer thread when a block is received that sends some coins to you. Note that this will
      * also be called when downloading the block chain as the wallet balance catches up so if you don't want that

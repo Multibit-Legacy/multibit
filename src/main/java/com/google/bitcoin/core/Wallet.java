@@ -16,6 +16,7 @@
 
 package com.google.bitcoin.core;
 
+import org.multibit.IsMultiBitClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,7 @@ import static com.google.bitcoin.core.Utils.bitcoinValueToFriendlyString;
  * use the built in Java serialization to avoid the need to pull in a potentially large (code-size) third party
  * serialization library.<p>
  */
-public class Wallet implements Serializable {
+public class Wallet implements Serializable, IsMultiBitClass {
     private static final Logger log = LoggerFactory.getLogger(Wallet.class);
     private static final long serialVersionUID = 2L;
 

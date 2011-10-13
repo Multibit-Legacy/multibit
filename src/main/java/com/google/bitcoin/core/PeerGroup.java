@@ -22,6 +22,7 @@ import com.google.bitcoin.discovery.PeerDiscoveryException;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 
+import org.multibit.IsMultiBitClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author miron@google.com (Miron Cuperman a.k.a devrandom)
  *
  */
-public class PeerGroup {
+public class PeerGroup implements IsMultiBitClass {
     private static final int DEFAULT_CONNECTIONS = 4;
 
     private static final Logger log = LoggerFactory.getLogger(PeerGroup.class);

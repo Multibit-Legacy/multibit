@@ -17,6 +17,7 @@
 package com.google.bitcoin.core;
 
 import org.bouncycastle.util.encoders.Hex;
+import org.multibit.IsMultiBitClass;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -28,7 +29,7 @@ import java.util.Arrays;
  * A Sha256Hash just wraps a byte[] so that equals and hashcode work correctly, allowing it to be used as keys in a
  * map. It also checks that the length is correct and provides a bit more type safety.
  */
-public class Sha256Hash implements Serializable {
+public class Sha256Hash implements Serializable, IsMultiBitClass {
     private static final long serialVersionUID = 4807494979333778890L;
 
     private byte[] bytes;

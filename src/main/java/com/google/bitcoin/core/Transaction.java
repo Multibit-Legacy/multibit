@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.*;
 
+import org.multibit.IsMultiBitClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +39,7 @@ import static com.google.bitcoin.core.Utils.*;
  * serialization which is used for the wallet. This allows us to easily add extra fields used for our own accounting
  * or UI purposes.
  */
-public class Transaction extends ChildMessage implements Serializable {
+public class Transaction extends ChildMessage implements Serializable, IsMultiBitClass {
     @SuppressWarnings("unused")
     private static final Logger log = LoggerFactory.getLogger(Transaction.class);
     private static final long serialVersionUID = -8567546957352643140L;

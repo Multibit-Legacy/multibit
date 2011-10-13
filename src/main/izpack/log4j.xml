@@ -3,7 +3,7 @@
 <log4j:configuration>
 <!-- Daily Rolling File Appender that compresses old files -->
   <appender name="file" class="org.apache.log4j.rolling.RollingFileAppender" >
-     <param name="threshold" value="debug"/>
+     <param name="threshold" value="info"/>
      
      <rollingPolicy name="file"  
                       class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
@@ -18,7 +18,7 @@
   </appender>
 
   <root>
-    <priority value="debug"></priority>
+    <priority value="info"></priority>
     <appender-ref ref="file" />
   </root>
 </log4j:configuration>

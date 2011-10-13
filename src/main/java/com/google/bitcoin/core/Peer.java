@@ -16,6 +16,7 @@
 
 package com.google.bitcoin.core;
 
+import org.multibit.IsMultiBitClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ import java.util.concurrent.TimeoutException;
  * 
  * <p>After making the connection with connect(), call run() to start the message handling loop.
  */
-public class Peer {
+public class Peer implements IsMultiBitClass {
     private static final Logger log = LoggerFactory.getLogger(Peer.class);
     
     private NetworkConnection conn;
