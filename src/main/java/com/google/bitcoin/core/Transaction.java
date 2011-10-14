@@ -312,7 +312,6 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     		return;
     	
     	version = readUint32();
-    	int marker = cursor;
     	
     	// First come the inputs.
         long numInputs = readVarInt();

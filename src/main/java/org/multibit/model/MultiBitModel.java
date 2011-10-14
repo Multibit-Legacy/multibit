@@ -197,6 +197,7 @@ public class MultiBitModel {
                 controller.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
             }
 
+            @SuppressWarnings("unused")
             public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
                     BigInteger newBalance) {
                 controller.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);

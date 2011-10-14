@@ -1,6 +1,6 @@
 MultiBit release notes.
 
-Version 0.2.0beta1
+13 Oct 2011.  Version 0.2.0beta1
 Enhancements
 +  More language work done - English, Russian, Spanish, Swedish complete.
    French, Italian, Norwegian coming along nicely.  
@@ -13,7 +13,7 @@ Enhancements
 +  Various user interface tidy ups.
 
   
-Version 0.1.3
+12 Sep 2011.  Version 0.1.3
 Enhancements
 +  Added QRcode support, including drag and drop.
 +  Added transaction fee support.
@@ -26,7 +26,7 @@ Bug fixes
 +  Receive address in Receive bitcoin panel is now copiable.
 
 
-Version 0.1.2
+13 Aug 2011.  Version 0.1.2
 Enhancements:
 +  Added Russian translation. (Thanks Gary and Katya.)
 +  DNS peer discovery is now used on production network, IRC on testnet.
@@ -40,12 +40,12 @@ Bug fixes
 +  Not connecting to testnet when multibit.properties setting testOrProductionNetwork = test fixed.
 
 	
-Version 0.1.1
+4 Aug 2011.  Version 0.1.1
 Initial working version with:
 +  Send and receive bitcoins.
 +  Address book.  
 +  English and Spanish translation with ability to switch languages in a preferences setting.
 
 
-Version 0.1.1alpha
+1 Jul 2011.  Version 0.1.1alpha
 Non functional version illustrating user interface for review by bitcoinj group.
