@@ -27,6 +27,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -649,7 +650,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         private static final long serialVersionUID = 756395092284264645L;
 
         private DataFlavor flavors[];
-        private DataFlavor urlFlavor, uriListFlavor;
+        private DataFlavor urlFlavor, uriListAsStringFlavor, uriListAsReaderFlavor;
 
         private Image image;
 
@@ -666,8 +667,9 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                 flavors = new DataFlavor[] { DataFlavor.imageFlavor };
                 try {
                     urlFlavor = new DataFlavor("application/x-java-url; class=java.net.URL");
-                    uriListFlavor = new DataFlavor("text/uri-list; class=java.lang.String");
-                    flavors = new DataFlavor[] { DataFlavor.imageFlavor, urlFlavor, uriListFlavor };
+                    uriListAsStringFlavor = new DataFlavor("text/uri-list; class=java.lang.String");
+                    uriListAsReaderFlavor = new DataFlavor("text/uri-list;class=java.io.Reader");
+                    flavors = new DataFlavor[] { DataFlavor.imageFlavor, urlFlavor, uriListAsStringFlavor, uriListAsReaderFlavor };
                 } catch (ClassNotFoundException cnfe) {
                     cnfe.printStackTrace();
                 }
@@ -840,9 +842,9 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                   }
                 }
                 
-                if (transferable.isDataFlavorSupported(uriListFlavor)) {
-                    log.debug("uriListFlavor is supported");
-                    String uris = (String) transferable.getTransferData(uriListFlavor);
+                if (transferable.isDataFlavorSupported(uriListAsStringFlavor)) {
+                    log.debug("uriListAsStringFlavor is supported");
+                    String uris = (String) transferable.getTransferData(uriListAsStringFlavor);
 
                     // url-lists are defined by rfc 2483 as crlf-delimited
                     // TODO iterate over list for all of them
@@ -850,7 +852,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                     if (izer.hasMoreTokens()) {
                         String uri = izer.nextToken();
                         log.debug("uri = " + uri);
-                        java.awt.Image image = getURLImage(new URL(uri), label);
+                        java.awt.Image image = getURLImage(new URL(uri));
 
                         if (image != null) {
                             return image;
@@ -862,12 +864,33 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                       }
                     }
                 }
+
                 
+                if (transferable.isDataFlavorSupported(uriListAsReaderFlavor)) {
+                    log.debug("uriListAsReaderFlavor is supported");
+
+                    BufferedReader read = new BufferedReader(uriListAsReaderFlavor.getReaderForText(transferable));
+                    // Remove 'file://' from file name
+                    String fileName = read.readLine().substring(7).replace("%20", " ");
+                    // Remove 'localhost' from OS X file names
+                    if (fileName.substring(0, 9).equals("localhost")) {
+                        fileName = fileName.substring(9);
+                    }
+                    read.close();
+
+                    java.awt.Image image = getFileImage(new File(fileName));
+
+                    if (image != null) {
+                        return image;
+                    }
+                }
+                
+
                 if (transferable.isDataFlavorSupported(urlFlavor)) {
                     log.debug("urlFlavor is supported");
                     URL url = (URL) transferable.getTransferData(urlFlavor);
                     log.debug("url = " + url);
-                    java.awt.Image image = getURLImage(url, label);
+                    java.awt.Image image = getURLImage(url);
 
                     if (image != null) {
                         return image;
@@ -887,12 +910,22 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
             return null;
         }
 
-        // TODO Consider removing label parameter
-        private Image getURLImage(URL url, JComponent label) {
+        private Image getURLImage(URL url) {
             Image imageToReturn = null;
             
             try {
                imageToReturn = ImageIO.read(url);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } 
+            return imageToReturn;
+        }
+
+        private Image getFileImage(File file) {
+            Image imageToReturn = null;
+            
+            try {
+               imageToReturn = ImageIO.read(file);
             } catch (IOException e) {
                 e.printStackTrace();
             } 
