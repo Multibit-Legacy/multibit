@@ -1,9 +1,48 @@
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.util.Vector;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.TransferHandler;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.*;
-import org.multibit.qrcode.BitcoinURI;
-import org.multibit.qrcode.QRCodeEncoderDecoder;
+import org.multibit.model.AddressBookData;
+import org.multibit.model.Data;
+import org.multibit.model.DataProvider;
+import org.multibit.model.Item;
+import org.multibit.model.MultiBitModel;
+import org.multibit.model.WalletInfo;
+import org.multibit.qrcode.SwatchGenerator;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
@@ -12,16 +51,6 @@ import org.multibit.viewsystem.swing.action.CopyReceiveAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewReceivingAddressAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.util.Vector;
 
 public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
@@ -52,10 +81,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
     private int selectedAddressRow;
 
     private JLabel qrCodeLabel;
-    private JTextArea qrCodeTextArea;
-    private QRCodeEncoderDecoder qrCodeEncoderDecoder;
-    private static final int QRCODE_WIDTH = 140;
-    private static final int QRCODE_HEIGHT = 140;
+    private SwatchGenerator swatchGenerator;
 
     public ReceiveBitcoinPanel(JFrame mainFrame, MultiBitController controller) {
         this.controller = controller;
@@ -114,7 +140,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         GridBagConstraints constraints = new GridBagConstraints();
         JPanel filler1 = new JPanel();
         filler1.setOpaque(false);
-        
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -201,11 +227,11 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
         addressTextArea = new JTextArea("", 35, 1);
         addressTextArea.setEditable(false);
-        addressTextArea.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 4, 0, 4, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR),
+        addressTextArea.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 4, 0, 4, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR),
                 BorderFactory.createMatteBorder(2, 0, 0, 0, Color.WHITE)));
         addressTextArea.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
         addressTextArea.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
-        
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
@@ -226,7 +252,6 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(copyAddressButton, constraints);
 
-   
         JLabel labelLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel"));
         labelLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel.tooltip"));
         labelLabel.setHorizontalAlignment(JLabel.RIGHT);
@@ -257,7 +282,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         JLabel amountLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel"));
         amountLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel.tooltip"));
         amountLabel.setHorizontalAlignment(JLabel.RIGHT);
-        
+
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 7;
@@ -345,40 +370,18 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridx = 1;
         constraints.gridy = 1;
         constraints.weightx = 1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        qrCodePanel.add(qrCodeLabel, constraints);
-
-        JPanel filler2 = new JPanel();
-        filler2.setOpaque(false);
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        constraints.weightx = 0.02;
-        constraints.weighty = 0.02;
+        constraints.weighty = 0.6;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        qrCodePanel.add(filler2, constraints);
-
-        qrCodeTextArea = new JTextArea(2, 40);
-        qrCodeTextArea.setEditable(false);
-        qrCodeTextArea.setLineWrap(true);
-         qrCodeTextArea.setFont(qrCodeTextArea.getFont().deriveFont(12.0F));
-        JScrollPane scrollPane = new JScrollPane(qrCodeTextArea);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+ 
+        JScrollPane scrollPane = new JScrollPane(qrCodeLabel);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, MultiBitFrame.DARK_BACKGROUND_COLOR.darker()));
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-        scrollPane.setMinimumSize(new Dimension(220, 40));
-       
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 3;
-        constraints.weightx = 1;
-        constraints.weighty = 2;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
+        scrollPane.setMinimumSize(new Dimension(200, 160));
+
         qrCodePanel.add(scrollPane, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -387,6 +390,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.weightx = 1;
         constraints.weighty = 0.4;
         constraints.gridwidth = 1;
+        constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.CENTER;
         JPanel qrCodeButtonPanel = createQRCodeButtonPanel();
         qrCodeButtonPanel.setOpaque(false);
@@ -437,7 +441,6 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         tableColumn.setPreferredWidth(120);
         // addresses left justified
         tableColumn.setCellRenderer(new LeftJustifiedRenderer());
-
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -535,10 +538,6 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         amountItem.setNewValue(amountTextField.getText());
         data.addItem(MultiBitModel.RECEIVE_AMOUNT, amountItem);
 
-        Item uriTextItem = new Item(MultiBitModel.RECEIVE_URI_TEXT);
-        uriTextItem.setNewValue(qrCodeTextArea.getText());
-        data.addItem(MultiBitModel.RECEIVE_URI_TEXT, uriTextItem);
-
         Item uriImageItem = new Item(MultiBitModel.RECEIVE_URI_IMAGE);
         uriImageItem.setNewValue(qrCodeLabel);
         data.addItem(MultiBitModel.RECEIVE_URI_IMAGE, uriImageItem);
@@ -630,7 +629,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         addressesTable.getSelectionModel().removeListSelectionListener(addressesListener);
 
         String address = controller.getModel().getWalletPreference(MultiBitModel.RECEIVE_ADDRESS);
-        displayQRCode(BitcoinURI.convertToBitcoinURI(address, amountTextField.getText(), labelTextField.getText()));
+        displaySwatch(address, amountTextField.getText(), labelTextField.getText());
 
         // see if the current address is on the table and select it
         int rowToSelect = addressesTableModel.findRowByAddress(address, true);
@@ -646,25 +645,21 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
     }
 
     /**
-     * display the specified string as a QRCode
+     * display the address, amount and label as a swatch
      */
-    private void displayQRCode(String stringToDisplay) {
-        if (qrCodeEncoderDecoder == null) {
-            qrCodeEncoderDecoder = new QRCodeEncoderDecoder(QRCODE_WIDTH, QRCODE_HEIGHT);
+    private void displaySwatch(String address, String amount, String label) {
+        if (swatchGenerator == null) {
+            swatchGenerator = new SwatchGenerator();
         }
-        if (stringToDisplay != null && !stringToDisplay.equals("")) {
-            try {
-                BufferedImage image = qrCodeEncoderDecoder.encode(stringToDisplay);
-                ImageIcon icon = new ImageIcon(image);
-                qrCodeLabel.setIcon(icon);
-                qrCodeTextArea.setText(stringToDisplay);
-            } catch (IllegalArgumentException iae) {
-                log.error(iae.getMessage(), iae);
-
-            }
+        try {
+            BufferedImage image = swatchGenerator.generateSwatch(address, amount, label);
+            ImageIcon icon = new ImageIcon(image);
+            qrCodeLabel.setIcon(icon);
+        } catch (IllegalArgumentException iae) {
+            log.error(iae.getMessage(), iae);
         }
     }
-  
+
     class LeftJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
@@ -674,7 +669,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
                 int row, int column) {
             label.setHorizontalAlignment(SwingConstants.LEFT);
             label.setBackground(MultiBitFrame.BACKGROUND_COLOR);
-            label.setOpaque(true);   
+            label.setOpaque(true);
 
             label.setText((String) value);
 
@@ -685,7 +680,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
             return label;
         }
     }
-    
+
     class SelectionListener implements ListSelectionListener {
         SelectionListener() {
         }
@@ -709,8 +704,8 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
                     controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_LABEL, rowData.getLabel());
                     addressTextArea.setText(rowData.getAddress());
                     labelTextField.setText(rowData.getLabel());
-                    displayQRCode(BitcoinURI.convertToBitcoinURI(rowData.getAddress(), amountTextField.getText(),
-                            labelTextField.getText()));
+                    
+                    displaySwatch(rowData.getAddress(), amountTextField.getText(), labelTextField.getText());
                 }
             }
         }
@@ -743,8 +738,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
             controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_LABEL, label);
             controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_AMOUNT, amount);
 
-
-            displayQRCode(BitcoinURI.convertToBitcoinURI(address, amount, label));
+            displaySwatch(address, amount, label);
         }
     }
 

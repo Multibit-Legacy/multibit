@@ -50,6 +50,8 @@ public class BitcoinURI {
 
     private static final String BITCOIN_PREFIX = "bitcoin:";
     
+    private static StringBuffer stringBuffer;
+    
     public BitcoinURI(MultiBitController controller, String uriString) {
         // the uri strings accepted are:
         // <an address>
@@ -155,24 +157,24 @@ public class BitcoinURI {
             return "";
         }
         
-        String uriToReturn = "bitcoin:" + address;
+        stringBuffer = new StringBuffer("bitcoin:");
+        
+        stringBuffer.append(address);
         
         boolean haveOutputQuestionMark = false;
         if (amount != null && amount.length() > 0) {
-            uriToReturn = uriToReturn + "?amount=" + amount;
+            stringBuffer.append("?amount=").append(amount);
             haveOutputQuestionMark = true;
         }
         
         if (label != null && label.length() > 0) {
             if (haveOutputQuestionMark) {
-                uriToReturn = uriToReturn + "&label=" + label;
-                
+                stringBuffer.append("&label=").append(label);                               
             } else {
-                uriToReturn = uriToReturn + "?label=" + label;
-                
+                stringBuffer.append("?label=").append(label);
             }
         }
-        return uriToReturn;
+        return stringBuffer.toString();
     }
     
     public Address getAddress() {

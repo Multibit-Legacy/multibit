@@ -57,7 +57,6 @@ public class MultiBitModel {
     public static final String RECEIVE_LABEL = "receiveLabel";
     public static final String RECEIVE_AMOUNT = "receiveAmount";
     public static final String RECEIVE_NEW_KEY = "receiveNewKey"; // to delete
-    public static final String RECEIVE_URI_TEXT = "receiveUriText";
     public static final String RECEIVE_URI_IMAGE = "receiveUriImage";
 
     // validation
