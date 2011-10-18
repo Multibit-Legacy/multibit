@@ -39,10 +39,9 @@ public class FileHandler {
         Wallet wallet = null;
         try {
             wallet = Wallet.loadFromFile(walletFile);
-            // set the new wallet into the model
-            controller.getModel().addWallet(wallet);
-            controller.getModel().setWalletFilename(walletFile.getAbsolutePath());
-
+            // add the new wallet into the model
+            controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
+ 
             WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath());
             controller.getModel().setWalletInfo(walletInfo);
         } catch (IOException e) {
@@ -64,9 +63,8 @@ public class FileHandler {
                 newWalletInfo.writeToFile();
             }
 
-            // set the new wallet and wallet filename on the model
-            controller.getModel().setWalletFilename(walletFile.getAbsolutePath());
-            controller.getModel().addWallet(wallet);
+            // add the new wallet and wallet filename on the model
+            controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
 
             if (wallet != null) {
                 wallet.saveToFile(walletFile);

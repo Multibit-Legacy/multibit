@@ -83,9 +83,9 @@ public class MultiBitController implements PeerEventListener {
         viewSystems = new ArrayList<ViewSystem>();
 
         // initialise everything to look at the stored opened view and previous view
-        // if no properties passed in just initialise to the transactions view
-        int previousView = View.TRANSACTIONS_VIEW;
-        int initialView = View.TRANSACTIONS_VIEW;
+        // if no properties passed in just initialise to the my wallets view
+        int previousView = View.MY_WALLETS_VIEW;
+        int initialView = View.MY_WALLETS_VIEW;
         if (userPreferences != null) {
             String viewString = (String) userPreferences.get(MultiBitModel.SELECTED_VIEW);
             if (viewString != null) {
@@ -243,8 +243,14 @@ public class MultiBitController implements PeerEventListener {
             break;
         }
 
+        case FORWARD_TO_MY_WALLETS: {
+            // show the my wallets view
+            nextView = View.MY_WALLETS_VIEW;
+            break;
+        }
+
         default: {
-            nextView = View.TRANSACTIONS_VIEW;
+            nextView = View.MY_WALLETS_VIEW;
             break;
         }
         }
@@ -264,9 +270,9 @@ public class MultiBitController implements PeerEventListener {
         } else {
             log.warn("Could not determine next view to display, previousView = {}, currentView = {}",
                     previousView, currentView);
-            log.info("Displaying the transaction view anyhow");
+            log.info("Displaying the my wallets view anyhow");
             previousView = currentView;
-            currentView = View.TRANSACTIONS_VIEW;
+            currentView = View.MY_WALLETS_VIEW;
         }
 
         // tell all views to close the previous view
@@ -276,7 +282,7 @@ public class MultiBitController implements PeerEventListener {
 
         // for the top level views, clear the view stack
         // this makes the UI behaviour a bit more 'normal'
-        if (currentView == View.TRANSACTIONS_VIEW || currentView == View.RECEIVE_BITCOIN_VIEW
+        if (currentView == View.MY_WALLETS_VIEW || currentView == View.TRANSACTIONS_VIEW || currentView == View.RECEIVE_BITCOIN_VIEW
                 || currentView == View.SEND_BITCOIN_VIEW || currentView == View.HELP_ABOUT_VIEW
                 || currentView == View.HELP_CONTENTS_VIEW || currentView == View.PREFERENCES_VIEW) {
             clearViewStack();
@@ -354,9 +360,16 @@ public class MultiBitController implements PeerEventListener {
             Wallet newWallet = multiBitService.addWalletFromFilename(walletFilename);
             model.setActiveWallet(newWallet);
             fireWalletChanged();
+            fireDataChanged();
         }
     }
 
+//    /**
+//     * set the active wallet, given a wallet filename
+//     */
+//    public void setActiveWalletByFilename(String newActiveWalletFilename) {
+//        model.setActiveWallet(newActiveWalletFilename);
+//    }
 
     /**
      * the language has been changed
@@ -374,8 +387,6 @@ public class MultiBitController implements PeerEventListener {
      * the wallet file has been changed
      */
     public void fireWalletChanged() {
-        // TODO rewire the blockchain etc to reference the new wallet
-
         fireRecreateAllViews();
     }
 
@@ -390,7 +401,7 @@ public class MultiBitController implements PeerEventListener {
     }
 
     /**
-     * firethe model data has changed
+     * fire the model data has changed
      */
     public void fireDataChanged() {
         for (ViewSystem viewSystem : viewSystems) {
@@ -485,8 +496,8 @@ public class MultiBitController implements PeerEventListener {
 
     public void clearViewStack() {
         viewStack.clear();
-        viewStack.push(View.TRANSACTIONS_VIEW);
-        previousView = View.TRANSACTIONS_VIEW;
+        viewStack.push(View.MY_WALLETS_VIEW);
+        previousView = View.MY_WALLETS_VIEW;
     }
 
     public MultiBitService getMultiBitService() {

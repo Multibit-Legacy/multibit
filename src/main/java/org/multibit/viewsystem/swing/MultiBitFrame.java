@@ -38,8 +38,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static final int TOOLBAR_HEIGHT = 120;
     public static final String COPY_ICON_FILE = "/images/copy.png";
     public static final String PASTE_ICON_FILE = "/images/paste.png";
+
+    private static final String MY_WALLETS_ICON_FILE = "/images/openWallet.png";
     private static final String SAVE_AS_ICON_FILE = "/images/saveAs.png";
-    private static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
+    public static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
     private static final String SEND_BITCOIN_ICON_FILE = "/images/send.jpg";
     private static final String RECEIVE_BITCOIN_ICON_FILE = "/images/receive.jpg";
     private static final String PREFERENCES_ICON_FILE = "/images/preferences.png";
@@ -62,10 +64,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final Color DARK_BACKGROUND_COLOR = new Color(230, 230, 232);
 
     private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.72D;
-    
+
     public static final int WIDTH_OF_LONG_FIELDS = 320;
     public static final int WIDTH_OF_AMOUNT_FIELD = 160;
-    
+
     private static final long serialVersionUID = 7621813615342923041L;
 
     private MultiBitController controller;
@@ -86,8 +88,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private MultiBitButton sendBitcoinButton;
     private MultiBitButton receiveBitcoinButton;
     private MultiBitButton showTransactionsButton;
-    private MultiBitButton openWalletButton;
-    
+    private MultiBitButton myWalletsButton;
+
     /**
      * Macify integration on a Mac
      */
@@ -135,7 +137,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
          * initialise Macify application (Mac integration
          */
         application = new DefaultApplication();
-        
+
         getContentPane().setBackground(MultiBitFrame.BACKGROUND_COLOR);
         sizeAndCenter();
 
@@ -148,7 +150,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         updateStatusLabel("");
 
         estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(model.getEstimatedBalance(), true, false));
- 
+
         availableBalanceTextLabel.setText(controller.getLocaliser().getString("multiBitFrame.availableToSpend",
                 new Object[] { Localiser.bitcoinValueToString4(model.getAvailableBalance(), true, false) }));
 
@@ -291,7 +293,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 3);
         estimatedBalanceTextLabel.setFont(font);
         estimatedBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
- 
+
         constraints.gridx = 2;
         constraints.gridy = 0;
         constraints.weightx = 0.5;
@@ -315,7 +317,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.weightx = 0.5;
         constraints.anchor = GridBagConstraints.LINE_END;
         balancePanel.add(walletNameLabel, constraints);
-        
+
         JPanel filler2 = new JPanel();
         filler2.setOpaque(false);
         constraints.gridx = 5;
@@ -361,43 +363,48 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuBar.add(helpMenu);
 
         // open wallet action
-        JPanel openWalletPanel = new JPanel(new BorderLayout());
-        openWalletPanel.setBorder(BorderFactory.createEmptyBorder(0, 4, 3, 4));
-        openWalletPanel.setOpaque(false);
-
         OpenWalletAction openWalletAction = new OpenWalletAction(controller, createImageIcon(OPEN_WALLET_ICON_FILE));
         JMenuItem menuItem = new JMenuItem(openWalletAction);
         fileMenu.add(menuItem);
-        openWalletButton = new MultiBitButton(openWalletAction);
-        openWalletPanel.add(openWalletButton);
- 
+
         // save wallet as action
         SaveWalletAsAction saveWalletAsAction = new SaveWalletAsAction(controller, createImageIcon(SAVE_AS_ICON_FILE), this);
         menuItem = new JMenuItem(saveWalletAsAction);
         fileMenu.add(menuItem);
 
         // exit action
-        if (!application.isMac()) {  
+        if (!application.isMac()) {
             // non Macs have an Exit Menu item
             fileMenu.addSeparator();
 
             menuItem = new JMenuItem(new ExitAction(controller));
             fileMenu.add(menuItem);
-         } 
-        
+        }
+
         // show help contents action
         ShowHelpContentsAction showHelpContentsAction = new ShowHelpContentsAction(controller, localiser,
                 createImageIcon(HELP_CONTENTS_ICON_FILE));
         menuItem = new JMenuItem(showHelpContentsAction);
         helpMenu.add(menuItem);
-        
-        if (!application.isMac()) {  
+
+        if (!application.isMac()) {
             // non Macs have a Help About menu item
             // help about action
             HelpAboutAction helpAboutAction = new HelpAboutAction(controller, createImageIcon(MULTIBIT_SMALL_ICON_FILE), this);
             menuItem = new JMenuItem(helpAboutAction);
             helpMenu.add(menuItem);
-         } 
+        }
+
+        // My Wallets action
+        JPanel myWalletsPanel = new JPanel(new BorderLayout());
+        myWalletsPanel.setBorder(BorderFactory.createEmptyBorder(0, 4, 3, 4));
+        myWalletsPanel.setOpaque(false);
+
+        MyWalletsAction myWalletsAction = new MyWalletsAction(controller, createImageIcon(MY_WALLETS_ICON_FILE));
+        menuItem = new JMenuItem(myWalletsAction);
+        viewMenu.add(menuItem);
+        myWalletsButton = new MultiBitButton(myWalletsAction);
+        myWalletsPanel.add(myWalletsButton);
 
         // show transactions action
         JPanel showTransactionsPanel = new JPanel(new BorderLayout());
@@ -421,7 +428,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         receiveBitcoinButton = new MultiBitButton(receiveBitcoinAction);
 
         receiveBitcoinPanel.add(receiveBitcoinButton);
- 
+
         // send bitcoin action
         SendBitcoinAction sendBitcoinAction = new SendBitcoinAction(controller, createImageIcon(SEND_BITCOIN_ICON_FILE), this);
         menuItem = new JMenuItem(sendBitcoinAction);
@@ -432,35 +439,35 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         sendBitcoinPanel.setOpaque(false);
         sendBitcoinButton = new MultiBitButton(sendBitcoinAction);
         sendBitcoinPanel.add(sendBitcoinButton);
- 
+
         // show preferences
-        if (!application.isMac()) {  
+        if (!application.isMac()) {
             // non Macs have a Preferences menu item
             // help about action
             ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller,
                     createImageIcon(PREFERENCES_ICON_FILE));
             viewMenu.add(showPreferencesAction);
-         } 
+        }
 
-        toolBar.add(openWalletPanel);
+        toolBar.add(myWalletsPanel);
         toolBar.add(receiveBitcoinPanel);
         toolBar.add(sendBitcoinPanel);
         toolBar.add(showTransactionsPanel);
         toolBar.setBorder(BorderFactory.createEmptyBorder());
- 
+
         setJMenuBar(menuBar);
 
-        if (application.isMac()) {                                                  
+        if (application.isMac()) {
             // register Preferences handler
             application.addApplicationListener(this);
             application.addPreferencesMenuItem();
             application.setEnabledPreferencesMenu(true);
-       } 
+        }
         return toolBar;
     }
 
     /** Returns an ImageIcon, or null if the path was invalid. */
-    private ImageIcon createImageIcon(String path) {
+    public static ImageIcon createImageIcon(String path) {
         java.net.URL imgURL = MultiBitFrame.class.getResource(path);
         if (imgURL != null) {
             return new ImageIcon(imgURL);
@@ -525,9 +532,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     public void setWalletFilename(String walletFilename) {
-        walletNameLabel.setText(localiser.getString("multiBitFrame.walletNameLabel.text", new Object[] { new File(
-                walletFilename).getName() }));
-        walletNameLabel.setToolTipText(walletFilename);
+        if (walletFilename == null) {
+            return;
+        }
+        
+        File walletFile = new File(walletFilename);
+        if (walletFile != null) {
+            walletNameLabel.setText(localiser.getString("multiBitFrame.walletNameLabel.text", new Object[] { new File(
+                    walletFilename).getName() }));
+            walletNameLabel.setToolTipText(walletFilename);
+        }
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
@@ -536,8 +550,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             if (view != null) {
                 view.displayMessage(messageKey, messageData, titleKey);
             } else {
-                log.debug("MultiBitFrame#displayMessage - no view with id " + currentView
-                        + " to display message with key " + messageKey);
+                log.debug("MultiBitFrame#displayMessage - no view with id " + currentView + " to display message with key "
+                        + messageKey);
             }
         } else {
             log.debug("MultiBitFrame#displayMessage - no view on which to display message with key " + messageKey);
@@ -574,7 +588,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                             if (showTransactionsButton != null) {
                                 showTransactionsButton.requestFocusInWindow();
                             }
-                        } 
+                        }
                     }
                 }
 
@@ -690,10 +704,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
         } catch (ScriptException e) {
             // If we didn't understand the scriptSig, just crash.
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
             throw new IllegalStateException(e);
         } catch (IOException e) {
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
             throw new IllegalStateException(e);
         }
 
@@ -725,10 +739,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
         } catch (ScriptException e) {
             // If we didn't understand the scriptSig, just crash.
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
             throw new IllegalStateException(e);
         } catch (IOException e) {
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
             throw new IllegalStateException(e);
         }
     }
@@ -744,6 +758,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 availableBalanceTextLabel.setText(controller.getLocaliser().getString("multiBitFrame.availableToSpend",
                         new Object[] { Localiser.bitcoinValueToString4(model.getAvailableBalance(), true, false) }));
 
+                setWalletFilename(controller.getModel().getWalletFilename());
                 viewPanel.invalidate();
                 viewPanel.validate();
                 viewPanel.repaint();
@@ -753,13 +768,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
         });
     }
-    
+
     // Macify application methods
 
     @Override
     public void handleAbout(ApplicationEvent event) {
-        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_HELP_ABOUT);        
-        event.setHandled(true);        
+        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_HELP_ABOUT);
+        event.setHandled(true);
     }
 
     @Override
@@ -770,12 +785,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     @Override
     public void handleOpenFile(ApplicationEvent event) {
-        JOptionPane.showMessageDialog(this, "Sorry, opening of files with double click is not yet implemented.  Wallet was " + event.getFilename());
+        JOptionPane.showMessageDialog(this, "Sorry, opening of files with double click is not yet implemented.  Wallet was "
+                + event.getFilename());
     }
 
     @Override
     public void handlePreferences(ApplicationEvent event) {
-        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_PREFERENCES);                
+        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_PREFERENCES);
     }
 
     @Override

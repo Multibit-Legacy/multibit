@@ -211,9 +211,6 @@ public class MultiBitService {
             }
         }   
         
-        // set the wallet into the model
-        controller.getModel().addWallet(wallet);
-        
         // add wallet to blockchain
         blockChain.addWallet(wallet);
         

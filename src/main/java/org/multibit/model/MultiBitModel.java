@@ -102,12 +102,12 @@ public class MultiBitModel {
 
         activeWalletModelData = new PerWalletModelData();
         perWalletModelDataList.add(activeWalletModelData);
-
-        // wallet info including address labelling
-        activeWalletModelData.setWalletInfo(null);
-
-        // table row data used in displaying transactions - initially empty
-        activeWalletModelData.setWalletTableDataList(new ArrayList<WalletTableData>());
+//
+//        // wallet info including address labelling
+//        activeWalletModelData.setWalletInfo(null);
+//
+//        // table row data used in displaying transactions - initially empty
+//        activeWalletModelData.setWalletTableDataList(new ArrayList<WalletTableData>());
     }
 
     /**
@@ -226,7 +226,7 @@ public class MultiBitModel {
     }
 
     /**
-     * set the active wallet
+     * set the active wallet, given a wallet
      * 
      * @param wallet
      */
@@ -244,11 +244,47 @@ public class MultiBitModel {
         }
     }
     
+//    /**
+//     * set the active wallet, given a wallet filename
+//     * 
+//     * @param wallet
+//     */
+//    public void setActiveWallet(String walletFilename) {
+//        if (walletFilename == null) {
+//            return;
+//        }
+//        if (perWalletModelDataList != null) {
+//            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+//                if (walletFilename.equals(loopPerWalletModelData.getWalletFilename())) {
+//                    activeWalletModelData = loopPerWalletModelData;
+//                    break;
+//                }
+//            }
+//        }
+//    }
+    
     /**
      * add a new wallet to the list of managed wallets
      */
-    public void addWallet(Wallet wallet) {
-        activeWalletModelData.setWallet(wallet);
+    public void addWallet(Wallet wallet, String walletFilename) {
+        PerWalletModelData newPerWalletModelData = new PerWalletModelData();
+        newPerWalletModelData.setWallet(wallet);
+        newPerWalletModelData.setWalletFilename(walletFilename);
+        
+        // wallet info including address labelling
+        newPerWalletModelData.setWalletInfo(null);
+
+        // table row data used in displaying transactions - initially empty
+        newPerWalletModelData.setWalletTableDataList(new ArrayList<WalletTableData>());
+
+        // if it is the initial empty activeWalletModelData remove it
+        if (activeWalletModelData != null && ("".equals(activeWalletModelData.getWalletFilename()) || activeWalletModelData.getWalletFilename() == null)) {
+            perWalletModelDataList.remove(activeWalletModelData);
+        }
+        
+        perWalletModelDataList.add(0, newPerWalletModelData);
+        
+        activeWalletModelData = newPerWalletModelData;
 
         // wire up the controller as a wallet event listener
         if (wallet != null) {
@@ -294,7 +330,8 @@ public class MultiBitModel {
      * @return
      */
     public String getWalletFilename() {
-        return userPreferences.getProperty(WALLET_FILENAME);
+        //return userPreferences.getProperty(WALLET_FILENAME);
+        return activeWalletModelData.getWalletFilename();
     }
 
     /**
@@ -525,5 +562,9 @@ public class MultiBitModel {
 
     public void setWalletInfo(WalletInfo walletInfo) {
         activeWalletModelData.setWalletInfo(walletInfo);
+    }
+
+    public List<PerWalletModelData> getPerWalletModelDataList() {
+        return perWalletModelDataList;
     }
 }
