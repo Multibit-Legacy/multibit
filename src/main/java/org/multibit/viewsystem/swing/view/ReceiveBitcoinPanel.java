@@ -653,7 +653,12 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         }
         try {
             BufferedImage image = swatchGenerator.generateSwatch(address, amount, label);
-            ImageIcon icon = new ImageIcon(image);
+            ImageIcon icon;
+            if (image != null) {
+                icon = new ImageIcon(image);
+            } else {
+                icon = new ImageIcon();
+            }
             qrCodeLabel.setIcon(icon);
         } catch (IllegalArgumentException iae) {
             log.error(iae.getMessage(), iae);

@@ -37,25 +37,12 @@ public class OpenWalletSubmitAction implements Action {
                     // defensive check on file being a directory - should never
                     // happen
                     if (!(new File(walletFilename).isDirectory())) {
-                        MultiBitService oldMultiBitService = controller.getMultiBitService();
-                        if (oldMultiBitService != null && oldMultiBitService.getPeerGroup() != null) {
-                            oldMultiBitService.getPeerGroup().stop();
-                        }
-                        String testOrProduction = controller.getModel().getUserPreference(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
-                        if (testOrProduction == null) {
-                            testOrProduction = MultiBitModel.PRODUCTION_NETWORK_VALUE;
-                            controller.getModel().setUserPreference(MultiBitModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
-                        }
-                        boolean useTestNet = MultiBitModel.TEST_NETWORK_VALUE.equals(testOrProduction);
-
-                        MultiBitService multiBitService = new MultiBitService(useTestNet, walletFilename, controller);
-                        controller.setMultiBitService(multiBitService);
+                        controller.addWalletFromFilename(walletFilename);
                     }
-
-                    controller.fireWalletChanged();
-                    controller.setActionForwardToParent();
                 }
             }
+            controller.setActionForwardToParent();
+
         } else {
             // should never happen return to parent view
             controller.setActionForwardToParent();

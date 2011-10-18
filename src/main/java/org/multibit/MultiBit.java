@@ -100,10 +100,11 @@ public class MultiBit {
         // create the MultiBitService that connects to the bitcoin network
         MultiBitService multiBitService = new MultiBitService(useTestNet, controller);
         controller.setMultiBitService(multiBitService);
-
-        // make sure the total is updated
-        controller.fireDataChanged();
-
+        
+        // load up the wallet in the multibit.properties
+        String walletFilename = userPreferences.getProperty(MultiBitModel.WALLET_FILENAME);
+        controller.addWalletFromFilename(walletFilename);
+        
         // display the next view
         controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
 

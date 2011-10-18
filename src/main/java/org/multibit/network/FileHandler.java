@@ -40,7 +40,7 @@ public class FileHandler {
         try {
             wallet = Wallet.loadFromFile(walletFile);
             // set the new wallet into the model
-            controller.getModel().setWallet(wallet);
+            controller.getModel().addWallet(wallet);
             controller.getModel().setWalletFilename(walletFile.getAbsolutePath());
 
             WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath());
@@ -66,11 +66,13 @@ public class FileHandler {
 
             // set the new wallet and wallet filename on the model
             controller.getModel().setWalletFilename(walletFile.getAbsolutePath());
-            controller.getModel().setWallet(wallet);
+            controller.getModel().addWallet(wallet);
 
-            wallet.saveToFile(walletFile);
+            if (wallet != null) {
+                wallet.saveToFile(walletFile);
+            }
         } catch (IOException e) {
-           log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -84,9 +86,9 @@ public class FileHandler {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(bufferedOutputStream, "UTF8");
             userPreferences.store(outputStreamWriter, USER_PROPERTIES_HEADER_TEXT);
         } catch (FileNotFoundException e) {
-          log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
         } catch (IOException e) {
-          log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
         }
     }
 

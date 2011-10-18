@@ -17,6 +17,7 @@
 package com.google.bitcoin.core;
 
 import org.multibit.IsMultiBitClass;
+import org.multibit.network.PendingTransactionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ import static com.google.bitcoin.core.Utils.bitcoinValueToFriendlyString;
  * use the built in Java serialization to avoid the need to pull in a potentially large (code-size) third party
  * serialization library.<p>
  */
-public class Wallet implements Serializable, IsMultiBitClass {
+public class Wallet implements Serializable, IsMultiBitClass, PendingTransactionListener {
     private static final Logger log = LoggerFactory.getLogger(Wallet.class);
     private static final long serialVersionUID = 2L;
 
@@ -196,6 +197,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         eventListeners = new ArrayList<WalletEventListener>();
     }
 
+
     /**
      * Called by (@link Peer) when we receive a pending transaction that sends coins to one of our addresses.
      * Note that these are unconfirmed transactions
@@ -204,18 +206,21 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @throws VerificationException
      * @throws ScriptException
      */
-    synchronized void receivePendingTransaction(Transaction transaction) {
-        log.debug("Wallet#receivePendingTransaction - received pending transaction: " + transaction);
-        // the main receive logic is not run yet - this is done when the block with this transaction is received
-        transaction.setUpdatedAt(new Date());
-        pending.put(transaction.getHash(), transaction);
-        
-        // notify listeners
-        for (WalletEventListener walletEventListener : eventListeners) {
-            synchronized (walletEventListener) {
-                walletEventListener.onPendingCoinsReceived(this, transaction);
+    @Override
+    synchronized public void processPendingTransaction(Transaction transaction) {       
+        if (transaction.isMine(this) && !transaction.sent(this)) {
+            log.debug("Wallet#receivePendingTransaction - received pending transaction: " + transaction);
+            // the main receive logic is not run yet - this is done when the block with this transaction is received
+            transaction.setUpdatedAt(new Date());
+            pending.put(transaction.getHash(), transaction);
+            
+            // notify listeners
+            for (WalletEventListener walletEventListener : eventListeners) {
+                synchronized (walletEventListener) {
+                    walletEventListener.onPendingCoinsReceived(this, transaction);
+                }
             }
-        }
+        }    
     }
 
     /**

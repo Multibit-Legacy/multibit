@@ -23,13 +23,16 @@ import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 
 import org.multibit.IsMultiBitClass;
+import org.multibit.network.PendingTransactionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -76,35 +79,35 @@ public class PeerGroup implements IsMultiBitClass {
     private Set<Peer> peers;
     // The peer we are currently downloading the chain from
     private Peer downloadPeer;
+    
     // Callback for events related to chain download
     private PeerEventListener downloadListener;
     
     // Callbacks for events related to peer connection/disconnection
     private Set<PeerEventListener> peerEventListeners;
     
+    // Callbacks for receipt of pending transactions
+    private List<PendingTransactionListener> pendingTransactionListeners;
+    
     private NetworkParameters params;
     private BlockStore blockStore;
     private BlockChain chain;
     
     /**
-     * the wallet the PeerGroup/ Peers will notify pending transactions of
-     */
-    private final Wallet wallet;
-
-    /**
      * Create a PeerGroup
      */
-    public PeerGroup(BlockStore blockStore, NetworkParameters params, BlockChain chain, Wallet wallet) {
+    public PeerGroup(BlockStore blockStore, NetworkParameters params, BlockChain chain) {
         this.blockStore = blockStore;
         this.params = params;
         this.chain = chain;
-        this.wallet = wallet;
         
         inactives = new LinkedBlockingQueue<PeerAddress>();
         
         peers = Collections.synchronizedSet(new HashSet<Peer>());
 
         peerEventListeners = Collections.synchronizedSet(new HashSet<PeerEventListener>());
+
+        pendingTransactionListeners = Collections.synchronizedList(new ArrayList<PendingTransactionListener>());
 
         peerPool = new ThreadPoolExecutor(CORE_THREADS, DEFAULT_CONNECTIONS,
                 THREAD_KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
@@ -122,6 +125,24 @@ public class PeerGroup implements IsMultiBitClass {
     
     public boolean removeEventListener(PeerEventListener listener) {
         return peerEventListeners.remove(listener);
+    }
+    
+    public void addPendingTransactionListener(PendingTransactionListener listener) {
+        if (peers != null) {
+            for (Peer loopPeer : peers) {
+                loopPeer.addPendingTransactionListener(listener);
+            }
+        }
+        pendingTransactionListeners.add(listener);
+    }
+    
+    public boolean removePendingTransactionListener(PendingTransactionListener listener) {
+        if (peers != null) {
+            for (Peer loopPeer : peers) {
+                loopPeer.removePendingTransactionListener(listener);
+            }
+        }
+        return pendingTransactionListeners.remove(listener);
     }
     
     /**
@@ -239,7 +260,7 @@ public class PeerGroup implements IsMultiBitClass {
             while (true) {
                 try {
                     final Peer peer = new Peer(params, address,
-                            blockStore.getChainHead().getHeight(), chain, wallet);
+                            blockStore.getChainHead().getHeight(), chain);
                     Runnable command = new Runnable() {
                         public void run() {
                             try {
@@ -324,6 +345,13 @@ public class PeerGroup implements IsMultiBitClass {
     }
     
     protected synchronized void handleNewPeer(Peer peer) {
+        // hook up PendingTransactionListeners
+        if (pendingTransactionListeners != null) {
+            for (PendingTransactionListener loopListener : pendingTransactionListeners) {
+                peer.addPendingTransactionListener(loopListener);
+            }
+        }
+        
         if (downloadListener != null && downloadPeer == null)
             startBlockChainDownloadFromPeer(peer);
         synchronized (peerEventListeners) {
@@ -336,6 +364,13 @@ public class PeerGroup implements IsMultiBitClass {
     }
     
     protected synchronized void handlePeerDeath(Peer peer) {
+        // remove PendingTransactionListeners
+        if (pendingTransactionListeners != null) {
+            for (PendingTransactionListener loopListener : pendingTransactionListeners) {
+                peer.removePendingTransactionListener(loopListener);
+            }
+        }
+        
         if (peer == downloadPeer) {
             downloadPeer = null;
             synchronized (peers) {

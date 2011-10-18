@@ -75,7 +75,7 @@
                    <outputDirectory>${basedir}/target/bitcoinj</outputDirectory>
                    <includes>**/*.*</includes>
                    <!-- excludes classes that are duplicated in multibit -->
-                   <excludes>**/Peer.class, **/Peer$*.class,**/PeerGroup*.class, 
+                   <excludes>**/ChildMessage.class, **/Peer.class, **/Peer$*.class,**/PeerGroup*.class, 
                              **/Sha256Hash.class, 
                              **/Transaction.class, **/Transaction$*.class, 
                              **/TransactionInput.class, **/TransactionInput$*.class,

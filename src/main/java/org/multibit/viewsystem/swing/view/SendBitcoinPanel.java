@@ -935,7 +935,25 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         // Transferable
         public Object getTransferData(DataFlavor flavor) {
             if (isDataFlavorSupported(flavor)) {
-                return image;
+                if (DataFlavor.imageFlavor.equals(flavor)) {
+                    return image;
+                } else {
+                    if (DataFlavor.javaFileListFlavor.equals(flavor)) {
+                        java.util.List<File> list = new java.util.LinkedList<File>();
+                        
+                        // write the image to the output stream
+                        File swatchFile = new File("swatch.png");
+                        try {
+                            ImageIO.write( toBufferedImage(image, -1, -1), "png", new File("swatch.png"));
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        list.add(swatchFile);
+                        return list;
+                      
+                    }
+                }
             }
             return null;
         }

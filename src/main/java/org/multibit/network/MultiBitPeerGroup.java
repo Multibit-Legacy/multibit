@@ -12,8 +12,8 @@ import com.google.bitcoin.store.BlockStore;
 public class MultiBitPeerGroup extends PeerGroup {
     MultiBitController controller;
     
-    public MultiBitPeerGroup(MultiBitController controller, BlockStore blockStore, NetworkParameters params, BlockChain chain, Wallet wallet) {
-        super(blockStore, params, chain, wallet);
+    public MultiBitPeerGroup(MultiBitController controller, BlockStore blockStore, NetworkParameters params, BlockChain chain) {
+        super(blockStore, params, chain);
         this.controller = controller;
     }
     

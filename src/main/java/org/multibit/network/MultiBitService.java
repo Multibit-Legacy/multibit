@@ -75,7 +75,7 @@ public class MultiBitService {
 
     private PeerGroup peerGroup;
 
-    private BlockChain chain;
+    private BlockChain blockChain;
 
     private boolean useTestNet;
 
@@ -110,8 +110,59 @@ public class MultiBitService {
         this.controller = controller;
 
         networkParameters = useTestNet ? NetworkParameters.testNet() : NetworkParameters.prodNet();
-        String filePrefix = useTestNet ? MULTIBIT_PREFIX + SEPARATOR + TEST_NET_PREFIX : MULTIBIT_PREFIX;
+ 
+        BlockStore blockStore = null;
+        try {
+            // Load the block chain, if there is one stored locally.
+            log.debug("Reading block store from disk");
 
+            String filePrefix = getFilePrefix();
+            blockStore = new BoundedOverheadBlockStore(networkParameters, new File(filePrefix + ".blockchain"));
+
+            log.debug("Connecting ...");
+            blockChain = new BlockChain(networkParameters, blockStore);           
+   
+            peerGroup = new MultiBitPeerGroup(controller, blockStore, networkParameters, blockChain);
+
+            String singleNodeConnection = controller.getModel().getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
+            if (singleNodeConnection != null && !singleNodeConnection.equals("")) {
+                try {
+                    peerGroup.addAddress(new PeerAddress(InetAddress.getByName(singleNodeConnection)));
+                    peerGroup.setMaxConnections(1);
+                } catch (UnknownHostException e) {
+                    log.error(e.getMessage(),e);
+
+                }
+            } else {
+                // use DNS for production, IRC for test
+                if (useTestNet) {
+                    peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
+                } else {
+                    peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
+                }
+            }
+            // add the controller as a PeerEventListener
+            peerGroup.addEventListener(controller);
+            peerGroup.start();
+        } catch (BlockStoreException e) {
+            controller.displayMessage("multiBitService.errorText",
+                    new Object[] { e.getClass().getName() + " " + e.getMessage() }, "multiBitService.errorTitleText");
+        } catch (Exception e) {
+            controller.displayMessage("multiBitService.errorText",
+                    new Object[] { e.getClass().getName() + " " + e.getMessage() }, "multiBitService.errorTitleText");
+        }
+    }
+    
+    private String getFilePrefix() {
+        return useTestNet ? MULTIBIT_PREFIX + SEPARATOR + TEST_NET_PREFIX : MULTIBIT_PREFIX;
+    }
+    
+    /**
+     * initialise wallet from the wallet filename
+     * 
+     * @param walletFilename
+     */
+    public Wallet addWalletFromFilename(String walletFilename) {
         fileHandler = new FileHandler(controller);
         File walletFile = null;
         boolean walletFileIsADirectory = false;
@@ -127,7 +178,7 @@ public class MultiBitService {
 
         if (wallet == null || walletFilename == null || walletFilename.equals("") || walletFileIsADirectory) {
             // use default wallet name - create if does not exist
-            walletFilename = filePrefix + WALLET_SUFFIX;
+            walletFilename = getFilePrefix() + WALLET_SUFFIX;
             walletFile = new File(walletFilename);
 
             if (walletFile.exists()) {
@@ -158,47 +209,20 @@ public class MultiBitService {
                     }
                 }
             }
-        }
-
-        // Load the block chain, if there is one stored locally.
-        log.debug("Reading block store from disk");
-        BlockStore blockStore = null;
-        try {
-            blockStore = new BoundedOverheadBlockStore(networkParameters, new File(filePrefix + ".blockchain"));
-
-            log.debug("Connecting ...");
-            chain = new BlockChain(networkParameters, wallet, blockStore);
-
-            peerGroup = new MultiBitPeerGroup(controller, blockStore, networkParameters, chain, wallet);
-
-            String singleNodeConnection = controller.getModel().getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
-            if (singleNodeConnection != null && !singleNodeConnection.equals("")) {
-                try {
-                    peerGroup.addAddress(new PeerAddress(InetAddress.getByName(singleNodeConnection)));
-                    peerGroup.setMaxConnections(1);
-                } catch (UnknownHostException e) {
-                    log.error(e.getMessage(),e);
-
-                }
-            } else {
-                // use DNS for production, IRC for test
-                if (useTestNet) {
-                    peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
-                } else {
-                    peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
-                }
-            }
-            // add the controller as a PeerEventListener
-            peerGroup.addEventListener(controller);
-            peerGroup.start();
-        } catch (BlockStoreException e) {
-            controller.displayMessage("multiBitService.errorText",
-                    new Object[] { e.getClass().getName() + " " + e.getMessage() }, "multiBitService.errorTitleText");
-        } catch (Exception e) {
-            controller.displayMessage("multiBitService.errorText",
-                    new Object[] { e.getClass().getName() + " " + e.getMessage() }, "multiBitService.errorTitleText");
-        }
+        }   
+        
+        // set the wallet into the model
+        controller.getModel().addWallet(wallet);
+        
+        // add wallet to blockchain
+        blockChain.addWallet(wallet);
+        
+        // add wallet as PendingTransactionListener to PeerGroup
+        peerGroup.addPendingTransactionListener(wallet);
+        
+        return wallet;
     }
+    
 
     /**
      * download the block chain
@@ -241,7 +265,7 @@ public class MultiBitService {
     }
 
     public BlockChain getChain() {
-        return chain;
+        return blockChain;
     }
 
     public NetworkParameters getNetworkParameters() {

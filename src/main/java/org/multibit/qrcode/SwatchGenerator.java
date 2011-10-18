@@ -111,6 +111,9 @@ public class SwatchGenerator {
         } catch (com.google.zxing.WriterException e) {
             // exit the method
             return null;
+        } catch (IllegalArgumentException e) {
+            // exit the method
+            return null;
         }
 
         boolean addAmount;

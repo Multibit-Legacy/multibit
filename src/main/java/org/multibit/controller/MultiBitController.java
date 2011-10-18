@@ -90,15 +90,12 @@ public class MultiBitController implements PeerEventListener {
             String viewString = (String) userPreferences.get(MultiBitModel.SELECTED_VIEW);
             if (viewString != null) {
                 try {
-                    initialView = Integer.parseInt(viewString);
-                } catch (NumberFormatException nfe) {
-                    // carry on
-                }
-            }
-            String previouslySelectedViewString = (String) userPreferences.get(MultiBitModel.PREVIOUSLY_SELECTED_VIEW);
-            if (previouslySelectedViewString != null) {
-                try {
-                    previousView = Integer.parseInt(previouslySelectedViewString);
+                    int initialViewInProperties = Integer.parseInt(viewString);
+                    
+                    // do not open on open wallet view or create wallet view - confusing
+                    if (View.OPEN_WALLET_VIEW != initialViewInProperties && View.SAVE_WALLET_AS_VIEW != initialViewInProperties) {
+                        initialView = initialViewInProperties;
+                    }
                 } catch (NumberFormatException nfe) {
                     // carry on
                 }
@@ -348,6 +345,18 @@ public class MultiBitController implements PeerEventListener {
     public void setModel(MultiBitModel model) {
         this.model = model;
     }
+
+    /**
+     * add a wallet to multibit from a filename
+     */
+    public void addWalletFromFilename(String walletFilename) {
+        if (multiBitService != null) {
+            Wallet newWallet = multiBitService.addWalletFromFilename(walletFilename);
+            model.setActiveWallet(newWallet);
+            fireWalletChanged();
+        }
+    }
+
 
     /**
      * the language has been changed

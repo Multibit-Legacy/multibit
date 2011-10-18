@@ -13,6 +13,8 @@ import java.util.*;
 /**
  * model containing the MultiBit data
  * 
+ * most of the methods act on the single, active wallet in the model
+ * 
  * @author jim
  * 
  */
@@ -32,7 +34,7 @@ public class MultiBitModel {
     // user preferences
     public static final String SELECTED_VIEW = "selectedView";
     public static final String PREVIOUSLY_SELECTED_VIEW = "previousView";
-    
+
     public static final String USER_LANGUAGE_CODE = "languageCode";
     public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
 
@@ -45,13 +47,13 @@ public class MultiBitModel {
     public static final String SEND_AMOUNT = "sendAmount";
     public static final String SEND_FEE = "sendFee";
     // default is min fee of 0.0005 BTC
-    public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("50000"); 
+    public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("50000");
     // min fee of 0.0005 BTC
     public static final BigInteger SEND_MINIMUM_FEE = new BigInteger("50000");
-    
+
     public static final String SEND_WAS_SUCCESSFUL = "sendWasSuccessful";
     public static final String SEND_ERROR_MESSAGE = "sendErrorMessage";
-                                                      
+
     // receive bitcoin
     public static final String RECEIVE_ADDRESS = "receiveAddress";
     public static final String RECEIVE_LABEL = "receiveLabel";
@@ -67,23 +69,26 @@ public class MultiBitModel {
     public static final String VALIDATION_NOT_ENOUGH_FUNDS = "validationNotEnoughFunds";
     public static final String VALIDATION_ADDRESS_VALUE = "validationAddressValue";
     public static final String VALIDATION_AMOUNT_VALUE = "validationAmountValue";
-    
+
     public static final String WALLET_FILE_EXTENSION = "wallet";
 
     // connect to single node
     public static final String SINGLE_NODE_CONNECTION = "singleNodeConnection";
-    
-    private Wallet wallet;
 
     private final MultiBitController controller;
 
     // user preferences
     private Properties userPreferences;
 
-    private List<WalletTableData> walletData;
+    /**
+     * list of each wallet's total model data
+     */
+    private List<PerWalletModelData> perWalletModelDataList;
 
-    // wallet info including address labelling
-    private WalletInfo walletInfo;
+    /**
+     * the current active wallet
+     */
+    private PerWalletModelData activeWalletModelData;
 
     public MultiBitModel(MultiBitController controller) {
         this(controller, new Properties());
@@ -93,8 +98,16 @@ public class MultiBitModel {
         this.controller = controller;
         this.userPreferences = userPreferences;
 
-        walletData = new ArrayList<WalletTableData>();
-        walletInfo = null;
+        perWalletModelDataList = new LinkedList<PerWalletModelData>();
+
+        activeWalletModelData = new PerWalletModelData();
+        perWalletModelDataList.add(activeWalletModelData);
+
+        // wallet info including address labelling
+        activeWalletModelData.setWalletInfo(null);
+
+        // table row data used in displaying transactions - initially empty
+        activeWalletModelData.setWalletTableDataList(new ArrayList<WalletTableData>());
     }
 
     /**
@@ -134,124 +147,185 @@ public class MultiBitModel {
     }
 
     /**
-     * get a wallet preference
+     * get a wallet preference from the active wallet
      * 
      * @param key
      *            String key of property
      * @return String property value
      */
     public String getWalletPreference(String key) {
-        if (walletInfo != null) {
-            return walletInfo.getProperty(key);
+        if (activeWalletModelData.getWalletInfo() != null) {
+            return activeWalletModelData.getWalletInfo().getProperty(key);
         } else {
             return null;
         }
     }
 
     /**
-     * set a wallet preference
+     * set a wallet preference from the active wallet
      * 
      * @return
      */
     public void setWalletPreference(String key, String value) {
-        if (walletInfo != null && value != null) {
-            walletInfo.put(key, value);
+        if (activeWalletModelData.getWalletInfo() != null && value != null) {
+            activeWalletModelData.getWalletInfo().put(key, value);
         }
     }
 
+    /**
+     * get the estimated balance of the active wallet
+     * 
+     * @return
+     */
     public BigInteger getEstimatedBalance() {
-        if (wallet == null) {
+        if (activeWalletModelData.getWallet() == null) {
             return BigInteger.ZERO;
         } else {
-            return wallet.getBalance(BalanceType.ESTIMATED);
+            return activeWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED);
         }
     }
 
+    /**
+     * get the available balance of the active wallet
+     * 
+     * @return
+     */
     public BigInteger getAvailableBalance() {
-        if (wallet == null) {
+        if (activeWalletModelData.getWallet() == null) {
             return BigInteger.ZERO;
         } else {
-            return wallet.getBalance(BalanceType.AVAILABLE);
+            return activeWalletModelData.getWallet().getBalance(BalanceType.AVAILABLE);
         }
     }
 
+    /**
+     * get the wallet data for the active wallet
+     * 
+     * @return
+     */
     public List<WalletTableData> getWalletData() {
-        return walletData;
+        return activeWalletModelData.getWalletTableDataList();
     }
 
+    /**
+     * get the wallet info for the active wallet
+     * 
+     * @return
+     */
     public WalletInfo getWalletInfo() {
-        return walletInfo;
+        return activeWalletModelData.getWalletInfo();
     }
 
+    /**
+     * get the active wallet
+     * 
+     * @return
+     */
     public Wallet getWallet() {
-        return wallet;
+        return activeWalletModelData.getWallet();
     }
 
-    public void setWallet(Wallet wallet) {
-        this.wallet = wallet;
+    /**
+     * set the active wallet
+     * 
+     * @param wallet
+     */
+    public void setActiveWallet(Wallet wallet) {
+        if (wallet == null) {
+            return;
+        }
+        if (perWalletModelDataList != null) {
+            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+                if (wallet.equals(loopPerWalletModelData.getWallet())) {
+                    activeWalletModelData = loopPerWalletModelData;
+                    break;
+                }
+            }
+        }
+    }
+    
+    /**
+     * add a new wallet to the list of managed wallets
+     */
+    public void addWallet(Wallet wallet) {
+        activeWalletModelData.setWallet(wallet);
 
         // wire up the controller as a wallet event listener
-        wallet.addEventListener(new WalletEventListener() {
-            public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-                controller.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
-            }
+        if (wallet != null) {
+            wallet.addEventListener(new WalletEventListener() {
+                public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
+                        BigInteger newBalance) {
+                    controller.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
+                }
 
-            @SuppressWarnings("unused")
-            public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
-                    BigInteger newBalance) {
-                controller.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
-            }
+                @SuppressWarnings("unused")
+                public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
+                        BigInteger newBalance) {
+                    controller.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
+                }
 
-            public void onPendingCoinsReceived(Wallet wallet, Transaction transaction) {
-                controller.onPendingCoinsReceived(wallet, transaction, null, null);
-            }
+                public void onPendingCoinsReceived(Wallet wallet, Transaction transaction) {
+                    controller.onPendingCoinsReceived(wallet, transaction, null, null);
+                }
 
-            @Override
-            public void onReorganize(Wallet wallet) {
-                // TODO Auto-generated method stub
-                
-            }
+                @Override
+                public void onReorganize(Wallet wallet) {
+                    // TODO Auto-generated method stub
 
-            @Override
-            public void onDeadTransaction(Wallet wallet, Transaction deadTx, Transaction replacementTx) {
-                // TODO Auto-generated method stub
-                
-            }
+                }
 
-        });
+                @Override
+                public void onDeadTransaction(Wallet wallet, Transaction deadTx, Transaction replacementTx) {
+                    // TODO Auto-generated method stub
+
+                }
+
+            });
+        }
 
         createWalletData();
         createAddressBookReceivingAddresses();
     }
 
+    /**
+     * get the active wallet filename
+     * 
+     * 
+     * @return
+     */
     public String getWalletFilename() {
         return userPreferences.getProperty(WALLET_FILENAME);
     }
 
+    /**
+     * set the active wallet filename
+     * 
+     * @param walletFilename
+     */
     public void setWalletFilename(String walletFilename) {
         userPreferences.setProperty(WALLET_FILENAME, walletFilename);
     }
 
     /**
-     * convert the wallet info into walletdata records as they are easier to
-     * show to the user in tabular form
+     * convert the active wallet info into walletdata records as they are easier
+     * to show to the user in tabular form
      */
     public Vector<WalletTableData> createWalletData() {
         // TODO Consider an ArrayList if possible
         Vector<WalletTableData> walletData = new Vector<WalletTableData>();
 
-        if (wallet == null) {
+        if (activeWalletModelData.getWallet() == null) {
             return walletData;
         }
-        Set<Transaction> transactions = wallet.getTransactions(false, false);
- 
+        Set<Transaction> transactions = activeWalletModelData.getWallet().getTransactions(false, false);
+
         if (transactions != null) {
             for (Transaction loopTransaction : transactions) {
                 WalletTableData walletDataRow = new WalletTableData(loopTransaction);
                 walletData.add(walletDataRow);
-                walletDataRow.setCredit(loopTransaction.getValueSentToMe(wallet));
+                walletDataRow.setCredit(loopTransaction.getValueSentToMe(activeWalletModelData.getWallet()));
                 try {
-                    walletDataRow.setDebit(loopTransaction.getValueSentFromMe(wallet));
+                    walletDataRow.setDebit(loopTransaction.getValueSentFromMe(activeWalletModelData.getWallet()));
                 } catch (ScriptException e) {
                     log.error(e.getMessage(), e);
 
@@ -290,22 +364,22 @@ public class MultiBitModel {
     }
 
     /**
-     * add the receiving addresses of all the keys in this wallet
+     * add the receiving addresses of all the keys of the active wallet
      */
     public void createAddressBookReceivingAddresses() {
-        if (wallet != null) {
-            ArrayList<ECKey> keyChain = wallet.keychain;
+        if (activeWalletModelData.getWallet() != null) {
+            ArrayList<ECKey> keyChain = activeWalletModelData.getWallet().keychain;
             if (keyChain != null) {
                 MultiBitService multiBitService = controller.getMultiBitService();
                 if (multiBitService != null) {
                     NetworkParameters networkParameters = multiBitService.getNetworkParameters();
                     if (networkParameters != null) {
-                        if (walletInfo != null) {
+                        if (activeWalletModelData.getWalletInfo() != null) {
                             // clear the existing receiving addresses
-                            walletInfo.getReceivingAddresses().clear();
+                            activeWalletModelData.getWalletInfo().getReceivingAddresses().clear();
                             for (ECKey key : keyChain) {
                                 Address address = key.toAddress(controller.getMultiBitService().getNetworkParameters());
-                                walletInfo.addReceivingAddressOfKey(address);
+                                activeWalletModelData.getWalletInfo().addReceivingAddressOfKey(address);
                             }
                         }
                     }
@@ -314,6 +388,15 @@ public class MultiBitModel {
         }
     }
 
+    /**
+     * create a description for a transaction
+     * 
+     * @param transactionInputs
+     * @param transactionOutputs
+     * @param credit
+     * @param debit
+     * @return
+     */
     public String createDescription(List<TransactionInput> transactionInputs, List<TransactionOutput> transactionOutputs,
             BigInteger credit, BigInteger debit) {
         String toReturn = "";
@@ -322,10 +405,10 @@ public class MultiBitModel {
         TransactionOutput theirOutput = null;
         if (transactionOutputs != null) {
             for (TransactionOutput transactionOutput : transactionOutputs) {
-                if (transactionOutput != null && transactionOutput.isMine(wallet)) {
+                if (transactionOutput != null && transactionOutput.isMine(activeWalletModelData.getWallet())) {
                     myOutput = transactionOutput;
                 }
-                if (transactionOutput != null && !transactionOutput.isMine(wallet)) {
+                if (transactionOutput != null && !transactionOutput.isMine(activeWalletModelData.getWallet())) {
                     theirOutput = transactionOutput;
                 }
             }
@@ -344,8 +427,8 @@ public class MultiBitModel {
 
                 // String addressString = input.getFromAddress().toString();
                 String label = null;
-                if (walletInfo != null) {
-                    label = walletInfo.lookupLabelForReceivingAddress(addressString);
+                if (activeWalletModelData.getWalletInfo() != null) {
+                    label = activeWalletModelData.getWalletInfo().lookupLabelForReceivingAddress(addressString);
                 }
                 if (label != null && label != "") {
                     toReturn = controller.getLocaliser().getString("multiBitModel.creditDescriptionWithLabel",
@@ -367,8 +450,8 @@ public class MultiBitModel {
                 if (theirOutput != null) {
                     String addressString = theirOutput.getScriptPubKey().getToAddress().toString();
                     String label = null;
-                    if (walletInfo != null) {
-                        label = walletInfo.lookupLabelForSendingAddress(addressString);
+                    if (activeWalletModelData.getWalletInfo() != null) {
+                        label = activeWalletModelData.getWalletInfo().lookupLabelForSendingAddress(addressString);
                     }
                     if (label != null && label != "") {
                         toReturn = controller.getLocaliser().getString("multiBitModel.debitDescriptionWithLabel",
@@ -387,6 +470,12 @@ public class MultiBitModel {
         return toReturn;
     }
 
+    /**
+     * work out the transaction date
+     * 
+     * @param transaction
+     * @return Date date of transaction
+     */
     private Date createDate(Transaction transaction) {
         // if transaction has altered date - return that
         if (transaction.getUpdatedAt() != null) {
@@ -411,6 +500,12 @@ public class MultiBitModel {
         return null;
     }
 
+    /**
+     * work out the height of the block chain in which the transaction appears
+     * 
+     * @param transaction
+     * @return
+     */
     private int workOutHeight(Transaction transaction) {
         Set<StoredBlock> appearsIn = transaction.getAppearsIn();
         if (appearsIn != null) {
@@ -429,6 +524,6 @@ public class MultiBitModel {
     }
 
     public void setWalletInfo(WalletInfo walletInfo) {
-        this.walletInfo = walletInfo;
+        activeWalletModelData.setWalletInfo(walletInfo);
     }
 }

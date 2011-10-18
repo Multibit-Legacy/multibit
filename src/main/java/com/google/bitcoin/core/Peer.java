@@ -17,6 +17,7 @@
 package com.google.bitcoin.core;
 
 import org.multibit.IsMultiBitClass;
+import org.multibit.network.PendingTransactionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,13 +56,9 @@ public class Peer implements IsMultiBitClass {
 
     private List<PeerEventListener> eventListeners;
     
-    public static boolean MOBILE_OPTIMIZED = true;
-
-    /**
-     * the wallet that will be notified of pending transactions
-     */
+    private List<PendingTransactionListener> pendingTransactionListeners;
     
-    private Wallet wallet;
+    public static boolean MOBILE_OPTIMIZED = true;
 
     /**
      * Construct a peer that handles the given network connection and reads/writes from the given block chain. Note that
@@ -69,23 +66,23 @@ public class Peer implements IsMultiBitClass {
      * 
      * @param bestHeight our current best chain height, to facilitate downloading
      */
-    public Peer(NetworkParameters params, PeerAddress address, int bestHeight, BlockChain blockChain, Wallet wallet) {
+    public Peer(NetworkParameters params, PeerAddress address, int bestHeight, BlockChain blockChain) {
         this.params = params;
         this.address = address;
         this.bestHeight = bestHeight;
         this.blockChain = blockChain;
-        this.wallet = wallet;
         
         this.pendingGetBlockFutures = new ArrayList<GetDataFuture<Block>>();
         this.eventListeners = new ArrayList<PeerEventListener>();
+        this.pendingTransactionListeners = new ArrayList<PendingTransactionListener>();
     }
 
     /**
      * Construct a peer that handles the given network connection and reads/writes from the given block chain. Note that
      * communication won't occur until you call connect().
      */
-    public Peer(NetworkParameters params, PeerAddress address, BlockChain blockChain, Wallet wallet) {
-        this(params, address, 0, blockChain, wallet);
+    public Peer(NetworkParameters params, PeerAddress address, BlockChain blockChain) {
+        this(params, address, 0, blockChain);
     }
     
     public synchronized void addEventListener(PeerEventListener listener) {
@@ -94,6 +91,14 @@ public class Peer implements IsMultiBitClass {
 
     public synchronized boolean removeEventListener(PeerEventListener listener) {
         return eventListeners.remove(listener);
+    }
+   
+    public synchronized void addPendingTransactionListener(PendingTransactionListener listener) {
+        pendingTransactionListeners.add(listener);
+    }
+
+    public synchronized boolean removePendingTransactionListener(PendingTransactionListener listener) {
+        return pendingTransactionListeners.remove(listener);
     }
 
     @Override
@@ -254,15 +259,15 @@ public class Peer implements IsMultiBitClass {
     }
 
     /**
-     * if a transaction references our wallet keys and is not sent by us
-     * call wallet receivePendingTransaction
+     * notify pendingTransactionListeners about the transaction
      */
     private void processPendingTransaction(Transaction transaction) {
-        if (transaction.isMine(wallet) && !transaction.sent(wallet)) {
-            wallet.receivePendingTransaction(transaction);
+        if (pendingTransactionListeners != null) {
+            for(PendingTransactionListener loopListener : pendingTransactionListeners) {
+                loopListener.processPendingTransaction(transaction);
+            }
         }
     }
-
 
     /**
      * Asks the connected peer for the block of the given hash, and returns a Future representing the answer.
