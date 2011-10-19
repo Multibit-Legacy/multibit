@@ -54,8 +54,8 @@ public class SaveWalletAsView implements View, DataProvider {
         JFileChooser.setDefaultLocale(localiser.getLocale());
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setLocale(localiser.getLocale());
-        if (controller.getModel().getWalletFilename() != null) {
-            fileChooser.setCurrentDirectory(new File(controller.getModel().getWalletFilename()));
+        if (controller.getModel().getActiveWalletFilename() != null) {
+            fileChooser.setCurrentDirectory(new File(controller.getModel().getActiveWalletFilename()));
         }
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setFileFilter(new WalletFileFilter(controller));
@@ -98,7 +98,7 @@ public class SaveWalletAsView implements View, DataProvider {
     public Data getData() {
         Data data = new Data();
         Item activeWalletFilenameItem = new Item(MultiBitModel.ACTIVE_WALLET_FILENAME);
-        activeWalletFilenameItem.setOriginalValue(controller.getModel().getWalletFilename());
+        activeWalletFilenameItem.setOriginalValue(controller.getModel().getActiveWalletFilename());
         activeWalletFilenameItem.setNewValue(selectedSaveWalletAsFilename);
 
         data.addItem(MultiBitModel.ACTIVE_WALLET_FILENAME, activeWalletFilenameItem);

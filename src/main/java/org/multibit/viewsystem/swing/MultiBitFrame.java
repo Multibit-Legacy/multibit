@@ -154,10 +154,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         nowOffline();
         updateStatusLabel("");
 
-        estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(model.getEstimatedBalance(), true, false));
+        estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(model.getActiveWalletEstimatedBalance(), true, false));
 
         availableBalanceTextLabel.setText(controller.getLocaliser().getString("multiBitFrame.availableToSpend",
-                new Object[] { Localiser.bitcoinValueToString4(model.getAvailableBalance(), true, false) }));
+                new Object[] { Localiser.bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true, false) }));
 
         estimatedBalanceTextLabel.setFocusable(true);
         estimatedBalanceTextLabel.requestFocusInWindow();
@@ -519,11 +519,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             initUI();
         }
         updateOnlineStatusText();
-        estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(model.getEstimatedBalance(), true, false));
+        estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(model.getActiveWalletEstimatedBalance(), true, false));
         availableBalanceTextLabel.setText(controller.getLocaliser().getString("multiBitFrame.availableToSpend",
-                new Object[] { Localiser.bitcoinValueToString4(model.getAvailableBalance(), true, false) }));
+                new Object[] { Localiser.bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true, false) }));
 
-        String walletFilename = model.getWalletFilename();
+        String walletFilename = model.getActiveWalletFilename();
         if (walletFilename == null) {
             setWalletFilename("");
         } else {
@@ -701,7 +701,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             if (value != null && value.compareTo(BigInteger.ZERO) > 0) {
 
                 logger.debug("Received " + Localiser.bitcoinValueToString4(value, true, false) + " from " + from.toString());
-                wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
+                wallet.saveToFile(new File(controller.getModel().getActiveWalletFilename()));
 
                 ShowTransactionsPanel transactionsView = (ShowTransactionsPanel) viewFactory.getView(View.TRANSACTIONS_VIEW);
                 WalletTableModel walletTableModel = transactionsView.getWalletTableModel();
@@ -709,10 +709,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     walletTableModel.recreateWalletData();
                 }
 
-                estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel().getEstimatedBalance(),
+                estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel().getActiveWalletEstimatedBalance(),
                         true, false));
                 availableBalanceTextLabel.setText(controller.getLocaliser().getString("multiBitFrame.availableToSpend",
-                        new Object[] { Localiser.bitcoinValueToString4(model.getAvailableBalance(), true, false) }));
+                        new Object[] { Localiser.bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true, false) }));
 
                 fireDataChanged();
             }
@@ -742,12 +742,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     walletTableModel.recreateWalletData();
                 }
 
-                wallet.saveToFile(new File(controller.getModel().getWalletFilename()));
+                wallet.saveToFile(new File(controller.getModel().getActiveWalletFilename()));
 
-                estimatedBalanceTextLabel.blink(Localiser.bitcoinValueToString4(controller.getModel().getEstimatedBalance(),
+                estimatedBalanceTextLabel.blink(Localiser.bitcoinValueToString4(controller.getModel().getActiveWalletEstimatedBalance(),
                         true, false));
                 availableBalanceTextLabel.setText(controller.getLocaliser().getString("multiBitFrame.availableToSpend",
-                        new Object[] { Localiser.bitcoinValueToString4(model.getAvailableBalance(), true, false) }));
+                        new Object[] { Localiser.bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true, false) }));
 
                 fireDataChanged();
             }
@@ -767,12 +767,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void fireDataChanged() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel().getEstimatedBalance(),
+                estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel().getActiveWalletEstimatedBalance(),
                         true, false));
                 availableBalanceTextLabel.setText(controller.getLocaliser().getString("multiBitFrame.availableToSpend",
-                        new Object[] { Localiser.bitcoinValueToString4(model.getAvailableBalance(), true, false) }));
+                        new Object[] { Localiser.bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true, false) }));
 
-                setWalletFilename(controller.getModel().getWalletFilename());
+                setWalletFilename(controller.getModel().getActiveWalletFilename());
                 viewPanel.invalidate();
                 viewPanel.validate();
                 viewPanel.repaint();
@@ -799,8 +799,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         activeWalletComboBox.setRenderer(renderer);
 
         String activeWalletFileName = null;
-        if (controller.getModel().getWallet() != null) {
-            activeWalletFileName = controller.getModel().getWalletFilename();
+        if (controller.getModel().getActiveWallet() != null) {
+            activeWalletFileName = controller.getModel().getActiveWalletFilename();
         }
 
         if (activeWalletFileName != null) {

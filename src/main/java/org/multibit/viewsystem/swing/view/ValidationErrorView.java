@@ -45,39 +45,39 @@ public class ValidationErrorView implements View {
      */
     public void displayView() {
         // get the data out of the user preferences
-        String addressValue = controller.getModel().getWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE);
-        String amountValue = controller.getModel().getWalletPreference(MultiBitModel.VALIDATION_AMOUNT_VALUE);
+        String addressValue = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE);
+        String amountValue = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_VALUE);
 
         // invalid address
-        String addressIsInvalid = controller.getModel().getWalletPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID);
+        String addressIsInvalid = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID);
         boolean addressIsInvalidBoolean = false;
         if (Boolean.TRUE.toString().equals(addressIsInvalid)) {
             addressIsInvalidBoolean = true;
         }
 
         // amount is missing
-        String amountIsMissing = controller.getModel().getWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_MISSING);
+        String amountIsMissing = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_MISSING);
         boolean amountIsMissingBoolean = false;
         if (Boolean.TRUE.toString().equals(amountIsMissing)) {
             amountIsMissingBoolean = true;
         }
 
         // invalid amount i.e. not a number or could not parse
-        String amountIsInvalid = controller.getModel().getWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID);
+        String amountIsInvalid = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID);
         boolean amountIsInvalidBoolean = false;
         if (Boolean.TRUE.toString().equals(amountIsInvalid)) {
             amountIsInvalidBoolean = true;
         }
 
         // amount is negative or zero
-        String amountIsNegativeOrZero = controller.getModel().getWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO);
+        String amountIsNegativeOrZero = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO);
         boolean amountIsNegativeOrZeroBoolean = false;
         if (Boolean.TRUE.toString().equals(amountIsNegativeOrZero)) {
             amountIsNegativeOrZeroBoolean = true;
         }
 
         // amount is more than available funds
-        String notEnoughFunds = controller.getModel().getWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS);
+        String notEnoughFunds = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS);
         boolean notEnoughFundsBoolean = false;
         if (Boolean.TRUE.toString().equals(notEnoughFunds)) {
             notEnoughFundsBoolean = true;

@@ -43,17 +43,17 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
      */
     public void actionPerformed(ActionEvent e) {
         ECKey newKey = new ECKey();
-        controller.getModel().getWallet().keychain.add(newKey);
+        controller.getModel().getActiveWallet().keychain.add(newKey);
         
         String addressString = newKey.toAddress(controller.getMultiBitService().getNetworkParameters()).toString();
-        WalletInfo walletInfo = controller.getModel().getWalletInfo();
+        WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
         if (walletInfo == null) {
-            walletInfo = new WalletInfo(controller.getModel().getWalletFilename());
-            controller.getModel().setWalletInfo(walletInfo);
+            walletInfo = new WalletInfo(controller.getModel().getActiveWalletFilename());
+            controller.getModel().setActiveWalletInfo(walletInfo);
         }
-        controller.getModel().getWalletInfo().addReceivingAddress(new AddressBookData("", addressString), false);      
-        controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_ADDRESS, addressString);
-        controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
+        controller.getModel().getActiveWalletWalletInfo().addReceivingAddress(new AddressBookData("", addressString), false);      
+        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, addressString);
+        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
 
         controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME); 
         

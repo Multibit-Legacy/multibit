@@ -177,7 +177,7 @@ public class MyWalletsPanel extends JPanel implements View, DataProvider {
                             + Localiser.bitcoinValueToString4(
                                     loopPerWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED), true, false);
                     loopButton.setText(buttonText);
-                    if (loopPerWalletModelData.getWallet().equals(controller.getModel().getWallet())) {
+                    if (loopPerWalletModelData.getWallet().equals(controller.getModel().getActiveWallet())) {
                         loopButton.setSelected(true);
                     } else {
                         loopButton.setSelected(false);

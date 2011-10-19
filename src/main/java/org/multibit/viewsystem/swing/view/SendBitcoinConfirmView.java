@@ -75,9 +75,9 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
 
         setLayout(new GridBagLayout());
         // get the data out of the wallet preferences
-        sendAddress = controller.getModel().getWalletPreference(MultiBitModel.SEND_ADDRESS);
-        sendLabel = controller.getModel().getWalletPreference(MultiBitModel.SEND_LABEL);
-        sendAmount = controller.getModel().getWalletPreference(MultiBitModel.SEND_AMOUNT) + " BTC";
+        sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
+        sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
+        sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " BTC";
         String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
         if (fee == null || fee == "") {
             fee = Localiser.bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
@@ -355,9 +355,9 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
 
     public void displayView() {
         // get the data out of the wallet preferences
-        sendAddress = controller.getModel().getWalletPreference(MultiBitModel.SEND_ADDRESS);
-        sendLabel = controller.getModel().getWalletPreference(MultiBitModel.SEND_LABEL);
-        sendAmount = controller.getModel().getWalletPreference(MultiBitModel.SEND_AMOUNT) + " BTC";
+        sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
+        sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
+        sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " BTC";
 
         sendAddressText.setText(sendAddress);
         sendLabelText.setText(sendLabel);

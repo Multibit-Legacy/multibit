@@ -379,4 +379,8 @@ public class WalletInfo {
     public String getWalletVersion() {
         return walletVersion;
     }
+
+    public String getWalletFilename() {
+        return walletFilename;
+    }
 }

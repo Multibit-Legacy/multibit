@@ -24,6 +24,7 @@ import java.util.ArrayList;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,7 +195,7 @@ public class MultiBitService {
                 controller.getModel().addWallet(wallet, walletFilename);
                 fileHandler.saveWalletToFile(wallet, walletFile);
                 controller.fireWalletChanged();
-             }
+            }
         }
 
         if (wallet != null) {
@@ -202,12 +203,16 @@ public class MultiBitService {
             // addresses
             ArrayList<ECKey> keys = wallet.keychain;
             if (keys != null) {
-                WalletInfo walletInfo = controller.getModel().getWalletInfo();
-                if (walletInfo != null) {
-                    for (ECKey key : keys) {
-                        if (key != null) {
-                            Address address = key.toAddress(networkParameters);
-                            walletInfo.addReceivingAddressOfKey(address);
+                PerWalletModelData perWalletModelData = controller.getModel().getPerWalletModelDataByWalletFilename(
+                        walletFilename);
+                if (perWalletModelData != null) {
+                    WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+                    if (walletInfo != null) {
+                        for (ECKey key : keys) {
+                            if (key != null) {
+                                Address address = key.toAddress(networkParameters);
+                                walletInfo.addReceivingAddressOfKey(address);
+                            }
                         }
                     }
                 }
@@ -251,7 +256,7 @@ public class MultiBitService {
         // throw an exception if sendTransaction is null - no money
         if (sendTransaction != null) {
             log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is " + sendTransaction.getHashAsString());
-            fileHandler.saveWalletToFile(wallet, new File(controller.getModel().getWalletFilename()));
+            fileHandler.saveWalletToFile(wallet, new File(controller.getModel().getActiveWalletFilename()));
         } else {
             // transaction was null
         }

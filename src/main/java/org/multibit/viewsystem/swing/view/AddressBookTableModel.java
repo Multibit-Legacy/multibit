@@ -38,7 +38,7 @@ public class AddressBookTableModel extends DefaultTableModel {
         if (controller == null) {
             return 0;
         }
-        WalletInfo walletInfo = controller.getModel().getWalletInfo();
+        WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
         if (isReceiving) {
             if (walletInfo != null && walletInfo.getReceivingAddresses() != null) {
                 return walletInfo.getReceivingAddresses().size();
@@ -59,7 +59,7 @@ public class AddressBookTableModel extends DefaultTableModel {
     }
 
     public Object getValueAt(int row, int column) {
-        WalletInfo walletInfo = controller.getModel().getWalletInfo();
+        WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
 
         if (walletInfo == null) {
             return null;
@@ -109,7 +109,7 @@ public class AddressBookTableModel extends DefaultTableModel {
         if (address == null) {
             return -1;
         }
-        WalletInfo walletInfo = controller.getModel().getWalletInfo();
+        WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
         if (walletInfo == null) {
             return -1;
         }
@@ -140,7 +140,7 @@ public class AddressBookTableModel extends DefaultTableModel {
      * given a row, return the AddressBookData on this row
      */
     public AddressBookData getAddressBookDataByRow(int row, boolean isReceiving) {
-        WalletInfo walletInfo = controller.getModel().getWalletInfo();
+        WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
         if (walletInfo == null) {
             return null;
         }
@@ -162,7 +162,7 @@ public class AddressBookTableModel extends DefaultTableModel {
      * set a AddressBookData into a row
      */
     public void setAddressBookDataByRow(AddressBookData addressBookData, int row, boolean isReceiving) {
-        WalletInfo walletInfo = controller.getModel().getWalletInfo();
+        WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
         if (walletInfo == null) {
             return;
         }

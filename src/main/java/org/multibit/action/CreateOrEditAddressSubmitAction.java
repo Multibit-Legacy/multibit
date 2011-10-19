@@ -45,12 +45,12 @@ public class CreateOrEditAddressSubmitAction implements Action {
                     Item receiveAddressItem = data.getItem(MultiBitModel.RECEIVE_ADDRESS);
                     if (receiveAddressItem != null && receiveAddressItem.getNewValue() != null) {
                         receiveAddress = (String) receiveAddressItem.getNewValue();
-                        controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_ADDRESS, receiveAddress);
+                        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, receiveAddress);
                     }
                     Item receiveLabelItem = data.getItem(MultiBitModel.RECEIVE_LABEL);
                     if (receiveLabelItem != null && receiveLabelItem.getNewValue() != null) {
                         receiveLabel = (String) receiveLabelItem.getNewValue();
-                        controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_LABEL, receiveLabel);
+                        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, receiveLabel);
                     }
                 }
 
@@ -58,7 +58,7 @@ public class CreateOrEditAddressSubmitAction implements Action {
                     if (receiveLabel == null) {
                         receiveLabel = "";
                     }
-                    controller.getModel().getWalletInfo()
+                    controller.getModel().getActiveWalletWalletInfo()
                             .addReceivingAddress(new AddressBookData(receiveLabel, receiveAddress), false);
                 }
                 
@@ -66,9 +66,9 @@ public class CreateOrEditAddressSubmitAction implements Action {
                     Item receiveNewKeyItem = data.getItem(MultiBitModel.RECEIVE_NEW_KEY);
                     if (receiveNewKeyItem != null) {
                         ECKey newKey = (ECKey)receiveNewKeyItem.getNewValue();
-                        controller.getModel().getWallet().keychain.add(newKey);
+                        controller.getModel().getActiveWallet().keychain.add(newKey);
                         FileHandler fileHandler = new FileHandler(controller);
-                        fileHandler.saveWalletToFile(controller.getModel().getWallet(), new File(controller.getModel().getWalletFilename()));
+                        fileHandler.saveWalletToFile(controller.getModel().getActiveWallet(), new File(controller.getModel().getActiveWalletFilename()));
                     }
                 }
             } else {
@@ -81,12 +81,12 @@ public class CreateOrEditAddressSubmitAction implements Action {
                     Item sendAddressItem = data.getItem(MultiBitModel.SEND_ADDRESS);
                     if (sendAddressItem != null && sendAddressItem.getNewValue() != null) {
                         sendAddress = (String) sendAddressItem.getNewValue();
-                        controller.getModel().setWalletPreference(MultiBitModel.SEND_ADDRESS, sendAddress);
+                        controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, sendAddress);
                     }
                     Item sendLabelItem = data.getItem(MultiBitModel.SEND_LABEL);
                     if (sendLabelItem != null && sendLabelItem.getNewValue() != null) {
                         sendLabel = (String) sendLabelItem.getNewValue();
-                        controller.getModel().setWalletPreference(MultiBitModel.SEND_LABEL, sendLabel);
+                        controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, sendLabel);
                     }
                     
                     String sendAddressString = (String)sendAddressItem.getNewValue();
@@ -103,7 +103,7 @@ public class CreateOrEditAddressSubmitAction implements Action {
                     if (sendLabel == null) {
                         sendLabel = "";
                     }
-                    controller.getModel().getWalletInfo()
+                    controller.getModel().getActiveWalletWalletInfo()
                             .addSendingAddress(new AddressBookData(sendLabel, sendAddress));
                 }
                 

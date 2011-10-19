@@ -548,9 +548,9 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
     public void loadForm() {
         // get the current address, label and amount from the model
-        String address = controller.getModel().getWalletPreference(MultiBitModel.RECEIVE_ADDRESS);
-        String label = controller.getModel().getWalletPreference(MultiBitModel.RECEIVE_LABEL);
-        String amount = controller.getModel().getWalletPreference(MultiBitModel.RECEIVE_AMOUNT);
+        String address = controller.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS);
+        String label = controller.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_LABEL);
+        String amount = controller.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_AMOUNT);
 
         // if the currently stored address is missing or is not in this wallet,
         // pick
@@ -559,7 +559,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         if (address == null || address == "") {
             pickFirstReceivingAddress = true;
         } else {
-            WalletInfo addressBook = controller.getModel().getWalletInfo();
+            WalletInfo addressBook = controller.getModel().getActiveWalletWalletInfo();
             if (addressBook != null) {
                 if (!addressBook.containsReceivingAddress(address)) {
                     pickFirstReceivingAddress = true;
@@ -568,7 +568,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         }
 
         if (pickFirstReceivingAddress) {
-            WalletInfo addressBook = controller.getModel().getWalletInfo();
+            WalletInfo addressBook = controller.getModel().getActiveWalletWalletInfo();
             if (addressBook != null) {
                 Vector<AddressBookData> receivingAddresses = addressBook.getReceivingAddresses();
                 if (receivingAddresses != null) {
@@ -577,8 +577,8 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
                         if (addressBookData != null) {
                             address = addressBookData.getAddress();
                             label = addressBookData.getLabel();
-                            controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_ADDRESS, address);
-                            controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_LABEL, label);
+                            controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, address);
+                            controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, label);
                         }
                     }
                 }
@@ -629,7 +629,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         // stop listener firing
         addressesTable.getSelectionModel().removeListSelectionListener(addressesListener);
 
-        String address = controller.getModel().getWalletPreference(MultiBitModel.RECEIVE_ADDRESS);
+        String address = controller.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS);
         displaySwatch(address, amountTextField.getText(), labelTextField.getText());
 
         // see if the current address is on the table and select it
@@ -706,8 +706,8 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
                 }
                 AddressBookData rowData = addressesTableModel.getAddressBookDataByRow(selectedAddressRow, true);
                 if (rowData != null) {
-                    controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_ADDRESS, rowData.getAddress());
-                    controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_LABEL, rowData.getLabel());
+                    controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, rowData.getAddress());
+                    controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, rowData.getLabel());
                     addressTextArea.setText(rowData.getAddress());
                     labelTextField.setText(rowData.getLabel());
                     
@@ -734,15 +734,15 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
             String label = labelTextField.getText();
             AddressBookData addressBookData = new AddressBookData(label, address);
 
-            WalletInfo walletInfo = controller.getModel().getWalletInfo();
+            WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
             if (walletInfo == null) {
-                walletInfo = new WalletInfo(controller.getModel().getWalletFilename());
-                controller.getModel().setWalletInfo(walletInfo);
+                walletInfo = new WalletInfo(controller.getModel().getActiveWalletFilename());
+                controller.getModel().setActiveWalletInfo(walletInfo);
             }
             addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRow, true);
-            controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_ADDRESS, address);
-            controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_LABEL, label);
-            controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_AMOUNT, amount);
+            controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, address);
+            controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, label);
+            controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_AMOUNT, amount);
 
             displaySwatch(address, amount, label);
         }

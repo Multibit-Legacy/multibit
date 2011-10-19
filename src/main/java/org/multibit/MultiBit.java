@@ -111,21 +111,29 @@ public class MultiBit {
         if (numberOfWalletsAsString == null || "".equals(numberOfWalletsAsString)) {
             // if this is missing then there is just the one wallet (old format
             // properties)
-            controller.addWalletFromFilename(activeWalletFilename);
+            Wallet wallet = controller.addWalletFromFilename(activeWalletFilename);
+            controller.getModel().setActiveWallet(wallet);
+            controller.fireWalletChanged();
+            controller.fireDataChanged();
         } else {
             try {
                 int numberOfWallets = Integer.parseInt(numberOfWalletsAsString);
 
                 if (numberOfWallets > 0) {
-                    // start counting at 1
-                    for (int i = 1; i <= numberOfWallets; i++) {
+                    // count down becauae adding is done from the top of the list
+                    for (int i = numberOfWallets; i >= 1; i--) {
                         // load up ith wallet filename
                         String loopWalletFilename = userPreferences.getProperty(MultiBitModel.WALLET_FILENAME_PREFIX + i);
-                        Wallet addedWallet = controller.addWalletFromFilename(loopWalletFilename);
                         if (activeWalletFilename != null && activeWalletFilename.equals(loopWalletFilename)) {
+                            Wallet addedWallet = controller.addWalletFromFilename(loopWalletFilename);
                             controller.getModel().setActiveWallet(addedWallet);
+
+                        } else {
+                            controller.addWalletFromFilename(loopWalletFilename);
                         }
                     }
+                    controller.fireWalletChanged();
+                    controller.fireDataChanged();
                 }
             } catch (NumberFormatException nfe) {
                 // carry on

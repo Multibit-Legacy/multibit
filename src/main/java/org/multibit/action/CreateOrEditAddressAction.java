@@ -45,19 +45,19 @@ public class CreateOrEditAddressAction implements Action {
                     Item receiveAddressItem = data.getItem(MultiBitModel.RECEIVE_ADDRESS);
                     if (receiveAddressItem != null && receiveAddressItem.getNewValue() != null) {
                         receiveAddress = (String) receiveAddressItem.getNewValue();
-                        controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_ADDRESS, receiveAddress);
+                        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, receiveAddress);
                     }
                     Item receiveLabelItem = data.getItem(MultiBitModel.RECEIVE_LABEL);
                     if (receiveLabelItem != null && receiveLabelItem.getNewValue() != null) {
                         receiveLabel = (String) receiveLabelItem.getNewValue();
-                        controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_LABEL, receiveLabel);
+                        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, receiveLabel);
                     }
 
                     if (receiveAddress != null) {
                         if (receiveLabel == null) {
                             receiveLabel = "";
                         }
-                        controller.getModel().getWalletInfo()
+                        controller.getModel().getActiveWalletWalletInfo()
                                 .addReceivingAddress(new AddressBookData(receiveLabel, receiveAddress), false);
                     }
                 }
@@ -69,20 +69,20 @@ public class CreateOrEditAddressAction implements Action {
                     addressItem = data.getItem(MultiBitModel.RECEIVE_ADDRESS);
                     if (addressItem != null && addressItem.getNewValue() != null) {
                         address = (String) addressItem.getNewValue();
-                        controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_ADDRESS, address);
+                        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, address);
                     }
 
                     labelItem = data.getItem(MultiBitModel.RECEIVE_LABEL);
                     if (labelItem != null && labelItem.getNewValue() != null) {
                         label = (String) labelItem.getNewValue();
-                        controller.getModel().setWalletPreference(MultiBitModel.RECEIVE_LABEL, label);
+                        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, label);
                     }
 
                     if (address != null) {
                         if (label == null) {
                             label = "";
                         }
-                        controller.getModel().getWalletInfo().addReceivingAddress(new AddressBookData(label, address), false);
+                        controller.getModel().getActiveWalletWalletInfo().addReceivingAddress(new AddressBookData(label, address), false);
                     }
                 } else {
                     String address = null;
@@ -91,20 +91,20 @@ public class CreateOrEditAddressAction implements Action {
                     addressItem = data.getItem(MultiBitModel.SEND_ADDRESS);
                     if (addressItem != null && addressItem.getNewValue() != null) {
                         address = (String) addressItem.getNewValue();
-                        controller.getModel().setWalletPreference(MultiBitModel.SEND_ADDRESS, address);
+                        controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, address);
                     }
 
                     labelItem = data.getItem(MultiBitModel.SEND_LABEL);
                     if (labelItem != null && labelItem.getNewValue() != null) {
                         label = (String) labelItem.getNewValue();
-                        controller.getModel().setWalletPreference(MultiBitModel.SEND_LABEL, label);
+                        controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, label);
                     }
 
                     if (address != null) {
                         if (label == null) {
                             label = "";
                         }
-                        controller.getModel().getWalletInfo().addSendingAddress(new AddressBookData(label, address));
+                        controller.getModel().getActiveWalletWalletInfo().addSendingAddress(new AddressBookData(label, address));
                     }
                 }
             }

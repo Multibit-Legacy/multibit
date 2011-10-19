@@ -9,6 +9,8 @@ import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.network.MultiBitService;
 
+import com.google.bitcoin.core.Wallet;
+
 /**
  * an action to process the submit of the Open Wallet view
  * 
@@ -37,7 +39,10 @@ public class OpenWalletSubmitAction implements Action {
                     // defensive check on file being a directory - should never
                     // happen
                     if (!(new File(walletFilename).isDirectory())) {
-                        controller.addWalletFromFilename(walletFilename);
+                        Wallet wallet = controller.addWalletFromFilename(walletFilename);
+                        controller.getModel().setActiveWallet(wallet);
+                        controller.fireWalletChanged();
+                        controller.fireDataChanged();
                     }
                 }
             }

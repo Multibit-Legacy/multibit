@@ -22,8 +22,8 @@ public class SendBitcoinConfirmAction implements Action {
         // copy the data into the user preferences (side effect of getData call)
         dataProvider.getData();
   
-        String sendAddress = controller.getModel().getWalletPreference(MultiBitModel.SEND_ADDRESS);
-        String sendAmount = controller.getModel().getWalletPreference(MultiBitModel.SEND_AMOUNT);
+        String sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
+        String sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
 
         Validator validator = new Validator(controller);
         if (validator.validate(sendAddress, sendAmount)) {

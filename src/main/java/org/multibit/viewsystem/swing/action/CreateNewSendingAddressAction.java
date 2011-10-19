@@ -40,21 +40,21 @@ public class CreateNewSendingAddressAction extends AbstractAction {
      * create new send address
      */
     public void actionPerformed(ActionEvent e) {
-        WalletInfo walletInfo = controller.getModel().getWalletInfo();
+        WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
         if (walletInfo == null) {
-            walletInfo = new WalletInfo(controller.getModel().getWalletFilename());
-            controller.getModel().setWalletInfo(walletInfo);
+            walletInfo = new WalletInfo(controller.getModel().getActiveWalletFilename());
+            controller.getModel().setActiveWalletInfo(walletInfo);
         }
 
         if (walletInfo.getSendingAddresses().size() == 0) {
-            String address = controller.getModel().getWalletPreference(MultiBitModel.SEND_ADDRESS);
-            String label = controller.getModel().getWalletPreference(MultiBitModel.SEND_LABEL);
+            String address = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
+            String label = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
 
-            controller.getModel().getWalletInfo().addSendingAddress(new AddressBookData(label, address));
+            controller.getModel().getActiveWalletWalletInfo().addSendingAddress(new AddressBookData(label, address));
         } else {
-            controller.getModel().getWalletInfo().addSendingAddress(new AddressBookData("", ""));
-            controller.getModel().setWalletPreference(MultiBitModel.SEND_ADDRESS, "");
-            controller.getModel().setWalletPreference(MultiBitModel.SEND_LABEL, "");
+            controller.getModel().getActiveWalletWalletInfo().addSendingAddress(new AddressBookData("", ""));
+            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, "");
+            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, "");
         }
         controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
 

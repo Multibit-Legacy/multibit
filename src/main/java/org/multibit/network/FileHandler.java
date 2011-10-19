@@ -36,6 +36,10 @@ public class FileHandler {
     }
 
     public Wallet loadWalletFromFile(File walletFile) {
+        if (walletFile == null) {
+            return null;
+        }
+        
         Wallet wallet = null;
         try {
             wallet = Wallet.loadFromFile(walletFile);
@@ -54,7 +58,7 @@ public class FileHandler {
     public void saveWalletToFile(Wallet wallet, File walletFile) {
         try {
             // save the companion wallet info
-            WalletInfo walletInfo = controller.getModel().getWalletInfo();
+            WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
             if (walletInfo != null) {
                 walletInfo.writeToFile();
             } else {

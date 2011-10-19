@@ -33,9 +33,9 @@ public class SendBitcoinNowAction implements Action {
 
     public void execute(DataProvider dataProvider) {
         // get the data out of the wallet preferences
-        String sendAddress = controller.getModel().getWalletPreference(MultiBitModel.SEND_ADDRESS);
-        String sendLabel = controller.getModel().getWalletPreference(MultiBitModel.SEND_LABEL);
-        String sendAmount = controller.getModel().getWalletPreference(MultiBitModel.SEND_AMOUNT);
+        String sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
+        String sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
+        String sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
         BigInteger fee;
         if (sendFeeString == null || sendFeeString.equals("")) {
@@ -45,7 +45,7 @@ public class SendBitcoinNowAction implements Action {
         }
 
         if (sendLabel != null && !sendLabel.equals("")) {
-            WalletInfo addressBook = controller.getModel().getWalletInfo();
+            WalletInfo addressBook = controller.getModel().getActiveWalletWalletInfo();
             addressBook.addSendingAddress(new AddressBookData(sendLabel, sendAddress));
         }
         
@@ -74,7 +74,7 @@ public class SendBitcoinNowAction implements Action {
         if (errorMessage != null && errorMessage.length() > MAX_LENGTH_OF_ERROR_MESSAGE) {
             errorMessage = errorMessage.substring(0, MAX_LENGTH_OF_ERROR_MESSAGE) + "...";
         }
-        controller.getModel().setWalletPreference(MultiBitModel.SEND_WAS_SUCCESSFUL, sendWasSuccessful.toString());
-        controller.getModel().setWalletPreference(MultiBitModel.SEND_ERROR_MESSAGE, errorMessage);
+        controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_WAS_SUCCESSFUL, sendWasSuccessful.toString());
+        controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ERROR_MESSAGE, errorMessage);
     }
 }

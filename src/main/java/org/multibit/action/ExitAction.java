@@ -33,7 +33,7 @@ public class ExitAction implements Action {
             int numberOfWallets = perWalletModelDataList.size();
             controller.getModel().setUserPreference(MultiBitModel.NUMBER_OF_WALLETS, numberOfWallets + "");
             controller.getModel().setUserPreference(MultiBitModel.ACTIVE_WALLET_FILENAME,
-                    controller.getModel().getWalletFilename());
+                    controller.getModel().getActiveWalletFilename());
             if (numberOfWallets > 0) {
                 for (int i = 1; i <= numberOfWallets; i++) {
                     PerWalletModelData perWalletModelData = perWalletModelDataList.get(i - 1);

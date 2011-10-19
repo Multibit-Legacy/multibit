@@ -32,7 +32,7 @@ public class WalletTableModel extends AbstractTableModel {
 
         createHeaders();
 
-        walletData = multiBitModel.createWalletData();
+        walletData = multiBitModel.createWalletData(controller.getModel().getActiveWalletFilename());
     }
 
     public int getColumnCount() {
@@ -116,7 +116,7 @@ public class WalletTableModel extends AbstractTableModel {
 
     public void recreateWalletData() {
         // recreate the wallet data as the underlying wallet has changed
-        walletData = multiBitModel.createWalletData();
+        walletData = multiBitModel.createWalletData(controller.getModel().getActiveWalletFilename());
         this.fireTableDataChanged();
     }
 
