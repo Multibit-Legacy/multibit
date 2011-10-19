@@ -5,6 +5,7 @@ import org.multibit.Localiser;
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.*;
@@ -17,7 +18,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -77,7 +81,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private BlinkLabel estimatedBalanceTextLabel;
     private JLabel availableBalanceTextLabel;
 
-    private JLabel walletNameLabel;
+    private JLabel activeWalletLabel;
+    private JComboBox activeWalletComboBox;
 
     private JLabel onlineLabel;
     private JLabel statusLabel;
@@ -195,7 +200,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         JPanel headerPanel = new HeaderPanel();
         headerPanel.setLayout(new GridBagLayout());
 
-        JPanel balancePanel = createBalancePanel();
+        JPanel balancePanel = createHeaderPanel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -258,15 +263,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         contentPane.add(statusBar, constraints);
     }
 
-    private JPanel createBalancePanel() {
-        JPanel balancePanel = new JPanel();
+    private JPanel createHeaderPanel() {
+        JPanel headerPanel = new JPanel();
 
-        balancePanel.setMinimumSize(new Dimension(700, 66));
-        balancePanel.setPreferredSize(new Dimension(700, 66));
-        balancePanel.setOpaque(false);
-        balancePanel.setBackground(this.getBackground());
+        headerPanel.setMinimumSize(new Dimension(700, 66));
+        headerPanel.setPreferredSize(new Dimension(700, 66));
+        headerPanel.setOpaque(false);
+        headerPanel.setBackground(this.getBackground());
 
-        balancePanel.setLayout(new GridBagLayout());
+        headerPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
         JPanel filler1 = new JPanel();
@@ -275,7 +280,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridy = 0;
         constraints.weightx = 0.1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        balancePanel.add(filler1, constraints);
+        headerPanel.add(filler1, constraints);
 
         JLabel walletIconLabel = new JLabel();
         walletIconLabel.setIcon(createImageIcon(WALLET_ICON_FILE));
@@ -285,7 +290,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.weightx = 0.2;
         constraints.anchor = GridBagConstraints.LINE_START;
 
-        balancePanel.add(walletIconLabel, constraints);
+        headerPanel.add(walletIconLabel, constraints);
 
         estimatedBalanceTextLabel = new BlinkLabel();
         estimatedBalanceTextLabel.setHorizontalAlignment(JTextField.LEFT);
@@ -298,7 +303,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridy = 0;
         constraints.weightx = 0.5;
         constraints.anchor = GridBagConstraints.LINE_START;
-        balancePanel.add(estimatedBalanceTextLabel, constraints);
+        headerPanel.add(estimatedBalanceTextLabel, constraints);
 
         availableBalanceTextLabel = new JLabel();
         availableBalanceTextLabel.setFont(availableBalanceTextLabel.getFont().deriveFont(12.0F));
@@ -308,25 +313,26 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridy = 0;
         constraints.weightx = 3.0;
         constraints.anchor = GridBagConstraints.LINE_START;
-        balancePanel.add(availableBalanceTextLabel, constraints);
+        headerPanel.add(availableBalanceTextLabel, constraints);
 
-        walletNameLabel = new JLabel();
-        walletNameLabel.setFont(walletNameLabel.getFont().deriveFont(12.0F));
+        activeWalletLabel = new JLabel();
+        activeWalletLabel.setFont(activeWalletLabel.getFont().deriveFont(12.0F));
         constraints.gridx = 4;
         constraints.gridy = 0;
         constraints.weightx = 0.5;
         constraints.anchor = GridBagConstraints.LINE_END;
-        balancePanel.add(walletNameLabel, constraints);
+        headerPanel.add(activeWalletLabel, constraints);
 
-        JPanel filler2 = new JPanel();
-        filler2.setOpaque(false);
+        activeWalletComboBox = createActiveWalletComboBox();
+        activeWalletComboBox.setFont(activeWalletComboBox.getFont().deriveFont(12.0F));
+        constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 5;
         constraints.gridy = 0;
-        constraints.weightx = 0.05;
+        constraints.weightx = 0.3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        balancePanel.add(filler2, constraints);
+        headerPanel.add(activeWalletComboBox, constraints);
 
-        return balancePanel;
+        return headerPanel;
     }
 
     private JToolBar addMenuBarAndCreateToolBar(GridBagConstraints constraints, Container contentPane) {
@@ -535,12 +541,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (walletFilename == null) {
             return;
         }
-        
+
         File walletFile = new File(walletFilename);
         if (walletFile != null) {
-            walletNameLabel.setText(localiser.getString("multiBitFrame.walletNameLabel.text", new Object[] { new File(
-                    walletFilename).getName() }));
-            walletNameLabel.setToolTipText(walletFilename);
+            activeWalletLabel.setText(localiser.getString("multiBitFrame.walletNameLabel.text", new Object[] { "" }));
+            activeWalletLabel.setToolTipText(walletFilename);
+            activeWalletComboBox.setSelectedItem(walletFilename);
         }
     }
 
@@ -769,6 +775,65 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         });
     }
 
+    private JComboBox createActiveWalletComboBox() {
+        java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+
+        Integer[] indexArray = new Integer[perWalletModelDataList.size()];
+        int index = 0;
+        for (@SuppressWarnings("unused")
+        PerWalletModelData loopModelData : perWalletModelDataList) {
+            indexArray[index] = index;
+            index++;
+        }
+        activeWalletComboBox = new JComboBox(indexArray);
+        ComboBoxRenderer renderer = new ComboBoxRenderer();
+        //renderer.setMinimumSize(new Dimension(100, 30));
+        activeWalletComboBox.setRenderer(renderer);
+
+        String activeWalletFileName = null;
+        if (controller.getModel().getWallet() != null) {
+            activeWalletFileName = controller.getModel().getWalletFilename();
+        }
+
+        if (activeWalletFileName != null) {
+            int startingIndex = 0;
+            Integer walletIndex = 0;
+            for (PerWalletModelData loopWalletData : perWalletModelDataList) {
+                if (activeWalletFileName.equals(loopWalletData.getWalletFilename())) {
+                    walletIndex = startingIndex;
+                    break;
+                }
+                startingIndex++;
+            }
+            if (walletIndex != 0) {
+                activeWalletComboBox.setSelectedItem(walletIndex.intValue());
+            }
+        }
+        
+        // add change listener
+        activeWalletComboBox.addItemListener(new ChangeActiveWalletItemListener());
+
+        return activeWalletComboBox;
+    }
+    
+
+    class ChangeActiveWalletItemListener implements ItemListener {
+        public ChangeActiveWalletItemListener() {
+
+        }
+
+        public void itemStateChanged(ItemEvent e) {
+            JComboBox activeWalletComboBox = (JComboBox)e.getSource();
+            int selectedIndex = activeWalletComboBox.getSelectedIndex();
+            PerWalletModelData selectedWalletModelData = controller.getModel().getPerWalletModelDataList().get(selectedIndex);
+            controller.getModel().setActiveWallet(selectedWalletModelData.getWallet());
+            
+            controller.fireWalletChanged();
+            controller.fireDataChanged();
+            controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
+        }
+    }
+
     // Macify application methods
 
     @Override
@@ -808,5 +873,60 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     public void handleReOpenApplication(ApplicationEvent event) {
         setVisible(true);
+    }
+
+    class ComboBoxRenderer extends JLabel implements ListCellRenderer {
+        private static final long serialVersionUID = -3301957214353702172L;
+
+        public ComboBoxRenderer() {
+            setOpaque(true);
+            setHorizontalAlignment(LEFT);
+            setVerticalAlignment(CENTER);
+        }
+
+        /*
+         * This method finds the image and text corresponding to the selected
+         * value and returns the label, set up to display the text and image.
+         */
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+                boolean cellHasFocus) {
+            // Get the selected index. (The index param isn't
+            // always valid, so just use the value.)
+            int selectedIndex = 0;
+            if (value != null) {
+                selectedIndex = (Integer) value;
+            }
+            if (isSelected) {
+                setBackground(list.getSelectionBackground());
+                setForeground(list.getSelectionForeground());
+            } else {
+                setBackground(list.getBackground());
+                setForeground(list.getForeground());
+            }
+
+            // Set the icon and text. If icon was null, say so.
+            int loopIndex = 0;
+            java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+            if (perWalletModelDataList != null) {
+                for (PerWalletModelData loopModelData : perWalletModelDataList) {
+                    if (selectedIndex == loopIndex) {
+                        if (loopModelData.getWalletFilename() != null) {
+                            File walletFile = new File(loopModelData.getWalletFilename());
+                            if (walletFile != null) {
+                                this.setText(walletFile.getName());
+                                activeWalletComboBox.setToolTipText(walletFile.getAbsolutePath());
+                            }
+                        }
+
+                        break;
+                    }
+                    loopIndex++;
+                }
+            }
+
+            setFont(list.getFont());
+
+            return this;
+        }
     }
 }

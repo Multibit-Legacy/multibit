@@ -1,5 +1,6 @@
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -12,10 +13,13 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.ListCellRenderer;
 
 import org.multibit.Localiser;
 import org.multibit.controller.ActionForward;
@@ -26,6 +30,7 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
+import org.multibit.viewsystem.swing.view.ShowPreferencesPanel.LanguageData;
 
 import com.google.bitcoin.core.Wallet.BalanceType;
 
