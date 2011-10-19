@@ -21,11 +21,11 @@ property,receiveLabel,three
 property,validationAmountIsMissing,false
 property,sendLabel,Instawallet
 property,validationAmountIsNegativeOrZero,false
-property,receiveAddress,14381U2dpm3uprqRJG7VPxanCRyzJDtmEE
 property,sendErrorMessage, 
+property,receiveAddress,14381U2dpm3uprqRJG7VPxanCRyzJDtmEE
 property,validationAmountValue,0.011
-property,sendAmount,0.011
 property,sendWasSuccessful,true
+property,sendAmount,0.011
 property,validationAddressValue,1M7qAsXrE2dye8cHmT5DaiCXx24dQS3UsE
-property,validationAmountIsInvalid,false
 property,validationAddressIsInvalid,false
+property,validationAmountIsInvalid,false

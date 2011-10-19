@@ -48,6 +48,8 @@ public class MyWalletsPanel extends JPanel implements View, DataProvider {
     private ButtonGroup walletButtonGroup;
     private ArrayList<JRadioButton> walletButtons;
 
+    private boolean initialised = false;
+
     /**
      * Creates a new {@link MyWalletsPanel}.
      */
@@ -73,7 +75,10 @@ public class MyWalletsPanel extends JPanel implements View, DataProvider {
      * show my wallets view
      */
     public void displayView() {
-        initUI();
+        if (!initialised) {
+            initUI();
+        }
+        initialised = true;
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
@@ -231,7 +236,6 @@ public class MyWalletsPanel extends JPanel implements View, DataProvider {
                         .get(selectedIndex);
                 controller.getModel().setActiveWallet(selectedWalletModelData.getWallet());
 
-                controller.fireWalletChanged();
                 controller.fireDataChanged();
                 controller.setActionForwardToSibling(ActionForward.FORWARD_TO_MY_WALLETS);
             }

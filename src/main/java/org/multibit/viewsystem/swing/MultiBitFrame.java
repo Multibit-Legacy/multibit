@@ -505,11 +505,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // close down current view
         if (currentView != 0) {
-            navigateAwayFromView(currentView, View.TRANSACTIONS_VIEW, ViewSystem.NEW_VIEW_IS_PARENT_OF_PREVIOUS); // home
-            // page
-            // choice
-            // here is
-            // arbitary
+            navigateAwayFromView(currentView, View.TRANSACTIONS_VIEW, ViewSystem.NEW_VIEW_IS_PARENT_OF_PREVIOUS); 
         }
 
         if (initUI) {
@@ -549,7 +545,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (walletFile != null) {
             activeWalletLabel.setText(localiser.getString("multiBitFrame.walletNameLabel.text", new Object[] { "" }));
             activeWalletLabel.setToolTipText(walletFilename);
-            activeWalletComboBox.setSelectedItem(walletFilename);
+            //activeWalletComboBox.setSelectedItem(walletFilename);
+            int loopIndex = 0;
+            java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+            if (perWalletModelDataList != null) {
+                for (PerWalletModelData loopModelData : perWalletModelDataList) {
+                    if (loopModelData.getWalletFilename() != null && loopModelData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
+                        activeWalletComboBox.setSelectedIndex(loopIndex);
+
+                        break;
+                    }
+                    loopIndex++;
+                }
+            }
 
             if (!walletFilename.equals("")) {
                 activeWalletLabel.setVisible(true);
@@ -773,11 +781,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         new Object[] { Localiser.bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true, false) }));
 
                 setWalletFilename(controller.getModel().getActiveWalletFilename());
+
                 viewPanel.invalidate();
-                viewPanel.validate();
-                viewPanel.repaint();
                 thisFrame.invalidate();
+                viewPanel.validate();
                 thisFrame.validate();
+                //viewPanel.repaint();
                 thisFrame.repaint();
             }
         });

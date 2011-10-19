@@ -268,7 +268,6 @@ public class MultiBitController implements PeerEventListener {
             previousView = currentView;
             currentView = nextView;
             nextView = View.UNKNOWN_VIEW;
-
         } else {
             log.warn("Could not determine next view to display, previousView = {}, currentView = {}", previousView, currentView);
             log.info("Displaying the my wallets view anyhow");
@@ -276,6 +275,11 @@ public class MultiBitController implements PeerEventListener {
             currentView = View.MY_WALLETS_VIEW;
         }
 
+        if (previousView == View.MY_WALLETS_VIEW && nextView == View.MY_WALLETS_VIEW) {
+            // no need to redisplay - already there and ok to keep
+            return;
+        }
+        
         // tell all views to close the previous view
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.navigateAwayFromView(previousView, currentView, relationshipOfNewViewToPrevious);
