@@ -95,11 +95,11 @@ public class OpenWalletView implements View, DataProvider {
 
     public Data getData() {
         Data data = new Data();
-        Item selectedWalletFilenameItem = new Item(MultiBitModel.SELECTED_WALLET_FILENAME);
-        selectedWalletFilenameItem.setOriginalValue(controller.getModel().getWalletFilename());
-        selectedWalletFilenameItem.setNewValue(selectedWalletFilename);
+        Item activeWalletFilenameItem = new Item(MultiBitModel.ACTIVE_WALLET_FILENAME);
+        activeWalletFilenameItem.setOriginalValue(controller.getModel().getWalletFilename());
+        activeWalletFilenameItem.setNewValue(selectedWalletFilename);
 
-        data.addItem(MultiBitModel.SELECTED_WALLET_FILENAME, selectedWalletFilenameItem);
+        data.addItem(MultiBitModel.ACTIVE_WALLET_FILENAME, activeWalletFilenameItem);
         return data;
     }
 }

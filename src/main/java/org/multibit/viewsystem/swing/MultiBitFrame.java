@@ -43,7 +43,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final String COPY_ICON_FILE = "/images/copy.png";
     public static final String PASTE_ICON_FILE = "/images/paste.png";
 
-    private static final String MY_WALLETS_ICON_FILE = "/images/openWallet.png";
+    private static final String MY_WALLETS_ICON_FILE = "/images/myWallets.png";
     private static final String SAVE_AS_ICON_FILE = "/images/saveAs.png";
     public static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
     private static final String SEND_BITCOIN_ICON_FILE = "/images/send.jpg";
@@ -317,6 +317,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         activeWalletLabel = new JLabel();
         activeWalletLabel.setFont(activeWalletLabel.getFont().deriveFont(12.0F));
+        activeWalletLabel.setVisible(false); // hidden until set
+
         constraints.gridx = 4;
         constraints.gridy = 0;
         constraints.weightx = 0.5;
@@ -325,6 +327,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         activeWalletComboBox = createActiveWalletComboBox();
         activeWalletComboBox.setFont(activeWalletComboBox.getFont().deriveFont(12.0F));
+        activeWalletComboBox.setVisible(false); // hidden until set
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 5;
         constraints.gridy = 0;
@@ -547,6 +550,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             activeWalletLabel.setText(localiser.getString("multiBitFrame.walletNameLabel.text", new Object[] { "" }));
             activeWalletLabel.setToolTipText(walletFilename);
             activeWalletComboBox.setSelectedItem(walletFilename);
+
+            if (!walletFilename.equals("")) {
+                activeWalletLabel.setVisible(true);
+                activeWalletComboBox.setVisible(true);
+            }
         }
     }
 
@@ -787,7 +795,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
         activeWalletComboBox = new JComboBox(indexArray);
         ComboBoxRenderer renderer = new ComboBoxRenderer();
-        //renderer.setMinimumSize(new Dimension(100, 30));
+        // renderer.setMinimumSize(new Dimension(100, 30));
         activeWalletComboBox.setRenderer(renderer);
 
         String activeWalletFileName = null;
@@ -809,13 +817,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 activeWalletComboBox.setSelectedItem(walletIndex.intValue());
             }
         }
-        
+
         // add change listener
         activeWalletComboBox.addItemListener(new ChangeActiveWalletItemListener());
 
         return activeWalletComboBox;
     }
-    
 
     class ChangeActiveWalletItemListener implements ItemListener {
         public ChangeActiveWalletItemListener() {
@@ -823,11 +830,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
 
         public void itemStateChanged(ItemEvent e) {
-            JComboBox activeWalletComboBox = (JComboBox)e.getSource();
+            JComboBox activeWalletComboBox = (JComboBox) e.getSource();
             int selectedIndex = activeWalletComboBox.getSelectedIndex();
             PerWalletModelData selectedWalletModelData = controller.getModel().getPerWalletModelDataList().get(selectedIndex);
             controller.getModel().setActiveWallet(selectedWalletModelData.getWallet());
-            
+
             controller.fireWalletChanged();
             controller.fireDataChanged();
             controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);

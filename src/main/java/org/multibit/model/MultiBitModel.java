@@ -38,8 +38,10 @@ public class MultiBitModel {
     public static final String USER_LANGUAGE_CODE = "languageCode";
     public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
 
-    // open wallet and save wallet as dialog
-    public static final String SELECTED_WALLET_FILENAME = "selectedWalletFilename";
+    // my wallets, open wallet and save wallet as dialog
+    public static final String ACTIVE_WALLET_FILENAME = "selectedWalletFilename";
+    public static final String WALLET_FILENAME_PREFIX = "walletFilename.";
+    public static final String NUMBER_OF_WALLETS = "numberOfWallets";
 
     // send bitcoin and send bitcoin confirm
     public static final String SEND_ADDRESS = "sendAddress";
@@ -102,12 +104,6 @@ public class MultiBitModel {
 
         activeWalletModelData = new PerWalletModelData();
         perWalletModelDataList.add(activeWalletModelData);
-//
-//        // wallet info including address labelling
-//        activeWalletModelData.setWalletInfo(null);
-//
-//        // table row data used in displaying transactions - initially empty
-//        activeWalletModelData.setWalletTableDataList(new ArrayList<WalletTableData>());
     }
 
     /**
@@ -127,7 +123,9 @@ public class MultiBitModel {
      * @return
      */
     public void setUserPreference(String key, String value) {
-        userPreferences.put(key, value);
+        if (key != null && value != null) {
+            userPreferences.put(key, value);
+        }
     }
 
     /**
@@ -243,26 +241,7 @@ public class MultiBitModel {
             }
         }
     }
-    
-//    /**
-//     * set the active wallet, given a wallet filename
-//     * 
-//     * @param wallet
-//     */
-//    public void setActiveWallet(String walletFilename) {
-//        if (walletFilename == null) {
-//            return;
-//        }
-//        if (perWalletModelDataList != null) {
-//            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
-//                if (walletFilename.equals(loopPerWalletModelData.getWalletFilename())) {
-//                    activeWalletModelData = loopPerWalletModelData;
-//                    break;
-//                }
-//            }
-//        }
-//    }
-    
+
     /**
      * add a new wallet to the list of managed wallets
      */
@@ -270,7 +249,7 @@ public class MultiBitModel {
         PerWalletModelData newPerWalletModelData = new PerWalletModelData();
         newPerWalletModelData.setWallet(wallet);
         newPerWalletModelData.setWalletFilename(walletFilename);
-        
+
         // wallet info including address labelling
         newPerWalletModelData.setWalletInfo(null);
 
@@ -278,12 +257,13 @@ public class MultiBitModel {
         newPerWalletModelData.setWalletTableDataList(new ArrayList<WalletTableData>());
 
         // if it is the initial empty activeWalletModelData remove it
-        if (activeWalletModelData != null && ("".equals(activeWalletModelData.getWalletFilename()) || activeWalletModelData.getWalletFilename() == null)) {
+        if (activeWalletModelData != null
+                && ("".equals(activeWalletModelData.getWalletFilename()) || activeWalletModelData.getWalletFilename() == null)) {
             perWalletModelDataList.remove(activeWalletModelData);
         }
-        
+
         perWalletModelDataList.add(0, newPerWalletModelData);
-        
+
         activeWalletModelData = newPerWalletModelData;
 
         // wire up the controller as a wallet event listener
@@ -330,7 +310,7 @@ public class MultiBitModel {
      * @return
      */
     public String getWalletFilename() {
-        //return userPreferences.getProperty(WALLET_FILENAME);
+        // return userPreferences.getProperty(WALLET_FILENAME);
         return activeWalletModelData.getWalletFilename();
     }
 
@@ -339,9 +319,9 @@ public class MultiBitModel {
      * 
      * @param walletFilename
      */
-    public void setWalletFilename(String walletFilename) {
-        userPreferences.setProperty(WALLET_FILENAME, walletFilename);
-    }
+//    public void setWalletFilename(String walletFilename) {
+//        userPreferences.setProperty(WALLET_FILENAME, walletFilename);
+//    }
 
     /**
      * convert the active wallet info into walletdata records as they are easier

@@ -191,9 +191,10 @@ public class MultiBitService {
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
 
+                controller.getModel().addWallet(wallet, walletFilename);
                 fileHandler.saveWalletToFile(wallet, walletFile);
                 controller.fireWalletChanged();
-            }
+             }
         }
 
         if (wallet != null) {
@@ -218,7 +219,7 @@ public class MultiBitService {
             // add wallet as PendingTransactionListener to PeerGroup
             peerGroup.addPendingTransactionListener(wallet);
         }
-        
+
         return wallet;
     }
 

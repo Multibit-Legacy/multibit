@@ -97,11 +97,11 @@ public class SaveWalletAsView implements View, DataProvider {
 
     public Data getData() {
         Data data = new Data();
-        Item selectedWalletFilenameItem = new Item(MultiBitModel.SELECTED_WALLET_FILENAME);
-        selectedWalletFilenameItem.setOriginalValue(controller.getModel().getWalletFilename());
-        selectedWalletFilenameItem.setNewValue(selectedSaveWalletAsFilename);
+        Item activeWalletFilenameItem = new Item(MultiBitModel.ACTIVE_WALLET_FILENAME);
+        activeWalletFilenameItem.setOriginalValue(controller.getModel().getWalletFilename());
+        activeWalletFilenameItem.setNewValue(selectedSaveWalletAsFilename);
 
-        data.addItem(MultiBitModel.SELECTED_WALLET_FILENAME, selectedWalletFilenameItem);
+        data.addItem(MultiBitModel.ACTIVE_WALLET_FILENAME, activeWalletFilenameItem);
         return data;
     }
 }

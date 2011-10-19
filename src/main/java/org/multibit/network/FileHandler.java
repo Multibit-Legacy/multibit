@@ -63,9 +63,6 @@ public class FileHandler {
                 newWalletInfo.writeToFile();
             }
 
-            // add the new wallet and wallet filename on the model
-            controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
-
             if (wallet != null) {
                 wallet.saveToFile(walletFile);
             }

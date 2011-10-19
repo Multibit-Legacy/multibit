@@ -32,6 +32,8 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.Wallet;
+
 /**
  * Main MultiBit entry class
  * 
@@ -100,11 +102,36 @@ public class MultiBit {
         // create the MultiBitService that connects to the bitcoin network
         MultiBitService multiBitService = new MultiBitService(useTestNet, controller);
         controller.setMultiBitService(multiBitService);
-        
-        // load up the wallet in the multibit.properties
-        String walletFilename = userPreferences.getProperty(MultiBitModel.WALLET_FILENAME);
-        controller.addWalletFromFilename(walletFilename);
-        
+
+        // find the active wallet filename in the multibit.properties
+        String activeWalletFilename = userPreferences.getProperty(MultiBitModel.ACTIVE_WALLET_FILENAME);
+
+        // load up all the wallets
+        String numberOfWalletsAsString = userPreferences.getProperty(MultiBitModel.NUMBER_OF_WALLETS);
+        if (numberOfWalletsAsString == null || "".equals(numberOfWalletsAsString)) {
+            // if this is missing then there is just the one wallet (old format
+            // properties)
+            controller.addWalletFromFilename(activeWalletFilename);
+        } else {
+            try {
+                int numberOfWallets = Integer.parseInt(numberOfWalletsAsString);
+
+                if (numberOfWallets > 0) {
+                    // start counting at 1
+                    for (int i = 1; i <= numberOfWallets; i++) {
+                        // load up ith wallet filename
+                        String loopWalletFilename = userPreferences.getProperty(MultiBitModel.WALLET_FILENAME_PREFIX + i);
+                        Wallet addedWallet = controller.addWalletFromFilename(loopWalletFilename);
+                        if (activeWalletFilename != null && activeWalletFilename.equals(loopWalletFilename)) {
+                            controller.getModel().setActiveWallet(addedWallet);
+                        }
+                    }
+                }
+            } catch (NumberFormatException nfe) {
+                // carry on
+            }
+        }
+
         // display the next view
         controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
 

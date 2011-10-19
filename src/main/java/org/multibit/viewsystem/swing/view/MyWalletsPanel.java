@@ -44,7 +44,7 @@ public class MyWalletsPanel extends JPanel implements View, DataProvider {
     private MultiBitController controller;
 
     private Data data;
-    
+
     private ButtonGroup walletButtonGroup;
     private ArrayList<JRadioButton> walletButtons;
 
@@ -85,7 +85,7 @@ public class MyWalletsPanel extends JPanel implements View, DataProvider {
 
     private void initUI() {
         setMinimumSize(new Dimension(550, 160));
-        
+
         this.removeAll();
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -126,7 +126,7 @@ public class MyWalletsPanel extends JPanel implements View, DataProvider {
         constraints.weighty = 1.6;
         constraints.anchor = GridBagConstraints.NORTHWEST;
         add(createWalletListPanel(), constraints);
-        
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 3;
@@ -151,29 +151,37 @@ public class MyWalletsPanel extends JPanel implements View, DataProvider {
     private JPanel createWalletListPanel() {
         // wallet radios
         JPanel walletListPanel = new JPanel(new GridBagLayout());
-//        walletListPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0),
-//                BorderFactory.createTitledBorder(controller.getLocaliser().getString("showPreferencesPanel.languageTitle"))));
+        // walletListPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0,
+        // 2, 0, 0),
+        // BorderFactory.createTitledBorder(controller.getLocaliser().getString("showPreferencesPanel.languageTitle"))));
         walletListPanel.setOpaque(false);
 
         GridBagConstraints constraints = new GridBagConstraints();
 
         walletButtonGroup = new ButtonGroup();
         walletButtons = new ArrayList<JRadioButton>();
- 
+
         ItemListener itemListener = new ChangeActiveWalletListener();
 
         // get the wallets from the model
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
         int walletCount = 0;
-        
+
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
-                String buttonText = loopPerWalletModelData.getWalletFilename() + "  " +  Localiser.bitcoinValueToString4(loopPerWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED), true, false) ;
-                JRadioButton loopButton = new JRadioButton(buttonText);
-                if (loopPerWalletModelData.getWallet().equals(controller.getModel().getWallet())) {
-                    loopButton.setSelected(true);
-                } else {
-                    loopButton.setSelected(false);
+                JRadioButton loopButton = new JRadioButton();
+                String buttonText = loopPerWalletModelData.getWalletFilename();
+                if (loopPerWalletModelData.getWallet() != null) {
+                    buttonText = buttonText
+                            + "  "
+                            + Localiser.bitcoinValueToString4(
+                                    loopPerWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED), true, false);
+                    loopButton.setText(buttonText);
+                    if (loopPerWalletModelData.getWallet().equals(controller.getModel().getWallet())) {
+                        loopButton.setSelected(true);
+                    } else {
+                        loopButton.setSelected(false);
+                    }
                 }
                 loopButton.setOpaque(false);
                 loopButton.addItemListener(itemListener);
@@ -192,7 +200,7 @@ public class MyWalletsPanel extends JPanel implements View, DataProvider {
                 walletCount++;
             }
         }
- 
+
         return walletListPanel;
     }
 
@@ -216,14 +224,17 @@ public class MyWalletsPanel extends JPanel implements View, DataProvider {
         }
 
         public void itemStateChanged(ItemEvent e) {
-            JRadioButton selectedButton = (JRadioButton)e.getSource();
+            JRadioButton selectedButton = (JRadioButton) e.getSource();
             int selectedIndex = walletButtons.indexOf(selectedButton);
-            PerWalletModelData selectedWalletModelData = controller.getModel().getPerWalletModelDataList().get(selectedIndex);
-            controller.getModel().setActiveWallet(selectedWalletModelData.getWallet());
-            
-            controller.fireWalletChanged();
-            controller.fireDataChanged();
-            controller.setActionForwardToSibling(ActionForward.FORWARD_TO_MY_WALLETS);
+            if (selectedIndex > -1) {
+                PerWalletModelData selectedWalletModelData = controller.getModel().getPerWalletModelDataList()
+                        .get(selectedIndex);
+                controller.getModel().setActiveWallet(selectedWalletModelData.getWallet());
+
+                controller.fireWalletChanged();
+                controller.fireDataChanged();
+                controller.setActionForwardToSibling(ActionForward.FORWARD_TO_MY_WALLETS);
+            }
         }
     }
 

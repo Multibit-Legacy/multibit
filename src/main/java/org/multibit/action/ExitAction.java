@@ -1,9 +1,12 @@
 package org.multibit.action;
 
 import java.io.File;
+import java.util.List;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
+import org.multibit.model.MultiBitModel;
+import org.multibit.model.PerWalletModelData;
 import org.multibit.network.FileHandler;
 
 /**
@@ -22,10 +25,32 @@ public class ExitAction implements Action {
     public void execute(DataProvider dataProvider) {
         // write the user properties
         FileHandler fileHandler = new FileHandler(controller);
-        fileHandler.writeUserPreferences();
 
-        // save the wallet, including the wallet info
-        fileHandler.saveWalletToFile(controller.getModel().getWallet(), new File(controller.getModel().getWalletFilename()));
+        // save all the wallets and put their filenames in the user preferences
+        if (controller.getModel().getPerWalletModelDataList() != null) {
+            List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+
+            int numberOfWallets = perWalletModelDataList.size();
+            controller.getModel().setUserPreference(MultiBitModel.NUMBER_OF_WALLETS, numberOfWallets + "");
+            controller.getModel().setUserPreference(MultiBitModel.ACTIVE_WALLET_FILENAME,
+                    controller.getModel().getWalletFilename());
+            if (numberOfWallets > 0) {
+                for (int i = 1; i <= numberOfWallets; i++) {
+                    PerWalletModelData perWalletModelData = perWalletModelDataList.get(i - 1);
+                    if (perWalletModelData.getWalletFilename() != null) {
+                        controller.getModel().setUserPreference(MultiBitModel.WALLET_FILENAME_PREFIX + i,
+                                perWalletModelData.getWalletFilename());
+                        // save the ith wallet, including the wallet info
+                        fileHandler.saveWalletToFile(perWalletModelData.getWallet(),
+                                new File(perWalletModelData.getWalletFilename()));
+                    }
+                }
+
+            }
+
+        }
+
+        fileHandler.writeUserPreferences();
 
         // shut down the PeerGroup
         if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {

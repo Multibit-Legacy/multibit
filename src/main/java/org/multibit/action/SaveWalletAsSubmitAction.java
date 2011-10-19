@@ -33,7 +33,7 @@ public class SaveWalletAsSubmitAction implements Action {
             Data data = dataProvider.getData();
 
             if (data != null) {
-                Item item = data.getItem(MultiBitModel.SELECTED_WALLET_FILENAME);
+                Item item = data.getItem(MultiBitModel.ACTIVE_WALLET_FILENAME);
                 if (item != null && item.getNewValue() != null) {
 
                     Wallet wallet = controller.getModel().getWallet();
