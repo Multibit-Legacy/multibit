@@ -215,6 +215,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
         JLabel addressLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel"));
         addressLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel.tooltip"));
+        addressLabel.setBorder(BorderFactory.createMatteBorder(0, 0, 4, 0, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR));
         addressLabel.setHorizontalAlignment(JLabel.RIGHT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
@@ -228,7 +229,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         addressTextArea = new JTextArea("", 35, 1);
         addressTextArea.setEditable(false);
         addressTextArea.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 4, 0, 4, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR),
+                BorderFactory.createMatteBorder(0, 6, 0, 4, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR),
                 BorderFactory.createMatteBorder(2, 0, 0, 0, Color.WHITE)));
         addressTextArea.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
         addressTextArea.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));

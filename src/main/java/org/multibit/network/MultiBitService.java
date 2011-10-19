@@ -110,7 +110,7 @@ public class MultiBitService {
         this.controller = controller;
 
         networkParameters = useTestNet ? NetworkParameters.testNet() : NetworkParameters.prodNet();
- 
+
         BlockStore blockStore = null;
         try {
             // Load the block chain, if there is one stored locally.
@@ -120,8 +120,8 @@ public class MultiBitService {
             blockStore = new BoundedOverheadBlockStore(networkParameters, new File(filePrefix + ".blockchain"));
 
             log.debug("Connecting ...");
-            blockChain = new BlockChain(networkParameters, blockStore);           
-   
+            blockChain = new BlockChain(networkParameters, blockStore);
+
             peerGroup = new MultiBitPeerGroup(controller, blockStore, networkParameters, blockChain);
 
             String singleNodeConnection = controller.getModel().getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
@@ -130,7 +130,7 @@ public class MultiBitService {
                     peerGroup.addAddress(new PeerAddress(InetAddress.getByName(singleNodeConnection)));
                     peerGroup.setMaxConnections(1);
                 } catch (UnknownHostException e) {
-                    log.error(e.getMessage(),e);
+                    log.error(e.getMessage(), e);
 
                 }
             } else {
@@ -152,11 +152,11 @@ public class MultiBitService {
                     new Object[] { e.getClass().getName() + " " + e.getMessage() }, "multiBitService.errorTitleText");
         }
     }
-    
+
     private String getFilePrefix() {
         return useTestNet ? MULTIBIT_PREFIX + SEPARATOR + TEST_NET_PREFIX : MULTIBIT_PREFIX;
     }
-    
+
     /**
      * initialise wallet from the wallet filename
      * 
@@ -196,30 +196,31 @@ public class MultiBitService {
             }
         }
 
-        // add the keys for this wallet to the address book as receiving
-        // addresses
-        ArrayList<ECKey> keys = wallet.keychain;
-        if (keys != null) {
-            WalletInfo walletInfo = controller.getModel().getWalletInfo();
-            if (walletInfo != null) {
-                for (ECKey key : keys) {
-                    if (key != null) {
-                        Address address = key.toAddress(networkParameters);
-                        walletInfo.addReceivingAddressOfKey(address);
+        if (wallet != null) {
+            // add the keys for this wallet to the address book as receiving
+            // addresses
+            ArrayList<ECKey> keys = wallet.keychain;
+            if (keys != null) {
+                WalletInfo walletInfo = controller.getModel().getWalletInfo();
+                if (walletInfo != null) {
+                    for (ECKey key : keys) {
+                        if (key != null) {
+                            Address address = key.toAddress(networkParameters);
+                            walletInfo.addReceivingAddressOfKey(address);
+                        }
                     }
                 }
             }
-        }   
-        
-        // add wallet to blockchain
-        blockChain.addWallet(wallet);
-        
-        // add wallet as PendingTransactionListener to PeerGroup
-        peerGroup.addPendingTransactionListener(wallet);
+
+            // add wallet to blockchain
+            blockChain.addWallet(wallet);
+
+            // add wallet as PendingTransactionListener to PeerGroup
+            peerGroup.addPendingTransactionListener(wallet);
+        }
         
         return wallet;
     }
-    
 
     /**
      * download the block chain
@@ -248,8 +249,7 @@ public class MultiBitService {
         // coins than we have!
         // throw an exception if sendTransaction is null - no money
         if (sendTransaction != null) {
-            log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is "
-                    + sendTransaction.getHashAsString());
+            log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is " + sendTransaction.getHashAsString());
             fileHandler.saveWalletToFile(wallet, new File(controller.getModel().getWalletFilename()));
         } else {
             // transaction was null
