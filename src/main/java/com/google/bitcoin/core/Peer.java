@@ -17,7 +17,6 @@
 package com.google.bitcoin.core;
 
 import org.multibit.IsMultiBitClass;
-import org.multibit.network.PendingTransactionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -11,7 +11,7 @@ import org.multibit.model.DataProvider;
 /**
  * This {@link Action} saves the wallet file to the file in the DataProvider
  */
-public class SaveWalletAsSubmitAction extends AbstractAction {
+public class CreateNewWalletSubmitAction extends AbstractAction {
 
     private static final long serialVersionUID = 1923492460523457765L;
 
@@ -19,9 +19,9 @@ public class SaveWalletAsSubmitAction extends AbstractAction {
     private DataProvider dataProvider;
 
     /**
-     * Creates a new {@link SaveWalletAsSubmitAction}.
+     * Creates a new {@link CreateNewWalletSubmitAction}.
      */
-    public SaveWalletAsSubmitAction(MultiBitController controller, DataProvider dataProvider) {
+    public CreateNewWalletSubmitAction(MultiBitController controller, DataProvider dataProvider) {
         super(controller.getLocaliser().getString("saveWalletAsSubmitAction.text"));
         this.controller = controller;
         this.dataProvider = dataProvider;
@@ -35,7 +35,7 @@ public class SaveWalletAsSubmitAction extends AbstractAction {
      * delegate to generic submit action
      */
     public void actionPerformed(ActionEvent e) {
-        org.multibit.action.SaveWalletAsSubmitAction submitAction = new org.multibit.action.SaveWalletAsSubmitAction(controller);
+        org.multibit.action.CreateNewWalletSubmitAction submitAction = new org.multibit.action.CreateNewWalletSubmitAction(controller);
         submitAction.execute(dataProvider);
     }
     

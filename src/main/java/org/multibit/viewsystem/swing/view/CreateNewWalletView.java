@@ -7,7 +7,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.multibit.Localiser;
-import org.multibit.action.SaveWalletAsSubmitAction;
+import org.multibit.action.CreateNewWalletSubmitAction;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
@@ -17,9 +17,9 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
- * The view for saving a wallet to a new file
+ * The view for creating a new wallet
  */
-public class SaveWalletAsView implements View, DataProvider {
+public class CreateNewWalletView implements View, DataProvider {
 
     private static final long serialVersionUID = 191987612343457705L;
 
@@ -29,14 +29,14 @@ public class SaveWalletAsView implements View, DataProvider {
 
     private Localiser localiser;
 
-    private String selectedSaveWalletAsFilename;
+    private String newWalletAsFilename;
 
     private JFileChooser fileChooser;
 
     /**
-     * Creates a new {@link SaveWalletAsView}.
+     * Creates a new {@link CreateNewWalletView}.
      */
-    public SaveWalletAsView(MultiBitController controller, Localiser localiser,
+    public CreateNewWalletView(MultiBitController controller, Localiser localiser,
             MultiBitFrame mainFrame) {
         this.controller = controller;
         this.localiser = localiser;
@@ -67,16 +67,16 @@ public class SaveWalletAsView implements View, DataProvider {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             if (file != null) {
-                selectedSaveWalletAsFilename = file.getAbsolutePath();
+                newWalletAsFilename = file.getAbsolutePath();
                 
-                // delegate to save wallet as submit action
-                SaveWalletAsSubmitAction submitAction = new SaveWalletAsSubmitAction(controller);
+                // delegate to create new wallet action
+                CreateNewWalletSubmitAction submitAction = new CreateNewWalletSubmitAction(controller);
                 submitAction.execute(this);
             } else {
-                selectedSaveWalletAsFilename = null;
+                newWalletAsFilename = null;
             }
         } else {
-            selectedSaveWalletAsFilename = null;
+            newWalletAsFilename = null;
         }
 
         // forward back to parent view ( = home page)
@@ -99,7 +99,7 @@ public class SaveWalletAsView implements View, DataProvider {
         Data data = new Data();
         Item activeWalletFilenameItem = new Item(MultiBitModel.ACTIVE_WALLET_FILENAME);
         activeWalletFilenameItem.setOriginalValue(controller.getModel().getActiveWalletFilename());
-        activeWalletFilenameItem.setNewValue(selectedSaveWalletAsFilename);
+        activeWalletFilenameItem.setNewValue(newWalletAsFilename);
 
         data.addItem(MultiBitModel.ACTIVE_WALLET_FILENAME, activeWalletFilenameItem);
         return data;

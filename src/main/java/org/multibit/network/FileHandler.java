@@ -2,6 +2,7 @@ package org.multibit.network;
 
 import com.google.bitcoin.core.Wallet;
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,13 +40,13 @@ public class FileHandler {
         if (walletFile == null) {
             return null;
         }
-        
+
         Wallet wallet = null;
         try {
             wallet = Wallet.loadFromFile(walletFile);
             // add the new wallet into the model
             controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
- 
+
             WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath());
             controller.getModel().setWalletInfo(walletInfo);
         } catch (IOException e) {
@@ -58,15 +59,35 @@ public class FileHandler {
     public void saveWalletToFile(Wallet wallet, File walletFile) {
         try {
             // save the companion wallet info
-            WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
+            PerWalletModelData perWalletModelInfo = controller.getModel().getPerWalletModelDataByWalletFilename(
+                    walletFile.getAbsolutePath());
+            if (perWalletModelInfo != null) {
+                WalletInfo walletInfo = perWalletModelInfo.getWalletInfo();
+                if (walletInfo != null) {
+                    walletInfo.writeToFile();
+                } else {
+                    WalletInfo newWalletInfo = new WalletInfo(walletFile.getAbsolutePath());
+                    perWalletModelInfo.setWalletInfo(newWalletInfo);
+                    newWalletInfo.writeToFile();
+                }
+
+                if (wallet != null) {
+                    wallet.saveToFile(walletFile);
+                }
+            }
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    public void saveWalletAndWalletInfoToFile(Wallet wallet, File walletFile, WalletInfo walletInfo) {
+        try {
+            // save the companion wallet info
             if (walletInfo != null) {
                 walletInfo.writeToFile();
-            } else {
-                WalletInfo newWalletInfo = new WalletInfo(walletFile.getAbsolutePath());
-                controller.getModel().setWalletInfo(newWalletInfo);
-                newWalletInfo.writeToFile();
             }
 
+            // save the wallet file
             if (wallet != null) {
                 wallet.saveToFile(walletFile);
             }
@@ -107,17 +128,6 @@ public class FileHandler {
     }
 
     public String createBackupFile(File file) throws IOException {
-        String filename = file.getAbsolutePath();
-        DateFormat dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
-        String backupFilename = filename + SEPARATOR + dateFormat.format(new Date());
-
-        File backupFile = new File(backupFilename);
-        copyFile(file, backupFile);
-
-        return backupFilename;
-    }
-
-    public String createInfoFilenameFromWalletFilename(File file) throws IOException {
         String filename = file.getAbsolutePath();
         DateFormat dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
         String backupFilename = filename + SEPARATOR + dateFormat.format(new Date());

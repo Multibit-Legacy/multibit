@@ -29,6 +29,7 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.ShowPreferencesPanel.LanguageData;
 
@@ -42,7 +43,8 @@ public class MyWalletsPanel extends JPanel implements View, DataProvider {
     private static final long serialVersionUID = 191352298245057705L;
 
     private MultiBitController controller;
-
+    private MultiBitFrame mainFrame;
+    
     private Data data;
 
     private ButtonGroup walletButtonGroup;
@@ -55,6 +57,7 @@ public class MyWalletsPanel extends JPanel implements View, DataProvider {
      */
     public MyWalletsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
+        this.mainFrame = mainFrame;
 
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
                 BorderFactory.createMatteBorder(1, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
@@ -220,6 +223,10 @@ public class MyWalletsPanel extends JPanel implements View, DataProvider {
         JButton openWalletButton = new JButton(openWalletAction);
         buttonPanel.add(openWalletButton);
 
+        CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller, null, mainFrame);
+        JButton createNewWalletButton = new JButton(createNewWalletAction);
+        buttonPanel.add(createNewWalletButton);
+
         return buttonPanel;
     }
 
@@ -234,7 +241,7 @@ public class MyWalletsPanel extends JPanel implements View, DataProvider {
             if (selectedIndex > -1) {
                 PerWalletModelData selectedWalletModelData = controller.getModel().getPerWalletModelDataList()
                         .get(selectedIndex);
-                controller.getModel().setActiveWallet(selectedWalletModelData.getWallet());
+                controller.getModel().setActiveWalletByFilename(selectedWalletModelData.getWalletFilename());
 
                 controller.fireDataChanged();
                 controller.setActionForwardToSibling(ActionForward.FORWARD_TO_MY_WALLETS);

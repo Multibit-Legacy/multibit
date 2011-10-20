@@ -39,8 +39,8 @@ public class OpenWalletSubmitAction implements Action {
                     // defensive check on file being a directory - should never
                     // happen
                     if (!(new File(walletFilename).isDirectory())) {
-                        Wallet wallet = controller.addWalletFromFilename(walletFilename);
-                        controller.getModel().setActiveWallet(wallet);
+                        controller.addWalletFromFilename(walletFilename);
+                        controller.getModel().setActiveWalletByFilename(walletFilename);
                         controller.fireWalletChanged();
                         controller.fireDataChanged();
                     }

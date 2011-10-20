@@ -5,20 +5,20 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
 
 /**
- * an action to save wallet as view
+ * an action to create a new wallet view
  * 
  * @author jim
  *
  */
-public class SaveWalletAsAction implements Action {
+public class CreateNewWalletAction implements Action {
 
     private MultiBitController controller;
     
-    public SaveWalletAsAction(MultiBitController controller) {
+    public CreateNewWalletAction(MultiBitController controller) {
         this.controller = controller;   
     }
     
     public void execute(DataProvider dataProvider) {
-        controller.setActionForwardToChild(ActionForward.FORWARD_TO_SAVE_WALLET_AS);       
+        controller.setActionForwardToChild(ActionForward.FORWARD_TO_CREATE_NEW_WALLET);       
     }
 }

@@ -236,7 +236,7 @@ public class MultiBitService {
     }
 
     /**
-     * send bitcoins
+     * send bitcoins from the active wallet
      * 
      * @param sendAddressString
      *            the address to send to, as a String
@@ -250,7 +250,7 @@ public class MultiBitService {
             AddressFormatException {
         // send the coins
         Address sendAddress = new Address(networkParameters, sendAddressString);
-        Transaction sendTransaction = wallet.sendCoins(peerGroup, sendAddress, Utils.toNanoCoins(amount), fee);
+        Transaction sendTransaction = controller.getModel().getActiveWallet().sendCoins(peerGroup, sendAddress, Utils.toNanoCoins(amount), fee);
         assert sendTransaction != null; // We should never try to send more
         // coins than we have!
         // throw an exception if sendTransaction is null - no money

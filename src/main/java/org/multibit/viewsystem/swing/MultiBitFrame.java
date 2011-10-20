@@ -44,7 +44,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final String PASTE_ICON_FILE = "/images/paste.png";
 
     private static final String MY_WALLETS_ICON_FILE = "/images/myWallets.png";
-    private static final String SAVE_AS_ICON_FILE = "/images/saveAs.png";
+    private static final String CREATE_NEW_ICON_FILE = "/images/createNew.png";
     public static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
     private static final String SEND_BITCOIN_ICON_FILE = "/images/send.jpg";
     private static final String RECEIVE_BITCOIN_ICON_FILE = "/images/receive.jpg";
@@ -376,9 +376,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         JMenuItem menuItem = new JMenuItem(openWalletAction);
         fileMenu.add(menuItem);
 
-        // save wallet as action
-        SaveWalletAsAction saveWalletAsAction = new SaveWalletAsAction(controller, createImageIcon(SAVE_AS_ICON_FILE), this);
-        menuItem = new JMenuItem(saveWalletAsAction);
+        // create new wallet action
+        CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller, createImageIcon(CREATE_NEW_ICON_FILE), this);
+        menuItem = new JMenuItem(createNewWalletAction);
         fileMenu.add(menuItem);
 
         // exit action
@@ -842,7 +842,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             JComboBox activeWalletComboBox = (JComboBox) e.getSource();
             int selectedIndex = activeWalletComboBox.getSelectedIndex();
             PerWalletModelData selectedWalletModelData = controller.getModel().getPerWalletModelDataList().get(selectedIndex);
-            controller.getModel().setActiveWallet(selectedWalletModelData.getWallet());
+            controller.getModel().setActiveWalletByFilename(selectedWalletModelData.getWalletFilename());
 
             controller.fireWalletChanged();
             controller.fireDataChanged();

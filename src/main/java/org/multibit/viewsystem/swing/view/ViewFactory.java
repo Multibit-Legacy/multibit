@@ -61,7 +61,7 @@ public class ViewFactory {
         }
         
         case View.SAVE_WALLET_AS_VIEW: {
-            viewToReturn = new SaveWalletAsView(controller, controller.getLocaliser(), mainFrame);
+            viewToReturn = new CreateNewWalletView(controller, controller.getLocaliser(), mainFrame);
             break;
         }
         

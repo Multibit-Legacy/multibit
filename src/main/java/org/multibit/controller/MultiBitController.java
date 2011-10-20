@@ -189,7 +189,7 @@ public class MultiBitController implements PeerEventListener {
             nextView = View.OPEN_WALLET_VIEW;
             break;
         }
-        case FORWARD_TO_SAVE_WALLET_AS: {
+        case FORWARD_TO_CREATE_NEW_WALLET: {
             // show the open wallet view
             // should check actually on home page
             nextView = View.SAVE_WALLET_AS_VIEW;

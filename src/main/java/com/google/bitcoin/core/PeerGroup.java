@@ -23,7 +23,6 @@ import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 
 import org.multibit.IsMultiBitClass;
-import org.multibit.network.PendingTransactionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

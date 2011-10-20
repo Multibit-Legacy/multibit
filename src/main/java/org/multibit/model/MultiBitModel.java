@@ -228,13 +228,13 @@ public class MultiBitModel {
      * 
      * @param wallet
      */
-    public void setActiveWallet(Wallet wallet) {
-        if (wallet == null) {
+    public void setActiveWalletByFilename(String walletFilename) {
+        if (walletFilename == null) {
             return;
         }
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
-                if (wallet.equals(loopPerWalletModelData.getWallet())) {
+                if (walletFilename.equals(loopPerWalletModelData.getWalletFilename())) {
                     activeWalletModelData = loopPerWalletModelData;
                     break;
                 }

@@ -111,8 +111,8 @@ public class MultiBit {
         if (numberOfWalletsAsString == null || "".equals(numberOfWalletsAsString)) {
             // if this is missing then there is just the one wallet (old format
             // properties)
-            Wallet wallet = controller.addWalletFromFilename(activeWalletFilename);
-            controller.getModel().setActiveWallet(wallet);
+            controller.addWalletFromFilename(activeWalletFilename);
+            controller.getModel().setActiveWalletByFilename(activeWalletFilename);
             controller.fireWalletChanged();
             controller.fireDataChanged();
         } else {
@@ -126,7 +126,7 @@ public class MultiBit {
                         String loopWalletFilename = userPreferences.getProperty(MultiBitModel.WALLET_FILENAME_PREFIX + i);
                         if (activeWalletFilename != null && activeWalletFilename.equals(loopWalletFilename)) {
                             Wallet addedWallet = controller.addWalletFromFilename(loopWalletFilename);
-                            controller.getModel().setActiveWallet(addedWallet);
+                            controller.getModel().setActiveWalletByFilename(loopWalletFilename);
 
                         } else {
                             controller.addWalletFromFilename(loopWalletFilename);
