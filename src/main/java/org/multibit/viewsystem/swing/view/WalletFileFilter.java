@@ -14,7 +14,7 @@ public class WalletFileFilter extends javax.swing.filechooser.FileFilter {
     }
     
     public boolean accept(File file) {
-        return file.getName().toLowerCase().endsWith(MultiBitModel.WALLET_FILE_EXTENSION);
+        return (file.isDirectory()) || (file.getName().toLowerCase().endsWith(MultiBitModel.WALLET_FILE_EXTENSION));
     }
 
     public String getDescription() {

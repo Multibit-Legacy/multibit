@@ -1,5 +1,16 @@
 MultiBit release notes.
 
+Version 0.2.0beta2
+Enhancements
++  Added 'My Wallets' screen and Active wallet picker.
++  Added swatch generator on Receive bitcoin screen.
+
+Bug fixes
++  Fixed selection colour for Receive and Send bitcoin.
++  Fixed label alignment on Receive bitcoin.
++  Fixed that directories appear in 'Open Wallet' for Windows.
+
+
 13 Oct 2011.  Version 0.2.0beta1
 Enhancements
 +  More language work done - English, Russian, Spanish, Swedish complete.
