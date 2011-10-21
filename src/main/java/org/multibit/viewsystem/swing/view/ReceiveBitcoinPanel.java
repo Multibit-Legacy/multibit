@@ -674,14 +674,17 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
             label.setHorizontalAlignment(SwingConstants.LEFT);
-            label.setBackground(MultiBitFrame.BACKGROUND_COLOR);
             label.setOpaque(true);
 
             label.setText((String) value);
 
-            if (!label.getBackground().equals(table.getSelectionBackground())) {
+            if (isSelected) {
+                label.setBackground(table.getSelectionBackground());
+                label.setForeground(table.getSelectionForeground());
+            } else {
                 Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
+                label.setForeground(table.getForeground());
             }
             return label;
         }
