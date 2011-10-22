@@ -124,13 +124,15 @@ public class MultiBit {
                     for (int i = numberOfWallets; i >= 1; i--) {
                         // load up ith wallet filename
                         String loopWalletFilename = userPreferences.getProperty(MultiBitModel.WALLET_FILENAME_PREFIX + i);
+                        String loopWalletDescription = userPreferences.getProperty(MultiBitModel.WALLET_DESCRIPTION_PREFIX + i);
                         if (activeWalletFilename != null && activeWalletFilename.equals(loopWalletFilename)) {
-                            Wallet addedWallet = controller.addWalletFromFilename(loopWalletFilename);
+                            controller.addWalletFromFilename(loopWalletFilename);
                             controller.getModel().setActiveWalletByFilename(loopWalletFilename);
 
                         } else {
                             controller.addWalletFromFilename(loopWalletFilename);
                         }
+                        controller.getModel().setWalletDescriptionByFilename(loopWalletFilename, loopWalletDescription);
                     }
                     controller.fireWalletChanged();
                     controller.fireDataChanged();

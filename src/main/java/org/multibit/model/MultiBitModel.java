@@ -41,6 +41,7 @@ public class MultiBitModel {
     // my wallets, open wallet and save wallet as dialog
     public static final String ACTIVE_WALLET_FILENAME = "selectedWalletFilename";
     public static final String WALLET_FILENAME_PREFIX = "walletFilename.";
+    public static final String WALLET_DESCRIPTION_PREFIX = "walletDescription.";
     public static final String NUMBER_OF_WALLETS = "numberOfWallets";
 
     // send bitcoin and send bitcoin confirm
@@ -224,7 +225,7 @@ public class MultiBitModel {
     }
 
     /**
-     * set the active wallet, given a wallet
+     * set the active wallet, given a wallet filename
      * 
      * @param wallet
      */
@@ -241,7 +242,26 @@ public class MultiBitModel {
             }
         }
     }
-
+    
+    /**
+     * set a wallet description, given a wallet filename
+     * 
+     * @param wallet
+     */
+    public void setWalletDescriptionByFilename(String walletFilename, String walletDescription) {
+        if (walletFilename == null) {
+            return;
+        }
+        if (perWalletModelDataList != null) {
+            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+                if (walletFilename.equals(loopPerWalletModelData.getWalletFilename())) {
+                    loopPerWalletModelData.setWalletDescription(walletDescription);
+                    break;
+                }
+            }
+        }
+    }
+    
     /**
      * add a new wallet to the list of managed wallets
      */

@@ -13,6 +13,7 @@ public class PerWalletModelData {
 
     private Wallet wallet;
     private String walletFilename;
+    private String walletDescription;
     private WalletInfo walletInfo;
     private  List<WalletTableData> walletTableDataList;
     
@@ -39,5 +40,11 @@ public class PerWalletModelData {
     }
     public void setWalletTableDataList(List<WalletTableData> walletTableDataList) {
         this.walletTableDataList = walletTableDataList;
+    }
+    public String getWalletDescription() {
+        return walletDescription;
+    }
+    public void setWalletDescription(String walletDescription) {
+        this.walletDescription = walletDescription;
     }
 }

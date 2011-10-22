@@ -20,7 +20,7 @@ public interface View {
     public static final int OPEN_WALLET_VIEW = 8;
     public static final int SAVE_WALLET_AS_VIEW = 9;
     public static final int VALIDATION_ERROR_VIEW = 10;
-    public static final int MY_WALLETS_VIEW = 11;
+    public static final int YOUR_WALLETS_VIEW = 11;
  
     public String getDescription();
    

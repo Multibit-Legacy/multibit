@@ -85,8 +85,8 @@ public class MultiBitController implements PeerEventListener {
         // initialise everything to look at the stored opened view and previous
         // view
         // if no properties passed in just initialise to the my wallets view
-        int previousView = View.MY_WALLETS_VIEW;
-        int initialView = View.MY_WALLETS_VIEW;
+        int previousView = View.YOUR_WALLETS_VIEW;
+        int initialView = View.YOUR_WALLETS_VIEW;
         if (userPreferences != null) {
             String viewString = (String) userPreferences.get(MultiBitModel.SELECTED_VIEW);
             if (viewString != null) {
@@ -245,14 +245,14 @@ public class MultiBitController implements PeerEventListener {
             break;
         }
 
-        case FORWARD_TO_MY_WALLETS: {
+        case FORWARD_TO_YOUR_WALLETS: {
             // show the my wallets view
-            nextView = View.MY_WALLETS_VIEW;
+            nextView = View.YOUR_WALLETS_VIEW;
             break;
         }
 
         default: {
-            nextView = View.MY_WALLETS_VIEW;
+            nextView = View.YOUR_WALLETS_VIEW;
             break;
         }
         }
@@ -272,10 +272,10 @@ public class MultiBitController implements PeerEventListener {
             log.warn("Could not determine next view to display, previousView = {}, currentView = {}", previousView, currentView);
             log.info("Displaying the my wallets view anyhow");
             previousView = currentView;
-            currentView = View.MY_WALLETS_VIEW;
+            currentView = View.YOUR_WALLETS_VIEW;
         }
 
-        if (previousView == View.MY_WALLETS_VIEW && nextView == View.MY_WALLETS_VIEW) {
+        if (previousView == View.YOUR_WALLETS_VIEW && nextView == View.YOUR_WALLETS_VIEW) {
             // no need to redisplay - already there and ok to keep
             return;
         }
@@ -287,7 +287,7 @@ public class MultiBitController implements PeerEventListener {
 
         // for the top level views, clear the view stack
         // this makes the UI behaviour a bit more 'normal'
-        if (currentView == View.MY_WALLETS_VIEW || currentView == View.TRANSACTIONS_VIEW
+        if (currentView == View.YOUR_WALLETS_VIEW || currentView == View.TRANSACTIONS_VIEW
                 || currentView == View.RECEIVE_BITCOIN_VIEW || currentView == View.SEND_BITCOIN_VIEW
                 || currentView == View.HELP_ABOUT_VIEW || currentView == View.HELP_CONTENTS_VIEW
                 || currentView == View.PREFERENCES_VIEW) {
@@ -494,8 +494,8 @@ public class MultiBitController implements PeerEventListener {
 
     public void clearViewStack() {
         viewStack.clear();
-        viewStack.push(View.MY_WALLETS_VIEW);
-        previousView = View.MY_WALLETS_VIEW;
+        viewStack.push(View.YOUR_WALLETS_VIEW);
+        previousView = View.YOUR_WALLETS_VIEW;
     }
 
     public MultiBitService getMultiBitService() {

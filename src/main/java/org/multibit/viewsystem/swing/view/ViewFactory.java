@@ -91,8 +91,8 @@ public class ViewFactory {
         }
 
         
-        case View.MY_WALLETS_VIEW: {
-            viewToReturn = new MyWalletsPanel(controller, mainFrame);
+        case View.YOUR_WALLETS_VIEW: {
+            viewToReturn = new YourWalletsPanel(controller, mainFrame);
             break;
         }
 

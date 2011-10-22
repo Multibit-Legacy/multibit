@@ -43,7 +43,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final String COPY_ICON_FILE = "/images/copy.png";
     public static final String PASTE_ICON_FILE = "/images/paste.png";
 
-    private static final String MY_WALLETS_ICON_FILE = "/images/myWallets.png";
+    private static final String YOUR_WALLETS_ICON_FILE = "/images/yourWallets.png";
+    public static final String SINGLE_WALLET_ICON_FILE = "/images/singleWallet.png";
     private static final String CREATE_NEW_ICON_FILE = "/images/createNew.png";
     public static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
     private static final String SEND_BITCOIN_ICON_FILE = "/images/send.jpg";
@@ -71,6 +72,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public static final int WIDTH_OF_LONG_FIELDS = 320;
     public static final int WIDTH_OF_AMOUNT_FIELD = 160;
+    
+    private static final String SEPARATOR = "   ";
 
     private static final long serialVersionUID = 7621813615342923041L;
 
@@ -409,7 +412,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         myWalletsPanel.setBorder(BorderFactory.createEmptyBorder(0, 4, 3, 4));
         myWalletsPanel.setOpaque(false);
 
-        MyWalletsAction myWalletsAction = new MyWalletsAction(controller, createImageIcon(MY_WALLETS_ICON_FILE));
+        YourWalletsAction myWalletsAction = new YourWalletsAction(controller, createImageIcon(YOUR_WALLETS_ICON_FILE));
         menuItem = new JMenuItem(myWalletsAction);
         viewMenu.add(menuItem);
         myWalletsButton = new MultiBitButton(myWalletsAction);
@@ -543,9 +546,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         File walletFile = new File(walletFilename);
         if (walletFile != null) {
-            activeWalletLabel.setText(localiser.getString("multiBitFrame.walletNameLabel.text", new Object[] { "" }));
-            activeWalletLabel.setToolTipText(walletFilename);
-            //activeWalletComboBox.setSelectedItem(walletFilename);
+            activeWalletLabel.setText(localiser.getString("multiBitFrame.activeWallet.text", new Object[] { "" }));
             int loopIndex = 0;
             java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
             if (perWalletModelDataList != null) {
@@ -786,7 +787,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 thisFrame.invalidate();
                 viewPanel.validate();
                 thisFrame.validate();
-                //viewPanel.repaint();
                 thisFrame.repaint();
             }
         });
@@ -804,7 +804,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
         activeWalletComboBox = new JComboBox(indexArray);
         ComboBoxRenderer renderer = new ComboBoxRenderer();
-        // renderer.setMinimumSize(new Dimension(100, 30));
+        renderer.setMinimumSize(new Dimension(200, 30));
         activeWalletComboBox.setRenderer(renderer);
 
         String activeWalletFileName = null;
@@ -929,8 +929,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         if (loopModelData.getWalletFilename() != null) {
                             File walletFile = new File(loopModelData.getWalletFilename());
                             if (walletFile != null) {
-                                this.setText(walletFile.getName());
-                                activeWalletComboBox.setToolTipText(walletFile.getAbsolutePath());
+                                String walletFilenameFull = walletFile.getName();
+                                String walletFilenameShort = walletFilenameFull.replaceAll(".wallet", "");
+                                this.setText(walletFilenameShort);
+                                String toolTipText = loopModelData.getWalletDescription() + SEPARATOR + walletFile.getAbsolutePath();
+                                activeWalletComboBox.setToolTipText(toolTipText);
+                                activeWalletLabel.setToolTipText(toolTipText);
                             }
                         }
 

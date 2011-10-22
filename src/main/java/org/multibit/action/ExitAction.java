@@ -40,6 +40,8 @@ public class ExitAction implements Action {
                     if (perWalletModelData.getWalletFilename() != null) {
                         controller.getModel().setUserPreference(MultiBitModel.WALLET_FILENAME_PREFIX + i,
                                 perWalletModelData.getWalletFilename());
+                        controller.getModel().setUserPreference(MultiBitModel.WALLET_DESCRIPTION_PREFIX + i,
+                                perWalletModelData.getWalletDescription());
                         // save the ith wallet, including the wallet info
                         fileHandler.saveWalletToFile(perWalletModelData.getWallet(),
                                 new File(perWalletModelData.getWalletFilename()));
