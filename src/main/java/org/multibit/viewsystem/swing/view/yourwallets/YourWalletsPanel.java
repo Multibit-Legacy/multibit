@@ -3,9 +3,6 @@ package org.multibit.viewsystem.swing.view.yourwallets;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -15,7 +12,6 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -152,58 +148,16 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         headerPanel.setBorder(BorderFactory.createEmptyBorder(8, 2, 0, 2));
         headerPanel.setOpaque(false);
 
-        headerPanel.setLayout(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
+        headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         OpenWalletAction openWalletAction = new OpenWalletAction(controller, null);
         JButton openWalletButton = new JButton(openWalletAction);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 0.01;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(openWalletButton, constraints);
+        headerPanel.add(openWalletButton);
 
         CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller, null, mainFrame);
         JButton createNewWalletButton = new JButton(createNewWalletAction);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 0.01;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(createNewWalletButton, constraints);
-
-        JPanel filler1 = new JPanel();
-        filler1.setOpaque(false);
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 2;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 0.25;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(filler1, constraints);
-
-        JLabel titleLabel = new JLabel();
-        titleLabel.setHorizontalTextPosition(JLabel.CENTER);
-        titleLabel.setText(getDescription());
-        Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE,
-                MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
-        titleLabel.setFont(font);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 0.73;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(titleLabel, constraints);
-
+        headerPanel.add(createNewWalletButton);
+        
         return headerPanel;
     }
 

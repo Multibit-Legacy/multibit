@@ -395,7 +395,7 @@ public class MultiBitController implements PeerEventListener {
      * the wallet file has been changed
      */
     public void fireWalletChanged() {
-        fireRecreateAllViews(true);
+        fireRecreateAllViews(false);
     }
 
     /**
@@ -404,7 +404,7 @@ public class MultiBitController implements PeerEventListener {
     public void fireRecreateAllViews(boolean clearCache) {
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.recreateAllViews(true);
+            viewSystem.recreateAllViews(clearCache);
         }
     }
 

@@ -82,7 +82,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private BlinkLabel estimatedBalanceTextLabel;
     private JLabel availableBalanceTextLabel;
 
-    private JLabel activeWalletLabel;
+    private JPanel activeWalletPanel;
     private JComboBox activeWalletComboBox;
 
     private JLabel onlineLabel;
@@ -91,10 +91,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private MultiBitFrame thisFrame;
 
+    private MultiBitButton yourWalletsButton;
     private MultiBitButton sendBitcoinButton;
     private MultiBitButton receiveBitcoinButton;
     private MultiBitButton showTransactionsButton;
-    private MultiBitButton myWalletsButton;
 
     /**
      * Macify integration on a Mac
@@ -205,11 +205,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.setLayout(new GridBagLayout());
 
         JPanel balancePanel = createHeaderPanel();
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
-        constraints.weightx = 0.6;
+        constraints.weightx = 1.0;
         constraints.weighty = 0.01;
         constraints.anchor = GridBagConstraints.LINE_START;
 
@@ -319,25 +319,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(availableBalanceTextLabel, constraints);
 
-        activeWalletLabel = new JLabel();
-        activeWalletLabel.setFont(activeWalletLabel.getFont().deriveFont(12.0F));
-        activeWalletLabel.setVisible(false); // hidden until set
-
+        JPanel filler2 = new JPanel();
+        filler2.setOpaque(false);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 4;
         constraints.gridy = 0;
-        constraints.weightx = 0.5;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        headerPanel.add(activeWalletLabel, constraints);
-
-        activeWalletComboBox = createActiveWalletComboBox();
-        activeWalletComboBox.setFont(activeWalletComboBox.getFont().deriveFont(12.0F));
-        activeWalletComboBox.setVisible(false); // hidden until set
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 5;
-        constraints.gridy = 0;
-        constraints.weightx = 0.3;
+        constraints.weightx = 0.6;
         constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(activeWalletComboBox, constraints);
+        headerPanel.add(filler2, constraints);
 
         return headerPanel;
     }
@@ -409,16 +398,24 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             helpMenu.add(menuItem);
         }
 
-        // My Wallets action
-        JPanel myWalletsPanel = new JPanel(new BorderLayout());
-        myWalletsPanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 7, 4));
-        myWalletsPanel.setOpaque(false);
+        // Your Wallets action
+        JPanel yourWalletsPanel = new JPanel(new BorderLayout());
+        yourWalletsPanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 7, 4));
+        yourWalletsPanel.setOpaque(false);
 
         YourWalletsAction myWalletsAction = new YourWalletsAction(controller, createImageIcon(YOUR_WALLETS_ICON_FILE));
         menuItem = new JMenuItem(myWalletsAction);
         viewMenu.add(menuItem);
-        myWalletsButton = new MultiBitButton(myWalletsAction);
-        myWalletsPanel.add(myWalletsButton);
+        yourWalletsButton = new MultiBitButton(myWalletsAction);
+        yourWalletsPanel.add(yourWalletsButton);
+        
+        activeWalletPanel = new JPanel(new BorderLayout());
+        activeWalletPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 7, 4));
+        activeWalletPanel.setOpaque(false);
+        activeWalletComboBox = createActiveWalletComboBox();
+        activeWalletComboBox.setFont(yourWalletsButton.getFont());
+        activeWalletComboBox.setVisible(false); // hidden until set
+        activeWalletPanel.add(activeWalletComboBox, BorderLayout.CENTER);
 
         // show transactions action
         JPanel showTransactionsPanel = new JPanel(new BorderLayout());
@@ -463,7 +460,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             viewMenu.add(showPreferencesAction);
         }
 
-        toolBar.add(myWalletsPanel);
+        toolBar.add(yourWalletsPanel);
+        toolBar.add(activeWalletPanel);
+        JPanel filler1 = new JPanel();
+        filler1.setOpaque(false);
+        filler1.setPreferredSize(new Dimension(60, 20));
+        toolBar.add(filler1);
         toolBar.add(receiveBitcoinPanel);
         toolBar.add(sendBitcoinPanel);
         toolBar.add(showTransactionsPanel);
@@ -496,7 +498,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * recreate all views
      */
     public void recreateAllViews(boolean clearCache) {
-        recreateAllViews(true, false);
+        recreateAllViews(clearCache, false);
     }
 
     /**
@@ -556,7 +558,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         File walletFile = new File(walletFilename);
         if (walletFile != null) {
-            activeWalletLabel.setText(localiser.getString("multiBitFrame.activeWallet.text", new Object[] { "" }));
+            //activeWalletLabel.setText(localiser.getString("multiBitFrame.activeWallet.text", new Object[] { "" }));
             int loopIndex = 0;
             java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
             if (perWalletModelDataList != null) {
@@ -574,7 +576,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
 
             if (!walletFilename.equals("")) {
-                activeWalletLabel.setVisible(true);
+                //activeWalletLabel.setVisible(true);
                 activeWalletComboBox.setVisible(true);
             }
         }
@@ -922,7 +924,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
         toolTipText = toolTipText + walletFile.getAbsolutePath() + "</font></html>";
         activeWalletComboBox.setToolTipText(toolTipText);
-        activeWalletLabel.setToolTipText(toolTipText);
+        //activeWalletLabel.setToolTipText(toolTipText);
     }
 
     class ComboBoxRenderer extends JLabel implements ListCellRenderer {
@@ -986,20 +988,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     @Override
     public void newWalletCreated() {
-        headerPanel.remove(activeWalletComboBox);
+        activeWalletPanel.remove(activeWalletComboBox);
         activeWalletComboBox = this.createActiveWalletComboBox();
-        activeWalletComboBox.setFont(activeWalletComboBox.getFont().deriveFont(12.0F));
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 5;
-        constraints.gridy = 0;
-        constraints.weightx = 0.3;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(activeWalletComboBox, constraints);
+        activeWalletComboBox.setFont(yourWalletsButton.getFont());
 
         ComboBoxRenderer renderer = new ComboBoxRenderer();
         renderer.setMinimumSize(new Dimension(200, 30));
         activeWalletComboBox.setRenderer(renderer);
-        headerPanel.add(activeWalletComboBox, constraints);
+        activeWalletPanel.add(activeWalletComboBox, BorderLayout.CENTER);
     }
 }
