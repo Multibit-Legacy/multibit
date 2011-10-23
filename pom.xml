@@ -148,7 +148,6 @@
                   <includes>
                     <include>readme.txt</include>
                     <include>install.xml</include>
-                    <include>log4j.xml</include>
                     <include>multibit.properties</include>
                     <include>shortcutSpec.xml</include>
                   </includes>
@@ -216,7 +215,6 @@
                   <includes>
                     <include>multibit-exe.jar</include>
                     <include>readme.txt</include>
-                    <include>log4j.xml</include>
                     <include>multibit.properties</include>
                     <include>multibit.blockchain</include>
                     <include>release_notes.txt</include>
