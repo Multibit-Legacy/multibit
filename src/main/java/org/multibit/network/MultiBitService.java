@@ -192,8 +192,9 @@ public class MultiBitService {
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
 
-                controller.getModel().addWallet(wallet, walletFilename);
                 fileHandler.saveWalletToFile(wallet, walletFile);
+                controller.getModel().addWallet(wallet, walletFilename);
+                
                 controller.fireWalletChanged();
             }
         }

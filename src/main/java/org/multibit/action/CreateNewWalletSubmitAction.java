@@ -78,6 +78,7 @@ public class CreateNewWalletSubmitAction implements Action {
                         // start using the new file as the wallet
                         controller.addWalletFromFilename(newWalletFile.getAbsolutePath());
                         controller.getModel().setActiveWalletByFilename(newWalletFilename);
+                        controller.fireNewWalletCreated();
                         controller.fireWalletChanged();
                         controller.fireDataChanged();
                     } catch (IOException e) {

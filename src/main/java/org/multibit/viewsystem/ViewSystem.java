@@ -39,9 +39,14 @@ public interface ViewSystem {
     public void displayMessage(String messageKey, Object[] messageData, String titleKey);
     
     /**
+     * tells the views a new wallet has been created
+     */
+    public void newWalletCreated();
+    
+    /**
      * tells the view system to recreate all views e.g. after a language change
      */   
-    public void recreateAllViews();
+    public void recreateAllViews(boolean clearCache);
     
     /**
      * tells the view system that the model data has changed

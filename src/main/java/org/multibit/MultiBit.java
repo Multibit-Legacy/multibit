@@ -134,6 +134,7 @@ public class MultiBit {
                         }
                         controller.getModel().setWalletDescriptionByFilename(loopWalletFilename, loopWalletDescription);
                     }
+                    controller.fireNewWalletCreated();
                     controller.fireWalletChanged();
                     controller.fireDataChanged();
                 }

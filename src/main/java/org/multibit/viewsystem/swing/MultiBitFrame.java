@@ -119,6 +119,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private Timer refreshTimer;
 
+    private JPanel headerPanel;
+
     @SuppressWarnings("deprecation")
     public MultiBitFrame(MultiBitController controller) {
         this.controller = controller;
@@ -199,7 +201,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             setIconImage(imageIcon.getImage());
         }
 
-        JPanel headerPanel = new HeaderPanel();
+        headerPanel = new HeaderPanel();
         headerPanel.setLayout(new GridBagLayout());
 
         JPanel balancePanel = createHeaderPanel();
@@ -253,7 +255,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         onlineLabel = new JLabel();
         onlineLabel.setHorizontalAlignment(SwingConstants.CENTER);
         statusLabel = new JLabel();
-        // statusBar.addZone("filler1", new JPanel(), "0", "left");
+
         statusBar.addZone("online", onlineLabel, "12%", "left");
         statusBar.addZone("network", statusLabel, "*", "");
         statusBar.addZone("filler2", new JPanel(), "0", "right");
@@ -493,14 +495,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     /**
      * recreate all views
      */
-    public void recreateAllViews() {
-        recreateAllViews(true);
+    public void recreateAllViews(boolean clearCache) {
+        recreateAllViews(true, false);
     }
 
     /**
      * recreate all views
      */
-    public void recreateAllViews(boolean initUI) {
+    public void recreateAllViews(boolean clearCache, boolean initUI) {
         // do nothing on send
         if (View.SEND_BITCOIN_CONFIRM_VIEW == currentView) {
             return;
@@ -538,11 +540,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // recreate the views
         View yourWalletsView = null;
-        if (viewFactory != null) {
+        if (!clearCache && viewFactory != null) {
             yourWalletsView = viewFactory.getView(View.YOUR_WALLETS_VIEW);
         }
         viewFactory = new ViewFactory(controller, this);
-        if (yourWalletsView != null) {
+        if (!clearCache && yourWalletsView != null) {
             viewFactory.addView(View.YOUR_WALLETS_VIEW, yourWalletsView);
         }
     }
@@ -561,7 +563,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 for (PerWalletModelData loopModelData : perWalletModelDataList) {
                     if (loopModelData.getWalletFilename() != null
                             && loopModelData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
-                        activeWalletComboBox.setSelectedIndex(loopIndex);
+                        if (loopIndex < activeWalletComboBox.getItemCount()) {
+                            activeWalletComboBox.setSelectedIndex(loopIndex);
+                        }
 
                         break;
                     }
@@ -860,11 +864,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             JComboBox activeWalletComboBox = (JComboBox) e.getSource();
             int selectedIndex = activeWalletComboBox.getSelectedIndex();
             PerWalletModelData selectedWalletModelData = controller.getModel().getPerWalletModelDataList().get(selectedIndex);
-            controller.getModel().setActiveWalletByFilename(selectedWalletModelData.getWalletFilename());
-
-            controller.fireWalletChanged();
-            controller.fireDataChanged();
-            controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
+            if (selectedWalletModelData != null && !controller.getModel().getActiveWalletFilename().equals(selectedWalletModelData.getWalletFilename())) {
+                controller.getModel().setActiveWalletByFilename(selectedWalletModelData.getWalletFilename());
+                controller.fireWalletChanged();
+                controller.fireDataChanged();
+                controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
+            }
         }
     }
 
@@ -977,5 +982,24 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
             return this;
         }
+    }
+
+    @Override
+    public void newWalletCreated() {
+        headerPanel.remove(activeWalletComboBox);
+        activeWalletComboBox = this.createActiveWalletComboBox();
+        activeWalletComboBox.setFont(activeWalletComboBox.getFont().deriveFont(12.0F));
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 5;
+        constraints.gridy = 0;
+        constraints.weightx = 0.3;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        headerPanel.add(activeWalletComboBox, constraints);
+
+        ComboBoxRenderer renderer = new ComboBoxRenderer();
+        renderer.setMinimumSize(new Dimension(200, 30));
+        activeWalletComboBox.setRenderer(renderer);
+        headerPanel.add(activeWalletComboBox, constraints);
     }
 }
