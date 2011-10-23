@@ -352,9 +352,9 @@
       <version>1.6.2</version>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.6.2</version>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>0.9.30</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -362,12 +362,6 @@
       <artifactId>bcprov-jdk15</artifactId>
       <version>1.46</version>
       <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>apache-log4j-extras</artifactId>
-      <version>1.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

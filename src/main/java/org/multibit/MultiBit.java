@@ -22,7 +22,6 @@ import java.util.Properties;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import org.apache.log4j.xml.DOMConfigurator;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.network.FileHandler;
@@ -48,7 +47,6 @@ public class MultiBit {
      */
     public static void main(String args[]) {
         // initialise log4j
-        DOMConfigurator.configure("log4j.xml");
         logger = LoggerFactory.getLogger(MultiBit.class.getName());
 
         // load up the user preferences
