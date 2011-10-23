@@ -1,4 +1,4 @@
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.yourwallets;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -40,6 +40,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
     private MultiBitFrame mainFrame;
     private Data data;
 
+    private JPanel walletListPanel;
     private ArrayList<SingleWalletPanel> walletPanels;
 
     private boolean initialised = false;
@@ -75,6 +76,26 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
             initUI();
         }
         initialised = true;
+        
+        // get the wallets from the model
+        String activeWalletFilename = controller.getModel().getActiveWalletFilename();
+        PerWalletModelData activePerModelData = controller.getModel().getPerWalletModelDataByWalletFilename(activeWalletFilename);
+
+        if (walletPanels != null) {
+            for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
+                if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename() != null) {                  
+                    if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename().equals(activePerModelData.getWalletFilename())) {
+                        loopSingleWalletPanel.setSelected(true);
+                    } else {
+                        loopSingleWalletPanel.setSelected(false);
+                    }
+                }
+            }
+        }
+        invalidate();
+        revalidate();
+        repaint();
+
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
@@ -93,17 +114,19 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
 
         add(createHeaderPanel(), BorderLayout.NORTH);
 
-        JScrollPane scrollPane = new JScrollPane(createWalletListPanel(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+        createWalletListPanel();
+        JScrollPane scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setViewportView(walletListPanel);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(MultiBitFrame.BACKGROUND_COLOR);
         scrollPane.getViewport().setOpaque(true);
-        add(scrollPane, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);  
     }
 
     private JPanel createWalletListPanel() {
         WrapLayout layout = new WrapLayout(FlowLayout.LEADING, 10, 10);
-        JPanel walletListPanel = new JPanel(layout);
+        walletListPanel = new JPanel(layout);
         walletListPanel.setOpaque(false);
 
         // get the wallets from the model
@@ -112,15 +135,11 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
                 if (loopPerWalletModelData.getWallet() != null) {
-                    SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData);
+                    SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, mainFrame);
                     loopPanel.addMouseListener(new WalletMouseListener());
+                    
                     walletListPanel.add(loopPanel);
                     walletPanels.add(loopPanel);
-                    if (loopPerWalletModelData.getWallet().equals(controller.getModel().getActiveWallet())) {
-                        loopPanel.setSelected(true);
-                    } else {
-                        loopPanel.setSelected(false);
-                    }
                 }
             }
         }

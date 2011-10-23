@@ -1,4 +1,4 @@
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.yourwallets;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -14,7 +14,6 @@ import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
@@ -24,47 +23,67 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 
 import com.google.bitcoin.core.Wallet.BalanceType;
 
-public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener {
+public class SingleWalletPanel extends RoundedPanel implements ActionListener, FocusListener {
 
     private static final long serialVersionUID = -7110340338285836548L;
 
-    private static final int MINIMUM_WALLET_WIDTH = 200;
-    private static final int MINIMUM_WALLET_HEIGHT = 120;
+    public static final int MINIMUM_WALLET_WIDTH = 240;
+    public static final int MINIMUM_WALLET_HEIGHT = 100;
 
     private PerWalletModelData perWalletModelData;
-
-    private boolean selected;
-
-    private static JTable COLOR_TABLE = new JTable();
-    private static Color HIGHLIGHT_COLOR = COLOR_TABLE.getSelectionBackground();
 
     private JLabel walletFilenameLabel;
     private JTextField walletDescriptionTextField;
     private Border walletDescriptionTextFieldBorder;
 
     private JLabel amountLabel;
+    private MultiBitFrame mainFrame;
 
-    public SingleWalletPanel(PerWalletModelData perWalletModelData) {
+    public SingleWalletPanel(PerWalletModelData perWalletModelData, MultiBitFrame mainFrame) {
         this.perWalletModelData = perWalletModelData;
+        this.mainFrame = mainFrame;
         setLayout(new GridBagLayout());
         setMinimumSize(new Dimension(MINIMUM_WALLET_WIDTH, MINIMUM_WALLET_HEIGHT));
         setPreferredSize(new Dimension(MINIMUM_WALLET_WIDTH, MINIMUM_WALLET_HEIGHT));
-        setOpaque(true);
+        setOpaque(false);
         setFocusable(true);
         setBackground(Color.WHITE);
+        setBorder(BorderFactory.createEmptyBorder());
 
         GridBagConstraints constraints = new GridBagConstraints();
+
+        JPanel filler1 = new JPanel();
+        filler1.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.015;
+        constraints.weighty = 0.015;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(filler1, constraints);
 
         JLabel singleWalletIcon = new JLabel();
         singleWalletIcon.setIcon(MultiBitFrame.createImageIcon(MultiBitFrame.SINGLE_WALLET_ICON_FILE));
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
+        constraints.gridx = 1;
         constraints.gridy = 0;
         constraints.weightx = 0.02;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(singleWalletIcon, constraints);
+
+        JPanel filler2 = new JPanel();
+        filler2.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 0;
+        constraints.weightx = 0.015;
+        constraints.weighty = 0.015;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(filler2, constraints);
 
         walletFilenameLabel = new JLabel();
         String walletFilename = perWalletModelData.getWalletFilename();
@@ -77,9 +96,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             walletFilenameLabel.setToolTipText(walletFilename);
         }
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
+        constraints.gridx = 3;
         constraints.gridy = 0;
-        constraints.weightx = 0.48;
+        constraints.weightx = 2;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -92,7 +111,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         walletDescriptionTextFieldBorder = walletDescriptionTextField.getBorder();
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 1;
+        constraints.gridx = 3;
         constraints.gridy = 1;
         constraints.weightx = 0.5;
         constraints.weighty = 0.1;
@@ -104,7 +123,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         amountLabel.setText(Localiser.bitcoinValueToString4(perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED),
                 true, false));
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
+        constraints.gridx = 2;
         constraints.gridy = 2;
         constraints.weightx = 0.5;
         constraints.weighty = 0.1;
@@ -112,11 +131,18 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.LINE_END;
         add(amountLabel, constraints);
 
-        setSelected(false);
-    }
+        JPanel filler4 = new JPanel();
+        filler4.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 4;
+        constraints.gridy = 1;
+        constraints.weightx = 0.03;
+        constraints.weighty = 0.03;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(filler4, constraints);
 
-    public boolean isSelected() {
-        return selected;
+        setSelected(false);
     }
 
     @Override
@@ -126,31 +152,26 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     }
 
     public void setSelected(boolean selected) {
-        this.selected = selected;
+        super.setSelected(selected);
 
         if (selected) {
-            Border outsideBorder = BorderFactory.createMatteBorder(2, 2, 2, 2, HIGHLIGHT_COLOR);
-            Border insideBorder = BorderFactory.createEmptyBorder(2, 2, 2, 2);
-            setBorder(BorderFactory.createCompoundBorder(outsideBorder, insideBorder));
-
             walletDescriptionTextField.setEditable(true);
             walletDescriptionTextField.setBorder(walletDescriptionTextFieldBorder);
+            walletDescriptionTextField.setSelectionColor(RoundedPanel.HIGHLIGHT_COLOR.brighter().brighter());
             walletDescriptionTextField.requestFocusInWindow();
         } else {
-            Border outsideOutsideBorder = BorderFactory.createEmptyBorder(1, 1, 1, 1);
-            Border outsideBorder = BorderFactory.createMatteBorder(1, 1, 1, 1, MultiBitFrame.DARK_BACKGROUND_COLOR.darker());
-            Border insideBorder = BorderFactory.createEmptyBorder(2, 2, 2, 2);
-            setBorder(BorderFactory.createCompoundBorder(outsideOutsideBorder,
-                    BorderFactory.createCompoundBorder(outsideBorder, insideBorder)));
-
             walletDescriptionTextField.setEditable(false);
             walletDescriptionTextField.setBorder(BorderFactory.createEmptyBorder());
+            walletDescriptionTextField.setBackground(Color.WHITE);
         }
     }
 
     public void actionPerformed(ActionEvent evt) {
+        walletDescriptionTextField.setBackground(Color.WHITE);
+        walletDescriptionTextField.select(0, 0);
         String text = walletDescriptionTextField.getText();
         perWalletModelData.setWalletDescription(text);
+        mainFrame.setActiveWalletTooltip(new File(perWalletModelData.getWalletFilename()), text);
     }
 
     public PerWalletModelData getPerWalletModelData() {
@@ -163,11 +184,15 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     @Override
     public void focusGained(FocusEvent arg0) {
+        walletDescriptionTextField.setSelectionColor(RoundedPanel.HIGHLIGHT_COLOR.brighter().brighter());
     }
 
     @Override
     public void focusLost(FocusEvent arg0) {
+        walletDescriptionTextField.setBackground(Color.WHITE);
+        walletDescriptionTextField.select(0, 0);
         String text = walletDescriptionTextField.getText();
         perWalletModelData.setWalletDescription(text);
+        mainFrame.setActiveWalletTooltip(new File(perWalletModelData.getWalletFilename()), text);
     }
 }

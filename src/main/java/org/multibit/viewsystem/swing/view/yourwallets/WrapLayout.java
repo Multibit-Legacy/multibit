@@ -1,4 +1,4 @@
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.yourwallets;
 
 import java.awt.*;
 import javax.swing.JScrollPane;
@@ -8,7 +8,8 @@ import javax.swing.SwingUtilities;
  * FlowLayout subclass that fully supports wrapping of components.
  */
 public class WrapLayout extends FlowLayout {
-    private Dimension preferredLayoutSize;
+
+    private static final long serialVersionUID = 8688932153224596984L;
 
     /**
      * Constructs a new <code>WrapLayout</code> with a left alignment and a

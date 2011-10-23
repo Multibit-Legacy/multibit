@@ -6,6 +6,7 @@ import java.util.Map;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.yourwallets.YourWalletsPanel;
 
 /**
  * a factory class that lazy loads views
@@ -35,6 +36,10 @@ public class ViewFactory {
         return viewToReturn;
     }
 
+    public void addView(int viewNumber, View view) {
+        viewMap.put(viewNumber, view);
+    }
+    
     private View createView(int viewNumber) {
         View viewToReturn = null;
 
