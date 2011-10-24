@@ -78,9 +78,12 @@ public class CreateNewWalletSubmitAction implements Action {
                         // start using the new file as the wallet
                         controller.addWalletFromFilename(newWalletFile.getAbsolutePath());
                         controller.getModel().setActiveWalletByFilename(newWalletFilename);
+                        
+                        // set a default description
+                        String defaultDescription = controller.getLocaliser().getString("createNewWalletSubmitAction.defaultDescription");
+                        controller.getModel().setWalletDescriptionByFilename(newWalletFile.getAbsolutePath(), defaultDescription);
+                        
                         controller.fireNewWalletCreated();
-                        controller.fireWalletChanged();
-                        controller.fireDataChanged();
                     } catch (IOException e) {
                         log.error("IOException: {}", e.getMessage(), e);
                     }

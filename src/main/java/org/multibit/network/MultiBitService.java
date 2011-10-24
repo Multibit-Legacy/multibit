@@ -17,6 +17,7 @@
 package org.multibit.network;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -173,7 +174,13 @@ public class MultiBitService {
             if (walletFile.isDirectory()) {
                 walletFileIsADirectory = true;
             } else {
-                wallet = fileHandler.loadWalletFromFile(walletFile);
+                try {
+                    wallet = fileHandler.loadWalletFromFile(walletFile);
+                } catch (IOException ioe) {
+                    // TODO need to report back to user or will create a new
+                    // wallet
+                    // this is ok - we will create a wallet
+                }
             }
         }
 
@@ -184,18 +191,28 @@ public class MultiBitService {
 
             if (walletFile.exists()) {
                 // wallet file exists with default name
-                wallet = fileHandler.loadWalletFromFile(walletFile);
-                controller.fireWalletChanged();
+                try {
+                    wallet = fileHandler.loadWalletFromFile(walletFile);
+                    controller.fireWalletChanged();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             } else {
                 // create a brand new wallet
                 wallet = new Wallet(networkParameters);
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
 
+                controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
                 fileHandler.saveWalletToFile(wallet, walletFile);
-                controller.getModel().addWallet(wallet, walletFilename);
-                
-                controller.fireWalletChanged();
+
+                // set a default description
+                String defaultDescription = controller.getLocaliser().getString(
+                        "createNewWalletSubmitAction.defaultDescription");
+                controller.getModel().setWalletDescriptionByFilename(walletFile.getAbsolutePath(), defaultDescription);
+
+                controller.fireNewWalletCreated();
             }
         }
 
@@ -251,7 +268,8 @@ public class MultiBitService {
             AddressFormatException {
         // send the coins
         Address sendAddress = new Address(networkParameters, sendAddressString);
-        Transaction sendTransaction = controller.getModel().getActiveWallet().sendCoins(peerGroup, sendAddress, Utils.toNanoCoins(amount), fee);
+        Transaction sendTransaction = controller.getModel().getActiveWallet()
+                .sendCoins(peerGroup, sendAddress, Utils.toNanoCoins(amount), fee);
         assert sendTransaction != null; // We should never try to send more
         // coins than we have!
         // throw an exception if sendTransaction is null - no money

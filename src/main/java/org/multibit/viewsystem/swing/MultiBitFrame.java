@@ -10,6 +10,7 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.*;
 import org.multibit.viewsystem.swing.view.*;
+import org.multibit.viewsystem.swing.view.yourwallets.YourWalletsPanel;
 import org.simplericity.macify.eawt.Application;
 import org.simplericity.macify.eawt.ApplicationEvent;
 import org.simplericity.macify.eawt.ApplicationListener;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 
 import java.awt.*;
 import java.awt.event.ItemEvent;
@@ -68,6 +70,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final Color VERY_LIGHT_BACKGROUND_COLOR = new Color(254, 254, 255);
     public static final Color DARK_BACKGROUND_COLOR = new Color(230, 230, 232);
 
+    private static JTable COLOR_TABLE = new JTable();
+    public static Color SELECTION_FOREGROUND_COLOR = COLOR_TABLE.getSelectionForeground();
+    public static Color SELECTION_BACKGROUND_COLOR = COLOR_TABLE.getSelectionBackground();
+    private Border normalBorder;
+    private Border underlineBorder;
+
     private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.72D;
 
     public static final int WIDTH_OF_LONG_FIELDS = 320;
@@ -84,6 +92,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private JPanel activeWalletPanel;
     private JComboBox activeWalletComboBox;
+
+    private JPanel yourWalletsPanel;
+    private JPanel receiveBitcoinPanel;
+    private JPanel sendBitcoinPanel;
+    private JPanel showTransactionsPanel;
 
     private JLabel onlineLabel;
     private JLabel statusLabel;
@@ -148,6 +161,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         getContentPane().setBackground(MultiBitFrame.BACKGROUND_COLOR);
         sizeAndCenter();
+
+        normalBorder = BorderFactory.createEmptyBorder(0, 4, 7, 4);
+        underlineBorder = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 4, 3, 4), BorderFactory
+                .createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SELECTION_BACKGROUND_COLOR),
+                        BorderFactory.createEmptyBorder(0, 0, 3, 0)));
 
         initUI();
 
@@ -399,8 +417,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
 
         // Your Wallets action
-        JPanel yourWalletsPanel = new JPanel(new BorderLayout());
-        yourWalletsPanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 7, 4));
+        yourWalletsPanel = new JPanel(new BorderLayout());
+        yourWalletsPanel.setBorder(normalBorder);
         yourWalletsPanel.setOpaque(false);
 
         YourWalletsAction myWalletsAction = new YourWalletsAction(controller, createImageIcon(YOUR_WALLETS_ICON_FILE));
@@ -408,7 +426,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewMenu.add(menuItem);
         yourWalletsButton = new MultiBitButton(myWalletsAction);
         yourWalletsPanel.add(yourWalletsButton);
-        
+
         activeWalletPanel = new JPanel(new BorderLayout());
         activeWalletPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 7, 4));
         activeWalletPanel.setOpaque(false);
@@ -418,8 +436,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         activeWalletPanel.add(activeWalletComboBox, BorderLayout.CENTER);
 
         // show transactions action
-        JPanel showTransactionsPanel = new JPanel(new BorderLayout());
-        showTransactionsPanel.setBorder(BorderFactory.createEmptyBorder(0, 4, 7, 4));
+        showTransactionsPanel = new JPanel(new BorderLayout());
+        showTransactionsPanel.setBorder(normalBorder);
         showTransactionsPanel.setOpaque(false);
         ShowTransactionsAction showTransactionsAction = new ShowTransactionsAction(controller,
                 createImageIcon(TRANSACTIONS_ICON_FILE));
@@ -429,8 +447,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         showTransactionsPanel.add(showTransactionsButton);
 
         // receive bitcoin action
-        JPanel receiveBitcoinPanel = new JPanel(new BorderLayout());
-        receiveBitcoinPanel.setBorder(BorderFactory.createEmptyBorder(0, 4, 7, 4));
+        receiveBitcoinPanel = new JPanel(new BorderLayout());
+        receiveBitcoinPanel.setBorder(normalBorder);
         receiveBitcoinPanel.setOpaque(false);
 
         ReceiveBitcoinAction receiveBitcoinAction = new ReceiveBitcoinAction(controller, localiser,
@@ -445,8 +463,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem = new JMenuItem(sendBitcoinAction);
         tradeMenu.add(menuItem);
 
-        JPanel sendBitcoinPanel = new JPanel(new BorderLayout());
-        sendBitcoinPanel.setBorder(BorderFactory.createEmptyBorder(0, 4, 7, 4));
+        sendBitcoinPanel = new JPanel(new BorderLayout());
+        sendBitcoinPanel.setBorder(normalBorder);
         sendBitcoinPanel.setOpaque(false);
         sendBitcoinButton = new MultiBitButton(sendBitcoinAction);
         sendBitcoinPanel.add(sendBitcoinButton);
@@ -460,12 +478,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             viewMenu.add(showPreferencesAction);
         }
 
-        toolBar.add(yourWalletsPanel);
-        toolBar.add(activeWalletPanel);
         JPanel filler1 = new JPanel();
         filler1.setOpaque(false);
-        filler1.setPreferredSize(new Dimension(60, 20));
+        filler1.setPreferredSize(new Dimension(4, 20));
         toolBar.add(filler1);
+
+        toolBar.add(yourWalletsPanel);
+        toolBar.add(activeWalletPanel);
+
+        JPanel filler2 = new JPanel();
+        filler2.setOpaque(false);
+        filler2.setPreferredSize(new Dimension(90, 20));
+        toolBar.add(filler2);
+
         toolBar.add(receiveBitcoinPanel);
         toolBar.add(sendBitcoinPanel);
         toolBar.add(showTransactionsPanel);
@@ -532,6 +557,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             setWalletFilename("");
         } else {
             setWalletFilename(walletFilename);
+
+            // PerWalletModelData perWalletModelData =
+            // model.getPerWalletModelDataByWalletFilename(walletFilename);
+            // String walletDescription = null;
+            // if (perWalletModelData != null) {
+            // walletDescription = perWalletModelData.getWalletDescription();
+            // }
+            // setActiveWalletTooltip(new File(walletFilename),
+            // walletDescription);
         }
 
         setTitle(localiser.getString("multiBitFrame.title"));
@@ -558,7 +592,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         File walletFile = new File(walletFilename);
         if (walletFile != null) {
-            //activeWalletLabel.setText(localiser.getString("multiBitFrame.activeWallet.text", new Object[] { "" }));
             int loopIndex = 0;
             java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
             if (perWalletModelDataList != null) {
@@ -569,6 +602,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                             activeWalletComboBox.setSelectedIndex(loopIndex);
                         }
 
+                        String walletDescription = loopModelData.getWalletDescription();
+                        setActiveWalletTooltip(walletFile, walletDescription);
+
                         break;
                     }
                     loopIndex++;
@@ -576,7 +612,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
 
             if (!walletFilename.equals("")) {
-                //activeWalletLabel.setVisible(true);
                 activeWalletComboBox.setVisible(true);
             }
         }
@@ -612,19 +647,28 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             @SuppressWarnings("deprecation")
             public void run() {
 
-                if (nextViewFinal instanceof SendBitcoinPanel) {
-                    if (sendBitcoinButton != null) {
-                        sendBitcoinButton.requestFocusInWindow();
+                yourWalletsPanel.setBorder(normalBorder);
+                sendBitcoinPanel.setBorder(normalBorder);
+                receiveBitcoinPanel.setBorder(normalBorder);
+                showTransactionsPanel.setBorder(normalBorder);
+
+                if (nextViewFinal instanceof YourWalletsPanel) {
+                    if (yourWalletsPanel != null) {
+                        yourWalletsPanel.setBorder(underlineBorder);
+                    }
+                } else if (nextViewFinal instanceof SendBitcoinPanel) {
+                    if (sendBitcoinPanel != null) {
+                        sendBitcoinPanel.setBorder(underlineBorder);
                     }
                 } else {
                     if (nextViewFinal instanceof ReceiveBitcoinPanel) {
-                        if (receiveBitcoinButton != null) {
-                            receiveBitcoinButton.requestFocusInWindow();
+                        if (receiveBitcoinPanel != null) {
+                            receiveBitcoinPanel.setBorder(underlineBorder);
                         }
                     } else {
                         if (nextViewFinal instanceof ShowTransactionsPanel) {
-                            if (showTransactionsButton != null) {
-                                showTransactionsButton.requestFocusInWindow();
+                            if (showTransactionsPanel != null) {
+                                showTransactionsPanel.setBorder(underlineBorder);
                             }
                         }
                     }
@@ -755,7 +799,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-
         try {
             TransactionInput input = transaction.getInputs().get(0);
             Address from = input.getFromAddress();
@@ -866,7 +909,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             JComboBox activeWalletComboBox = (JComboBox) e.getSource();
             int selectedIndex = activeWalletComboBox.getSelectedIndex();
             PerWalletModelData selectedWalletModelData = controller.getModel().getPerWalletModelDataList().get(selectedIndex);
-            if (selectedWalletModelData != null && !controller.getModel().getActiveWalletFilename().equals(selectedWalletModelData.getWalletFilename())) {
+            if (selectedWalletModelData != null
+                    && !controller.getModel().getActiveWalletFilename().equals(selectedWalletModelData.getWalletFilename())) {
                 controller.getModel().setActiveWalletByFilename(selectedWalletModelData.getWalletFilename());
                 controller.fireWalletChanged();
                 controller.fireDataChanged();
@@ -924,7 +968,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
         toolTipText = toolTipText + walletFile.getAbsolutePath() + "</font></html>";
         activeWalletComboBox.setToolTipText(toolTipText);
-        //activeWalletLabel.setToolTipText(toolTipText);
     }
 
     class ComboBoxRenderer extends JLabel implements ListCellRenderer {
@@ -996,5 +1039,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         renderer.setMinimumSize(new Dimension(200, 30));
         activeWalletComboBox.setRenderer(renderer);
         activeWalletPanel.add(activeWalletComboBox, BorderLayout.CENTER);
+
+        this.recreateAllViews(true);
     }
 }

@@ -157,7 +157,8 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         if (selected) {
             walletDescriptionTextField.setEditable(true);
             walletDescriptionTextField.setBorder(walletDescriptionTextFieldBorder);
-            walletDescriptionTextField.setSelectionColor(RoundedPanel.HIGHLIGHT_COLOR.brighter().brighter());
+            walletDescriptionTextField.setSelectedTextColor(MultiBitFrame.SELECTION_FOREGROUND_COLOR);
+            walletDescriptionTextField.setSelectionColor(MultiBitFrame.SELECTION_BACKGROUND_COLOR);
             walletDescriptionTextField.requestFocusInWindow();
         } else {
             walletDescriptionTextField.setEditable(false);
@@ -168,6 +169,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
 
     public void actionPerformed(ActionEvent evt) {
         walletDescriptionTextField.setBackground(Color.WHITE);
+        walletDescriptionTextField.setForeground(Color.BLACK);
         walletDescriptionTextField.select(0, 0);
         String text = walletDescriptionTextField.getText();
         perWalletModelData.setWalletDescription(text);
@@ -184,12 +186,17 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
 
     @Override
     public void focusGained(FocusEvent arg0) {
-        walletDescriptionTextField.setSelectionColor(RoundedPanel.HIGHLIGHT_COLOR.brighter().brighter());
+        walletDescriptionTextField.setSelectedTextColor(MultiBitFrame.SELECTION_FOREGROUND_COLOR);
+        walletDescriptionTextField.setSelectionColor(MultiBitFrame.SELECTION_BACKGROUND_COLOR);
+        String text = walletDescriptionTextField.getText();
+        perWalletModelData.setWalletDescription(text);
+        mainFrame.setActiveWalletTooltip(new File(perWalletModelData.getWalletFilename()), text);
     }
 
     @Override
     public void focusLost(FocusEvent arg0) {
         walletDescriptionTextField.setBackground(Color.WHITE);
+        walletDescriptionTextField.setForeground(Color.BLACK);
         walletDescriptionTextField.select(0, 0);
         String text = walletDescriptionTextField.getText();
         perWalletModelData.setWalletDescription(text);

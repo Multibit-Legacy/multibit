@@ -2,9 +2,10 @@ MultiBit release notes.
 
 Version 0.2.0beta2
 Enhancements
-+  Added 'My Wallets' screen and Active wallet picker.
++  Added 'Your Wallets' screen and a wallet picker in the toolbar.
 +  Added swatch generator on Receive bitcoin screen.
 +  Decreased minimum amount to 0.0001 to match bitcoin v0.4
++  Visua indication of which panel you are on.
 
 Bug fixes
 +  Fixed selection colour for Receive and Send bitcoin.

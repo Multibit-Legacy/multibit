@@ -11,6 +11,8 @@ import java.awt.RenderingHints;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 
+import org.multibit.viewsystem.swing.MultiBitFrame;
+
 /**
  * RoundedPanel code from:
  * 
@@ -40,8 +42,6 @@ public class RoundedPanel extends JPanel {
     /** The transparency value of shadow. ( 0 - 255) */
     protected int shadowAlpha = 100;
 
-    private static JTable COLOR_TABLE = new JTable();
-    public static Color HIGHLIGHT_COLOR = COLOR_TABLE.getSelectionBackground();
     boolean selected;
 
     public RoundedPanel() {
@@ -81,7 +81,7 @@ public class RoundedPanel extends JPanel {
         graphics.fillRoundRect(0, 0, width - shadowGap, height - shadowGap, arcs.width, arcs.height);
 
         if (selected) {
-            graphics.setColor(HIGHLIGHT_COLOR);
+            graphics.setColor(MultiBitFrame.SELECTION_BACKGROUND_COLOR);
             graphics.setStroke(new BasicStroke(strokeSize + 1));
         } else {
             graphics.setColor(getForeground());

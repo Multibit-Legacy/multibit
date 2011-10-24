@@ -1,18 +1,28 @@
 package org.multibit.network;
 
-import com.google.bitcoin.core.Wallet;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.channels.FileChannel;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Properties;
+
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.nio.channels.FileChannel;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Properties;
+import com.google.bitcoin.core.Wallet;
 
 /**
  * a class consolidating all the File IO in MultiBit
@@ -36,22 +46,17 @@ public class FileHandler {
         this.controller = controller;
     }
 
-    public Wallet loadWalletFromFile(File walletFile) {
+    public Wallet loadWalletFromFile(File walletFile) throws IOException {
         if (walletFile == null) {
             return null;
         }
 
-        Wallet wallet = null;
-        try {
-            wallet = Wallet.loadFromFile(walletFile);
-            // add the new wallet into the model
-            controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
+        Wallet wallet = Wallet.loadFromFile(walletFile);
+        // add the new wallet into the model
+        controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
 
-            WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath());
-            controller.getModel().setWalletInfo(walletInfo);
-        } catch (IOException e) {
-            log.error("Failed to load wallet", e);
-        }
+        WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath());
+        controller.getModel().setWalletInfo(walletInfo);
 
         return wallet;
     }

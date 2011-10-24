@@ -41,8 +41,7 @@ public class OpenWalletSubmitAction implements Action {
                     if (!(new File(walletFilename).isDirectory())) {
                         controller.addWalletFromFilename(walletFilename);
                         controller.getModel().setActiveWalletByFilename(walletFilename);
-                        controller.fireWalletChanged();
-                        controller.fireDataChanged();
+                        controller.fireNewWalletCreated();
                     }
                 }
             }

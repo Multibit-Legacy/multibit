@@ -180,6 +180,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
                     controller.getModel().setActiveWalletByFilename(
                             selectedWalletPanel.getPerWalletModelData().getWalletFilename());
 
+                    controller.fireWalletChanged();
                     controller.fireDataChanged();
                     controller.setActionForwardToSibling(ActionForward.FORWARD_TO_YOUR_WALLETS);
                 } 

@@ -31,7 +31,7 @@ public class FileHandlerTest extends TestCase {
     public static final BigInteger WALLET_TEST2_BALANCE = new BigInteger("2000000");;
 
     @Test
-    public void testLoadTest1() {
+    public void testLoadTest1() throws IOException {
         MultiBitController controller = new MultiBitController();
         Localiser localiser = new Localiser();
         MultiBitModel model = new MultiBitModel(controller);
@@ -64,7 +64,7 @@ public class FileHandlerTest extends TestCase {
     }
 
     @Test
-    public void testLoadTest2() {
+    public void testLoadTest2() throws IOException {
         MultiBitController controller = new MultiBitController();
         Localiser localiser = new Localiser();
         MultiBitModel model = new MultiBitModel(controller);

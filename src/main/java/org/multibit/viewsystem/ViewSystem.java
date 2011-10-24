@@ -46,7 +46,7 @@ public interface ViewSystem {
     /**
      * tells the view system to recreate all views e.g. after a language change
      */   
-    public void recreateAllViews(boolean clearCache);
+    public void recreateAllViews(boolean clearCache, boolean initUI);
     
     /**
      * tells the view system that the model data has changed

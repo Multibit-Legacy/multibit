@@ -148,7 +148,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         JLabel helpLabel1 = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.helpLabel1.message"));
         helpLabel1.setHorizontalAlignment(JLabel.LEFT);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
+        constraints.gridx = 3;
         constraints.gridy = 1;
         constraints.weightx = 0.3;
         constraints.weighty = 0.08;
@@ -159,7 +159,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         JLabel helpLabel2 = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.helpLabel2.message"));
         helpLabel2.setHorizontalAlignment(JLabel.LEFT);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
+        constraints.gridx = 3;
         constraints.gridy = 2;
         constraints.weightx = 0.3;
         constraints.weighty = 0.08;
@@ -170,7 +170,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         JLabel helpLabel3 = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.helpLabel3.message"));
         helpLabel3.setHorizontalAlignment(JLabel.LEFT);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
+        constraints.gridx = 3;
         constraints.gridy = 3;
         constraints.weightx = 0.3;
         constraints.weighty = 0.08;
@@ -211,6 +211,16 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(addressLabel, constraints);
 
+        JLabel filler4 = new JLabel("");
+        filler4.setOpaque(false);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 2;
+        constraints.gridy = 5;
+        constraints.weightx = 1;
+        constraints.weighty = 1.0;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        formPanel.add(filler4, constraints);
+
         addressTextField = new JTextField(35);
         addressTextField.setHorizontalAlignment(JTextField.LEFT);
         addressTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
@@ -218,7 +228,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
         addressTextField.addKeyListener(new QRCodeKeyListener());
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
+        constraints.gridx = 3;
         constraints.gridy = 5;
         constraints.weightx = 0.1;
         constraints.gridwidth = 2;
@@ -229,7 +239,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         CopySendAddressAction copyAddressAction = new CopySendAddressAction(controller, this, copyIcon);
         JButton copyAddressButton = new JButton(copyAddressAction);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 4;
+        constraints.gridx = 5;
         constraints.gridy = 5;
         constraints.weightx = 1;
         constraints.gridwidth = 1;
@@ -240,7 +250,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         PasteAddressAction pasteAddressAction = new PasteAddressAction(controller, this, pasteIcon);
         JButton pasteAddressButton = new JButton(pasteAddressAction);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 5;
+        constraints.gridx = 6;
         constraints.gridy = 5;
         constraints.weightx = 9;
         constraints.gridwidth = 1;
@@ -266,7 +276,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
         labelTextField.addKeyListener(new QRCodeKeyListener());
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
+        constraints.gridx = 3;
         constraints.gridy = 6;
         constraints.weightx = 0.15;
         constraints.gridwidth = 2;
@@ -292,7 +302,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         amountTextField.addKeyListener(new QRCodeKeyListener());
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
+        constraints.gridx = 3;
         constraints.gridy = 7;
         constraints.weightx = 0.1;
         constraints.weighty = 0.30;
@@ -301,7 +311,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
 
         JLabel amountUnitLabel = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"));
         amountUnitLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel.tooltip"));
-        constraints.gridx = 3;
+        constraints.gridx = 4;
         constraints.gridy = 7;
         constraints.weightx = 2.0;
         constraints.weighty = 0.30;
@@ -311,7 +321,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, this);
         JButton sendButton = new JButton(sendBitcoinConfirmAction);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 4;
+        constraints.gridx = 5;
         constraints.gridy = 8;
         constraints.weightx = 10;
         constraints.weighty = 0.4;
@@ -449,10 +459,20 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         addressesHeaderPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
+        JLabel filler1 = new JLabel("");
+        filler1.setOpaque(false);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.01;
+        constraints.weighty = 0.01;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        addressesHeaderPanel.add(filler1, constraints);
+
         CreateNewSendingAddressAction createNewSendingAddressAction = new CreateNewSendingAddressAction(controller, this);
         JButton createNewButton = new JButton(createNewSendingAddressAction);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
+        constraints.gridx = 1;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
         constraints.weightx = 0.3;
@@ -468,7 +488,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         titleLabel.setFont(font);
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 1;
+        constraints.gridx = 2;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
         constraints.weightx = 1;

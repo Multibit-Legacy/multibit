@@ -377,7 +377,7 @@ public class MultiBitController implements PeerEventListener {
 
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.recreateAllViews(false);
+            viewSystem.recreateAllViews(true, true);
         }
     }
 
@@ -404,7 +404,7 @@ public class MultiBitController implements PeerEventListener {
     public void fireRecreateAllViews(boolean clearCache) {
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.recreateAllViews(clearCache);
+            viewSystem.recreateAllViews(clearCache, false);
         }
     }
 
