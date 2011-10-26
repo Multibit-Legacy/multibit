@@ -1,6 +1,7 @@
 package org.multibit.viewsystem.swing.view.yourwallets;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
@@ -50,7 +51,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
 
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
                 BorderFactory.createMatteBorder(1, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
-        setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        setBackground(Color.WHITE);
 
         this.controller = controller;
 
@@ -123,7 +124,8 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
     private JPanel createWalletListPanel() {
         WrapLayout layout = new WrapLayout(FlowLayout.LEADING, 10, 10);
         walletListPanel = new JPanel(layout);
-        walletListPanel.setOpaque(false);
+        walletListPanel.setOpaque(true);
+        walletListPanel.setBackground(Color.WHITE);
 
         // get the wallets from the model
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
@@ -201,8 +203,6 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            // TODO Auto-generated method stub
-
         }
     }
 

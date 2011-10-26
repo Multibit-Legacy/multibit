@@ -32,6 +32,8 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
 
     private PerWalletModelData perWalletModelData;
 
+    private static final Color BACKGROUND_COLOR = new Color(0xf3, 0xe5, 0xab);   // kitten's ear
+    
     private JLabel walletFilenameLabel;
     private JTextField walletDescriptionTextField;
     private Border walletDescriptionTextFieldBorder;
@@ -47,8 +49,8 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         setPreferredSize(new Dimension(MINIMUM_WALLET_WIDTH, MINIMUM_WALLET_HEIGHT));
         setOpaque(false);
         setFocusable(true);
-        setBackground(Color.WHITE);
         setBorder(BorderFactory.createEmptyBorder());
+        setBackground(BACKGROUND_COLOR);
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -163,12 +165,12 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         } else {
             walletDescriptionTextField.setEditable(false);
             walletDescriptionTextField.setBorder(BorderFactory.createEmptyBorder());
-            walletDescriptionTextField.setBackground(Color.WHITE);
+            walletDescriptionTextField.setBackground(BACKGROUND_COLOR);
         }
     }
 
     public void actionPerformed(ActionEvent evt) {
-        walletDescriptionTextField.setBackground(Color.WHITE);
+        walletDescriptionTextField.setBackground(BACKGROUND_COLOR);
         walletDescriptionTextField.setForeground(Color.BLACK);
         walletDescriptionTextField.select(0, 0);
         String text = walletDescriptionTextField.getText();
@@ -189,13 +191,14 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         walletDescriptionTextField.setSelectedTextColor(MultiBitFrame.SELECTION_FOREGROUND_COLOR);
         walletDescriptionTextField.setSelectionColor(MultiBitFrame.SELECTION_BACKGROUND_COLOR);
         String text = walletDescriptionTextField.getText();
+        walletDescriptionTextField.setCaretPosition(text == null ? 0 : text.length());
         perWalletModelData.setWalletDescription(text);
         mainFrame.setActiveWalletTooltip(new File(perWalletModelData.getWalletFilename()), text);
     }
 
     @Override
     public void focusLost(FocusEvent arg0) {
-        walletDescriptionTextField.setBackground(Color.WHITE);
+        walletDescriptionTextField.setBackground(BACKGROUND_COLOR);
         walletDescriptionTextField.setForeground(Color.BLACK);
         walletDescriptionTextField.select(0, 0);
         String text = walletDescriptionTextField.getText();

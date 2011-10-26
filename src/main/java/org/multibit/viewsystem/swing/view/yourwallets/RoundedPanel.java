@@ -47,6 +47,7 @@ public class RoundedPanel extends JPanel {
     public RoundedPanel() {
         super();
         setOpaque(false);
+        setBackground(MultiBitFrame.DARK_BACKGROUND_COLOR);
     }
 
     @Override

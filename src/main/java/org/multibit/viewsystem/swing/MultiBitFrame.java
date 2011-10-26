@@ -68,7 +68,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public static final Color BACKGROUND_COLOR = new Color(244, 244, 246);
     public static final Color VERY_LIGHT_BACKGROUND_COLOR = new Color(254, 254, 255);
-    public static final Color DARK_BACKGROUND_COLOR = new Color(230, 230, 232);
+    //public static final Color DARK_BACKGROUND_COLOR = new Color(230, 230, 232);
+    public static final Color DARK_BACKGROUND_COLOR = new Color(188, 212, 230); // beau blue
+
 
     private static JTable COLOR_TABLE = new JTable();
     public static Color SELECTION_FOREGROUND_COLOR = COLOR_TABLE.getSelectionForeground();
