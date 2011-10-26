@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -13,6 +16,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -25,6 +29,8 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
+import org.multibit.viewsystem.swing.view.AddressesPanel;
+import org.multibit.viewsystem.swing.view.ShowTransactionsPanel;
 
 /**
  * The your wallets view
@@ -40,6 +46,8 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
     private JPanel walletListPanel;
     private ArrayList<SingleWalletPanel> walletPanels;
 
+    private ShowTransactionsPanel transactionsPanel;
+    
     private boolean initialised = false;
 
     /**
@@ -83,6 +91,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
                 if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename() != null) {                  
                     if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename().equals(activePerModelData.getWalletFilename())) {
                         loopSingleWalletPanel.setSelected(true);
+                        this.transactionsPanel.displayView();
                     } else {
                         loopSingleWalletPanel.setSelected(false);
                     }
@@ -107,22 +116,83 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
 
         this.removeAll();
 
-        setLayout(new BorderLayout());
+        setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
 
-        add(createHeaderPanel(), BorderLayout.NORTH);
+        JPanel headerPanel = createHeaderPanel();
+        
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.weighty = 0.01;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(headerPanel, constraints);
 
         createWalletListPanel();
         JScrollPane scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setViewportView(walletListPanel);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker()));
         scrollPane.getViewport().setBackground(MultiBitFrame.BACKGROUND_COLOR);
         scrollPane.getViewport().setOpaque(true);
-        add(scrollPane, BorderLayout.CENTER);  
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.49;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(scrollPane, constraints); 
+        
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.weightx = 1;
+        constraints.weighty = 0.03;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(createAddressesHeaderPanel(), constraints);
+
+        transactionsPanel = new ShowTransactionsPanel(mainFrame, controller);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.weightx = 1;
+        constraints.weighty = 0.45;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(transactionsPanel, constraints);
+    }
+
+    private JPanel createAddressesHeaderPanel() {
+        JPanel addressesHeaderPanel = new AddressesPanel();
+
+        addressesHeaderPanel.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        JLabel titleLabel = new JLabel();
+        titleLabel.setHorizontalTextPosition(JLabel.CENTER);
+        titleLabel.setText(controller.getLocaliser().getString("showTransactionsAction.text"));
+        Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE,
+                MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
+        titleLabel.setFont(font);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        addressesHeaderPanel.add(titleLabel, constraints);
+
+        return addressesHeaderPanel;
     }
 
     private JPanel createWalletListPanel() {
-        WrapLayout layout = new WrapLayout(FlowLayout.LEADING, 10, 10);
+        WrapLayout layout = new WrapLayout(FlowLayout.LEADING, 1, 1);
         walletListPanel = new JPanel(layout);
         walletListPanel.setOpaque(true);
         walletListPanel.setBackground(Color.WHITE);
@@ -133,10 +203,15 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
                 if (loopPerWalletModelData.getWallet() != null) {
+                    JPanel outerPanel = new JPanel();
+                    outerPanel.setOpaque(false);
+                    outerPanel.setBorder(BorderFactory.createEmptyBorder(0, 9, 18, 9));
+                    outerPanel.setLayout(new BorderLayout());
                     SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, mainFrame);
+                    outerPanel.add(loopPanel, BorderLayout.CENTER);
                     loopPanel.addMouseListener(new WalletMouseListener());
                     
-                    walletListPanel.add(loopPanel);
+                    walletListPanel.add(outerPanel);
                     walletPanels.add(loopPanel);
                 }
             }

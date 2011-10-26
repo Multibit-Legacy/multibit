@@ -28,7 +28,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
     private static final long serialVersionUID = -7110340338285836548L;
 
     public static final int MINIMUM_WALLET_WIDTH = 240;
-    public static final int MINIMUM_WALLET_HEIGHT = 100;
+    public static final int MINIMUM_WALLET_HEIGHT = 80;
 
     private PerWalletModelData perWalletModelData;
 
@@ -49,7 +49,6 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         setPreferredSize(new Dimension(MINIMUM_WALLET_WIDTH, MINIMUM_WALLET_HEIGHT));
         setOpaque(false);
         setFocusable(true);
-        setBorder(BorderFactory.createEmptyBorder());
         setBackground(BACKGROUND_COLOR);
 
         GridBagConstraints constraints = new GridBagConstraints();

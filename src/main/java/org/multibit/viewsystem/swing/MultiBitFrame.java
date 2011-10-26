@@ -438,15 +438,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         activeWalletPanel.add(activeWalletComboBox, BorderLayout.CENTER);
 
         // show transactions action
-        showTransactionsPanel = new JPanel(new BorderLayout());
-        showTransactionsPanel.setBorder(normalBorder);
-        showTransactionsPanel.setOpaque(false);
-        ShowTransactionsAction showTransactionsAction = new ShowTransactionsAction(controller,
-                createImageIcon(TRANSACTIONS_ICON_FILE));
-        menuItem = new JMenuItem(showTransactionsAction);
-        viewMenu.add(menuItem);
-        showTransactionsButton = new MultiBitButton(showTransactionsAction);
-        showTransactionsPanel.add(showTransactionsButton);
+//        showTransactionsPanel = new JPanel(new BorderLayout());
+//        showTransactionsPanel.setBorder(normalBorder);
+//        showTransactionsPanel.setOpaque(false);
+//        ShowTransactionsAction showTransactionsAction = new ShowTransactionsAction(controller,
+//                createImageIcon(TRANSACTIONS_ICON_FILE));
+//        menuItem = new JMenuItem(showTransactionsAction);
+//        viewMenu.add(menuItem);
+//        showTransactionsButton = new MultiBitButton(showTransactionsAction);
+//        showTransactionsPanel.add(showTransactionsButton);
 
         // receive bitcoin action
         receiveBitcoinPanel = new JPanel(new BorderLayout());
@@ -495,7 +495,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         toolBar.add(receiveBitcoinPanel);
         toolBar.add(sendBitcoinPanel);
-        toolBar.add(showTransactionsPanel);
+        //toolBar.add(showTransactionsPanel);
         toolBar.setBorder(BorderFactory.createEmptyBorder());
 
         setJMenuBar(menuBar);
@@ -652,7 +652,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 yourWalletsPanel.setBorder(normalBorder);
                 sendBitcoinPanel.setBorder(normalBorder);
                 receiveBitcoinPanel.setBorder(normalBorder);
-                showTransactionsPanel.setBorder(normalBorder);
+                //showTransactionsPanel.setBorder(normalBorder);
 
                 if (nextViewFinal instanceof YourWalletsPanel) {
                     if (yourWalletsPanel != null) {
@@ -668,11 +668,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                             receiveBitcoinPanel.setBorder(underlineBorder);
                         }
                     } else {
-                        if (nextViewFinal instanceof ShowTransactionsPanel) {
-                            if (showTransactionsPanel != null) {
-                                showTransactionsPanel.setBorder(underlineBorder);
-                            }
-                        }
+//                        if (nextViewFinal instanceof ShowTransactionsPanel) {
+//                            if (showTransactionsPanel != null) {
+//                                showTransactionsPanel.setBorder(underlineBorder);
+//                            }
+//                        }
                     }
                 }
 

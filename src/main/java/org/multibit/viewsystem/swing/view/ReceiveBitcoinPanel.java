@@ -459,7 +459,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridy = 0;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
-        constraints.weighty = 0.1;
+        constraints.weighty = 0.05;
         constraints.anchor = GridBagConstraints.LINE_START;
         addressPanel.add(createAddressesHeaderPanel(), constraints);
 
@@ -517,14 +517,25 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
                 MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
         titleLabel.setFont(font);
 
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.anchor = GridBagConstraints.CENTER;
         addressesHeaderPanel.add(titleLabel, constraints);
+
+        JPanel filler2 = new JPanel();
+        filler2.setOpaque(false);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 3;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 0.6;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        addressesHeaderPanel.add(filler2, constraints);
 
         return addressesHeaderPanel;
     }

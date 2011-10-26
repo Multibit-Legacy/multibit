@@ -316,23 +316,6 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         }
     }
 
-    // TODO Is this used?
-    class CenterJustifiedRenderer extends DefaultTableCellRenderer {
-        private static final long serialVersionUID = 1549545L;
-
-        JLabel label = new JLabel();
-
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-                int row, int column) {
-            label.setHorizontalAlignment(SwingConstants.CENTER);
-            label.setOpaque(false);
-
-            label.setText((String) value);
-
-            return label;
-        }
-    }
-
     public String getDescription() {
         // not required in Swing View
         return null;
