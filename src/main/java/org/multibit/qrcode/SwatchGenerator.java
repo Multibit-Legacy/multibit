@@ -53,12 +53,12 @@ public class SwatchGenerator {
     private static Font amountFont;
     private static Map<Font, FontMetrics> fontToFontMetricsMap;
     private static final int WIDTH_OF_TEXT_BORDER = 2;
-    private static final int LEFT_TEXT_INSET = 2;
-    private static final int RIGHT_TEXT_INSET = 2;
+    private static final int LEFT_TEXT_INSET = 3;
+    private static final int RIGHT_TEXT_INSET = 3;
     private static final int BOTTOM_TEXT_INSET = 4;
-    private static final int TOP_TEXT_INSET = 4;
-    private static final int GAP_BETWEEN_TEXT_ROWS = 4;
-    private static final int GAP_ABOVE_ADDRESS = 2;
+    private static final int TOP_TEXT_INSET = 2;
+    private static final int GAP_BETWEEN_TEXT_ROWS = 2;
+    private static final int GAP_ABOVE_ADDRESS = 3;
 
     private static int BOUNDING_BOX_PADDING = 2;
 
@@ -235,7 +235,7 @@ public class SwatchGenerator {
 
         g2.setColor(Color.black);
         g2.setFont(addressFont);
-        g2.drawString(address, matrixWidth + QUIET_ZONE_SIZE, swatchHeight - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER
+        g2.drawString(address, matrixWidth + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER, swatchHeight - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER
                 - BOTTOM_TEXT_INSET);
 
         g2.setFont(labelFont);

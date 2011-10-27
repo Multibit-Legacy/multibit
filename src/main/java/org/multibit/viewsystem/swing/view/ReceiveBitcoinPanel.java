@@ -208,7 +208,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridx = 0;
         constraints.gridy = 4;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.15;
+        constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(filler3, constraints);
@@ -232,7 +232,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridx = 2;
         constraints.gridy = 5;
         constraints.weightx = 1;
-        constraints.weighty = 1.0;
+        constraints.weighty = 0.5;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(filler4, constraints);
 
@@ -241,8 +241,8 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         addressTextArea.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 2, 0, 4, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR),
                 BorderFactory.createMatteBorder(2, 0, 0, 0, Color.WHITE)));
-        addressTextArea.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
-        addressTextArea.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
+        addressTextArea.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 22));
+        addressTextArea.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 22));
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -281,7 +281,8 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         labelTextArea.addKeyListener(new QRCodeKeyListener());
         
         JScrollPane labelScrollPane = new JScrollPane(labelTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        labelScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, MultiBitFrame.DARK_BACKGROUND_COLOR));
+        labelScrollPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 3, 0, 0), 
+                BorderFactory.createMatteBorder(1, 1, 1, 1, MultiBitFrame.DARK_BACKGROUND_COLOR)));
         labelScrollPane.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 34));
         labelScrollPane.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 34));
         constraints.fill = GridBagConstraints.BOTH;
@@ -302,7 +303,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridy = 7;
         constraints.gridwidth = 1;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.20;
+        constraints.weighty = 0.30;
         constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(amountLabel, constraints);
 
@@ -317,7 +318,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridx = 3;
         constraints.gridy = 7;
         constraints.weightx = 0.1;
-        constraints.weighty = 0.30;
+        constraints.weighty = 0.5;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(amountTextField, constraints);
 
@@ -337,7 +338,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridx = 5;
         constraints.gridy = 8;
         constraints.weightx = 10;
-        constraints.weighty = 1.0;
+        constraints.weighty = 0.6;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(filler5, constraints);
 
