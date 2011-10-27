@@ -27,8 +27,11 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
 
     private static final long serialVersionUID = -7110340338285836548L;
 
-    public static final int MINIMUM_WALLET_WIDTH = 240;
+    public static final int MINIMUM_WALLET_WIDTH = 220;
     public static final int MINIMUM_WALLET_HEIGHT = 80;
+    
+    private static final Dimension TOP_LEFT_CORNER_PADDING = new Dimension(5, 12);
+    private static final Dimension BOTTOM_RIGHT_CORNER_PADDING = new Dimension(9, 12);
 
     private PerWalletModelData perWalletModelData;
 
@@ -53,40 +56,25 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        JPanel filler1 = new JPanel();
+        JLabel filler1 = new JLabel();
+        filler1.setMinimumSize(TOP_LEFT_CORNER_PADDING);
+        filler1.setPreferredSize(TOP_LEFT_CORNER_PADDING);
+        filler1.setMaximumSize(TOP_LEFT_CORNER_PADDING);
+
         filler1.setOpaque(false);
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.weightx = 0.015;
-        constraints.weighty = 0.015;
+        constraints.weightx = 0.04;
+        constraints.weighty = 0.04;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
         add(filler1, constraints);
 
-        JLabel singleWalletIcon = new JLabel();
-        singleWalletIcon.setIcon(MultiBitFrame.createImageIcon(MultiBitFrame.SINGLE_WALLET_ICON_FILE));
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.weightx = 0.02;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        add(singleWalletIcon, constraints);
-
-        JPanel filler2 = new JPanel();
-        filler2.setOpaque(false);
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 2;
-        constraints.gridy = 0;
-        constraints.weightx = 0.015;
-        constraints.weighty = 0.015;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        add(filler2, constraints);
-
         walletFilenameLabel = new JLabel();
+        walletFilenameLabel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 0));
+        
         String walletFilename = perWalletModelData.getWalletFilename();
 
         File walletFile = new File(walletFilename);
@@ -97,12 +85,13 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
             walletFilenameLabel.setToolTipText(walletFilename);
         }
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
-        constraints.gridy = 0;
-        constraints.weightx = 2;
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        constraints.weightx = 0.92;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
         add(walletFilenameLabel, constraints);
 
         walletDescriptionTextField = new JTextField(perWalletModelData.getWalletDescription());
@@ -112,35 +101,40 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         walletDescriptionTextFieldBorder = walletDescriptionTextField.getBorder();
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 3;
-        constraints.gridy = 1;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.1;
+        constraints.gridx = 1;
+        constraints.gridy = 2;
+        constraints.weightx = 0.92;
+        constraints.weighty = 4;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(walletDescriptionTextField, constraints);
 
         amountLabel = new JLabel();
+        amountLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
         amountLabel.setText(Localiser.bitcoinValueToString4(perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED),
                 true, false));
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 2;
-        constraints.weightx = 0.5;
+        constraints.gridx = 1;
+        constraints.gridy = 3;
+        constraints.weightx = 0.92;
         constraints.weighty = 0.1;
-        constraints.gridwidth = 2;
-        constraints.anchor = GridBagConstraints.LINE_END;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.SOUTHEAST;
         add(amountLabel, constraints);
 
         JPanel filler4 = new JPanel();
+        filler4.setMinimumSize(BOTTOM_RIGHT_CORNER_PADDING);
+        filler4.setPreferredSize(BOTTOM_RIGHT_CORNER_PADDING);
+        filler4.setMaximumSize(BOTTOM_RIGHT_CORNER_PADDING);
         filler4.setOpaque(false);
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 4;
-        constraints.gridy = 1;
-        constraints.weightx = 0.03;
-        constraints.weighty = 0.03;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 4;
+        constraints.weightx = 0.02;
+        constraints.weighty = 0.02;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.anchor = GridBagConstraints.SOUTHEAST;
         add(filler4, constraints);
 
         setSelected(false);
@@ -163,7 +157,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
             walletDescriptionTextField.requestFocusInWindow();
         } else {
             walletDescriptionTextField.setEditable(false);
-            walletDescriptionTextField.setBorder(BorderFactory.createEmptyBorder());
+            walletDescriptionTextField.setBorder(BorderFactory.createEmptyBorder(5, 7, 5, 5));
             walletDescriptionTextField.setBackground(BACKGROUND_COLOR);
         }
     }
