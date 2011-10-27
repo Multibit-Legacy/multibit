@@ -58,7 +58,7 @@ public class SwatchGenerator {
     private static final int BOTTOM_TEXT_INSET = 4;
     private static final int TOP_TEXT_INSET = 2;
     private static final int GAP_BETWEEN_TEXT_ROWS = 2;
-    private static final int GAP_ABOVE_ADDRESS = 3;
+    private static final int GAP_ABOVE_ADDRESS = 4;
 
     private static int BOUNDING_BOX_PADDING = 2;
 
@@ -235,7 +235,12 @@ public class SwatchGenerator {
 
         g2.setColor(Color.black);
         g2.setFont(addressFont);
-        g2.drawString(address, matrixWidth + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER, swatchHeight - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER
+        // left justified
+        // g2.drawString(address, matrixWidth + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER, swatchHeight - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER
+        //        - BOTTOM_TEXT_INSET);
+        
+        // right justified
+        g2.drawString(address, swatchWidth - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - RIGHT_TEXT_INSET - addressAdvance, swatchHeight - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER
                 - BOTTOM_TEXT_INSET);
 
         g2.setFont(labelFont);
@@ -246,8 +251,13 @@ public class SwatchGenerator {
             }
             if (addAmount) {
                 g2.setFont(amountFont);
-                g2.drawString(amount + " BTC", matrixWidth + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER, QUIET_ZONE_SIZE
-                        + TOP_TEXT_INSET + labelLines.length * (labelFont.getSize() + GAP_BETWEEN_TEXT_ROWS) + amountFont.getSize());
+                // left justified
+                //g2.drawString(amount + " BTC", matrixWidth + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER, QUIET_ZONE_SIZE
+                //        + TOP_TEXT_INSET + labelLines.length * (labelFont.getSize() + GAP_BETWEEN_TEXT_ROWS) + amountFont.getSize());
+                
+                // bottom right justified
+                g2.drawString(amount + " BTC", swatchWidth - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - RIGHT_TEXT_INSET - amountAdvance, 
+                        swatchHeight - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - BOTTOM_TEXT_INSET - addressFont.getSize() - GAP_ABOVE_ADDRESS);
             }
        } else {
            if (addAmount) {

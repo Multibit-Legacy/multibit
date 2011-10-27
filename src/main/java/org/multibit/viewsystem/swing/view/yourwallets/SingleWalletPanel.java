@@ -28,7 +28,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
     private static final long serialVersionUID = -7110340338285836548L;
 
     public static final int MINIMUM_WALLET_WIDTH = 220;
-    public static final int MINIMUM_WALLET_HEIGHT = 80;
+    public static final int MINIMUM_WALLET_HEIGHT = 90;
     
     private static final Dimension TOP_LEFT_CORNER_PADDING = new Dimension(5, 12);
     private static final Dimension BOTTOM_RIGHT_CORNER_PADDING = new Dimension(9, 12);
