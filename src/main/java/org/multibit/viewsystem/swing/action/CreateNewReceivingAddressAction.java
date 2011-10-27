@@ -58,6 +58,6 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
         controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME); 
         
         receiveBitcoinPanel.getFormPanel().requestFocusInWindow();
-        receiveBitcoinPanel.getLabelTextField().requestFocusInWindow();
+        receiveBitcoinPanel.getLabelTextArea().requestFocusInWindow();
     }
 }

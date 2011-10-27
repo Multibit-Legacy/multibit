@@ -64,7 +64,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
 
     private JTextArea addressTextArea;
 
-    private JTextField labelTextField;
+    private JTextArea labelTextArea;
 
     private JTextField amountTextField;
 
@@ -89,7 +89,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         initUI();
         loadForm();
 
-        labelTextField.requestFocusInWindow();
+        labelTextArea.requestFocusInWindow();
     }
 
     private void initUI() {
@@ -272,23 +272,26 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.weightx = 0.3;
         constraints.weighty = 0.15;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
+        constraints.anchor = GridBagConstraints.NORTHEAST;
         formPanel.add(labelLabel, constraints);
 
-        labelTextField = new JTextField("", 35);
-        labelTextField.setHorizontalAlignment(JTextField.LEFT);
-        labelTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
-        labelTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
-
-        labelTextField.addKeyListener(new QRCodeKeyListener());
-        constraints.fill = GridBagConstraints.NONE;
+        JTextField aTextField = new JTextField();
+        labelTextArea = new JTextArea("", 2, 35);
+        labelTextArea.setBorder(aTextField.getBorder());
+        labelTextArea.addKeyListener(new QRCodeKeyListener());
+        
+        JScrollPane labelScrollPane = new JScrollPane(labelTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        labelScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, MultiBitFrame.DARK_BACKGROUND_COLOR));
+        labelScrollPane.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 34));
+        labelScrollPane.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 34));
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 3;
         constraints.gridy = 6;
         constraints.weightx = 0.15;
-        constraints.weighty = 0.20;
+        constraints.weighty = 0.40;
         constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.LINE_START;
-        formPanel.add(labelTextField, constraints);
+        formPanel.add(labelScrollPane, constraints);
 
         JLabel amountLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel"));
         amountLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel.tooltip"));
@@ -299,7 +302,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridy = 7;
         constraints.gridwidth = 1;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.30;
+        constraints.weighty = 0.20;
         constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(amountLabel, constraints);
 
@@ -564,7 +567,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         data.addItem(MultiBitModel.RECEIVE_ADDRESS, addressItem);
 
         Item labelItem = new Item(MultiBitModel.RECEIVE_LABEL);
-        labelItem.setNewValue(labelTextField.getText());
+        labelItem.setNewValue(labelTextArea.getText());
         data.addItem(MultiBitModel.RECEIVE_LABEL, labelItem);
 
         Item amountItem = new Item(MultiBitModel.RECEIVE_AMOUNT);
@@ -621,7 +624,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
             addressTextArea.setText(address);
         }
         if (label != null) {
-            labelTextField.setText(label);
+            labelTextArea.setText(label);
         }
         if (amount != null) {
             amountTextField.setText(amount);
@@ -662,7 +665,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         addressesTable.getSelectionModel().removeListSelectionListener(addressesListener);
 
         String address = controller.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS);
-        displaySwatch(address, amountTextField.getText(), labelTextField.getText());
+        displaySwatch(address, amountTextField.getText(), labelTextArea.getText());
 
         // see if the current address is on the table and select it
         int rowToSelect = addressesTableModel.findRowByAddress(address, true);
@@ -744,9 +747,9 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
                     controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, rowData.getAddress());
                     controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, rowData.getLabel());
                     addressTextArea.setText(rowData.getAddress());
-                    labelTextField.setText(rowData.getLabel());
+                    labelTextArea.setText(rowData.getLabel());
                     
-                    displaySwatch(rowData.getAddress(), amountTextField.getText(), labelTextField.getText());
+                    displaySwatch(rowData.getAddress(), amountTextField.getText(), labelTextArea.getText());
                 }
             }
         }
@@ -766,7 +769,7 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         public void keyReleased(KeyEvent e) {
             String address = addressTextArea.getText();
             String amount = amountTextField.getText();
-            String label = labelTextField.getText();
+            String label = labelTextArea.getText();
             AddressBookData addressBookData = new AddressBookData(label, address);
 
             WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
@@ -783,8 +786,8 @@ public class ReceiveBitcoinPanel extends JPanel implements DataProvider, View {
         }
     }
 
-    public JTextField getLabelTextField() {
-        return labelTextField;
+    public JTextArea getLabelTextArea() {
+        return labelTextArea;
     }
 
     public JPanel getFormPanel() {

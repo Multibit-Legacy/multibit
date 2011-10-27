@@ -58,6 +58,7 @@ public class SwatchGenerator {
     private static final int BOTTOM_TEXT_INSET = 4;
     private static final int TOP_TEXT_INSET = 4;
     private static final int GAP_BETWEEN_TEXT_ROWS = 4;
+    private static final int GAP_ABOVE_ADDRESS = 2;
 
     private static int BOUNDING_BOX_PADDING = 2;
 
@@ -85,7 +86,7 @@ public class SwatchGenerator {
         fontToFontMetricsMap.put(labelFont, emptyGraphics.getFontMetrics(labelFont));
         fontToFontMetricsMap.put(amountFont, emptyGraphics.getFontMetrics(amountFont));
 
-        // initialise
+        // initialise statics for extra speed later
         BitcoinURI.convertToBitcoinURI("1", "1", "1");
     }
 
@@ -121,8 +122,12 @@ public class SwatchGenerator {
             addAmount = false;
         } else {
             addAmount = true;
-
         }
+
+        if (label == null) {
+            label = "";
+        }
+
         // generate an image from the byte matrix
         int matrixWidth = matrix.getWidth();
         int matrixHeight = matrix.getHeight();
@@ -132,32 +137,81 @@ public class SwatchGenerator {
         if (addAmount) {
             amountAdvance = getAdvance(emptyGraphics, amount + " BTC", amountFont);
         }
-        int labelAdvance = getAdvance(emptyGraphics, label, labelFont);
+        // convert backslash-rs to backslash-ns
+        label = label.replaceAll("\r\n", "\n");
+        label = label.replaceAll("\n\r", "\n");
+        String[] labelLines = label.split("[\\n\\r]");
 
-        int widestTextAdvance = (int) Math.max(Math.max(addressAdvance, amountAdvance), labelAdvance);
+        int maxLabelAdvance = 0;
+
+        if (labelLines != null) {
+            for (int i = 0; i < labelLines.length; i++) {
+                int labelAdvance = getAdvance(emptyGraphics, labelLines[i], labelFont);
+                if (labelAdvance > maxLabelAdvance) {
+                    maxLabelAdvance = labelAdvance;
+                }
+            }
+        }
+
+        int widestTextAdvance = (int) Math.max(Math.max(addressAdvance, amountAdvance), maxLabelAdvance);
         int swatchWidth = matrixWidth + widestTextAdvance + LEFT_TEXT_INSET + RIGHT_TEXT_INSET + WIDTH_OF_TEXT_BORDER * 2
                 + QUIET_ZONE_SIZE;
 
+        // work out the height of the swatch
+        int minimumBoxHeight = TOP_TEXT_INSET + BOTTOM_TEXT_INSET + 2
+                * (QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER) + GAP_ABOVE_ADDRESS + addressFont.getSize();
+        if (addAmount) {
+            minimumBoxHeight = minimumBoxHeight + GAP_BETWEEN_TEXT_ROWS + amountFont.getSize();
+        }
+
+        if (labelLines != null) {
+            minimumBoxHeight = minimumBoxHeight + labelLines.length * (labelFont.getSize() + GAP_BETWEEN_TEXT_ROWS - 1);
+        }
+
+        int swatchHeight;
+        if (minimumBoxHeight > matrixHeight) {
+            swatchHeight = minimumBoxHeight;
+        } else {
+            swatchHeight = matrixHeight;
+        }
+
         // create buffered image to draw to
-        BufferedImage image = new BufferedImage(swatchWidth, matrixHeight, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(swatchWidth, swatchHeight, BufferedImage.TYPE_INT_RGB);
 
         // iterate through the matrix and draw the pixels to the image
+        int qrCodeVerticalOffset = 0;
+        if (swatchHeight > matrixHeight) {
+            qrCodeVerticalOffset = (int)((swatchHeight - matrixHeight) * 0.5);
+        }
         for (int y = 0; y < matrixHeight; y++) {
             for (int x = 0; x < matrixWidth; x++) {
                 byte imageValue = matrix.get(x, y);
-                image.setRGB(x, y, imageValue);
+                image.setRGB(x, y + qrCodeVerticalOffset, imageValue);
             }
         }
 
         // fill in the rest of the image as white
-        for (int y = 0; y < matrixHeight; y++) {
+        for (int y = 0; y < swatchHeight; y++) {
             for (int x = matrixWidth; x < swatchWidth; x++) {
                 image.setRGB(x, y, 0xFFFFFF);
             }
         }
+        if (swatchHeight > matrixHeight) {
+                for (int y = 0; y < qrCodeVerticalOffset; y++) {
+                    for (int x = 0; x < swatchWidth; x++) {
+                        image.setRGB(x, y, 0xFFFFFF);
+                    }
+                }                
+
+            for (int y = matrixHeight + qrCodeVerticalOffset; y < swatchHeight; y++) {
+                for (int x = 0; x < swatchWidth; x++) {
+                    image.setRGB(x, y, 0xFFFFFF);
+                }
+            }
+        }
 
         // draw the text box
-        for (int y = QUIET_ZONE_SIZE; y < matrixHeight - QUIET_ZONE_SIZE; y++) {
+        for (int y = QUIET_ZONE_SIZE; y < swatchHeight - QUIET_ZONE_SIZE; y++) {
             for (int loopX = 0; loopX < WIDTH_OF_TEXT_BORDER; loopX++) {
                 // left hand side
                 image.setRGB(matrixWidth + loopX, y, 0x000000);
@@ -173,7 +227,7 @@ public class SwatchGenerator {
                 image.setRGB(x, QUIET_ZONE_SIZE + loopY, 0x000000);
 
                 // bottom side
-                image.setRGB(x, matrixHeight - QUIET_ZONE_SIZE - loopY - 1, 0x000000);
+                image.setRGB(x, swatchHeight - QUIET_ZONE_SIZE - loopY - 1, 0x000000);
             }
         }
 
@@ -181,19 +235,28 @@ public class SwatchGenerator {
 
         g2.setColor(Color.black);
         g2.setFont(addressFont);
-        g2.drawString(address, matrixWidth + QUIET_ZONE_SIZE, matrixHeight - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER
+        g2.drawString(address, matrixWidth + QUIET_ZONE_SIZE, swatchHeight - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER
                 - BOTTOM_TEXT_INSET);
 
         g2.setFont(labelFont);
-        g2.drawString(label, matrixWidth + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER,
-                QUIET_ZONE_SIZE + TOP_TEXT_INSET + labelFont.getSize());
-
-        if (addAmount) {
-            g2.setFont(amountFont);
-            g2.drawString(amount + " BTC", matrixWidth + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER, QUIET_ZONE_SIZE
-                    + TOP_TEXT_INSET + labelFont.getSize() + GAP_BETWEEN_TEXT_ROWS + amountFont.getSize());
-        }
-        // long time1 = (new Date()).getTime();
+        if (labelLines != null) {
+            for (int i = 0; i < labelLines.length; i++) {
+                g2.drawString(labelLines[i], matrixWidth + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER, QUIET_ZONE_SIZE + TOP_TEXT_INSET
+                        + labelFont.getSize() + i * (labelFont.getSize() + GAP_BETWEEN_TEXT_ROWS));
+            }
+            if (addAmount) {
+                g2.setFont(amountFont);
+                g2.drawString(amount + " BTC", matrixWidth + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER, QUIET_ZONE_SIZE
+                        + TOP_TEXT_INSET + labelLines.length * (labelFont.getSize() + GAP_BETWEEN_TEXT_ROWS) + amountFont.getSize());
+            }
+       } else {
+           if (addAmount) {
+               g2.setFont(amountFont);
+               g2.drawString(amount + " BTC", matrixWidth + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER, QUIET_ZONE_SIZE
+                       + TOP_TEXT_INSET + amountFont.getSize());
+           }
+       }
+         // long time1 = (new Date()).getTime();
         // System.out.println("SwatchGenerator#generateSwatch took " + (time1 -
         // time0) + " millisec");
         return image;
@@ -221,11 +284,19 @@ public class SwatchGenerator {
 
         address = "15BGmyMKxGFkejW1oyf2Gwv3NHqeUP7aWh";
         amount = "0.4";
-        label = "A longer label xyz";
+        label = "A longer label xyz\non two lines";
 
         swatch = swatchGenerator.generateSwatch(address, amount, label);
         icon = new ImageIcon(swatch);
         JOptionPane.showMessageDialog(null, "", "Swatch Generator 2", JOptionPane.INFORMATION_MESSAGE, icon);
+
+        address = "15BGmyMKxGFkejW1oyf2Gwv3NHqeUP7aWh";
+        amount = "0.41";
+        label = "";
+
+        swatch = swatchGenerator.generateSwatch(address, amount, label);
+        icon = new ImageIcon(swatch);
+        JOptionPane.showMessageDialog(null, "", "Swatch Generator 3", JOptionPane.INFORMATION_MESSAGE, icon);
 
         address = "15BGmyMKxGFkejW1oyf2Gwv3NHqeUP7aWh";
         amount = "";
@@ -233,15 +304,15 @@ public class SwatchGenerator {
 
         swatch = swatchGenerator.generateSwatch(address, amount, label);
         icon = new ImageIcon(swatch);
-        JOptionPane.showMessageDialog(null, "", "Swatch Generator 3", JOptionPane.INFORMATION_MESSAGE, icon);
+        JOptionPane.showMessageDialog(null, "", "Swatch Generator 4", JOptionPane.INFORMATION_MESSAGE, icon);
 
         address = "15BGmyMKxGFkejW1oyf2Gwv3NHqeUP7aWh";
         amount = "1.2";
-        label = "Shorty";
+        label = "Shorty\r\non three\rseparate lines";
 
         swatch = swatchGenerator.generateSwatch(address, amount, label);
         icon = new ImageIcon(swatch);
-        JOptionPane.showMessageDialog(null, "", "Swatch Generator 4", JOptionPane.INFORMATION_MESSAGE, icon);
+        JOptionPane.showMessageDialog(null, "", "Swatch Generator 5", JOptionPane.INFORMATION_MESSAGE, icon);
 
         // write the image to the output stream
         try {
