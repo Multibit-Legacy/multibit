@@ -57,6 +57,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         this.controller = controller;
         this.mainFrame = mainFrame;
 
+        setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
         setBackground(Color.WHITE);
 
         this.controller = controller;

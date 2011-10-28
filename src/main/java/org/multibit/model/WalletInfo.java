@@ -329,8 +329,8 @@ public class WalletInfo {
             String multilineColumnThreeValue = null;
             
             while ((inputLine = bufferedReader.readLine()) != null) {
-                if (inputLine.startsWith(RECEIVE_ADDRESS_MARKER) || inputLine.startsWith(SEND_ADDRESS_MARKER)
-                        || inputLine.startsWith(PROPERTY_MARKER)) {
+                if (inputLine.startsWith(RECEIVE_ADDRESS_MARKER + SEPARATOR) || inputLine.startsWith(SEND_ADDRESS_MARKER + SEPARATOR)
+                        || inputLine.startsWith(PROPERTY_MARKER + SEPARATOR)) {
                     if (isMultilineColumnThree) {
                         // add previous multiline column three to model
                         if (RECEIVE_ADDRESS_MARKER.equals(previousColumnOne)) {

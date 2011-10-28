@@ -45,7 +45,7 @@ public class PasteAddressAction extends AbstractAction {
       
         // TODO parse string - if bitcoin URI then fill out other fields
         
-        String label = sendBitcoinPanel.getLabelTextField().getText();
+        String label = sendBitcoinPanel.getLabelTextArea().getText();
         AddressBookData addressBookData = new AddressBookData(label, stringToPaste);
         sendBitcoinPanel.setAddressBookDataByRow(addressBookData);
        

@@ -383,6 +383,14 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         return data;
     }
 
+    public JPanel getFormPanel() {
+        return null;
+    }
+
+    public JTextField getLabelTextField() {
+        return null;
+    }
+
     class ComboBoxRenderer extends JLabel implements ListCellRenderer {
         private static final long serialVersionUID = -3301957214353702172L;
 

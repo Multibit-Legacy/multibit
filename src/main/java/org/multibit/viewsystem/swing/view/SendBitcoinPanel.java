@@ -12,6 +12,7 @@ import org.multibit.viewsystem.swing.action.CopySendAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewSendingAddressAction;
 import org.multibit.viewsystem.swing.action.PasteAddressAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
+import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel.QRCodeKeyListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.StringTokenizer;
 
-public class SendBitcoinPanel extends JPanel implements DataProvider, View {
+public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider, View {
 
     private static final long serialVersionUID = -2065108865497111662L;
 
@@ -42,27 +43,15 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
     private static final String SEND_BITCOIN_BIG_ICON_FILE = "/images/send-big.jpg";
     private static final String DRAG_HERE_ICON_FILE = "/images/dragHere.png";
 
-    private MultiBitFrame mainFrame;
-    private MultiBitController controller;
+    protected JTextField addressTextField;
 
-    private JTextField addressTextField;
+    protected SelectionListener addressesListener;
 
-    private JTextField labelTextField;
-
-    private JTextField amountTextField;
-
-    private JPanel formPanel;
-
-    private AddressBookTableModel addressesTableModel;
-
-    private JTable addressesTable;
-
-    private SelectionListener addressesListener;
-
-    private int selectedAddressRow;
+    protected int selectedAddressRow;
 
     private JPanel qrCodePanel;
     private JLabel qrCodeLabel;
+
     private static final int QRCODE_WIDTH = 140;
     private static final int QRCODE_HEIGHT = 140;
 
@@ -70,49 +59,10 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
     private static final int MINIMUM_QRCODE_PANEL_VERTICAL_SPACING = 80;
     
     public SendBitcoinPanel(MultiBitFrame mainFrame, MultiBitController controller) {
-        this.mainFrame = mainFrame;
-        this.controller = controller;
-
-        initUI();
-        loadForm();
-
-        labelTextField.requestFocusInWindow();
+        super(mainFrame, controller);;
     }
 
-    private void initUI() {
-        setMinimumSize(new Dimension(550, 220));
-        setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
-        setLayout(new GridBagLayout());
-        setBackground(MultiBitFrame.BACKGROUND_COLOR);
-
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.4;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        add(createFormPanel(), constraints);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.4;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        add(createQRCodePanel(), constraints);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.gridwidth = 2;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.2;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        add(createAddressesPanel(), constraints);
-    }
-
-    private JPanel createFormPanel() {
+    protected JPanel createFormPanel() {
         formPanel = new JPanel();
         formPanel.setBorder(new DashedBorder());
         formPanel.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
@@ -194,7 +144,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridx = 0;
         constraints.gridy = 4;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.1;
+        constraints.weighty = 0.05;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(filler3, constraints);
@@ -217,7 +167,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridx = 2;
         constraints.gridy = 5;
         constraints.weightx = 1;
-        constraints.weighty = 1.0;
+        constraints.weighty = 0.5;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(filler4, constraints);
 
@@ -227,7 +177,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         addressTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
 
         addressTextField.addKeyListener(new QRCodeKeyListener());
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 3;
         constraints.gridy = 5;
         constraints.weightx = 0.1;
@@ -239,7 +189,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         CopySendAddressAction copyAddressAction = new CopySendAddressAction(controller, this, copyIcon);
         JButton copyAddressButton = new JButton(copyAddressAction);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 5;
+        constraints.gridx = 6;
         constraints.gridy = 5;
         constraints.weightx = 1;
         constraints.gridwidth = 1;
@@ -250,7 +200,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         PasteAddressAction pasteAddressAction = new PasteAddressAction(controller, this, pasteIcon);
         JButton pasteAddressButton = new JButton(pasteAddressAction);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 6;
+        constraints.gridx = 7;
         constraints.gridy = 5;
         constraints.weightx = 9;
         constraints.gridwidth = 1;
@@ -258,6 +208,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         formPanel.add(pasteAddressButton, constraints);
 
         JLabel labelLabel = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel"));
+        labelLabel.setBorder(BorderFactory.createMatteBorder(4, 0, 0, 0, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR));
         labelLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel.tooltip"));
         labelLabel.setHorizontalAlignment(JLabel.RIGHT);
         constraints.fill = GridBagConstraints.NONE;
@@ -266,22 +217,38 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.weightx = 0.3;
         constraints.weighty = 0.15;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
+        constraints.anchor = GridBagConstraints.NORTHEAST;
         formPanel.add(labelLabel, constraints);
 
-        labelTextField = new JTextField("", 35);
-        labelTextField.setHorizontalAlignment(JTextField.LEFT);
-        labelTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
-        labelTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
-
-        labelTextField.addKeyListener(new QRCodeKeyListener());
-        constraints.fill = GridBagConstraints.NONE;
+        JTextField aTextField = new JTextField();
+        labelTextArea = new JTextArea("", 2, 35);
+        labelTextArea.setBorder(aTextField.getBorder());
+        labelTextArea.addKeyListener(new QRCodeKeyListener());
+        
+        JScrollPane labelScrollPane = new JScrollPane(labelTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        labelScrollPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 3, 0, 3), 
+                BorderFactory.createMatteBorder(1, 1, 1, 1, MultiBitFrame.DARK_BACKGROUND_COLOR)));
+        labelScrollPane.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 34));
+        labelScrollPane.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 34));
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 3;
         constraints.gridy = 6;
         constraints.weightx = 0.15;
+        constraints.weighty = 0.40;
         constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.LINE_START;
-        formPanel.add(labelTextField, constraints);
+        formPanel.add(labelScrollPane, constraints);
+
+        JPanel filler5 = new JPanel();
+        filler5.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 5;
+        constraints.gridy = 6;
+        constraints.weightx = 1;
+        constraints.weighty = 0.4;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        formPanel.add(filler5, constraints);
 
         JLabel amountLabel = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel"));
         amountLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel.tooltip"));
@@ -305,7 +272,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         constraints.gridx = 3;
         constraints.gridy = 7;
         constraints.weightx = 0.1;
-        constraints.weighty = 0.30;
+        constraints.weighty = 0.5;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(amountTextField, constraints);
 
@@ -321,8 +288,8 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, this);
         JButton sendButton = new JButton(sendBitcoinConfirmAction);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 5;
-        constraints.gridy = 8;
+        constraints.gridx = 6;
+        constraints.gridy = 7;
         constraints.weightx = 10;
         constraints.weighty = 0.4;
         constraints.gridwidth = 2;
@@ -332,7 +299,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         return formPanel;
     }
 
-    private JPanel createQRCodePanel() {
+    protected JPanel createQRCodePanel() {
         qrCodePanel = new JPanel();
         qrCodePanel.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
 
@@ -396,7 +363,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         return qrCodePanel;
     }
 
-    private JPanel createAddressesPanel() {
+    protected JPanel createAddressesPanel() {
         JPanel addressPanel = new JPanel();
         addressPanel.setBackground(MultiBitFrame.BACKGROUND_COLOR);
         addressPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
@@ -517,7 +484,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         data.addItem(MultiBitModel.SEND_ADDRESS, addressItem);
 
         Item labelItem = new Item(MultiBitModel.SEND_LABEL);
-        labelItem.setNewValue(labelTextField.getText());
+        labelItem.setNewValue(labelTextArea.getText());
         data.addItem(MultiBitModel.SEND_LABEL, labelItem);
 
         Item amountItem = new Item(MultiBitModel.SEND_AMOUNT);
@@ -537,37 +504,15 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
             addressTextField.setText(address);
         }
         if (label != null) {
-            labelTextField.setText(label);
+            labelTextArea.setText(label);
         }
         if (amount != null) {
             amountTextField.setText(amount);
         }
     }
 
-    /** Returns an ImageIcon, or null if the path was invalid. */
-    protected ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = MultiBitFrame.class.getResource(path);
-        if (imgURL != null) {
-            return new ImageIcon(imgURL);
-        } else {
-            log.error("SendBitcoinPanel#createImageIcon: Could not find file: " + path);
-            return null;
-        }
-    }
-
     public String getDescription() {
         return controller.getLocaliser().getString("sendBitcoinPanel.title");
-    }
-
-    public void displayView() {
-        loadForm();
-        selectRows();
-    }
-
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
-    }
-
-    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
     }
 
     /**
@@ -614,7 +559,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                     controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, rowData.getAddress());
                     controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, rowData.getLabel());
                     addressTextField.setText(rowData.getAddress());
-                    labelTextField.setText(rowData.getLabel());
+                    labelTextArea.setText(rowData.getLabel());
                 }
             }
         }
@@ -634,7 +579,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
         public void keyReleased(KeyEvent e) {
             String address = addressTextField.getText();
             String amount = amountTextField.getText();
-            String label = labelTextField.getText();
+            String label = labelTextArea.getText();
             AddressBookData addressBookData = new AddressBookData(label, address);
             addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRow, false);
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, address);
@@ -646,14 +591,6 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
     public void setAddressBookDataByRow(AddressBookData addressBookData) {
         addressTextField.setText(addressBookData.getAddress());
         addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRow, false);
-    }
-
-    public JTextField getLabelTextField() {
-        return labelTextField;
-    }
-
-    public JPanel getFormPanel() {
-        return formPanel;
     }
 
     class LeftJustifiedRenderer extends DefaultTableCellRenderer {
@@ -798,7 +735,7 @@ public class SendBitcoinPanel extends JPanel implements DataProvider, View {
                 log.debug("SendBitcoinPanel - ping 11");
                 amountTextField.setText(amountString);
                 log.debug("SendBitcoinPanel - ping 12");
-                labelTextField.setText(decodedLabel);
+                labelTextArea.setText(decodedLabel);
                 log.debug("SendBitcoinPanel - ping 13");
                 mainFrame.updateStatusLabel("");
                 label.setIcon(icon);

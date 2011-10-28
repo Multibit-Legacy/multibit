@@ -337,4 +337,12 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     public WalletTableModel getWalletTableModel() {
         return walletTableModel;
     }
+
+    public JPanel getFormPanel() {
+        return null;
+    }
+
+    public JTextField getLabelTextField() {
+        return null;
+    }
 }

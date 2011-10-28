@@ -10,7 +10,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletInfo;
-import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
+import org.multibit.viewsystem.swing.view.AbstractTradePanel;
 
 import com.google.bitcoin.core.ECKey;
 
@@ -23,12 +23,12 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
 
     private MultiBitController controller;
     
-    private ReceiveBitcoinPanel receiveBitcoinPanel;
+    private AbstractTradePanel receiveBitcoinPanel;
 
     /**
      * Creates a new {@link CreateNewReceivingAddressAction}.
      */
-    public CreateNewReceivingAddressAction(MultiBitController controller, ReceiveBitcoinPanel receiveBitcoinPanel) {
+    public CreateNewReceivingAddressAction(MultiBitController controller, AbstractTradePanel receiveBitcoinPanel) {
         super(controller.getLocaliser().getString("createOrEditAddressAction.createReceiving.text"));
         this.controller = controller;
         this.receiveBitcoinPanel = receiveBitcoinPanel;
