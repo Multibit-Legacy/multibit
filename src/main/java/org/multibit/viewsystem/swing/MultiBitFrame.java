@@ -255,6 +255,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         contentPane.add(headerPanel, constraints);
 
         viewPanel = new JPanel(new BorderLayout()); // initally blank
+        viewPanel.setOpaque(true);
+        viewPanel.setBackground(BACKGROUND_COLOR);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 2;

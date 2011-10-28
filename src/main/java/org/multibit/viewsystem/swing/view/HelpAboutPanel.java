@@ -46,12 +46,23 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.gridy = 0;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
-        constraints.weighty = 0.12;
+        constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.CENTER;
         JPanel fillerPanel1 = new JPanel();
         fillerPanel1.setOpaque(false);
         add(fillerPanel1, constraints);
 
+        ImageIcon imageIcon = createImageIcon(SPLASH_ICON_FILE);
+        JLabel splashLabel = new JLabel();
+        splashLabel.setIcon(imageIcon);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.4;
+        constraints.anchor = GridBagConstraints.CENTER;
+        add(splashLabel, constraints);
 
         JLabel titleLabel = new JLabel();
         titleLabel.setHorizontalTextPosition(JLabel.CENTER);
@@ -61,31 +72,19 @@ public class HelpAboutPanel extends JPanel implements View {
  
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0.06;
-        constraints.anchor = GridBagConstraints.CENTER;
-        add(titleLabel, constraints);
-
-        ImageIcon imageIcon = createImageIcon(SPLASH_ICON_FILE);
-        JLabel splashLabel = new JLabel();
-        splashLabel.setIcon(imageIcon);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
         constraints.gridy = 2;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
-        constraints.weighty = 0.64;
+        constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.CENTER;
-        add(splashLabel, constraints);
+        add(titleLabel, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 3;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
-        constraints.weighty = 0.06;
+        constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.CENTER;
         JLabel urlLabel = new JLabel(MULTIBIT_URL);
         add(urlLabel, constraints);
@@ -95,7 +94,7 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.gridy = 4;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
-        constraints.weighty = 0.06;
+        constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.CENTER;
         JLabel versionLabel = new JLabel(versionText);
         add(versionLabel, constraints);
@@ -105,7 +104,7 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.gridy = 5;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
-        constraints.weighty = 0.12;
+        constraints.weighty = 0.2;
         constraints.anchor = GridBagConstraints.CENTER;
         JPanel fillerPanel2 = new JPanel();
         fillerPanel2.setOpaque(false);

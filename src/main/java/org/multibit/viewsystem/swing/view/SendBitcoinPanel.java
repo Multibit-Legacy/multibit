@@ -1,9 +1,63 @@
 package org.multibit.viewsystem.swing.view;
 
-import com.google.bitcoin.core.Address;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.HeadlessException;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.Transparency;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.StringTokenizer;
+
+import javax.imageio.ImageIO;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.TransferHandler;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.*;
+import org.multibit.model.AddressBookData;
+import org.multibit.model.Data;
+import org.multibit.model.DataProvider;
+import org.multibit.model.Item;
+import org.multibit.model.MultiBitModel;
 import org.multibit.qrcode.BitcoinURI;
 import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.viewsystem.View;
@@ -12,27 +66,10 @@ import org.multibit.viewsystem.swing.action.CopySendAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewSendingAddressAction;
 import org.multibit.viewsystem.swing.action.PasteAddressAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
-import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel.QRCodeKeyListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.StringTokenizer;
+import com.google.bitcoin.core.Address;
 
 public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider, View {
 
@@ -221,7 +258,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         formPanel.add(labelLabel, constraints);
 
         JTextField aTextField = new JTextField();
-        labelTextArea = new JTextArea("", 2, 35);
+        labelTextArea = new JTextArea("", 2, 20);
         labelTextArea.setBorder(aTextField.getBorder());
         labelTextArea.addKeyListener(new QRCodeKeyListener());
         

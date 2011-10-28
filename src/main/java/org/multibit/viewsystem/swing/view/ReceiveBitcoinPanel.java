@@ -225,7 +225,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         formPanel.add(labelLabel, constraints);
 
         JTextField aTextField = new JTextField();
-        labelTextArea = new JTextArea("", 2, 35);
+        labelTextArea = new JTextArea("", 2, 20);
         labelTextArea.setBorder(aTextField.getBorder());
         labelTextArea.addKeyListener(new QRCodeKeyListener());
         
@@ -308,6 +308,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
     protected JPanel createQRCodePanel() {
         JPanel qrCodePanel = new JPanel();
         qrCodePanel.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
+        qrCodePanel.setOpaque(true);
         qrCodePanel.setMinimumSize(new Dimension(280, 200));
         qrCodePanel.setLayout(new GridBagLayout());
         qrCodeLabel = new JLabel("", null, JLabel.CENTER);
