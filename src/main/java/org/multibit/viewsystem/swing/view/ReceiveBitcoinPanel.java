@@ -150,24 +150,13 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(filler2, constraints);
 
-        JPanel filler3 = new JPanel();
-        filler3.setOpaque(false);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 0;
-        constraints.gridy = 4;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.05;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        formPanel.add(filler3, constraints);
-
         JLabel addressLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel"));
         addressLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel.tooltip"));
         addressLabel.setBorder(BorderFactory.createMatteBorder(0, 0, 4, 0, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR));
         addressLabel.setHorizontalAlignment(JLabel.RIGHT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
-        constraints.gridy = 5;
+        constraints.gridy = 4;
         constraints.weightx = 1;
         constraints.weighty = 0.15;
         constraints.gridwidth = 1;
@@ -178,7 +167,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         filler4.setOpaque(false);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
-        constraints.gridy = 5;
+        constraints.gridy = 4;
         constraints.weightx = 1;
         constraints.weighty = 0.5;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -194,8 +183,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
-        constraints.gridy = 5;
-        constraints.weightx = 0.15;
+        constraints.gridy = 4;
+        constraints.weightx = 0.1;
         constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(addressTextArea, constraints);
@@ -205,8 +194,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         JButton copyAddressButton = new JButton(copyAddressAction);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 6;
-        constraints.gridy = 5;
-        constraints.weightx = 10;
+        constraints.gridy = 4;
+        constraints.weightx = 3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(copyAddressButton, constraints);
@@ -217,7 +206,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         labelLabel.setHorizontalAlignment(JLabel.RIGHT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
-        constraints.gridy = 6;
+        constraints.gridy = 5;
         constraints.weightx = 0.3;
         constraints.weighty = 0.15;
         constraints.gridwidth = 1;
@@ -230,13 +219,12 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         labelTextArea.addKeyListener(new QRCodeKeyListener());
         
         JScrollPane labelScrollPane = new JScrollPane(labelTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        labelScrollPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 3, 0, 3), 
-                BorderFactory.createMatteBorder(1, 1, 1, 1, MultiBitFrame.DARK_BACKGROUND_COLOR)));
-        labelScrollPane.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 34));
-        labelScrollPane.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 34));
+        labelScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, MultiBitFrame.DARK_BACKGROUND_COLOR));
+        labelScrollPane.setOpaque(true);
+        labelScrollPane.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 3;
-        constraints.gridy = 6;
+        constraints.gridy = 5;
         constraints.weightx = 0.15;
         constraints.weighty = 0.40;
         constraints.gridwidth = 2;
@@ -247,7 +235,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         filler5.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 5;
-        constraints.gridy = 6;
+        constraints.gridy = 5;
         constraints.weightx = 1;
         constraints.weighty = 0.4;
         constraints.gridwidth = 1;
@@ -260,7 +248,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
-        constraints.gridy = 7;
+        constraints.gridy = 6;
         constraints.gridwidth = 1;
         constraints.weightx = 0.3;
         constraints.weighty = 0.30;
@@ -276,7 +264,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
-        constraints.gridy = 7;
+        constraints.gridy = 6;
         constraints.weightx = 0.1;
         constraints.weighty = 0.5;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -286,21 +274,21 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         amountUnitLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountUnitLabel.tooltip"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 4;
-        constraints.gridy = 7;
+        constraints.gridy = 6;
         constraints.weightx = 2.0;
         constraints.weighty = 0.30;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(amountUnitLabel, constraints);
 
-        JLabel filler6 = new JLabel("");
-        filler6.setOpaque(false);
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 6;
-        constraints.gridy = 7;
-        constraints.weightx = 10;
-        constraints.weighty = 0.4;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        formPanel.add(filler6, constraints);
+//        JLabel filler6 = new JLabel("");
+//        filler6.setOpaque(false);
+//        constraints.fill = GridBagConstraints.BOTH;
+//        constraints.gridx = 6;
+//        constraints.gridy = 6;
+//        constraints.weightx = 10;
+//        constraints.weighty = 0.4;
+//        constraints.anchor = GridBagConstraints.LINE_START;
+//        formPanel.add(filler6, constraints);
 
         return formPanel;
     }
@@ -314,6 +302,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         qrCodeLabel = new JLabel("", null, JLabel.CENTER);
         qrCodeLabel.setVerticalTextPosition(JLabel.BOTTOM);
         qrCodeLabel.setHorizontalTextPosition(JLabel.CENTER);
+        qrCodeLabel.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
+        qrCodeLabel.setOpaque(true);
 
         // copy image support
         qrCodeLabel.setTransferHandler(new ImageSelection(false));
@@ -352,7 +342,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.anchor = GridBagConstraints.CENTER;
  
         JScrollPane scrollPane = new JScrollPane(qrCodeLabel);
-        scrollPane.setOpaque(false);
+        scrollPane.setOpaque(true);
+        scrollPane.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
