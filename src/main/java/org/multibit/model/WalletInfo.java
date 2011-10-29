@@ -45,6 +45,10 @@ public class WalletInfo {
     private static final String WALLET_VERSION_MARKER = "walletVersion";
     private static final String WALLET_VERSION_TEXT = "1";
 
+    public static final String DESCRIPTION_PROPERTY = "walletDescription";
+    public static final String SIZE_PROPERTY = "walletSize";
+    public static final String DATE_LAST_MODIFED_PROPERTY = "walletLastModified";
+    
     private String walletFilename;
     private String walletVersion;
 
@@ -68,10 +72,20 @@ public class WalletInfo {
         loadFromFile();
     }
 
+    /**
+     * put a String property into the walletinfo
+     * @param key
+     * @param value
+     */
     public void put(String key, String value) {
         walletPreferences.put(key, value);
     }
 
+    /**
+     * get a String property from the wallet info
+     * @param key
+     * @return
+     */
     public String getProperty(String key) {
         return (String) walletPreferences.getProperty(key);
     }

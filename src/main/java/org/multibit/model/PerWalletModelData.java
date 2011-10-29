@@ -6,45 +6,63 @@ import com.google.bitcoin.core.Wallet;
 
 /**
  * this wrapper class wraps all the data pertaining to a single wallet
+ * 
  * @author jim
- *
+ * 
  */
 public class PerWalletModelData {
 
     private Wallet wallet;
     private String walletFilename;
-    private String walletDescription;
     private WalletInfo walletInfo;
-    private  List<WalletTableData> walletTableDataList;
-    
+    private List<WalletTableData> walletTableDataList;
+
     public Wallet getWallet() {
         return wallet;
     }
+
     public void setWallet(Wallet wallet) {
         this.wallet = wallet;
     }
+
     public String getWalletFilename() {
         return walletFilename;
     }
+
     public void setWalletFilename(String walletFilename) {
         this.walletFilename = walletFilename;
     }
+
     public WalletInfo getWalletInfo() {
         return walletInfo;
     }
+
     public void setWalletInfo(WalletInfo walletInfo) {
         this.walletInfo = walletInfo;
     }
+
     public List<WalletTableData> getWalletTableDataList() {
         return walletTableDataList;
     }
+
     public void setWalletTableDataList(List<WalletTableData> walletTableDataList) {
         this.walletTableDataList = walletTableDataList;
     }
+
     public String getWalletDescription() {
-        return walletDescription;
+        if (walletInfo != null) {
+            return walletInfo.getProperty(WalletInfo.DESCRIPTION_PROPERTY);
+        } else {
+            return "";
+        }
     }
+
     public void setWalletDescription(String walletDescription) {
-        this.walletDescription = walletDescription;
+        if (walletInfo != null) {
+            if (walletDescription == null) {
+                walletDescription = "";
+            }
+            walletInfo.put(WalletInfo.DESCRIPTION_PROPERTY, walletDescription);
+        }
     }
 }

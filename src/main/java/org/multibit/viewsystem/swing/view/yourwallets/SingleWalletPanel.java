@@ -35,7 +35,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
 
     private PerWalletModelData perWalletModelData;
 
-    private static final Color BACKGROUND_COLOR = new Color(0xf3, 0xe5, 0xab);   // kitten's ear
+    private static final Color BACKGROUND_COLOR = new Color(0xfB, 0xeD, 0xb3);   // kitten's ear + 8 (for better readibility)
     
     private JLabel walletFilenameLabel;
     private JTextField walletDescriptionTextField;
