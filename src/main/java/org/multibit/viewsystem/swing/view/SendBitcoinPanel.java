@@ -536,10 +536,6 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         }
     }
 
-    public String getDescription() {
-        return controller.getLocaliser().getString("sendBitcoinPanel.title");
-    }
-
     /**
      * select the rows that correspond to the current data
      */
@@ -1054,5 +1050,11 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
             return bimage;
         }
+    }
+
+    @Override
+    public void updateView() {
+        // TODO Auto-generated method stub
+        
     }
 }

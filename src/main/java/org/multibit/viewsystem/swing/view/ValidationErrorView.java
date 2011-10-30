@@ -36,10 +36,6 @@ public class ValidationErrorView implements View {
         this.mainFrame = mainFrame;
     }
 
-    public String getDescription() {
-        return controller.getLocaliser().getString("validationErrorView.title");
-    }
-
     /**
      * show validation error view
      */
@@ -128,7 +124,7 @@ public class ValidationErrorView implements View {
         // tell user validation messages
         Object[] options = { controller.getLocaliser().getString("validationErrorView.okOption") };
 
-        JOptionPane optionPane = new JOptionPane(completeMessage, JOptionPane.ERROR_MESSAGE, JOptionPane.DEFAULT_OPTION, createImageIcon(MultiBitFrame.EXCLAMATION_MARK_ICON_FILE),
+        JOptionPane optionPane = new JOptionPane(completeMessage, JOptionPane.ERROR_MESSAGE, JOptionPane.DEFAULT_OPTION, MultiBitFrame.createImageIcon(MultiBitFrame.EXCLAMATION_MARK_ICON_FILE),
                 options, options[0]);
 
         messageDialog = optionPane.createDialog(mainFrame, controller.getLocaliser().getString("validationErrorView.title"));
@@ -156,18 +152,9 @@ public class ValidationErrorView implements View {
         }
     }
 
-    /**
-     * TODO Consider refactoring this method into a static utility
-     * @param path The resource path
-     * @return an ImageIcon, or null if the path was invalid.
-     */
-    protected ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = MultiBitFrame.class.getResource(path);
-        if (imgURL != null) {
-            return new ImageIcon(imgURL);
-        } else {
-            log.error("SendBitcoinPanel#createImageIcon: Could not find file: " + path);
-            return null;
-        }
+    @Override
+    public void updateView() {
+        // TODO Auto-generated method stub
+        
     }
 }

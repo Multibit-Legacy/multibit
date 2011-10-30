@@ -20,6 +20,7 @@ import javax.swing.border.Border;
 import org.multibit.Localiser;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.BlinkLabel;
 
 import com.google.bitcoin.core.Wallet.BalanceType;
 
@@ -29,19 +30,25 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
 
     public static final int MINIMUM_WALLET_WIDTH = 220;
     public static final int MINIMUM_WALLET_HEIGHT = 90;
-    
+
     private static final Dimension TOP_LEFT_CORNER_PADDING = new Dimension(5, 12);
     private static final Dimension BOTTOM_RIGHT_CORNER_PADDING = new Dimension(9, 12);
 
     private PerWalletModelData perWalletModelData;
 
-    private static final Color BACKGROUND_COLOR = new Color(0xfB, 0xeD, 0xb3);   // kitten's ear + 8 (for better readibility)
-    
+    private static final Color BACKGROUND_COLOR = new Color(0xfB, 0xeD, 0xb3); // kitten's
+                                                                               // ear
+                                                                               // +
+                                                                               // 8
+                                                                               // (for
+                                                                               // better
+                                                                               // readibility)
+
     private JLabel walletFilenameLabel;
     private JTextField walletDescriptionTextField;
     private Border walletDescriptionTextFieldBorder;
 
-    private JLabel amountLabel;
+    private BlinkLabel amountLabel;
     private MultiBitFrame mainFrame;
 
     public SingleWalletPanel(PerWalletModelData perWalletModelData, MultiBitFrame mainFrame) {
@@ -74,7 +81,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
 
         walletFilenameLabel = new JLabel();
         walletFilenameLabel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 0));
-        
+
         String walletFilename = perWalletModelData.getWalletFilename();
 
         File walletFile = new File(walletFilename);
@@ -109,7 +116,8 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         constraints.anchor = GridBagConstraints.LINE_START;
         add(walletDescriptionTextField, constraints);
 
-        amountLabel = new JLabel();
+        amountLabel = new BlinkLabel();
+        amountLabel.setBackground(BACKGROUND_COLOR);
         amountLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
         amountLabel.setText(Localiser.bitcoinValueToString4(perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED),
                 true, false));
@@ -138,6 +146,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         add(filler4, constraints);
 
         setSelected(false);
+        amountLabel.setBlinkEnabled(true);
     }
 
     @Override
@@ -197,5 +206,16 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         String text = walletDescriptionTextField.getText();
         perWalletModelData.setWalletDescription(text);
         mainFrame.setActiveWalletTooltip(new File(perWalletModelData.getWalletFilename()), text);
+    }
+
+    /**
+     * update any UI elements from the model (hint that data has changed)
+     */
+    public void updateFromModel() {
+        String newAmountText = Localiser.bitcoinValueToString4(
+                perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED), true, false);
+        if (newAmountText != null && !newAmountText.equals(amountLabel.getText())) {
+            amountLabel.blink(newAmountText);
+        }
     }
 }

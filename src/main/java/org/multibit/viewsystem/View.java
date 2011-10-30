@@ -22,16 +22,29 @@ public interface View {
     public static final int VALIDATION_ERROR_VIEW = 10;
     public static final int YOUR_WALLETS_VIEW = 11;
  
-    public String getDescription();
-   
+    /**
+     * display the view (including any screen drawing/ construction
+     */
     public void displayView();
     
     /**
+     * update the view (primarily due to the model data changing
+     */
+    public void updateView();
+    
+    /**
      * 
-     * @param nextViewId - one of the View constants
-     * @param relationshipOfNewViewToPrevious - one of the ViewSystem relationship constants
+     * @param nextViewId One of the View constants.
+     * @param relationshipOfNewViewToPrevious One of the ViewSystem relationship constants.
      */
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious);
     
+    /**
+     * display a modal message to the user
+     * 
+     * @param messageKey Localisation key for message.
+     * @param messageData Data for the message parsing.
+     * @param titleKey Title of the message box/ container.
+     */
     public void displayMessage(String messageKey, Object[] messageData, String titleKey);   
 }

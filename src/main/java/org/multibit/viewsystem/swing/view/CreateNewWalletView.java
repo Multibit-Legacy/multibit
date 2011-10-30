@@ -43,10 +43,6 @@ public class CreateNewWalletView implements View, DataProvider {
         this.mainFrame = mainFrame;
     }
 
-    public String getDescription() {
-        return localiser.getString("openWalletView.title");
-    }
-
     /**
      * show open wallet view
      */
@@ -103,5 +99,11 @@ public class CreateNewWalletView implements View, DataProvider {
 
         data.addItem(MultiBitModel.ACTIVE_WALLET_FILENAME, activeWalletFilenameItem);
         return data;
+    }
+
+    @Override
+    public void updateView() {
+        // TODO Auto-generated method stub
+        
     }
 }

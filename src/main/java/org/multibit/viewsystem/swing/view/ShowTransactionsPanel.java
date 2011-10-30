@@ -316,12 +316,16 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         }
     }
 
-    public String getDescription() {
-        // not required in Swing View
-        return null;
-    }
-
+    @Override
     public void displayView() {
+        walletTableModel.recreateWalletData();
+        table.invalidate();
+        table.validate();
+        table.repaint();
+    }
+    
+    @Override
+    public void updateView() {
         walletTableModel.recreateWalletData();
         table.invalidate();
         table.validate();

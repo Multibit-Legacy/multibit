@@ -54,10 +54,6 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         initUI();
     }
 
-    public String getDescription() {
-        return controller.getLocaliser().getString("showPreferencesPanel.title");
-    }
-
     /**
      * show help about message box
      */
@@ -106,7 +102,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         JLabel titleLabel = new JLabel();
         titleLabel.setHorizontalTextPosition(JLabel.LEFT);
-        titleLabel.setText(getDescription());
+        titleLabel.setText(controller.getLocaliser().getString("showPreferencesPanel.title"));
         Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE,
                 MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
         titleLabel.setFont(font);
@@ -448,5 +444,11 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         public int compareTo(LanguageData other) {
             return languageCode.compareTo(other.languageCode);
         }
+    }
+
+    @Override
+    public void updateView() {
+        // TODO Auto-generated method stub
+        
     }
 }

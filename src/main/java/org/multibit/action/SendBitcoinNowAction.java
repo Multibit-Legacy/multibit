@@ -6,6 +6,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,15 +45,16 @@ public class SendBitcoinNowAction implements Action {
             fee = Utils.toNanoCoins(sendFeeString);
         }
 
+        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         if (sendLabel != null && !sendLabel.equals("")) {
-            WalletInfo addressBook = controller.getModel().getActiveWalletWalletInfo();
+            WalletInfo addressBook = perWalletModelData.getWalletInfo();
             addressBook.addSendingAddress(new AddressBookData(sendLabel, sendAddress));
         }
         
         Boolean sendWasSuccessful = Boolean.FALSE;
         String errorMessage = " ";
         try {
-            controller.sendCoins(sendAddress, sendLabel, sendAmount, fee);
+            controller.sendCoins(perWalletModelData, sendAddress, sendLabel, sendAmount, fee);
             sendWasSuccessful = Boolean.TRUE;
         } catch (IOException e) {
             log.error(e.getMessage(), e);
@@ -68,6 +70,7 @@ public class SendBitcoinNowAction implements Action {
             errorMessage = t.getMessage();
         }
 
+//        // for testing
 //        sendWasSuccessful = Boolean.FALSE;
 //        errorMessage = "snuibbnfjhsbfjlsfbjslfbnsjkfb";
         

@@ -73,9 +73,10 @@ public class HelpContentsPanel extends JPanel implements View {
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
     }
-    
 
-    public String getDescription() {
-        return null;
+    @Override
+    public void updateView() {
+        // TODO Auto-generated method stub
+        
     }
 }

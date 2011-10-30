@@ -11,6 +11,7 @@ import java.util.Stack;
 
 import org.multibit.Localiser;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.PerWalletModelData;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
@@ -486,16 +487,16 @@ public class MultiBitController implements PeerEventListener {
         }
     }
 
-    public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+    public void onPendingCoinsReceived(Wallet wallet, Transaction transaction) {
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
+            viewSystem.onPendingCoinsReceived(wallet, transaction);
         }
     }
 
-    public void sendCoins(String sendAddressString, String sendLabel, String amount, BigInteger fee) throws IOException,
+    public void sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String sendLabel, String amount, BigInteger fee) throws IOException,
             AddressFormatException {
         // send the coins
-        Transaction sendTransaction = multiBitService.sendCoins(sendAddressString, amount, fee);
+        Transaction sendTransaction = multiBitService.sendCoins(perWalletModelData, sendAddressString, amount, fee);
         fireRecreateAllViews(false);
         if (sendTransaction == null) {
             throw new IllegalStateException("No transaction was created after send.   The send may have failed.");

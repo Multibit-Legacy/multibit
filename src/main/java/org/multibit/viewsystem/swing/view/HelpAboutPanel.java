@@ -66,7 +66,7 @@ public class HelpAboutPanel extends JPanel implements View {
 
         JLabel titleLabel = new JLabel();
         titleLabel.setHorizontalTextPosition(JLabel.CENTER);
-        titleLabel.setText(getDescription());
+        titleLabel.setText(controller.getLocaliser().getString("helpAboutAction.messageBoxTitle"));
         Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE, MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
         titleLabel.setFont(font);
  
@@ -112,10 +112,6 @@ public class HelpAboutPanel extends JPanel implements View {
 
     }
 
-    public String getDescription() {
-        return controller.getLocaliser().getString("helpAboutAction.messageBoxTitle");
-    }
-
     /**
      * show help about message box
      */
@@ -144,5 +140,11 @@ public class HelpAboutPanel extends JPanel implements View {
     }
 
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+    }
+
+    @Override
+    public void updateView() {
+        // TODO Auto-generated method stub
+        
     }
 }

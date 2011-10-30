@@ -424,4 +424,16 @@ public class PeerGroup implements IsMultiBitClass {
             return t;
         }
     }
+    
+    /**
+     * notify pendingTransactionListeners about the transaction
+     */
+    public void processPendingTransaction(Transaction transaction) {
+        if (pendingTransactionListeners != null) {
+            for(PendingTransactionListener loopListener : pendingTransactionListeners) {
+                loopListener.processPendingTransaction(transaction);
+            }
+        }
+    }
+
 }

@@ -61,10 +61,6 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         initUI();
     }
 
-    public String getDescription() {
-        return localiser.getString("sendBitcoinConfirmView.title");
-    }
-
     /**
      * show send bitcoin confirm view
      */
@@ -370,5 +366,11 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         cancelButton.setVisible(true);
         
         setVisible(true);
+    }
+
+    @Override
+    public void updateView() {
+        // TODO Auto-generated method stub
+        
     }
 }

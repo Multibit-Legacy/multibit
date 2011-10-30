@@ -264,18 +264,21 @@ public class MultiBitService {
      *            the amount to send to, in BTC, as a String
      */
 
-    public Transaction sendCoins(String sendAddressString, String amount, BigInteger fee) throws java.io.IOException,
+    public Transaction sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee) throws java.io.IOException,
             AddressFormatException {
         // send the coins
         Address sendAddress = new Address(networkParameters, sendAddressString);
-        Transaction sendTransaction = controller.getModel().getActiveWallet()
-                .sendCoins(peerGroup, sendAddress, Utils.toNanoCoins(amount), fee);
+        Transaction sendTransaction = perWalletModelData.getWallet().sendCoins(peerGroup, sendAddress, Utils.toNanoCoins(amount), fee);
         assert sendTransaction != null; // We should never try to send more
         // coins than we have!
         // throw an exception if sendTransaction is null - no money
         if (sendTransaction != null) {
             log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is " + sendTransaction.getHashAsString());
-            fileHandler.saveWalletToFile(wallet, new File(controller.getModel().getActiveWalletFilename()));
+            
+            fileHandler.saveWalletToFile(perWalletModelData.getWallet(), new File(perWalletModelData.getWalletFilename()));
+            
+            // notify all of the pendingTransactionsListeners about the new transaction
+            peerGroup.processPendingTransaction(sendTransaction);
         } else {
             // transaction was null
         }

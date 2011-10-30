@@ -584,10 +584,6 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         }
     }
 
-    public String getDescription() {
-        return controller.getLocaliser().getString("receiveBitcoinPanel.title");
-    }
-
     /**
      * select the rows that correspond to the current data
      */
@@ -715,5 +711,11 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
 
             displaySwatch(address, amount, label);
         }
+    }
+
+    @Override
+    public void updateView() {
+        // TODO Auto-generated method stub
+        
     }
 }

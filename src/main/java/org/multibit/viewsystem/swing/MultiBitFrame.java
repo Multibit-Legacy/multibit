@@ -67,7 +67,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public static final Color BACKGROUND_COLOR = new Color(244, 244, 246);
     public static final Color VERY_LIGHT_BACKGROUND_COLOR = new Color(254, 254, 255);
-    public static final Color DARK_BACKGROUND_COLOR = new Color(188, 212, 230); // beau blue
+    public static final Color DARK_BACKGROUND_COLOR = new Color(188, 212, 230); // beau
+                                                                                // blue
 
     private static JTable COLOR_TABLE = new JTable();
     public static Color SELECTION_FOREGROUND_COLOR = COLOR_TABLE.getSelectionForeground();
@@ -630,7 +631,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 yourWalletsPanel.setBorder(normalBorder);
                 sendBitcoinPanel.setBorder(normalBorder);
                 receiveBitcoinPanel.setBorder(normalBorder);
-                //showTransactionsPanel.setBorder(normalBorder);
 
                 if (nextViewFinal instanceof YourWalletsPanel) {
                     if (yourWalletsPanel != null) {
@@ -645,7 +645,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         if (receiveBitcoinPanel != null) {
                             receiveBitcoinPanel.setBorder(underlineBorder);
                         }
-                    } 
+                    }
                 }
 
                 if (nextViewFinal instanceof JPanel) {
@@ -735,30 +735,26 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        // print out transaction details
+        // loop through all the wallets, updating them as required with the new
+        // transaction
         try {
+            java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+
             TransactionInput input = transaction.getInputs().get(0);
             Address from = input.getFromAddress();
-            BigInteger value = transaction.getValueSentToMe(wallet);
-            if (value != null && value.compareTo(BigInteger.ZERO) > 0) {
-
-                logger.debug("Received " + Localiser.bitcoinValueToString4(value, true, false) + " from " + from.toString());
-                wallet.saveToFile(new File(controller.getModel().getActiveWalletFilename()));
-
-                ShowTransactionsPanel transactionsView = (ShowTransactionsPanel) viewFactory.getView(View.TRANSACTIONS_VIEW);
-                WalletTableModel walletTableModel = transactionsView.getWalletTableModel();
-                if (walletTableModel != null) {
-                    walletTableModel.recreateWalletData();
+            boolean dataHasChanged = false;
+            if (perWalletModelDataList != null) {
+                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                    BigInteger value = transaction.getValueSentToMe(perWalletModelData.getWallet());
+                    if (value != null && value.compareTo(BigInteger.ZERO) > 0) {
+                        logger.debug("Received " + Localiser.bitcoinValueToString4(value, true, false) + " from "
+                                + from.toString() + " to wallet '" + perWalletModelData.getWalletDescription() + "'");
+                        perWalletModelData.getWallet().saveToFile(new File(perWalletModelData.getWalletFilename()));
+                        dataHasChanged = true;
+                    }
                 }
-
-                estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel()
-                        .getActiveWalletEstimatedBalance(), true, false));
-                availableBalanceTextLabel
-                        .setText(controller.getLocaliser().getString(
-                                "multiBitFrame.availableToSpend",
-                                new Object[] { Localiser.bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true,
-                                        false) }));
-
+            }
+            if (dataHasChanged) {
                 fireDataChanged();
             }
         } catch (ScriptException e) {
@@ -772,30 +768,34 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     }
 
-    public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+    public void onPendingCoinsReceived(Wallet wallet, Transaction transaction) {
+        // loop through all the wallets, updating them as required with the new
+        // transaction
         try {
+            java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+
             TransactionInput input = transaction.getInputs().get(0);
             Address from = input.getFromAddress();
-            BigInteger value = transaction.getValueSentToMe(wallet);
-            if (value != null && value.compareTo(BigInteger.ZERO) > 0) {
-                logger.debug("Received " + Localiser.bitcoinValueToString4(value, true, false) + " from " + from.toString());
+            boolean dataHasChanged = false;
+            if (perWalletModelDataList != null) {
+                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                    BigInteger value = transaction.getValueSentToMe(perWalletModelData.getWallet());
+                    if (value != null && value.compareTo(BigInteger.ZERO) > 0) {
+                        logger.debug("Received " + Localiser.bitcoinValueToString4(value, true, false) + " from "
+                                + from.toString() + " to wallet '" + perWalletModelData.getWalletDescription() + "'");
+                        perWalletModelData.getWallet().saveToFile(new File(perWalletModelData.getWalletFilename()));
+                        dataHasChanged = true;
 
-                ShowTransactionsPanel transactionsView = (ShowTransactionsPanel) viewFactory.getView(View.TRANSACTIONS_VIEW);
-                WalletTableModel walletTableModel = transactionsView.getWalletTableModel();
-                if (walletTableModel != null) {
-                    walletTableModel.recreateWalletData();
+                        if (perWalletModelData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
+
+                            // blink the total
+                            estimatedBalanceTextLabel.blink(Localiser.bitcoinValueToString4(controller.getModel()
+                                    .getActiveWalletEstimatedBalance(), true, false));
+                        }
+                    }
                 }
-
-                wallet.saveToFile(new File(controller.getModel().getActiveWalletFilename()));
-
-                estimatedBalanceTextLabel.blink(Localiser.bitcoinValueToString4(controller.getModel()
-                        .getActiveWalletEstimatedBalance(), true, false));
-                availableBalanceTextLabel
-                        .setText(controller.getLocaliser().getString(
-                                "multiBitFrame.availableToSpend",
-                                new Object[] { Localiser.bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true,
-                                        false) }));
-
+            }
+            if (dataHasChanged) {
                 fireDataChanged();
             }
         } catch (ScriptException e) {
@@ -814,6 +814,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void fireDataChanged() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                // update the totals in the header
                 estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel()
                         .getActiveWalletEstimatedBalance(), true, false));
                 availableBalanceTextLabel
@@ -823,6 +824,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                                         false) }));
 
                 setWalletFilename(controller.getModel().getActiveWalletFilename());
+
+                // tell the current view to update itself
+                View currentViewView = viewFactory.getView(currentView);
+                if (currentViewView != null) {
+                    currentViewView.updateView();
+                }
 
                 viewPanel.invalidate();
                 thisFrame.invalidate();
@@ -1014,6 +1021,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         activeWalletComboBox.setRenderer(renderer);
         activeWalletPanel.add(activeWalletComboBox, BorderLayout.CENTER);
 
-        this.recreateAllViews(true);
+        recreateAllViews(true);
     }
 }

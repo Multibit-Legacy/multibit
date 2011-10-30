@@ -27,6 +27,7 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.WalletTableModel;
 import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.AddressesPanel;
@@ -47,7 +48,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
     private ArrayList<SingleWalletPanel> walletPanels;
 
     private ShowTransactionsPanel transactionsPanel;
-    
+
     private boolean initialised = false;
 
     /**
@@ -80,17 +81,19 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
             initUI();
         }
         initialised = true;
-        
+
         // get the wallets from the model
         String activeWalletFilename = controller.getModel().getActiveWalletFilename();
-        PerWalletModelData activePerModelData = controller.getModel().getPerWalletModelDataByWalletFilename(activeWalletFilename);
+        PerWalletModelData activePerModelData = controller.getModel().getPerWalletModelDataByWalletFilename(
+                activeWalletFilename);
 
         if (walletPanels != null) {
             for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
-                if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename() != null) {                  
-                    if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename().equals(activePerModelData.getWalletFilename())) {
+                if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename() != null) {
+                    if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename()
+                            .equals(activePerModelData.getWalletFilename())) {
                         loopSingleWalletPanel.setSelected(true);
-                        this.transactionsPanel.displayView();
+                        transactionsPanel.displayView();
                     } else {
                         loopSingleWalletPanel.setSelected(false);
                     }
@@ -119,7 +122,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         GridBagConstraints constraints = new GridBagConstraints();
 
         JPanel headerPanel = createHeaderPanel();
-        
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -143,8 +146,8 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         constraints.weighty = 0.49;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(scrollPane, constraints); 
-        
+        add(scrollPane, constraints);
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 2;
@@ -209,7 +212,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
                     SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, mainFrame);
                     outerPanel.add(loopPanel, BorderLayout.CENTER);
                     loopPanel.addMouseListener(new WalletMouseListener());
-                    
+
                     walletListPanel.add(outerPanel);
                     walletPanels.add(loopPanel);
                 }
@@ -233,7 +236,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller, null, mainFrame);
         JButton createNewWalletButton = new JButton(createNewWalletAction);
         headerPanel.add(createNewWalletButton);
-        
+
         return headerPanel;
     }
 
@@ -259,7 +262,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
                     controller.fireWalletChanged();
                     controller.fireDataChanged();
                     controller.setActionForwardToSibling(ActionForward.FORWARD_TO_YOUR_WALLETS);
-                } 
+                }
             }
         }
 
@@ -282,5 +285,27 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
 
     public Data getData() {
         return null;
+    }
+
+    @Override
+    public void updateView() {
+        if (walletPanels != null) {
+            for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
+                // make sure the totals displayed are correct
+                loopSingleWalletPanel.updateFromModel();
+                loopSingleWalletPanel.invalidate();
+                loopSingleWalletPanel.revalidate();
+                loopSingleWalletPanel.repaint();
+            }
+        }
+
+        // recreate the wallet data backing the ShowTransactionsPanel
+        if (transactionsPanel != null) {
+            WalletTableModel walletTableModel = transactionsPanel.getWalletTableModel();
+            if (walletTableModel != null) {
+                walletTableModel.recreateWalletData();
+            }
+        }
+        displayView();
     }
 }

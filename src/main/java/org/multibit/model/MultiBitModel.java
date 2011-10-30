@@ -145,6 +145,10 @@ public class MultiBitModel {
         userPreferences = properties;
     }
 
+    public PerWalletModelData getActivePerWalletModelData() {
+        return activeWalletModelData;
+    }
+    
     /**
      * get a wallet preference from the active wallet
      * 
@@ -302,26 +306,16 @@ public class MultiBitModel {
                     controller.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
                 }
 
-                @SuppressWarnings("unused")
-                public void onPendingCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
-                        BigInteger newBalance) {
-                    controller.onPendingCoinsReceived(wallet, transaction, prevBalance, newBalance);
-                }
-
                 public void onPendingCoinsReceived(Wallet wallet, Transaction transaction) {
-                    controller.onPendingCoinsReceived(wallet, transaction, null, null);
+                    controller.onPendingCoinsReceived(wallet, transaction);
                 }
 
                 @Override
                 public void onReorganize(Wallet wallet) {
-                    // TODO Auto-generated method stub
-
                 }
 
                 @Override
                 public void onDeadTransaction(Wallet wallet, Transaction deadTx, Transaction replacementTx) {
-                    // TODO Auto-generated method stub
-
                 }
 
             });

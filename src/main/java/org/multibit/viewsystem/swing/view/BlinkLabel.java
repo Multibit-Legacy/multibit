@@ -7,14 +7,16 @@ import java.awt.event.ActionListener;
 import javax.swing.JLabel;
 import javax.swing.Timer;
 
+import org.multibit.viewsystem.swing.MultiBitFrame;
+
 public class BlinkLabel extends JLabel {
     private static final long serialVersionUID = 1L;
 
     private static final int BLINKING_TIME = 1500; // in ms
-    private static final Color BLINK_COLOR = new Color(175, 120, 23); // dark
-                                                                      // gold
-    private static final Color ORIGINAL_COLOR = Color.BLACK;
+    private static final Color ORIGINAL_FOREGROUND_COLOR = Color.BLACK;
 
+    private Color originalBackgroundColor;
+    
     private boolean blinkEnabled;
 
     private String previousBlinkText;
@@ -23,13 +25,17 @@ public class BlinkLabel extends JLabel {
         super();
         blinkEnabled = false;
         previousBlinkText = "";
+        setOpaque(false);
     }
 
     public void blink(String newLabelText) {
         if (blinkEnabled) {
             if (checkTextHasChanged(newLabelText)) {
-                setForeground(BLINK_COLOR);
-
+                originalBackgroundColor = getBackground();
+                setForeground(MultiBitFrame.SELECTION_FOREGROUND_COLOR);
+                setBackground(MultiBitFrame.SELECTION_BACKGROUND_COLOR);
+                setOpaque(true);
+ 
                 this.invalidate();
                 this.validate();
                 this.repaint();
@@ -57,7 +63,9 @@ public class BlinkLabel extends JLabel {
         }
 
         public void actionPerformed(ActionEvent e) {
-            blinkLabel.setForeground(ORIGINAL_COLOR);
+            blinkLabel.setForeground(ORIGINAL_FOREGROUND_COLOR);
+            blinkLabel.setBackground(originalBackgroundColor);
+            blinkLabel.setOpaque(false);
         }
     }
 
