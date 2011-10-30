@@ -17,6 +17,8 @@ public class PerWalletModelData {
     private WalletInfo walletInfo;
     private List<WalletTableData> walletTableDataList;
 
+    private boolean filesHaveBeenChangedByAnotherProcess;
+    
     public Wallet getWallet() {
         return wallet;
     }
@@ -64,5 +66,13 @@ public class PerWalletModelData {
             }
             walletInfo.put(WalletInfo.DESCRIPTION_PROPERTY, walletDescription);
         }
+    }
+
+    public boolean isFilesHaveBeenChangedByAnotherProcess() {
+        return filesHaveBeenChangedByAnotherProcess;
+    }
+
+    public void setFilesHaveBeenChangedByAnotherProcess(boolean filesHaveBeenChangedByAnotherProcess) {
+        this.filesHaveBeenChangedByAnotherProcess = filesHaveBeenChangedByAnotherProcess;
     }
 }

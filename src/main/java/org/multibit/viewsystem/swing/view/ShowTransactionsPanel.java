@@ -132,8 +132,6 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         scrollPane.getViewport().setBackground(MultiBitFrame.BACKGROUND_COLOR);
-        //scrollPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0), 
-        //        BorderFactory.createMatteBorder(1, 0, 1, 0,  MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -154,13 +152,13 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
         JLabel label = new JLabel();
 
-        ImageIcon tickIcon = createImageIcon(TICK_ICON_FILE);
-        ImageIcon progress0Icon = createImageIcon(PROGRESS_0_ICON_FILE);
-        ImageIcon progress1Icon = createImageIcon(PROGRESS_1_ICON_FILE);
-        ImageIcon progress2Icon = createImageIcon(PROGRESS_2_ICON_FILE);
-        ImageIcon progress3Icon = createImageIcon(PROGRESS_3_ICON_FILE);
-        ImageIcon progress4Icon = createImageIcon(PROGRESS_4_ICON_FILE);
-        ImageIcon progress5Icon = createImageIcon(PROGRESS_5_ICON_FILE);
+        ImageIcon tickIcon = MultiBitFrame.createImageIcon(TICK_ICON_FILE);
+        ImageIcon progress0Icon = MultiBitFrame.createImageIcon(PROGRESS_0_ICON_FILE);
+        ImageIcon progress1Icon = MultiBitFrame.createImageIcon(PROGRESS_1_ICON_FILE);
+        ImageIcon progress2Icon = MultiBitFrame.createImageIcon(PROGRESS_2_ICON_FILE);
+        ImageIcon progress3Icon = MultiBitFrame.createImageIcon(PROGRESS_3_ICON_FILE);
+        ImageIcon progress4Icon = MultiBitFrame.createImageIcon(PROGRESS_4_ICON_FILE);
+        ImageIcon progress5Icon = MultiBitFrame.createImageIcon(PROGRESS_5_ICON_FILE);
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
@@ -221,20 +219,6 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 label.setBackground(backgroundColor);
             }
             return label;
-        }
-    }
-
-    /**
-     * @param path The icon image path
-     * @return an ImageIcon, or null if the path was invalid
-     */
-    private ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = MultiBitFrame.class.getResource(path);
-        if (imgURL != null) {
-            return new ImageIcon(imgURL);
-        } else {
-            log.error("org.multibit.ViewerFrame#createImageIcon: Could not find file: " + path);
-            return null;
         }
     }
 
@@ -327,6 +311,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     @Override
     public void updateView() {
         walletTableModel.recreateWalletData();
+
         table.invalidate();
         table.validate();
         table.repaint();

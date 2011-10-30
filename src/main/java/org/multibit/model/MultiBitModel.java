@@ -77,6 +77,13 @@ public class MultiBitModel {
 
     // connect to single node
     public static final String SINGLE_NODE_CONNECTION = "singleNodeConnection";
+    
+    // sizes and last modified dates of files
+    public static final String WALLET_FILE_SIZE = "walletFileSize";
+    public static final String WALLET_FILE_LAST_MODIFIED = "walletFileLastModified";
+
+    public static final String WALLET_INFO_FILE_SIZE = "walletInfoFileSize";
+    public static final String WALLET_INFO_FILE_LAST_MODIFIED = "walletInfoFileLastModified";
 
     private final MultiBitController controller;
 
@@ -269,16 +276,16 @@ public class MultiBitModel {
     /**
      * add a new wallet to the list of managed wallets
      */
-    public void addWallet(Wallet wallet, String walletFilename) {
+    public PerWalletModelData addWallet(Wallet wallet, String walletFilename) {
         if (walletFilename == null) {
-            return;
+            return null;
         }
 
         // check to see if it is already in the managed list - no need to add it
         // again if so
         for (PerWalletModelData loopModelData : perWalletModelDataList) {
             if (walletFilename.equals(loopModelData.getWalletFilename())) {
-                return;
+                return loopModelData;
             }
         }
 
@@ -323,6 +330,8 @@ public class MultiBitModel {
 
         createWalletData(walletFilename);
         createAddressBookReceivingAddresses(walletFilename);
+        
+        return newPerWalletModelData;
     }
 
     /**

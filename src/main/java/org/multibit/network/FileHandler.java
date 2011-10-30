@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.Properties;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.slf4j.Logger;
@@ -46,59 +47,135 @@ public class FileHandler {
         this.controller = controller;
     }
 
-    public Wallet loadWalletFromFile(File walletFile) throws IOException {
+    public PerWalletModelData loadFromFile(File walletFile) throws IOException {
         if (walletFile == null) {
             return null;
         }
 
+        String walletFilename = walletFile.getAbsolutePath();
         Wallet wallet = Wallet.loadFromFile(walletFile);
+
         // add the new wallet into the model
-        controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
+        PerWalletModelData perWalletModelData = controller.getModel().addWallet(wallet, walletFilename);
 
-        WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath());
-        controller.getModel().setWalletInfo(walletInfo);
+        WalletInfo walletInfo = new WalletInfo(walletFilename);
+        perWalletModelData.setWalletInfo(walletInfo);
 
-        return wallet;
+        rememberFileSizesAndLastModified(walletFile, walletInfo);
+
+        return perWalletModelData;
     }
 
-    public void saveWalletToFile(Wallet wallet, File walletFile) {
+    /**
+     * save the perWalletModelData to file
+     * 
+     * @param perWalletModelData
+     * @return saveAbortedBecauseFilesHaveChanged True if one of the files has
+     *         changed by another process - save aborted. False if no files were
+     *         changed by another process.
+     */
+    public boolean savePerWalletModelData(PerWalletModelData perWalletModelData) {
+        boolean saveAbortedBecauseFilesHaveChanged = false;
         try {
-            // save the companion wallet info
-            PerWalletModelData perWalletModelInfo = controller.getModel().getPerWalletModelDataByWalletFilename(
-                    walletFile.getAbsolutePath());
-            if (perWalletModelInfo != null) {
-                WalletInfo walletInfo = perWalletModelInfo.getWalletInfo();
+            if (perWalletModelData == null) {
+                // nothing to do
+                return false;
+            }
+
+            // check dates and sizes of files
+            saveAbortedBecauseFilesHaveChanged = haveFilesChanged(perWalletModelData);
+
+            if (!saveAbortedBecauseFilesHaveChanged) {
+                File walletFile = new File(perWalletModelData.getWalletFilename());
+                WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+
+                // save the companion wallet info
                 if (walletInfo != null) {
                     walletInfo.writeToFile();
                 } else {
-                    WalletInfo newWalletInfo = new WalletInfo(walletFile.getAbsolutePath());
-                    perWalletModelInfo.setWalletInfo(newWalletInfo);
-                    newWalletInfo.writeToFile();
+                    walletInfo = new WalletInfo(perWalletModelData.getWalletFilename());
+                    perWalletModelData.setWalletInfo(walletInfo);
+                    walletInfo.writeToFile();
                 }
 
-                if (wallet != null) {
-                    wallet.saveToFile(walletFile);
+                if (perWalletModelData.getWallet() != null) {
+                    perWalletModelData.getWallet().saveToFile(walletFile);
                 }
+
+                rememberFileSizesAndLastModified(walletFile, walletInfo);
             }
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
+        return saveAbortedBecauseFilesHaveChanged;
     }
 
-    public void saveWalletAndWalletInfoToFile(Wallet wallet, File walletFile, WalletInfo walletInfo) {
-        try {
-            // save the companion wallet info
-            if (walletInfo != null) {
-                walletInfo.writeToFile();
+    public boolean haveFilesChanged(PerWalletModelData perWalletModelData) {
+        if (perWalletModelData == null || perWalletModelData.getWalletFilename() == null) {
+            return false;
+        }
+        
+        boolean haveFilesChanged = false;
+
+        String walletInfoFilename = WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename());
+        File walletInfoFile = new File(walletInfoFilename);
+        File walletFile = new File(perWalletModelData.getWalletFilename());
+
+        String walletFileSize = "" + walletFile.length();
+        String walletFileLastModified = "" + walletFile.lastModified();
+        String walletInfoFileSize = "" + walletInfoFile.length();
+        String walletInfoFileLastModified = "" + walletInfoFile.lastModified();
+
+        WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+        if (walletInfo != null) {
+            if (!walletFileSize.equals(walletInfo.getProperty(MultiBitModel.WALLET_FILE_SIZE))) {
+                haveFilesChanged = true;
             }
 
-            // save the wallet file
-            if (wallet != null) {
-                wallet.saveToFile(walletFile);
+            if (!walletFileLastModified.equals(walletInfo.getProperty(MultiBitModel.WALLET_FILE_LAST_MODIFIED))) {
+                haveFilesChanged = true;
             }
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
+
+            if (!walletInfoFileSize.equals(walletInfo.getProperty(MultiBitModel.WALLET_INFO_FILE_SIZE))) {
+                haveFilesChanged = true;
+            }
+
+            if (!walletInfoFileLastModified.equals(walletInfo.getProperty(MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED))) {
+                haveFilesChanged = true;
+            }
         }
+        log.info("Result of check of whether files have changed for wallet filename " + perWalletModelData.getWalletFilename()
+                + " was " + haveFilesChanged + ".");
+
+        return haveFilesChanged;
+    }
+
+    /**
+     * keep a record of the wallet and wallet info files sizes and date last
+     * modified
+     * 
+     * @param walletFilename
+     */
+    private void rememberFileSizesAndLastModified(File walletFile, WalletInfo walletInfo) {
+        // get the files' last modified data and sizes and store them in the
+        // wallet properties
+        long walletFileSize = walletFile.length();
+        long walletFileLastModified = walletFile.lastModified();
+
+        String walletFilename = walletFile.getAbsolutePath();
+        String walletInfoFilename = WalletInfo.createWalletInfoFilename(walletFilename);
+        File walletInfoFile = new File(walletInfoFilename);
+        long walletInfoFileSize = walletInfoFile.length();
+        long walletInfoFileLastModified = walletInfoFile.lastModified();
+
+        walletInfo.put(MultiBitModel.WALLET_FILE_SIZE, "" + walletFileSize);
+        walletInfo.put(MultiBitModel.WALLET_FILE_LAST_MODIFIED, "" + walletFileLastModified);
+        walletInfo.put(MultiBitModel.WALLET_INFO_FILE_SIZE, "" + walletInfoFileSize);
+        walletInfo.put(MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED, "" + walletInfoFileLastModified);
+        log.info("Wallet filename " + walletFilename + " , " + MultiBitModel.WALLET_FILE_SIZE + " " + walletFileSize + " ,"
+                + MultiBitModel.WALLET_FILE_LAST_MODIFIED + " " + walletFileLastModified + " ,"
+                + MultiBitModel.WALLET_INFO_FILE_SIZE + " " + walletInfoFileSize + " ,"
+                + MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED + " " + walletInfoFileLastModified);
     }
 
     public void writeUserPreferences() {

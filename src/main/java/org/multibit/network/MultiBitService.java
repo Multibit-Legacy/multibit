@@ -163,8 +163,11 @@ public class MultiBitService {
      * initialise wallet from the wallet filename
      * 
      * @param walletFilename
+     * @return perWalletModelData
      */
-    public Wallet addWalletFromFilename(String walletFilename) {
+    public PerWalletModelData addWalletFromFilename(String walletFilename) {
+        PerWalletModelData perWalletModelDataToReturn = null;
+        
         fileHandler = new FileHandler(controller);
         File walletFile = null;
         boolean walletFileIsADirectory = false;
@@ -175,7 +178,10 @@ public class MultiBitService {
                 walletFileIsADirectory = true;
             } else {
                 try {
-                    wallet = fileHandler.loadWalletFromFile(walletFile);
+                    perWalletModelDataToReturn = fileHandler.loadFromFile(walletFile);
+                    if (perWalletModelDataToReturn != null) {
+                        wallet = perWalletModelDataToReturn.getWallet();
+                    }
                 } catch (IOException ioe) {
                     // TODO need to report back to user or will create a new
                     // wallet
@@ -192,7 +198,11 @@ public class MultiBitService {
             if (walletFile.exists()) {
                 // wallet file exists with default name
                 try {
-                    wallet = fileHandler.loadWalletFromFile(walletFile);
+                    perWalletModelDataToReturn = fileHandler.loadFromFile(walletFile);
+                    if (perWalletModelDataToReturn != null) {
+                        wallet = perWalletModelDataToReturn.getWallet();
+                    }
+
                     controller.fireWalletChanged();
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
@@ -204,14 +214,15 @@ public class MultiBitService {
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
 
-                controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
-                fileHandler.saveWalletToFile(wallet, walletFile);
+                PerWalletModelData newPerWalletModelData = controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
 
                 // set a default description
                 String defaultDescription = controller.getLocaliser().getString(
                         "createNewWalletSubmitAction.defaultDescription");
-                controller.getModel().setWalletDescriptionByFilename(walletFile.getAbsolutePath(), defaultDescription);
+                newPerWalletModelData.setWalletDescription(defaultDescription);
+                fileHandler.savePerWalletModelData(newPerWalletModelData);
 
+                //controller.getModel().setWalletDescriptionByFilename(walletFile.getAbsolutePath(), defaultDescription);
                 controller.fireNewWalletCreated();
             }
         }
@@ -243,7 +254,7 @@ public class MultiBitService {
             peerGroup.addPendingTransactionListener(wallet);
         }
 
-        return wallet;
+        return perWalletModelDataToReturn;
     }
 
     /**
@@ -275,7 +286,7 @@ public class MultiBitService {
         if (sendTransaction != null) {
             log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is " + sendTransaction.getHashAsString());
             
-            fileHandler.saveWalletToFile(perWalletModelData.getWallet(), new File(perWalletModelData.getWalletFilename()));
+            fileHandler.savePerWalletModelData(perWalletModelData);
             
             // notify all of the pendingTransactionsListeners about the new transaction
             peerGroup.processPendingTransaction(sendTransaction);

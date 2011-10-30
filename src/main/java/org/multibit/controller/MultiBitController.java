@@ -362,12 +362,12 @@ public class MultiBitController implements PeerEventListener {
     /**
      * add a wallet to multibit from a filename
      */
-    public Wallet addWalletFromFilename(String walletFilename) {
-        Wallet walletToReturn = null;
+    public PerWalletModelData addWalletFromFilename(String walletFilename) {
+        PerWalletModelData perWalletModelDataToReturn = null;
         if (multiBitService != null) {
-            walletToReturn = multiBitService.addWalletFromFilename(walletFilename);
+            perWalletModelDataToReturn = multiBitService.addWalletFromFilename(walletFilename);
         }
-        return walletToReturn;
+        return perWalletModelDataToReturn;
     }
 
     /**

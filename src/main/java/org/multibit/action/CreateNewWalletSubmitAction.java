@@ -8,6 +8,7 @@ import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.network.FileHandler;
 import org.slf4j.Logger;
@@ -72,17 +73,17 @@ public class CreateNewWalletSubmitAction implements Action {
                         ECKey newKey = new ECKey();
                         newWallet.keychain.add(newKey);
 
-                        WalletInfo newWalletInfo = new WalletInfo(newWalletFilename);
-                        fileHandler.saveWalletAndWalletInfoToFile(newWallet, newWalletFile, newWalletInfo);                        
+                        PerWalletModelData perWalletModelData = new PerWalletModelData();
+                        perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename));
+                        perWalletModelData.setWallet(newWallet);
+                        perWalletModelData.setWalletFilename(newWalletFilename);
+                        perWalletModelData.setWalletDescription(controller.getLocaliser().getString("createNewWalletSubmitAction.defaultDescription"));
+                        fileHandler.savePerWalletModelData(perWalletModelData);                       
  
                         // start using the new file as the wallet
                         controller.addWalletFromFilename(newWalletFile.getAbsolutePath());
                         controller.getModel().setActiveWalletByFilename(newWalletFilename);
-                        
-                        // set a default description
-                        String defaultDescription = controller.getLocaliser().getString("createNewWalletSubmitAction.defaultDescription");
-                        controller.getModel().setWalletDescriptionByFilename(newWalletFile.getAbsolutePath(), defaultDescription);
-                        
+                                                
                         controller.fireNewWalletCreated();
                     } catch (IOException e) {
                         log.error("IOException: {}", e.getMessage(), e);

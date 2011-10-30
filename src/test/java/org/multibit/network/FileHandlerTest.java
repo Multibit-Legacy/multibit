@@ -11,6 +11,7 @@ import org.multibit.Constants;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.PerWalletModelData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,11 +57,11 @@ public class FileHandlerTest extends TestCase {
 
         }
         assertTrue(walletFile.exists());
-        Wallet wallet = fileHandler.loadWalletFromFile(walletFile);
+        PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
 
-        assertNotNull(wallet);
+        assertNotNull(perWalletModelData);
 
-        assertEquals(WALLET_TEST1_BALANCE, wallet.getBalance());
+        assertEquals(WALLET_TEST1_BALANCE, perWalletModelData.getWallet().getBalance());
     }
 
     @Test
@@ -89,10 +90,10 @@ public class FileHandlerTest extends TestCase {
 
         }
         assertTrue(walletFile.exists());
-        Wallet wallet = fileHandler.loadWalletFromFile(walletFile);
+        PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
 
-        assertNotNull(wallet);
+        assertNotNull(perWalletModelData);
 
-        assertEquals(WALLET_TEST2_BALANCE, wallet.getBalance());
+        assertEquals(WALLET_TEST2_BALANCE, perWalletModelData.getWallet().getBalance());
     }
 }

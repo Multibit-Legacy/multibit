@@ -6,6 +6,7 @@ import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.network.FileHandler;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.*;
@@ -128,9 +129,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private ViewFactory viewFactory;
 
-    private Timer refreshTimer;
+    private Timer fileChangeTimer;
 
     private JPanel headerPanel;
+
+    private FileHandler fileHandler;
 
     @SuppressWarnings("deprecation")
     public MultiBitFrame(MultiBitController controller) {
@@ -165,6 +168,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 .createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SELECTION_BACKGROUND_COLOR),
                         BorderFactory.createEmptyBorder(0, 0, 3, 0)));
 
+        fileHandler = new FileHandler(controller);
+
         initUI();
 
         recreateAllViews(false);
@@ -185,10 +190,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         pack();
         setVisible(true);
 
-        refreshTimer = new Timer();
-        refreshTimer.schedule(new RefreshTimerTask(this), 0, 60000); // fires
-                                                                     // once a
-                                                                     // minute
+        fileChangeTimer = new Timer();
+        fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), 0, 30000); // fires
+                                                                     // once every two
+                                                                     // minutes
     }
 
     private void sizeAndCenter() {
@@ -749,7 +754,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     if (value != null && value.compareTo(BigInteger.ZERO) > 0) {
                         logger.debug("Received " + Localiser.bitcoinValueToString4(value, true, false) + " from "
                                 + from.toString() + " to wallet '" + perWalletModelData.getWalletDescription() + "'");
-                        perWalletModelData.getWallet().saveToFile(new File(perWalletModelData.getWalletFilename()));
+                        fileHandler.savePerWalletModelData(perWalletModelData);
                         dataHasChanged = true;
                     }
                 }
@@ -761,11 +766,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             // If we didn't understand the scriptSig, just crash.
             log.error(e.getMessage(), e);
             throw new IllegalStateException(e);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new IllegalStateException(e);
         }
-
     }
 
     public void onPendingCoinsReceived(Wallet wallet, Transaction transaction) {
@@ -783,11 +784,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     if (value != null && value.compareTo(BigInteger.ZERO) > 0) {
                         logger.debug("Received " + Localiser.bitcoinValueToString4(value, true, false) + " from "
                                 + from.toString() + " to wallet '" + perWalletModelData.getWalletDescription() + "'");
-                        perWalletModelData.getWallet().saveToFile(new File(perWalletModelData.getWalletFilename()));
+                        fileHandler.savePerWalletModelData(perWalletModelData);
                         dataHasChanged = true;
 
                         if (perWalletModelData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
-
                             // blink the total
                             estimatedBalanceTextLabel.blink(Localiser.bitcoinValueToString4(controller.getModel()
                                     .getActiveWalletEstimatedBalance(), true, false));
@@ -802,10 +802,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             // If we didn't understand the scriptSig, just crash.
             log.error(e.getMessage(), e);
             throw new IllegalStateException(e);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new IllegalStateException(e);
-        }
+        } 
     }
 
     /**

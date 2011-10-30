@@ -47,6 +47,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
     private JPanel walletListPanel;
     private ArrayList<SingleWalletPanel> walletPanels;
 
+    private JLabel transactionsTitleLabel;
     private ShowTransactionsPanel transactionsPanel;
 
     private boolean initialised = false;
@@ -174,12 +175,12 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         addressesHeaderPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
-        JLabel titleLabel = new JLabel();
-        titleLabel.setHorizontalTextPosition(JLabel.CENTER);
-        titleLabel.setText(controller.getLocaliser().getString("showTransactionsAction.text"));
+        transactionsTitleLabel = new JLabel();
+        transactionsTitleLabel.setHorizontalTextPosition(JLabel.CENTER);
+        transactionsTitleLabel.setText(controller.getLocaliser().getString("showTransactionsAction.text"));
         Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE,
                 MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
-        titleLabel.setFont(font);
+        transactionsTitleLabel.setFont(font);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -188,7 +189,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        addressesHeaderPanel.add(titleLabel, constraints);
+        addressesHeaderPanel.add(transactionsTitleLabel, constraints);
 
         return addressesHeaderPanel;
     }
@@ -209,7 +210,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
                     outerPanel.setOpaque(false);
                     outerPanel.setBorder(BorderFactory.createEmptyBorder(0, 9, 18, 9));
                     outerPanel.setLayout(new BorderLayout());
-                    SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, mainFrame);
+                    SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, controller, mainFrame);
                     outerPanel.add(loopPanel, BorderLayout.CENTER);
                     loopPanel.addMouseListener(new WalletMouseListener());
 
@@ -297,6 +298,21 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
                 loopSingleWalletPanel.revalidate();
                 loopSingleWalletPanel.repaint();
             }
+        }
+
+        if (controller.getModel().getActivePerWalletModelData() != null) {
+            if (controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+                transactionsTitleLabel.setText(controller.getLocaliser()
+                        .getString("showTransactionsAction.mayBeOutOfDate.text"));
+                transactionsTitleLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));            
+
+            } else {
+                transactionsTitleLabel.setText(controller.getLocaliser().getString("showTransactionsAction.text"));
+                transactionsTitleLabel.setToolTipText(null);
+            }
+            transactionsTitleLabel.invalidate();
+            transactionsTitleLabel.revalidate();
+            transactionsTitleLabel.repaint();
         }
 
         // recreate the wallet data backing the ShowTransactionsPanel
