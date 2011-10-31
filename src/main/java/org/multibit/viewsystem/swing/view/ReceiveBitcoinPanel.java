@@ -280,16 +280,25 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(amountUnitLabel, constraints);
 
-//        JLabel filler6 = new JLabel("");
-//        filler6.setOpaque(false);
-//        constraints.fill = GridBagConstraints.BOTH;
-//        constraints.gridx = 6;
-//        constraints.gridy = 6;
-//        constraints.weightx = 10;
-//        constraints.weighty = 0.4;
-//        constraints.anchor = GridBagConstraints.LINE_START;
-//        formPanel.add(filler6, constraints);
-
+        // disable any new changes if another process has changed the wallet
+        if (controller.getModel().getActivePerWalletModelData() != null
+                && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+            // files have been changed by another process - disallow edits
+            labelTextArea.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));   
+            labelTextArea.setEditable(false);
+            labelTextArea.setEnabled(false);
+            amountTextField.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));   
+            amountTextField.setEditable(false);
+            amountTextField.setEnabled(false);
+         } else {
+             labelTextArea.setToolTipText(null);
+             labelTextArea.setEditable(true);
+             labelTextArea.setEnabled(true);
+             amountTextField.setToolTipText(null);
+             amountTextField.setEditable(true);
+             amountTextField.setEnabled(true);
+         }
+        
         return formPanel;
     }
 
@@ -456,7 +465,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         addressesHeaderPanel.add(filler1, constraints);
 
         CreateNewReceivingAddressAction createNewReceivingAddressAction = new CreateNewReceivingAddressAction(controller, this);
-        JButton createNewButton = new JButton(createNewReceivingAddressAction);
+        createNewButton = new JButton(createNewReceivingAddressAction);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 0;
@@ -466,7 +475,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.anchor = GridBagConstraints.LINE_START;
         addressesHeaderPanel.add(createNewButton, constraints);
 
-        JLabel titleLabel = new JLabel();
+        titleLabel = new JLabel();
         titleLabel.setHorizontalTextPosition(JLabel.CENTER);
         titleLabel.setText(controller.getLocaliser().getString("receiveBitcoinPanel.receivingAddressesTitle"));
         Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE,
@@ -712,10 +721,38 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
             displaySwatch(address, amount, label);
         }
     }
-
+    
+    @Override
+    public void displayView() {
+        super.displayView();
+        // disable any new changes if another process has changed the wallet
+        if (controller.getModel().getActivePerWalletModelData() != null
+                && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+            // files have been changed by another process - disallow edits
+           titleLabel.setText(controller.getLocaliser()
+                    .getString("receiveBitcoinPanel.receivingAddressesTitle.mayBeOutOfDate"));
+            titleLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));            
+        } else {
+            titleLabel.setText(controller.getLocaliser()
+                    .getString("receiveBitcoinPanel.receivingAddressesTitle"));
+            titleLabel.setToolTipText(null);            
+        }
+    }
+    
     @Override
     public void updateView() {
-        // TODO Auto-generated method stub
-        
+        super.updateView();
+        // disable any new changes if another process has changed the wallet
+        if (controller.getModel().getActivePerWalletModelData() != null
+                && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+            // files have been changed by another process - disallow edits
+            titleLabel.setText(controller.getLocaliser()
+                    .getString("receiveBitcoinPanel.receivingAddressesTitle.mayBeOutOfDate"));
+            titleLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));            
+        } else {
+            titleLabel.setText(controller.getLocaliser()
+                    .getString("receiveBitcoinPanel.receivingAddressesTitle"));
+            titleLabel.setToolTipText(null);            
+        }
     }
 }

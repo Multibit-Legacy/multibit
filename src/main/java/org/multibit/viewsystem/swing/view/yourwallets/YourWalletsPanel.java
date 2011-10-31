@@ -42,7 +42,6 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
-    private Data data;
 
     private JPanel walletListPanel;
     private ArrayList<SingleWalletPanel> walletPanels;
@@ -65,13 +64,8 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         this.controller = controller;
 
         walletPanels = new ArrayList<SingleWalletPanel>();
-        data = new Data();
 
         initUI();
-    }
-
-    public String getDescription() {
-        return controller.getLocaliser().getString("showYourWalletsAction.text");
     }
 
     /**
@@ -90,6 +84,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
 
         if (walletPanels != null) {
             for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
+                loopSingleWalletPanel.updateFromModel();
                 if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename() != null) {
                     if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename()
                             .equals(activePerModelData.getWalletFilename())) {
@@ -101,6 +96,21 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
                 }
             }
         }
+        
+        if (controller.getModel().getActivePerWalletModelData() != null) {
+            if (controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+                transactionsTitleLabel.setText(controller.getLocaliser()
+                        .getString("showTransactionsAction.mayBeOutOfDate.text"));
+                transactionsTitleLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));            
+            } else {
+                transactionsTitleLabel.setText(controller.getLocaliser().getString("showTransactionsAction.text"));
+                transactionsTitleLabel.setToolTipText(null);
+            }
+            transactionsTitleLabel.invalidate();
+            transactionsTitleLabel.revalidate();
+            transactionsTitleLabel.repaint();
+        }
+
         invalidate();
         revalidate();
         repaint();
@@ -298,21 +308,6 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
                 loopSingleWalletPanel.revalidate();
                 loopSingleWalletPanel.repaint();
             }
-        }
-
-        if (controller.getModel().getActivePerWalletModelData() != null) {
-            if (controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                transactionsTitleLabel.setText(controller.getLocaliser()
-                        .getString("showTransactionsAction.mayBeOutOfDate.text"));
-                transactionsTitleLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));            
-
-            } else {
-                transactionsTitleLabel.setText(controller.getLocaliser().getString("showTransactionsAction.text"));
-                transactionsTitleLabel.setToolTipText(null);
-            }
-            transactionsTitleLabel.invalidate();
-            transactionsTitleLabel.revalidate();
-            transactionsTitleLabel.repaint();
         }
 
         // recreate the wallet data backing the ShowTransactionsPanel

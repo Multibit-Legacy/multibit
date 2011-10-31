@@ -61,12 +61,12 @@ public class CreateNewWalletSubmitAction implements Action {
                     try {
                         // create backup file if file exists
                         if (newWalletFile.exists()) {
-                           fileHandler.createBackupFile(newWalletFile);
+                           fileHandler.createBackupFilename(newWalletFile);
                         }
                         String walletInfoFilename = WalletInfo.createWalletInfoFilename(newWalletFilename);
                         File walletInfoFile = new File(walletInfoFilename);
                         if (walletInfoFile.exists()) {
-                            fileHandler.createBackupFile(walletInfoFile);
+                            fileHandler.createBackupFilename(walletInfoFile);
                          }
                         // create a new wallet
                         Wallet newWallet = new Wallet(controller.getMultiBitService().getNetworkParameters());

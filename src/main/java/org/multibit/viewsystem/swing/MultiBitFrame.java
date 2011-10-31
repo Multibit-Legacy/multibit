@@ -1,6 +1,42 @@
 package org.multibit.viewsystem.swing;
 
-import com.google.bitcoin.core.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Toolkit;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.math.BigInteger;
+import java.util.Timer;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import javax.swing.ListCellRenderer;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
+
 import org.multibit.Localiser;
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
@@ -9,8 +45,22 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.network.FileHandler;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
-import org.multibit.viewsystem.swing.action.*;
-import org.multibit.viewsystem.swing.view.*;
+import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
+import org.multibit.viewsystem.swing.action.ExitAction;
+import org.multibit.viewsystem.swing.action.HelpAboutAction;
+import org.multibit.viewsystem.swing.action.MnemonicUtil;
+import org.multibit.viewsystem.swing.action.OpenWalletAction;
+import org.multibit.viewsystem.swing.action.ReceiveBitcoinAction;
+import org.multibit.viewsystem.swing.action.SendBitcoinAction;
+import org.multibit.viewsystem.swing.action.ShowHelpContentsAction;
+import org.multibit.viewsystem.swing.action.ShowPreferencesAction;
+import org.multibit.viewsystem.swing.action.YourWalletsAction;
+import org.multibit.viewsystem.swing.view.BlinkLabel;
+import org.multibit.viewsystem.swing.view.HeaderPanel;
+import org.multibit.viewsystem.swing.view.MultiBitButton;
+import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
+import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
+import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.yourwallets.YourWalletsPanel;
 import org.simplericity.macify.eawt.Application;
 import org.simplericity.macify.eawt.ApplicationEvent;
@@ -19,18 +69,11 @@ import org.simplericity.macify.eawt.DefaultApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-
-import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.Timer;
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.ScriptException;
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.TransactionInput;
+import com.google.bitcoin.core.Wallet;
 
 /*
  * JFrame displaying Swing version of MultiBit
@@ -191,9 +234,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         setVisible(true);
 
         fileChangeTimer = new Timer();
-        fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), 0, 30000); // fires
-                                                                     // once every two
-                                                                     // minutes
+        // fires once every minute
+        fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), 0, 60000);
     }
 
     private void sizeAndCenter() {
@@ -302,19 +344,23 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         GridBagConstraints constraints = new GridBagConstraints();
 
         JPanel filler1 = new JPanel();
+        filler1.setMinimumSize(new Dimension(30, 30));
+        filler1.setMaximumSize(new Dimension(30, 30));
+        filler1.setPreferredSize(new Dimension(30, 30));
         filler1.setOpaque(false);
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.weightx = 0.1;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.weightx = 0.01;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
         headerPanel.add(filler1, constraints);
 
         JLabel walletIconLabel = new JLabel();
         walletIconLabel.setIcon(createImageIcon(WALLET_ICON_FILE));
         walletIconLabel.setOpaque(false);
+        constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 0;
-        constraints.weightx = 0.2;
+        constraints.weightx = 0.1;
         constraints.anchor = GridBagConstraints.LINE_START;
 
         headerPanel.add(walletIconLabel, constraints);
@@ -542,17 +588,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             initUI();
         }
         updateOnlineStatusText();
-        estimatedBalanceTextLabel
-                .setText(Localiser.bitcoinValueToString4(model.getActiveWalletEstimatedBalance(), true, false));
-        availableBalanceTextLabel.setText(controller.getLocaliser().getString("multiBitFrame.availableToSpend",
-                new Object[] { Localiser.bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true, false) }));
-
-        String walletFilename = model.getActiveWalletFilename();
-        if (walletFilename == null) {
-            setWalletFilename("");
-        } else {
-            setWalletFilename(walletFilename);
-        }
+        
+        updateHeader();
 
         setTitle(localiser.getString("multiBitFrame.title"));
 
@@ -802,7 +839,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             // If we didn't understand the scriptSig, just crash.
             log.error(e.getMessage(), e);
             throw new IllegalStateException(e);
-        } 
+        }
     }
 
     /**
@@ -811,16 +848,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void fireDataChanged() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                // update the totals in the header
-                estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel()
-                        .getActiveWalletEstimatedBalance(), true, false));
-                availableBalanceTextLabel
-                        .setText(controller.getLocaliser().getString(
-                                "multiBitFrame.availableToSpend",
-                                new Object[] { Localiser.bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true,
-                                        false) }));
-
-                setWalletFilename(controller.getModel().getActiveWalletFilename());
+                // update the header
+                updateHeader();
 
                 // tell the current view to update itself
                 View currentViewView = viewFactory.getView(currentView);
@@ -836,7 +865,37 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
         });
     }
+  
+    private void updateHeader() {
+        if (controller.getModel().getActivePerWalletModelData() != null
+                && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+            // files have been changed by another process - blank totals
+            // and put 'Updates stopped' message
+            estimatedBalanceTextLabel.setText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.text"));
+            estimatedBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));   
+            
+            availableBalanceTextLabel.setText("");
+        } else {
+            estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel()
+                    .getActiveWalletEstimatedBalance(), true, false));
+            estimatedBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
 
+            availableBalanceTextLabel.setText(controller.getLocaliser()
+                    .getString(
+                            "multiBitFrame.availableToSpend",
+                            new Object[] { Localiser.bitcoinValueToString4(model.getActiveWalletAvailableBalance(),
+                                    true, false) }));
+        }
+
+        String walletFilename = controller.getModel().getActiveWalletFilename();
+        if (walletFilename == null) {
+            setWalletFilename("");
+        } else {
+            setWalletFilename(walletFilename);
+        }
+
+    }
+    
     private JComboBox createActiveWalletComboBox() {
         java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 

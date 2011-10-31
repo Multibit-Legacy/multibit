@@ -9,7 +9,9 @@ import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
+import org.multibit.network.FileHandler;
 import org.multibit.viewsystem.swing.view.AbstractTradePanel;
 
 import com.google.bitcoin.core.ECKey;
@@ -22,7 +24,7 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
     private static final long serialVersionUID = 200152235465875405L;
 
     private MultiBitController controller;
-    
+
     private AbstractTradePanel receiveBitcoinPanel;
 
     /**
@@ -42,22 +44,35 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
      * create new receiving address
      */
     public void actionPerformed(ActionEvent e) {
-        ECKey newKey = new ECKey();
-        controller.getModel().getActiveWallet().keychain.add(newKey);
-        
-        String addressString = newKey.toAddress(controller.getMultiBitService().getNetworkParameters()).toString();
-        WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
-        if (walletInfo == null) {
-            walletInfo = new WalletInfo(controller.getModel().getActiveWalletFilename());
-            controller.getModel().setActiveWalletInfo(walletInfo);
-        }
-        controller.getModel().getActiveWalletWalletInfo().addReceivingAddress(new AddressBookData("", addressString), false);      
-        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, addressString);
-        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
+        // check to see if the wallet files have changed
+        FileHandler fileHandler = new FileHandler(controller);
+        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        boolean haveFilesChanged = fileHandler.haveFilesChanged(perWalletModelData);
 
-        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME); 
-        
-        receiveBitcoinPanel.getFormPanel().requestFocusInWindow();
-        receiveBitcoinPanel.getLabelTextArea().requestFocusInWindow();
+        if (haveFilesChanged) {
+            // set on the perWalletModelData that files have changed and fire data changed
+            perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
+            controller.fireDataChanged();
+        } else {
+            ECKey newKey = new ECKey();
+            perWalletModelData.getWallet().keychain.add(newKey);
+
+            String addressString = newKey.toAddress(controller.getMultiBitService().getNetworkParameters()).toString();
+            WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+            if (walletInfo == null) {
+                walletInfo = new WalletInfo(perWalletModelData.getWalletFilename());
+                perWalletModelData.setWalletInfo(walletInfo);
+            }
+            walletInfo.addReceivingAddress(new AddressBookData("", addressString), false);
+            controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, addressString);
+            controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
+            
+            fileHandler.savePerWalletModelData(perWalletModelData);
+
+            controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
+
+            receiveBitcoinPanel.getFormPanel().requestFocusInWindow();
+            receiveBitcoinPanel.getLabelTextArea().requestFocusInWindow();
+        }
     }
 }

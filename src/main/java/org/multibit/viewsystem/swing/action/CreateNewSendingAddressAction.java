@@ -9,7 +9,9 @@ import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
+import org.multibit.network.FileHandler;
 import org.multibit.viewsystem.swing.view.AbstractTradePanel;
 
 /**
@@ -40,25 +42,37 @@ public class CreateNewSendingAddressAction extends AbstractAction {
      * create new send address
      */
     public void actionPerformed(ActionEvent e) {
-        WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
-        if (walletInfo == null) {
-            walletInfo = new WalletInfo(controller.getModel().getActiveWalletFilename());
-            controller.getModel().setActiveWalletInfo(walletInfo);
-        }
+        // check to see if the wallet files have changed
+        FileHandler fileHandler = new FileHandler(controller);
+        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        boolean haveFilesChanged = fileHandler.haveFilesChanged(perWalletModelData);
 
-        if (walletInfo.getSendingAddresses().size() == 0) {
-            String address = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
-            String label = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
-
-            controller.getModel().getActiveWalletWalletInfo().addSendingAddress(new AddressBookData(label, address));
+        if (haveFilesChanged) {
+            // set on the perWalletModelData that files have changed and fire
+            // data changed
+            perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
+            controller.fireDataChanged();
         } else {
-            controller.getModel().getActiveWalletWalletInfo().addSendingAddress(new AddressBookData("", ""));
-            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, "");
-            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, "");
-        }
-        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
+            WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+            if (walletInfo == null) {
+                walletInfo = new WalletInfo(perWalletModelData.getWalletFilename());
+                perWalletModelData.setWalletInfo(walletInfo);
+            }
 
-        sendBitcoinPanel.getFormPanel().requestFocusInWindow();
-        sendBitcoinPanel.getLabelTextArea().requestFocusInWindow();
+            if (walletInfo.getSendingAddresses().size() == 0) {
+                String address = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
+                String label = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
+
+                perWalletModelData.getWalletInfo().addSendingAddress(new AddressBookData(label, address));
+            } else {
+                perWalletModelData.getWalletInfo().addSendingAddress(new AddressBookData("", ""));
+                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, "");
+                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, "");
+            }
+            controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
+
+            sendBitcoinPanel.getFormPanel().requestFocusInWindow();
+            sendBitcoinPanel.getLabelTextArea().requestFocusInWindow();
+        }
     }
 }

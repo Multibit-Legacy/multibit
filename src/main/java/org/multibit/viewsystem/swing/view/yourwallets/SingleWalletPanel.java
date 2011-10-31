@@ -228,6 +228,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         }
 
         if (perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
+            setOpaque(true);
             setBackground(BACKGROUND_COLOR_DATA_HAS_CHANGED);
             walletDescriptionTextField.setBackground(BACKGROUND_COLOR_DATA_HAS_CHANGED);
             walletDescriptionTextField.setText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.text"));

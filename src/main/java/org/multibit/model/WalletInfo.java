@@ -48,7 +48,7 @@ public class WalletInfo {
     public static final String DESCRIPTION_PROPERTY = "walletDescription";
     public static final String SIZE_PROPERTY = "walletSize";
     public static final String DATE_LAST_MODIFED_PROPERTY = "walletLastModified";
-    
+
     private String walletFilename;
     private String walletVersion;
 
@@ -74,6 +74,7 @@ public class WalletInfo {
 
     /**
      * put a String property into the walletinfo
+     * 
      * @param key
      * @param value
      */
@@ -83,6 +84,7 @@ public class WalletInfo {
 
     /**
      * get a String property from the wallet info
+     * 
      * @param key
      * @return
      */
@@ -220,9 +222,17 @@ public class WalletInfo {
     }
 
     /**
-     * write out the address book - a simple comma separated file format is used
+     * write out the wallet info to the file specified internally
      */
     public void writeToFile() {
+        writeToFile(createWalletInfoFilename(walletFilename));
+    }
+
+    /**
+     * write out the wallet info to the file specified as a parameter - a comma
+     * separated file format is used
+     */
+    public void writeToFile(String walletInfoFilename) {
         try {
             // we write out the union of the candidate and actual receiving
             // addresses
@@ -239,8 +249,7 @@ public class WalletInfo {
             }
 
             // Create file
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
-                    createWalletInfoFilename(walletFilename)), "UTF8"));
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(walletInfoFilename), "UTF8"));
 
             // write out the multibit addressbook identifier
             out.write(INFO_MAGIC_TEXT + SEPARATOR + INFO_VERSION_TEXT + "\n");
@@ -341,9 +350,10 @@ public class WalletInfo {
             String previousColumnOne = null;
             String previousColumnTwo = null;
             String multilineColumnThreeValue = null;
-            
+
             while ((inputLine = bufferedReader.readLine()) != null) {
-                if (inputLine.startsWith(RECEIVE_ADDRESS_MARKER + SEPARATOR) || inputLine.startsWith(SEND_ADDRESS_MARKER + SEPARATOR)
+                if (inputLine.startsWith(RECEIVE_ADDRESS_MARKER + SEPARATOR)
+                        || inputLine.startsWith(SEND_ADDRESS_MARKER + SEPARATOR)
                         || inputLine.startsWith(PROPERTY_MARKER + SEPARATOR)) {
                     if (isMultilineColumnThree) {
                         // add previous multiline column three to model
@@ -390,7 +400,7 @@ public class WalletInfo {
                             }
                         }
                     }
-                    
+
                     previousColumnOne = columnOne;
                     previousColumnTwo = columnTwo;
                     multilineColumnThreeValue = columnThree;

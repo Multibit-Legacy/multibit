@@ -7,6 +7,8 @@ import java.awt.GridBagLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -44,6 +46,10 @@ public abstract class AbstractTradePanel extends JPanel implements View {
     protected AddressBookTableModel addressesTableModel;
 
     protected JTable addressesTable;
+    
+    protected JButton createNewButton;
+    
+    protected JLabel titleLabel;
     
     public AbstractTradePanel(MultiBitFrame mainFrame, MultiBitController controller) {
         this.mainFrame = mainFrame;
@@ -113,6 +119,65 @@ public abstract class AbstractTradePanel extends JPanel implements View {
     public void displayView() {
         loadForm();
         selectRows();
+        
+        // disable any new changes if another process has changed the wallet
+        if (controller.getModel().getActivePerWalletModelData() != null
+                && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+            // files have been changed by another process - disallow edits
+            labelTextArea.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));   
+            labelTextArea.setEditable(false);
+            labelTextArea.setEnabled(false);
+            amountTextField.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));   
+            amountTextField.setEditable(false);
+            amountTextField.setEnabled(false);
+            
+            if (createNewButton != null) {
+                createNewButton.setEnabled(false);
+                createNewButton.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));                   
+            }
+         } else {
+             labelTextArea.setToolTipText(null);
+             labelTextArea.setEditable(true);
+             labelTextArea.setEnabled(true);
+             amountTextField.setToolTipText(null);
+             amountTextField.setEditable(true);
+             amountTextField.setEnabled(true);
+             if (createNewButton != null) {
+                 createNewButton.setEnabled(true);
+                 createNewButton.setToolTipText(null);                   
+             }
+         }
+    }
+    
+    @Override
+    public void updateView() {
+        // disable any new changes if another process has changed the wallet
+        if (controller.getModel().getActivePerWalletModelData() != null
+                && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+            // files have been changed by another process - disallow edits
+            labelTextArea.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));   
+            labelTextArea.setEditable(false);
+            labelTextArea.setEnabled(false);
+            amountTextField.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));   
+            amountTextField.setEditable(false);
+            amountTextField.setEnabled(false);
+            
+            if (createNewButton != null) {
+                createNewButton.setEnabled(false);
+                createNewButton.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));                   
+            }
+         } else {
+             labelTextArea.setToolTipText(null);
+             labelTextArea.setEditable(true);
+             labelTextArea.setEnabled(true);
+             amountTextField.setToolTipText(null);
+             amountTextField.setEditable(true);
+             amountTextField.setEnabled(true);
+             if (createNewButton != null) {
+                 createNewButton.setEnabled(true);
+                 createNewButton.setToolTipText(null);                   
+             }
+         }
     }
 
     @Override

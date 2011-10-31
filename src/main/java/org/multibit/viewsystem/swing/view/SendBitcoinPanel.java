@@ -94,9 +94,12 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
     private static final int MINIMUM_QRCODE_PANEL_HORIZONTAL_SPACING = 30;
     private static final int MINIMUM_QRCODE_PANEL_VERTICAL_SPACING = 80;
-    
+
+    private JButton pasteAddressButton;
+    private JButton sendButton;
+
     public SendBitcoinPanel(MultiBitFrame mainFrame, MultiBitController controller) {
-        super(mainFrame, controller);;
+        super(mainFrame, controller);
     }
 
     protected JPanel createFormPanel() {
@@ -224,7 +227,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
         ImageIcon pasteIcon = createImageIcon(MultiBitFrame.PASTE_ICON_FILE);
         PasteAddressAction pasteAddressAction = new PasteAddressAction(controller, this, pasteIcon);
-        JButton pasteAddressButton = new JButton(pasteAddressAction);
+        pasteAddressButton = new JButton(pasteAddressAction);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 7;
         constraints.gridy = 4;
@@ -250,8 +253,9 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         labelTextArea = new JTextArea("", 2, 20);
         labelTextArea.setBorder(aTextField.getBorder());
         labelTextArea.addKeyListener(new QRCodeKeyListener());
-        
-        JScrollPane labelScrollPane = new JScrollPane(labelTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        JScrollPane labelScrollPane = new JScrollPane(labelTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         labelScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, MultiBitFrame.DARK_BACKGROUND_COLOR));
         labelScrollPane.setOpaque(true);
         labelScrollPane.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
@@ -311,7 +315,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         formPanel.add(amountUnitLabel, constraints);
 
         SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, this);
-        JButton sendButton = new JButton(sendBitcoinConfirmAction);
+        sendButton = new JButton(sendBitcoinConfirmAction);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 6;
         constraints.gridy = 6;
@@ -462,7 +466,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         addressesHeaderPanel.add(filler1, constraints);
 
         CreateNewSendingAddressAction createNewSendingAddressAction = new CreateNewSendingAddressAction(controller, this);
-        JButton createNewButton = new JButton(createNewSendingAddressAction);
+        createNewButton = new JButton(createNewSendingAddressAction);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 0;
@@ -472,7 +476,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         addressesHeaderPanel.add(createNewButton, constraints);
 
-        JLabel titleLabel = new JLabel();
+        titleLabel = new JLabel();
         titleLabel.setHorizontalTextPosition(JLabel.CENTER);
         titleLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.sendingAddressesTitle"));
         Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE,
@@ -487,7 +491,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.CENTER;
         addressesHeaderPanel.add(titleLabel, constraints);
-        
+
         JPanel filler2 = new JPanel();
         filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -634,7 +638,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
-  
+
             return label;
         }
     }
@@ -662,7 +666,8 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
                     urlFlavor = new DataFlavor("application/x-java-url; class=java.net.URL");
                     uriListAsStringFlavor = new DataFlavor("text/uri-list; class=java.lang.String");
                     uriListAsReaderFlavor = new DataFlavor("text/uri-list;class=java.io.Reader");
-                    flavors = new DataFlavor[] { DataFlavor.imageFlavor, urlFlavor, uriListAsStringFlavor, uriListAsReaderFlavor };
+                    flavors = new DataFlavor[] { DataFlavor.imageFlavor, urlFlavor, uriListAsStringFlavor,
+                            uriListAsReaderFlavor };
                 } catch (ClassNotFoundException cnfe) {
                     cnfe.printStackTrace();
                 }
@@ -784,10 +789,12 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
                     if (image.getWidth(qrCodeLabel) + MINIMUM_QRCODE_PANEL_HORIZONTAL_SPACING > qrCodePanel.getWidth()
                             || image.getHeight(qrCodeLabel) + MINIMUM_QRCODE_PANEL_VERTICAL_SPACING > qrCodePanel.getHeight()) {
                         // scale image
-                        double qrCodeWidth = (double)qrCodePanel.getWidth();
-                        double qrCodeHeight = (double)qrCodePanel.getHeight();
-                        double xScale = qrCodeWidth / (double)(image.getWidth(qrCodeLabel) + MINIMUM_QRCODE_PANEL_HORIZONTAL_SPACING);
-                        double yScale = qrCodeHeight / (double)(image.getHeight(qrCodeLabel) + MINIMUM_QRCODE_PANEL_VERTICAL_SPACING);
+                        double qrCodeWidth = (double) qrCodePanel.getWidth();
+                        double qrCodeHeight = (double) qrCodePanel.getHeight();
+                        double xScale = qrCodeWidth
+                                / (double) (image.getWidth(qrCodeLabel) + MINIMUM_QRCODE_PANEL_HORIZONTAL_SPACING);
+                        double yScale = qrCodeHeight
+                                / (double) (image.getHeight(qrCodeLabel) + MINIMUM_QRCODE_PANEL_VERTICAL_SPACING);
                         double scaleFactor = Math.min(xScale, yScale);
                         bufferedImage = toBufferedImage(image, (int) (image.getWidth(qrCodeLabel) * scaleFactor),
                                 (int) (image.getHeight(qrCodeLabel) * scaleFactor));
@@ -827,14 +834,14 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
                     log.debug("javaFileList is supported");
                     java.util.List list = (java.util.List) transferable.getTransferData(DataFlavor.javaFileListFlavor);
                     for (Object aList : list) {
-                    File f = (File) aList;
-                    ImageIcon icon = new ImageIcon(f.getAbsolutePath());
-                    if (icon.getImage() != null) {
-                      return icon.getImage();
+                        File f = (File) aList;
+                        ImageIcon icon = new ImageIcon(f.getAbsolutePath());
+                        if (icon.getImage() != null) {
+                            return icon.getImage();
+                        }
                     }
-                  }
                 }
-                
+
                 if (transferable.isDataFlavorSupported(uriListAsStringFlavor)) {
                     log.debug("uriListAsStringFlavor is supported");
                     String uris = (String) transferable.getTransferData(uriListAsStringFlavor);
@@ -850,15 +857,14 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
                         if (image != null) {
                             return image;
                         }
-                        
+
                         ImageIcon uriIcon = new ImageIcon(uri);
-                      if(uriIcon.getImage() != null) {
-                          return uriIcon.getImage();
-                      }
+                        if (uriIcon.getImage() != null) {
+                            return uriIcon.getImage();
+                        }
                     }
                 }
 
-                
                 if (transferable.isDataFlavorSupported(uriListAsReaderFlavor)) {
                     log.debug("uriListAsReaderFlavor is supported");
 
@@ -877,7 +883,6 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
                         return image;
                     }
                 }
-                
 
                 if (transferable.isDataFlavorSupported(urlFlavor)) {
                     log.debug("urlFlavor is supported");
@@ -888,11 +893,11 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
                     if (image != null) {
                         return image;
                     }
-                    
+
                     ImageIcon urlIcon = new ImageIcon(url);
-                  if (urlIcon.getImage() != null) {
-                      return urlIcon.getImage();
-                  }
+                    if (urlIcon.getImage() != null) {
+                        return urlIcon.getImage();
+                    }
                 }
             } catch (IOException ioe) {
                 ioe.printStackTrace();
@@ -905,26 +910,26 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
         private Image getURLImage(URL url) {
             Image imageToReturn = null;
-            
+
             try {
-               imageToReturn = ImageIO.read(url);
+                imageToReturn = ImageIO.read(url);
             } catch (IOException e) {
                 e.printStackTrace();
-            } 
+            }
             return imageToReturn;
         }
 
         private Image getFileImage(File file) {
             Image imageToReturn = null;
-            
+
             try {
-               imageToReturn = ImageIO.read(file);
+                imageToReturn = ImageIO.read(file);
             } catch (IOException e) {
                 e.printStackTrace();
-            } 
+            }
             return imageToReturn;
         }
-        
+
         // Transferable
         public Object getTransferData(DataFlavor flavor) {
             if (isDataFlavorSupported(flavor)) {
@@ -933,18 +938,18 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
                 } else {
                     if (DataFlavor.javaFileListFlavor.equals(flavor)) {
                         java.util.List<File> list = new java.util.LinkedList<File>();
-                        
+
                         // write the image to the output stream
                         File swatchFile = new File("swatch.png");
                         try {
-                            ImageIO.write( toBufferedImage(image, -1, -1), "png", new File("swatch.png"));
+                            ImageIO.write(toBufferedImage(image, -1, -1), "png", new File("swatch.png"));
                         } catch (IOException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                         list.add(swatchFile);
                         return list;
-                      
+
                     }
                 }
             }
@@ -977,15 +982,14 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
             }
             // draw original image to thumbnail image object and
             // scale it to the new size on-the-fly
-            log.debug("SendBitCoinPanel#toBufferedImage - 2.2, image = " + image + ",width = " + width + ", height = "
-                    + height);
+            log.debug("SendBitCoinPanel#toBufferedImage - 2.2, image = " + image + ",width = " + width + ", height = " + height);
 
             BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
             log.debug("SendBitCoinPanel#toBufferedImage - 2.3, bufferedImage = " + bufferedImage);
 
             Graphics2D g2 = bufferedImage.createGraphics();
-            
+
             log.debug("SendBitCoinPanel#toBufferedImage - 3");
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             g2.drawImage(image, 0, 0, width, height, null);
@@ -1021,8 +1025,8 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
                 log.debug("SendBitCoinPanel#toBufferedImage - 2.2");
 
                 GraphicsConfiguration gc = gs.getDefaultConfiguration();
-                log.debug("SendBitCoinPanel#toBufferedImage - 2.3, image = " + image + ",width = " + width
-                        + ", height = " + height);
+                log.debug("SendBitCoinPanel#toBufferedImage - 2.3, image = " + image + ",width = " + width + ", height = "
+                        + height);
 
                 bimage = gc.createCompatibleImage(width, height, transparency);
                 log.debug("SendBitCoinPanel#toBufferedImage - 2.4");
@@ -1053,8 +1057,84 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
     }
 
     @Override
+    public void displayView() {
+        super.displayView();
+        // disable any new changes if another process has changed the wallet
+        if (controller.getModel().getActivePerWalletModelData() != null
+                && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+            // files have been changed by another process - disallow edits
+            addressTextField.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));
+            addressTextField.setEditable(false);
+            addressTextField.setEnabled(false);
+
+            if (sendButton != null) {
+                sendButton.setEnabled(false);
+                sendButton.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));
+            }
+            if (pasteAddressButton != null) {
+                pasteAddressButton.setEnabled(false);
+                pasteAddressButton.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));
+            }
+            titleLabel.setText(controller.getLocaliser()
+                    .getString("sendBitcoinPanel.sendingAddressesTitle.mayBeOutOfDate"));
+            titleLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));            
+        } else {
+            addressTextField.setToolTipText(null);
+            addressTextField.setEditable(true);
+            addressTextField.setEnabled(true);
+
+            if (sendButton != null) {
+                sendButton.setEnabled(true);
+                sendButton.setToolTipText(null);
+            }
+            if (pasteAddressButton != null) {
+                pasteAddressButton.setEnabled(true);
+                pasteAddressButton.setToolTipText(null);
+            }
+            titleLabel.setText(controller.getLocaliser()
+                    .getString("sendBitcoinPanel.sendingAddressesTitle"));
+            titleLabel.setToolTipText(null);            
+        }
+    }
+    
+    @Override
     public void updateView() {
-        // TODO Auto-generated method stub
-        
+        super.updateView();
+        // disable any new changes if another process has changed the wallet
+        if (controller.getModel().getActivePerWalletModelData() != null
+                && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+            // files have been changed by another process - disallow edits
+            addressTextField.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));
+            addressTextField.setEditable(false);
+            addressTextField.setEnabled(false);
+
+            if (sendButton != null) {
+                sendButton.setEnabled(false);
+                sendButton.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));
+            }
+            if (pasteAddressButton != null) {
+                pasteAddressButton.setEnabled(false);
+                pasteAddressButton.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));
+            }
+            titleLabel.setText(controller.getLocaliser()
+                    .getString("sendBitcoinPanel.sendingAddressesTitle.mayBeOutOfDate"));
+            titleLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));            
+        } else {
+            addressTextField.setToolTipText(null);
+            addressTextField.setEditable(true);
+            addressTextField.setEnabled(true);
+
+            if (sendButton != null) {
+                sendButton.setEnabled(true);
+                sendButton.setToolTipText(null);
+            }
+            if (pasteAddressButton != null) {
+                pasteAddressButton.setEnabled(true);
+                pasteAddressButton.setToolTipText(null);
+            }
+            titleLabel.setText(controller.getLocaliser()
+                    .getString("sendBitcoinPanel.sendingAddressesTitle"));
+            titleLabel.setToolTipText(null);            
+        }
     }
 }

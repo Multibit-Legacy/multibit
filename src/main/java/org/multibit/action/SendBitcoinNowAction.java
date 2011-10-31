@@ -8,6 +8,7 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
+import org.multibit.network.FileHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +57,10 @@ public class SendBitcoinNowAction implements Action {
         try {
             controller.sendCoins(perWalletModelData, sendAddress, sendLabel, sendAmount, fee);
             sendWasSuccessful = Boolean.TRUE;
+            
+            // save the wallet
+            FileHandler fileHandler = new FileHandler(controller);
+            fileHandler.savePerWalletModelData(perWalletModelData);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
 
