@@ -64,6 +64,7 @@ public class CreateNewSendingAddressAction extends AbstractAction {
                 String label = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
 
                 perWalletModelData.getWalletInfo().addSendingAddress(new AddressBookData(label, address));
+                controller.getModel().getActivePerWalletModelData().setDirty(true);
             } else {
                 perWalletModelData.getWalletInfo().addSendingAddress(new AddressBookData("", ""));
                 controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, "");

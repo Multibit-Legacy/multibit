@@ -717,6 +717,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
             controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, address);
             controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, label);
             controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_AMOUNT, amount);
+            controller.getModel().getActivePerWalletModelData().setDirty(true);
 
             displaySwatch(address, amount, label);
         }

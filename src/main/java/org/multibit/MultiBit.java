@@ -116,8 +116,7 @@ public class MultiBit {
                 int numberOfWallets = Integer.parseInt(numberOfWalletsAsString);
 
                 if (numberOfWallets > 0) {
-                    // count down becauae adding is done from the top of the list
-                    for (int i = numberOfWallets; i >= 1; i--) {
+                    for (int i = 1; i <= numberOfWallets; i++) {
                         // load up ith wallet filename
                         String loopWalletFilename = userPreferences.getProperty(MultiBitModel.WALLET_FILENAME_PREFIX + i);
                        if (activeWalletFilename != null && activeWalletFilename.equals(loopWalletFilename)) {

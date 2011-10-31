@@ -15,6 +15,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.network.FileHandler;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
@@ -51,13 +52,18 @@ public abstract class AbstractTradePanel extends JPanel implements View {
     
     protected JLabel titleLabel;
     
+    protected FileHandler fileHandler;
+    
     public AbstractTradePanel(MultiBitFrame mainFrame, MultiBitController controller) {
         this.mainFrame = mainFrame;
         this.controller = controller;
         
+        fileHandler = new FileHandler(controller);
+        
         initUI();
         loadForm();
 
+        
         labelTextArea.requestFocusInWindow();
     }
 
@@ -182,6 +188,11 @@ public abstract class AbstractTradePanel extends JPanel implements View {
 
     @Override
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+        // save any changes
+        if (controller.getModel().getActivePerWalletModelData() != null
+                && controller.getModel().getActivePerWalletModelData().isDirty()) {
+            fileHandler.savePerWalletModelData(controller.getModel().getActivePerWalletModelData());
+        }
     }
 
     @Override

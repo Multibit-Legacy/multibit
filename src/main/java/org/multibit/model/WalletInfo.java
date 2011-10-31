@@ -199,7 +199,7 @@ public class WalletInfo {
         if (!done) {
             sendingAddresses.add(sendingAddress);
         }
-    }
+     }
 
     public String lookupLabelForReceivingAddress(String address) {
         for (AddressBookData addressBookData : receivingAddresses) {

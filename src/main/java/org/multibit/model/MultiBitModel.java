@@ -179,6 +179,7 @@ public class MultiBitModel {
     public void setActiveWalletPreference(String key, String value) {
         if (activeWalletModelData.getWalletInfo() != null && value != null) {
             activeWalletModelData.getWalletInfo().put(key, value);
+            activeWalletModelData.setDirty(true);            
         }
     }
 
@@ -267,6 +268,7 @@ public class MultiBitModel {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
                 if (walletFilename.equals(loopPerWalletModelData.getWalletFilename())) {
                     loopPerWalletModelData.setWalletDescription(walletDescription);
+                    loopPerWalletModelData.setDirty(true);
                     break;
                 }
             }
@@ -303,7 +305,7 @@ public class MultiBitModel {
             activeWalletModelData = newPerWalletModelData;
         }
 
-        perWalletModelDataList.add(0, newPerWalletModelData);
+        perWalletModelDataList.add(newPerWalletModelData);
 
         // wire up the controller as a wallet event listener
         if (wallet != null) {
@@ -598,21 +600,6 @@ public class MultiBitModel {
 
     public void setActiveWalletInfo(WalletInfo walletInfo) {
         activeWalletModelData.setWalletInfo(walletInfo);
-    }
-
-    public void setWalletInfo(WalletInfo walletInfo) {
-        PerWalletModelData perWalletModelData = null;
-        if (perWalletModelDataList != null) {
-            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
-                if (walletInfo.getWalletFilename().equals(loopPerWalletModelData.getWalletFilename())) {
-                    perWalletModelData = loopPerWalletModelData;
-                    break;
-                }
-            }
-        }
-        if (perWalletModelData != null) {
-            perWalletModelData.setWalletInfo(walletInfo);
-        }
     }
 
     public List<PerWalletModelData> getPerWalletModelDataList() {

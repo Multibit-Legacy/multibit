@@ -610,6 +610,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, address);
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, label);
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amount);
+            controller.getModel().getActivePerWalletModelData().setDirty(true);
         }
     }
 
@@ -732,6 +733,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
                 } else {
                     // add a new row to the table
                     controller.getModel().getActiveWalletWalletInfo().addSendingAddress(addressBookData);
+                    controller.getModel().getActivePerWalletModelData().setDirty(true);
 
                     // select new row
                     rowToSelect = addressesTableModel.findRowByAddress(addressBookData.getAddress(), false);

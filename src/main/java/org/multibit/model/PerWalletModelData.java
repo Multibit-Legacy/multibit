@@ -17,8 +17,21 @@ public class PerWalletModelData {
     private WalletInfo walletInfo;
     private List<WalletTableData> walletTableDataList;
 
+    /**
+     * the files that store the PerWalletModelData have been changed by some
+     * other process i.e. NOT this copy of MultiBit
+     */
     private boolean filesHaveBeenChangedByAnotherProcess;
-    
+
+    /**
+     * the PerWalletModelData has changed since last been written to disk
+     */
+    private boolean isDirty;
+
+    public PerWalletModelData() {
+        isDirty = false;
+    }
+
     public Wallet getWallet() {
         return wallet;
     }
@@ -64,7 +77,11 @@ public class PerWalletModelData {
             if (walletDescription == null) {
                 walletDescription = "";
             }
-            walletInfo.put(WalletInfo.DESCRIPTION_PROPERTY, walletDescription);
+            String currentWalletDescription = walletInfo.getProperty(WalletInfo.DESCRIPTION_PROPERTY);
+            if (!walletDescription.equals(currentWalletDescription)) {
+                walletInfo.put(WalletInfo.DESCRIPTION_PROPERTY, walletDescription);
+                setDirty(true);
+            }
         }
     }
 
@@ -74,5 +91,13 @@ public class PerWalletModelData {
 
     public void setFilesHaveBeenChangedByAnotherProcess(boolean filesHaveBeenChangedByAnotherProcess) {
         this.filesHaveBeenChangedByAnotherProcess = filesHaveBeenChangedByAnotherProcess;
+    }
+
+    public boolean isDirty() {
+        return isDirty;
+    }
+
+    public void setDirty(boolean isDirty) {
+        this.isDirty = isDirty;
     }
 }
