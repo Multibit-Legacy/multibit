@@ -1065,23 +1065,20 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
             // files have been changed by another process - disallow edits
-            mainFrame.setUpdatesStoppedTooltip(addressTextField, controller.getModel().getActivePerWalletModelData()
-                    .getWalletBackupFilename());
+            mainFrame.setUpdatesStoppedTooltip(addressTextField);
             addressTextField.setEditable(false);
             addressTextField.setEnabled(false);
 
             if (sendButton != null) {
                 sendButton.setEnabled(false);
-                mainFrame.setUpdatesStoppedTooltip(sendButton, controller.getModel().getActivePerWalletModelData()
-                        .getWalletBackupFilename());
+                mainFrame.setUpdatesStoppedTooltip(sendButton);
             }
             if (pasteAddressButton != null) {
                 pasteAddressButton.setEnabled(false);
-                mainFrame.setUpdatesStoppedTooltip(pasteAddressButton, controller.getModel().getActivePerWalletModelData()
-                        .getWalletBackupFilename());
+                mainFrame.setUpdatesStoppedTooltip(pasteAddressButton);
             }
             titleLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.sendingAddressesTitle.mayBeOutOfDate"));
-            mainFrame.setUpdatesStoppedTooltip(titleLabel, controller.getModel().getActivePerWalletModelData().getWalletBackupFilename());                             
+            mainFrame.setUpdatesStoppedTooltip(titleLabel);                             
         } else {
             addressTextField.setToolTipText(null);
             addressTextField.setEditable(true);
@@ -1089,11 +1086,11 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
             if (sendButton != null) {
                 sendButton.setEnabled(true);
-                sendButton.setToolTipText(null);
+                sendButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinAction.tooltip"));
             }
             if (pasteAddressButton != null) {
                 pasteAddressButton.setEnabled(true);
-                pasteAddressButton.setToolTipText(null);
+                pasteAddressButton.setToolTipText(controller.getLocaliser().getString("pasteAddressAction.tooltip"));
             }
             titleLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.sendingAddressesTitle"));
             titleLabel.setToolTipText(null);
@@ -1107,23 +1104,20 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
             // files have been changed by another process - disallow edits
-            mainFrame.setUpdatesStoppedTooltip(addressTextField, controller.getModel().getActivePerWalletModelData()
-                    .getWalletBackupFilename());
+            mainFrame.setUpdatesStoppedTooltip(addressTextField);
             addressTextField.setEditable(false);
             addressTextField.setEnabled(false);
 
             if (sendButton != null) {
                 sendButton.setEnabled(false);
-                mainFrame.setUpdatesStoppedTooltip(sendButton, controller.getModel().getActivePerWalletModelData()
-                        .getWalletBackupFilename());
+                mainFrame.setUpdatesStoppedTooltip(sendButton);
             }
             if (pasteAddressButton != null) {
                 pasteAddressButton.setEnabled(false);
-                mainFrame.setUpdatesStoppedTooltip(pasteAddressButton, controller.getModel().getActivePerWalletModelData()
-                        .getWalletBackupFilename());
+                mainFrame.setUpdatesStoppedTooltip(pasteAddressButton);
             }
             titleLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.sendingAddressesTitle.mayBeOutOfDate"));
-            mainFrame.setUpdatesStoppedTooltip(titleLabel, controller.getModel().getActivePerWalletModelData().getWalletBackupFilename());                 
+            mainFrame.setUpdatesStoppedTooltip(titleLabel);                 
         } else {
             addressTextField.setToolTipText(null);
             addressTextField.setEditable(true);
@@ -1131,11 +1125,11 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
             if (sendButton != null) {
                 sendButton.setEnabled(true);
-                sendButton.setToolTipText(null);
+                sendButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinAction.tooltip"));
             }
             if (pasteAddressButton != null) {
                 pasteAddressButton.setEnabled(true);
-                pasteAddressButton.setToolTipText(null);
+                pasteAddressButton.setToolTipText(controller.getLocaliser().getString("pasteAddressAction.tooltip"));
             }
             titleLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.sendingAddressesTitle"));
             titleLabel.setToolTipText(null);

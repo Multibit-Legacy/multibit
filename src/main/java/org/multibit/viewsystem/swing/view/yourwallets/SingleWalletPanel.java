@@ -235,7 +235,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
             setBackground(BACKGROUND_COLOR_DATA_HAS_CHANGED);
             walletDescriptionTextField.setBackground(BACKGROUND_COLOR_DATA_HAS_CHANGED);
             walletDescriptionTextField.setText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.text"));
-            mainFrame.setUpdatesStoppedTooltip(walletDescriptionTextField, perWalletModelData.getWalletBackupFilename()); 
+            mainFrame.setUpdatesStoppedTooltip(walletDescriptionTextField); 
             walletDescriptionTextField.setEnabled(false);
             walletDescriptionTextField.setEditable(false);
             amountLabel.setText("");

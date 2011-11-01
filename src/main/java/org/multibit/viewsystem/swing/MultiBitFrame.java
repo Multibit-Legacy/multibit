@@ -854,6 +854,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
     }
 
+    public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
+        updateStatusLabel( controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.1") + " " + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.2"));
+        fireDataChanged();
+    }
+
     /**
      * update the UI after the model data has changed
      */
@@ -884,7 +889,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             // files have been changed by another process - blank totals
             // and put 'Updates stopped' message
             estimatedBalanceTextLabel.setText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.text"));
-            setUpdatesStoppedTooltip(estimatedBalanceTextLabel,controller.getModel().getActivePerWalletModelData().getWalletBackupFilename()); 
+            setUpdatesStoppedTooltip(estimatedBalanceTextLabel); 
             availableBalanceTextLabel.setText("");
         } else {
             estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel()
@@ -1015,20 +1020,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         activeWalletComboBox.setToolTipText(toolTipText);
     }
 
-    public void setUpdatesStoppedTooltip(JComponent component, String walletBackupFilename) {
+    public void setUpdatesStoppedTooltip(JComponent component) {
         // multiline tool tip text
         String toolTipText = "<html><font face=\"sansserif\">";
         toolTipText = toolTipText + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.1") + "<br>";
         toolTipText = toolTipText + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.2") + "<br>";
-
-//        if (walletBackupFilename != null) {
-//            toolTipText = toolTipText
-//                    + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.backupFile",
-//                            new Object[] { walletBackupFilename });
-//        }
         toolTipText = toolTipText + "</font></html>";
-        component.setToolTipText(toolTipText);
-        
+        component.setToolTipText(toolTipText);        
     }
 
     class ComboBoxRenderer extends JLabel implements ListCellRenderer {

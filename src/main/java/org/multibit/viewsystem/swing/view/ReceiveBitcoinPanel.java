@@ -286,13 +286,11 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
             // files have been changed by another process - disallow edits
             labelTextArea.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));
-            mainFrame.setUpdatesStoppedTooltip(labelTextArea, controller.getModel().getActivePerWalletModelData()
-                    .getWalletBackupFilename());
+            mainFrame.setUpdatesStoppedTooltip(labelTextArea);
 
             labelTextArea.setEditable(false);
             labelTextArea.setEnabled(false);
-            mainFrame.setUpdatesStoppedTooltip(amountTextField, controller.getModel().getActivePerWalletModelData()
-                    .getWalletBackupFilename());
+            mainFrame.setUpdatesStoppedTooltip(amountTextField);
             amountTextField.setEditable(false);
             amountTextField.setEnabled(false);
         } else {
@@ -737,8 +735,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
             // files have been changed by another process - disallow edits
             titleLabel.setText(controller.getLocaliser()
                     .getString("receiveBitcoinPanel.receivingAddressesTitle.mayBeOutOfDate"));
-            mainFrame.setUpdatesStoppedTooltip(titleLabel, controller.getModel().getActivePerWalletModelData()
-                    .getWalletBackupFilename());
+            mainFrame.setUpdatesStoppedTooltip(titleLabel);
         } else {
             titleLabel.setText(controller.getLocaliser().getString("receiveBitcoinPanel.receivingAddressesTitle"));
             titleLabel.setToolTipText(null);
@@ -754,8 +751,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
             // files have been changed by another process - disallow edits
             titleLabel.setText(controller.getLocaliser()
                     .getString("receiveBitcoinPanel.receivingAddressesTitle.mayBeOutOfDate"));
-            mainFrame.setUpdatesStoppedTooltip(titleLabel, controller.getModel().getActivePerWalletModelData()
-                    .getWalletBackupFilename());
+            mainFrame.setUpdatesStoppedTooltip(titleLabel);
         } else {
             titleLabel.setText(controller.getLocaliser().getString("receiveBitcoinPanel.receivingAddressesTitle"));
             titleLabel.setToolTipText(null);

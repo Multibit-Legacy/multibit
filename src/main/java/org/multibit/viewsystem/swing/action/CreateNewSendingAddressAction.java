@@ -50,7 +50,7 @@ public class CreateNewSendingAddressAction extends AbstractAction {
             // set on the perWalletModelData that files have changed and fire
             // data changed
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            controller.fireDataChanged();
+            controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
             WalletInfo walletInfo = perWalletModelData.getWalletInfo();
             if (walletInfo == null) {

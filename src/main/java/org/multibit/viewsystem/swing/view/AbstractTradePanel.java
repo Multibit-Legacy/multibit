@@ -123,20 +123,17 @@ public abstract class AbstractTradePanel extends JPanel implements View {
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
             // files have been changed by another process - disallow edits
-            mainFrame.setUpdatesStoppedTooltip(labelTextArea, controller.getModel().getActivePerWalletModelData()
-                    .getWalletBackupFilename());
+            mainFrame.setUpdatesStoppedTooltip(labelTextArea);
 
             labelTextArea.setEditable(false);
             labelTextArea.setEnabled(false);
-            mainFrame.setUpdatesStoppedTooltip(amountTextField, controller.getModel().getActivePerWalletModelData()
-                    .getWalletBackupFilename());
+            mainFrame.setUpdatesStoppedTooltip(amountTextField);
             amountTextField.setEditable(false);
             amountTextField.setEnabled(false);
 
             if (createNewButton != null) {
                 createNewButton.setEnabled(false);
-                mainFrame.setUpdatesStoppedTooltip(createNewButton, controller.getModel().getActivePerWalletModelData()
-                        .getWalletBackupFilename());
+                mainFrame.setUpdatesStoppedTooltip(createNewButton);
             }
         } else {
             labelTextArea.setToolTipText(null);
@@ -158,19 +155,16 @@ public abstract class AbstractTradePanel extends JPanel implements View {
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
             // files have been changed by another process - disallow edits
-            mainFrame.setUpdatesStoppedTooltip(labelTextArea, controller.getModel().getActivePerWalletModelData()
-                    .getWalletBackupFilename());
+            mainFrame.setUpdatesStoppedTooltip(labelTextArea);
             labelTextArea.setEditable(false);
             labelTextArea.setEnabled(false);
-            mainFrame.setUpdatesStoppedTooltip(amountTextField, controller.getModel().getActivePerWalletModelData()
-                    .getWalletBackupFilename());
+            mainFrame.setUpdatesStoppedTooltip(amountTextField);
             amountTextField.setEditable(false);
             amountTextField.setEnabled(false);
 
             if (createNewButton != null) {
                 createNewButton.setEnabled(false);
-                mainFrame.setUpdatesStoppedTooltip(createNewButton, controller.getModel().getActivePerWalletModelData()
-                        .getWalletBackupFilename());
+                mainFrame.setUpdatesStoppedTooltip(createNewButton);
             }
         } else {
             labelTextArea.setToolTipText(null);

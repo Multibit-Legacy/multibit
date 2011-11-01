@@ -43,6 +43,7 @@ public class FileChangeTimerTask extends TimerTask {
                 boolean haveFilesChanged = fileHandler.haveFilesChanged(loopModelData);
                 if (haveFilesChanged) {
                     loopModelData.setFilesHaveBeenChangedByAnotherProcess(true);
+                    controller.fireFilesHaveBeenChangedByAnotherProcess(loopModelData);
                 }
             }
         }

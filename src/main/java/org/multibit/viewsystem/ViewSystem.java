@@ -2,6 +2,8 @@ package org.multibit.viewsystem;
 
 import java.math.BigInteger;
 
+import org.multibit.model.PerWalletModelData;
+
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 
@@ -53,6 +55,11 @@ public interface ViewSystem {
      */   
     public void fireDataChanged();
     
+    /**
+     * tells the view system that an external process has modified one of the wallets
+     */
+    public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData);
+
     /**
      * a method called when MultiBit is now online i.e. now has a peer when it did not before
      */

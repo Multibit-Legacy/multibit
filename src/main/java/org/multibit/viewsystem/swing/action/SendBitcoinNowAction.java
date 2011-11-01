@@ -55,7 +55,7 @@ public class SendBitcoinNowAction extends AbstractAction {
             SendBitcoinConfirmView sendBitcoinConfirmView = (SendBitcoinConfirmView) dataProvider;
             sendBitcoinConfirmView.setSendConfirmText(
                     controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSendFailed"), controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));
-            controller.fireDataChanged();
+            controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
 
             org.multibit.action.SendBitcoinNowAction sendBitcoinNowAction = new org.multibit.action.SendBitcoinNowAction(

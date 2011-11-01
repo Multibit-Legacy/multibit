@@ -427,6 +427,14 @@ public class MultiBitController implements PeerEventListener {
         }
     }
 
+    public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
+        for (ViewSystem viewSystem : viewSystems) {
+            viewSystem.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
+        }
+        
+        fireDataChanged();
+    }
+    
     public Localiser getLocaliser() {
         return localiser;
     }

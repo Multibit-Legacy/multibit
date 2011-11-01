@@ -51,7 +51,7 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
         if (haveFilesChanged) {
             // set on the perWalletModelData that files have changed and fire data changed
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            controller.fireDataChanged();
+            controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
             ECKey newKey = new ECKey();
             perWalletModelData.getWallet().keychain.add(newKey);

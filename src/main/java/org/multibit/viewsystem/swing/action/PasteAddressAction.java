@@ -50,7 +50,7 @@ public class PasteAddressAction extends AbstractAction {
             // set on the perWalletModelData that files have changed and fire
             // data changed
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            controller.fireDataChanged();
+            controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
             TextTransfer textTransfer = new TextTransfer();
             String stringToPaste = textTransfer.getClipboardContents();

@@ -101,7 +101,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
             if (controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
                 transactionsTitleLabel.setText(controller.getLocaliser()
                         .getString("showTransactionsAction.mayBeOutOfDate.text"));
-                mainFrame.setUpdatesStoppedTooltip(transactionsTitleLabel,controller.getModel().getActivePerWalletModelData().getWalletBackupFilename());                 
+                mainFrame.setUpdatesStoppedTooltip(transactionsTitleLabel);                 
             } else {
                 transactionsTitleLabel.setText(controller.getLocaliser().getString("showTransactionsAction.text"));
                 transactionsTitleLabel.setToolTipText(null);
