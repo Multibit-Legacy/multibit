@@ -16,8 +16,9 @@ import org.multibit.network.FileHandler;
  */
 public class FileChangeTimerTask extends TimerTask {
 
-    private MultiBitController controller;
-    private MultiBitFrame mainFrame;
+    private final MultiBitController controller;
+    private final MultiBitFrame mainFrame;
+    private final FileHandler fileHandler;
 
     /**
      * Constructs the object, sets the string to be output in function run()
@@ -27,6 +28,7 @@ public class FileChangeTimerTask extends TimerTask {
     public FileChangeTimerTask(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
+        fileHandler = new FileHandler(controller);
     }
 
     /**
@@ -36,7 +38,6 @@ public class FileChangeTimerTask extends TimerTask {
         // see if the wallet files have changed
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
         
-        FileHandler fileHandler = new FileHandler(controller);
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopModelData : perWalletModelDataList) {
                 boolean haveFilesChanged = fileHandler.haveFilesChanged(loopModelData);

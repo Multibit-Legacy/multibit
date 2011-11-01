@@ -24,8 +24,6 @@ public class ExitAction implements Action {
 
     public void execute(DataProvider dataProvider) {
         // write the user properties
-        FileHandler fileHandler = new FileHandler(controller);
-
         // save all the wallets and put their filenames in the user preferences
         if (controller.getModel().getPerWalletModelDataList() != null) {
             List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
@@ -40,10 +38,8 @@ public class ExitAction implements Action {
                     if (perWalletModelData.getWalletFilename() != null) {
                         controller.getModel().setUserPreference(MultiBitModel.WALLET_FILENAME_PREFIX + i,
                                 perWalletModelData.getWalletFilename());
-//                        controller.getModel().setUserPreference(MultiBitModel.WALLET_DESCRIPTION_PREFIX + i,
-//                                perWalletModelData.getWalletDescription());
                         // save the ith wallet, including the wallet info
-                        fileHandler.savePerWalletModelData(perWalletModelData);
+                        controller.getFileHandler().savePerWalletModelData(perWalletModelData);
                     }
                 }
 
@@ -51,7 +47,7 @@ public class ExitAction implements Action {
 
         }
 
-        fileHandler.writeUserPreferences();
+        controller.getFileHandler().writeUserPreferences();
 
         // shut down the PeerGroup
         if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {

@@ -18,15 +18,31 @@ public class PerWalletModelData {
     private List<WalletTableData> walletTableDataList;
 
     /**
+     * the wallet filename used for when a backup is being written to
+     */
+    private String walletBackupFilename;
+
+    /**
+     * the wallet info filename used for when a backup is being written to
+     */
+
+    private String walletInfoBackupFilename;
+
+    /**
      * the files that store the PerWalletModelData have been changed by some
      * other process i.e. NOT this copy of MultiBit
      */
     private boolean filesHaveBeenChangedByAnotherProcess;
 
     /**
-     * the PerWalletModelData has changed since last been written to disk
+     * the PerWalletModelData (except for incoming receipts) has changed since last been written to disk
      */
     private boolean isDirty;
+    
+    /**
+     * the PerWalletModelData has received incoming receipts since last been written to disk
+     */
+    private boolean isTransactionDirty;
 
     public PerWalletModelData() {
         isDirty = false;
@@ -99,5 +115,29 @@ public class PerWalletModelData {
 
     public void setDirty(boolean isDirty) {
         this.isDirty = isDirty;
+    }
+
+    public boolean isTransactionDirty() {
+        return isTransactionDirty;
+    }
+
+    public void setTransactionDirty(boolean isTransactionDirty) {
+        this.isTransactionDirty = isTransactionDirty;
+    }
+
+    public String getWalletBackupFilename() {
+        return walletBackupFilename;
+    }
+
+    public void setWalletBackupFilename(String walletBackupFilename) {
+        this.walletBackupFilename = walletBackupFilename;
+    }
+
+    public String getWalletInfoBackupFilename() {
+        return walletInfoBackupFilename;
+    }
+
+    public void setWalletInfoBackupFilename(String walletInfoBackupFilename) {
+        this.walletInfoBackupFilename = walletInfoBackupFilename;
     }
 }

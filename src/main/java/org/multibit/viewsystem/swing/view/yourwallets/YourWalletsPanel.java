@@ -25,7 +25,6 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.network.FileHandler;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.WalletTableModel;
@@ -52,8 +51,6 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
 
     private boolean initialised = false;
 
-    private FileHandler fileHandler;
-
     /**
      * Creates a new {@link YourWalletsPanel}.
      */
@@ -67,8 +64,6 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         this.controller = controller;
 
         walletPanels = new ArrayList<SingleWalletPanel>();
-
-        fileHandler = new FileHandler(controller);
 
         initUI();
     }
@@ -106,8 +101,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
             if (controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
                 transactionsTitleLabel.setText(controller.getLocaliser()
                         .getString("showTransactionsAction.mayBeOutOfDate.text"));
-                transactionsTitleLabel.setToolTipText(controller.getLocaliser().getString(
-                        "singleWalletPanel.dataHasChanged.tooltip"));
+                mainFrame.setUpdatesStoppedTooltip(transactionsTitleLabel,controller.getModel().getActivePerWalletModelData().getWalletBackupFilename());                 
             } else {
                 transactionsTitleLabel.setText(controller.getLocaliser().getString("showTransactionsAction.text"));
                 transactionsTitleLabel.setToolTipText(null);
@@ -135,7 +129,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
             for (PerWalletModelData loopModelData : perWalletModelDataList) {
                 if (loopModelData != null) {
                     if (loopModelData.isDirty() && !loopModelData.isFilesHaveBeenChangedByAnotherProcess()) {
-                        fileHandler.savePerWalletModelData(loopModelData);
+                        controller.getFileHandler().savePerWalletModelData(loopModelData);
                     }
                 }
             }
@@ -255,7 +249,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         JPanel headerPanel = new JPanel();
         headerPanel.setBorder(BorderFactory.createEmptyBorder(8, 2, 0, 2));
         headerPanel.setOpaque(false);
-
+ 
         headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         OpenWalletAction openWalletAction = new OpenWalletAction(controller, null);

@@ -217,8 +217,9 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         labelTextArea = new JTextArea("", 2, 20);
         labelTextArea.setBorder(aTextField.getBorder());
         labelTextArea.addKeyListener(new QRCodeKeyListener());
-        
-        JScrollPane labelScrollPane = new JScrollPane(labelTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        JScrollPane labelScrollPane = new JScrollPane(labelTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         labelScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, MultiBitFrame.DARK_BACKGROUND_COLOR));
         labelScrollPane.setOpaque(true);
         labelScrollPane.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
@@ -284,21 +285,25 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
             // files have been changed by another process - disallow edits
-            labelTextArea.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));   
+            labelTextArea.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));
+            mainFrame.setUpdatesStoppedTooltip(labelTextArea, controller.getModel().getActivePerWalletModelData()
+                    .getWalletBackupFilename());
+
             labelTextArea.setEditable(false);
             labelTextArea.setEnabled(false);
-            amountTextField.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));   
+            mainFrame.setUpdatesStoppedTooltip(amountTextField, controller.getModel().getActivePerWalletModelData()
+                    .getWalletBackupFilename());
             amountTextField.setEditable(false);
             amountTextField.setEnabled(false);
-         } else {
-             labelTextArea.setToolTipText(null);
-             labelTextArea.setEditable(true);
-             labelTextArea.setEnabled(true);
-             amountTextField.setToolTipText(null);
-             amountTextField.setEditable(true);
-             amountTextField.setEnabled(true);
-         }
-        
+        } else {
+            labelTextArea.setToolTipText(null);
+            labelTextArea.setEditable(true);
+            labelTextArea.setEnabled(true);
+            amountTextField.setToolTipText(null);
+            amountTextField.setEditable(true);
+            amountTextField.setEnabled(true);
+        }
+
         return formPanel;
     }
 
@@ -349,7 +354,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.CENTER;
- 
+
         JScrollPane scrollPane = new JScrollPane(qrCodeLabel);
         scrollPane.setOpaque(true);
         scrollPane.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
@@ -684,7 +689,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
                     controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, rowData.getLabel());
                     addressTextArea.setText(rowData.getAddress());
                     labelTextArea.setText(rowData.getLabel());
-                    
+
                     displaySwatch(rowData.getAddress(), amountTextField.getText(), labelTextArea.getText());
                 }
             }
@@ -722,7 +727,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
             displaySwatch(address, amount, label);
         }
     }
-    
+
     @Override
     public void displayView() {
         super.displayView();
@@ -730,16 +735,16 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
             // files have been changed by another process - disallow edits
-           titleLabel.setText(controller.getLocaliser()
-                    .getString("receiveBitcoinPanel.receivingAddressesTitle.mayBeOutOfDate"));
-            titleLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));            
-        } else {
             titleLabel.setText(controller.getLocaliser()
-                    .getString("receiveBitcoinPanel.receivingAddressesTitle"));
-            titleLabel.setToolTipText(null);            
+                    .getString("receiveBitcoinPanel.receivingAddressesTitle.mayBeOutOfDate"));
+            mainFrame.setUpdatesStoppedTooltip(titleLabel, controller.getModel().getActivePerWalletModelData()
+                    .getWalletBackupFilename());
+        } else {
+            titleLabel.setText(controller.getLocaliser().getString("receiveBitcoinPanel.receivingAddressesTitle"));
+            titleLabel.setToolTipText(null);
         }
     }
-    
+
     @Override
     public void updateView() {
         super.updateView();
@@ -749,11 +754,11 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
             // files have been changed by another process - disallow edits
             titleLabel.setText(controller.getLocaliser()
                     .getString("receiveBitcoinPanel.receivingAddressesTitle.mayBeOutOfDate"));
-            titleLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));            
+            mainFrame.setUpdatesStoppedTooltip(titleLabel, controller.getModel().getActivePerWalletModelData()
+                    .getWalletBackupFilename());
         } else {
-            titleLabel.setText(controller.getLocaliser()
-                    .getString("receiveBitcoinPanel.receivingAddressesTitle"));
-            titleLabel.setToolTipText(null);            
+            titleLabel.setText(controller.getLocaliser().getString("receiveBitcoinPanel.receivingAddressesTitle"));
+            titleLabel.setToolTipText(null);
         }
     }
 }

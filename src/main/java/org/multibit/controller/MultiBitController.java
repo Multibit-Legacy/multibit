@@ -12,6 +12,7 @@ import java.util.Stack;
 import org.multibit.Localiser;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
@@ -75,6 +76,12 @@ public class MultiBitController implements PeerEventListener {
      * the bitcoinj network interface
      */
     private MultiBitService multiBitService;
+    
+    /**
+     * class encapsulating File IO
+     */
+    private FileHandler fileHandler;
+    
 
     public MultiBitController() {
         this(null);
@@ -110,6 +117,8 @@ public class MultiBitController implements PeerEventListener {
         this.previousView = previousView;
         currentView = initialView;
         nextView = initialView;
+        
+        fileHandler = new FileHandler(this);
     }
 
     /**
@@ -515,5 +524,9 @@ public class MultiBitController implements PeerEventListener {
 
     public void setMultiBitService(MultiBitService multiBitService) {
         this.multiBitService = multiBitService;
+    }
+
+    public FileHandler getFileHandler() {
+        return fileHandler;
     }
 }

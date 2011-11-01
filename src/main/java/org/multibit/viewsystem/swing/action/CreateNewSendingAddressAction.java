@@ -43,9 +43,8 @@ public class CreateNewSendingAddressAction extends AbstractAction {
      */
     public void actionPerformed(ActionEvent e) {
         // check to see if the wallet files have changed
-        FileHandler fileHandler = new FileHandler(controller);
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = fileHandler.haveFilesChanged(perWalletModelData);
+        boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
             // set on the perWalletModelData that files have changed and fire

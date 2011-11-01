@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.nio.channels.FileChannel;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -43,6 +42,8 @@ public class FileHandler {
 
     private MultiBitController controller;
 
+    private Date dateForBackupName = null;
+
     public FileHandler(MultiBitController controller) {
         this.controller = controller;
     }
@@ -64,6 +65,7 @@ public class FileHandler {
         rememberFileSizesAndLastModified(walletFile, walletInfo);
 
         perWalletModelData.setDirty(false);
+        perWalletModelData.setTransactionDirty(false);
 
         return perWalletModelData;
     }
@@ -83,7 +85,7 @@ public class FileHandler {
             }
 
             // save the perWalletModelData if it is dirty
-            if (perWalletModelData.isDirty()) {
+            if (perWalletModelData.isDirty() || perWalletModelData.isTransactionDirty()) {
                 // check dates and sizes of files
                 boolean filesHaveChanged = haveFilesChanged(perWalletModelData);
 
@@ -111,6 +113,7 @@ public class FileHandler {
 
                         // the perWalletModelData is no longer dirty
                         perWalletModelData.setDirty(false);
+                        perWalletModelData.setTransactionDirty(false);
                     }
 
                 } else {
@@ -118,19 +121,38 @@ public class FileHandler {
                     File walletFile = new File(perWalletModelData.getWalletFilename());
                     WalletInfo walletInfo = perWalletModelData.getWalletInfo();
 
-                    // save the companion wallet info
-                    if (walletInfo != null) {
-                        String walletInfoBackupFilename = createBackupFilename(new File(
-                                WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename())));
-                        walletInfo.writeToFile(walletInfoBackupFilename);
+                    // work out / reuse the backup file names
+                    String walletInfoBackupFilename = null;
+                    String walletBackupFilename = null;
+
+                    if (perWalletModelData.getWalletBackupFilename() != null) {
+                        walletBackupFilename = perWalletModelData.getWalletBackupFilename();
+                    }
+                    if (perWalletModelData.getWalletInfoBackupFilename() != null) {
+                        walletInfoBackupFilename = perWalletModelData.getWalletInfoBackupFilename();
                     }
 
+                    if (walletBackupFilename == null) {
+                        walletBackupFilename = createBackupFilename(walletFile, false);
+                        perWalletModelData.setWalletBackupFilename(walletBackupFilename);
+
+                        walletInfoBackupFilename = createBackupFilename(
+                                new File(WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename())), true);
+                        perWalletModelData.setWalletInfoBackupFilename(walletInfoBackupFilename);
+                    }
+                    
+                    // save the companion wallet info
+                    if (walletInfo != null) {
+                        walletInfo.writeToFile(walletInfoBackupFilename);
+                    }
+                    // save the wallet file
                     if (perWalletModelData.getWallet() != null) {
-                        String walletBackupFilename = createBackupFilename(walletFile);
                         perWalletModelData.getWallet().saveToFile(new File(walletBackupFilename));
                     }
+
                     // the perWalletModelData is no longer dirty
                     perWalletModelData.setDirty(false);
+                    perWalletModelData.setTransactionDirty(false);
                 }
             }
         } catch (IOException e) {
@@ -176,6 +198,19 @@ public class FileHandler {
             }
             log.info("Result of check of whether files have changed for wallet filename "
                     + perWalletModelData.getWalletFilename() + " was " + haveFilesChanged + ".");
+            
+            // create backup filenames early if the files have changed
+            // (it is then available in the tooltip)
+            if (perWalletModelData.getWalletBackupFilename() == null) {
+                try {
+                    perWalletModelData.setWalletBackupFilename(createBackupFilename(walletFile, false));
+
+                    perWalletModelData.setWalletInfoBackupFilename(createBackupFilename(
+                            new File(WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename())), true));
+                } catch (IOException e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
         }
 
         return haveFilesChanged;
@@ -242,47 +277,32 @@ public class FileHandler {
         return userPreferences;
     }
 
-    public String createBackupFilename(File file) throws IOException {
+    /**
+     * create a backup filename the format is: original file: filename.suffix
+     * backup file: filename-yyyymmddhhmmss.suffix
+     * 
+     * @param file
+     * @param reusePReviousBackupDate
+     *            Reuse the previously created backup date so that wallet and
+     *            wallet info names match
+     * @return
+     * @throws IOException
+     */
+    private String createBackupFilename(File file, boolean reusePreviousBackupDate) throws IOException {
         String filename = file.getAbsolutePath();
-        DateFormat dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
-        String backupFilename = filename + SEPARATOR + dateFormat.format(new Date());
 
-        File backupFile = new File(backupFilename);
-        copyFile(file, backupFile);
+        // find suffix
+        int suffixSeparator = filename.lastIndexOf(".");
+        String stem = filename.substring(0, suffixSeparator);
+        String suffix = filename.substring(suffixSeparator); // includes
+                                                             // separating dot
+
+        if (dateForBackupName == null || !reusePreviousBackupDate) {
+            dateForBackupName = new Date();
+        }
+        DateFormat dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
+        String backupFilename = stem + SEPARATOR + dateFormat.format(dateForBackupName) + suffix;
 
         return backupFilename;
-    }
-
-    public void copyFile(File sourceFile, File destinationFile) throws IOException {
-        if (!destinationFile.exists()) {
-            destinationFile.createNewFile();
-        }
-        FileInputStream fileInputStream = null;
-        FileOutputStream fileOutpurStream = null;
-        FileChannel source = null;
-        FileChannel destination = null;
-        try {
-            fileInputStream = new FileInputStream(sourceFile);
-            source = fileInputStream.getChannel();
-            fileOutpurStream = new FileOutputStream(destinationFile);
-            destination = fileOutpurStream.getChannel();
-            long transfered = 0;
-            long bytes = source.size();
-            while (transfered < bytes) {
-                transfered += destination.transferFrom(source, 0, source.size());
-                destination.position(transfered);
-            }
-        } finally {
-            if (source != null) {
-                source.close();
-            } else if (fileInputStream != null) {
-                fileInputStream.close();
-            }
-            if (destination != null) {
-                destination.close();
-            } else if (fileOutpurStream != null) {
-                fileOutpurStream.close();
-            }
-        }
     }
 }

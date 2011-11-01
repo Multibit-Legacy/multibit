@@ -21,6 +21,7 @@ import java.util.Timer;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -35,6 +36,7 @@ import javax.swing.JToolBar;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.swing.border.Border;
 
 import org.multibit.Localiser;
@@ -42,7 +44,6 @@ import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.network.FileHandler;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
@@ -150,6 +151,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private MultiBitButton yourWalletsButton;
     private MultiBitButton sendBitcoinButton;
     private MultiBitButton receiveBitcoinButton;
+    
+    private static final int TOOLTIP_DISMISSAL_DELAY = 10000;  // millisecs
 
     /**
      * Macify integration on a Mac
@@ -176,8 +179,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private JPanel headerPanel;
 
-    private FileHandler fileHandler;
-
     @SuppressWarnings("deprecation")
     public MultiBitFrame(MultiBitController controller) {
         this.controller = controller;
@@ -189,6 +190,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setTitle(localiser.getString("multiBitFrame.title"));
+        
+        ToolTipManager.sharedInstance().setDismissDelay(TOOLTIP_DISMISSAL_DELAY);
 
         final MultiBitController finalController = controller;
         this.addWindowListener(new WindowAdapter() {
@@ -210,8 +213,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         underlineBorder = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 4, 3, 4), BorderFactory
                 .createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SELECTION_BACKGROUND_COLOR),
                         BorderFactory.createEmptyBorder(0, 0, 3, 0)));
-
-        fileHandler = new FileHandler(controller);
 
         initUI();
 
@@ -588,7 +589,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             initUI();
         }
         updateOnlineStatusText();
-        
+
         updateHeader();
 
         setTitle(localiser.getString("multiBitFrame.title"));
@@ -791,7 +792,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     if (value != null && value.compareTo(BigInteger.ZERO) > 0) {
                         logger.debug("Received " + Localiser.bitcoinValueToString4(value, true, false) + " from "
                                 + from.toString() + " to wallet '" + perWalletModelData.getWalletDescription() + "'");
-                        fileHandler.savePerWalletModelData(perWalletModelData);
+
+                        // the perWalletModelData is marked as transactionDirty
+                        // but is not written out immediately
+                        // this is to avoid unnecessary 'Updates have stopped'
+                        // when two MultiBit have a single wallet open.
+                        // they will both get the incoming transaction
+                        perWalletModelData.setTransactionDirty(true);
                         dataHasChanged = true;
                     }
                 }
@@ -821,7 +828,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     if (value != null && value.compareTo(BigInteger.ZERO) > 0) {
                         logger.debug("Received " + Localiser.bitcoinValueToString4(value, true, false) + " from "
                                 + from.toString() + " to wallet '" + perWalletModelData.getWalletDescription() + "'");
-                        fileHandler.savePerWalletModelData(perWalletModelData);
+                        // the perWalletModelData is marked as transactionDirty
+                        // but is not written out immediately
+                        // this is to avoid unnecessary 'Updates have stopped'
+                        // when two MultiBit have a single wallet open.
+                        // they will both get the incoming transaction
+                        perWalletModelData.setTransactionDirty(true);
                         dataHasChanged = true;
 
                         if (perWalletModelData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
@@ -865,26 +877,22 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
         });
     }
-  
+
     private void updateHeader() {
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
             // files have been changed by another process - blank totals
             // and put 'Updates stopped' message
             estimatedBalanceTextLabel.setText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.text"));
-            estimatedBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));   
-            
+            setUpdatesStoppedTooltip(estimatedBalanceTextLabel,controller.getModel().getActivePerWalletModelData().getWalletBackupFilename()); 
             availableBalanceTextLabel.setText("");
         } else {
             estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel()
                     .getActiveWalletEstimatedBalance(), true, false));
             estimatedBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
 
-            availableBalanceTextLabel.setText(controller.getLocaliser()
-                    .getString(
-                            "multiBitFrame.availableToSpend",
-                            new Object[] { Localiser.bitcoinValueToString4(model.getActiveWalletAvailableBalance(),
-                                    true, false) }));
+            availableBalanceTextLabel.setText(controller.getLocaliser().getString("multiBitFrame.availableToSpend",
+                    new Object[] { Localiser.bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true, false) }));
         }
 
         String walletFilename = controller.getModel().getActiveWalletFilename();
@@ -895,7 +903,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
 
     }
-    
+
     private JComboBox createActiveWalletComboBox() {
         java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
@@ -1005,6 +1013,22 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
         toolTipText = toolTipText + walletFile.getAbsolutePath() + "</font></html>";
         activeWalletComboBox.setToolTipText(toolTipText);
+    }
+
+    public void setUpdatesStoppedTooltip(JComponent component, String walletBackupFilename) {
+        // multiline tool tip text
+        String toolTipText = "<html><font face=\"sansserif\">";
+        toolTipText = toolTipText + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.1") + "<br>";
+        toolTipText = toolTipText + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.2") + "<br>";
+
+//        if (walletBackupFilename != null) {
+//            toolTipText = toolTipText
+//                    + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.backupFile",
+//                            new Object[] { walletBackupFilename });
+//        }
+        toolTipText = toolTipText + "</font></html>";
+        component.setToolTipText(toolTipText);
+        
     }
 
     class ComboBoxRenderer extends JLabel implements ListCellRenderer {

@@ -59,8 +59,7 @@ public class SendBitcoinNowAction implements Action {
             sendWasSuccessful = Boolean.TRUE;
             
             // save the wallet
-            FileHandler fileHandler = new FileHandler(controller);
-            fileHandler.savePerWalletModelData(perWalletModelData);
+            controller.getFileHandler().savePerWalletModelData(perWalletModelData);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
 

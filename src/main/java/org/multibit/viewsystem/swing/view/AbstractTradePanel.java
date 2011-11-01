@@ -15,27 +15,25 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.network.FileHandler;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract parent class for SendBitcoinPanel and
- * ReceiveBitcoinPanel
+ * Abstract parent class for SendBitcoinPanel and ReceiveBitcoinPanel
  * 
  * @author jim
- *
+ * 
  */
 public abstract class AbstractTradePanel extends JPanel implements View {
 
     private static final long serialVersionUID = 7227169670412230264L;
-    
+
     private static final Logger log = LoggerFactory.getLogger(ReceiveBitcoinPanel.class);
 
     protected MultiBitFrame mainFrame;
-    
+
     protected MultiBitController controller;
 
     protected JTextArea labelTextArea;
@@ -47,23 +45,18 @@ public abstract class AbstractTradePanel extends JPanel implements View {
     protected AddressBookTableModel addressesTableModel;
 
     protected JTable addressesTable;
-    
+
     protected JButton createNewButton;
-    
+
     protected JLabel titleLabel;
-    
-    protected FileHandler fileHandler;
-    
+
     public AbstractTradePanel(MultiBitFrame mainFrame, MultiBitController controller) {
         this.mainFrame = mainFrame;
         this.controller = controller;
-        
-        fileHandler = new FileHandler(controller);
-        
+
         initUI();
         loadForm();
 
-        
         labelTextArea.requestFocusInWindow();
     }
 
@@ -72,7 +65,7 @@ public abstract class AbstractTradePanel extends JPanel implements View {
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
         setLayout(new GridBagLayout());
         setBackground(MultiBitFrame.BACKGROUND_COLOR);
-    
+
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -81,7 +74,7 @@ public abstract class AbstractTradePanel extends JPanel implements View {
         constraints.weighty = 0.4;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createFormPanel(), constraints);
-    
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 0;
@@ -89,7 +82,7 @@ public abstract class AbstractTradePanel extends JPanel implements View {
         constraints.weighty = 0.4;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createQRCodePanel(), constraints);
-    
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 1;
@@ -99,17 +92,17 @@ public abstract class AbstractTradePanel extends JPanel implements View {
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createAddressesPanel(), constraints);
     }
-    
+
     protected abstract JPanel createFormPanel();
-    
+
     protected abstract JPanel createQRCodePanel();
-    
+
     protected abstract JPanel createAddressesPanel();
-    
+
     public abstract void loadForm();
 
     public abstract void selectRows();
-        
+
     /** Returns an ImageIcon, or null if the path was invalid. */
     protected ImageIcon createImageIcon(String path) {
         java.net.URL imgURL = MultiBitFrame.class.getResource(path);
@@ -125,65 +118,72 @@ public abstract class AbstractTradePanel extends JPanel implements View {
     public void displayView() {
         loadForm();
         selectRows();
-        
+
         // disable any new changes if another process has changed the wallet
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
             // files have been changed by another process - disallow edits
-            labelTextArea.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));   
+            mainFrame.setUpdatesStoppedTooltip(labelTextArea, controller.getModel().getActivePerWalletModelData()
+                    .getWalletBackupFilename());
+
             labelTextArea.setEditable(false);
             labelTextArea.setEnabled(false);
-            amountTextField.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));   
+            mainFrame.setUpdatesStoppedTooltip(amountTextField, controller.getModel().getActivePerWalletModelData()
+                    .getWalletBackupFilename());
             amountTextField.setEditable(false);
             amountTextField.setEnabled(false);
-            
+
             if (createNewButton != null) {
                 createNewButton.setEnabled(false);
-                createNewButton.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));                   
+                mainFrame.setUpdatesStoppedTooltip(createNewButton, controller.getModel().getActivePerWalletModelData()
+                        .getWalletBackupFilename());
             }
-         } else {
-             labelTextArea.setToolTipText(null);
-             labelTextArea.setEditable(true);
-             labelTextArea.setEnabled(true);
-             amountTextField.setToolTipText(null);
-             amountTextField.setEditable(true);
-             amountTextField.setEnabled(true);
-             if (createNewButton != null) {
-                 createNewButton.setEnabled(true);
-                 createNewButton.setToolTipText(null);                   
-             }
-         }
+        } else {
+            labelTextArea.setToolTipText(null);
+            labelTextArea.setEditable(true);
+            labelTextArea.setEnabled(true);
+            amountTextField.setToolTipText(null);
+            amountTextField.setEditable(true);
+            amountTextField.setEnabled(true);
+            if (createNewButton != null) {
+                createNewButton.setEnabled(true);
+                createNewButton.setToolTipText(null);
+            }
+        }
     }
-    
+
     @Override
     public void updateView() {
         // disable any new changes if another process has changed the wallet
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
             // files have been changed by another process - disallow edits
-            labelTextArea.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));   
+            mainFrame.setUpdatesStoppedTooltip(labelTextArea, controller.getModel().getActivePerWalletModelData()
+                    .getWalletBackupFilename());
             labelTextArea.setEditable(false);
             labelTextArea.setEnabled(false);
-            amountTextField.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));   
+            mainFrame.setUpdatesStoppedTooltip(amountTextField, controller.getModel().getActivePerWalletModelData()
+                    .getWalletBackupFilename());
             amountTextField.setEditable(false);
             amountTextField.setEnabled(false);
-            
+
             if (createNewButton != null) {
                 createNewButton.setEnabled(false);
-                createNewButton.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));                   
+                mainFrame.setUpdatesStoppedTooltip(createNewButton, controller.getModel().getActivePerWalletModelData()
+                        .getWalletBackupFilename());
             }
-         } else {
-             labelTextArea.setToolTipText(null);
-             labelTextArea.setEditable(true);
-             labelTextArea.setEnabled(true);
-             amountTextField.setToolTipText(null);
-             amountTextField.setEditable(true);
-             amountTextField.setEnabled(true);
-             if (createNewButton != null) {
-                 createNewButton.setEnabled(true);
-                 createNewButton.setToolTipText(null);                   
-             }
-         }
+        } else {
+            labelTextArea.setToolTipText(null);
+            labelTextArea.setEditable(true);
+            labelTextArea.setEnabled(true);
+            amountTextField.setToolTipText(null);
+            amountTextField.setEditable(true);
+            amountTextField.setEnabled(true);
+            if (createNewButton != null) {
+                createNewButton.setEnabled(true);
+                createNewButton.setToolTipText(null);
+            }
+        }
     }
 
     @Override
@@ -191,7 +191,7 @@ public abstract class AbstractTradePanel extends JPanel implements View {
         // save any changes
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isDirty()) {
-            fileHandler.savePerWalletModelData(controller.getModel().getActivePerWalletModelData());
+            controller.getFileHandler().savePerWalletModelData(controller.getModel().getActivePerWalletModelData());
         }
     }
 

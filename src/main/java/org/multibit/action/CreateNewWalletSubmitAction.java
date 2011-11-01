@@ -57,34 +57,32 @@ public class CreateNewWalletSubmitAction implements Action {
 
                     File newWalletFile = new File(newWalletFilename);
 
-                    FileHandler fileHandler = new FileHandler(controller);
                     try {
-                        // create backup file if file exists
+                        // if file exists, load the existing wallet
                         if (newWalletFile.exists()) {
-                           fileHandler.createBackupFilename(newWalletFile);
-                        }
-                        String walletInfoFilename = WalletInfo.createWalletInfoFilename(newWalletFilename);
-                        File walletInfoFile = new File(walletInfoFilename);
-                        if (walletInfoFile.exists()) {
-                            fileHandler.createBackupFilename(walletInfoFile);
-                         }
-                        // create a new wallet
-                        Wallet newWallet = new Wallet(controller.getMultiBitService().getNetworkParameters());
-                        ECKey newKey = new ECKey();
-                        newWallet.keychain.add(newKey);
+                            PerWalletModelData perWalletModelData = controller.getFileHandler().loadFromFile(newWalletFile);
+                            if (perWalletModelData != null) {
+                                controller.getModel().setActiveWalletByFilename(perWalletModelData.getWalletFilename());
+                                controller.fireNewWalletCreated();
+                            }
+                        } else {
+                            // create a new wallet
+                            Wallet newWallet = new Wallet(controller.getMultiBitService().getNetworkParameters());
+                            ECKey newKey = new ECKey();
+                            newWallet.keychain.add(newKey);
+                            PerWalletModelData perWalletModelData = new PerWalletModelData();
+                            perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename));
+                            perWalletModelData.setWallet(newWallet);
+                            perWalletModelData.setWalletFilename(newWalletFilename);
+                            perWalletModelData.setWalletDescription(controller.getLocaliser().getString(
+                                    "createNewWalletSubmitAction.defaultDescription"));
+                            controller.getFileHandler().savePerWalletModelData(perWalletModelData);
 
-                        PerWalletModelData perWalletModelData = new PerWalletModelData();
-                        perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename));
-                        perWalletModelData.setWallet(newWallet);
-                        perWalletModelData.setWalletFilename(newWalletFilename);
-                        perWalletModelData.setWalletDescription(controller.getLocaliser().getString("createNewWalletSubmitAction.defaultDescription"));
-                        fileHandler.savePerWalletModelData(perWalletModelData);                       
- 
-                        // start using the new file as the wallet
-                        controller.addWalletFromFilename(newWalletFile.getAbsolutePath());
-                        controller.getModel().setActiveWalletByFilename(newWalletFilename);
-                                                
-                        controller.fireNewWalletCreated();
+                            // start using the new file as the wallet
+                            controller.addWalletFromFilename(newWalletFile.getAbsolutePath());
+                            controller.getModel().setActiveWalletByFilename(newWalletFilename);
+                            controller.fireNewWalletCreated();
+                        }
                     } catch (IOException e) {
                         log.error("IOException: {}", e.getMessage(), e);
                     }

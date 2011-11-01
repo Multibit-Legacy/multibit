@@ -47,7 +47,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
     private Border walletDescriptionTextFieldBorder;
 
     private BlinkLabel amountLabel;
-    
+
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
 
@@ -212,8 +212,11 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
             walletDescriptionTextField.setForeground(Color.BLACK);
             walletDescriptionTextField.select(0, 0);
             String text = walletDescriptionTextField.getText();
-            perWalletModelData.setWalletDescription(text);
-            mainFrame.setActiveWalletTooltip(new File(perWalletModelData.getWalletFilename()), text);
+            if (text != null && !text.equals(perWalletModelData.getWalletDescription())) {
+                perWalletModelData.setWalletDescription(text);
+                mainFrame.setActiveWalletTooltip(new File(perWalletModelData.getWalletFilename()), text);
+                controller.getFileHandler().savePerWalletModelData(perWalletModelData);
+            }
         }
     }
 
@@ -232,7 +235,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
             setBackground(BACKGROUND_COLOR_DATA_HAS_CHANGED);
             walletDescriptionTextField.setBackground(BACKGROUND_COLOR_DATA_HAS_CHANGED);
             walletDescriptionTextField.setText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.text"));
-            walletDescriptionTextField.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));            
+            mainFrame.setUpdatesStoppedTooltip(walletDescriptionTextField, perWalletModelData.getWalletBackupFilename()); 
             walletDescriptionTextField.setEnabled(false);
             walletDescriptionTextField.setEditable(false);
             amountLabel.setText("");
