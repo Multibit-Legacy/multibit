@@ -151,8 +151,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private MultiBitButton yourWalletsButton;
     private MultiBitButton sendBitcoinButton;
     private MultiBitButton receiveBitcoinButton;
-    
-    private static final int TOOLTIP_DISMISSAL_DELAY = 10000;  // millisecs
+
+    private static final int TOOLTIP_DISMISSAL_DELAY = 10000; // millisecs
 
     /**
      * Macify integration on a Mac
@@ -190,7 +190,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setTitle(localiser.getString("multiBitFrame.title"));
-        
+
         ToolTipManager.sharedInstance().setDismissDelay(TOOLTIP_DISMISSAL_DELAY);
 
         final MultiBitController finalController = controller;
@@ -344,27 +344,42 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
-        JPanel filler1 = new JPanel();
+        JLabel filler1 = new JLabel();
         filler1.setMinimumSize(new Dimension(30, 30));
         filler1.setMaximumSize(new Dimension(30, 30));
         filler1.setPreferredSize(new Dimension(30, 30));
+        //filler1.setBorder(BorderFactory.createLineBorder(Color.CYAN));
         filler1.setOpaque(false);
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 0.01;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(filler1, constraints);
 
         JLabel walletIconLabel = new JLabel();
         walletIconLabel.setIcon(createImageIcon(WALLET_ICON_FILE));
         walletIconLabel.setOpaque(false);
+        walletIconLabel.setMinimumSize(new Dimension(60, 80));
+        walletIconLabel.setMaximumSize(new Dimension(60, 80));
+        walletIconLabel.setPreferredSize(new Dimension(60, 80));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 0;
-        constraints.weightx = 0.1;
+        constraints.weightx = 0.01;
         constraints.anchor = GridBagConstraints.LINE_START;
 
         headerPanel.add(walletIconLabel, constraints);
+
+        JPanel filler2 = new JPanel();
+        filler2.setMinimumSize(new Dimension(10, 10));
+        filler2.setMaximumSize(new Dimension(10, 10));
+        filler2.setPreferredSize(new Dimension(10, 10));
+        filler2.setOpaque(false);
+        constraints.gridx = 2;
+        constraints.gridy = 0;
+        constraints.weightx = 0.01;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        headerPanel.add(filler2, constraints);
 
         estimatedBalanceTextLabel = new BlinkLabel();
         estimatedBalanceTextLabel.setHorizontalAlignment(JTextField.LEFT);
@@ -373,9 +388,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         estimatedBalanceTextLabel.setFont(font);
         estimatedBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
 
-        constraints.gridx = 2;
+        constraints.gridx = 3;
         constraints.gridy = 0;
-        constraints.weightx = 0.4;
+        constraints.weightx = 0.6;
         constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(estimatedBalanceTextLabel, constraints);
 
@@ -383,20 +398,20 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         availableBalanceTextLabel.setFont(availableBalanceTextLabel.getFont().deriveFont(12.0F));
         availableBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.availableToSpend.tooltip"));
 
-        constraints.gridx = 3;
+        constraints.gridx = 4;
         constraints.gridy = 0;
         constraints.weightx = 3.0;
         constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(availableBalanceTextLabel, constraints);
 
-        JPanel filler2 = new JPanel();
-        filler2.setOpaque(false);
+        JPanel filler3 = new JPanel();
+        filler3.setOpaque(false);
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 4;
+        constraints.gridx = 5;
         constraints.gridy = 0;
-        constraints.weightx = 0.6;
+        constraints.weightx = 10;
         constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(filler2, constraints);
+        headerPanel.add(filler3, constraints);
 
         return headerPanel;
     }
@@ -855,7 +870,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
-        updateStatusLabel( controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.1") + " " + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.2"));
+        updateStatusLabel(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.1") + " "
+                + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.2"));
         fireDataChanged();
     }
 
@@ -889,15 +905,23 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             // files have been changed by another process - blank totals
             // and put 'Updates stopped' message
             estimatedBalanceTextLabel.setText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.text"));
-            setUpdatesStoppedTooltip(estimatedBalanceTextLabel); 
+            setUpdatesStoppedTooltip(estimatedBalanceTextLabel);
             availableBalanceTextLabel.setText("");
         } else {
             estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel()
                     .getActiveWalletEstimatedBalance(), true, false));
             estimatedBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
 
-            availableBalanceTextLabel.setText(controller.getLocaliser().getString("multiBitFrame.availableToSpend",
-                    new Object[] { Localiser.bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true, false) }));
+            if (model.getActiveWalletAvailableBalance() != null
+                    && model.getActiveWalletAvailableBalance().equals(controller.getModel().getActiveWalletEstimatedBalance())) {
+                availableBalanceTextLabel.setText("");
+            } else {
+                availableBalanceTextLabel
+                        .setText(controller.getLocaliser().getString(
+                                "multiBitFrame.availableToSpend",
+                                new Object[] { Localiser.bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true,
+                                        false) }));
+            }
         }
 
         String walletFilename = controller.getModel().getActiveWalletFilename();
@@ -1026,7 +1050,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         toolTipText = toolTipText + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.1") + "<br>";
         toolTipText = toolTipText + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.2") + "<br>";
         toolTipText = toolTipText + "</font></html>";
-        component.setToolTipText(toolTipText);        
+        component.setToolTipText(toolTipText);
     }
 
     class ComboBoxRenderer extends JLabel implements ListCellRenderer {

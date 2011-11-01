@@ -39,7 +39,7 @@ public class ExitAction implements Action {
                         controller.getModel().setUserPreference(MultiBitModel.WALLET_FILENAME_PREFIX + i,
                                 perWalletModelData.getWalletFilename());
                         // save the ith wallet, including the wallet info
-                        controller.getFileHandler().savePerWalletModelData(perWalletModelData);
+                        controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
                     }
                 }
 

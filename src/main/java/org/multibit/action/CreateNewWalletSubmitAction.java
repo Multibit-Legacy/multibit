@@ -76,7 +76,7 @@ public class CreateNewWalletSubmitAction implements Action {
                             perWalletModelData.setWalletFilename(newWalletFilename);
                             perWalletModelData.setWalletDescription(controller.getLocaliser().getString(
                                     "createNewWalletSubmitAction.defaultDescription"));
-                            controller.getFileHandler().savePerWalletModelData(perWalletModelData);
+                            controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
 
                             // start using the new file as the wallet
                             controller.addWalletFromFilename(newWalletFile.getAbsolutePath());

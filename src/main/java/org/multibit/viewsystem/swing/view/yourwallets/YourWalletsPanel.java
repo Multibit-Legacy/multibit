@@ -129,7 +129,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
             for (PerWalletModelData loopModelData : perWalletModelDataList) {
                 if (loopModelData != null) {
                     if (loopModelData.isDirty() && !loopModelData.isFilesHaveBeenChangedByAnotherProcess()) {
-                        controller.getFileHandler().savePerWalletModelData(loopModelData);
+                        controller.getFileHandler().savePerWalletModelData(loopModelData, false);
                     }
                 }
             }

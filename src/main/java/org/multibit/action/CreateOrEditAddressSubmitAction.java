@@ -67,7 +67,7 @@ public class CreateOrEditAddressSubmitAction implements Action {
                     if (receiveNewKeyItem != null) {
                         ECKey newKey = (ECKey)receiveNewKeyItem.getNewValue();
                         controller.getModel().getActiveWallet().keychain.add(newKey);
-                        controller.getFileHandler().savePerWalletModelData(controller.getModel().getActivePerWalletModelData());
+                        controller.getFileHandler().savePerWalletModelData(controller.getModel().getActivePerWalletModelData(), false);
                     }
                 }
             } else {

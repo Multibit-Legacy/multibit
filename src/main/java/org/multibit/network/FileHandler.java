@@ -76,20 +76,21 @@ public class FileHandler {
      * @param perWalletModelData
      *            TODO give notification of whether data was written to a backup
      *            file
+     * @param isNew The savePerWalletModelData is completely new
      */
-    public void savePerWalletModelData(PerWalletModelData perWalletModelData) {
+    public void savePerWalletModelData(PerWalletModelData perWalletModelData, boolean isNew) {
         try {
             if (perWalletModelData == null) {
                 // nothing to do
                 return;
             }
 
-            // save the perWalletModelData if it is dirty
-            if (perWalletModelData.isDirty() || perWalletModelData.isTransactionDirty()) {
+             // save the perWalletModelData if it is dirty
+            if (perWalletModelData.isDirty() || perWalletModelData.isTransactionDirty() || isNew) {
                 // check dates and sizes of files
                 boolean filesHaveChanged = haveFilesChanged(perWalletModelData);
-
-                if (!filesHaveChanged) {
+             
+                if (!filesHaveChanged || isNew) {
                     // normal write of data
 
                     File walletFile = new File(perWalletModelData.getWalletFilename());
@@ -115,7 +116,6 @@ public class FileHandler {
                         perWalletModelData.setDirty(false);
                         perWalletModelData.setTransactionDirty(false);
                     }
-
                 } else {
                     // write to backup files
                     File walletFile = new File(perWalletModelData.getWalletFilename());

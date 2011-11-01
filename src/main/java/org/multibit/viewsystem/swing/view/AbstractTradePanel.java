@@ -185,7 +185,7 @@ public abstract class AbstractTradePanel extends JPanel implements View {
         // save any changes
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isDirty()) {
-            controller.getFileHandler().savePerWalletModelData(controller.getModel().getActivePerWalletModelData());
+            controller.getFileHandler().savePerWalletModelData(controller.getModel().getActivePerWalletModelData(), false);
         }
     }
 

@@ -66,7 +66,7 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
             controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, addressString);
             controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
             
-            controller.getFileHandler().savePerWalletModelData(perWalletModelData);
+            controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
 
             controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
 

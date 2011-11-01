@@ -217,7 +217,7 @@ public class MultiBitService {
                 String defaultDescription = controller.getLocaliser().getString(
                         "createNewWalletSubmitAction.defaultDescription");
                 newPerWalletModelData.setWalletDescription(defaultDescription);
-                controller.getFileHandler().savePerWalletModelData(newPerWalletModelData);
+                controller.getFileHandler().savePerWalletModelData(newPerWalletModelData, false);
 
                 //controller.getModel().setWalletDescriptionByFilename(walletFile.getAbsolutePath(), defaultDescription);
                 controller.fireNewWalletCreated();
@@ -283,7 +283,7 @@ public class MultiBitService {
         if (sendTransaction != null) {
             log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is " + sendTransaction.getHashAsString());
             
-            controller.getFileHandler().savePerWalletModelData(perWalletModelData);
+            controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
             
             // notify all of the pendingTransactionsListeners about the new transaction
             peerGroup.processPendingTransaction(sendTransaction);

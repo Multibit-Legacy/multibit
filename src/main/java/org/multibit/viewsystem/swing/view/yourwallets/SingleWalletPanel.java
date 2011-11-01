@@ -215,7 +215,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
             if (text != null && !text.equals(perWalletModelData.getWalletDescription())) {
                 perWalletModelData.setWalletDescription(text);
                 mainFrame.setActiveWalletTooltip(new File(perWalletModelData.getWalletFilename()), text);
-                controller.getFileHandler().savePerWalletModelData(perWalletModelData);
+                controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
             }
         }
     }
