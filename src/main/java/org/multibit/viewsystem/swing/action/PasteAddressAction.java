@@ -12,6 +12,7 @@ import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.network.FileHandler;
+import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
 
 /**
@@ -54,6 +55,7 @@ public class PasteAddressAction extends AbstractAction {
         } else {
             TextTransfer textTransfer = new TextTransfer();
             String stringToPaste = textTransfer.getClipboardContents();
+            stringToPaste = WhitespaceTrimmer.trim(stringToPaste);
 
             // TODO parse string - if bitcoin URI then fill out other fields
 

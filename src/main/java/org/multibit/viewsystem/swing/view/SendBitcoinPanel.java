@@ -60,6 +60,7 @@ import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.qrcode.BitcoinURI;
 import org.multibit.qrcode.QRCodeEncoderDecoder;
+import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopySendAddressAction;
@@ -605,6 +606,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
             String address = addressTextField.getText();
             String amount = amountTextField.getText();
             String label = labelTextArea.getText();
+            address = WhitespaceTrimmer.trim(address);
             AddressBookData addressBookData = new AddressBookData(label, address);
             addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRow, false);
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, address);
