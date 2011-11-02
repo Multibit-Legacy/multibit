@@ -333,7 +333,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     if (controller.getMultiBitService().getChain() != null) {
                         if (controller.getMultiBitService().getChain().getChainHead() != null) {
                             blockHeight = controller.getMultiBitService().getChain().getChainHead().getHeight();
-                            onlineLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.numberOfBlocks", new Object[] { "" + blockHeight}));
+                            onlineLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.numberOfBlocks",
+                                    new Object[] { "" + blockHeight }));
                         }
                     }
                 }
@@ -890,8 +891,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
-        updateStatusLabel(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.1") + " "
-                + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.2"));
+        if (controller.getModel().getActiveWalletFilename() != null
+                && controller.getModel().getActiveWalletFilename().equals(perWalletModelData.getWalletFilename())) {
+            updateStatusLabel(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.1") + " "
+                    + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.2"));
+        }
         fireDataChanged();
     }
 

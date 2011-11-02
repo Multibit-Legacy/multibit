@@ -71,5 +71,4 @@ public class PasteAddressAction extends AbstractAction {
             controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
         }
     }
-
 }

@@ -32,7 +32,7 @@ public class CopyQRCodeImageAction extends AbstractAction {
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("copyQRCodeImageAction.tooltip"));
-        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("copyQRCodeImagAction.mnemonicKey"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("copyQRCodeImageAction.mnemonicKey"));
     }
 
     /**
