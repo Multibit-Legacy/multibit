@@ -131,8 +131,7 @@ public class BitcoinURI {
                                     if (matcher.matches()) {
                                         amount = Utils.toNanoCoins(matcher.group(1));
                                         if (matcher.group(2) != null) {
-                                           // TODO Why is the result of this ignored?
-                                           amount.multiply(BigInteger.valueOf(10).pow(Integer.parseInt(matcher.group(2)) - 8));
+                                           amount = amount.multiply(BigInteger.valueOf(10).pow(Integer.parseInt(matcher.group(2)) - 8));
                                         }
                                     }
                                 }

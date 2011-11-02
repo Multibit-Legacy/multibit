@@ -106,17 +106,14 @@ public class Localiser {
 
         String propertyFilename = bundleName + SEPARATOR + locale.getLanguage() + PROPERTY_NAME_SUFFIX;
         String propertyFilenameBase = bundleName + PROPERTY_NAME_SUFFIX;
-        //log.debug("Localiser#setLocale propertyFilename = " + propertyFilename);
-        //log.debug("Localiser#setLocale propertyFilenameBase = " + propertyFilenameBase);
-        boolean foundIt = false;
+         boolean foundIt = false;
         try {
             InputStream inputStream = Localiser.class.getResourceAsStream(propertyFilename);
             if (inputStream != null) {
                 resourceBundle = new PropertyResourceBundle(new InputStreamReader(inputStream, "UTF8"));
                 foundIt = true;
             }
-            // ResourceBundle.getBundle(bundleName, locale);
-        } catch (FileNotFoundException e) {
+         } catch (FileNotFoundException e) {
           log.error(e.getMessage(), e);
         } catch (IOException e) {
           log.error(e.getMessage(), e);
@@ -213,6 +210,32 @@ public class Localiser {
         }
         //toReturn = toReturn + (coins.floatValue() + ((float)cents.intValue()) / Utils.COIN.intValue());
         toReturn = String.format("%s%d.%04d", negative ? "-" : "", coins.intValue(), fraction.intValue() / 10000);
+        if (addUnit) {
+            toReturn = toReturn + " " + "BTC";
+        }
+        return toReturn;
+    }
+    
+    /** 
+     * Returns the given value in nanocoins as a number with as many digits as it needs
+     **/
+    public static String bitcoinValueToString(BigInteger value, boolean addUnit, boolean blankZero) {
+        if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
+            return "";
+        }
+
+        boolean negative = value.compareTo(BigInteger.ZERO) < 0;
+        if (negative) {
+            value = value.negate();
+        }
+        BigInteger coins = value.divide(Utils.COIN);
+        BigInteger fraction = value.remainder(Utils.COIN);
+        
+        String toReturn = "";
+        if (negative) {
+            toReturn = "-";
+        }
+        toReturn = toReturn + (coins.floatValue() + ((float)fraction.intValue()) / Utils.COIN.intValue());
         if (addUnit) {
             toReturn = toReturn + " " + "BTC";
         }

@@ -154,6 +154,8 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
     public void addMouseListener(MouseListener mouseListener) {
         super.addMouseListener(mouseListener);
         walletDescriptionTextField.addMouseListener(mouseListener);
+        amountLabel.addMouseListener(mouseListener);
+        walletFilenameLabel.addMouseListener(mouseListener);
     }
 
     public void setSelected(boolean selected) {
