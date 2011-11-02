@@ -48,6 +48,8 @@ public class MultiBitModel {
     public static final String SEND_ADDRESS = "sendAddress";
     public static final String SEND_LABEL = "sendLabel";
     public static final String SEND_AMOUNT = "sendAmount";
+    public static final String SEND_URI_IMAGE = "sendUriImage";
+
     public static final String SEND_FEE = "sendFee";
     // default is min fee of 0.0005 BTC
     public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("10000");
@@ -58,6 +60,7 @@ public class MultiBitModel {
     public static final String SEND_ERROR_MESSAGE = "sendErrorMessage";
 
     // receive bitcoin
+    public static final String IS_RECEIVE_BITCOIN = "isReceiveBitcoin";
     public static final String RECEIVE_ADDRESS = "receiveAddress";
     public static final String RECEIVE_LABEL = "receiveLabel";
     public static final String RECEIVE_AMOUNT = "receiveAmount";
@@ -354,6 +357,10 @@ public class MultiBitModel {
         // TODO Consider an ArrayList if possible
         Vector<WalletTableData> walletData = new Vector<WalletTableData>();
 
+        if (walletFilename == null) {
+            return walletData;
+        }
+        
         PerWalletModelData perWalletModelData = null;
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {

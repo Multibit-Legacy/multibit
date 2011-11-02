@@ -24,28 +24,42 @@ public class CopyQRCodeTextAction implements Action {
             Data data = dataProvider.getData();
 
             if (data != null) {
-                Item receiveAmountItem = data.getItem(MultiBitModel.RECEIVE_AMOUNT);
-                Item receiveAddressItem = data.getItem(MultiBitModel.RECEIVE_ADDRESS);
-                Item receiveLabelItem = data.getItem(MultiBitModel.RECEIVE_LABEL);
-                               
-                String receiveAmount = "";
-                String receiveAddress = "";
-                String receiveLabel = "";
-                
-                if (receiveAmountItem != null && receiveAmountItem.getNewValue() != null) {
-                    receiveAmount = (String) receiveAmountItem.getNewValue();
+                boolean isReceive = false;
+
+                Item isReceiveItem = data.getItem(MultiBitModel.IS_RECEIVE_BITCOIN);
+                if (isReceiveItem != null && Boolean.TRUE.toString().equals(isReceiveItem.getNewValue())) {
+                    isReceive = true;
                 }
-                
-                if (receiveAddressItem != null && receiveAddressItem.getNewValue() != null) {
-                    receiveAddress = (String) receiveAddressItem.getNewValue();
+                Item amountItem = null;
+                Item addressItem = null;
+                Item labelItem = null;
+                if (isReceive) {
+                    amountItem = data.getItem(MultiBitModel.RECEIVE_AMOUNT);
+                    addressItem = data.getItem(MultiBitModel.RECEIVE_ADDRESS);
+                    labelItem = data.getItem(MultiBitModel.RECEIVE_LABEL);
+                } else {
+                    amountItem = data.getItem(MultiBitModel.SEND_AMOUNT);
+                    addressItem = data.getItem(MultiBitModel.SEND_ADDRESS);
+                    labelItem = data.getItem(MultiBitModel.SEND_LABEL);
                 }
-                
-                if (receiveLabelItem != null && receiveLabelItem.getNewValue() != null) {
-                    receiveLabel = (String) receiveLabelItem.getNewValue();
+                String amount = "";
+                String address = "";
+                String label = "";
+
+                if (amountItem != null && amountItem.getNewValue() != null) {
+                    amount = (String) amountItem.getNewValue();
                 }
-                
-                String bitcoinURI = BitcoinURI.convertToBitcoinURI(receiveAddress, receiveAmount, receiveLabel);
-                
+
+                if (addressItem != null && addressItem.getNewValue() != null) {
+                    address = (String) addressItem.getNewValue();
+                }
+
+                if (labelItem != null && labelItem.getNewValue() != null) {
+                    label = (String) labelItem.getNewValue();
+                }
+
+                String bitcoinURI = BitcoinURI.convertToBitcoinURI(address, amount, label);
+
                 // copy to clipboard
                 TextTransfer textTransfer = new TextTransfer();
                 textTransfer.setClipboardContents(bitcoinURI);

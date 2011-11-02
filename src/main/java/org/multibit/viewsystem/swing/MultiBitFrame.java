@@ -10,8 +10,13 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -320,6 +325,21 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         statusBar.setMaximumSize(new Dimension(A_SMALL_NUMBER_OF_PIXELS, STATUSBAR_HEIGHT));
         onlineLabel = new JLabel();
         onlineLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        onlineLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent arg0) {
+                int blockHeight = -1;
+                if (controller.getMultiBitService() != null) {
+                    if (controller.getMultiBitService().getChain() != null) {
+                        if (controller.getMultiBitService().getChain().getChainHead() != null) {
+                            blockHeight = controller.getMultiBitService().getChain().getChainHead().getHeight();
+                            onlineLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.numberOfBlocks", new Object[] { "" + blockHeight}));
+                        }
+                    }
+                }
+            }
+        });
+
         statusLabel = new JLabel();
 
         statusBar.addZone("online", onlineLabel, "12%", "left");
@@ -348,7 +368,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         filler1.setMinimumSize(new Dimension(30, 30));
         filler1.setMaximumSize(new Dimension(30, 30));
         filler1.setPreferredSize(new Dimension(30, 30));
-        //filler1.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+        // filler1.setBorder(BorderFactory.createLineBorder(Color.CYAN));
         filler1.setOpaque(false);
         constraints.gridx = 0;
         constraints.gridy = 0;

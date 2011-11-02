@@ -29,7 +29,7 @@ public class CopyQRCodeImageAction extends AbstractAction {
     public CopyQRCodeImageAction(MultiBitController controller, DataProvider dataProvider) {
         super(controller.getLocaliser().getString("copyQRCodeImageAction.text"));
         this.dataProvider = dataProvider;
- 
+
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("copyQRCodeImageAction.tooltip"));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("copyQRCodeImagAction.mnemonicKey"));
@@ -43,10 +43,21 @@ public class CopyQRCodeImageAction extends AbstractAction {
             Data data = dataProvider.getData();
 
             if (data != null) {
-                Item qrCodeImageItem = data.getItem(MultiBitModel.RECEIVE_URI_IMAGE);
-               
-                if (qrCodeImageItem != null && qrCodeImageItem.getNewValue() != null) {
+                boolean isReceive = false;
 
+                Item isReceiveItem = data.getItem(MultiBitModel.IS_RECEIVE_BITCOIN);
+                if (isReceiveItem != null && Boolean.TRUE.toString().equals(isReceiveItem.getNewValue())) {
+                    isReceive = true;
+                }
+
+                Item qrCodeImageItem = null;
+                if (isReceive) {
+                    qrCodeImageItem = data.getItem(MultiBitModel.RECEIVE_URI_IMAGE);
+                } else {
+                    qrCodeImageItem = data.getItem(MultiBitModel.SEND_URI_IMAGE);
+                }
+                
+                if (qrCodeImageItem != null && qrCodeImageItem.getNewValue() != null) {
                     JLabel qrCodeLabel = (JLabel) qrCodeImageItem.getNewValue();
                     final Clipboard clipboard = qrCodeLabel.getTopLevelAncestor().getToolkit().getSystemClipboard();
 

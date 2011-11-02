@@ -12,7 +12,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.TransferHandler;
 
-public class ImageSelection extends TransferHandler implements Transferable {
+public class ImageSelection1 extends TransferHandler implements Transferable {
 
     private static final long serialVersionUID = 8659153379261699446L;
 
@@ -21,7 +21,7 @@ public class ImageSelection extends TransferHandler implements Transferable {
     private Image image;
 
     private boolean canImport;
-    public ImageSelection(boolean canImport) {
+    public ImageSelection1(boolean canImport) {
         this.canImport = canImport;
     }
     

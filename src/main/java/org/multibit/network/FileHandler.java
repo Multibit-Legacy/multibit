@@ -196,7 +196,7 @@ public class FileHandler {
                     haveFilesChanged = true;
                 }
             }
-            log.info("Result of check of whether files have changed for wallet filename "
+            log.debug("Result of check of whether files have changed for wallet filename "
                     + perWalletModelData.getWalletFilename() + " was " + haveFilesChanged + ".");
             
             // create backup filenames early if the files have changed
@@ -240,7 +240,7 @@ public class FileHandler {
         walletInfo.put(MultiBitModel.WALLET_INFO_FILE_SIZE, "" + walletInfoFileSize);
         walletInfo.put(MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED, "" + walletInfoFileLastModified);
 
-        log.info("Wallet filename " + walletFilename + " , " + MultiBitModel.WALLET_FILE_SIZE + " " + walletFileSize + " ,"
+        log.debug("Wallet filename " + walletFilename + " , " + MultiBitModel.WALLET_FILE_SIZE + " " + walletFileSize + " ,"
                 + MultiBitModel.WALLET_FILE_LAST_MODIFIED + " " + walletFileLastModified + " ,"
                 + MultiBitModel.WALLET_INFO_FILE_SIZE + " " + walletInfoFileSize + " ,"
                 + MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED + " " + walletInfoFileLastModified);
