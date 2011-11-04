@@ -10,13 +10,10 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -369,7 +366,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         filler1.setMinimumSize(new Dimension(30, 30));
         filler1.setMaximumSize(new Dimension(30, 30));
         filler1.setPreferredSize(new Dimension(30, 30));
-        // filler1.setBorder(BorderFactory.createLineBorder(Color.CYAN));
         filler1.setOpaque(false);
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -516,12 +512,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         yourWalletsPanel.add(yourWalletsButton);
 
         activeWalletPanel = new JPanel(new BorderLayout());
-        activeWalletPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 7, 4));
         activeWalletPanel.setOpaque(false);
         activeWalletComboBox = createActiveWalletComboBox();
         activeWalletComboBox.setFont(yourWalletsButton.getFont());
         activeWalletComboBox.setVisible(false); // hidden until set
-        activeWalletPanel.add(activeWalletComboBox, BorderLayout.CENTER);
+        activeWalletPanel.add(activeWalletComboBox, BorderLayout.NORTH);
 
         // receive bitcoin action
         receiveBitcoinPanel = new JPanel(new BorderLayout());
@@ -968,8 +963,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             index++;
         }
         activeWalletComboBox = new JComboBox(indexArray);
+        activeWalletComboBox.setBorder(normalBorder);
+
         ComboBoxRenderer renderer = new ComboBoxRenderer();
         renderer.setMinimumSize(new Dimension(200, 30));
+        
         activeWalletComboBox.setRenderer(renderer);
 
         String activeWalletFileName = null;
@@ -1143,7 +1141,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         activeWalletComboBox.setFont(yourWalletsButton.getFont());
 
         ComboBoxRenderer renderer = new ComboBoxRenderer();
-        renderer.setMinimumSize(new Dimension(200, 30));
+        renderer.setMinimumSize(new Dimension(200, 50));
         activeWalletComboBox.setRenderer(renderer);
         activeWalletPanel.add(activeWalletComboBox, BorderLayout.CENTER);
 

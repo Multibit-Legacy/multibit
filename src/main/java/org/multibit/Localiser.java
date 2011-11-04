@@ -208,7 +208,6 @@ public class Localiser {
         if (negative) {
             toReturn = "-";
         }
-        //toReturn = toReturn + (coins.floatValue() + ((float)cents.intValue()) / Utils.COIN.intValue());
         toReturn = String.format("%s%d.%04d", negative ? "-" : "", coins.intValue(), fraction.intValue() / 10000);
         if (addUnit) {
             toReturn = toReturn + " " + "BTC";

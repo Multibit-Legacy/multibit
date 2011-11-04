@@ -7,9 +7,9 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.network.FileHandler;
 
-
 /**
- * TimerTask to detect whether wallet files have been changed by some external process
+ * TimerTask to detect whether wallet files have been changed by some external
+ * process
  * 
  * @see java.util.Timer
  * @see java.util.TimerTask
@@ -37,17 +37,21 @@ public class FileChangeTimerTask extends TimerTask {
     public void run() {
         // see if the wallet files have changed
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
-        
+
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopModelData : perWalletModelDataList) {
                 boolean haveFilesChanged = fileHandler.haveFilesChanged(loopModelData);
                 if (haveFilesChanged) {
+                    boolean previousFilesHaveBeenChanged = loopModelData.isFilesHaveBeenChangedByAnotherProcess();
                     loopModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-                    controller.fireFilesHaveBeenChangedByAnotherProcess(loopModelData);
+                    if (!previousFilesHaveBeenChanged) {
+                        // only fire once, when change happens
+                        controller.fireFilesHaveBeenChangedByAnotherProcess(loopModelData);
+                    }
                 }
             }
         }
-        
+
         // refresh the main screen
         mainFrame.fireDataChanged();
     }

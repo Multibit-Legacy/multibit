@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
@@ -37,14 +38,14 @@ public class ImageSelection extends TransferHandler implements Transferable {
     private DataFlavor flavors[];
 
     private Image image;
-    
+
     private AbstractTradePanel abstractTradePanel;
     private boolean canImport;
 
     public ImageSelection(AbstractTradePanel abstractTradePanel, boolean canImport) {
         this.abstractTradePanel = abstractTradePanel;
         this.canImport = canImport;
-        
+
         try {
             urlFlavor = new DataFlavor("application/x-java-url; class=java.net.URL");
             uriListAsStringFlavor = new DataFlavor("text/uri-list; class=java.lang.String");
@@ -60,10 +61,10 @@ public class ImageSelection extends TransferHandler implements Transferable {
     }
 
     public boolean canImport(JComponent comp, DataFlavor flavor[]) {
-        if (!canImport){
+        if (!canImport) {
             return false;
         }
-        
+
         if (!(comp instanceof JLabel) && !(comp instanceof AbstractButton)) {
             return false;
         }
@@ -96,8 +97,6 @@ public class ImageSelection extends TransferHandler implements Transferable {
     public boolean importData(JComponent comp, Transferable transferable) {
         if (comp instanceof JLabel) {
             log.debug("importData - 1");
-            JPanel qrCodePanel = abstractTradePanel.getQRCodePanel();
-            JLabel qrCodeLabel = abstractTradePanel.getQRCodeLabel();
 
             JLabel label = (JLabel) comp;
             image = getDropData(transferable, label);
@@ -105,38 +104,6 @@ public class ImageSelection extends TransferHandler implements Transferable {
 
             return abstractTradePanel.processDroppedImage(image);
 
-//            if (image != null) {
-//                BufferedImage bufferedImage;
-//                log.debug("importData - 2.1");
-//                if (image.getWidth(qrCodeLabel) + MINIMUM_QRCODE_PANEL_HORIZONTAL_SPACING > qrCodePanel.getWidth()
-//                        || image.getHeight(qrCodeLabel) + MINIMUM_QRCODE_PANEL_VERTICAL_SPACING > qrCodePanel.getHeight()) {
-//                    // scale image
-//                    double qrCodeWidth = (double) qrCodePanel.getWidth();
-//                    double qrCodeHeight = (double) qrCodePanel.getHeight();
-//                    double xScale = qrCodeWidth
-//                            / (double) (image.getWidth(qrCodeLabel) + MINIMUM_QRCODE_PANEL_HORIZONTAL_SPACING);
-//                    double yScale = qrCodeHeight
-//                            / (double) (image.getHeight(qrCodeLabel) + MINIMUM_QRCODE_PANEL_VERTICAL_SPACING);
-//                    double scaleFactor = Math.min(xScale, yScale);
-//                    bufferedImage = toBufferedImage(image, (int) (image.getWidth(qrCodeLabel) * scaleFactor),
-//                            (int) (image.getHeight(qrCodeLabel) * scaleFactor));
-//                } else {
-//                    // no resize
-//                    bufferedImage = toBufferedImage(image, -1, -1);
-//                }
-//                log.debug("importData - 2.2");
-//                ImageIcon icon = new ImageIcon(bufferedImage);
-//
-//                // decode the QRCode to a String
-//                QRCodeEncoderDecoder qrCodeEncoderDecoder = new QRCodeEncoderDecoder(image.getWidth(qrCodeLabel),
-//                        image.getHeight(qrCodeLabel));
-//                log.debug("importData - 2.3");
-//
-//                String decodedString = qrCodeEncoderDecoder.decode(toBufferedImage(image, -1, -1));
-//                log.debug("importData - 3 - decodedResult = " + decodedString);
-//                log.info("importData = decodedString = {}", decodedString);
-//                return abstractTradePanel.processDecodedString(decodedString, icon);
-//            }
         }
         return false;
     }
@@ -146,24 +113,42 @@ public class ImageSelection extends TransferHandler implements Transferable {
         if (isDataFlavorSupported(flavor)) {
             if (DataFlavor.imageFlavor.equals(flavor)) {
                 return image;
-            } else {
-                if (DataFlavor.javaFileListFlavor.equals(flavor)) {
-                    java.util.List<File> list = new java.util.LinkedList<File>();
+            }
 
-                    // write the image to the output stream
-                    File swatchFile = new File("swatch.png");
-                    try {
-                        ImageIO.write(toBufferedImage(image, -1, -1), "png", new File("swatch.png"));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+            if (DataFlavor.javaFileListFlavor.equals(flavor)) {
+                java.util.List<File> list = new java.util.LinkedList<File>();
+
+                // write the image to the output stream
+                File swatchFile;
+                try {
+                    swatchFile = File.createTempFile("swatch", ".png");
+                    ImageIO.write(toBufferedImage(image, -1, -1), "png", swatchFile);
                     list.add(swatchFile);
-                    return list;
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                return list;
+            }
 
+            if (uriListAsStringFlavor.equals(flavor)) {
+                log.debug("uriListAsStringFlavor is supported");
+                // write the image to the output stream
+                File swatchFile;
+                try {
+                    swatchFile = File.createTempFile("swatch", ".png");
+                    ImageIO.write(toBufferedImage(image, -1, -1), "png", swatchFile);
+                    return "file://" + swatchFile.getAbsolutePath() + "\r\n";
+                 } catch (IOException e1) {
+                    e1.printStackTrace();
                 }
             }
+
         }
         return null;
+        
+        //java.awt.datatransfer.DataFlavor[mimetype=image/x-pict;representationclass=java.io.InputStream], 
+        //java.awt.datatransfer.DataFlavor[mimetype=image/x-java-image;representationclass=java.awt.Image], 
+
     }
 
     public DataFlavor[] getTransferDataFlavors() {
@@ -211,16 +196,21 @@ public class ImageSelection extends TransferHandler implements Transferable {
                 StringTokenizer izer = new StringTokenizer(uris, "\r\n");
                 if (izer.hasMoreTokens()) {
                     String uri = izer.nextToken();
-                    log.debug("uri = " + uri);
-                    java.awt.Image image = getURLImage(new URL(uri));
 
-                    if (image != null) {
-                        return image;
-                    }
+                    if (uri.startsWith("#") || uri.isEmpty()) {
+                        // comment line, by RFC 2483
+                    } else {
+                        log.debug("uri = " + uri);
+                        java.awt.Image image = getURLImage(new URL(uri));
 
-                    ImageIcon uriIcon = new ImageIcon(uri);
-                    if (uriIcon.getImage() != null) {
-                        return uriIcon.getImage();
+                        if (image != null) {
+                            return image;
+                        }
+
+                        ImageIcon uriIcon = new ImageIcon(uri);
+                        if (uriIcon.getImage() != null) {
+                            return uriIcon.getImage();
+                        }
                     }
                 }
             }
