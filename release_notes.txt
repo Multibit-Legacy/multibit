@@ -8,6 +8,7 @@ Enhancements
 +  Visual indication of which panel you are on added.
 +  'Available to spend' now hidden when amount is equal to estimated balance
 +  Added number of blocks as a tool tip to the "Online/ Connecting..." status label
++  MultiBit now supplied as an exe file for Windows.
 
 Bug fixes
 +  Fixed selection colour for Receive and Send bitcoin.

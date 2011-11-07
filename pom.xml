@@ -80,15 +80,16 @@
                              **/Transaction.class, **/Transaction$*.class, 
                              **/TransactionInput.class, **/TransactionInput$*.class,
                              **/Wallet.class, **/Wallet$*.class,
-                             **/WalletEventListener.class</excludes>
+                             **/WalletEventListener.class,
+                             **/DNSDiscovery.class</excludes>
                  </artifactItem>
                </artifactItems>
               </configuration>
            </execution>
  
-          <!-- Put izPack2app into staging dir for production of installer later -->
+          <!-- Put izPack2app into linux staging dir for production of linux installer later -->
           <execution>
-            <id>unpack-shared-resources-ipack2app</id>
+            <id>unpack-shared-resources-ipack2app-linux</id>
             <goals>
               <goal>unpack-dependencies</goal>
             </goals>
@@ -99,7 +100,24 @@
               <classifier>izpack2app</classifier>
               <type>zip</type>
               <excludeTransitive>true</excludeTransitive>
-              <outputDirectory>${staging.dir}</outputDirectory>
+              <outputDirectory>${staging.linux.dir}</outputDirectory>
+            </configuration>
+          </execution>
+          
+          <!-- Put izPack2app into windows staging dir for production of windows installer later -->
+         <execution>
+            <id>unpack-shared-resources-ipack2app-windows</id>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <phase>install</phase>
+            <configuration>
+              <includeGroupIds>org.codehaus.izpack</includeGroupIds>
+              <includeArtifactIds>izpack-standalone-compiler</includeArtifactIds>
+              <classifier>izpack2app</classifier>
+              <type>zip</type>
+              <excludeTransitive>true</excludeTransitive>
+              <outputDirectory>${staging.windows.dir}</outputDirectory>
             </configuration>
           </execution>
          </executions>
@@ -129,27 +147,31 @@
         </executions>
       </plugin>
 
-      <!-- Produce staging directory with all resources used in creation of the IzPack installer and in creation of the Mac application bundle -->
+      <!-- Produce staging directory with all resources used in creation of the linux IzPack installer and in creation of the Mac application bundle -->
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <version>2.5</version>
         <executions>
           <execution>
-            <id>copy-resources-to-staging</id>
+            <id>copy-resources-to-staging-linux</id>
             <phase>install</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${basedir}/target/staging</outputDirectory>
+              <outputDirectory>${staging.linux.dir}</outputDirectory>
               <resources>
                 <resource>
                   <directory>src/main/izpack</directory>
                   <includes>
                     <include>readme.txt</include>
-                    <include>install.xml</include>
                     <include>multibit.properties</include>
-                    <include>shortcutSpec.xml</include>
+                  </includes>
+                </resource>
+                <resource>
+                  <directory>src/main/izpack/linux</directory>
+                  <includes>
+                    <include>install.xml</include>
                   </includes>
                 </resource>
                 <resource>
@@ -181,9 +203,63 @@
               </resources>
             </configuration>
           </execution>
+     
+          <!-- Produce staging directory with all resources used in creation of the windows IzPack installer -->     
+          <execution>
+            <id>copy-resources-to-staging-windows</id>
+            <phase>install</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${staging.windows.dir}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/izpack</directory>
+                  <includes>
+                    <include>readme.txt</include>
+                     <include>multibit.properties</include>
+                  </includes>
+                </resource>
+                <resource>
+                  <directory>src/main/izpack/windows</directory>
+                  <includes>
+                    <include>install.xml</include>
+                     <include>shortcutSpec.xml</include>
+                  </includes>
+                </resource>               
+                <resource>
+                  <directory>src/main/resources/images</directory>
+                  <includes>
+                    <include>installerLeft.png</include>
+                    <include>multibit.bmp</include>
+                  </includes>
+                </resource>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <includes>
+                    <include>multibit.blockchain</include>
+                  </includes>
+                </resource>
+                <resource>
+                  <directory>.</directory>
+                  <includes>
+                    <include>release_notes.txt</include>
+                    <include>COPYING</include>
+                  </includes>
+                </resource>
+                <resource>
+                  <directory>target</directory>
+                  <includes>
+                    <include>multibit.exe</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
           
           <!-- produce a Mac application bundle -->
-          <!-- this plugin copies a skeleton App and then copies in the resources from the staging directory -->
+          <!-- this plugin copies a skeleton App and then copies in the resources from the linux staging directory -->
           <!-- Note I have tried using http://mojo.codehaus.org/osxappbundle-maven-plugin/ but cannot get extra resources into my Java directory in the app -->
           <execution>
             <id>create-skeleton-Mac-application-bundle</id>
@@ -211,7 +287,7 @@
               <outputDirectory>${basedir}/target/MultiBit.app/Contents/Resources/Java</outputDirectory>
               <resources>
                 <resource>
-                  <directory>${basedir}/target/staging</directory>
+                  <directory>${basedir}/target/staging.linux</directory>
                   <includes>
                     <include>multibit-exe.jar</include>
                     <include>readme.txt</include>
@@ -227,22 +303,34 @@
         </executions>
       </plugin>
 
-      <!-- Produce IzPack installer from contents of staging directory -->
+      <!-- Produce linux IzPack installer from contents of linux staging directory -->
       <plugin>
         <groupId>org.codehaus.izpack</groupId>
         <artifactId>izpack-maven-plugin</artifactId>
         <version>1.0-alpha-5</version>
         <executions>
           <execution>
+            <id>create-linux-installer</id>
             <phase>install</phase>
             <goals>
               <goal>izpack</goal>
             </goals>
             <configuration>
-              <izpackBasedir>${staging.dir}</izpackBasedir>
-              <installerFile>target/${project.build.finalName}-installer.jar</installerFile>
+              <izpackBasedir>${staging.linux.dir}</izpackBasedir>
+              <installerFile>target/${project.build.finalName}-linux-installer.jar</installerFile>
             </configuration>
           </execution>
+          <execution>
+           <id>create-windows-installer</id>
+            <phase>install</phase>
+            <goals>
+              <goal>izpack</goal>
+            </goals>
+            <configuration>
+              <izpackBasedir>${staging.windows.dir}</izpackBasedir>
+              <installerFile>target/${project.build.finalName}-windows-installer.jar</installerFile>
+            </configuration>
+          </execution>     
         </executions>
         <dependencies>
           <dependency>
@@ -269,7 +357,7 @@
                 <copy todir="${basedir}/target/MultiBit-mac/MultiBit.app">
                   <fileset dir="${basedir}/target/MultiBit.app" includes="**"/>                 
                 </copy>
-                <copy file="${basedir}/target/staging/readme.txt" todir="${basedir}/target/MultiBit-mac"/>
+                <copy file="${basedir}/target/staging.linux/readme.txt" todir="${basedir}/target/MultiBit-mac"/>
  
 
  	            <!-- Create Applications Symbolic link -->
@@ -305,10 +393,29 @@
               <goal>run</goal>
             </goals>
           </execution>
-
-          <!-- Produce a Win32 exe from the generic IzPack installer (no Maven plugin for JSmooth so drop down to ant) -->
+          <!-- Produce a Win32 exe from the multibit-exe.jar (no Maven plugin for JSmooth so drop down to ant) -->
           <execution>
-            <id>jsmooth-installer2exe</id>
+            <id>jsmooth-installer2exe-exe</id>
+            <phase>package</phase>
+            <configuration>
+              <tasks>
+                <path id="jsmooth-classpathref">
+                  <pathelement path="src/main/jsmooth/lib/jsmoothgen.jar"/>
+                  <pathelement path="src/main/jsmooth/lib/jsmoothgen-ant.jar"/>
+                </path>
+                <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen"
+                         classpathref="jsmooth-classpathref"/>
+                <jsmoothgen project="exe.jsmooth" skeletonroot="src/main/jsmooth/skeletons"/>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+
+          <!-- Produce a Win32 exe from the windows IzPack installer (no Maven plugin for JSmooth so drop down to ant) -->
+          <execution>
+            <id>jsmooth-installer2exe-installer</id>
             <phase>install</phase>
             <configuration>
               <tasks>
@@ -418,7 +525,10 @@
     <!-- Source encoding -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Location of staging directory for creation of IzPack installer -->
-    <staging.dir>${project.build.directory}/staging</staging.dir>
+    <!-- Location of staging directory for creation of linux IzPack installer -->
+    <staging.linux.dir>${project.build.directory}/staging.linux</staging.linux.dir>
+
+    <!-- Location of staging directory for creation of windows IzPack installer -->
+    <staging.windows.dir>${project.build.directory}/staging.windows</staging.windows.dir>
   </properties>
 </project>

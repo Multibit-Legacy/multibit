@@ -165,9 +165,10 @@ public class MultiBitService {
      */
     public PerWalletModelData addWalletFromFilename(String walletFilename) {
         PerWalletModelData perWalletModelDataToReturn = null;
-        
+
         File walletFile = null;
         boolean walletFileIsADirectory = false;
+        boolean newWalletCreated = false;
 
         if (walletFilename != null) {
             walletFile = new File(walletFilename);
@@ -182,7 +183,6 @@ public class MultiBitService {
                 } catch (IOException ioe) {
                     // TODO need to report back to user or will create a new
                     // wallet
-                    // this is ok - we will create a wallet
                 }
             }
         }
@@ -200,7 +200,7 @@ public class MultiBitService {
                         wallet = perWalletModelDataToReturn.getWallet();
                     }
 
-                    controller.fireWalletChanged();
+                    newWalletCreated = true;
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -211,16 +211,20 @@ public class MultiBitService {
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
 
-                PerWalletModelData newPerWalletModelData = controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
+                perWalletModelDataToReturn = controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
+
+                // create a wallet info
+                WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath());
+                perWalletModelDataToReturn.setWalletInfo(walletInfo);
 
                 // set a default description
                 String defaultDescription = controller.getLocaliser().getString(
                         "createNewWalletSubmitAction.defaultDescription");
-                newPerWalletModelData.setWalletDescription(defaultDescription);
-                controller.getFileHandler().savePerWalletModelData(newPerWalletModelData, false);
+                perWalletModelDataToReturn.setWalletDescription(defaultDescription);
 
-                //controller.getModel().setWalletDescriptionByFilename(walletFile.getAbsolutePath(), defaultDescription);
-                controller.fireNewWalletCreated();
+                controller.getFileHandler().savePerWalletModelData(perWalletModelDataToReturn, true);
+
+                newWalletCreated = true;
             }
         }
 
@@ -229,10 +233,11 @@ public class MultiBitService {
             // addresses
             ArrayList<ECKey> keys = wallet.keychain;
             if (keys != null) {
-                PerWalletModelData perWalletModelData = controller.getModel().getPerWalletModelDataByWalletFilename(
-                        walletFilename);
-                if (perWalletModelData != null) {
-                    WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+                if (!newWalletCreated) {
+                    perWalletModelDataToReturn = controller.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
+                }
+                if (perWalletModelDataToReturn != null) {
+                    WalletInfo walletInfo = perWalletModelDataToReturn.getWalletInfo();
                     if (walletInfo != null) {
                         for (ECKey key : keys) {
                             if (key != null) {
@@ -249,6 +254,10 @@ public class MultiBitService {
 
             // add wallet as PendingTransactionListener to PeerGroup
             peerGroup.addPendingTransactionListener(wallet);
+
+            if (newWalletCreated) {
+                controller.fireNewWalletCreated();
+            }
         }
 
         return perWalletModelDataToReturn;
@@ -272,20 +281,22 @@ public class MultiBitService {
      *            the amount to send to, in BTC, as a String
      */
 
-    public Transaction sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee) throws java.io.IOException,
-            AddressFormatException {
+    public Transaction sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee)
+            throws java.io.IOException, AddressFormatException {
         // send the coins
         Address sendAddress = new Address(networkParameters, sendAddressString);
-        Transaction sendTransaction = perWalletModelData.getWallet().sendCoins(peerGroup, sendAddress, Utils.toNanoCoins(amount), fee);
+        Transaction sendTransaction = perWalletModelData.getWallet().sendCoins(peerGroup, sendAddress,
+                Utils.toNanoCoins(amount), fee);
         assert sendTransaction != null; // We should never try to send more
         // coins than we have!
         // throw an exception if sendTransaction is null - no money
         if (sendTransaction != null) {
             log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is " + sendTransaction.getHashAsString());
-            
+
             controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
-            
-            // notify all of the pendingTransactionsListeners about the new transaction
+
+            // notify all of the pendingTransactionsListeners about the new
+            // transaction
             peerGroup.processPendingTransaction(sendTransaction);
         } else {
             // transaction was null

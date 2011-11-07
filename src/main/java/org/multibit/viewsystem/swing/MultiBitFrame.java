@@ -963,7 +963,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             index++;
         }
         activeWalletComboBox = new JComboBox(indexArray);
-        activeWalletComboBox.setBorder(normalBorder);
+        activeWalletPanel.setBorder(normalBorder);
 
         ComboBoxRenderer renderer = new ComboBoxRenderer();
         renderer.setMinimumSize(new Dimension(200, 30));
