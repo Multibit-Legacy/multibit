@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.Stack;
 
+import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Localiser;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
@@ -82,12 +83,22 @@ public class MultiBitController implements PeerEventListener {
      */
     private FileHandler fileHandler;
     
+    /**
+     * class encapsulating the location of the Application Data Directory
+     */
+    private ApplicationDataDirectoryLocator applicationDataDirectoryLocator;
+    
 
+    /**
+     * used for testing only
+     */
     public MultiBitController() {
-        this(null);
+        this(null, null);
     }
 
-    public MultiBitController(Properties userPreferences) {
+    public MultiBitController(Properties userPreferences, ApplicationDataDirectoryLocator applicationDataDirectoryLocator) {
+        this.applicationDataDirectoryLocator = applicationDataDirectoryLocator;
+        
         viewSystems = new ArrayList<ViewSystem>();
 
         // initialise everything to look at the stored opened view and previous
@@ -536,5 +547,9 @@ public class MultiBitController implements PeerEventListener {
 
     public FileHandler getFileHandler() {
         return fileHandler;
+    }
+
+    public ApplicationDataDirectoryLocator getApplicationDataDirectoryLocator() {
+        return applicationDataDirectoryLocator;
     }
 }

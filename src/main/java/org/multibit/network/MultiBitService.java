@@ -113,11 +113,18 @@ public class MultiBitService {
 
         BlockStore blockStore = null;
         try {
-            // Load the block chain, if there is one stored locally.
-            log.debug("Reading block store from disk");
-
+            // Load the block chain
             String filePrefix = getFilePrefix();
-            blockStore = new BoundedOverheadBlockStore(networkParameters, new File(filePrefix + ".blockchain"));
+            String blockchainFilename;
+            if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
+                blockchainFilename = filePrefix + BLOCKCHAIN_SUFFIX;
+            } else {
+                blockchainFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator + filePrefix + BLOCKCHAIN_SUFFIX;                              
+            }
+
+            log.debug("Reading block store '" + blockchainFilename + "' from disk");
+
+            blockStore = new BoundedOverheadBlockStore(networkParameters, new File(blockchainFilename));
 
             log.debug("Connecting ...");
             blockChain = new BlockChain(networkParameters, blockStore);
@@ -189,7 +196,12 @@ public class MultiBitService {
 
         if (wallet == null || walletFilename == null || walletFilename.equals("") || walletFileIsADirectory) {
             // use default wallet name - create if does not exist
-            walletFilename = getFilePrefix() + WALLET_SUFFIX;
+            if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
+                walletFilename = getFilePrefix() + WALLET_SUFFIX;
+            } else {
+                walletFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator + getFilePrefix() + WALLET_SUFFIX;
+            }
+
             walletFile = new File(walletFilename);
 
             if (walletFile.exists()) {
@@ -202,7 +214,6 @@ public class MultiBitService {
 
                     newWalletCreated = true;
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             } else {

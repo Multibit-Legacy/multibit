@@ -16,64 +16,107 @@ package org.multibit;
  * limitations under the License.
  */
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.rolling.RollingFileAppender;
+import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
+
 /**
- * Main MultiBit entry class for when running in an executable jar - put console output to a file
+ * Main MultiBit entry class for when running in an executable jar - put console
+ * output to a file
  * 
  * @author jim
  * 
  */
 public class MultiBitInExecutableJar {
     public static final String OUTPUT_DIRECTORY = "log";
-    public static final String OUTPUT_FILENAME = "multibit_console.log";
+    public static final String CONSOLE_OUTPUT_FILENAME = "multibit_console.log";
+    public static final String DEBUG_OUTPUT_FILENAME = "multibit_debug.log";
 
-    private static final Logger log = LoggerFactory.getLogger(MultiBitInExecutableJar.class);
+    private static Logger log;
 
     /**
      * start multibit user interface when running in a jar
      */
+    @SuppressWarnings("rawtypes")
     public static void main(String args[]) {
-      // TODO Refactor this to work with a different Logger appender
+        // TODO Refactor this to work with a different Logger appender
         // redirect the console output to a file
-       PrintStream orgStream   = null;
-        PrintStream fileStream  = null;
+        PrintStream originalStream = null;
+        PrintStream fileStream = null;
         try {
+            ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
+            String outputDirectory;
+            String consoleOutputFilename;
+            String debugOutputFilename;
+            if ("".equals(applicationDataDirectoryLocator.getApplicationDataDirectory())) {
+                outputDirectory = OUTPUT_DIRECTORY;
+                consoleOutputFilename = OUTPUT_DIRECTORY + File.separator + CONSOLE_OUTPUT_FILENAME;
+                debugOutputFilename = OUTPUT_DIRECTORY + File.separator + DEBUG_OUTPUT_FILENAME;
+            } else {
+                outputDirectory = applicationDataDirectoryLocator.getApplicationDataDirectory() + File.separator
+                        + OUTPUT_DIRECTORY;
+                consoleOutputFilename = applicationDataDirectoryLocator.getApplicationDataDirectory() + File.separator
+                        + OUTPUT_DIRECTORY + File.separator + CONSOLE_OUTPUT_FILENAME;
+                debugOutputFilename = applicationDataDirectoryLocator.getApplicationDataDirectory() + File.separator
+                        + OUTPUT_DIRECTORY + File.separator + DEBUG_OUTPUT_FILENAME;
+            }
+
+            ch.qos.logback.classic.Logger logback_logger = (ch.qos.logback.classic.Logger) LoggerFactory
+                    .getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+            RollingFileAppender<ILoggingEvent> rfappender = (RollingFileAppender<ILoggingEvent>) logback_logger
+                    .getAppender("FILE");
+            rfappender.setFile(debugOutputFilename);
+            TimeBasedRollingPolicy rollingPolicy = (TimeBasedRollingPolicy) rfappender.getRollingPolicy();
+            rollingPolicy.setFileNamePattern(debugOutputFilename + ".%d{yyyy-MM-dd}.gz");
+
+            rollingPolicy.stop();
+            rfappender.stop();
+            rollingPolicy.start();
+            rfappender.start();
+            
+            log = LoggerFactory.getLogger(MultiBitInExecutableJar.class);
             // Saving the orginal stream
-            orgStream = System.out;
-            
+            originalStream = System.out;
+
             // create output directory
-            (new File(OUTPUT_DIRECTORY)).mkdir();
-            String outputFilename = OUTPUT_DIRECTORY + File.separator + OUTPUT_FILENAME;
-            
-            fileStream = new PrintStream(new FileOutputStream(outputFilename,true));
-            
+            (new File(outputDirectory)).mkdir();
+
+            // create output console log
+            (new File(consoleOutputFilename)).createNewFile();
+
+            fileStream = new PrintStream(new FileOutputStream(consoleOutputFilename, true));
+
             // Redirecting console output to file
             System.setOut(fileStream);
             // Redirecting runtime exceptions to file
             System.setErr(fileStream);
-            
+
             // call the main MultiBit code
             MultiBit.main(args);
-        }
-        catch (FileNotFoundException e) {
-            log.error("Error in IO Redirection", e);
-        }
-        catch (Exception e) {
-            //Gets printed in the file
-            log.debug("Redirecting output & exceptions to file", e);
-        }
-        finally {
-            //Restoring back to console
-            System.setOut(orgStream);
-            //Gets printed in the console
-            log.debug("Redirecting file output back to console");
+        } catch (FileNotFoundException e) {
+            if (log != null) {
+                log.error("Error in IO Redirection", e);
+            }
+        } catch (Exception e) {
+            // Gets printed in the file
+            if (log != null) {
+                log.debug("Redirecting output & exceptions to file", e);
+            }
+        } finally {
+            // Restoring back to console
+            System.setOut(originalStream);
+            // Gets printed in the console
+            if (log != null) {
+                log.debug("Redirecting file output back to console");
+            }
         }
     }
 }

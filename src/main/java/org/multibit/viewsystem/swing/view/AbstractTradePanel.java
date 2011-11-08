@@ -310,6 +310,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         JScrollPane scrollPane = new JScrollPane(addressesTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getViewport().setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
         scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker()));
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -454,6 +455,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
 
         scrollPane.setMinimumSize(new Dimension(200, 160));
 

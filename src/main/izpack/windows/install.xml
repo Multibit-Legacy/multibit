@@ -26,6 +26,7 @@
 
 <variables>
   <variable name="ShowCreateDirectoryMessage" value="false"/>
+  <variable name="DesktopShortcutCheckboxEnabled" value="true"/>
 </variables>
 
     <!-- 

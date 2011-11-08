@@ -35,11 +35,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
     private final Logger log = LoggerFactory.getLogger(SendBitcoinPanel.class);
 
     private static final String SEND_BITCOIN_BIG_ICON_FILE = "/images/send-big.jpg";
-//    private static final String DRAG_HERE_ICON_FILE = "/images/dragHere.png";
-
-//    private static final int MINIMUM_QRCODE_PANEL_HORIZONTAL_SPACING = 30;
-//    private static final int MINIMUM_QRCODE_PANEL_VERTICAL_SPACING = 80;
-
+    
     private JButton pasteAddressButton;
     private JButton sendButton;
 

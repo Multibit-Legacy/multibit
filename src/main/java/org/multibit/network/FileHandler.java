@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
+import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
@@ -26,6 +27,9 @@ import com.google.bitcoin.core.Wallet;
 
 /**
  * a class consolidating all the File IO in MultiBit
+ * 
+ * it also has responsibility for determining the directory used for storing the
+ * user specific application data
  * 
  * @author jim
  * 
@@ -258,7 +262,14 @@ public class FileHandler {
         Properties userPreferences = controller.getModel().getAllUserPreferences();
         OutputStream outputStream;
         try {
-            outputStream = new FileOutputStream(USER_PROPERTIES_FILE_NAME);
+            String userPropertiesFilename;
+            if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
+                userPropertiesFilename = USER_PROPERTIES_FILE_NAME;
+            } else {
+                userPropertiesFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator + USER_PROPERTIES_FILE_NAME;                              
+            }
+
+            outputStream = new FileOutputStream(userPropertiesFilename);
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(bufferedOutputStream, "UTF8");
             userPreferences.store(outputStreamWriter, USER_PROPERTIES_HEADER_TEXT);
@@ -269,10 +280,16 @@ public class FileHandler {
         }
     }
 
-    public static Properties loadUserPreferences() {
+    public static Properties loadUserPreferences(ApplicationDataDirectoryLocator applicationDataDirectoryLocator) {
         Properties userPreferences = new Properties();
         try {
-            InputStream inputStream = new FileInputStream(USER_PROPERTIES_FILE_NAME);
+            String userPropertiesFilename;
+            if ("".equals(applicationDataDirectoryLocator.getApplicationDataDirectory())) {
+                userPropertiesFilename = USER_PROPERTIES_FILE_NAME;
+            } else {
+                userPropertiesFilename = applicationDataDirectoryLocator.getApplicationDataDirectory() + File.separator + USER_PROPERTIES_FILE_NAME;                              
+            }
+            InputStream inputStream = new FileInputStream(userPropertiesFilename);
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF8");
             userPreferences.load(inputStreamReader);
         } catch (FileNotFoundException e) {
@@ -289,7 +306,7 @@ public class FileHandler {
      * backup file: filename-yyyymmddhhmmss.suffix
      * 
      * @param file
-     * @param reusePReviousBackupDate
+     * @param reusePreviousBackupDate
      *            Reuse the previously created backup date so that wallet and
      *            wallet info names match
      * @return

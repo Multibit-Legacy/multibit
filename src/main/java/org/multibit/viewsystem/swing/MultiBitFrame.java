@@ -108,7 +108,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public static final String MULTIBIT_FONT_NAME = "Dialog";
     public static final int MULTIBIT_FONT_STYLE = Font.PLAIN;
-    public static final int MULTIBIT_LARGE_FONT_SIZE = 14;
+    public static final int MULTIBIT_LARGE_FONT_SIZE = 15;
 
     public static final Color GOLD_COLOR = new Color(212, 160, 23);
 
@@ -269,6 +269,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         headerPanel = new HeaderPanel();
         headerPanel.setLayout(new GridBagLayout());
+        headerPanel.setOpaque(true);
 
         JPanel balancePanel = createHeaderPanel();
         constraints.fill = GridBagConstraints.BOTH;
@@ -281,10 +282,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         headerPanel.add(balancePanel, constraints);
 
-        JToolBar toolBar = addMenuBarAndCreateToolBar(constraints, contentPane);
-        toolBar.setMaximumSize(new Dimension(A_SMALL_NUMBER_OF_PIXELS, TOOLBAR_HEIGHT));
-        toolBar.setOpaque(false);
-
+        JPanel toolBarPanel = addMenuBarAndCreateToolBar(constraints, contentPane);
+        toolBarPanel.setMaximumSize(new Dimension(A_SMALL_NUMBER_OF_PIXELS, TOOLBAR_HEIGHT));
+ 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 1;
@@ -293,7 +293,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
 
-        headerPanel.add(toolBar, constraints);
+        headerPanel.add(toolBarPanel, constraints);
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -433,17 +433,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         return headerPanel;
     }
 
-    private JToolBar addMenuBarAndCreateToolBar(GridBagConstraints constraints, Container contentPane) {
+    private JPanel addMenuBarAndCreateToolBar(GridBagConstraints constraints, Container contentPane) {
         // Create the menu bar
         JMenuBar menuBar = new JMenuBar();
 
         // Create the toolBar
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-
-        // Enable rollover mode
-        toolBar.setRollover(true);
-
+        JPanel toolBarPanel = new JPanel();
+        toolBarPanel.setOpaque(false);
+ 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
 
         // Build the File menu.
@@ -555,19 +552,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         JPanel filler1 = new JPanel();
         filler1.setOpaque(false);
         filler1.setPreferredSize(new Dimension(4, 20));
-        toolBar.add(filler1);
+        toolBarPanel.add(filler1);
 
-        toolBar.add(yourWalletsPanel);
-        toolBar.add(activeWalletPanel);
+        toolBarPanel.add(yourWalletsPanel);
+        toolBarPanel.add(activeWalletPanel);
 
         JPanel filler2 = new JPanel();
         filler2.setOpaque(false);
         filler2.setPreferredSize(new Dimension(90, 20));
-        toolBar.add(filler2);
+        toolBarPanel.add(filler2);
 
-        toolBar.add(receiveBitcoinPanel);
-        toolBar.add(sendBitcoinPanel);
-        toolBar.setBorder(BorderFactory.createEmptyBorder());
+        toolBarPanel.add(receiveBitcoinPanel);
+        toolBarPanel.add(sendBitcoinPanel);
+        toolBarPanel.setBorder(BorderFactory.createEmptyBorder());
 
         setJMenuBar(menuBar);
 
@@ -577,7 +574,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             application.addPreferencesMenuItem();
             application.setEnabledPreferencesMenu(true);
         }
-        return toolBar;
+        return toolBarPanel;
     }
 
     /** Returns an ImageIcon, or null if the path was invalid. */
@@ -963,6 +960,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             index++;
         }
         activeWalletComboBox = new JComboBox(indexArray);
+        activeWalletComboBox.setOpaque(false);
         activeWalletPanel.setBorder(normalBorder);
 
         ComboBoxRenderer renderer = new ComboBoxRenderer();

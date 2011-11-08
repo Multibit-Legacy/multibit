@@ -17,6 +17,7 @@ package org.multibit;
  */
 
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.swing.UIManager;
@@ -46,12 +47,14 @@ public class MultiBit {
     public static void main(String args[]) {
         // initialise log4j
         logger = LoggerFactory.getLogger(MultiBit.class.getName());
-
+        
+        ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
+        
         // load up the user preferences
-        Properties userPreferences = FileHandler.loadUserPreferences();
+        Properties userPreferences = FileHandler.loadUserPreferences(applicationDataDirectoryLocator);
 
         // create the controller
-        MultiBitController controller = new MultiBitController(userPreferences);
+        MultiBitController controller = new MultiBitController(userPreferences, applicationDataDirectoryLocator);
 
         // if test or production is not specified, default to production
         String testOrProduction = userPreferences.getProperty(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
@@ -139,6 +142,14 @@ public class MultiBit {
         // display the next view
         controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
 
+        String userHome = System.getProperty("user.home");
+        String userDir = System.getProperty("user.dir");
+        //JOptionPane.showMessageDialog((MultiBitFrame)swingViewSystem, "user.home = " + userHome + "\nuser.dir = " + userDir);
+        Map<String, String> env = System.getenv();
+        for (String envName : env.keySet()) {
+            System.out.format("%s=%s%n", envName, env.get(envName));
+        }
+        
         // see if the user wants to connect to a single node
         multiBitService.downloadBlockChain();
     }

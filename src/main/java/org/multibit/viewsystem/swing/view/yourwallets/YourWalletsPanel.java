@@ -159,6 +159,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         JScrollPane scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setViewportView(walletListPanel);
+        scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
         scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker()));
         scrollPane.getViewport().setBackground(MultiBitFrame.BACKGROUND_COLOR);
         scrollPane.getViewport().setOpaque(true);
@@ -221,6 +222,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         walletListPanel = new JPanel(layout);
         walletListPanel.setOpaque(true);
         walletListPanel.setBackground(Color.WHITE);
+        walletListPanel.setBorder(BorderFactory.createEmptyBorder());
 
         // get the wallets from the model
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();

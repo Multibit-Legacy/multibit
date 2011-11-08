@@ -26,6 +26,7 @@
 
 <variables>
   <variable name="ShowCreateDirectoryMessage" value="false"/>
+  <variable name="DesktopShortcutCheckboxEnabled" value="true"/>
 </variables>
 
     <!-- 
@@ -61,7 +62,6 @@
         <panel classname="InfoPanel"/>
         <panel classname="LicencePanel"/>
         <panel classname="TargetPanel"/>
-        <panel classname="ShortcutPanel"/>
         <panel classname="InstallPanel"/>
         <panel classname="FinishPanel"/>
     </panels>
