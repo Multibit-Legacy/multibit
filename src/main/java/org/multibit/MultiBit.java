@@ -17,7 +17,6 @@ package org.multibit;
  */
 
 import java.util.Locale;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.swing.UIManager;
@@ -141,14 +140,6 @@ public class MultiBit {
 
         // display the next view
         controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
-
-        String userHome = System.getProperty("user.home");
-        String userDir = System.getProperty("user.dir");
-        //JOptionPane.showMessageDialog((MultiBitFrame)swingViewSystem, "user.home = " + userHome + "\nuser.dir = " + userDir);
-        Map<String, String> env = System.getenv();
-        for (String envName : env.keySet()) {
-            System.out.format("%s=%s%n", envName, env.get(envName));
-        }
         
         // see if the user wants to connect to a single node
         multiBitService.downloadBlockChain();

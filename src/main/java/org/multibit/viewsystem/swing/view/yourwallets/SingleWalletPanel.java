@@ -88,7 +88,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         File walletFile = new File(walletFilename);
         if (walletFile != null) {
             String walletFilenameFull = walletFile.getName();
-            String walletFilenameShort = walletFilenameFull.replaceAll(".wallet", "");
+            String walletFilenameShort = walletFilenameFull.replaceAll("\\.wallet", "");
             walletFilenameLabel.setText(walletFilenameShort);
             walletFilenameLabel.setToolTipText(walletFilename);
         }

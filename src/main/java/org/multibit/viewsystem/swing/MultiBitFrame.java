@@ -1112,7 +1112,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                             File walletFile = new File(loopModelData.getWalletFilename());
                             if (walletFile != null) {
                                 String walletFilenameFull = walletFile.getName();
-                                String walletFilenameShort = walletFilenameFull.replaceAll(".wallet", "");
+                                String walletFilenameShort = walletFilenameFull.replaceAll("\\.wallet", "");
                                 this.setText(walletFilenameShort);
 
                                 // multiline tool tip text
