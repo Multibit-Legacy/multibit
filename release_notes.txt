@@ -14,6 +14,7 @@ Bug fixes
 +  Fixed selection colour for Receive and Send bitcoin.
 +  Fixed label alignment on Receive bitcoin.
 +  Fixed that directories appear in 'Open Wallet' for Windows.
++  User data is now stored in user specific roaming/ application data folders.
 
 
 13 Oct 2011.  Version 0.2.0beta1

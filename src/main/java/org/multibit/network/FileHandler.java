@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.channels.FileChannel;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -328,5 +329,87 @@ public class FileHandler {
         String backupFilename = stem + SEPARATOR + dateFormat.format(dateForBackupName) + suffix;
 
         return backupFilename;
+    }
+    
+    /**
+     * to support multiple users on the same machine, the block chain is installed
+     * into the program installation directory and is then copied to the user's
+     * application data directory when MultiBit is first used
+     * 
+     * thus each user has their own copy of the blockchain
+     */
+    public void copyBlockChainFromInstallationDirectory(MultiBitService multiBitService, String destinationBlockChainFilename) {
+        if (destinationBlockChainFilename == null) {
+            return;
+        }
+        
+        // see if the block chain in the user's application data directory exists
+        // it is never overwritten
+        File destinationBlockchain = new File(destinationBlockChainFilename);
+        if (!destinationBlockchain.exists()) {
+            // work out the source blockchain (put into the program installation directory by the installer)
+            File directory = new File (".");
+            try {
+                String currentWorkingDirectory = directory.getCanonicalPath();
+                
+                String filePrefix = multiBitService.getFilePrefix();
+                String blockchainFilename = filePrefix + MultiBitService.BLOCKCHAIN_SUFFIX;
+                String sourceBlockchainFilename = currentWorkingDirectory + File.separator + blockchainFilename;
+                File sourceBlockchain = new File(sourceBlockchainFilename);
+                if (sourceBlockchain.exists()) {
+                    // it should exist since installer puts them in
+                    log.info("Copying blockchain from '" + sourceBlockchainFilename + "' to '" + destinationBlockChainFilename + "'");
+                    long startTime = (new Date()).getTime();
+                    copyFile(sourceBlockchain, destinationBlockchain);
+                    long stopTime = (new Date()).getTime();
+                    log.info("Time taken to copy blockchain was " + (stopTime - startTime) + " ms.");
+                    
+                    // check all the data was copied
+                    long sourceLength = sourceBlockchain.length();
+                    long destinationLength = destinationBlockchain.length();
+                    if (sourceLength != destinationLength) {
+                        log.error("Blockchain was not copied to user's application data directory correctly.\nThe source blockchain '" 
+                                + sourceBlockchainFilename + "' is of length " + sourceLength 
+                                + "\nbut the destination blockchain '" + destinationBlockChainFilename + "' is of length " + destinationLength);           
+                    }
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }           
+        }       
+    }
+    
+    public void copyFile(File sourceFile, File destinationFile) throws IOException {
+        if (!destinationFile.exists()) {
+            destinationFile.createNewFile();
+        }
+        FileInputStream fileInputStream = null;
+        FileOutputStream fileOutpurStream = null;
+        FileChannel source = null;
+        FileChannel destination = null;
+        try {
+            fileInputStream = new FileInputStream(sourceFile);
+            source = fileInputStream.getChannel();
+            fileOutpurStream = new FileOutputStream(destinationFile);
+            destination = fileOutpurStream.getChannel();
+            long transfered = 0;
+            long bytes = source.size();
+            while (transfered < bytes) {
+                transfered += destination.transferFrom(source, 0, source.size());
+                destination.position(transfered);
+            }
+        } finally {
+            if (source != null) {
+                source.close();
+            } else if (fileInputStream != null) {
+                fileInputStream.close();
+            }
+            if (destination != null) {
+                destination.close();
+            } else if (fileOutpurStream != null) {
+                fileOutpurStream.close();
+            }
+        }
     }
 }

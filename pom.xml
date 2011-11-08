@@ -165,7 +165,6 @@
                   <directory>src/main/izpack</directory>
                   <includes>
                     <include>readme.txt</include>
-                    <include>multibit.properties</include>
                   </includes>
                 </resource>
                 <resource>
@@ -218,8 +217,7 @@
                   <directory>src/main/izpack</directory>
                   <includes>
                     <include>readme.txt</include>
-                     <include>multibit.properties</include>
-                  </includes>
+                   </includes>
                 </resource>
                 <resource>
                   <directory>src/main/izpack/windows</directory>
@@ -291,7 +289,6 @@
                   <includes>
                     <include>multibit-exe.jar</include>
                     <include>readme.txt</include>
-                    <include>multibit.properties</include>
                     <include>multibit.blockchain</include>
                     <include>release_notes.txt</include>
                     <include>COPYING</include>
@@ -460,7 +457,7 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>0.9.30</version>
-      <scope>runtime</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>

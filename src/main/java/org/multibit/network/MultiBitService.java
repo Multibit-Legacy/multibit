@@ -121,7 +121,10 @@ public class MultiBitService {
             } else {
                 blockchainFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator + filePrefix + BLOCKCHAIN_SUFFIX;                              
             }
-
+            
+            // check to see if the user has a blockchain and copy over the installed one if they do not
+            controller.getFileHandler().copyBlockChainFromInstallationDirectory(this, blockchainFilename);
+            
             log.debug("Reading block store '" + blockchainFilename + "' from disk");
 
             blockStore = new BoundedOverheadBlockStore(networkParameters, new File(blockchainFilename));
@@ -160,7 +163,7 @@ public class MultiBitService {
         }
     }
 
-    private String getFilePrefix() {
+    public String getFilePrefix() {
         return useTestNet ? MULTIBIT_PREFIX + SEPARATOR + TEST_NET_PREFIX : MULTIBIT_PREFIX;
     }
 
