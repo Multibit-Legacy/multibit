@@ -1,20 +1,21 @@
 MultiBit release notes.
 
-Version 0.2.0beta2
+11 Nov 2011.   Version 0.2.0beta2
 Enhancements
++  German added.
 +  Added 'Your Wallets' screen and a wallet picker in the toolbar.
-+  Added swatch generator on Receive bitcoin screen.
-+  Decreased minimum amount to 0.0001 to match bitcoin v0.4
++  Added swatch generator on Receive bitcoin and Send bitcoin screens.
++  Decreased minimum fee amount to 0.0001 to match bitcoin v0.4 .
 +  Visual indication of which panel you are on added.
-+  'Available to spend' now hidden when amount is equal to estimated balance
-+  Added number of blocks as a tool tip to the "Online/ Connecting..." status label
++  'Available to spend' now hidden when amount is equal to estimated balance.
++  Added number of blocks as a tool tip to the "Online/ Connecting..." status label.
 +  MultiBit now supplied as an exe file for Windows.
++  User data is now stored in user specific roaming/ application data folders.
 
 Bug fixes
 +  Fixed selection colour for Receive and Send bitcoin.
 +  Fixed label alignment on Receive bitcoin.
 +  Fixed that directories appear in 'Open Wallet' for Windows.
-+  User data is now stored in user specific roaming/ application data folders.
 
 
 13 Oct 2011.  Version 0.2.0beta1

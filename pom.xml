@@ -314,7 +314,7 @@
             </goals>
             <configuration>
               <izpackBasedir>${staging.linux.dir}</izpackBasedir>
-              <installerFile>target/${project.build.finalName}-linux-installer.jar</installerFile>
+              <installerFile>target/${project.build.finalName}-linux.jar</installerFile>
             </configuration>
           </execution>
           <execution>
@@ -325,7 +325,7 @@
             </goals>
             <configuration>
               <izpackBasedir>${staging.windows.dir}</izpackBasedir>
-              <installerFile>target/${project.build.finalName}-windows-installer.jar</installerFile>
+              <installerFile>target/${project.build.finalName}-windows.jar</installerFile>
             </configuration>
           </execution>     
         </executions>

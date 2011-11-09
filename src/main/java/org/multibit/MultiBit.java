@@ -46,9 +46,9 @@ public class MultiBit {
     public static void main(String args[]) {
         // initialise log4j
         logger = LoggerFactory.getLogger(MultiBit.class.getName());
-        
+
         ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
-        
+
         // load up the user preferences
         Properties userPreferences = FileHandler.loadUserPreferences(applicationDataDirectoryLocator);
 
@@ -68,10 +68,16 @@ public class MultiBit {
         String userLanguageCode = userPreferences.getProperty(MultiBitModel.USER_LANGUAGE_CODE);
         logger.debug("userLanguageCode = " + userLanguageCode);
 
-        if (userLanguageCode == null || MultiBitModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
-            localiser = new Localiser(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, Locale.getDefault());
+        if (userLanguageCode == null) {
+            // no language info supplied - set to English
+            userPreferences.setProperty(MultiBitModel.USER_LANGUAGE_CODE, Locale.ENGLISH.getLanguage());
+            localiser = new Localiser(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, Locale.ENGLISH);
         } else {
-            localiser = new Localiser(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, new Locale(userLanguageCode));
+            if (MultiBitModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
+                localiser = new Localiser(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, Locale.getDefault());
+            } else {
+                localiser = new Localiser(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, new Locale(userLanguageCode));
+            }
         }
         controller.setLocaliser(localiser);
 
@@ -121,7 +127,7 @@ public class MultiBit {
                     for (int i = 1; i <= numberOfWallets; i++) {
                         // load up ith wallet filename
                         String loopWalletFilename = userPreferences.getProperty(MultiBitModel.WALLET_FILENAME_PREFIX + i);
-                       if (activeWalletFilename != null && activeWalletFilename.equals(loopWalletFilename)) {
+                        if (activeWalletFilename != null && activeWalletFilename.equals(loopWalletFilename)) {
                             controller.addWalletFromFilename(loopWalletFilename);
                             controller.getModel().setActiveWalletByFilename(loopWalletFilename);
 
@@ -140,7 +146,7 @@ public class MultiBit {
 
         // display the next view
         controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
-        
+
         // see if the user wants to connect to a single node
         multiBitService.downloadBlockChain();
     }

@@ -7,12 +7,12 @@
 <JVMSearchPath>exepath</JVMSearchPath>
 <JVMSearchPath>jview</JVMSearchPath>
 <arguments></arguments>
-<classPath>target/multibit-installer.jar</classPath>
+<classPath>target/multibit-windows.jar</classPath>
 <embeddedJar>true</embeddedJar>
-<executableName>target/multibit-windows-installer.exe</executableName>
+<executableName>target/multibit-windows.exe</executableName>
 <iconLocation>src/main/resources/images/multibit.png</iconLocation>
 <initialMemoryHeap>-1</initialMemoryHeap>
-<jarLocation>target/multibit-windows-installer.jar</jarLocation>
+<jarLocation>target/multibit-windows.jar</jarLocation>
 <mainClassName>com.izforge.izpack.installer.Installer</mainClassName>
 <maximumMemoryHeap>-1</maximumMemoryHeap>
 <maximumVersion></maximumVersion>
