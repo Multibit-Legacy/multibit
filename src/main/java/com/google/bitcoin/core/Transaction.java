@@ -45,11 +45,11 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     private long version;
     private ArrayList<TransactionInput> inputs;
     //a cached copy to prevent constantly rewrapping
-    private transient List<TransactionInput> immutableInputs;
+//    private transient List<TransactionInput> immutableInputs;
 
     private ArrayList<TransactionOutput> outputs;
     //a cached copy to prevent constantly rewrapping
-    private transient List<TransactionOutput> immutableOutputs;
+//    private transient List<TransactionOutput> immutableOutputs;
 
     private long lockTime;
 
@@ -100,6 +100,17 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
 
     /**
      * Creates a transaction by reading payload starting from offset bytes in. Length of a transaction is fixed.
+     * @param params NetworkParameters object.
+     * @param msg Bitcoin protocol formatted byte array containing message content.
+     * @param offset The location of the first msg byte within the array.
+     * @param protocolVersion Bitcoin protocol version.
+     * @param parseLazy Whether to perform a full parse immediately or delay until a read is requested.
+     * @param parseRetain Whether to retain the backing byte array for quick reserialization.  
+     * If true and the backing byte array is invalidated due to modification of a field then 
+     * the cached bytes may be repopulated and retained if the message is serialized again in the future.
+     * @param length The length of message if known.  Usually this is provided when deserializing of the wire
+     * as the length will be provided as part of the header.  If unknown then set to Message.UNKNOWN_LENGTH
+     * @throws ProtocolException
      */
     public Transaction(NetworkParameters params, byte[] msg, int offset, Message parent, boolean parseLazy, boolean parseRetain, int length)
             throws ProtocolException {
@@ -144,7 +155,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * include spent outputs or not.
      */
     BigInteger getValueSentToMe(Wallet wallet, boolean includeSpent) {
-        checkParse();
+        maybeParse();
         // This is tested in WalletTest.
         BigInteger v = BigInteger.ZERO;
         for (TransactionOutput o : outputs) {
@@ -196,7 +207,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * @return sum in nanocoins.
      */
     public BigInteger getValueSentFromMe(Wallet wallet) throws ScriptException {
-        checkParse();
+        maybeParse();
         // This is tested in WalletTest.
         BigInteger v = BigInteger.ZERO;
         for (TransactionInput input : inputs) {
@@ -220,7 +231,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
 
     boolean disconnectInputs() {
         boolean disconnected = false;
-        checkParse();
+        maybeParse();
         for (TransactionInput input : inputs) {
             disconnected |= input.disconnect();
         }
@@ -232,7 +243,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * null on success.
      */
     TransactionInput connectForReorganize(Map<Sha256Hash, Transaction> transactions) {
-        checkParse();
+        maybeParse();
         for (TransactionInput input : inputs) {
             // Coinbase transactions, by definition, do not have connectable inputs.
             if (input.isCoinBase()) continue;
@@ -253,7 +264,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * @return true if every output is marked as spent.
      */
     public boolean isEveryOutputSpent() {
-        checkParse();
+        maybeParse();
         for (TransactionOutput output : outputs) {
             if (output.isAvailableForSpending())
                 return false;
@@ -330,6 +341,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
 
     protected static int calcLength(byte[] buf, int cursor, int offset) {
         VarInt varint;
+        // jump past version (uint32)
         cursor = offset + 4;
 
         int i;
@@ -340,9 +352,11 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         cursor += varint.getSizeInBytes();
 
         for (i = 0; i < txInCount; i++) {
+        	// 36 = length of previous_outpoint
             cursor += 36;
             varint = new VarInt(buf, cursor);
             scriptLen = varint.value;
+            // 4 = length of sequence field (unint32)
             cursor += scriptLen + 4 + varint.getSizeInBytes();
         }
 
@@ -351,11 +365,13 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         cursor += varint.getSizeInBytes();
 
         for (i = 0; i < txOutCount; i++) {
-            cursor += 8;
+            // 8 = length of tx value field (uint64)
+        	cursor += 8;
             varint = new VarInt(buf, cursor);
             scriptLen = varint.value;
             cursor += scriptLen + varint.getSizeInBytes();
         }
+        // 4 = length of lock_time field (uint32)
         return cursor - offset + 4;
     }
 
@@ -396,7 +412,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * position in a block but by the data in the inputs.
      */
     public boolean isCoinBase() {
-        checkParse();
+        maybeParse();
         return inputs.get(0).isCoinBase();
     }
 
@@ -465,7 +481,6 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     public void addInput(TransactionInput input) {
         unCache();
         input.setParent(this);
-        immutableInputs = null;
         inputs.add(input);
         adjustLength(input.length);
     }
@@ -480,7 +495,6 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         to.setParent(this);
         to.parentTransaction = this;
 
-        immutableOutputs = null;
         outputs.add(to);
         adjustLength(to.length);
     }
@@ -589,7 +603,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * @return the lockTime
      */
     public long getLockTime() {
-        checkParse();
+        maybeParse();
         return lockTime;
     }
 
@@ -605,7 +619,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * @return the version
      */
     public long getVersion() {
-        checkParse();
+        maybeParse();
         return version;
     }
 
@@ -613,22 +627,16 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * @return a read-only list of the inputs of this transaction.
      */
     public List<TransactionInput> getInputs() {
-        if (immutableInputs == null) {
-            checkParse();
-            immutableInputs = Collections.unmodifiableList(inputs);
-        }
-        return immutableInputs;
+        maybeParse();
+        return Collections.unmodifiableList(inputs);
     }
 
     /**
      * @return a read-only list of the outputs of this transaction.
      */
     public List<TransactionOutput> getOutputs() {
-        if (immutableOutputs == null) {
-            checkParse();
-            immutableOutputs = Collections.unmodifiableList(outputs);
-        }
-        return immutableOutputs;
+        maybeParse();
+        return Collections.unmodifiableList(outputs);
     }
 
     @Override
@@ -650,7 +658,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * then data will be lost during serialization.
      */
     private void writeObject(ObjectOutputStream out) throws IOException {
-        checkParse();
+        maybeParse();
         out.defaultWriteObject();
     }
 

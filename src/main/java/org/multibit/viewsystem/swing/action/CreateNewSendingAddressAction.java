@@ -11,7 +11,6 @@ import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
-import org.multibit.network.FileHandler;
 import org.multibit.viewsystem.swing.view.AbstractTradePanel;
 
 /**

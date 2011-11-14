@@ -54,16 +54,22 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
     // A pointer to the transaction that owns this input.
     private Transaction parentTransaction;
 
-    /** Used only in creation of the genesis block. */
+    /**
+     * Used only in creation of the genesis block.
+     */
     TransactionInput(NetworkParameters params, Transaction parentTransaction, byte[] scriptBytes) {
         super(params);
         this.scriptBytes = scriptBytes;
         this.outpoint = new TransactionOutPoint(params, -1, null);
         this.sequence = 0xFFFFFFFFL;
         this.parentTransaction = parentTransaction;
+
+        length = 40 + (scriptBytes == null ? 1 : VarInt.sizeOf(scriptBytes.length) + scriptBytes.length);
     }
 
-    /** Creates an UNSIGNED input that links to the given output */
+    /**
+     * Creates an UNSIGNED input that links to the given output
+     */
     TransactionInput(NetworkParameters params, Transaction parentTransaction, TransactionOutput output) {
         super(params);
         long outputIndex = output.getIndex();
@@ -71,37 +77,54 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
         scriptBytes = EMPTY_ARRAY;
         sequence = 0xFFFFFFFFL;
         this.parentTransaction = parentTransaction;
+
+        length = 41;
     }
 
-    /** Deserializes an input message. This is usually part of a transaction message. */
+    /**
+     * Deserializes an input message. This is usually part of a transaction message.
+     */
     public TransactionInput(NetworkParameters params, Transaction parentTransaction,
                             byte[] payload, int offset) throws ProtocolException {
         super(params, payload, offset);
         this.parentTransaction = parentTransaction;
     }
-    
-    /** Deserializes an input message. This is usually part of a transaction message. */
+
+    /**
+     * Deserializes an input message. This is usually part of a transaction message.
+     * @param params NetworkParameters object.
+     * @param msg Bitcoin protocol formatted byte array containing message content.
+     * @param offset The location of the first msg byte within the array.
+     * @param protocolVersion Bitcoin protocol version.
+     * @param parseLazy Whether to perform a full parse immediately or delay until a read is requested.
+     * @param parseRetain Whether to retain the backing byte array for quick reserialization.  
+     * If true and the backing byte array is invalidated due to modification of a field then 
+     * the cached bytes may be repopulated and retained if the message is serialized again in the future.
+     * @param length The length of message if known.  Usually this is provided when deserializing of the wire
+     * as the length will be provided as part of the header.  If unknown then set to Message.UNKNOWN_LENGTH
+     * @throws ProtocolException
+     */
     public TransactionInput(NetworkParameters params, Transaction parentTransaction, byte[] msg, int offset, boolean parseLazy, boolean parseRetain)
-			throws ProtocolException {
-		super(params, msg, offset, parentTransaction, parseLazy, parseRetain, UNKNOWN_LENGTH);
-		this.parentTransaction = parentTransaction;
-	}
+            throws ProtocolException {
+        super(params, msg, offset, parentTransaction, parseLazy, parseRetain, UNKNOWN_LENGTH);
+        this.parentTransaction = parentTransaction;
+    }
 
     protected void parseLite() {
-    	int curs = cursor;
-    	int scriptLen = (int) readVarInt(36);
-    	length = cursor - offset + scriptLen + 4;
-    	cursor = curs;
+        int curs = cursor;
+        int scriptLen = (int) readVarInt(36);
+        length = cursor - offset + scriptLen + 4;
+        cursor = curs;
     }
-    
-	void parse() throws ProtocolException {
+
+    void parse() throws ProtocolException {
         outpoint = new TransactionOutPoint(params, bytes, cursor, this, parseLazy, parseRetain);
-        cursor += outpoint.getMessageSize(); 
+        cursor += outpoint.getMessageSize();
         int scriptLen = (int) readVarInt();
         scriptBytes = readBytes(scriptLen);
         sequence = readUint32();
     }
-    
+
     @Override
     protected void bitcoinSerializeToStream(OutputStream stream) throws IOException {
         outpoint.bitcoinSerialize(stream);
@@ -114,6 +137,7 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
      * Coinbase transactions have special inputs with hashes of zero. If this is such an input, returns true.
      */
     public boolean isCoinBase() {
+        maybeParse();
         return outpoint.getHash().equals(Sha256Hash.ZERO_HASH);
     }
 
@@ -124,8 +148,8 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
         // Transactions that generate new coins don't actually have a script. Instead this
         // parameter is overloaded to be something totally different.
         if (scriptSig == null) {
-            checkParse();
-        	assert scriptBytes != null;
+            maybeParse();
+            assert scriptBytes != null;
             scriptSig = new Script(params, scriptBytes, 0, scriptBytes.length);
         }
         return scriptSig;
@@ -133,61 +157,72 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
 
     /**
      * Convenience method that returns the from address of this input by parsing the scriptSig.
+     *
      * @throws ScriptException if the scriptSig could not be understood (eg, if this is a coinbase transaction).
      */
     public Address getFromAddress() throws ScriptException {
         assert !isCoinBase();
         return getScriptSig().getFromAddress();
     }
-    
+
     /**
-	 * @return the sequence
-	 */
-	public long getSequence() {
-		checkParse();
-		return sequence;
-	}
+     * @return Transaction version as defined by the sender. Intended for "replacement" of transactions when information is updated before inclusion into a block. 
+     */
+    public long getSequence() {
+        maybeParse();
+        return sequence;
+    }
 
-	/**
-	 * @param sequence the sequence to set
-	 */
-	public void setSequence(long sequence) {
-		unCache();
-		this.sequence = sequence;
-	}
+    /**
+     * @param sequence Transaction version as defined by the sender. Intended for "replacement" of transactions when information is updated before inclusion into a block. 
+     */
+    public void setSequence(long sequence) {
+        unCache();
+        this.sequence = sequence;
+    }
 
-	/**
-	 * @return the outpoint
-	 */
-	public TransactionOutPoint getOutpoint() {
-		checkParse();
-		return outpoint;
-	}
+    /**
+     * @return The previous output transaction reference, as an OutPoint structure.  This contains the 
+     * data needed to connect to the output of the transaction we're gathering coins from.
+     */
+    public TransactionOutPoint getOutpoint() {
+        maybeParse();
+        return outpoint;
+    }
 
-	/**
-	 * @return the scriptBytes
-	 */
-	public byte[] getScriptBytes() {
-		checkParse();
-		return scriptBytes;
-	}
-	
-	/**
-	 * @param scriptBytes the scriptBytes to set
-	 */
-	void setScriptBytes(byte[] scriptBytes) {
-		unCache();
-		this.scriptBytes = scriptBytes;
-	}
+    /**
+     * The "script bytes" might not actually be a script. In coinbase transactions where new coins are minted there
+     * is no input transaction, so instead the scriptBytes contains some extra stuff (like a rollover nonce) that we
+     * don't care about much. The bytes are turned into a Script object (cached below) on demand via a getter.
+     * @return the scriptBytes
+     */
+    public byte[] getScriptBytes() {
+        maybeParse();
+        return scriptBytes;
+    }
 
-	/**
-	 * @return the parentTransaction
-	 */
-	public Transaction getParentTransaction() {
-		return parentTransaction;
-	}
+    /**
+     * @param scriptBytes the scriptBytes to set
+     */
+    void setScriptBytes(byte[] scriptBytes) {
+        unCache();
+        int oldLength = length;
+        this.scriptBytes = scriptBytes;
+        // 40 = previous_outpoint (36) + sequence (4)
+        int newLength = 40 + (scriptBytes == null ? 1 : VarInt.sizeOf(scriptBytes.length) + scriptBytes.length);
+        adjustLength(newLength - oldLength);
+    }
 
-	/** Returns a human readable debug string. */
+    /**
+     * @return The Transaction that owns this input.
+     */
+    public Transaction getParentTransaction() {
+        return parentTransaction;
+    }
+
+    /**
+     * Returns a human readable debug string.
+     */
     public String toString() {
         if (isCoinBase())
             return "TxIn: COINBASE";
@@ -210,13 +245,14 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
 
     /**
      * Locates the referenced output from the given pool of transactions.
+     *
      * @return The TransactionOutput or null if the transactions map doesn't contain the referenced tx.
      */
     TransactionOutput getConnectedOutput(Map<Sha256Hash, Transaction> transactions) {
         Transaction tx = transactions.get(outpoint.getHash());
         if (tx == null)
             return null;
-        TransactionOutput out = tx.getOutputs().get((int)outpoint.getIndex());
+        TransactionOutput out = tx.getOutputs().get((int) outpoint.getIndex());
         return out;
     }
 
@@ -225,14 +261,14 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
      * Connecting means updating the internal pointers and spent flags.
      *
      * @param transactions Map of txhash->transaction.
-     * @param disconnect Whether to abort if there's a pre-existing connection or not.
+     * @param disconnect   Whether to abort if there's a pre-existing connection or not.
      * @return true if connection took place, false if the referenced transaction was not in the list.
      */
     ConnectionResult connect(Map<Sha256Hash, Transaction> transactions, boolean disconnect) {
         Transaction tx = transactions.get(outpoint.getHash());
         if (tx == null)
             return TransactionInput.ConnectionResult.NO_SUCH_TX;
-        TransactionOutput out = tx.getOutputs().get((int)outpoint.getIndex());
+        TransactionOutput out = tx.getOutputs().get((int) outpoint.getIndex());
         if (!out.isAvailableForSpending()) {
             if (disconnect)
                 out.markAsUnspent();
@@ -251,19 +287,19 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
      */
     boolean disconnect() {
         if (outpoint.fromTx == null) return false;
-        outpoint.fromTx.getOutputs().get((int)outpoint.getIndex()).markAsUnspent();
+        outpoint.fromTx.getOutputs().get((int) outpoint.getIndex()).markAsUnspent();
         outpoint.fromTx = null;
         return true;
     }
-    
+
     /**
      * Ensure object is fully parsed before invoking java serialization.  The backing byte array
      * is transient so if the object has parseLazy = true and hasn't invoked checkParse yet
      * then data will be lost during serialization.
      */
     private void writeObject(ObjectOutputStream out) throws IOException {
-    	checkParse();
-    	out.defaultWriteObject();
+        maybeParse();
+        out.defaultWriteObject();
     }
     
     /** Mostly copied from transaction output */

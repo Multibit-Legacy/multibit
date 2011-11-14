@@ -1,5 +1,5 @@
 MultiBit release notes.
-
+     
 11 Nov 2011.   Version 0.2.0beta2
 Enhancements
 +  German added.

@@ -1,19 +1,19 @@
 package org.multibit.action;
 
-import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.Utils;
+import java.io.IOException;
+import java.math.BigInteger;
+
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
-import org.multibit.network.FileHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.math.BigInteger;
+import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.Utils;
 
 /**
  * an action that actually sends bitcoin

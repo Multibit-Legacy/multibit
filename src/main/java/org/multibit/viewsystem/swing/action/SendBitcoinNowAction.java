@@ -9,7 +9,6 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.network.FileHandler;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.SendBitcoinConfirmView;
 
@@ -20,7 +19,6 @@ public class SendBitcoinNowAction extends AbstractAction {
 
     private static final long serialVersionUID = 1913592460523457765L;
 
-    private MultiBitFrame mainFrame;
     private MultiBitController controller;
     private DataProvider dataProvider;
 
@@ -29,7 +27,6 @@ public class SendBitcoinNowAction extends AbstractAction {
      */
     public SendBitcoinNowAction(MultiBitFrame mainFrame, MultiBitController controller, DataProvider dataProvider) {
         super(controller.getLocaliser().getString("sendBitcoinConfirmAction.text"));
-        this.mainFrame = mainFrame;
         this.controller = controller;
         this.dataProvider = dataProvider;
 

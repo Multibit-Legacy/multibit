@@ -1,13 +1,11 @@
 package org.multibit.action;
 
-import java.io.File;
 import java.util.List;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.network.FileHandler;
 
 /**
  * exit the application

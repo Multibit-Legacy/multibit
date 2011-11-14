@@ -1,13 +1,19 @@
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * The help about view
@@ -22,14 +28,10 @@ public class HelpAboutPanel extends JPanel implements View {
 
     private static final String MULTIBIT_URL = "http://multibit.org";
 
-    private MultiBitController controller;
-
   /**
      * Creates a new {@link HelpAboutPanel}.
      */
-    public HelpAboutPanel(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
-        
+    public HelpAboutPanel(MultiBitController controller, MultiBitFrame mainFrame) {        
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0), BorderFactory.createMatteBorder(1, 0, 1, 0,  MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
         setBackground(MultiBitFrame.BACKGROUND_COLOR);
 

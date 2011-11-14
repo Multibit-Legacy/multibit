@@ -4,8 +4,12 @@
 
 package org.multibit.network;
 
-import com.google.bitcoin.core.Wallet;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigInteger;
+
 import junit.framework.TestCase;
+
 import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.Localiser;
@@ -14,10 +18,6 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.math.BigInteger;
 
 public class FileHandlerTest extends TestCase {
 
