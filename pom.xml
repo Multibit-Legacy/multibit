@@ -50,6 +50,12 @@
       <name>org.simplericity.macify</name>
       <url>http://simplericity.org/repository/</url>
     </repository>
+    <!-- zxing repo -->
+	<repository>
+      <id>mvn-adamgent</id>
+        <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
+        <name>Adam Gent Maven Repository</name>
+      </repository>
   </repositories>
   <build>
     <finalName>multibit</finalName>
@@ -466,12 +472,13 @@
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
+    <!-- zxing used for swatches -->
     <dependency>
       <groupId>com.google.zxing</groupId>
-      <artifactId>zxing-javase</artifactId>
-      <version>1.7</version>
-    </dependency>
-    <dependency>
+      <artifactId>javase</artifactId>
+      <version>1.6</version>
+    </dependency>    
+   <dependency>
       <groupId>org.codehaus.izpack</groupId>
       <artifactId>izpack-standalone-compiler</artifactId>
       <version>4.3.4</version>

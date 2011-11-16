@@ -267,8 +267,14 @@ public class MultiBitController implements PeerEventListener {
         }
 
         case FORWARD_TO_YOUR_WALLETS: {
-            // show the my wallets view
+            // show the your wallets view
             nextView = View.YOUR_WALLETS_VIEW;
+            break;
+        }
+
+        case FORWARD_TO_CREATE_BULK_ADDRESSES_VIEW: {
+            // show the your wallets view
+            nextView = View.CREATE_BULK_ADDRESSES_VIEW;
             break;
         }
 

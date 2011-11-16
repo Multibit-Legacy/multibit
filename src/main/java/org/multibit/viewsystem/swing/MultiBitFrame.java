@@ -54,6 +54,7 @@ import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.action.ReceiveBitcoinAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinAction;
+import org.multibit.viewsystem.swing.action.ShowCreateBulkAddressesAction;
 import org.multibit.viewsystem.swing.action.ShowHelpContentsAction;
 import org.multibit.viewsystem.swing.action.ShowPreferencesAction;
 import org.multibit.viewsystem.swing.action.YourWalletsAction;
@@ -283,7 +284,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         JPanel toolBarPanel = addMenuBarAndCreateToolBar(constraints, contentPane);
         toolBarPanel.setMaximumSize(new Dimension(A_SMALL_NUMBER_OF_PIXELS, TOOLBAR_HEIGHT));
- 
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 1;
@@ -439,7 +440,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // Create the toolBar
         JPanel toolBarPanel = new JPanel();
         toolBarPanel.setOpaque(false);
- 
+
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
 
         // Build the File menu.
@@ -456,6 +457,17 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         JMenu viewMenu = new JMenu(localiser.getString("multiBitFrame.viewMenuText"));
         viewMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.viewMenuMnemonic"));
         menuBar.add(viewMenu);
+
+        // Build the Merchant menu.
+        // see if it is required
+        String showMerchantMenuString = controller.getModel().getUserPreference(MultiBitModel.SHOW_MERCHANT_MENU);
+        boolean showMerchantMenu = Boolean.TRUE.toString().equalsIgnoreCase(showMerchantMenuString);
+        JMenu merchantMenu = null;
+        if (showMerchantMenu) {
+            merchantMenu = new JMenu(localiser.getString("multiBitFrame.merchantMenuText"));
+            merchantMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.merchantMenuMnemonic"));
+            menuBar.add(merchantMenu);
+        }
 
         // Build the Help menu.
         JMenu helpMenu = new JMenu(localiser.getString("multiBitFrame.helpMenuText"));
@@ -546,6 +558,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller,
                     createImageIcon(PREFERENCES_ICON_FILE));
             viewMenu.add(showPreferencesAction);
+        }
+
+        if (showMerchantMenu) {
+            // create bulk addresses action
+            ShowCreateBulkAddressesAction createBulkAddressesAction = new ShowCreateBulkAddressesAction(controller, null);
+            menuItem = new JMenuItem(createBulkAddressesAction);
+            merchantMenu.add(menuItem);
         }
 
         JPanel filler1 = new JPanel();
@@ -964,7 +983,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         ComboBoxRenderer renderer = new ComboBoxRenderer();
         renderer.setMinimumSize(new Dimension(200, 30));
-        
+
         activeWalletComboBox.setRenderer(renderer);
 
         String activeWalletFileName = null;

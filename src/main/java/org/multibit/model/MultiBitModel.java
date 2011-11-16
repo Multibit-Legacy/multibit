@@ -88,6 +88,12 @@ public class MultiBitModel {
     public static final String WALLET_INFO_FILE_SIZE = "walletInfoFileSize";
     public static final String WALLET_INFO_FILE_LAST_MODIFIED = "walletInfoFileLastModified";
 
+    // merchant menu
+    public static final String SHOW_MERCHANT_MENU = "showMerchantMenu";
+    public static final String MERCHANT_BULK_ADDRESSES_NUMBER_OF_ADDRESSES = "merchantBulkAddressesNumberOfAddresses";
+    public static final String MERCHANT_BULK_ADDRESSES_OUTPUT_FILENAME = "merchantBulkAddressesOutputFilename";
+       
+    // main controller class
     private final MultiBitController controller;
 
     // user preferences

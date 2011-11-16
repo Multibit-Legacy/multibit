@@ -44,7 +44,7 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
      */
     public void actionPerformed(ActionEvent e) {
         // check to see if the wallet files have changed
-       PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {

@@ -94,10 +94,14 @@ public class ViewFactory {
             viewToReturn = new ValidationErrorView(controller, mainFrame);
             break;
         }
-
         
         case View.YOUR_WALLETS_VIEW: {
             viewToReturn = new YourWalletsPanel(controller, mainFrame);
+            break;
+        }
+       
+        case View.CREATE_BULK_ADDRESSES_VIEW: {
+            viewToReturn = new CreateBulkAddressesPanel(controller, mainFrame);
             break;
         }
 
