@@ -29,6 +29,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import com.google.zxing.WriterException;
@@ -90,8 +91,8 @@ public class SwatchGenerator {
 
         // fonts
         addressFont = new Font("Verdana", Font.PLAIN, 10);   // 10 best
-        labelFont = new Font("Times New Roman", Font.PLAIN, 17); // 17 looks best
-        amountFont = labelFont;
+        labelFont = new Font("Serif", Font.PLAIN, 17); // 17 looks best
+        amountFont = labelFont;       
 
         // cached to save time
         fontToFontMetricsMap = new HashMap<Font, FontMetrics>();
@@ -101,6 +102,9 @@ public class SwatchGenerator {
 
         // initialise statics for extra speed later
         BitcoinURI.convertToBitcoinURI("1", "1", "1");
+        
+        // make sure fonts are loaded
+        JFrame frame = new JFrame();
     }
 
     /**
@@ -300,7 +304,7 @@ public class SwatchGenerator {
         String address = "15BGmyMKxGFkejW1oyf2Gwv3NHqeUP7aWh";
         String amount = "0.423232";
         String label = "A longish label xyz";
-
+        
         BufferedImage swatch = swatchGenerator.generateSwatch(address, amount, label);
         ImageIcon icon = new ImageIcon(swatch);
         JOptionPane.showMessageDialog(null, "", "Swatch Generator 1", JOptionPane.INFORMATION_MESSAGE, icon);
