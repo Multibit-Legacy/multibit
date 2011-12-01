@@ -478,11 +478,6 @@
       <artifactId>javase</artifactId>
       <version>1.6</version>
     </dependency>    
-   <dependency>
-      <groupId>org.codehaus.izpack</groupId>
-      <artifactId>izpack-standalone-compiler</artifactId>
-      <version>4.3.4</version>
-    </dependency>
     <dependency>
     	<groupId>org.simplericity.macify</groupId>
     	<artifactId>macify</artifactId>
@@ -495,6 +490,13 @@
       <artifactId>bitcoinj</artifactId>
       <version>0.3-SNAPSHOT</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.codehaus.izpack</groupId>
+    	<artifactId>izpack</artifactId>
+    	<version>5.0.0-beta8</version>
+    	<type>pom</type>
+    	<scope>compile</scope>
     </dependency>
   </dependencies>
   <reporting>

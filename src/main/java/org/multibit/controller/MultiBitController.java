@@ -527,6 +527,12 @@ public class MultiBitController implements PeerEventListener {
         }
     }
 
+    public void onReorganise(Wallet wallet) {
+        for (ViewSystem viewSystem : viewSystems) {
+            viewSystem.onReorganise(wallet);
+        }
+    }
+
     public void sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String sendLabel, String amount, BigInteger fee) throws IOException,
             AddressFormatException {
         // send the coins

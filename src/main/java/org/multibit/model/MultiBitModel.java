@@ -330,6 +330,7 @@ public class MultiBitModel {
 
                 @Override
                 public void onReorganize(Wallet wallet) {
+                    controller.onReorganise(wallet);
                 }
 
                 @Override

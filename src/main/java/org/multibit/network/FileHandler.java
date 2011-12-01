@@ -13,6 +13,7 @@ import java.io.OutputStreamWriter;
 import java.nio.channels.FileChannel;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
 
@@ -24,6 +25,7 @@ import org.multibit.model.WalletInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Wallet;
 
 /**
@@ -67,6 +69,17 @@ public class FileHandler {
         WalletInfo walletInfo = new WalletInfo(walletFilename);
         perWalletModelData.setWalletInfo(walletInfo);
 
+        // remove all the transactions from the wallet
+//        log.info("Wallet details for wallet file before clear= " + walletFilename + "\n" + wallet.toString());
+//        wallet.dead.clear();
+//        wallet.inactive.clear();
+//        wallet.pending.clear();
+//        wallet.spent.clear();
+//        wallet.unspent.clear();
+//        log.info("Wallet details for wallet file after clear= " + walletFilename + "\n" + wallet.toString());
+//
+//        savePerWalletModelData(perWalletModelData, false);
+
         rememberFileSizesAndLastModified(walletFile, walletInfo);
 
         perWalletModelData.setDirty(false);
@@ -85,6 +98,10 @@ public class FileHandler {
      *            The savePerWalletModelData is completely new
      */
     public void savePerWalletModelData(PerWalletModelData perWalletModelData, boolean isNew) {
+
+//        log.info("Wallet details for wallet file = " + perWalletModelData.getWalletFilename() + "\n"
+//                + perWalletModelData.getWallet().toString());
+
         try {
             if (perWalletModelData == null) {
                 // nothing to do
@@ -267,7 +284,8 @@ public class FileHandler {
             if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
                 userPropertiesFilename = USER_PROPERTIES_FILE_NAME;
             } else {
-                userPropertiesFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator + USER_PROPERTIES_FILE_NAME;                              
+                userPropertiesFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory()
+                        + File.separator + USER_PROPERTIES_FILE_NAME;
             }
 
             outputStream = new FileOutputStream(userPropertiesFilename);
@@ -288,7 +306,8 @@ public class FileHandler {
             if ("".equals(applicationDataDirectoryLocator.getApplicationDataDirectory())) {
                 userPropertiesFilename = USER_PROPERTIES_FILE_NAME;
             } else {
-                userPropertiesFilename = applicationDataDirectoryLocator.getApplicationDataDirectory() + File.separator + USER_PROPERTIES_FILE_NAME;                              
+                userPropertiesFilename = applicationDataDirectoryLocator.getApplicationDataDirectory() + File.separator
+                        + USER_PROPERTIES_FILE_NAME;
             }
             InputStream inputStream = new FileInputStream(userPropertiesFilename);
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF8");
@@ -330,11 +349,11 @@ public class FileHandler {
 
         return backupFilename;
     }
-    
+
     /**
-     * to support multiple users on the same machine, the block chain is installed
-     * into the program installation directory and is then copied to the user's
-     * application data directory when MultiBit is first used
+     * to support multiple users on the same machine, the block chain is
+     * installed into the program installation directory and is then copied to
+     * the user's application data directory when MultiBit is first used
      * 
      * thus each user has their own copy of the blockchain
      */
@@ -342,44 +361,52 @@ public class FileHandler {
         if (destinationBlockChainFilename == null) {
             return;
         }
-        
-        // see if the block chain in the user's application data directory exists
+
+        // see if the block chain in the user's application data directory
+        // exists
         // it is never overwritten
         File destinationBlockchain = new File(destinationBlockChainFilename);
         if (!destinationBlockchain.exists()) {
-            // work out the source blockchain (put into the program installation directory by the installer)
-            File directory = new File (".");
+            // work out the source blockchain (put into the program installation
+            // directory by the installer)
+            File directory = new File(".");
             try {
                 String currentWorkingDirectory = directory.getCanonicalPath();
-                
+
                 String filePrefix = multiBitService.getFilePrefix();
                 String blockchainFilename = filePrefix + MultiBitService.BLOCKCHAIN_SUFFIX;
                 String sourceBlockchainFilename = currentWorkingDirectory + File.separator + blockchainFilename;
                 File sourceBlockchain = new File(sourceBlockchainFilename);
                 if (sourceBlockchain.exists()) {
                     // it should exist since installer puts them in
-                    log.info("Copying blockchain from '" + sourceBlockchainFilename + "' to '" + destinationBlockChainFilename + "'");
+                    log.info("Copying blockchain from '" + sourceBlockchainFilename + "' to '" + destinationBlockChainFilename
+                            + "'");
                     long startTime = (new Date()).getTime();
                     copyFile(sourceBlockchain, destinationBlockchain);
                     long stopTime = (new Date()).getTime();
                     log.info("Time taken to copy blockchain was " + (stopTime - startTime) + " ms.");
-                    
+
                     // check all the data was copied
                     long sourceLength = sourceBlockchain.length();
                     long destinationLength = destinationBlockchain.length();
                     if (sourceLength != destinationLength) {
-                        log.error("Blockchain was not copied to user's application data directory correctly.\nThe source blockchain '" 
-                                + sourceBlockchainFilename + "' is of length " + sourceLength 
-                                + "\nbut the destination blockchain '" + destinationBlockChainFilename + "' is of length " + destinationLength);           
+                        log.error("Blockchain was not copied to user's application data directory correctly.\nThe source blockchain '"
+                                + sourceBlockchainFilename
+                                + "' is of length "
+                                + sourceLength
+                                + "\nbut the destination blockchain '"
+                                + destinationBlockChainFilename
+                                + "' is of length "
+                                + destinationLength);
                     }
                 }
 
             } catch (IOException e) {
                 e.printStackTrace();
-            }           
-        }       
+            }
+        }
     }
-    
+
     public void copyFile(File sourceFile, File destinationFile) throws IOException {
         if (!destinationFile.exists()) {
             destinationFile.createNewFile();

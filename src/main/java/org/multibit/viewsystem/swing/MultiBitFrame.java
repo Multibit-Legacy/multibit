@@ -900,6 +900,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
     }
 
+    
+    /**
+     * one of the wallets has been reorganised due to a block chain reorganise
+     */
+    public void onReorganise(Wallet wallet) {
+        log.info("Wallet has been reorganised.");
+        recreateAllViews(true);
+    }
+    
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
         if (controller.getModel().getActiveWalletFilename() != null
                 && controller.getModel().getActiveWalletFilename().equals(perWalletModelData.getWalletFilename())) {

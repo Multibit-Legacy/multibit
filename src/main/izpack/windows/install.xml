@@ -17,11 +17,12 @@
     -->
     <info>
         <appname>MultiBit</appname>
-        <appsubpath>MultiBit-0.2.0beta2</appsubpath>
-        <appversion>0.2.0beta2</appversion>
+        <appsubpath>MultiBit-0.2.0beta3</appsubpath>
+        <appversion>0.2.0beta3</appversion>
         <url>http://multibit.org/</url>
         <uninstaller write="yes" />
         <javaversion>1.6</javaversion>
+        <run-privileged condition="izpack.windowsinstall.vista|izpack.windowsinstall.7"/> 
     </info>
 
 <variables>

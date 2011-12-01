@@ -80,7 +80,7 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
      * spent for the purposes of calculating our balance but their outputs are not available for spending yet. This
      * means after a spend, our balance can actually go down temporarily before going up again!
      */
-    final Map<Sha256Hash, Transaction> pending;
+    public final Map<Sha256Hash, Transaction> pending;
 
     /**
      * Map of txhash->Transactions where the Transaction has unspent outputs. These are transactions we can use
@@ -94,7 +94,7 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
      * theoretically you could spend zero-conf coins and all of them would be included together. To simplify we'll
      * make people wait but it would be a good improvement to resolve this in future.
      */
-    final Map<Sha256Hash, Transaction> unspent;
+    public final Map<Sha256Hash, Transaction> unspent;
 
     /**
      * Map of txhash->Transactions where the Transactions outputs are all fully spent. They are kept separately so
@@ -104,7 +104,7 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
      *
      * Transactions only appear in this map if they are part of the best chain.
      */
-    final Map<Sha256Hash, Transaction> spent;
+    public final Map<Sha256Hash, Transaction> spent;
 
     /**
      * An inactive transaction is one that is seen only in a block that is not a part of the best chain. We keep it
@@ -114,7 +114,7 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
      * Note that in the case where a transaction appears in both the best chain and a side chain as well, it is not
      * placed in this map. It's an error for a transaction to be in both the inactive pool and unspent/spent.
      */
-    private Map<Sha256Hash, Transaction> inactive;
+    public Map<Sha256Hash, Transaction> inactive;
 
     /**
      * A dead transaction is one that's been overridden by a double spend. Such a transaction is pending except it
@@ -122,7 +122,7 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
      * should nearly never happen in normal usage. Dead transactions can be "resurrected" by re-orgs just like any
      * other. Dead transactions are not in the pending pool.
      */
-    private Map<Sha256Hash, Transaction> dead;
+    public Map<Sha256Hash, Transaction> dead;
 
     /** A list of public/private EC keys owned by this user. */
     public final ArrayList<ECKey> keychain;

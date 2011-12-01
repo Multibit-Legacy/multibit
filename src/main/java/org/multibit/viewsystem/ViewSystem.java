@@ -97,4 +97,10 @@ public interface ViewSystem {
      * @param transaction
      */
     public void onPendingCoinsReceived(Wallet wallet, Transaction transaction);
+    
+    /**
+     * WalletEventListener callback method
+     * @param wallet
+     */
+    public void onReorganise(Wallet wallet);
 }
