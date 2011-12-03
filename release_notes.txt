@@ -1,4 +1,15 @@
 MultiBit release notes.
+
+Version 0.2.0beta3
+This is mainly a bugfix release.
+
+Enhancements
++  Added Linux shortcuts
++  Added 'Create Bulk Addresses' for MultiBitMerchant (add showMerchantMenu=true into multibit.properties)
+
+Bug fixes
++  Fixed issue #6 - Windows installer cannot install into C:/Program Files.
+
      
 11 Nov 2011.   Version 0.2.0beta2
 Enhancements
