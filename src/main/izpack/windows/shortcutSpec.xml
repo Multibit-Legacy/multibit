@@ -4,7 +4,7 @@
              target="$INSTALL_PATH/multibit.exe" 
              description="MultiBit" 
              workingDirectory="$INSTALL_PATH"
-             iconFile="$INSTALL_PATH/multibit.bmp" 
+             iconFile="$INSTALL_PATH/multibit.ico" 
              initialState="normal" 
              programGroup="yes"
              desktop="yes" 

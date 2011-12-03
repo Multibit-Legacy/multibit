@@ -177,13 +177,14 @@
                   <directory>src/main/izpack/linux</directory>
                   <includes>
                     <include>install.xml</include>
+                    <include>Unix_shortcutSpec.xml</include>
                   </includes>
                 </resource>
                 <resource>
                   <directory>src/main/resources/images</directory>
                   <includes>
                     <include>installerLeft.png</include>
-                    <include>multibit.bmp</include>
+                    <include>multibit48.png</include>
                   </includes>
                 </resource>
                 <resource>
@@ -229,14 +230,14 @@
                   <directory>src/main/izpack/windows</directory>
                   <includes>
                     <include>install.xml</include>
-                     <include>shortcutSpec.xml</include>
+                    <include>shortcutSpec.xml</include>
                   </includes>
                 </resource>               
                 <resource>
                   <directory>src/main/resources/images</directory>
                   <includes>
                     <include>installerLeft.png</include>
-                    <include>multibit.bmp</include>
+                    <include>multibit.ico</include>
                   </includes>
                 </resource>
                 <resource>
