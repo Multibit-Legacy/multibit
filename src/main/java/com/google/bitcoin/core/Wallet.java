@@ -1087,4 +1087,15 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
     public Collection<Transaction> getPendingTransactions() {
         return Collections.unmodifiableCollection(pending.values());
     }
+    
+    /**
+     * remove all transactions from the wallet
+     */
+    public void removeAllTransactions(){
+        pending.clear();
+        unspent.clear();
+        spent.clear();
+        inactive.clear();
+        dead.clear();
+    }
 }

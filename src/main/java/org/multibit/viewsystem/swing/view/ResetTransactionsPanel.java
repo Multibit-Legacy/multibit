@@ -153,16 +153,6 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         explainPanel.add(explainLabel2, constraints);
 
-        JLabel explainLabel3 = new JLabel(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text3"));
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        explainPanel.add(explainLabel3, constraints);
-
         return explainPanel;
     }
 

@@ -79,6 +79,8 @@ public class MultiBitService {
 
     private BlockChain blockChain;
 
+    private BlockStore blockStore;
+    
     private boolean useTestNet;
 
     private MultiBitController controller;
@@ -110,8 +112,7 @@ public class MultiBitService {
         this.controller = controller;
 
         networkParameters = useTestNet ? NetworkParameters.testNet() : NetworkParameters.prodNet();
-
-        BlockStore blockStore = null;
+       
         try {
             // Load the block chain
             String filePrefix = getFilePrefix();
@@ -332,5 +333,9 @@ public class MultiBitService {
 
     public boolean isUseTestNet() {
         return useTestNet;
+    }
+
+    public BlockStore getBlockStore() {
+        return blockStore;
     }
 }
