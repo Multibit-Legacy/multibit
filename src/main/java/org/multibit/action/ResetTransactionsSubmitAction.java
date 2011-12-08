@@ -89,7 +89,7 @@ public class ResetTransactionsSubmitAction implements Action {
             boolean haveGoneBackInTimeEnough = false;
             boolean blockNavigationError = false;
 
-            while (!haveGoneBackInTimeEnough || blockNavigationError) {
+            while (!haveGoneBackInTimeEnough && !blockNavigationError) {
                 Block header = storedBlock.getHeader();
                 long headerTimeInSeconds = header.getTimeSeconds();
                 if (headerTimeInSeconds < (earliestTransactionDate.getTime() / NUMBER_OF_MILLISECOND_IN_A_SECOND)) {
