@@ -22,6 +22,7 @@ public interface View {
     public static final int VALIDATION_ERROR_VIEW = 10;
     public static final int YOUR_WALLETS_VIEW = 11;
     public static final int CREATE_BULK_ADDRESSES_VIEW = 12;
+    public static final int RESET_TRANSACTIONS_VIEW = 13;
  
     /**
      * display the view (including any screen drawing/ construction

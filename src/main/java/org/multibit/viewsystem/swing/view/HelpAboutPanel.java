@@ -6,12 +6,15 @@ import java.awt.GridBagLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.action.ResetTransactionsAction;
+import org.multibit.viewsystem.swing.action.ShowPreferencesSubmitAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,7 +103,7 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.anchor = GridBagConstraints.CENTER;
         JLabel versionLabel = new JLabel(versionText);
         add(versionLabel, constraints);
-        
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 5;
@@ -112,6 +115,16 @@ public class HelpAboutPanel extends JPanel implements View {
         fillerPanel2.setOpaque(false);
         add(fillerPanel2, constraints);
 
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 6;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.1;
+        constraints.anchor = GridBagConstraints.EAST;
+        ResetTransactionsAction resetTransactionsAction = new ResetTransactionsAction(controller, null);
+        JButton resetTransactionsButton = new JButton(resetTransactionsAction);
+        add(resetTransactionsButton, constraints);
     }
 
     /**
