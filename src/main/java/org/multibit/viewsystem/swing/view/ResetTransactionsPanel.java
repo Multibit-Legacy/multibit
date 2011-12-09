@@ -15,8 +15,6 @@ import javax.swing.JTextField;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
-import org.multibit.model.Item;
-import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ResetTransactionsSubmitAction;
@@ -31,6 +29,10 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
     private MultiBitController controller;
 
     private Data data;
+
+    private JLabel walletFilenameLabel;
+
+    private JLabel walletDescriptionLabel;
 
     /**
      * Creates a new {@link ResetTransactionsPanel}.
@@ -50,9 +52,12 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
     }
 
     /**
-     * show explanatory text for resetting blockchain and transactions and a button to do it
+     * show explanatory text for resetting blockchain and transactions and a
+     * button to do it
      */
     public void displayView() {
+        walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
+        walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
@@ -139,17 +144,93 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         constraints.gridy = 0;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         explainPanel.add(explainLabel1, constraints);
 
-        JLabel explainLabel2 = new JLabel(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text2"));
-        constraints.fill = GridBagConstraints.NONE;
+        JPanel filler1 = new JPanel();
+        filler1.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        explainPanel.add(filler1, constraints);
+
+        JPanel filler2 = new JPanel();
+        filler2.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 2;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        explainPanel.add(filler2, constraints);
+
+        JLabel walletFilenameLabelLabel = new JLabel(controller.getLocaliser().getString(
+                "resetTransactionsPanel.walletFilenameLabel"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        explainPanel.add(walletFilenameLabelLabel, constraints);
+
+        walletFilenameLabel = new JLabel(controller.getModel().getActiveWalletFilename());
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 2;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        explainPanel.add(walletFilenameLabel, constraints);
+
+        JLabel walletDescriptionLabelLabel = new JLabel(controller.getLocaliser().getString(
+                "resetTransactionsPanel.walletDescriptionLabel"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        explainPanel.add(walletDescriptionLabelLabel, constraints);
+
+        walletDescriptionLabel = new JLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 3;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        explainPanel.add(walletDescriptionLabel, constraints);
+
+        JPanel filler3 = new JPanel();
+        filler3.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        explainPanel.add(filler3, constraints);
+
+ 
+        JLabel explainLabel2 = new JLabel(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text2"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 5;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         explainPanel.add(explainLabel2, constraints);
 
@@ -170,7 +251,6 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         return buttonPanel;
     }
 
-
     public Data getData() {
         return data;
     }
@@ -186,6 +266,6 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
     @Override
     public void updateView() {
         // TODO Auto-generated method stub
-        
+
     }
 }
