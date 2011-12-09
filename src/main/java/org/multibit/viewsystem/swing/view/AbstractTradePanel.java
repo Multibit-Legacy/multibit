@@ -16,6 +16,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,6 +65,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.ProtocolException;
+import com.google.bitcoin.core.Transaction;
 
 /**
  * Abstract parent class for SendBitcoinPanel and ReceiveBitcoinPanel
@@ -678,6 +684,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
             return false;
         } else {
+            if (decodedString.startsWith("btctx:")) {
+                processTx(decodedString);
+                return true;
+            }
+            
             // decode the string to an AddressBookData
             BitcoinURI bitcoinURI = new BitcoinURI(controller, decodedString);
 
@@ -759,7 +770,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             }
         }
     }
-
+ 
     /**
      * select the rows that correspond to the current data
      */
@@ -858,4 +869,52 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         g2.dispose();
         return bufferedImage;
     }
+    
+    // Transaction test code
+    
+    private void processTx(String txString) {
+        // strip off btctx: prefix
+        txString = txString.substring("btctx:".length());
+        sun.misc.BASE64Decoder decoder = new sun.misc.BASE64Decoder();
+        ObjectInputStream inputStream = null;
+        try {
+            byte[] txBytes = decoder.decodeBuffer(txString);
+            System.out.println("AbstractTradePanel#decoded " + (txBytes == null ? 0 : txBytes.length) + " bytes.\n");
+            for (int i=0; i < txBytes.length; i++) {
+                String hexString = Integer.toHexString(txBytes[i]);
+                if (hexString.length() > 2) {
+                    hexString = hexString.substring(hexString.length()-2);
+                }
+                if (hexString.length() < 2) {
+                    hexString = '0' + hexString;
+                }
+                System.out.print(hexString + " ");
+                if (i % 16 == 15) {
+                    System.out.print("\n");
+                }
+            }
+            System.out.println("\n");
+            final Transaction transaction = new Transaction(controller.getMultiBitService().getNetworkParameters(), txBytes);
+            System.out.println("AbstractTradePanel#created transaction " + transaction);
+
+            boolean wasBroadcasted = controller.getMultiBitService().getPeerGroup().broadcastTransaction(transaction);
+            System.out.println("AbstractTradePanel#result of broadcastTransaction was " + wasBroadcasted);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally{
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+ 
 }

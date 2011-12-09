@@ -105,6 +105,11 @@ public class ViewFactory {
             break;
         }
 
+        case View.RESET_TRANSACTIONS_VIEW: {
+            viewToReturn = new ResetTransactionsPanel(controller, mainFrame);
+            break;
+        }
+
         default: {
         }
         }

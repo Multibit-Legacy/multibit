@@ -34,6 +34,8 @@ public class SendBitcoinNowAction implements Action {
     }
 
     public void execute(DataProvider dataProvider) {
+        // TODO check if wallet has been changed by a different process
+        
         // get the data out of the wallet preferences
         String sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
         String sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);

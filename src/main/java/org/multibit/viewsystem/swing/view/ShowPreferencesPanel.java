@@ -19,7 +19,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * The help about view
+ * The show preferences view
  */
 public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
@@ -55,7 +55,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     }
 
     /**
-     * show help about message box
+     * show preferences panel
      */
     public void displayView() {
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
@@ -91,15 +91,6 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         fillerPanel1.setOpaque(false);
         add(fillerPanel1, constraints);
 
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.gridwidth = 1;
-        constraints.weightx = 0.4;
-        constraints.weighty = 0.06;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        add(createButtonPanel(), constraints);
-
         JLabel titleLabel = new JLabel();
         titleLabel.setHorizontalTextPosition(JLabel.LEFT);
         titleLabel.setText(controller.getLocaliser().getString("showPreferencesPanel.title"));
@@ -108,12 +99,12 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         titleLabel.setFont(font);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
+        constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 1;
         constraints.weightx = 1.8;
         constraints.weighty = 0.06;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.anchor = GridBagConstraints.CENTER;
         add(titleLabel, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -134,11 +125,20 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.anchor = GridBagConstraints.NORTHWEST;
         add(createFeePanel(), constraints);
 
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        constraints.gridwidth = 1;
+        constraints.weightx = 0.4;
+        constraints.weighty = 0.06;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(createButtonPanel(), constraints);
+
         JLabel filler1 = new JLabel();
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 5;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 20;

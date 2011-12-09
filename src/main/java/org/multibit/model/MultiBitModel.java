@@ -93,6 +93,8 @@ public class MultiBitModel {
     public static final String MERCHANT_BULK_ADDRESSES_NUMBER_OF_ADDRESSES = "merchantBulkAddressesNumberOfAddresses";
     public static final String MERCHANT_BULK_ADDRESSES_OUTPUT_FILENAME = "merchantBulkAddressesOutputFilename";
        
+    // reset transactions 
+    public static final String EARLIEST_TRANSACTION_DATE = "earliestTransactionDate";
     // main controller class
     private final MultiBitController controller;
 
