@@ -84,15 +84,6 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         fillerPanel1.setOpaque(false);
         add(fillerPanel1, constraints);
 
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.gridwidth = 1;
-        constraints.weightx = 0.4;
-        constraints.weighty = 0.06;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        add(createButtonPanel(), constraints);
-
         JLabel titleLabel = new JLabel();
         titleLabel.setHorizontalTextPosition(JLabel.LEFT);
         titleLabel.setText(controller.getLocaliser().getString("createBulkAddressesPanel.title"));
@@ -101,12 +92,12 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         titleLabel.setFont(font);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
+        constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 1;
-        constraints.weightx = 1.8;
+        constraints.weightx = 1;
         constraints.weighty = 0.06;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.anchor = GridBagConstraints.CENTER;
         add(titleLabel, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -127,11 +118,20 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         constraints.anchor = GridBagConstraints.NORTHWEST;
         add(createFileNamePanel(), constraints);
 
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        constraints.gridwidth = 1;
+        constraints.weightx = 0.4;
+        constraints.weighty = 0.06;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(createButtonPanel(), constraints);
+
         JLabel filler1 = new JLabel();
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 5;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 20;
