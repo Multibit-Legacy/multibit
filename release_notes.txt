@@ -1,8 +1,16 @@
 MultiBit release notes.
 
-Version 0.2.0beta3
-This is mainly a bugfix release.
+12 Dec 2011.   Version 0.2.0beta4
 
+Enhancements
++  French and Italian translations completed. Swedish, German, Spanish, Russian updated.
++  Some minor UI changes
+
+Bug fixes
++  Fixed issue #3 - Zero confirmation transactions not confirming.   Added 'Reset transactions and blockchain' screen.
+
+ 
+04 Dec 2011.   Version 0.2.0beta3
 Enhancements
 +  Added Linux shortcuts
 +  Added 'Create Bulk Addresses' for MultiBitMerchant (add showMerchantMenu=true into multibit.properties)

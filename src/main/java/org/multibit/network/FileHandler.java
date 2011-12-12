@@ -94,10 +94,10 @@ public class FileHandler {
      * @param perWalletModelData
      *            TODO give notification of whether data was written to a backup
      *            file
-     * @param isNew
-     *            The savePerWalletModelData is completely new
+     * @param forceWrite
+     *            force the write of the perWalletModelData
      */
-    public void savePerWalletModelData(PerWalletModelData perWalletModelData, boolean isNew) {
+    public void savePerWalletModelData(PerWalletModelData perWalletModelData, boolean forceWrite) {
 
 //        log.info("Wallet details for wallet file = " + perWalletModelData.getWalletFilename() + "\n"
 //                + perWalletModelData.getWallet().toString());
@@ -108,12 +108,12 @@ public class FileHandler {
                 return;
             }
 
-            // save the perWalletModelData if it is dirty
-            if (perWalletModelData.isDirty() || perWalletModelData.isTransactionDirty() || isNew) {
+            // save the perWalletModelData if it is dirty or if forceWrite is true
+            if (perWalletModelData.isDirty() || perWalletModelData.isTransactionDirty() || forceWrite) {
                 // check dates and sizes of files
                 boolean filesHaveChanged = haveFilesChanged(perWalletModelData);
 
-                if (!filesHaveChanged || isNew) {
+                if (!filesHaveChanged || forceWrite) {
                     // normal write of data
 
                     File walletFile = new File(perWalletModelData.getWalletFilename());

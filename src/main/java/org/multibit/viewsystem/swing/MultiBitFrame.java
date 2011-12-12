@@ -834,10 +834,25 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             boolean dataHasChanged = false;
             if (perWalletModelDataList != null) {
                 for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
-                    BigInteger value = transaction.getValueSentToMe(perWalletModelData.getWallet());
-                    if (value != null && value.compareTo(BigInteger.ZERO) > 0) {
-                        logger.debug("Received " + Localiser.bitcoinValueToString4(value, true, false) + " from "
+                    // check bitcoin sent to me
+                    BigInteger valueSentToMe = transaction.getValueSentToMe(perWalletModelData.getWallet());
+                    if (valueSentToMe != null && valueSentToMe.compareTo(BigInteger.ZERO) > 0) {
+                        logger.debug("Received " + Localiser.bitcoinValueToString4(valueSentToMe, true, false) + " from "
                                 + from.toString() + " to wallet '" + perWalletModelData.getWalletDescription() + "'");
+
+                        // the perWalletModelData is marked as transactionDirty
+                        // but is not written out immediately
+                        // this is to avoid unnecessary 'Updates have stopped'
+                        // when two MultiBit have a single wallet open.
+                        // they will both get the incoming transaction
+                        perWalletModelData.setTransactionDirty(true);
+                        dataHasChanged = true;
+                    }
+                    // check bitcoin sent from me
+                    BigInteger valueSentFromMe = transaction.getValueSentFromMe(perWalletModelData.getWallet());
+                    if (valueSentFromMe != null && valueSentFromMe.compareTo(BigInteger.ZERO) > 0) {
+                        logger.debug("Sent " + Localiser.bitcoinValueToString4(valueSentFromMe, true, false) + " from "
+                                + from.toString() + " from wallet '" + perWalletModelData.getWalletDescription() + "'");
 
                         // the perWalletModelData is marked as transactionDirty
                         // but is not written out immediately

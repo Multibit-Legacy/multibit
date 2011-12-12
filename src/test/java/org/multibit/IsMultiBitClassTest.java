@@ -20,6 +20,7 @@ public class IsMultiBitClassTest extends TestCase {
 
     @Test
     public void testIsMultiBitClass() throws ClassNotFoundException {
+        checkClass("BlockChain");
         checkClass("Peer");
         checkClass("PeerGroup");
         checkClass("Sha256Hash");

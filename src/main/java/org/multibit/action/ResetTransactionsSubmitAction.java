@@ -106,11 +106,18 @@ public class ResetTransactionsSubmitAction implements Action {
             }
 
             if (!blockNavigationError) {
-
-                // switch off the PeerGroup ?
+                // shut down the PeerGroup and restart it again
+                // this is in case it is already downloading the up to date blockchain
+//                if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
+//                    controller.getMultiBitService().getPeerGroup().stop();
+//                    controller.getMultiBitService().getPeerGroup().start();
+//                }
 
                 // remove the transactions from the wallet
                 activePerWalletModelData.getWallet().removeAllTransactions();
+                
+                // save the wallet without the transactions
+                controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
 
                 // set the block chain head to the block just before the
                 // earliest transaction in the wallet

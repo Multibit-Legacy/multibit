@@ -18,6 +18,8 @@ package com.google.bitcoin.core;
 
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
+
+import org.multibit.IsMultiBitClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +50,7 @@ import java.util.*;
  * Orphan chains can occur when blocks are solved and received during the initial block chain download,
  * or if we connect to a peer that doesn't send us blocks in order.
  */
-public class BlockChain {
+public class BlockChain implements IsMultiBitClass {
     private static final Logger log = LoggerFactory.getLogger(BlockChain.class);
 
     /** Keeps a map of block hashes to StoredBlocks. */
