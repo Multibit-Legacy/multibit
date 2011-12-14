@@ -16,6 +16,9 @@ import java.util.*;
  * class used for producing localised messages it contains a resource bundle and
  * has some helper functions to do message formatting
  * 
+ * it also pulls in a file language.properties which lists the number of
+ * languages and language codes
+ * 
  * @author jim
  * 
  */
@@ -28,10 +31,13 @@ public class Localiser {
     public static final String PROPERTY_NAME_SUFFIX = ".properties";
     public static final String VERSION_PROPERTY_KEY_NAME = "version";
     public static final String VERSION_PROPERTIES_FILENAME = "/version.properties";
+    public static final String LANGUAGE_PROPERTIES_FILENAME = "/i18n/language.properties";
     private ResourceBundle resourceBundle;
     private MessageFormat formatter;
 
     private Properties versionProperties;
+
+    private Properties languageProperties;
 
     private Locale locale;
     private String bundleName;
@@ -39,12 +45,12 @@ public class Localiser {
     private final static String MISSING_RESOURCE_TEXT = "Missing resource : ";
 
     /**
-     * Localiser hardwired to English - mainlt for testing
+     * Localiser hardwired to English - mainly for testing
      */
     public Localiser() {
         this(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, new Locale("en"));
     }
-    
+
     /**
      * create a Localiser using a ResourceBundle based on the specified
      * 'bundleName' with Locale 'locale'
@@ -55,10 +61,29 @@ public class Localiser {
     public Localiser(String bundleName, Locale locale) {
         this.bundleName = bundleName;
         formatter = new MessageFormat("");
+
+        languageProperties = new Properties();
+        try {
+            java.net.URL languagePropertiesURL = Localiser.class.getResource(LANGUAGE_PROPERTIES_FILENAME);
+            if (languagePropertiesURL != null) {
+                languageProperties.load(languagePropertiesURL.openStream());
+            }
+        } catch (IOException ioe) {
+            log.error(ioe.getMessage(), ioe);
+        }
+
         setLocale(locale);
     }
 
     public String getString(String key) {
+        // see if it is the number of languages or a language code
+        if (languageProperties != null) {
+            String toReturn = (String)languageProperties.get(key);
+            if (toReturn != null) {
+                return toReturn;
+            }
+        }
+        
         if (resourceBundle != null) {
             try {
                 return resourceBundle.getString(key);
@@ -106,23 +131,23 @@ public class Localiser {
 
         String propertyFilename = bundleName + SEPARATOR + locale.getLanguage() + PROPERTY_NAME_SUFFIX;
         String propertyFilenameBase = bundleName + PROPERTY_NAME_SUFFIX;
-         boolean foundIt = false;
+        boolean foundIt = false;
         try {
             InputStream inputStream = Localiser.class.getResourceAsStream(propertyFilename);
             if (inputStream != null) {
                 resourceBundle = new PropertyResourceBundle(new InputStreamReader(inputStream, "UTF8"));
                 foundIt = true;
             }
-         } catch (FileNotFoundException e) {
-          log.error(e.getMessage(), e);
+        } catch (FileNotFoundException e) {
+            log.error(e.getMessage(), e);
         } catch (IOException e) {
-          log.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
 
         if (!foundIt) {
             // just get the base version i.e. English
             try {
-                InputStream inputStream =  Localiser.class.getResourceAsStream(propertyFilenameBase);
+                InputStream inputStream = Localiser.class.getResourceAsStream(propertyFilenameBase);
                 if (inputStream != null) {
                     resourceBundle = new PropertyResourceBundle(new InputStreamReader(inputStream, "UTF8"));
                 }
@@ -165,10 +190,13 @@ public class Localiser {
         return version;
     }
 
-    /** 
-     * @param value The value
-     * @param addUnit True if a unit should be appended
-     * @param blankZero True if a zero value should be returned as blank
+    /**
+     * @param value
+     *            The value
+     * @param addUnit
+     *            True if a unit should be appended
+     * @param blankZero
+     *            True if a zero value should be returned as blank
      * @return the given value in nanocoins as a 0.12 type string - 2 sig figs
      */
     public static String bitcoinValueToFriendlyString(BigInteger value, boolean addUnit, boolean blankZero) {
@@ -188,9 +216,10 @@ public class Localiser {
         }
         return toReturn;
     }
-    
-    /** 
-     * Returns the given value in nanocoins as a 0.1234 type string down to 100 mikes
+
+    /**
+     * Returns the given value in nanocoins as a 0.1234 type string down to 100
+     * mikes
      **/
     public static String bitcoinValueToString4(BigInteger value, boolean addUnit, boolean blankZero) {
         if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
@@ -203,7 +232,7 @@ public class Localiser {
         }
         BigInteger coins = value.divide(Utils.COIN);
         BigInteger fraction = value.remainder(Utils.COIN);
-        
+
         String toReturn = "";
         if (negative) {
             toReturn = "-";
@@ -214,9 +243,10 @@ public class Localiser {
         }
         return toReturn;
     }
-    
-    /** 
-     * Returns the given value in nanocoins as a number with as many digits as it needs
+
+    /**
+     * Returns the given value in nanocoins as a number with as many digits as
+     * it needs
      **/
     public static String bitcoinValueToString(BigInteger value, boolean addUnit, boolean blankZero) {
         if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
@@ -229,12 +259,12 @@ public class Localiser {
         }
         BigInteger coins = value.divide(Utils.COIN);
         BigInteger fraction = value.remainder(Utils.COIN);
-        
+
         String toReturn = "";
         if (negative) {
             toReturn = "-";
         }
-        toReturn = toReturn + (coins.floatValue() + ((float)fraction.intValue()) / Utils.COIN.intValue());
+        toReturn = toReturn + (coins.floatValue() + ((float) fraction.intValue()) / Utils.COIN.intValue());
         if (addUnit) {
             toReturn = toReturn + " " + "BTC";
         }
