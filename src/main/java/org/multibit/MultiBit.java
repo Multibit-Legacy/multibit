@@ -71,12 +71,12 @@ public class MultiBit {
         if (userLanguageCode == null) {
             // no language info supplied - set to English
             userPreferences.setProperty(MultiBitModel.USER_LANGUAGE_CODE, Locale.ENGLISH.getLanguage());
-            localiser = new Localiser(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, Locale.ENGLISH);
+            localiser = new Localiser(Locale.ENGLISH);
         } else {
             if (MultiBitModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
-                localiser = new Localiser(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, Locale.getDefault());
+                localiser = new Localiser(Locale.getDefault());
             } else {
-                localiser = new Localiser(Localiser.VIEWER_RESOURCE_BUNDLE_NAME, new Locale(userLanguageCode));
+                localiser = new Localiser(new Locale(userLanguageCode));
             }
         }
         controller.setLocaliser(localiser);
