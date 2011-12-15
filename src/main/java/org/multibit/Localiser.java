@@ -204,7 +204,7 @@ public class Localiser {
      *            True if a zero value should be returned as blank
      * @return the given value in nanocoins as a 0.12 type string - 2 sig figs
      */
-    public static String bitcoinValueToFriendlyString(BigInteger value, boolean addUnit, boolean blankZero) {
+    public String bitcoinValueToFriendlyString(BigInteger value, boolean addUnit, boolean blankZero) {
         if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
             return "";
         }
@@ -217,7 +217,7 @@ public class Localiser {
         BigInteger cents = value.remainder(Utils.COIN);
         String toReturn = String.format("%s%d.%02d", negative ? "-" : "", coins.intValue(), cents.intValue() / 1000000);
         if (addUnit) {
-            toReturn = toReturn + " " + "BTC";
+            toReturn = toReturn + " " + getString("sendBitcoinPanel.amountUnitLabel");
         }
         return toReturn;
     }
@@ -226,7 +226,7 @@ public class Localiser {
      * Returns the given value in nanocoins as a 0.1234 type string down to 100
      * mikes
      **/
-    public static String bitcoinValueToString4(BigInteger value, boolean addUnit, boolean blankZero) {
+    public String bitcoinValueToString4(BigInteger value, boolean addUnit, boolean blankZero) {
         if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
             return "";
         }
@@ -244,7 +244,7 @@ public class Localiser {
         }
         toReturn = String.format("%s%d.%04d", negative ? "-" : "", coins.intValue(), fraction.intValue() / 10000);
         if (addUnit) {
-            toReturn = toReturn + " " + "BTC";
+            toReturn = toReturn + " " + getString("sendBitcoinPanel.amountUnitLabel");
         }
         return toReturn;
     }
@@ -253,7 +253,7 @@ public class Localiser {
      * Returns the given value in nanocoins as a number with as many digits as
      * it needs
      **/
-    public static String bitcoinValueToString(BigInteger value, boolean addUnit, boolean blankZero) {
+    public String bitcoinValueToString(BigInteger value, boolean addUnit, boolean blankZero) {
         if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
             return "";
         }
@@ -271,7 +271,7 @@ public class Localiser {
         }
         toReturn = toReturn + (coins.floatValue() + ((float) fraction.intValue()) / Utils.COIN.intValue());
         if (addUnit) {
-            toReturn = toReturn + " " + "BTC";
+            toReturn = toReturn + " " + getString("sendBitcoinPanel.amountUnitLabel");
         }
         return toReturn;
     }

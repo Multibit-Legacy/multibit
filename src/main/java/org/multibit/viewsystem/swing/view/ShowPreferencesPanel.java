@@ -61,7 +61,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
 
         if (sendFeeString == null || sendFeeString == "") {
-            sendFeeString = Localiser.bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
+            sendFeeString = controller.getLocaliser().bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
         }
         originalFee = sendFeeString;
         feeTextField.setText(sendFeeString);
@@ -276,7 +276,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
 
         if (sendFeeString == null || sendFeeString == "") {
-            sendFeeString = Localiser.bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
+            sendFeeString = controller.getLocaliser().bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
         }
         originalFee = sendFeeString;
 

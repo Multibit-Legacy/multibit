@@ -700,7 +700,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 log.debug("SendBitcoinPanel - ping 3");
                 String amountString = amountTextField.getText();
                 if (bitcoinURI.getAmount() != null) {
-                    amountString = Localiser.bitcoinValueToString(bitcoinURI.getAmount(), false, false);
+                    amountString = controller.getLocaliser().bitcoinValueToString(bitcoinURI.getAmount(), false, false);
                 }
                 log.debug("SendBitcoinPanel - ping 4");
                 String decodedLabel = bitcoinURI.getLabel();

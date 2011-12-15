@@ -225,10 +225,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         updateStatusLabel("");
 
         estimatedBalanceTextLabel
-                .setText(Localiser.bitcoinValueToString4(model.getActiveWalletEstimatedBalance(), true, false));
+                .setText(controller.getLocaliser().bitcoinValueToString4(model.getActiveWalletEstimatedBalance(), true, false));
 
         availableBalanceTextLabel.setText(controller.getLocaliser().getString("multiBitFrame.availableToSpend",
-                new Object[] { Localiser.bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true, false) }));
+                new Object[] { controller.getLocaliser().bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true, false) }));
 
         estimatedBalanceTextLabel.setFocusable(true);
         estimatedBalanceTextLabel.requestFocusInWindow();
@@ -837,7 +837,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     // check bitcoin sent to me
                     BigInteger valueSentToMe = transaction.getValueSentToMe(perWalletModelData.getWallet());
                     if (valueSentToMe != null && valueSentToMe.compareTo(BigInteger.ZERO) > 0) {
-                        logger.debug("Received " + Localiser.bitcoinValueToString4(valueSentToMe, true, false) + " from "
+                        logger.debug("Received " + controller.getLocaliser().bitcoinValueToString4(valueSentToMe, true, false) + " from "
                                 + from.toString() + " to wallet '" + perWalletModelData.getWalletDescription() + "'");
 
                         // the perWalletModelData is marked as transactionDirty
@@ -851,7 +851,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     // check bitcoin sent from me
                     BigInteger valueSentFromMe = transaction.getValueSentFromMe(perWalletModelData.getWallet());
                     if (valueSentFromMe != null && valueSentFromMe.compareTo(BigInteger.ZERO) > 0) {
-                        logger.debug("Sent " + Localiser.bitcoinValueToString4(valueSentFromMe, true, false) + " from "
+                        logger.debug("Sent " + controller.getLocaliser().bitcoinValueToString4(valueSentFromMe, true, false) + " from "
                                 + from.toString() + " from wallet '" + perWalletModelData.getWalletDescription() + "'");
 
                         // the perWalletModelData is marked as transactionDirty
@@ -887,7 +887,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
                     BigInteger value = transaction.getValueSentToMe(perWalletModelData.getWallet());
                     if (value != null && value.compareTo(BigInteger.ZERO) > 0) {
-                        logger.debug("Received " + Localiser.bitcoinValueToString4(value, true, false) + " from "
+                        logger.debug("Received " + controller.getLocaliser().bitcoinValueToString4(value, true, false) + " from "
                                 + from.toString() + " to wallet '" + perWalletModelData.getWalletDescription() + "'");
                         // the perWalletModelData is marked as transactionDirty
                         // but is not written out immediately
@@ -899,7 +899,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
                         if (perWalletModelData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
                             // blink the total
-                            estimatedBalanceTextLabel.blink(Localiser.bitcoinValueToString4(controller.getModel()
+                            estimatedBalanceTextLabel.blink(controller.getLocaliser().bitcoinValueToString4(controller.getModel()
                                     .getActiveWalletEstimatedBalance(), true, false));
                         }
                     }
@@ -966,7 +966,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             setUpdatesStoppedTooltip(estimatedBalanceTextLabel);
             availableBalanceTextLabel.setText("");
         } else {
-            estimatedBalanceTextLabel.setText(Localiser.bitcoinValueToString4(controller.getModel()
+            estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString4(controller.getModel()
                     .getActiveWalletEstimatedBalance(), true, false));
             estimatedBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
 
@@ -977,7 +977,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 availableBalanceTextLabel
                         .setText(controller.getLocaliser().getString(
                                 "multiBitFrame.availableToSpend",
-                                new Object[] { Localiser.bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true,
+                                new Object[] { controller.getLocaliser().bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true,
                                         false) }));
             }
         }

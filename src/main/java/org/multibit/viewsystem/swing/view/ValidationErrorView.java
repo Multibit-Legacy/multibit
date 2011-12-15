@@ -114,7 +114,7 @@ public class ValidationErrorView implements View {
             }
             String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
             if (fee == null || fee.equals("")) {
-                fee = Localiser.bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
+                fee = controller.getLocaliser().bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
             }
             completeMessage = completeMessage
                     + controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage",

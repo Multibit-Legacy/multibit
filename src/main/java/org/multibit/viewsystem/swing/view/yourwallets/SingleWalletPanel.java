@@ -120,7 +120,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         amountLabel = new BlinkLabel();
         amountLabel.setBackground(BACKGROUND_COLOR_NORMAL);
         amountLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
-        amountLabel.setText(Localiser.bitcoinValueToString4(perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED),
+        amountLabel.setText(controller.getLocaliser().bitcoinValueToString4(perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED),
                 true, false));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
@@ -226,7 +226,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
      * update any UI elements from the model (hint that data has changed)
      */
     public void updateFromModel() {
-        String newAmountText = Localiser.bitcoinValueToString4(
+        String newAmountText = controller.getLocaliser().bitcoinValueToString4(
                 perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED), true, false);
         if (newAmountText != null && !newAmountText.equals(amountLabel.getText())) {
             amountLabel.blink(newAmountText);
