@@ -2,9 +2,9 @@ MultiBit
 
 Developers:
 -----------
+Gary Rowe
 Jim Burton
 Jonny Heggheim
-Gary Rowe
 
 Internationalisation:
 ---------------------
