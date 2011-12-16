@@ -1,14 +1,24 @@
 MultiBit
 
-Contributors:
-
-Firstname Surname
------------------
+Developers:
+-----------
 Jim Burton
 Jonny Heggheim
-Mats Henricson
-GlobalStandardBank.com
-HostFat
-Jeffrey Perz
 Gary Rowe
-Katya Rowe
+
+Internationalisation:
+---------------------
+Azrael_PT           - Portuguese
+damnek              - Dutch
+Emin GŸn Sirer      - Turkish
+finway              - Simplified Chinese
+freemoney           - Spanish, German
+GSBank              - French
+HostFat             - Italian
+Jonny Heggheim      - Norwegian
+Katya Rowe          - Russian
+Kishor Kumar        - Hindi
+Mats Henricson      - Swedish
+raymccarthy         - Swedish
+ziomik              - Italian
+

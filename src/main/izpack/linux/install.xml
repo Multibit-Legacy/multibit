@@ -80,6 +80,7 @@
             <file src="multibit.blockchain" targetdir="$INSTALL_PATH"/>
             <file src="release_notes.txt" targetdir="$INSTALL_PATH"/>
             <file src="COPYING" targetdir="$INSTALL_PATH"/>
+            <file src="AUTHORS.txt" targetdir="$INSTALL_PATH"/>
             <file src="multibit-exe.jar" targetdir="$INSTALL_PATH"/>
         </pack>
     </packs>

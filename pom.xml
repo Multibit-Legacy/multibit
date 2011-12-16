@@ -198,6 +198,7 @@
                   <includes>
                     <include>release_notes.txt</include>
                     <include>COPYING</include>
+                    <include>AUTHORS.txt</include>
                   </includes>
                 </resource>
                 <resource>
@@ -251,6 +252,7 @@
                   <includes>
                     <include>release_notes.txt</include>
                     <include>COPYING</include>
+                    <include>AUTHORS.txt</include>
                   </includes>
                 </resource>
                 <resource>
@@ -299,7 +301,8 @@
                     <include>multibit.blockchain</include>
                     <include>release_notes.txt</include>
                     <include>COPYING</include>
-                  </includes>
+                    <include>AUTHORS.txt</include>
+                   </includes>
                 </resource>
               </resources>
             </configuration>
