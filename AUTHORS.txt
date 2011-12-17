@@ -10,7 +10,7 @@ Internationalisation:
 ---------------------
 Azrael_PT           - Portuguese
 damnek              - Dutch
-Emin GŸn Sirer      - Turkish
+Emin Gun Sirer      - Turkish
 finway              - Simplified Chinese
 freemoney           - Spanish, German
 GSBank              - French
