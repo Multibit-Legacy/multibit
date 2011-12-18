@@ -16,16 +16,21 @@ package org.multibit;
  * limitations under the License.
  */
 
+import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
+import org.multibit.qrcode.BitcoinURI;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.net.URLDecoder;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -35,26 +40,15 @@ import java.util.Properties;
  * @author jim
  */
 public class MultiBit {
-    private static Logger logger;
+    private static final Logger log = LoggerFactory.getLogger(MultiBit.class);
 
     /**
      * start multibit user interface
+     * @param args String encoding of arguments ([0]= Bitcoin URI)
      */
     public static void main(String args[]) {
-        // initialise log4j
-        logger = LoggerFactory.getLogger(MultiBit.class);
-
-        if (args != null && args.length > 0) {
-            for (int i = 0; i < args.length; i++) {
-                logger.info("Started with args[{}]: '{}'", i, args[i]);
-            }
-        }
-        
-        logger.info("Stage 1 app locator");
 
         ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
-
-        logger.info("Stage 2 the rest");
 
         // load up the user preferences
         Properties userPreferences = FileHandler.loadUserPreferences(applicationDataDirectoryLocator);
@@ -69,11 +63,11 @@ public class MultiBit {
             userPreferences.put(MultiBitModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
         }
         boolean useTestNet = MultiBitModel.TEST_NETWORK_VALUE.equals(testOrProduction);
-        logger.debug("useTestNet = " + useTestNet);
+        log.debug("useTestNet = {}" ,useTestNet);
 
         Localiser localiser;
         String userLanguageCode = userPreferences.getProperty(MultiBitModel.USER_LANGUAGE_CODE);
-        logger.debug("userLanguageCode = " + userLanguageCode);
+        log.debug("userLanguageCode = {}", userLanguageCode);
 
         if (userLanguageCode == null) {
             // no language info supplied - set to English
@@ -151,8 +145,47 @@ public class MultiBit {
             }
         }
 
-        // display the next view
-        controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
+        // Check for a valid entry on the command line (protocol handler)
+        if (args != null && args.length > 0) {
+            for (int i = 0; i < args.length; i++) {
+                log.debug("Started with args[{}]: '{}'", i, args[i]);
+            }
+            // Attempt to decode the first entry as a BitcoinURI
+            BitcoinURI bitcoinURI = new BitcoinURI(controller, args[0]);
+            if (bitcoinURI.isParsedOk()) {
+                log.debug("Parsed Bitcoin URI successfully");
+
+                // Convert the URI data into suitably formatted view data
+                String address = bitcoinURI.getAddress().toString();
+                String label="";
+                try {
+                    // No label? Set it to a blank String otherwise perform a URL decode on it just to be sure
+                    label = null == bitcoinURI.getLabel() ? "" : URLDecoder.decode(bitcoinURI.getLabel(), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    log.error("Could not decode the label in UTF-8. Unusual URI entry or platform.");
+                }
+                // No amount? Set it to zero
+                BigInteger numericAmount = null == bitcoinURI.getAmount() ? BigInteger.ZERO : bitcoinURI.getAmount();
+                String amount = controller.getLocaliser().bitcoinValueToString(numericAmount, false, false);
+
+                // Populate the model with the URI data
+                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS,address);
+                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, label);
+                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amount);
+
+                // Configure to work with the Send view
+                controller.determineNextView(ActionForward.FORWARD_TO_SEND_BITCOIN);
+            } else {
+                log.warn("Failed to parse Bitcoin URI");
+            }
+            controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
+
+        } else {
+            log.info("No Bitcoin URI provided as an argument");
+            // display the next view
+            controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
+
+        }
 
         // see if the user wants to connect to a single node
         multiBitService.downloadBlockChain();

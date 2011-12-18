@@ -20,11 +20,11 @@ public final class TextTransfer implements ClipboardOwner {
         TextTransfer textTransfer = new TextTransfer();
 
         // display what is currently on the clipboard
-        log.debug("Clipboard contains:" + textTransfer.getClipboardContents());
+        log.debug("Clipboard contains: {}", textTransfer.getClipboardContents());
 
         // change the contents and then re-display
         textTransfer.setClipboardContents("blah, blah, blah");
-        log.debug("Clipboard contains:" + textTransfer.getClipboardContents());
+        log.debug("Clipboard contains: {}", textTransfer.getClipboardContents());
     }
 
     /**

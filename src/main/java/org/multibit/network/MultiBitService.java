@@ -16,13 +16,12 @@
 
 package org.multibit.network;
 
-import java.io.File;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-
+import com.google.bitcoin.core.*;
+import com.google.bitcoin.discovery.DnsDiscovery;
+import com.google.bitcoin.discovery.IrcDiscovery;
+import com.google.bitcoin.store.BlockStore;
+import com.google.bitcoin.store.BlockStoreException;
+import com.google.bitcoin.store.BoundedOverheadBlockStore;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
@@ -30,21 +29,12 @@ import org.multibit.model.WalletInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.BlockChain;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.PeerAddress;
-import com.google.bitcoin.core.PeerGroup;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.discovery.DnsDiscovery;
-import com.google.bitcoin.discovery.IrcDiscovery;
-import com.google.bitcoin.store.BlockStore;
-import com.google.bitcoin.store.BlockStoreException;
-import com.google.bitcoin.store.BoundedOverheadBlockStore;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 /**
  * <p>
@@ -126,7 +116,7 @@ public class MultiBitService {
             // check to see if the user has a blockchain and copy over the installed one if they do not
             controller.getFileHandler().copyBlockChainFromInstallationDirectory(this, blockchainFilename);
             
-            log.debug("Reading block store '" + blockchainFilename + "' from disk");
+            log.debug("Reading block store '{}' from disk", blockchainFilename);
 
             blockStore = new BoundedOverheadBlockStore(networkParameters, new File(blockchainFilename));
 
@@ -306,7 +296,7 @@ public class MultiBitService {
         // coins than we have!
         // throw an exception if sendTransaction is null - no money
         if (sendTransaction != null) {
-            log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is " + sendTransaction.getHashAsString());
+            log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is {}", sendTransaction.getHashAsString());
 
             controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
 

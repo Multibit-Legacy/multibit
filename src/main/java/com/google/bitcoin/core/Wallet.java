@@ -208,7 +208,7 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
     @Override
     synchronized public void processPendingTransaction(Transaction transaction) {       
         if (transaction.isMine(this) && !transaction.sent(this)) {
-            log.debug("Wallet#receivePendingTransaction - received pending transaction: " + transaction);
+            log.debug("Wallet#receivePendingTransaction - received pending transaction: {}", transaction);
             // the main receive logic is not run yet - this is done when the block with this transaction is received
             transaction.setUpdatedAt(new Date());
             pending.put(transaction.getHash(), transaction);

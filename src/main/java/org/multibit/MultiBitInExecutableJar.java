@@ -16,17 +16,16 @@ package org.multibit;
  * limitations under the License.
  */
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.rolling.RollingFileAppender;
+import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.rolling.RollingFileAppender;
-import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 
 /**
  * Main MultiBit entry class for when running in an executable jar - put console
@@ -40,13 +39,24 @@ public class MultiBitInExecutableJar {
     public static final String CONSOLE_OUTPUT_FILENAME = "multibit_console.log";
     public static final String DEBUG_OUTPUT_FILENAME = "multibit_debug.log";
 
-    private static Logger log;
+    private static Logger log = LoggerFactory.getLogger(MultiBitInExecutableJar.class);
 
+    /**
+     * Start MultiBit user interface when running in a JAR
+     *
+     * @param args Any command line arguments passed in
+     */
+    public static void main(String args[]) {
+        // TODO Consider logging implications (see main2 for original)
+
+        MultiBit.main(args);
+    }
+    
     /**
      * start multibit user interface when running in a jar
      */
     @SuppressWarnings("rawtypes")
-    public static void main(String args[]) {
+    public static void main2(String args[]) {
         // TODO Refactor this to work with a different Logger appender
         // redirect the console output to a file
         PrintStream originalStream = null;

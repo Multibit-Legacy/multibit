@@ -1,45 +1,6 @@
 package org.multibit.viewsystem.swing;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Toolkit;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.math.BigInteger;
-import java.util.Timer;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ListCellRenderer;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.ToolTipManager;
-import javax.swing.border.Border;
-
+import com.google.bitcoin.core.*;
 import org.multibit.Localiser;
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
@@ -47,23 +8,8 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
-import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
-import org.multibit.viewsystem.swing.action.ExitAction;
-import org.multibit.viewsystem.swing.action.HelpAboutAction;
-import org.multibit.viewsystem.swing.action.MnemonicUtil;
-import org.multibit.viewsystem.swing.action.OpenWalletAction;
-import org.multibit.viewsystem.swing.action.ReceiveBitcoinAction;
-import org.multibit.viewsystem.swing.action.SendBitcoinAction;
-import org.multibit.viewsystem.swing.action.ShowCreateBulkAddressesAction;
-import org.multibit.viewsystem.swing.action.ShowHelpContentsAction;
-import org.multibit.viewsystem.swing.action.ShowPreferencesAction;
-import org.multibit.viewsystem.swing.action.YourWalletsAction;
-import org.multibit.viewsystem.swing.view.BlinkLabel;
-import org.multibit.viewsystem.swing.view.HeaderPanel;
-import org.multibit.viewsystem.swing.view.MultiBitButton;
-import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
-import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
-import org.multibit.viewsystem.swing.view.ViewFactory;
+import org.multibit.viewsystem.swing.action.*;
+import org.multibit.viewsystem.swing.view.*;
 import org.multibit.viewsystem.swing.view.yourwallets.YourWalletsPanel;
 import org.simplericity.macify.eawt.Application;
 import org.simplericity.macify.eawt.ApplicationEvent;
@@ -72,11 +18,13 @@ import org.simplericity.macify.eawt.DefaultApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.ScriptException;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionInput;
-import com.google.bitcoin.core.Wallet;
+import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.math.BigInteger;
+import java.util.Timer;
 
 /*
  * JFrame displaying Swing version of MultiBit
@@ -693,11 +641,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             if (view != null) {
                 view.displayMessage(messageKey, messageData, titleKey);
             } else {
-                log.debug("MultiBitFrame#displayMessage - no view with id " + currentView + " to display message with key "
-                        + messageKey);
+                log.debug("MultiBitFrame#displayMessage - no view with id {} to display message with key {}", currentView,
+                        messageKey);
             }
         } else {
-            log.debug("MultiBitFrame#displayMessage - no view on which to display message with key " + messageKey);
+            log.debug("MultiBitFrame#displayMessage - no view on which to display message with key {}", messageKey);
         }
     }
 
@@ -837,6 +785,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     // check bitcoin sent to me
                     BigInteger valueSentToMe = transaction.getValueSentToMe(perWalletModelData.getWallet());
                     if (valueSentToMe != null && valueSentToMe.compareTo(BigInteger.ZERO) > 0) {
+                        // TODO Fix this
                         logger.debug("Received " + controller.getLocaliser().bitcoinValueToString4(valueSentToMe, true, false) + " from "
                                 + from.toString() + " to wallet '" + perWalletModelData.getWalletDescription() + "'");
 
@@ -851,6 +800,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     // check bitcoin sent from me
                     BigInteger valueSentFromMe = transaction.getValueSentFromMe(perWalletModelData.getWallet());
                     if (valueSentFromMe != null && valueSentFromMe.compareTo(BigInteger.ZERO) > 0) {
+                        // TODO Fix this
                         logger.debug("Sent " + controller.getLocaliser().bitcoinValueToString4(valueSentFromMe, true, false) + " from "
                                 + from.toString() + " from wallet '" + perWalletModelData.getWalletDescription() + "'");
 
@@ -887,6 +837,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
                     BigInteger value = transaction.getValueSentToMe(perWalletModelData.getWallet());
                     if (value != null && value.compareTo(BigInteger.ZERO) > 0) {
+                        // TODO Fix this
                         logger.debug("Received " + controller.getLocaliser().bitcoinValueToString4(value, true, false) + " from "
                                 + from.toString() + " to wallet '" + perWalletModelData.getWalletDescription() + "'");
                         // the perWalletModelData is marked as transactionDirty
