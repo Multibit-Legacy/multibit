@@ -16,12 +16,6 @@ package org.multibit;
  * limitations under the License.
  */
 
-import java.util.Locale;
-import java.util.Properties;
-
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.network.FileHandler;
@@ -31,11 +25,14 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
+import java.util.Locale;
+import java.util.Properties;
+
 /**
  * Main MultiBit entry class
- * 
+ *
  * @author jim
- * 
  */
 public class MultiBit {
     private static Logger logger;
@@ -45,9 +42,19 @@ public class MultiBit {
      */
     public static void main(String args[]) {
         // initialise log4j
-        logger = LoggerFactory.getLogger(MultiBit.class.getName());
+        logger = LoggerFactory.getLogger(MultiBit.class);
+
+        if (args != null && args.length > 0) {
+            for (int i = 0; i < args.length; i++) {
+                logger.info("Started with args[{}]: '{}'", i, args[i]);
+            }
+        }
+        
+        logger.info("Stage 1 app locator");
 
         ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
+
+        logger.info("Stage 2 the rest");
 
         // load up the user preferences
         Properties userPreferences = FileHandler.loadUserPreferences(applicationDataDirectoryLocator);
