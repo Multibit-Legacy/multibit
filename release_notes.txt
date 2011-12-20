@@ -1,5 +1,12 @@
 MultiBit release notes.
 
+19 Dec 2011.   Version 0.2.0beta5
+
+Enhancements
++  Simplified Chinese, Dutch, Hindi, Portuguese and Turkish translations added.
++  Minor installer changes.
+
+
 12 Dec 2011.   Version 0.2.0beta4
 
 Enhancements

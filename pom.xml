@@ -180,15 +180,10 @@
               <outputDirectory>${staging.linux.dir}</outputDirectory>
               <resources>
                 <resource>
-                  <directory>src/main/izpack</directory>
-                  <includes>
-                    <include>readme.txt</include>
-                  </includes>
-                </resource>
-                <resource>
                   <directory>src/main/izpack/linux</directory>
                   <includes>
                     <include>install.xml</include>
+                    <include>readme.txt</include>
                     <include>Unix_shortcutSpec.xml</include>
                   </includes>
                 </resource>
@@ -209,6 +204,7 @@
                   <directory>.</directory>
                   <includes>
                     <include>release_notes.txt</include>
+                    <include>configuration.txt</include>
                     <include>COPYING</include>
                     <include>AUTHORS.txt</include>
                   </includes>
@@ -234,15 +230,10 @@
               <outputDirectory>${staging.windows.dir}</outputDirectory>
               <resources>
                 <resource>
-                  <directory>src/main/izpack</directory>
-                  <includes>
-                    <include>readme.txt</include>
-                   </includes>
-                </resource>
-                <resource>
                   <directory>src/main/izpack/windows</directory>
                   <includes>
                     <include>install.xml</include>
+                    <include>readme.txt</include>
                     <include>shortcutSpec.xml</include>
                   </includes>
                 </resource>               
@@ -263,6 +254,7 @@
                   <directory>.</directory>
                   <includes>
                     <include>release_notes.txt</include>
+                    <include>configuration.txt</include>
                     <include>COPYING</include>
                     <include>AUTHORS.txt</include>
                   </includes>
@@ -309,11 +301,17 @@
                   <directory>${basedir}/target/staging.linux</directory>
                   <includes>
                     <include>multibit-exe.jar</include>
-                    <include>readme.txt</include>
                     <include>multibit.blockchain</include>
                     <include>release_notes.txt</include>
+                    <include>configuration.txt</include>
                     <include>COPYING</include>
                     <include>AUTHORS.txt</include>
+                   </includes>
+                </resource>
+                <resource>
+                  <directory>${basedir}/src/main/izpack/mac</directory>
+                  <includes>
+                    <include>readme.txt</include>
                    </includes>
                 </resource>
               </resources>
@@ -376,7 +374,7 @@
                 <copy todir="${basedir}/target/MultiBit-mac/MultiBit.app">
                   <fileset dir="${basedir}/target/MultiBit.app" includes="**"/>                 
                 </copy>
-                <copy file="${basedir}/target/staging.linux/readme.txt" todir="${basedir}/target/MultiBit-mac"/>
+                <copy file="${basedir}/src/main/izpack/mac/readme.txt" todir="${basedir}/target/MultiBit-mac"/>
  
 
  	            <!-- Create Applications Symbolic link -->

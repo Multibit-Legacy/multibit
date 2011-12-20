@@ -1,0 +1,24 @@
+MultiBit Configuration Options:
+
+All these options are set in the main control file:
+multibit.properties
+
+
++ Connect to single node
+If you want to connect to a single node set the following 
+property:
+singleConnectionNode=<node to connect to>
+
+The node can be specified as either a domain name (www.myNode.com) 
+or an IP address.
+
+
++ Testnet
+To use the testnet set the property "testOrProductionNetwork" 
+to be "test".
+
+
++ Show the merchant menu
+To show the merchant menu set the property "showMerchantMenu" 
+to be "true".
+

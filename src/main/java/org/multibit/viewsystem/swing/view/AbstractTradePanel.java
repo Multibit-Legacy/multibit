@@ -621,7 +621,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
      */
     private void displaySwatch(String address, String amount, String label) {
         if (swatchGenerator == null) {
-            swatchGenerator = new SwatchGenerator();
+            swatchGenerator = new SwatchGenerator(controller);
         }
         try {
             BufferedImage image = swatchGenerator.generateSwatch(address, amount, label);

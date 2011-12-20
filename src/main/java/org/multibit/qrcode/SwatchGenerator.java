@@ -32,6 +32,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import org.multibit.controller.MultiBitController;
+
 import com.google.zxing.WriterException;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
@@ -81,8 +83,12 @@ public class SwatchGenerator {
     private BufferedImage emptyImage;
     private Graphics2D emptyGraphics;
     private QRCode code;
+    
+    private MultiBitController controller;
 
-    public SwatchGenerator() {
+    public SwatchGenerator(MultiBitController controller) {
+        this.controller = controller;
+        
         // graphics context - used to work out the width of the swatch
         emptyImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
         emptyGraphics = emptyImage.createGraphics();
@@ -152,7 +158,7 @@ public class SwatchGenerator {
         int addressAdvance = getAdvance(emptyGraphics, address, addressFont);
         int amountAdvance = 0;
         if (addAmount) {
-            amountAdvance = getAdvance(emptyGraphics, amount + " BTC", amountFont);
+            amountAdvance = getAdvance(emptyGraphics, amount + " " + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"), amountFont);
         }
         // convert backslash-rs to backslash-ns
         label = label.replaceAll("\r\n", "\n");
@@ -269,17 +275,17 @@ public class SwatchGenerator {
             if (addAmount) {
                 g2.setFont(amountFont);
                 // left justified
-                //g2.drawString(amount + " BTC", matrixWidth + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER, QUIET_ZONE_SIZE
+                //g2.drawString(amount + " "+ controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"), matrixWidth + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER, QUIET_ZONE_SIZE
                 //        + TOP_TEXT_INSET + labelLines.length * (labelFont.getSize() + GAP_BETWEEN_TEXT_ROWS) + amountFont.getSize());
                 
                 // bottom right justified
-                g2.drawString(amount + " BTC", swatchWidth - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - RIGHT_TEXT_INSET - amountAdvance, 
+                g2.drawString(amount + " " + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"), swatchWidth - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - RIGHT_TEXT_INSET - amountAdvance, 
                         swatchHeight - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - BOTTOM_TEXT_INSET - addressFont.getSize() - GAP_ABOVE_ADDRESS);
             }
        } else {
            if (addAmount) {
                g2.setFont(amountFont);
-               g2.drawString(amount + " BTC", matrixWidth + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER, QUIET_ZONE_SIZE
+               g2.drawString(amount + " " + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"), matrixWidth + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER, QUIET_ZONE_SIZE
                        + TOP_TEXT_INSET + amountFont.getSize());
            }
        }
@@ -300,7 +306,7 @@ public class SwatchGenerator {
     }
 
     public static void main(String[] args) {
-        SwatchGenerator swatchGenerator = new SwatchGenerator();
+        SwatchGenerator swatchGenerator = new SwatchGenerator(new MultiBitController());
         String address = "15BGmyMKxGFkejW1oyf2Gwv3NHqeUP7aWh";
         String amount = "0.423232";
         String label = "A longish label xyz";

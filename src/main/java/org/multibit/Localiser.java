@@ -27,13 +27,13 @@ public class Localiser {
 
     private static final Logger log = LoggerFactory.getLogger(Localiser.class);
 
-    public static final String MULTIBIT_RESOURCE_BUNDLE_DIRECTORY = "/i18n";
+    public static final String MULTIBIT_RESOURCE_BUNDLE_DIRECTORY =  "/i18n";
     public static final String MULTIBIT_RESOURCE_BUNDLE_NAME = "viewer";
     public static final String SEPARATOR = "_";
     public static final String PROPERTY_NAME_SUFFIX = ".properties";
     public static final String VERSION_PROPERTY_KEY_NAME = "version";
     public static final String VERSION_PROPERTIES_FILENAME = "/version.properties";
-    public static final String LANGUAGE_PROPERTIES_FILENAME = "/i18n/language.properties";
+    public static final String LANGUAGE_PROPERTIES_FILENAME = MULTIBIT_RESOURCE_BUNDLE_DIRECTORY + "/language.properties";
     
     public static final String FALLBACK_LANGUAGE_CODE = "en";
     
@@ -45,7 +45,6 @@ public class Localiser {
     private Properties languageProperties;
 
     private Locale locale;
-//    private String bundleName;
 
     private final static String MISSING_RESOURCE_TEXT = "Missing resource : ";
 
@@ -64,7 +63,6 @@ public class Localiser {
      * @param locale
      */
     public Localiser(Locale locale) {
-        //this.bundleName = MULTIBIT_RESOURCE_BUNDLE_NAME;
         formatter = new MessageFormat("");
 
         languageProperties = new Properties();
@@ -134,8 +132,8 @@ public class Localiser {
         formatter.setLocale(locale);
         this.locale = locale;
 
-        String propertyFilename = MULTIBIT_RESOURCE_BUNDLE_DIRECTORY + File.separator + locale.getLanguage() + File.separator + MULTIBIT_RESOURCE_BUNDLE_NAME + PROPERTY_NAME_SUFFIX;
-        String propertyFilenameBase = MULTIBIT_RESOURCE_BUNDLE_DIRECTORY + File.separator + FALLBACK_LANGUAGE_CODE + File.separator + MULTIBIT_RESOURCE_BUNDLE_NAME + PROPERTY_NAME_SUFFIX;
+        String propertyFilename = MULTIBIT_RESOURCE_BUNDLE_DIRECTORY + "/" + locale.getLanguage() + "/" + MULTIBIT_RESOURCE_BUNDLE_NAME + PROPERTY_NAME_SUFFIX;
+        String propertyFilenameBase = MULTIBIT_RESOURCE_BUNDLE_DIRECTORY + "/" + FALLBACK_LANGUAGE_CODE + "/" + MULTIBIT_RESOURCE_BUNDLE_NAME + PROPERTY_NAME_SUFFIX;
         boolean foundIt = false;
         try {
             InputStream inputStream = Localiser.class.getResourceAsStream(propertyFilename);

@@ -20,5 +20,6 @@ Katya Rowe          - Russian
 Kishor Kumar        - Hindi
 Mats Henricson      - Swedish
 raymccarthy         - Swedish
+technomage          - Finnish
 ziomik              - Italian
 

@@ -17,8 +17,8 @@
     -->
     <info>
         <appname>MultiBit</appname>
-        <appsubpath>MultiBit-0.2.0beta4</appsubpath>
-        <appversion>0.2.0beta4</appversion>
+        <appsubpath>MultiBit-0.2.0beta5</appsubpath>
+        <appversion>0.2.0beta5</appversion>
         <url>http://multibit.org/</url>
         <uninstaller write="yes" />
         <javaversion>1.6</javaversion>
@@ -76,9 +76,11 @@
         <pack name="MultiBit" required="yes">
             <description>MultiBit install files.</description>
             <file src="readme.txt" targetdir="$INSTALL_PATH"/>
+            <file src="configuration.txt" targetdir="$INSTALL_PATH"/>
             <file src="multibit48.png" targetdir="$INSTALL_PATH"/>
             <file src="multibit.blockchain" targetdir="$INSTALL_PATH"/>
             <file src="release_notes.txt" targetdir="$INSTALL_PATH"/>
+            <file src="configuration.txt" targetdir="$INSTALL_PATH"/>
             <file src="COPYING" targetdir="$INSTALL_PATH"/>
             <file src="AUTHORS.txt" targetdir="$INSTALL_PATH"/>
             <file src="multibit-exe.jar" targetdir="$INSTALL_PATH"/>
