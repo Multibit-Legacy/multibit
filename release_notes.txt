@@ -1,5 +1,13 @@
 MultiBit release notes.
 
+21 Dec 2011.   Version 0.2.0
+Enhancements
++  Finnish translation added.
+
+Bug fixes
++  Fixed bug where confirmations for a transaction sent intra-wallets was not always saved on exit and amount not updated.
+
+
 19 Dec 2011.   Version 0.2.0beta5
 
 Enhancements

@@ -862,6 +862,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         perWalletModelData.setTransactionDirty(true);
                         dataHasChanged = true;
                     }
+                    // check to see if the tx is mine, even though there is nothing sent to or from me
+                    // this may be a transfer intrawallet
+                    if (!dataHasChanged && transaction.isMine(perWalletModelData.getWallet())) {
+                        logger.debug("Transaction " + transaction.getHashAsString() + " is mine so wallet is marked transactionDirty  for wallet '" + perWalletModelData.getWalletDescription() + "'");
+
+                        // the perWalletModelData is marked as transactionDirty
+                        // but is not written out immediately
+                        // this is to avoid unnecessary 'Updates have stopped'
+                        // when two MultiBit have a single wallet open.
+                        // they will both get the incoming transaction
+                        perWalletModelData.setTransactionDirty(true);
+                        dataHasChanged = true;                        
+                    }
                 }
             }
             if (dataHasChanged) {
@@ -896,12 +909,41 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         // they will both get the incoming transaction
                         perWalletModelData.setTransactionDirty(true);
                         dataHasChanged = true;
+                    }
+                    // check bitcoin sent from me
+                    BigInteger valueSentFromMe = transaction.getValueSentFromMe(perWalletModelData.getWallet());
+                    if (valueSentFromMe != null && valueSentFromMe.compareTo(BigInteger.ZERO) > 0) {
+                        logger.debug("Sent " + controller.getLocaliser().bitcoinValueToString4(valueSentFromMe, true, false) + " from "
+                                + from.toString() + " from wallet '" + perWalletModelData.getWalletDescription() + "'");
 
+                        // the perWalletModelData is marked as transactionDirty
+                        // but is not written out immediately
+                        // this is to avoid unnecessary 'Updates have stopped'
+                        // when two MultiBit have a single wallet open.
+                        // they will both get the incoming transaction
+                        perWalletModelData.setTransactionDirty(true);
+                        dataHasChanged = true;
+                    }
+                    // check to see if the tx is mine, even though there is nothing sent to or from me
+                    // this may be a transfer intrawallet
+                    if (!dataHasChanged && transaction.isMine(perWalletModelData.getWallet())) {
+                        logger.debug("Transaction " + transaction.getHashAsString() + " is mine so wallet is marked transactionDirty  for wallet '" + perWalletModelData.getWalletDescription() + "'");
+
+                        // the perWalletModelData is marked as transactionDirty
+                        // but is not written out immediately
+                        // this is to avoid unnecessary 'Updates have stopped'
+                        // when two MultiBit have a single wallet open.
+                        // they will both get the incoming transaction
+                        perWalletModelData.setTransactionDirty(true);
+                        dataHasChanged = true;                        
+                    }
+                    if (dataHasChanged) {
                         if (perWalletModelData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
                             // blink the total
                             estimatedBalanceTextLabel.blink(controller.getLocaliser().bitcoinValueToString4(controller.getModel()
                                     .getActiveWalletEstimatedBalance(), true, false));
                         }
+
                     }
                 }
             }

@@ -99,8 +99,8 @@ public class FileHandler {
      */
     public void savePerWalletModelData(PerWalletModelData perWalletModelData, boolean forceWrite) {
 
-//        log.info("Wallet details for wallet file = " + perWalletModelData.getWalletFilename() + "\n"
-//                + perWalletModelData.getWallet().toString());
+        //log.info("Wallet details for wallet file = " + perWalletModelData.getWalletFilename() + "\n"
+        //        + perWalletModelData.getWallet().toString());
 
         try {
             if (perWalletModelData == null) {

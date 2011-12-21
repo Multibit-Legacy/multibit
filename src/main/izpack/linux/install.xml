@@ -17,8 +17,8 @@
     -->
     <info>
         <appname>MultiBit</appname>
-        <appsubpath>MultiBit-0.2.0beta5</appsubpath>
-        <appversion>0.2.0beta5</appversion>
+        <appsubpath>MultiBit-0.2.0</appsubpath>
+        <appversion>0.2.0</appversion>
         <url>http://multibit.org/</url>
         <uninstaller write="yes" />
         <javaversion>1.6</javaversion>

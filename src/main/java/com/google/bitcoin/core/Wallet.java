@@ -211,6 +211,11 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
             log.debug("Wallet#receivePendingTransaction - received pending transaction: " + transaction);
             // the main receive logic is not run yet - this is done when the block with this transaction is received
             transaction.setUpdatedAt(new Date());
+            
+            // mark all the transaction outputs as being unspent (with respect to this wallet)
+            for (TransactionOutput transactionOutput : transaction.getOutputs()) {
+                transactionOutput.markAsUnspent();
+            }
             pending.put(transaction.getHash(), transaction);
             
             // notify listeners
@@ -254,6 +259,8 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
         boolean bestChain = blockType == BlockChain.NewBlockType.BEST_CHAIN;
         boolean sideChain = blockType == BlockChain.NewBlockType.SIDE_CHAIN;
 
+        boolean spendToMyself = false;
+        
         BigInteger valueSentFromMe = tx.getValueSentFromMe(this);
         BigInteger valueSentToMe = tx.getValueSentToMe(this);
         BigInteger valueDifference = valueSentToMe.subtract(valueSentFromMe);
@@ -285,6 +292,7 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
                     // anonymization purposes).
                     log.info("  ->unspent");
                     boolean alreadyPresent = unspent.put(wtx.getHash(), wtx) != null;
+                    spendToMyself = true;
                     assert !alreadyPresent : "TX in both pending and unspent pools";
                 }
             } else if (sideChain) {
@@ -323,7 +331,7 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
         // Inform anyone interested that we have new coins. Note: we may be re-entered by the event listener,
         // so we must not make assumptions about our state after this loop returns! For example the balance we just
         // received might already be spent!
-        if (!reorg && bestChain && valueDifference.compareTo(BigInteger.ZERO) > 0) {
+        if (!reorg && bestChain && (valueDifference.compareTo(BigInteger.ZERO) > 0 || spendToMyself)) {
             for (WalletEventListener l : eventListeners) {
                 synchronized (l) {
                     l.onCoinsReceived(this, tx, prevBalance, getBalance());
@@ -644,7 +652,8 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
             return null;
         if (!peerGroup.broadcastTransaction(tx)) {
             throw new IOException("Failed to broadcast tx to all connected peers");
-        }        confirmSend(tx);
+        }        
+        confirmSend(tx);
         return tx;
     }
 
