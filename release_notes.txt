@@ -1,6 +1,6 @@
 MultiBit release notes.
 
-21 Dec 2011.   Version 0.2.0
+22 Dec 2011.   Version 0.2.0
 Enhancements
 +  Finnish translation added.
 

@@ -19,7 +19,9 @@ Jonny Heggheim      - Norwegian
 Katya Rowe          - Russian
 Kishor Kumar        - Hindi
 Mats Henricson      - Swedish
+mrmx                - Spanish
 raymccarthy         - Swedish
 technomage          - Finnish
+Piotr Waskiewicz    - Polish
 ziomik              - Italian
 
