@@ -14,7 +14,6 @@ import org.multibit.viewsystem.swing.view.yourwallets.YourWalletsPanel;
 import org.simplericity.macify.eawt.Application;
 import org.simplericity.macify.eawt.ApplicationEvent;
 import org.simplericity.macify.eawt.ApplicationListener;
-import org.simplericity.macify.eawt.DefaultApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,9 +104,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static final int TOOLTIP_DISMISSAL_DELAY = 10000; // millisecs
 
     /**
-     * Macify integration on a Mac
+     * Provide the Application reference during construction
      */
-    private Application application;
+    private final Application application;
 
     /**
      * the panel containing the main view
@@ -130,11 +129,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private JPanel headerPanel;
 
     @SuppressWarnings("deprecation")
-    public MultiBitFrame(MultiBitController controller) {
+    public MultiBitFrame(MultiBitController controller, Application application) {
         this.controller = controller;
         this.model = controller.getModel();
         this.localiser = controller.getLocaliser();
         this.thisFrame = this;
+        this.application=application;
 
         setCursor(Cursor.WAIT_CURSOR);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -150,11 +150,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 exitAction.execute(null);
             }
         });
-
-        /**
-         * initialise Macify application (Mac integration
-         */
-        application = new DefaultApplication();
 
         getContentPane().setBackground(MultiBitFrame.BACKGROUND_COLOR);
         sizeAndCenter();
@@ -534,12 +529,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         setJMenuBar(menuBar);
 
-        if (application.isMac()) {
-            // register Preferences handler
-            application.addApplicationListener(this);
-            application.addPreferencesMenuItem();
-            application.setEnabledPreferencesMenu(true);
-        }
+        // TODO Re-instate this
+//        if (application.isMac()) {
+//            // register Preferences handler
+//            application.addApplicationListener(this);
+//            application.addPreferencesMenuItem();
+//            application.setEnabledPreferencesMenu(true);
+//        }
         return toolBarPanel;
     }
 

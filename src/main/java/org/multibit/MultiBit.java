@@ -21,9 +21,13 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
+import org.multibit.protocolhandler.GenericApplication;
+import org.multibit.protocolhandler.GenericApplicationFactory;
 import org.multibit.qrcode.BitcoinURI;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.simplericity.macify.eawt.Application;
+import org.simplericity.macify.eawt.DefaultApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +52,13 @@ public class MultiBit {
      */
     public static void main(String args[]) {
 
+        log.info("Starting generic application");
+        GenericApplication genericApplication = GenericApplicationFactory.INSTANCE.buildGenericApplication();
+        
+        log.info("Starting DefaultApplication");
+        // Configure the URI listener for different platforms
+        Application application = new DefaultApplication();
+        
         ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
 
         // load up the user preferences
@@ -82,10 +93,13 @@ public class MultiBit {
         }
         controller.setLocaliser(localiser);
 
+        log.debug("Creating model");
+
         // create the model and put it in the controller
         MultiBitModel model = new MultiBitModel(controller, userPreferences);
         controller.setModel(model);
 
+        log.debug("Setting look and feel");
         try {
             // Set System L&F
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -99,15 +113,20 @@ public class MultiBit {
             // carry on
         }
 
+        log.debug("Creating views");
         // create the view systems
         // add the swing view system
-        ViewSystem swingViewSystem = new MultiBitFrame(controller);
+        ViewSystem swingViewSystem = new MultiBitFrame(controller,application);
+
+        log.debug("Registering with controller");
         controller.registerViewSystem(swingViewSystem);
 
+        log.debug("Creating Bitcoin service");
         // create the MultiBitService that connects to the bitcoin network
         MultiBitService multiBitService = new MultiBitService(useTestNet, controller);
         controller.setMultiBitService(multiBitService);
 
+        log.debug("Locating wallets");
         // find the active wallet filename in the multibit.properties
         String activeWalletFilename = userPreferences.getProperty(MultiBitModel.ACTIVE_WALLET_FILENAME);
 
@@ -145,6 +164,7 @@ public class MultiBit {
             }
         }
 
+        log.debug("Checking for Bitcoin URI on command line");
         // Check for a valid entry on the command line (protocol handler)
         if (args != null && args.length > 0) {
             for (int i = 0; i < args.length; i++) {
@@ -187,6 +207,7 @@ public class MultiBit {
 
         }
 
+        log.debug("Downloading blockchain");
         // see if the user wants to connect to a single node
         multiBitService.downloadBlockChain();
     }

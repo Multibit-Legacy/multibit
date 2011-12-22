@@ -45,11 +45,6 @@
       <snapshots/>
       <url>http://nexus.bitcoinj.org/content/repositories/snapshots</url>
     </repository>
-    <repository>
-      <id>macify</id>
-      <name>org.simplericity.macify</name>
-      <url>http://simplericity.org/repository/</url>
-    </repository>
     <!-- zxing repo -->
 	<repository>
       <id>mvn-adamgent</id>
