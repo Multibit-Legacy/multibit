@@ -1,5 +1,7 @@
 package org.multibit.protocolhandler.builders;
 
+import org.multibit.protocolhandler.GenericApplicationSpecification;
+
 /**
  * <p>Builder to provide the following to {@link org.multibit.protocolhandler.GenericApplicationFactory}:</p>
  * <ul>
@@ -10,7 +12,7 @@ package org.multibit.protocolhandler.builders;
  *         
  */
 public class UnknownApplicationBuilder {
-    public UnknownApplication build() {
+    public UnknownApplication build(GenericApplicationSpecification specification) {
         return new UnknownApplication();
     }
 }

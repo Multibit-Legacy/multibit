@@ -1,8 +1,8 @@
 package org.multibit.protocolhandler.builders;
 
 import org.multibit.protocolhandler.GenericApplication;
-import org.multibit.protocolhandler.GenericOpenURIHandler;
-import org.multibit.protocolhandler.GenericURIEvent;
+import org.multibit.protocolhandler.handlers.GenericOpenURIHandler;
+import org.multibit.protocolhandler.handlers.GenericOpenURIEvent;
 import org.simplericity.macify.eawt.ApplicationEvent;
 import org.simplericity.macify.eawt.ApplicationListener;
 import org.slf4j.Logger;
@@ -33,6 +33,7 @@ public class MacApplication implements GenericApplication {
     private static final Logger log = LoggerFactory.getLogger(MacApplication.class);
 
     private Object nativeApplication;
+    // TODO Remove this
     private Class nativeApplicationListenerClass;
     private Class nativeOpenURIHandlerClass;
 
@@ -57,7 +58,7 @@ public class MacApplication implements GenericApplication {
 
     public void addOpenURIHandler(GenericOpenURIHandler openURIHandler) {
 
-        log.info("Adding OpenURIHandler");
+        log.debug("Adding GenericOpenURIHandler");
         // Ensure the implementing class is public
         // This avoids anonymous interface issues
         if (!Modifier.isPublic(openURIHandler.getClass().getModifiers())) {
@@ -71,8 +72,11 @@ public class MacApplication implements GenericApplication {
                 new Class[]{nativeOpenURIHandlerClass},
                 new OpenURIHandlerInvocationHandler(openURIHandler));
 
-        // Call application.setOpenURIHandler(nativeOpenURIHandler)
+        // Reflective call as application.setOpenURIHandler(nativeOpenURIHandler)
+        // nativeOpenURIHandler is a proxy that actually uses the generic handler
         callMethod(nativeApplication, "setOpenURIHandler", new Class[]{nativeOpenURIHandlerClass}, new Object[]{nativeOpenURIHandler});
+
+        log.debug("GenericOpenURIHandler configured");
 
         // Keep track of this handler
         handlerMap.put(openURIHandler, nativeOpenURIHandler);
@@ -327,16 +331,18 @@ public class MacApplication implements GenericApplication {
         return null;
     }
 
-    private Object callMethod(String methodname) {
-        return callMethod(nativeApplication, methodname, new Class[0], new Object[0]);
+    private Object callMethod(String methodName) {
+        return callMethod(nativeApplication, methodName, new Class[0], new Object[0]);
     }
 
-    private Object callMethod(Object object, String methodname) {
-        return callMethod(object, methodname, new Class[0], new Object[0]);
+    private Object callMethod(Object object, String methodName) {
+        return callMethod(object, methodName, new Class[0], new Object[0]);
     }
 
-    private Object callMethod(Object object, String methodname, Class[] classes, Object[] arguments) {
+    private Object callMethod(Object object, String methodName, Class[] classes, Object[] arguments) {
+        log.debug("Calling methodName {}",methodName);
         try {
+            // Build a suitable Class[] for the method signature based on the arguments
             if (classes == null) {
                 classes = new Class[arguments.length];
                 for (int i = 0; i < classes.length; i++) {
@@ -344,8 +350,8 @@ public class MacApplication implements GenericApplication {
 
                 }
             }
-            Method addListnerMethod = object.getClass().getMethod(methodname, classes);
-            return addListnerMethod.invoke(object, arguments);
+            Method addListenerMethod = object.getClass().getMethod(methodName, classes);
+            return addListenerMethod.invoke(object, arguments);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         } catch (IllegalAccessException e) {
@@ -401,13 +407,17 @@ class OpenURIHandlerInvocationHandler implements InvocationHandler {
      */
     public Object invoke(Object object, Method nativeMethod, Object[] objects) throws Throwable {
 
-        log.info("Invoked object={}, nativeMethod={}, objects length={}", new Object[] {object, nativeMethod.getName(), objects.length});
+        log.debug("Invoked nativeMethod={}, method args length={}", nativeMethod.getName(), objects.length);
         // Create a generic event using the object parameters
-        GenericURIEvent event = createGenericURIEvent(objects[0]);
+        GenericOpenURIEvent event = createGenericURIEvent(objects[0]);
         try {
-            // Access the equivalent method on the generic handler (e.g. openURI(GenericUIEvent event))
-            Method method = openURIHandler.getClass().getMethod(nativeMethod.getName(), new Class[]{GenericURIEvent.class});
+            log.debug("Created GenericOpenURIEvent");
+
+            // Access the equivalent method on the generic handler (e.g. openURI(GenericOpenURIEvent event))
+            Method method = openURIHandler.getClass().getMethod(nativeMethod.getName(), new Class[]{GenericOpenURIEvent.class});
+
             // Invoke the method passing in the event (e.g. GenericURIEvent)
+            log.debug("Invoking {}.{}({}) ",new Object[] {openURIHandler.getClass().getSimpleName(), method.getName(), method.getParameterTypes()[0].getSimpleName()});
             return method.invoke(openURIHandler, event);
         } catch (NoSuchMethodException e) {
             log.warn("Got a NoSuchMethodException");
@@ -419,25 +429,29 @@ class OpenURIHandlerInvocationHandler implements InvocationHandler {
     }
 
     /**
-     * <p>Create a proxy instance of {@link GenericURIEvent} that delegates to the native Apple OpenURIEvent</p>
+     * <p>Create a proxy instance of {@link org.multibit.protocolhandler.handlers.GenericOpenURIEvent}
+     * that delegates to the native Apple OpenURIEvent</p>
      * @param nativeOpenURIEvent The Apple native OpenURIEvent
      * @return The generic URI event acting as a proxy
      */
-    private GenericURIEvent createGenericURIEvent(final Object nativeOpenURIEvent) {
+    private GenericOpenURIEvent createGenericURIEvent(final Object nativeOpenURIEvent) {
         log.debug("Building invocation handler against object {}",nativeOpenURIEvent);
         // The invocation handler manages all method calls against the proxy
         // Relies on the proxy having the same method signatures
         InvocationHandler invocationHandler = new InvocationHandler() {
             public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
-                log.debug("Invoking method {} with argument[0]={}",method.getName(),objects[0]);
-                return nativeOpenURIEvent.getClass().getMethod(method.getName(), method.getParameterTypes()).invoke(nativeOpenURIEvent, objects);
+                log.debug("GenericOpenURIEvent called");
+                Method nativeMethod=nativeOpenURIEvent.getClass().getMethod(method.getName(), method.getParameterTypes());
+                log.debug("Invoking method {}.{}",nativeOpenURIEvent.getClass().getSimpleName(),method.getName());
+                return nativeMethod.invoke(nativeOpenURIEvent, objects);
             }
         };
 
+        log.debug("Building proxy for GenericOpenURIEvent");
         // Create a proxy that delegates the call to the native instance
         // when the invocation handler is called against it's methods
-        return (GenericURIEvent) Proxy.newProxyInstance(getClass().getClassLoader(),
-                new Class[]{GenericURIEvent.class}, invocationHandler);
+        return (GenericOpenURIEvent) Proxy.newProxyInstance(getClass().getClassLoader(),
+                new Class[]{GenericOpenURIEvent.class}, invocationHandler);
     }
 
 }

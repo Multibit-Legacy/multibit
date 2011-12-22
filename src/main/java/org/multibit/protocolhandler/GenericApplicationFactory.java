@@ -15,50 +15,52 @@ public enum GenericApplicationFactory {
     INSTANCE;
 
     /**
+     * This method must be synchronized to ensure that it completes before any OS events come in
      * @return A {@link GenericApplication} appropriate for the current execution platform
+     * @param specification The specification providing all the listeners
      */
-    public GenericApplication buildGenericApplication() {
+    public synchronized GenericApplication buildGenericApplication(GenericApplicationSpecification specification) {
         // Determine the current platform
         if (OSUtils.isMac()) {
-            return buildMacApplication();
+            return buildMacApplication(specification);
         }
         if (OSUtils.isLinux()) {
-            return buildLinuxApplication();
+            return buildLinuxApplication(specification);
         }
         if (OSUtils.isSolaris()) {
-            return buildSolarisApplication();
+            return buildSolarisApplication(specification);
         }
         if (OSUtils.isUnix()) {
-            return buildUnixApplication();
+            return buildUnixApplication(specification);
         }
         if (OSUtils.isWindows()) {
-            return buildWindowsApplication();
+            return buildWindowsApplication(specification);
         }
-        return buildUnknownApplication();
+        return buildUnknownApplication(specification);
     }
 
-    private GenericApplication buildLinuxApplication() {
-        return new LinuxApplicationBuilder().build();
+    private GenericApplication buildLinuxApplication(GenericApplicationSpecification specification) {
+        return new LinuxApplicationBuilder().build(specification);
     }
 
-    private GenericApplication buildMacApplication() {
-        return new MacApplicationBuilder().build();
+    private GenericApplication buildMacApplication(GenericApplicationSpecification specification) {
+        return new MacApplicationBuilder().build(specification);
     }
 
-    private GenericApplication buildSolarisApplication() {
-        return new SolarisApplicationBuilder().build();
+    private GenericApplication buildSolarisApplication(GenericApplicationSpecification specification) {
+        return new SolarisApplicationBuilder().build(specification);
     }
 
-    private GenericApplication buildUnixApplication() {
-        return new UnixApplicationBuilder().build();
+    private GenericApplication buildUnixApplication(GenericApplicationSpecification specification) {
+        return new UnixApplicationBuilder().build(specification);
     }
 
-    private GenericApplication buildWindowsApplication() {
-        return new WindowsApplicationBuilder().build();
+    private GenericApplication buildWindowsApplication(GenericApplicationSpecification specification) {
+        return new WindowsApplicationBuilder().build(specification);
     }
 
-    private GenericApplication buildUnknownApplication() {
-        return new UnknownApplicationBuilder().build();
+    private GenericApplication buildUnknownApplication(GenericApplicationSpecification specification) {
+        return new UnknownApplicationBuilder().build(specification);
     }
 
 }

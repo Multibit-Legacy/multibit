@@ -11,17 +11,9 @@ public class ApplicationDataDirectoryLocator {
     
     private static final Logger log = LoggerFactory.getLogger(ApplicationDataDirectoryLocator.class);
 
-    private static final Logger log2 = LoggerFactory.getLogger(MultiBit.class);
-
     public ApplicationDataDirectoryLocator() {
         applicationDataDirectory = getApplicationDataDirectory();
-        log.debug("Level 1");
-        log.info("Application data directory = '" + applicationDataDirectory + "'");
-        log.warn("Level 3");
-        log2.debug("Level 1 - mb");
-        log2.info("Level 2 - mb");
-        log2.warn("Level 3 - mb");
-        log2.error("Level 4 - mb");
+        log.info("Application data directory = '{}'",applicationDataDirectory);
     }
     
     /**

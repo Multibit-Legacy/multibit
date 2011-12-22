@@ -16,14 +16,13 @@ package org.multibit;
  * limitations under the License.
  */
 
-import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
-import org.multibit.protocolhandler.GenericApplication;
 import org.multibit.protocolhandler.GenericApplicationFactory;
-import org.multibit.qrcode.BitcoinURI;
+import org.multibit.protocolhandler.GenericApplicationSpecification;
+import org.multibit.protocolhandler.handlers.GenericOpenURIEvent;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.simplericity.macify.eawt.Application;
@@ -32,9 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.net.URLDecoder;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -52,13 +50,8 @@ public class MultiBit {
      */
     public static void main(String args[]) {
 
-        log.info("Starting generic application");
-        GenericApplication genericApplication = GenericApplicationFactory.INSTANCE.buildGenericApplication();
-        
         log.info("Starting DefaultApplication");
-        // Configure the URI listener for different platforms
-        Application application = new DefaultApplication();
-        
+
         ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
 
         // load up the user preferences
@@ -66,6 +59,16 @@ public class MultiBit {
 
         // create the controller
         MultiBitController controller = new MultiBitController(userPreferences, applicationDataDirectoryLocator);
+
+        log.info("Configuring native event handling");
+        GenericApplicationSpecification specification = new GenericApplicationSpecification();
+        specification.getOpenURIEventListeners().add(controller);
+        // We don't need to keep track of the application since we've added all our listeners
+        GenericApplicationFactory.INSTANCE.buildGenericApplication(specification);
+
+        // TODO Remove this
+        // Configure the URI listener for different platforms
+        Application application = new DefaultApplication();
 
         // if test or production is not specified, default to production
         String testOrProduction = userPreferences.getProperty(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
@@ -114,8 +117,6 @@ public class MultiBit {
         }
 
         log.debug("Creating views");
-        // create the view systems
-        // add the swing view system
         ViewSystem swingViewSystem = new MultiBitFrame(controller,application);
 
         log.debug("Registering with controller");
@@ -147,6 +148,7 @@ public class MultiBit {
                     for (int i = 1; i <= numberOfWallets; i++) {
                         // load up ith wallet filename
                         String loopWalletFilename = userPreferences.getProperty(MultiBitModel.WALLET_FILENAME_PREFIX + i);
+                        log.debug("Loading wallet from '{}'",loopWalletFilename);
                         if (activeWalletFilename != null && activeWalletFilename.equals(loopWalletFilename)) {
                             controller.addWalletFromFilename(loopWalletFilename);
                             controller.getModel().setActiveWalletByFilename(loopWalletFilename);
@@ -170,35 +172,23 @@ public class MultiBit {
             for (int i = 0; i < args.length; i++) {
                 log.debug("Started with args[{}]: '{}'", i, args[i]);
             }
-            // Attempt to decode the first entry as a BitcoinURI
-            BitcoinURI bitcoinURI = new BitcoinURI(controller, args[0]);
-            if (bitcoinURI.isParsedOk()) {
-                log.debug("Parsed Bitcoin URI successfully");
-
-                // Convert the URI data into suitably formatted view data
-                String address = bitcoinURI.getAddress().toString();
-                String label="";
-                try {
-                    // No label? Set it to a blank String otherwise perform a URL decode on it just to be sure
-                    label = null == bitcoinURI.getLabel() ? "" : URLDecoder.decode(bitcoinURI.getLabel(), "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    log.error("Could not decode the label in UTF-8. Unusual URI entry or platform.");
-                }
-                // No amount? Set it to zero
-                BigInteger numericAmount = null == bitcoinURI.getAmount() ? BigInteger.ZERO : bitcoinURI.getAmount();
-                String amount = controller.getLocaliser().bitcoinValueToString(numericAmount, false, false);
-
-                // Populate the model with the URI data
-                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS,address);
-                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, label);
-                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amount);
-
-                // Configure to work with the Send view
-                controller.determineNextView(ActionForward.FORWARD_TO_SEND_BITCOIN);
-            } else {
-                log.warn("Failed to parse Bitcoin URI");
+            final URI uri;
+            try {
+                log.debug("Treating '{}' as a Bitcoin URI",args[0]);
+                // Construct an OpenURIEvent to simulate receiving this from a listener
+                uri=new URI(args[0]);
+                GenericOpenURIEvent event = new GenericOpenURIEvent() {
+                    @Override
+                    public URI getURI() {
+                        return uri;
+                    }
+                };
+                // Call the event which will attempt validation against the Bitcoin URI specification
+                controller.onOpenURIEvent(event);
+            } catch (URISyntaxException e) {
+                log.error("URI is malformed. Received: '{}'",args[0]);
             }
-            controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
+
 
         } else {
             log.info("No Bitcoin URI provided as an argument");
@@ -206,6 +196,12 @@ public class MultiBit {
             controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
 
         }
+
+        // Indicate to the application that startup has completed
+        controller.setApplicationStarting(false);
+
+        // Check for any pending URI operations
+        controller.handleOpenURI();
 
         log.debug("Downloading blockchain");
         // see if the user wants to connect to a single node

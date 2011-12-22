@@ -3,6 +3,7 @@ package org.multibit.protcolhandler.builders;
 import org.junit.Test;
 import org.multibit.protocolhandler.GenericApplication;
 import org.multibit.protocolhandler.GenericApplicationFactory;
+import org.multibit.protocolhandler.GenericApplicationSpecification;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -13,7 +14,8 @@ public class GenericApplicationFactoryTest {
      */
     @Test
     public void testMac() {
-        GenericApplication testObject = GenericApplicationFactory.INSTANCE.buildGenericApplication();
+        GenericApplicationSpecification specification = new GenericApplicationSpecification();
+        GenericApplication testObject = GenericApplicationFactory.INSTANCE.buildGenericApplication(specification);
 
         assertNotNull(testObject);
 

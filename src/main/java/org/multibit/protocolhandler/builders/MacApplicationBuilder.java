@@ -1,7 +1,10 @@
 package org.multibit.protocolhandler.builders;
 
-import org.multibit.protocolhandler.DefaultOpenURIHandler;
 import org.multibit.protocolhandler.GenericApplication;
+import org.multibit.protocolhandler.GenericApplicationSpecification;
+import org.multibit.protocolhandler.handlers.DefaultOpenURIHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -24,9 +27,7 @@ import java.net.URLClassLoader;
  */
 public class MacApplicationBuilder {
 
-
-
-
+    private static final Logger log = LoggerFactory.getLogger(MacApplicationBuilder.class);
 
     /**
      * <p>Builds either a {@link GenericApplication} if the platform does not provide EAWT support, or a {@link MacApplication} if it does.</p>
@@ -41,7 +42,7 @@ public class MacApplicationBuilder {
      *  });
      *  
      *  application.setOpenURIHandler(new OpenURIHandler() {
-     *      void openFiles(AppEvent.OpenFilesEvent event) {
+     *      void openURI(AppEvent.OpenURIEvent event) {
      *          // Fire the internal open file event
      *      }
      *  });
@@ -53,8 +54,9 @@ public class MacApplicationBuilder {
      *  });
      * </pre>
      * @return A {@link GenericApplication}
+     * @param specification The specification containing the listeners
      */
-    public GenericApplication build() {
+    public GenericApplication build(GenericApplicationSpecification specification) {
 
         Object nativeApplication;
         Class nativeApplicationListenerClass;
@@ -89,25 +91,35 @@ public class MacApplicationBuilder {
             nativeOpenURIHandlerClass = Class.forName("com.apple.eawt.OpenURIHandler");
 
         } catch (ClassNotFoundException e) {
-            nativeApplication = null;
-            return new UnknownApplicationBuilder().build();
+            return new UnknownApplicationBuilder().build(specification);
         } catch (IllegalAccessException e) {
-            return new UnknownApplicationBuilder().build();
+            return new UnknownApplicationBuilder().build(specification);
         } catch (NoSuchMethodException e) {
-            return new UnknownApplicationBuilder().build();
+            return new UnknownApplicationBuilder().build(specification);
         } catch (InvocationTargetException e) {
-            return new UnknownApplicationBuilder().build();
+            return new UnknownApplicationBuilder().build(specification);
         } catch (MalformedURLException e) {
-            return new UnknownApplicationBuilder().build();
+            return new UnknownApplicationBuilder().build(specification);
         }
         
         // Must have successfully configured the EAWT library to be here
-        
+
+        log.debug("Found EAWT libraries so building native bridge");
         MacApplication macApplication = new MacApplication();
         macApplication.setApplication(nativeApplication);
         macApplication.setOpenURIHandlerClass(nativeOpenURIHandlerClass);
-        macApplication.addOpenURIHandler(new DefaultOpenURIHandler());
-        
+
+        // Create and configure the default handlers that simply broadcast
+        // the events back to their listeners
+
+        // Open URI handler
+        log.debug("Adding the DefaultOpenURIHandler");
+        DefaultOpenURIHandler openURIHandler = new DefaultOpenURIHandler();
+        openURIHandler.addListeners(specification.getOpenURIEventListeners());
+        macApplication.addOpenURIHandler(openURIHandler);
+
+        // TODO Add the rest later
+
         return macApplication;
 
     }
