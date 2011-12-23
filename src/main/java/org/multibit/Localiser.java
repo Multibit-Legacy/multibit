@@ -4,7 +4,6 @@ import com.google.bitcoin.core.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,7 +59,6 @@ public class Localiser {
      * create a Localiser using a ResourceBundle based on the specified
      * 'bundleName' with Locale 'locale'
      * 
-     * @param bundleName
      * @param locale
      */
     public Localiser(Locale locale) {
@@ -134,8 +132,8 @@ public class Localiser {
         formatter.setLocale(locale);
         this.locale = locale;
 
-        String propertyFilename = MULTIBIT_RESOURCE_BUNDLE_DIRECTORY + File.separator + locale.getLanguage() + File.separator + MULTIBIT_RESOURCE_BUNDLE_NAME + PROPERTY_NAME_SUFFIX;
-        String propertyFilenameBase = MULTIBIT_RESOURCE_BUNDLE_DIRECTORY + File.separator + FALLBACK_LANGUAGE_CODE + File.separator + MULTIBIT_RESOURCE_BUNDLE_NAME + PROPERTY_NAME_SUFFIX;
+        String propertyFilename = MULTIBIT_RESOURCE_BUNDLE_DIRECTORY + "/" + locale.getLanguage() + "/" + MULTIBIT_RESOURCE_BUNDLE_NAME + PROPERTY_NAME_SUFFIX;
+        String propertyFilenameBase = MULTIBIT_RESOURCE_BUNDLE_DIRECTORY + "/" + FALLBACK_LANGUAGE_CODE + "/" + MULTIBIT_RESOURCE_BUNDLE_NAME + PROPERTY_NAME_SUFFIX;
         boolean foundIt = false;
         try {
             InputStream inputStream = Localiser.class.getResourceAsStream(propertyFilename);

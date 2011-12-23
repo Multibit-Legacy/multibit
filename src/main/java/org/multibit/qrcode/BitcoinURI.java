@@ -90,8 +90,11 @@ public class BitcoinURI {
                     // Trap broken URI (e.g. "bitcoin:")
                     if (!"".equals(uriString.trim())) {
                         address = new Address(controller.getMultiBitService().getNetworkParameters(), uriString);
-                        parsedOk = true; // we are done
-                        log.debug("BitcoinURI - Ping 1");
+                        parsedOk = true;
+                    }
+                    // Trap Windows performing a URLDecode in advance
+                    if (uriString.contains(" ")) {
+
                     }
                 } catch (final AddressFormatException x) {
                     // do nothing

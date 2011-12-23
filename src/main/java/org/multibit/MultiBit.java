@@ -30,8 +30,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -45,6 +47,7 @@ public class MultiBit {
 
     /**
      * start multibit user interface
+     *
      * @param args String encoding of arguments ([0]= Bitcoin URI)
      */
     public static void main(String args[]) {
@@ -74,7 +77,7 @@ public class MultiBit {
             userPreferences.put(MultiBitModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
         }
         boolean useTestNet = MultiBitModel.TEST_NETWORK_VALUE.equals(testOrProduction);
-        log.debug("useTestNet = {}" ,useTestNet);
+        log.debug("useTestNet = {}", useTestNet);
 
         Localiser localiser;
         String userLanguageCode = userPreferences.getProperty(MultiBitModel.USER_LANGUAGE_CODE);
@@ -114,7 +117,7 @@ public class MultiBit {
         }
 
         log.debug("Creating views");
-        ViewSystem swingViewSystem = new MultiBitFrame(controller,genericApplication);
+        ViewSystem swingViewSystem = new MultiBitFrame(controller, genericApplication);
 
         log.debug("Registering with controller");
         controller.registerViewSystem(swingViewSystem);
@@ -145,7 +148,7 @@ public class MultiBit {
                     for (int i = 1; i <= numberOfWallets; i++) {
                         // load up ith wallet filename
                         String loopWalletFilename = userPreferences.getProperty(MultiBitModel.WALLET_FILENAME_PREFIX + i);
-                        log.debug("Loading wallet from '{}'",loopWalletFilename);
+                        log.debug("Loading wallet from '{}'", loopWalletFilename);
                         if (activeWalletFilename != null && activeWalletFilename.equals(loopWalletFilename)) {
                             controller.addWalletFromFilename(loopWalletFilename);
                             controller.getModel().setActiveWalletByFilename(loopWalletFilename);
@@ -169,11 +172,27 @@ public class MultiBit {
             for (int i = 0; i < args.length; i++) {
                 log.debug("Started with args[{}]: '{}'", i, args[i]);
             }
-            final URI uri;
+            String rawURI = args[0];
             try {
-                log.debug("Treating '{}' as a Bitcoin URI",args[0]);
+                // Attempt to detect if the command line URI is valid
+                // Note that this is largely because IE6-8 strip URL encoding when passing in
+                // URIs to a protocol handler
+                // However, there is also the chance that anyone could hand-craft a URI and pass
+                // it in with non-ASCII character encoding present in the label
+                // This a really limited approach (no consideration of "amount=10.0&label=Black & White")
+                // but should be OK for early use cases
+                int queryParamIndex = rawURI.indexOf("?");
+                if (queryParamIndex > 0 && !rawURI.contains("%")) {
+                    // Possibly encoded but more likely not
+                    String encodedQueryParams = URLEncoder.encode(rawURI.substring(queryParamIndex + 1), "UTF-8");
+                    rawURI = rawURI.substring(0, queryParamIndex) + "?" + encodedQueryParams;
+                    rawURI = rawURI.replaceAll("%3D", "=");
+                    rawURI = rawURI.replaceAll("%26", "&");
+                }
+                final URI uri;
+                log.debug("Working with '{}' as a Bitcoin URI", rawURI);
                 // Construct an OpenURIEvent to simulate receiving this from a listener
-                uri=new URI(args[0]);
+                uri = new URI(rawURI);
                 GenericOpenURIEvent event = new GenericOpenURIEvent() {
                     @Override
                     public URI getURI() {
@@ -183,10 +202,10 @@ public class MultiBit {
                 // Call the event which will attempt validation against the Bitcoin URI specification
                 controller.onOpenURIEvent(event);
             } catch (URISyntaxException e) {
-                log.error("URI is malformed. Received: '{}'",args[0]);
+                log.error("URI is malformed. Received: '{}'", args[0]);
+            } catch (UnsupportedEncodingException e) {
+                log.error("UTF=8 is not supported on this platform");
             }
-
-
         } else {
             log.debug("No Bitcoin URI provided as an argument");
             // display the next view

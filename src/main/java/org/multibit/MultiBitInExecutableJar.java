@@ -41,6 +41,11 @@ public class MultiBitInExecutableJar {
 
     private static Logger log = LoggerFactory.getLogger(MultiBitInExecutableJar.class);
 
+    public static void main(String args[]) {
+        MultiBit.main(args);
+    }
+
+
     /**
      * Start multibit user interface when running in a jar
      * This will adjust the logging framework output to ensure that console output is sent
@@ -48,7 +53,7 @@ public class MultiBitInExecutableJar {
      * @param args The optional command line arguments ([0] can be a Bitcoin URI
      */
     @SuppressWarnings("rawtypes")
-    public static void main(String args[]) {
+    public static void main2(String args[]) {
         // TODO Refactor this to work with a different Logger appender
         // redirect the console output to a file
         PrintStream originalStream = null;
