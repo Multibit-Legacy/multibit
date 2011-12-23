@@ -1,6 +1,7 @@
 package org.multibit.platform.handler;
 
 import org.multibit.platform.listener.GenericEventListener;
+import org.multibit.platform.listener.GenericPreferencesEvent;
 import org.multibit.platform.listener.GenericPreferencesEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

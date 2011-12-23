@@ -1,5 +1,7 @@
 package org.multibit.platform.handler;
 
+import org.multibit.platform.listener.GenericPreferencesEvent;
+
 /**
  * <p>Generic handler to provide the following to {@link org.multibit.platform.GenericApplication}:</p>
  * <ul>
@@ -9,10 +11,10 @@ package org.multibit.platform.handler;
  * @since 0.3.0
  *         
  */
-public interface GenericPreferencesHandler {
+public interface GenericPreferencesHandler extends GenericHandler {
     /**
-     * Called in response to receiving a preferences event
-     * @param event The generic preferences event
+     * Called in response to receiving a Preferences event
+     * @param event The generic Preferences event
      */
     void handlePreferences(GenericPreferencesEvent event);
 }

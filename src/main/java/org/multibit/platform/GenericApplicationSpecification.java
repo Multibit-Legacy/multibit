@@ -1,7 +1,9 @@
 package org.multibit.platform;
 
+import org.multibit.platform.listener.GenericAboutEventListener;
 import org.multibit.platform.listener.GenericOpenURIEventListener;
 import org.multibit.platform.listener.GenericPreferencesEventListener;
+import org.multibit.platform.listener.GenericQuitEventListener;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,8 +19,10 @@ import java.util.Set;
  */
 public class GenericApplicationSpecification {
 
-    private Set<GenericOpenURIEventListener> openURIEventListeners= new HashSet<GenericOpenURIEventListener>();
-    private Set<GenericPreferencesEventListener> preferencesEventListeners=new HashSet<GenericPreferencesEventListener>();
+    private Set<GenericOpenURIEventListener> openURIEventListeners = new HashSet<GenericOpenURIEventListener>();
+    private Set<GenericPreferencesEventListener> preferencesEventListeners = new HashSet<GenericPreferencesEventListener>();
+    private Set<GenericAboutEventListener> aboutEventListeners = new HashSet<GenericAboutEventListener>();
+    private Set<GenericQuitEventListener> quitEventListeners = new HashSet<GenericQuitEventListener>();
 
     public Set<GenericOpenURIEventListener> getOpenURIEventListeners() {
         return openURIEventListeners;
@@ -27,4 +31,13 @@ public class GenericApplicationSpecification {
     public Set<GenericPreferencesEventListener> getPreferencesEventListeners() {
         return preferencesEventListeners;
     }
+
+    public Set<GenericAboutEventListener> getAboutEventListeners() {
+        return aboutEventListeners;
+    }
+
+    public Set<GenericQuitEventListener> getQuitEventListeners() {
+        return quitEventListeners;
+    }
+
 }

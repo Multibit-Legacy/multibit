@@ -23,7 +23,7 @@ import org.multibit.network.MultiBitService;
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
 import org.multibit.platform.GenericApplicationSpecification;
-import org.multibit.platform.handler.GenericOpenURIEvent;
+import org.multibit.platform.listener.GenericOpenURIEvent;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
@@ -63,6 +63,8 @@ public class MultiBit {
         GenericApplicationSpecification specification = new GenericApplicationSpecification();
         specification.getOpenURIEventListeners().add(controller);
         specification.getPreferencesEventListeners().add(controller);
+        specification.getAboutEventListeners().add(controller);
+        specification.getQuitEventListeners().add(controller);
         GenericApplication genericApplication = GenericApplicationFactory.INSTANCE.buildGenericApplication(specification);
 
         // if test or production is not specified, default to production

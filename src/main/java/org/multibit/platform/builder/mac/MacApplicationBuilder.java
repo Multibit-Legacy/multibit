@@ -3,8 +3,10 @@ package org.multibit.platform.builder.mac;
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationSpecification;
 import org.multibit.platform.builder.generic.DefaultApplicationBuilder;
+import org.multibit.platform.handler.DefaultAboutHandler;
 import org.multibit.platform.handler.DefaultOpenURIHandler;
 import org.multibit.platform.handler.DefaultPreferencesHandler;
+import org.multibit.platform.handler.DefaultQuitHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +68,8 @@ public class MacApplicationBuilder {
         Object nativeApplication;
         Class nativeOpenURIHandlerClass;
         Class nativePreferencesHandlerClass;
+        Class nativeAboutHandlerClass;
+        Class nativeQuitHandlerClass;
 
         try {
             // Attempt to locate the Apple Java JDK
@@ -91,8 +95,11 @@ public class MacApplicationBuilder {
             // Instantiate through getApplication()
             nativeApplication = nativeApplicationClass.getMethod("getApplication", new Class[0]).invoke(null);
 
+            // Create native instances of the various handlers
             nativeOpenURIHandlerClass = Class.forName("com.apple.eawt.OpenURIHandler");
             nativePreferencesHandlerClass = Class.forName("com.apple.eawt.PreferencesHandler");
+            nativeAboutHandlerClass = Class.forName("com.apple.eawt.AboutHandler");
+            nativeQuitHandlerClass = Class.forName("com.apple.eawt.QuitHandler");
 
         } catch (ClassNotFoundException e) {
             return new DefaultApplicationBuilder().build(specification);
@@ -111,8 +118,12 @@ public class MacApplicationBuilder {
         log.debug("Found EAWT libraries so building native bridge");
         MacApplication macApplication = new MacApplication();
         macApplication.setApplication(nativeApplication);
+
+        // Add the native handlers
         macApplication.setOpenURIHandlerClass(nativeOpenURIHandlerClass);
         macApplication.setPreferencesHandlerClass(nativePreferencesHandlerClass);
+        macApplication.setAboutHandlerClass(nativeAboutHandlerClass);
+        macApplication.setQuitHandlerClass(nativeQuitHandlerClass);
 
         // Create and configure the default handlers that simply broadcast
         // the events back to their listeners
@@ -128,6 +139,18 @@ public class MacApplicationBuilder {
         DefaultPreferencesHandler preferencesHandler = new DefaultPreferencesHandler();
         preferencesHandler.addListeners(specification.getPreferencesEventListeners());
         macApplication.addPreferencesHandler(preferencesHandler);
+
+        // About handler
+        log.debug("Adding the DefaultAboutHandler");
+        DefaultAboutHandler aboutHandler = new DefaultAboutHandler();
+        aboutHandler.addListeners(specification.getAboutEventListeners());
+        macApplication.addAboutHandler(aboutHandler);
+
+        // Quit handler
+        log.debug("Adding the DefaultQuitHandler");
+        DefaultQuitHandler quitHandler = new DefaultQuitHandler();
+        quitHandler.addListeners(specification.getQuitEventListeners());
+        macApplication.addQuitHandler(quitHandler);
 
         // TODO Add the rest later
 

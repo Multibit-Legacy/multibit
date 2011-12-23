@@ -1,4 +1,4 @@
-package org.multibit.platform.handler;
+package org.multibit.platform.listener;
 
 import java.net.URI;
 
@@ -11,7 +11,7 @@ import java.net.URI;
  * @since 0.3.0
  *         
  */
-public interface GenericOpenURIEvent {
+public interface GenericOpenURIEvent extends GenericEvent {
 
     /**
      * @return The URI that should be opened

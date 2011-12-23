@@ -145,6 +145,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         ToolTipManager.sharedInstance().setDismissDelay(TOOLTIP_DISMISSAL_DELAY);
 
         final MultiBitController finalController = controller;
+
+        // TODO Examine how this fits in with the controller onQuit() event
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent arg0) {
                 org.multibit.action.ExitAction exitAction = new org.multibit.action.ExitAction(finalController);
@@ -1010,19 +1012,23 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     // Macify application methods
 
     @Override
+    @Deprecated
     public void handleAbout(ApplicationEvent event) {
         controller.setActionForwardToSibling(ActionForward.FORWARD_TO_HELP_ABOUT);
         event.setHandled(true);
     }
 
     @Override
+    @Deprecated
     public void handleOpenApplication(ApplicationEvent event) {
         // Ok, we know our application started
         // Not much to do about that..
     }
 
     @Override
+    @Deprecated
     public void handleOpenFile(ApplicationEvent event) {
+        // TODO i18n required
         JOptionPane.showMessageDialog(this, "Sorry, opening of files with double click is not yet implemented.  Wallet was "
             + event.getFilename());
     }
@@ -1034,11 +1040,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     @Override
+    @Deprecated
     public void handlePrintFile(ApplicationEvent event) {
+        // TODO i18n required
         JOptionPane.showMessageDialog(this, "Sorry, printing not implemented");
     }
 
     @Override
+    @Deprecated
     public void handleQuit(ApplicationEvent event) {
         ExitAction exitAction = new ExitAction(controller);
         exitAction.actionPerformed(null);

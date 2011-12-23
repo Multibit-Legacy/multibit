@@ -1,4 +1,4 @@
-package org.multibit.platform.handler;
+package org.multibit.platform.listener;
 
 /**
  * <p>Generic event to provide the following to {@link org.multibit.platform.GenericApplication}:</p>
@@ -9,6 +9,6 @@ package org.multibit.platform.handler;
  * @since 0.3.0
  *         
  */
-public interface GenericPreferencesEvent {
+public interface GenericPreferencesEvent extends GenericEvent {
 
 }

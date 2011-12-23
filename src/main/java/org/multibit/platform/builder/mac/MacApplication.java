@@ -1,8 +1,11 @@
 package org.multibit.platform.builder.mac;
 
 import org.multibit.platform.GenericApplication;
+import org.multibit.platform.handler.GenericAboutHandler;
 import org.multibit.platform.handler.GenericOpenURIHandler;
 import org.multibit.platform.handler.GenericPreferencesHandler;
+import org.multibit.platform.handler.GenericQuitHandler;
+import org.multibit.platform.listener.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +43,10 @@ public class MacApplication implements GenericApplication {
      * Handles the Preferences use case
      */
     private Class nativePreferencesHandlerClass;
+    /**
+     * Handles the About use case
+     */
+    private Class nativeAboutHandlerClass;
 
     public void addOpenURIHandler(GenericOpenURIHandler openURIHandler) {
 
@@ -55,7 +62,7 @@ public class MacApplication implements GenericApplication {
         // back to the generic handler
         Object nativeOpenURIHandler = Proxy.newProxyInstance(getClass().getClassLoader(),
             new Class[]{nativeOpenURIHandlerClass},
-            new OpenURIHandlerInvocationHandler(openURIHandler));
+            new OpenURIHandlerInvocationHandler(openURIHandler, GenericOpenURIEvent.class));
 
         // Reflective call as application.setOpenURIHandler(nativeOpenURIHandler)
         // nativeOpenURIHandler is a proxy that actually uses the generic handler
@@ -64,6 +71,11 @@ public class MacApplication implements GenericApplication {
         log.debug("GenericOpenURIHandler configured");
 
     }
+
+    /**
+     * Handles the Quit use case
+     */
+    private Class nativeQuitHandlerClass;
 
     public void addPreferencesHandler(GenericPreferencesHandler preferencesHandler) {
 
@@ -79,13 +91,61 @@ public class MacApplication implements GenericApplication {
         // back to the generic handler
         Object nativePreferencesHandler = Proxy.newProxyInstance(getClass().getClassLoader(),
             new Class[]{nativePreferencesHandlerClass},
-            new PreferencesHandlerInvocationHandler(preferencesHandler));
+            new PreferencesHandlerInvocationHandler(preferencesHandler,GenericPreferencesEvent.class));
 
         // Reflective call as application.setPreferencesHandler(nativePreferencesHandler)
         // nativePreferencesHandler is a proxy that actually uses the generic handler
         callNativeMethod(nativeApplication, "setPreferencesHandler", new Class[]{nativePreferencesHandlerClass}, new Object[]{nativePreferencesHandler});
 
         log.debug("GenericPreferencesHandler configured");
+
+    }
+
+    public void addAboutHandler(GenericAboutHandler aboutHandler) {
+
+        log.debug("Adding GenericAboutHandler");
+        // Ensure the implementing class is public
+        // This avoids anonymous interface issues
+        if (!Modifier.isPublic(aboutHandler.getClass().getModifiers())) {
+            throw new IllegalArgumentException("GenericAboutHandler must be a public class");
+        }
+
+        // Load up an instance of the native AboutHandler
+        // Provide an invocation handler to link the native about(AppEvent.AboutEvent event)
+        // back to the generic handler
+        Object nativeAboutHandler = Proxy.newProxyInstance(getClass().getClassLoader(),
+            new Class[]{nativeAboutHandlerClass},
+            new AboutHandlerInvocationHandler(aboutHandler, GenericAboutEvent.class));
+
+        // Reflective call as application.setAboutHandler(nativeAboutHandler)
+        // nativeAboutHandler is a proxy that actually uses the generic handler
+        callNativeMethod(nativeApplication, "setAboutHandler", new Class[]{nativeAboutHandlerClass}, new Object[]{nativeAboutHandler});
+
+        log.debug("GenericAboutHandler configured");
+
+    }
+
+    public void addQuitHandler(GenericQuitHandler quitHandler) {
+
+        log.debug("Adding GenericQuitHandler");
+        // Ensure the implementing class is public
+        // This avoids anonymous interface issues
+        if (!Modifier.isPublic(quitHandler.getClass().getModifiers())) {
+            throw new IllegalArgumentException("GenericQuitHandler must be a public class");
+        }
+
+        // Load up an instance of the native QuitHandler
+        // Provide an invocation handler to link the native about(AppEvent.AboutEvent event)
+        // back to the generic handler
+        Object nativeQuitHandler = Proxy.newProxyInstance(getClass().getClassLoader(),
+            new Class[]{nativeQuitHandlerClass},
+            new QuitHandlerInvocationHandler(quitHandler, GenericQuitEvent.class, GenericQuitResponse.class));
+
+        // Reflective call as application.setQuitHandler(nativeQuitHandler)
+        // nativeQuitHandler is a proxy that actually uses the generic handler
+        callNativeMethod(nativeApplication, "setQuitHandler", new Class[]{nativeQuitHandlerClass}, new Object[]{nativeQuitHandler});
+
+        log.debug("GenericAboutHandler configured");
 
     }
 
@@ -146,6 +206,13 @@ public class MacApplication implements GenericApplication {
         this.nativePreferencesHandlerClass = preferencesHandlerClass;
     }
 
+    public void setAboutHandlerClass(Class aboutHandlerClass) {
+        this.nativeAboutHandlerClass = aboutHandlerClass;
+    }
+
+    public void setQuitHandlerClass(Class quitHandlerClass) {
+        this.nativeQuitHandlerClass = quitHandlerClass;
+    }
 }
 
 

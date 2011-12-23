@@ -1,7 +1,5 @@
 package org.multibit.platform.listener;
 
-import org.multibit.platform.handler.GenericOpenURIEvent;
-
 /**
  * <p>Listener to provide the following to applications:</p>
  * <ul>
@@ -15,5 +13,10 @@ import org.multibit.platform.handler.GenericOpenURIEvent;
  *         
  */
 public interface GenericOpenURIEventListener {
+    /**
+     * Received when the application receives an open URI event
+     *
+     * @param event The event
+     */
     void onOpenURIEvent(GenericOpenURIEvent event);
 }

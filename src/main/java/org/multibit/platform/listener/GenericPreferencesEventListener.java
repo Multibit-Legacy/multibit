@@ -1,7 +1,5 @@
 package org.multibit.platform.listener;
 
-import org.multibit.platform.handler.GenericPreferencesEvent;
-
 /**
  * <p>Listener to provide the following to applications:</p>
  * <ul>
@@ -12,5 +10,10 @@ import org.multibit.platform.handler.GenericPreferencesEvent;
  *         
  */
 public interface GenericPreferencesEventListener {
+    /**
+     * Received when the user requests the Preferences display
+     *
+     * @param event The event
+     */
     void onPreferencesEvent(GenericPreferencesEvent event);
 }
