@@ -1,4 +1,7 @@
-package org.multibit.protocolhandler;
+package org.multibit.platform;
+
+import org.multibit.platform.listener.GenericOpenURIEventListener;
+import org.multibit.platform.listener.GenericPreferencesEventListener;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,9 +18,13 @@ import java.util.Set;
 public class GenericApplicationSpecification {
 
     private Set<GenericOpenURIEventListener> openURIEventListeners= new HashSet<GenericOpenURIEventListener>();
+    private Set<GenericPreferencesEventListener> preferencesEventListeners=new HashSet<GenericPreferencesEventListener>();
 
     public Set<GenericOpenURIEventListener> getOpenURIEventListeners() {
         return openURIEventListeners;
     }
 
+    public Set<GenericPreferencesEventListener> getPreferencesEventListeners() {
+        return preferencesEventListeners;
+    }
 }

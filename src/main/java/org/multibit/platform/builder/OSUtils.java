@@ -1,7 +1,7 @@
-package org.multibit.protocolhandler;
+package org.multibit.platform.builder;
 
 /**
- * <p>Utilities to provide the following to {@link GenericApplicationFactory}:</p>
+ * <p>Utilities to provide the following to {@link org.multibit.platform.GenericApplicationFactory}:</p>
  * <ul>
  * <li>Detection of operating system</li>
  * </ul>

@@ -1,9 +1,9 @@
-package org.multibit.protocolhandler.handlers;
+package org.multibit.platform.handler;
 
 /**
- * <p>Generic handler to provide the following to {@link org.multibit.protocolhandler.GenericApplication}:</p>
+ * <p>Generic handler to provide the following to {@link org.multibit.platform.GenericApplication}:</p>
  * <ul>
- * <li>Provision of application specific handling code</li>
+ * <li>Proxies any native handling code</li>
  * </ul>
  *
  * @since 0.3.0

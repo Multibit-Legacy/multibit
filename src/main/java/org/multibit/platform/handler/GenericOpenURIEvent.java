@@ -1,9 +1,9 @@
-package org.multibit.protocolhandler.handlers;
+package org.multibit.platform.handler;
 
 import java.net.URI;
 
 /**
- * <p>Generic event to provide the following to {@link org.multibit.protocolhandler.GenericApplication}:</p>
+ * <p>Generic event to provide the following to {@link org.multibit.platform.GenericApplication}:</p>
  * <ul>
  * <li>Provision of application specific event handling code</li>
  * </ul>

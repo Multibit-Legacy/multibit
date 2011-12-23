@@ -20,13 +20,12 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
-import org.multibit.protocolhandler.GenericApplicationFactory;
-import org.multibit.protocolhandler.GenericApplicationSpecification;
-import org.multibit.protocolhandler.handlers.GenericOpenURIEvent;
+import org.multibit.platform.GenericApplication;
+import org.multibit.platform.GenericApplicationFactory;
+import org.multibit.platform.GenericApplicationSpecification;
+import org.multibit.platform.handler.GenericOpenURIEvent;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.simplericity.macify.eawt.Application;
-import org.simplericity.macify.eawt.DefaultApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,12 +62,8 @@ public class MultiBit {
         log.info("Configuring native event handling");
         GenericApplicationSpecification specification = new GenericApplicationSpecification();
         specification.getOpenURIEventListeners().add(controller);
-        // We don't need to keep track of the application since we've added all our listeners
-        GenericApplicationFactory.INSTANCE.buildGenericApplication(specification);
-
-        // TODO Remove this
-        // Configure the URI listener for different platforms
-        Application application = new DefaultApplication();
+        specification.getPreferencesEventListeners().add(controller);
+        GenericApplication genericApplication = GenericApplicationFactory.INSTANCE.buildGenericApplication(specification);
 
         // if test or production is not specified, default to production
         String testOrProduction = userPreferences.getProperty(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
@@ -117,7 +112,7 @@ public class MultiBit {
         }
 
         log.debug("Creating views");
-        ViewSystem swingViewSystem = new MultiBitFrame(controller,application);
+        ViewSystem swingViewSystem = new MultiBitFrame(controller,genericApplication);
 
         log.debug("Registering with controller");
         controller.registerViewSystem(swingViewSystem);
@@ -191,7 +186,7 @@ public class MultiBit {
 
 
         } else {
-            log.info("No Bitcoin URI provided as an argument");
+            log.debug("No Bitcoin URI provided as an argument");
             // display the next view
             controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
 

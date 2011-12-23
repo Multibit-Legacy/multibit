@@ -1,4 +1,4 @@
-package org.multibit.protocolhandler;
+package org.multibit.platform.listener;
 
 import java.util.Collection;
 
@@ -7,7 +7,7 @@ import java.util.Collection;
  * <ul>
  * <li>Type safety for adding and removing listeners</li>
  * </ul>
- * <p>See {@link org.multibit.protocolhandler.handlers.DefaultOpenURIHandler} for an example of an implementation</p>
+ * <p>See {@link org.multibit.platform.handler.DefaultOpenURIHandler} for an example of an implementation</p>
  *
  * @since 0.3.0
  *         

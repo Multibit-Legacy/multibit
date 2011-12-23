@@ -7,8 +7,10 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
-import org.multibit.protocolhandler.GenericOpenURIEventListener;
-import org.multibit.protocolhandler.handlers.GenericOpenURIEvent;
+import org.multibit.platform.handler.GenericPreferencesEvent;
+import org.multibit.platform.listener.GenericOpenURIEventListener;
+import org.multibit.platform.handler.GenericOpenURIEvent;
+import org.multibit.platform.listener.GenericPreferencesEventListener;
 import org.multibit.qrcode.BitcoinURI;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
@@ -29,7 +31,7 @@ import java.util.*;
  * @author jim
  * 
  */
-public class MultiBitController implements PeerEventListener, GenericOpenURIEventListener {
+public class MultiBitController implements PeerEventListener, GenericOpenURIEventListener, GenericPreferencesEventListener {
 
     private Logger log = LoggerFactory.getLogger(MultiBitController.class);
 
@@ -627,4 +629,9 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
 
     }
+
+  @Override
+  public void onPreferencesEvent(GenericPreferencesEvent event) {
+    setActionForwardToSibling(ActionForward.FORWARD_TO_PREFERENCES);
+  }
 }

@@ -1,9 +1,9 @@
-package org.multibit.protocolhandler.builders;
+package org.multibit.platform.builder.generic;
 
-import org.multibit.protocolhandler.GenericApplication;
+import org.multibit.platform.GenericApplication;
 
 /**
- * <p>GenericApplication to provide the following to {@link org.multibit.protocolhandler.GenericApplicationFactory}:</p>
+ * <p>GenericApplication to provide the following to {@link org.multibit.platform.GenericApplicationFactory}:</p>
  * <ul>
  * <li>Provision of methods for the given platform</li>
  * </ul>
@@ -11,7 +11,7 @@ import org.multibit.protocolhandler.GenericApplication;
  * @since 0.3.0
  *         
  */
-public class UnknownApplication implements GenericApplication {
+public class DefaultApplication implements GenericApplication {
 
     @Override
     public boolean isMac() {

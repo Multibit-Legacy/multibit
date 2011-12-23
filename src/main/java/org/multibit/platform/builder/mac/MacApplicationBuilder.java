@@ -1,8 +1,10 @@
-package org.multibit.protocolhandler.builders;
+package org.multibit.platform.builder.mac;
 
-import org.multibit.protocolhandler.GenericApplication;
-import org.multibit.protocolhandler.GenericApplicationSpecification;
-import org.multibit.protocolhandler.handlers.DefaultOpenURIHandler;
+import org.multibit.platform.GenericApplication;
+import org.multibit.platform.GenericApplicationSpecification;
+import org.multibit.platform.builder.generic.DefaultApplicationBuilder;
+import org.multibit.platform.handler.DefaultOpenURIHandler;
+import org.multibit.platform.handler.DefaultPreferencesHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +54,9 @@ public class MacApplicationBuilder {
      *          // Fire the internal open file event
      *      }
      *  });
+     *
+     *  ...
+     *
      * </pre>
      * @return A {@link GenericApplication}
      * @param specification The specification containing the listeners
@@ -59,8 +64,8 @@ public class MacApplicationBuilder {
     public GenericApplication build(GenericApplicationSpecification specification) {
 
         Object nativeApplication;
-        Class nativeApplicationListenerClass;
         Class nativeOpenURIHandlerClass;
+        Class nativePreferencesHandlerClass;
 
         try {
             // Attempt to locate the Apple Java JDK
@@ -86,20 +91,19 @@ public class MacApplicationBuilder {
             // Instantiate through getApplication()
             nativeApplication = nativeApplicationClass.getMethod("getApplication", new Class[0]).invoke(null);
 
-            //nativeApplicationListenerClass = Class.forName("com.apple.eawt.ApplicationListener");
-
             nativeOpenURIHandlerClass = Class.forName("com.apple.eawt.OpenURIHandler");
+            nativePreferencesHandlerClass = Class.forName("com.apple.eawt.PreferencesHandler");
 
         } catch (ClassNotFoundException e) {
-            return new UnknownApplicationBuilder().build(specification);
+            return new DefaultApplicationBuilder().build(specification);
         } catch (IllegalAccessException e) {
-            return new UnknownApplicationBuilder().build(specification);
+            return new DefaultApplicationBuilder().build(specification);
         } catch (NoSuchMethodException e) {
-            return new UnknownApplicationBuilder().build(specification);
+            return new DefaultApplicationBuilder().build(specification);
         } catch (InvocationTargetException e) {
-            return new UnknownApplicationBuilder().build(specification);
+            return new DefaultApplicationBuilder().build(specification);
         } catch (MalformedURLException e) {
-            return new UnknownApplicationBuilder().build(specification);
+            return new DefaultApplicationBuilder().build(specification);
         }
         
         // Must have successfully configured the EAWT library to be here
@@ -108,6 +112,7 @@ public class MacApplicationBuilder {
         MacApplication macApplication = new MacApplication();
         macApplication.setApplication(nativeApplication);
         macApplication.setOpenURIHandlerClass(nativeOpenURIHandlerClass);
+        macApplication.setPreferencesHandlerClass(nativePreferencesHandlerClass);
 
         // Create and configure the default handlers that simply broadcast
         // the events back to their listeners
@@ -117,6 +122,12 @@ public class MacApplicationBuilder {
         DefaultOpenURIHandler openURIHandler = new DefaultOpenURIHandler();
         openURIHandler.addListeners(specification.getOpenURIEventListeners());
         macApplication.addOpenURIHandler(openURIHandler);
+
+        // Preferences handler
+        log.debug("Adding the DefaultPreferencesHandler");
+        DefaultPreferencesHandler preferencesHandler = new DefaultPreferencesHandler();
+        preferencesHandler.addListeners(specification.getPreferencesEventListeners());
+        macApplication.addPreferencesHandler(preferencesHandler);
 
         // TODO Add the rest later
 

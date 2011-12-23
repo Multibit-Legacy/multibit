@@ -1,13 +1,10 @@
-package org.multibit.protocolhandler;
+package org.multibit.platform;
 
 /**
- * <p>Interface to provide the following to {@link OpenURIHandlerApplication}:</p>
+ * <p>Interface to provide the following to applications:</p>
  * <ul>
- * <li>Provision of dedicated URI handling methods</li>
+ * <li>Provision of simple platform identification methods</li>
  * </ul>
- * <p>Example:</p>
- * <pre>
- * </pre>
  *
  * @since 0.3.0
  *         

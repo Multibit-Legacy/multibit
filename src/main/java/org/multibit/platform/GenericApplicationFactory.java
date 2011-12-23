@@ -1,6 +1,12 @@
-package org.multibit.protocolhandler;
+package org.multibit.platform;
 
-import org.multibit.protocolhandler.builders.*;
+import org.multibit.platform.builder.*;
+import org.multibit.platform.builder.linux.LinuxApplicationBuilder;
+import org.multibit.platform.builder.mac.MacApplicationBuilder;
+import org.multibit.platform.builder.solaris.SolarisApplicationBuilder;
+import org.multibit.platform.builder.unix.UnixApplicationBuilder;
+import org.multibit.platform.builder.generic.DefaultApplicationBuilder;
+import org.multibit.platform.builder.win.WindowsApplicationBuilder;
 
 /**
  * <p>Factory to provide the following to application:</p>
@@ -60,7 +66,7 @@ public enum GenericApplicationFactory {
     }
 
     private GenericApplication buildUnknownApplication(GenericApplicationSpecification specification) {
-        return new UnknownApplicationBuilder().build(specification);
+        return new DefaultApplicationBuilder().build(specification);
     }
 
 }

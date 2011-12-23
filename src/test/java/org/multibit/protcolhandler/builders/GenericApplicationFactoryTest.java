@@ -1,9 +1,9 @@
 package org.multibit.protcolhandler.builders;
 
 import org.junit.Test;
-import org.multibit.protocolhandler.GenericApplication;
-import org.multibit.protocolhandler.GenericApplicationFactory;
-import org.multibit.protocolhandler.GenericApplicationSpecification;
+import org.multibit.platform.GenericApplication;
+import org.multibit.platform.GenericApplicationFactory;
+import org.multibit.platform.GenericApplicationSpecification;
 
 import static org.junit.Assert.assertNotNull;
 

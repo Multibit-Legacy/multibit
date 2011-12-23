@@ -1,6 +1,6 @@
-package org.multibit.protocolhandler;
+package org.multibit.platform.listener;
 
-import org.multibit.protocolhandler.handlers.GenericOpenURIEvent;
+import org.multibit.platform.handler.GenericOpenURIEvent;
 
 /**
  * <p>Listener to provide the following to applications:</p>
@@ -11,7 +11,7 @@ import org.multibit.protocolhandler.handlers.GenericOpenURIEvent;
  * <pre>
  * </pre>
  *
- * @since 1.0.0
+ * @since 0.3.0
  *         
  */
 public interface GenericOpenURIEventListener {

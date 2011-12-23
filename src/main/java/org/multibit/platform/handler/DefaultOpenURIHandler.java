@@ -1,7 +1,7 @@
-package org.multibit.protocolhandler.handlers;
+package org.multibit.platform.handler;
 
-import org.multibit.protocolhandler.GenericEventListener;
-import org.multibit.protocolhandler.GenericOpenURIEventListener;
+import org.multibit.platform.listener.GenericEventListener;
+import org.multibit.platform.listener.GenericOpenURIEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * <p>Generic event to provide the following to {@link org.multibit.protocolhandler.GenericApplication}:</p>
+ * <p>Generic event to provide the following to {@link org.multibit.platform.GenericApplication}:</p>
  * <ul>
  * <li>Provision of application specific event handling code</li>
  * </ul>
