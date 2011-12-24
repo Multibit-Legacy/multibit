@@ -2,6 +2,7 @@ package org.multibit.viewsystem.swing.view;
 
 import javax.swing.border.Border;
 import java.awt.*;
+import java.util.Locale;
 
 class DashedBorder implements Border {
     public static final int THICKNESS = 2;
@@ -9,8 +10,11 @@ class DashedBorder implements Border {
     int dashWidth;
     int dashHeight;
 
-    public DashedBorder() {
+    Locale locale;
+
+    public DashedBorder(Locale locale) {
         this(Color.LIGHT_GRAY, 4, 4);
+        this.locale = locale;
     }
 
     public DashedBorder(Color c, int width, int height) {
@@ -28,18 +32,17 @@ class DashedBorder implements Border {
     public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
         Insets insets = getBorderInsets(c);
         g.setColor(color);
-//        int numWide = (int) Math.round(width / dashWidth);
         int numHigh = Math.round(height / dashHeight);
         int startPoint;
-//        for (int i = 0; i <= numWide; i += 2) {
-//            startPoint = x + dashWidth * i;
-//            g.fillRect(startPoint, y, dashWidth, THICKNESS);
-//            g.fillRect(startPoint, y + height - insets.bottom, dashWidth, THICKNESS);
-//        }
+
         for (int i = 0; i <= numHigh; i += 2) {
             startPoint = x + dashHeight * i;
-            //g.fillRect(x, startPoint, THICKNESS, dashHeight);
-            g.fillRect(x + width - insets.right, startPoint, THICKNESS, dashHeight);
+            if (ComponentOrientation.getOrientation(locale).isLeftToRight()) {
+                g.fillRect(x + width - insets.right, startPoint, THICKNESS, dashHeight);
+            } else {
+                g.fillRect(x + insets.left, startPoint, THICKNESS, dashHeight);
+
+            }
         }
     }
 

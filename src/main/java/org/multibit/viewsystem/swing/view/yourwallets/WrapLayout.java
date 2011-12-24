@@ -20,7 +20,7 @@ public class WrapLayout extends FlowLayout {
     }
 
     /**
-     * Constructs a new <code>FlowLayout</code> with the specified alignment and
+     * Constructs a new <code>WrapLayout</code> with the specified alignment and
      * a default 5-unit horizontal and vertical gap. The value of the alignment
      * argument must be one of <code>WrapLayout</code>, <code>WrapLayout</code>,
      * or <code>WrapLayout</code>.
@@ -33,7 +33,7 @@ public class WrapLayout extends FlowLayout {
     }
 
     /**
-     * Creates a new flow layout manager with the indicated alignment and the
+     * Creates a new wrap layout manager with the indicated alignment and the
      * indicated horizontal and vertical gaps.
      * <p>
      * The value of the alignment argument must be one of

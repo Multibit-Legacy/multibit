@@ -2,10 +2,12 @@ package org.multibit.viewsystem.swing.view.yourwallets;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.util.Locale;
 
 import javax.swing.JPanel;
 
@@ -42,10 +44,11 @@ public class RoundedPanel extends JPanel {
 
     boolean selected;
 
-    public RoundedPanel() {
+    public RoundedPanel(Locale locale) {
         super();
         setOpaque(false);
         setBackground(MultiBitFrame.DARK_BACKGROUND_COLOR);
+        applyComponentOrientation(ComponentOrientation.getOrientation(locale));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package org.multibit.viewsystem.swing.view.yourwallets;
 
 import java.awt.Color;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -32,8 +33,8 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
     public static final int MINIMUM_WALLET_WIDTH = 220;
     public static final int MINIMUM_WALLET_HEIGHT = 90;
 
-    private static final Dimension TOP_LEFT_CORNER_PADDING = new Dimension(5, 12);
-    private static final Dimension BOTTOM_RIGHT_CORNER_PADDING = new Dimension(9, 12);
+    private static final Dimension ABOVE_BASELINE_LEADING_CORNER_PADDING = new Dimension(5, 12);
+    private static final Dimension BELOW_BASELINE_TRAILING_CORNER_PADDING = new Dimension(9, 12);
 
     private PerWalletModelData perWalletModelData;
 
@@ -52,6 +53,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
     private MultiBitFrame mainFrame;
 
     public SingleWalletPanel(PerWalletModelData perWalletModelData, MultiBitController controller, MultiBitFrame mainFrame) {
+        super(controller.getLocaliser().getLocale());
         this.perWalletModelData = perWalletModelData;
         this.controller = controller;
         this.mainFrame = mainFrame;
@@ -65,9 +67,9 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         GridBagConstraints constraints = new GridBagConstraints();
 
         JLabel filler1 = new JLabel();
-        filler1.setMinimumSize(TOP_LEFT_CORNER_PADDING);
-        filler1.setPreferredSize(TOP_LEFT_CORNER_PADDING);
-        filler1.setMaximumSize(TOP_LEFT_CORNER_PADDING);
+        filler1.setMinimumSize(ABOVE_BASELINE_LEADING_CORNER_PADDING);
+        filler1.setPreferredSize(ABOVE_BASELINE_LEADING_CORNER_PADDING);
+        filler1.setMaximumSize(ABOVE_BASELINE_LEADING_CORNER_PADDING);
 
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
@@ -77,7 +79,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         constraints.weighty = 0.04;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         add(filler1, constraints);
 
         walletFilenameLabel = new JLabel();
@@ -99,7 +101,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         add(walletFilenameLabel, constraints);
 
         walletDescriptionTextField = new JTextField(perWalletModelData.getWalletDescription());
@@ -129,13 +131,13 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.SOUTHEAST;
+        constraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
         add(amountLabel, constraints);
 
         JPanel filler4 = new JPanel();
-        filler4.setMinimumSize(BOTTOM_RIGHT_CORNER_PADDING);
-        filler4.setPreferredSize(BOTTOM_RIGHT_CORNER_PADDING);
-        filler4.setMaximumSize(BOTTOM_RIGHT_CORNER_PADDING);
+        filler4.setMinimumSize(BELOW_BASELINE_TRAILING_CORNER_PADDING);
+        filler4.setPreferredSize(BELOW_BASELINE_TRAILING_CORNER_PADDING);
+        filler4.setMaximumSize(BELOW_BASELINE_TRAILING_CORNER_PADDING);
         filler4.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
@@ -143,11 +145,14 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         constraints.weightx = 0.02;
         constraints.weighty = 0.02;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.SOUTHEAST;
+        constraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
         add(filler4, constraints);
 
         setSelected(false);
         amountLabel.setBlinkEnabled(true);
+        
+        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
     }
 
     @Override

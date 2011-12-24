@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing;
  * limitations under the License.
  */
 
+import org.multibit.controller.MultiBitController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,7 @@ import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Locale;
 
 /**
  * StatusBar. <BR>
@@ -54,12 +56,14 @@ public class StatusBar extends JComponent {
      * Construct a new StatusBar
      * 
      */
-    public StatusBar() {
-        setLayout(LookAndFeelTweaks.createHorizontalPercentLayout());
+    public StatusBar(MultiBitController controller) {
+        setLayout(LookAndFeelTweaks.createHorizontalPercentLayout(controller.getLocaliser().getLocale()));
         idToZones = new Hashtable<String, Component>();
         setZoneBorder(BorderFactory.createEmptyBorder());
         setBackground(MultiBitFrame.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
+
+        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
     }
 
     public void setZoneBorder(Border border) {
@@ -88,12 +92,13 @@ public class StatusBar extends JComponent {
             if (jc.getBorder() == null || jc.getBorder() instanceof UIResource) {
                 if (jc instanceof JLabel) {
                     if ("left".equals(tweak)) {
-                        jc.setBorder(new CompoundBorder(new EmptyBorder(0, 3, 0, 2), BorderFactory.createLineBorder(Color.lightGray)));       
+                        jc.setBorder(new CompoundBorder(new EmptyBorder(0, 3, 0, 2), BorderFactory
+                                .createLineBorder(Color.lightGray)));
                     } else {
                         if ("right".equals(tweak)) {
                             jc.setBorder(new CompoundBorder(zoneBorder, new EmptyBorder(0, 2, 0, 1)));
                         } else {
-                            jc.setBorder(new CompoundBorder(zoneBorder, new EmptyBorder(0, 2, 0, 2)));                           
+                            jc.setBorder(new CompoundBorder(zoneBorder, new EmptyBorder(0, 2, 0, 2)));
                         }
                     }
                     ((JLabel) jc).setText(" ");
@@ -218,19 +223,22 @@ class PercentLayout implements LayoutManager2 {
     private int orientation;
     private int gap;
 
+    private Locale locale;
+
     // Consider using HashMap
     private Hashtable<Component, Constraint> m_ComponentToConstraint;
 
     /**
      * Creates a new HORIZONTAL PercentLayout with a gap of 0.
      */
-    public PercentLayout() {
-        this(HORIZONTAL, 0);
+    public PercentLayout(Locale locale) {
+        this(HORIZONTAL, 0, locale);
     }
 
-    public PercentLayout(int orientation, int gap) {
+    public PercentLayout(int orientation, int gap, Locale locale) {
         setOrientation(orientation);
         this.gap = gap;
+        this.locale = locale;
 
         m_ComponentToConstraint = new Hashtable<Component, Constraint>();
     }
@@ -463,22 +471,33 @@ class PercentLayout implements LayoutManager2 {
 
         if (remaining.size() > 0) {
             int rest = availableSize / remaining.size();
-          for (Integer aRemaining : remaining) {
-            sizes[aRemaining] = rest;
-          }
+            for (Integer aRemaining : remaining) {
+                sizes[aRemaining] = rest;
+            }
         }
 
         // all calculations are done, apply the sizes
         int currentOffset = (HORIZONTAL == orientation ? insets.left : insets.top);
+        if (!ComponentOrientation.getOrientation(locale).isLeftToRight()) {
+            currentOffset = (HORIZONTAL == orientation ? d.width - insets.right : insets.top);
+        }
 
         for (int i = 0, c = components.length; i < c; i++) {
             if (components[i].isVisible()) {
                 if (HORIZONTAL == orientation) {
-                    components[i].setBounds(currentOffset, insets.top, sizes[i], d.height);
+                    if (ComponentOrientation.getOrientation(locale).isLeftToRight()) {
+                        components[i].setBounds(currentOffset, insets.top, sizes[i], d.height);
+                    } else {
+                        components[i].setBounds(currentOffset - sizes[i], insets.top, sizes[i], d.height);
+                    }
                 } else {
                     components[i].setBounds(insets.left, currentOffset, d.width, sizes[i]);
                 }
-                currentOffset += gap + sizes[i];
+                if (ComponentOrientation.getOrientation(locale).isLeftToRight()) {
+                    currentOffset += gap + sizes[i];
+                } else {
+                    currentOffset = currentOffset - gap - sizes[i];
+                }
             }
         }
     }
@@ -508,12 +527,12 @@ class LookAndFeelTweaks {
         UIManager.put("Viewport.background", "Table.background");
     }
 
-    public static PercentLayout createVerticalPercentLayout() {
-        return new PercentLayout(PercentLayout.VERTICAL, 8);
+    public static PercentLayout createVerticalPercentLayout(Locale locale) {
+        return new PercentLayout(PercentLayout.VERTICAL, 8, locale);
     }
 
-    public static PercentLayout createHorizontalPercentLayout() {
-        return new PercentLayout(PercentLayout.HORIZONTAL, 4);
+    public static PercentLayout createHorizontalPercentLayout(Locale locale) {
+        return new PercentLayout(PercentLayout.HORIZONTAL, 4, locale);
     }
 
     public static BorderLayout createBorderLayout() {

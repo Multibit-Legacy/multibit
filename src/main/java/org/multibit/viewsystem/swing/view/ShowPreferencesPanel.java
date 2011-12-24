@@ -1,6 +1,32 @@
 package org.multibit.viewsystem.swing.view;
 
-import org.multibit.Localiser;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.image.BufferedImage;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
+
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
@@ -9,14 +35,6 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ShowPreferencesSubmitAction;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.image.BufferedImage;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
  * The show preferences view
@@ -52,6 +70,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         data = new Data();
 
         initUI();
+        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
     }
 
     /**
@@ -92,7 +111,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         add(fillerPanel1, constraints);
 
         JLabel titleLabel = new JLabel();
-        titleLabel.setHorizontalTextPosition(JLabel.LEFT);
+        titleLabel.setHorizontalTextPosition(JLabel.LEADING);
         titleLabel.setText(controller.getLocaliser().getString("showPreferencesPanel.title"));
         Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE,
                 MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
@@ -113,7 +132,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1.6;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         add(createLanguagePanel(), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -122,7 +141,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         add(createFeePanel(), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -142,7 +161,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 20;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         add(filler1, constraints);
     }
 
@@ -281,7 +300,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         originalFee = sendFeeString;
 
         feeTextField = new JTextField(10);
-        feeTextField.setHorizontalAlignment(JLabel.RIGHT);
+        feeTextField.setHorizontalAlignment(JLabel.TRAILING);
 
         feeTextField.setText(sendFeeString);
         constraints.fill = GridBagConstraints.NONE;
@@ -316,7 +335,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
         FlowLayout flowLayout = new FlowLayout();
-        flowLayout.setAlignment(FlowLayout.RIGHT);
+        flowLayout.setAlignment(FlowLayout.TRAILING);
         buttonPanel.setLayout(flowLayout);
 
         ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(controller, this);
@@ -392,7 +411,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         public ComboBoxRenderer() {
             setOpaque(true);
-            setHorizontalAlignment(LEFT);
+            setHorizontalAlignment(LEADING);
             setVerticalAlignment(CENTER);
         }
 

@@ -47,6 +47,8 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         data = new Data();
 
         initUI();
+
+        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
     }
 
     private void initUI() {
@@ -63,28 +65,33 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         table = new JTable(walletTableModel);
         table.setOpaque(true);
         table.setBorder(BorderFactory.createEmptyBorder());
+        table.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         // use status icons
         table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
 
         // date right justified
-        table.getColumnModel().getColumn(1).setCellRenderer(new RightJustifiedDateRenderer());
+        table.getColumnModel().getColumn(1).setCellRenderer(new TrailingJustifiedDateRenderer());
 
-        // center column headers
+        // justify column headers
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
         JLabel label = (JLabel) renderer;
         label.setHorizontalAlignment(JLabel.CENTER);
+        
+        // description leading justified (set explicitly as it does not seem to work otherwise)
+        if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
+            table.getColumnModel().getColumn(2).setCellRenderer(new LeadingJustifiedRenderer());
+        } else {
+            table.getColumnModel().getColumn(2).setCellRenderer(new TrailingJustifiedRenderer());
+        }
 
-        // description left justified
-        table.getColumnModel().getColumn(2).setCellRenderer(new LeftJustifiedRenderer());
-
-        // credit and debit right justified
-        table.getColumnModel().getColumn(3).setCellRenderer(new RightJustifiedRenderer());
-        table.getColumnModel().getColumn(4).setCellRenderer(new RightJustifiedRenderer());
+        // credit and debit trailing justified
+        table.getColumnModel().getColumn(3).setCellRenderer(new TrailingJustifiedRenderer());
+        table.getColumnModel().getColumn(4).setCellRenderer(new TrailingJustifiedRenderer());
 
         TableColumn tableColumn = table.getColumnModel().getColumn(0); // status
         tableColumn.setPreferredWidth(35);
-
+ 
         tableColumn = table.getColumnModel().getColumn(1); // date
         tableColumn.setPreferredWidth(85);
 
@@ -132,6 +139,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         scrollPane.getViewport().setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -213,7 +221,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 label.setIcon(progress0Icon);
                 label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.notConfirmed"));
             }
-            
+
             if (!label.getBackground().equals(table.getSelectionBackground())) {
                 Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
@@ -222,14 +230,14 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         }
     }
 
-    class RightJustifiedRenderer extends DefaultTableCellRenderer {
+    class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
         JLabel label = new JLabel();
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
-            label.setHorizontalAlignment(SwingConstants.RIGHT);
+            label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
 
             label.setText(value + SPACER);
@@ -241,7 +249,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         }
     }
 
-    class RightJustifiedDateRenderer extends DefaultTableCellRenderer {
+    class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
         JLabel label = new JLabel();
@@ -249,7 +257,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
-            label.setHorizontalAlignment(SwingConstants.RIGHT);
+            label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
 
             String formattedDate = "";
@@ -279,16 +287,16 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         }
     }
 
-    class LeftJustifiedRenderer extends DefaultTableCellRenderer {
+    class LeadingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
         JLabel label = new JLabel();
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
-            label.setHorizontalAlignment(SwingConstants.LEFT);
+            label.setHorizontalAlignment(SwingConstants.LEADING);
             label.setBackground(MultiBitFrame.BACKGROUND_COLOR);
-            label.setOpaque(true);   
+            label.setOpaque(true);
 
             label.setText((String) value);
 
@@ -307,7 +315,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         table.validate();
         table.repaint();
     }
-    
+
     @Override
     public void updateView() {
         walletTableModel.recreateWalletData();

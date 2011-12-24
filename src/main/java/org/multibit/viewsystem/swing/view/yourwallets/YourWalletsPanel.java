@@ -2,6 +2,7 @@ package org.multibit.viewsystem.swing.view.yourwallets;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -66,6 +67,8 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         walletPanels = new ArrayList<SingleWalletPanel>();
 
         initUI();
+
+        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
     }
 
     /**
@@ -163,6 +166,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker()));
         scrollPane.getViewport().setBackground(MultiBitFrame.BACKGROUND_COLOR);
         scrollPane.getViewport().setOpaque(true);
+        scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 1;
@@ -223,6 +227,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         walletListPanel.setOpaque(true);
         walletListPanel.setBackground(Color.WHITE);
         walletListPanel.setBorder(BorderFactory.createEmptyBorder());
+        walletListPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         // get the wallets from the model
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
@@ -251,8 +256,9 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         JPanel headerPanel = new JPanel();
         headerPanel.setBorder(BorderFactory.createEmptyBorder(8, 2, 0, 2));
         headerPanel.setOpaque(false);
+        headerPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
  
-        headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        headerPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 
         OpenWalletAction openWalletAction = new OpenWalletAction(controller, null);
         JButton openWalletButton = new JButton(openWalletAction);

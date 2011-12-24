@@ -81,12 +81,12 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
 
     protected JPanel createFormPanel() {
         formPanel = new JPanel();
-        formPanel.setBorder(new DashedBorder());
+        formPanel.setBorder(new DashedBorder(controller.getLocaliser().getLocale()));
         formPanel.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
 
         JPanel buttonPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
-        flowLayout.setAlignment(FlowLayout.LEFT);
+        flowLayout.setAlignment(FlowLayout.LEADING);
         buttonPanel.setLayout(flowLayout);
 
         formPanel.setLayout(new GridBagLayout());
@@ -113,7 +113,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         formPanel.add(new JLabel(bigIcon), constraints);
 
         JLabel helpLabel1 = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel1.message"));
-        helpLabel1.setHorizontalAlignment(JLabel.LEFT);
+        helpLabel1.setHorizontalAlignment(JLabel.LEADING);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 1;
@@ -124,7 +124,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         formPanel.add(helpLabel1, constraints);
 
         JLabel helpLabel2 = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel2.message"));
-        helpLabel2.setHorizontalAlignment(JLabel.LEFT);
+        helpLabel2.setHorizontalAlignment(JLabel.LEADING);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 2;
@@ -135,7 +135,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         formPanel.add(helpLabel2, constraints);
 
         JLabel helpLabel3 = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel3.message"));
-        helpLabel3.setHorizontalAlignment(JLabel.LEFT);
+        helpLabel3.setHorizontalAlignment(JLabel.LEADING);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 3;
@@ -158,7 +158,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         JLabel addressLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel"));
         addressLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel.tooltip"));
         addressLabel.setBorder(BorderFactory.createMatteBorder(0, 0, 4, 0, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR));
-        addressLabel.setHorizontalAlignment(JLabel.RIGHT);
+        addressLabel.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 4;
@@ -208,14 +208,14 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         JLabel labelLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel"));
         labelLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel.tooltip"));
         labelLabel.setBorder(BorderFactory.createMatteBorder(4, 0, 0, 0, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR));
-        labelLabel.setHorizontalAlignment(JLabel.RIGHT);
+        labelLabel.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 5;
         constraints.weightx = 0.3;
         constraints.weighty = 0.15;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.NORTHEAST;
+        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_TRAILING;
         formPanel.add(labelLabel, constraints);
 
         JTextField aTextField = new JTextField();
@@ -250,7 +250,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
 
         JLabel amountLabel = new JLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel"));
         amountLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel.tooltip"));
-        amountLabel.setHorizontalAlignment(JLabel.RIGHT);
+        amountLabel.setHorizontalAlignment(JLabel.TRAILING);
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
@@ -262,7 +262,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         formPanel.add(amountLabel, constraints);
 
         amountTextField = new JTextField("", 20);
-        amountTextField.setHorizontalAlignment(JTextField.RIGHT);
+        amountTextField.setHorizontalAlignment(JTextField.TRAILING);
         amountTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_AMOUNT_FIELD, 24));
         amountTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_AMOUNT_FIELD, 24));
 

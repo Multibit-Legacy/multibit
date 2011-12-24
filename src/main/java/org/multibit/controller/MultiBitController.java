@@ -1,5 +1,6 @@
 package org.multibit.controller;
 
+import java.awt.ComponentOrientation;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -406,8 +407,9 @@ public class MultiBitController implements PeerEventListener {
      * the language has been changed
      */
     public void fireLanguageChanged() {
-        localiser.setLocale(new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE)));
-
+        Locale newLocale = new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE));
+        localiser.setLocale(newLocale);
+ 
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.recreateAllViews(true, true);

@@ -1,5 +1,6 @@
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.ComponentOrientation;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -14,7 +15,6 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ResetTransactionsAction;
-import org.multibit.viewsystem.swing.action.ShowPreferencesSubmitAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,10 +121,12 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 0.1;
-        constraints.anchor = GridBagConstraints.EAST;
+        constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
         ResetTransactionsAction resetTransactionsAction = new ResetTransactionsAction(controller, null);
         JButton resetTransactionsButton = new JButton(resetTransactionsAction);
         add(resetTransactionsButton, constraints);
+        
+        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
     }
 
     /**

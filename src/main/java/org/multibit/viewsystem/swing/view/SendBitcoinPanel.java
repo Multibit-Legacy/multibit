@@ -83,12 +83,12 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
     protected JPanel createFormPanel() {
         formPanel = new JPanel();
-        formPanel.setBorder(new DashedBorder());
+        formPanel.setBorder(new DashedBorder(controller.getLocaliser().getLocale()));
         formPanel.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
 
         JPanel buttonPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
-        flowLayout.setAlignment(FlowLayout.LEFT);
+        flowLayout.setAlignment(FlowLayout.LEADING);
         buttonPanel.setLayout(flowLayout);
 
         formPanel.setLayout(new GridBagLayout());
@@ -115,7 +115,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         formPanel.add(new JLabel(bigIcon), constraints);
 
         JLabel helpLabel1 = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.helpLabel1.message"));
-        helpLabel1.setHorizontalAlignment(JLabel.LEFT);
+        helpLabel1.setHorizontalAlignment(JLabel.LEADING);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 1;
@@ -126,7 +126,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         formPanel.add(helpLabel1, constraints);
 
         JLabel helpLabel2 = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.helpLabel2.message"));
-        helpLabel2.setHorizontalAlignment(JLabel.LEFT);
+        helpLabel2.setHorizontalAlignment(JLabel.LEADING);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 2;
@@ -137,7 +137,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         formPanel.add(helpLabel2, constraints);
 
         JLabel helpLabel3 = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.helpLabel3.message"));
-        helpLabel3.setHorizontalAlignment(JLabel.LEFT);
+        helpLabel3.setHorizontalAlignment(JLabel.LEADING);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 3;
@@ -159,7 +159,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
         JLabel addressLabel = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel"));
         addressLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel.tooltip"));
-        addressLabel.setHorizontalAlignment(JLabel.RIGHT);
+        addressLabel.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 4;
@@ -180,7 +180,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         formPanel.add(filler4, constraints);
 
         addressTextField = new JTextField(35);
-        addressTextField.setHorizontalAlignment(JTextField.LEFT);
+        addressTextField.setHorizontalAlignment(JTextField.LEADING);
         addressTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
         addressTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
 
@@ -218,14 +218,14 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         JLabel labelLabel = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel"));
         labelLabel.setBorder(BorderFactory.createMatteBorder(4, 0, 0, 0, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR));
         labelLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel.tooltip"));
-        labelLabel.setHorizontalAlignment(JLabel.RIGHT);
+        labelLabel.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 5;
         constraints.weightx = 0.3;
         constraints.weighty = 0.15;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.NORTHEAST;
+        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_TRAILING;
         formPanel.add(labelLabel, constraints);
 
         JTextField aTextField = new JTextField();
@@ -260,7 +260,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
         JLabel amountLabel = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel"));
         amountLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel.tooltip"));
-        amountLabel.setHorizontalAlignment(JLabel.RIGHT);
+        amountLabel.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 6;
@@ -271,7 +271,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         formPanel.add(amountLabel, constraints);
 
         amountTextField = new JTextField("", 20);
-        amountTextField.setHorizontalAlignment(JTextField.RIGHT);
+        amountTextField.setHorizontalAlignment(JTextField.TRAILING);
         amountTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_AMOUNT_FIELD, 24));
         amountTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_AMOUNT_FIELD, 24));
         amountTextField.addKeyListener(new QRCodeKeyListener());
@@ -307,70 +307,6 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         return formPanel;
     }
 
-//    protected JPanel createQRCodePanel() {
-//        qrCodePanel = new JPanel();
-//        qrCodePanel.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
-//
-//        qrCodePanel.setMinimumSize(new Dimension(280, 200));
-//        qrCodePanel.setLayout(new GridBagLayout());
-//        qrCodeLabel = new JLabel("", MultiBitFrame.createImageIcon(DRAG_HERE_ICON_FILE), JLabel.CENTER);
-//        qrCodeLabel.setMinimumSize(new Dimension(QRCODE_WIDTH, QRCODE_HEIGHT));
-//        qrCodeLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabel.tooltip"));
-//
-//        qrCodeLabel.setVerticalTextPosition(JLabel.BOTTOM);
-//        qrCodeLabel.setHorizontalTextPosition(JLabel.CENTER);
-//
-//        // copy image support
-//        qrCodeLabel.setTransferHandler(new ImageSelection());
-//
-//        // drag support
-//        MouseListener listener = new MouseAdapter() {
-//            public void mousePressed(MouseEvent me) {
-//                JComponent comp = (JComponent) me.getSource();
-//                TransferHandler handler = comp.getTransferHandler();
-//                handler.exportAsDrag(comp, me, TransferHandler.COPY);
-//            }
-//        };
-//        qrCodeLabel.addMouseListener(listener);
-//
-//        GridBagConstraints constraints = new GridBagConstraints();
-//
-//        JPanel filler1 = new JPanel();
-//        filler1.setOpaque(false);
-//        constraints.fill = GridBagConstraints.NONE;
-//        constraints.gridx = 0;
-//        constraints.gridy = 0;
-//        constraints.weightx = 0.01;
-//        constraints.weighty = 0.2;
-//        constraints.gridwidth = 1;
-//        constraints.gridheight = 1;
-//        constraints.anchor = GridBagConstraints.CENTER;
-//        qrCodePanel.add(filler1, constraints);
-//
-//        constraints.fill = GridBagConstraints.BOTH;
-//        constraints.gridx = 1;
-//        constraints.gridy = 1;
-//        constraints.weightx = 1;
-//        constraints.weighty = 0.3;
-//        constraints.gridwidth = 1;
-//        constraints.anchor = GridBagConstraints.CENTER;
-//        qrCodePanel.add(qrCodeLabel, constraints);
-//
-//        JPanel filler2 = new JPanel();
-//        filler2.setOpaque(false);
-//        constraints.fill = GridBagConstraints.NONE;
-//        constraints.gridx = 2;
-//        constraints.gridy = 3;
-//        constraints.weightx = 0.01;
-//        constraints.weighty = 0.3;
-//        constraints.gridwidth = 1;
-//        constraints.gridheight = 1;
-//        constraints.anchor = GridBagConstraints.LINE_END;
-//        qrCodePanel.add(filler2, constraints);
-//
-//        return qrCodePanel;
-//    }
-
     public void loadForm() {
         // get the current address, label and amount from the model
         String address = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
@@ -392,420 +328,6 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         addressTextField.setText(addressBookData.getAddress());
         addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRow, false);
     }
-
-//    class ImageSelection extends TransferHandler implements Transferable {
-//        private static final long serialVersionUID = 756395092284264645L;
-//
-//        private DataFlavor flavors[];
-//        private DataFlavor urlFlavor, uriListAsStringFlavor, uriListAsReaderFlavor;
-//
-//        private Image image;
-//
-//        public int getSourceActions(JComponent c) {
-//            return TransferHandler.COPY;
-//        }
-//
-//        public boolean canImport(JComponent comp, DataFlavor flavor[]) {
-//            if (!(comp instanceof JLabel) && !(comp instanceof AbstractButton)) {
-//                return false;
-//            }
-//
-//            if (flavors == null) {
-//                flavors = new DataFlavor[] { DataFlavor.imageFlavor };
-//                try {
-//                    urlFlavor = new DataFlavor("application/x-java-url; class=java.net.URL");
-//                    uriListAsStringFlavor = new DataFlavor("text/uri-list; class=java.lang.String");
-//                    uriListAsReaderFlavor = new DataFlavor("text/uri-list;class=java.io.Reader");
-//                    flavors = new DataFlavor[] { DataFlavor.imageFlavor, urlFlavor, uriListAsStringFlavor,
-//                            uriListAsReaderFlavor };
-//                } catch (ClassNotFoundException cnfe) {
-//                    cnfe.printStackTrace();
-//                }
-//            }
-//
-//            for (int i = 0, n = flavor.length; i < n; i++) {
-//                for (int j = 0, m = flavors.length; j < m; j++) {
-//                    if (flavor[i].equals(flavors[j])) {
-//                        return true;
-//                    }
-//                }
-//            }
-//            return false;
-//        }
-//
-//        public Transferable createTransferable(JComponent comp) {
-//            // Clear
-//            image = null;
-//
-//            if (comp instanceof JLabel) {
-//                JLabel label = (JLabel) comp;
-//                Icon icon = label.getIcon();
-//                if (icon instanceof ImageIcon) {
-//                    image = ((ImageIcon) icon).getImage();
-//                    return this;
-//                }
-//            }
-//            return null;
-//        }
-//
-//        private boolean processDecodedString(String decodedString, JLabel label, ImageIcon icon) {
-//            // decode the string to an AddressBookData
-//            BitcoinURI bitcoinURI = new BitcoinURI(controller, decodedString);
-//
-//            if (bitcoinURI.isParsedOk()) {
-//                log.debug("SendBitcoinPanel - ping 1");
-//                Address address = bitcoinURI.getAddress();
-//                log.debug("SendBitcoinPanel - ping 2");
-//                String addressString = address.toString();
-//                log.debug("SendBitcoinPanel - ping 3");
-//                String amountString = amountTextField.getText();
-//                if (bitcoinURI.getAmount() != null) {
-//                    amountString = Localiser.bitcoinValueToString4(bitcoinURI.getAmount(), false, false);
-//                }
-//                log.debug("SendBitcoinPanel - ping 4");
-//                String decodedLabel = bitcoinURI.getLabel();
-//
-//                log.debug("SendBitcoinPanel#imageSelection#importData = addressString = " + addressString + ", amountString = "
-//                        + amountString + ", label = " + decodedLabel);
-//                log.debug("SendBitcoinPanel - ping 5");
-//
-//                AddressBookData addressBookData = new AddressBookData(decodedLabel, addressString);
-//                log.debug("SendBitcoinPanel - ping 6");
-//                // see if the address is already in the address book
-//                // see if the current address is on the table and
-//                // select it
-//                int rowToSelect = addressesTableModel.findRowByAddress(addressBookData.getAddress(), false);
-//                if (rowToSelect >= 0) {
-//                    addressesTableModel.setAddressBookDataByRow(addressBookData, rowToSelect, false);
-//                    addressesTable.getSelectionModel().setSelectionInterval(rowToSelect, rowToSelect);
-//                    selectedAddressRow = rowToSelect;
-//                } else {
-//                    // add a new row to the table
-//                    controller.getModel().getActiveWalletWalletInfo().addSendingAddress(addressBookData);
-//                    controller.getModel().getActivePerWalletModelData().setDirty(true);
-//
-//                    // select new row
-//                    rowToSelect = addressesTableModel.findRowByAddress(addressBookData.getAddress(), false);
-//                    if (rowToSelect >= 0) {
-//                        addressesTable.getSelectionModel().setSelectionInterval(rowToSelect, rowToSelect);
-//                        selectedAddressRow = rowToSelect;
-//                    }
-//                }
-//                // scroll to visible
-//                addressesTable.scrollRectToVisible(addressesTable.getCellRect(rowToSelect, 0, false));
-//                addressesTable.invalidate();
-//                addressesTable.validate();
-//                addressesTable.repaint();
-//                mainFrame.invalidate();
-//                mainFrame.validate();
-//                mainFrame.repaint();
-//
-//                log.debug("SendBitcoinPanel - ping 7");
-//                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, addressString);
-//                log.debug("SendBitcoinPanel - ping 8");
-//                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, decodedLabel);
-//                log.debug("SendBitcoinPanel - ping 9");
-//
-//                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amountString);
-//                log.debug("SendBitcoinPanel - ping 10");
-//                addressTextField.setText(addressString);
-//                log.debug("SendBitcoinPanel - ping 11");
-//                amountTextField.setText(amountString);
-//                log.debug("SendBitcoinPanel - ping 12");
-//                labelTextArea.setText(decodedLabel);
-//                log.debug("SendBitcoinPanel - ping 13");
-//                mainFrame.updateStatusLabel("");
-//                label.setIcon(icon);
-//                label.setToolTipText(decodedString);
-//                return true;
-//            } else {
-//                mainFrame.updateStatusLabel(controller.getLocaliser().getString("sendBitcoinPanel.couldNotUnderstandQRcode",
-//                        new Object[] { decodedString }));
-//                return false;
-//            }
-//
-//        }
-//
-//        public boolean importData(JComponent comp, Transferable transferable) {
-//            if (comp instanceof JLabel) {
-//                log.debug("importData - 1");
-//
-//                JLabel label = (JLabel) comp;
-//                image = getDropData(transferable, label);
-//                log.debug("importData - 2 - image = " + image);
-//
-//                if (image != null) {
-//                    BufferedImage bufferedImage;
-//                    log.debug("importData - 2.1");
-//                    if (image.getWidth(qrCodeLabel) + MINIMUM_QRCODE_PANEL_HORIZONTAL_SPACING > qrCodePanel.getWidth()
-//                            || image.getHeight(qrCodeLabel) + MINIMUM_QRCODE_PANEL_VERTICAL_SPACING > qrCodePanel.getHeight()) {
-//                        // scale image
-//                        double qrCodeWidth = (double) qrCodePanel.getWidth();
-//                        double qrCodeHeight = (double) qrCodePanel.getHeight();
-//                        double xScale = qrCodeWidth
-//                                / (double) (image.getWidth(qrCodeLabel) + MINIMUM_QRCODE_PANEL_HORIZONTAL_SPACING);
-//                        double yScale = qrCodeHeight
-//                                / (double) (image.getHeight(qrCodeLabel) + MINIMUM_QRCODE_PANEL_VERTICAL_SPACING);
-//                        double scaleFactor = Math.min(xScale, yScale);
-//                        bufferedImage = toBufferedImage(image, (int) (image.getWidth(qrCodeLabel) * scaleFactor),
-//                                (int) (image.getHeight(qrCodeLabel) * scaleFactor));
-//                    } else {
-//                        // no resize
-//                        bufferedImage = toBufferedImage(image, -1, -1);
-//                    }
-//                    log.debug("importData - 2.2");
-//                    ImageIcon icon = new ImageIcon(bufferedImage);
-//
-//                    // decode the QRCode to a String
-//                    QRCodeEncoderDecoder qrCodeEncoderDecoder = new QRCodeEncoderDecoder(image.getWidth(qrCodeLabel),
-//                            image.getHeight(qrCodeLabel));
-//                    log.debug("importData - 2.3");
-//
-//                    String decodedString = qrCodeEncoderDecoder.decode(toBufferedImage(image, -1, -1));
-//                    log.debug("importData - 3 - decodedResult = " + decodedString);
-//                    log.info("SendBitcoinPanel#imageSelection#importData = decodedString = {}", decodedString);
-//                    return processDecodedString(decodedString, label, icon);
-//                }
-//            }
-//            return false;
-//        }
-//
-//        @SuppressWarnings("rawtypes")
-//        private Image getDropData(Transferable transferable, JComponent label) {
-//            try {
-//                // try to get an image
-//                if (transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
-//                    log.debug("image flavor is supported");
-//                    Image img = (Image) transferable.getTransferData(DataFlavor.imageFlavor);
-//                    if (img != null && img.getWidth(null) != -1) {
-//                        return img;
-//                    }
-//                }
-//                if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-//                    log.debug("javaFileList is supported");
-//                    java.util.List list = (java.util.List) transferable.getTransferData(DataFlavor.javaFileListFlavor);
-//                    for (Object aList : list) {
-//                        File f = (File) aList;
-//                        ImageIcon icon = new ImageIcon(f.getAbsolutePath());
-//                        if (icon.getImage() != null) {
-//                            return icon.getImage();
-//                        }
-//                    }
-//                }
-//
-//                if (transferable.isDataFlavorSupported(uriListAsStringFlavor)) {
-//                    log.debug("uriListAsStringFlavor is supported");
-//                    String uris = (String) transferable.getTransferData(uriListAsStringFlavor);
-//
-//                    // url-lists are defined by rfc 2483 as crlf-delimited
-//                    // TODO iterate over list for all of them
-//                    StringTokenizer izer = new StringTokenizer(uris, "\r\n");
-//                    if (izer.hasMoreTokens()) {
-//                        String uri = izer.nextToken();
-//                        log.debug("uri = " + uri);
-//                        java.awt.Image image = getURLImage(new URL(uri));
-//
-//                        if (image != null) {
-//                            return image;
-//                        }
-//
-//                        ImageIcon uriIcon = new ImageIcon(uri);
-//                        if (uriIcon.getImage() != null) {
-//                            return uriIcon.getImage();
-//                        }
-//                    }
-//                }
-//
-//                if (transferable.isDataFlavorSupported(uriListAsReaderFlavor)) {
-//                    log.debug("uriListAsReaderFlavor is supported");
-//
-//                    BufferedReader read = new BufferedReader(uriListAsReaderFlavor.getReaderForText(transferable));
-//                    // Remove 'file://' from file name
-//                    String fileName = read.readLine().substring(7).replace("%20", " ");
-//                    // Remove 'localhost' from OS X file names
-//                    if (fileName.substring(0, 9).equals("localhost")) {
-//                        fileName = fileName.substring(9);
-//                    }
-//                    read.close();
-//
-//                    java.awt.Image image = getFileImage(new File(fileName));
-//
-//                    if (image != null) {
-//                        return image;
-//                    }
-//                }
-//
-//                if (transferable.isDataFlavorSupported(urlFlavor)) {
-//                    log.debug("urlFlavor is supported");
-//                    URL url = (URL) transferable.getTransferData(urlFlavor);
-//                    log.debug("url = " + url);
-//                    java.awt.Image image = getURLImage(url);
-//
-//                    if (image != null) {
-//                        return image;
-//                    }
-//
-//                    ImageIcon urlIcon = new ImageIcon(url);
-//                    if (urlIcon.getImage() != null) {
-//                        return urlIcon.getImage();
-//                    }
-//                }
-//            } catch (IOException ioe) {
-//                ioe.printStackTrace();
-//            } catch (UnsupportedFlavorException e) {
-//
-//                e.printStackTrace();
-//            }
-//            return null;
-//        }
-//
-//        private Image getURLImage(URL url) {
-//            Image imageToReturn = null;
-//
-//            try {
-//                imageToReturn = ImageIO.read(url);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            return imageToReturn;
-//        }
-//
-//        private Image getFileImage(File file) {
-//            Image imageToReturn = null;
-//
-//            try {
-//                imageToReturn = ImageIO.read(file);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            return imageToReturn;
-//        }
-//
-//        // Transferable
-//        public Object getTransferData(DataFlavor flavor) {
-//            if (isDataFlavorSupported(flavor)) {
-//                if (DataFlavor.imageFlavor.equals(flavor)) {
-//                    return image;
-//                } else {
-//                    if (DataFlavor.javaFileListFlavor.equals(flavor)) {
-//                        java.util.List<File> list = new java.util.LinkedList<File>();
-//
-//                        // write the image to the output stream
-//                        File swatchFile = new File("swatch.png");
-//                        try {
-//                            ImageIO.write(toBufferedImage(image, -1, -1), "png", new File("swatch.png"));
-//                        } catch (IOException e) {
-//                            // TODO Auto-generated catch block
-//                            e.printStackTrace();
-//                        }
-//                        list.add(swatchFile);
-//                        return list;
-//
-//                    }
-//                }
-//            }
-//            return null;
-//        }
-//
-//        public DataFlavor[] getTransferDataFlavors() {
-//            return flavors;
-//        }
-//
-//        public boolean isDataFlavorSupported(DataFlavor flavor) {
-//            for (int j = 0, m = flavors.length; j < m; j++) {
-//                if (flavor.equals(flavors[j])) {
-//                    return true;
-//                }
-//            }
-//            return false;
-//        }
-//
-//        public BufferedImage toBufferedImage(Image image, int width, int height) {
-//            log.debug("SendBitCoinPanel#toBufferedImage - 1");
-//            if (image == null) {
-//                return null;
-//            }
-//            if (width == -1) {
-//                width = image.getWidth(null);
-//            }
-//            if (height == -1) {
-//                height = image.getHeight(null);
-//            }
-//            // draw original image to thumbnail image object and
-//            // scale it to the new size on-the-fly
-//            log.debug("SendBitCoinPanel#toBufferedImage - 2.2, image = " + image + ",width = " + width + ", height = " + height);
-//
-//            BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-//
-//            log.debug("SendBitCoinPanel#toBufferedImage - 2.3, bufferedImage = " + bufferedImage);
-//
-//            Graphics2D g2 = bufferedImage.createGraphics();
-//
-//            log.debug("SendBitCoinPanel#toBufferedImage - 3");
-//            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-//            g2.drawImage(image, 0, 0, width, height, null);
-//            log.debug("SendBitCoinPanel#toBufferedImage - 4");
-//            g2.dispose();
-//            return bufferedImage;
-//        }
-//
-//        // This method returns a buffered image with the contents of an image
-//        public BufferedImage toBufferedImage2(Image image, int width, int height) {
-//            if (width == -1) {
-//                width = image.getWidth(null);
-//            }
-//            if (height == -1) {
-//                height = image.getHeight(null);
-//            }
-//
-//            // This code ensures that all the pixels in the image are loaded
-//            image = new ImageIcon(image).getImage();
-//            log.debug("SendBitCoinPanel#toBufferedImage - 2");
-//
-//            // Create a buffered image with a format that's compatible with the
-//            // screen
-//            BufferedImage bimage = null;
-//            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-//            log.debug("SendBitCoinPanel#toBufferedImage - 2.1");
-//            try {
-//                // Determine the type of transparency of the new buffered image
-//                int transparency = Transparency.OPAQUE;
-//
-//                // Create the buffered image
-//                GraphicsDevice gs = ge.getDefaultScreenDevice();
-//                log.debug("SendBitCoinPanel#toBufferedImage - 2.2");
-//
-//                GraphicsConfiguration gc = gs.getDefaultConfiguration();
-//                log.debug("SendBitCoinPanel#toBufferedImage - 2.3, image = " + image + ",width = " + width + ", height = "
-//                        + height);
-//
-//                bimage = gc.createCompatibleImage(width, height, transparency);
-//                log.debug("SendBitCoinPanel#toBufferedImage - 2.4");
-//
-//            } catch (HeadlessException e) {
-//                // The system does not have a screen
-//            }
-//            log.debug("SendBitCoinPanel#toBufferedImage - 3 - bimage = " + bimage);
-//
-//            if (bimage == null) {
-//                // Create a buffered image using the default color model
-//                int type = BufferedImage.TYPE_INT_RGB;
-//                bimage = new BufferedImage(width, height, type);
-//            }
-//
-//            // Copy image to buffered image
-//            Graphics2D g = bimage.createGraphics();
-//
-//            // Paint the image onto the buffered image
-//            g.drawImage(image, 0, 0, width, height, null);
-//
-//            g.dispose();
-//
-//            log.debug("SendBitCoinPanel#toBufferedImage - 4 - bimage = " + bimage);
-//
-//            return bimage;
-//        }
-//    }
 
     @Override
     public void displayView() {

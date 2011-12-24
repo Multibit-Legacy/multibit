@@ -2,6 +2,7 @@ package org.multibit.viewsystem.swing.view;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -16,8 +17,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.HashMap;
@@ -41,9 +40,9 @@ import javax.swing.TransferHandler;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.Data;
@@ -61,6 +60,8 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
 import org.multibit.viewsystem.swing.action.CopyQRCodeTextAction;
 import org.multibit.viewsystem.swing.action.PasteSwatchAction;
+import org.multibit.viewsystem.swing.view.ShowTransactionsPanel.LeadingJustifiedRenderer;
+import org.multibit.viewsystem.swing.view.ShowTransactionsPanel.TrailingJustifiedRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,6 +145,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         loadForm();
 
         labelTextArea.requestFocusInWindow();
+
+        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
     }
 
     /**
@@ -293,16 +296,34 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         addressesTable.setRowSelectionAllowed(true);
         addressesTable.setColumnSelectionAllowed(false);
         // TODO make sure table cannot be edited by double click
+        // justify column headers
+        TableCellRenderer renderer = addressesTable.getTableHeader().getDefaultRenderer();
+        JLabel label = (JLabel) renderer;
+        if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
+            label.setHorizontalAlignment(JLabel.LEFT);
+        } else {
+            label.setHorizontalAlignment(JLabel.RIGHT);
+        }
 
         TableColumn tableColumn = addressesTable.getColumnModel().getColumn(0); // label
         tableColumn.setPreferredWidth(40);
-        // label left justified
-        tableColumn.setCellRenderer(new LeftJustifiedRenderer());
-
+        if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
+            tableColumn.setCellRenderer(new LeftJustifiedRenderer());
+        } else {
+            tableColumn.setCellRenderer(new RightJustifiedRenderer());
+        }
+   
+        // description leading justified (set explicitly as it does not seem to
+        // work otherwise)
         tableColumn = addressesTable.getColumnModel().getColumn(1); // address
         tableColumn.setPreferredWidth(120);
-        // addresses left justified
-        tableColumn.setCellRenderer(new LeftJustifiedRenderer());
+        // addresses leading justified (set explicitly as it does not seem to
+        // work otherwise)
+        if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
+            tableColumn.setCellRenderer(new LeftJustifiedRenderer());
+        } else {
+            tableColumn.setCellRenderer(new RightJustifiedRenderer());
+        }
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -372,14 +393,86 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         }
     }
 
-    class LeftJustifiedRenderer extends DefaultTableCellRenderer {
+    class LeadingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
         JLabel label = new JLabel();
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
+            label.setHorizontalAlignment(SwingConstants.LEADING);
+            label.setOpaque(true);
+
+            label.setText((String) value);
+
+            if (isSelected) {
+                label.setBackground(table.getSelectionBackground());
+                label.setForeground(table.getSelectionForeground());
+            } else {
+                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
+                label.setBackground(backgroundColor);
+                label.setForeground(table.getForeground());
+            }
+            return label;
+        }
+    }
+
+    class LeftJustifiedRenderer extends DefaultTableCellRenderer {
+        private static final long serialVersionUID = 1549115L;
+
+        JLabel label = new JLabel();
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+                int row, int column) {
             label.setHorizontalAlignment(SwingConstants.LEFT);
+            label.setOpaque(true);
+
+            label.setText((String) value);
+
+            if (isSelected) {
+                label.setBackground(table.getSelectionBackground());
+                label.setForeground(table.getSelectionForeground());
+            } else {
+                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
+                label.setBackground(backgroundColor);
+                label.setForeground(table.getForeground());
+            }
+            return label;
+        }
+    }
+
+    class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
+        private static final long serialVersionUID = 1999545L;
+
+        JLabel label = new JLabel();
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+                int row, int column) {
+            label.setHorizontalAlignment(SwingConstants.TRAILING);
+            label.setOpaque(true);
+
+            label.setText((String) value);
+
+            if (isSelected) {
+                label.setBackground(table.getSelectionBackground());
+                label.setForeground(table.getSelectionForeground());
+            } else {
+                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
+                label.setBackground(backgroundColor);
+                label.setForeground(table.getForeground());
+            }
+            return label;
+        }
+    }
+
+    class RightJustifiedRenderer extends DefaultTableCellRenderer {
+        private static final long serialVersionUID = 2299545L;
+
+        JLabel label = new JLabel();
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+                int row, int column) {
+            label.setHorizontalAlignment(SwingConstants.RIGHT);
             label.setOpaque(true);
 
             label.setText((String) value);
@@ -443,7 +536,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         constraints.weighty = 0.02;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         qrCodePanel.add(filler1, constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -497,7 +590,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected JPanel createQRCodeButtonPanel() {
         JPanel buttonPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
-        flowLayout.setAlignment(FlowLayout.LEFT);
+        flowLayout.setAlignment(FlowLayout.LEADING);
         buttonPanel.setLayout(flowLayout);
 
         CopyQRCodeTextAction copyQRCodeTextAction = new CopyQRCodeTextAction(controller, this);
@@ -688,7 +781,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 processTx(decodedString);
                 return true;
             }
-            
+
             // decode the string to an AddressBookData
             BitcoinURI bitcoinURI = new BitcoinURI(controller, decodedString);
 
@@ -770,7 +863,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             }
         }
     }
- 
+
     /**
      * select the rows that correspond to the current data
      */
@@ -869,9 +962,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         g2.dispose();
         return bufferedImage;
     }
-    
+
     // Transaction test code
-    
+
     private void processTx(String txString) {
         // strip off btctx: prefix
         txString = txString.substring("btctx:".length());
@@ -880,10 +973,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         try {
             byte[] txBytes = decoder.decodeBuffer(txString);
             System.out.println("AbstractTradePanel#decoded " + (txBytes == null ? 0 : txBytes.length) + " bytes.\n");
-            for (int i=0; i < txBytes.length; i++) {
+            for (int i = 0; i < txBytes.length; i++) {
                 String hexString = Integer.toHexString(txBytes[i]);
                 if (hexString.length() > 2) {
-                    hexString = hexString.substring(hexString.length()-2);
+                    hexString = hexString.substring(hexString.length() - 2);
                 }
                 if (hexString.length() < 2) {
                     hexString = '0' + hexString;
@@ -905,7 +998,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         } catch (ProtocolException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } finally{
+        } finally {
             if (inputStream != null) {
                 try {
                     inputStream.close();
@@ -916,5 +1009,5 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             }
         }
     }
- 
+
 }
