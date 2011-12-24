@@ -413,6 +413,8 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
             setOpaque(true);
             setHorizontalAlignment(LEADING);
             setVerticalAlignment(CENTER);
+            
+            setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         }
 
         /*
