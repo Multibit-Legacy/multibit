@@ -210,17 +210,33 @@ public class SwatchGenerator {
         if (swatchHeight > matrixHeight) {
             qrCodeVerticalOffset = (int) ((swatchHeight - matrixHeight) * 0.5);
         }
+        int matrixHorizontalOffset = 0;
+        if (!ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
+            matrixHorizontalOffset = swatchWidth - matrixWidth;
+        }
+
+        int textBoxHorizontalOffset = matrixWidth;
+        if (!ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
+            textBoxHorizontalOffset = QUIET_ZONE_SIZE;
+        }
+
         for (int y = 0; y < matrixHeight; y++) {
             for (int x = 0; x < matrixWidth; x++) {
                 byte imageValue = matrix.get(x, y);
-                image.setRGB(x, y + qrCodeVerticalOffset, imageValue);
+                image.setRGB(x + matrixHorizontalOffset, y + qrCodeVerticalOffset, imageValue);
             }
         }
 
         // fill in the rest of the image as white
         for (int y = 0; y < swatchHeight; y++) {
-            for (int x = matrixWidth; x < swatchWidth; x++) {
-                image.setRGB(x, y, 0xFFFFFF);
+            if (matrixHorizontalOffset == 0) {
+                for (int x = matrixWidth; x < swatchWidth; x++) {
+                    image.setRGB(x, y, 0xFFFFFF);
+                }
+            } else {
+                for (int x = 0; x < swatchWidth - matrixWidth; x++) {
+                    image.setRGB(x, y, 0xFFFFFF);
+                }
             }
         }
         if (swatchHeight > matrixHeight) {
@@ -241,14 +257,18 @@ public class SwatchGenerator {
         for (int y = QUIET_ZONE_SIZE; y < swatchHeight - QUIET_ZONE_SIZE; y++) {
             for (int loopX = 0; loopX < WIDTH_OF_TEXT_BORDER; loopX++) {
                 // left hand side
-                image.setRGB(matrixWidth + loopX, y, 0x000000);
+                image.setRGB(textBoxHorizontalOffset + loopX, y, 0x000000);
 
                 // right hand side
-                image.setRGB(swatchWidth - QUIET_ZONE_SIZE - loopX - 1, y, 0x000000);
+                if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
+                    image.setRGB(swatchWidth - QUIET_ZONE_SIZE - loopX - 1, y, 0x000000);
+                } else {
+                    image.setRGB(swatchWidth - matrixWidth - loopX - 1, y, 0x000000);
+                }
             }
         }
 
-        for (int x = matrixWidth + QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER; x < swatchWidth - QUIET_ZONE_SIZE; x++) {
+        for (int x = textBoxHorizontalOffset + QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER; x < swatchWidth - QUIET_ZONE_SIZE - matrixWidth + textBoxHorizontalOffset; x++) {
             for (int loopY = 0; loopY < WIDTH_OF_TEXT_BORDER; loopY++) {
                 // top side
                 image.setRGB(x, QUIET_ZONE_SIZE + loopY, 0x000000);
@@ -262,50 +282,51 @@ public class SwatchGenerator {
 
         g2.setColor(Color.black);
         g2.setFont(addressFont);
-        // left justified
-        // g2.drawString(address, matrixWidth + QUIET_ZONE_SIZE +
-        // WIDTH_OF_TEXT_BORDER, swatchHeight - QUIET_ZONE_SIZE -
-        // WIDTH_OF_TEXT_BORDER
-        // - BOTTOM_TEXT_INSET);
 
         // right justified
-        g2.drawString(address, swatchWidth - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - RIGHT_TEXT_INSET - addressAdvance,
-                swatchHeight - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - BOTTOM_TEXT_INSET);
+        g2.drawString(address, swatchWidth - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - RIGHT_TEXT_INSET - addressAdvance
+                - matrixWidth + textBoxHorizontalOffset, swatchHeight - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - BOTTOM_TEXT_INSET);
 
         g2.setFont(labelFont);
         if (labelLines != null) {
             for (int i = 0; i < labelLines.length; i++) {
                 if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
-                    g2.drawString(labelLines[i], matrixWidth + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER, QUIET_ZONE_SIZE
-                            + TOP_TEXT_INSET + labelFont.getSize() + i * (labelFont.getSize() + GAP_BETWEEN_TEXT_ROWS));
+                    // left justified
+                    g2.drawString(labelLines[i], textBoxHorizontalOffset + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER,
+                            QUIET_ZONE_SIZE + TOP_TEXT_INSET + labelFont.getSize() + i
+                                    * (labelFont.getSize() + GAP_BETWEEN_TEXT_ROWS));
                 } else {
-                    int leftEdge = swatchWidth - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - RIGHT_TEXT_INSET - getAdvance(emptyGraphics, labelLines[i], labelFont);
-                    g2.drawString(labelLines[i], leftEdge, QUIET_ZONE_SIZE
-                            + TOP_TEXT_INSET + labelFont.getSize() + i * (labelFont.getSize() + GAP_BETWEEN_TEXT_ROWS));
+                    // right justified
+                    int leftEdge = swatchWidth - matrixWidth - WIDTH_OF_TEXT_BORDER - RIGHT_TEXT_INSET
+                            - getAdvance(emptyGraphics, labelLines[i], labelFont);
+                    g2.drawString(labelLines[i], leftEdge, QUIET_ZONE_SIZE + TOP_TEXT_INSET + labelFont.getSize() + i
+                            * (labelFont.getSize() + GAP_BETWEEN_TEXT_ROWS));
                 }
             }
             if (addAmount) {
                 g2.setFont(amountFont);
-                // left justified
-                // g2.drawString(amount + " "+
-                // controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"),
-                // matrixWidth + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER,
-                // QUIET_ZONE_SIZE
-                // + TOP_TEXT_INSET + labelLines.length * (labelFont.getSize() +
-                // GAP_BETWEEN_TEXT_ROWS) + amountFont.getSize());
 
                 // bottom right justified
-                g2.drawString(amount + " " + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"),
-                        swatchWidth - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - RIGHT_TEXT_INSET - amountAdvance, swatchHeight
-                                - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - BOTTOM_TEXT_INSET - addressFont.getSize()
-                                - GAP_ABOVE_ADDRESS);
+                if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
+                    g2.drawString(amount + " " + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"),
+                            swatchWidth - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - RIGHT_TEXT_INSET - amountAdvance,
+                            swatchHeight - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - BOTTOM_TEXT_INSET - addressFont.getSize()
+                                    - GAP_ABOVE_ADDRESS);
+                } else {
+                    // bottom right justified, with swatch to right
+                    g2.drawString(amount + " " + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"),
+                            swatchWidth - matrixWidth - WIDTH_OF_TEXT_BORDER - RIGHT_TEXT_INSET
+                                    - amountAdvance, swatchHeight - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - BOTTOM_TEXT_INSET
+                                    - addressFont.getSize() - GAP_ABOVE_ADDRESS);
+                }
             }
         } else {
             if (addAmount) {
                 g2.setFont(amountFont);
-                g2.drawString(amount + " " + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"),
-                        matrixWidth + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER,
-                        QUIET_ZONE_SIZE + TOP_TEXT_INSET + amountFont.getSize());
+                     // left justified, no swatch
+                    g2.drawString(amount + " " + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"),
+                            textBoxHorizontalOffset + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER,
+                            QUIET_ZONE_SIZE + TOP_TEXT_INSET + amountFont.getSize());
             }
         }
         // long time1 = (new Date()).getTime();
@@ -326,7 +347,7 @@ public class SwatchGenerator {
 
     public static void main(String[] args) {
         MultiBitController controller = new MultiBitController();
-        Localiser localiser = new Localiser(new Locale("ar"));
+        Localiser localiser = new Localiser(new Locale("en"));
         controller.setLocaliser(localiser);
         SwatchGenerator swatchGenerator = new SwatchGenerator(controller);
         String address = "15BGmyMKxGFkejW1oyf2Gwv3NHqeUP7aWh";
@@ -349,6 +370,7 @@ public class SwatchGenerator {
         amount = "0.41";
         label = "";
 
+        controller.getLocaliser().setLocale(new Locale("ar"));
         swatch = swatchGenerator.generateSwatch(address, amount, label);
         icon = new ImageIcon(swatch);
         JOptionPane.showMessageDialog(null, "", "Swatch Generator 3", JOptionPane.INFORMATION_MESSAGE, icon);
