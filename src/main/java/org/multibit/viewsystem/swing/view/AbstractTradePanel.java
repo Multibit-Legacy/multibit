@@ -10,6 +10,7 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -37,6 +38,7 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.TransferHandler;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -60,8 +62,6 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
 import org.multibit.viewsystem.swing.action.CopyQRCodeTextAction;
 import org.multibit.viewsystem.swing.action.PasteSwatchAction;
-import org.multibit.viewsystem.swing.view.ShowTransactionsPanel.LeadingJustifiedRenderer;
-import org.multibit.viewsystem.swing.view.ShowTransactionsPanel.TrailingJustifiedRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,6 +83,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
     private static final int MINIMUM_QRCODE_PANEL_HORIZONTAL_SPACING = 30;
     private static final int MINIMUM_QRCODE_PANEL_VERTICAL_SPACING = 80;
+
+    private static final int TABLE_BORDER = 3;
 
     protected MultiBitFrame mainFrame;
 
@@ -402,6 +404,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 int row, int column) {
             label.setHorizontalAlignment(SwingConstants.LEADING);
             label.setOpaque(true);
+            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
 
             label.setText((String) value);
 
@@ -426,6 +429,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 int row, int column) {
             label.setHorizontalAlignment(SwingConstants.LEFT);
             label.setOpaque(true);
+            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
 
             label.setText((String) value);
 
@@ -450,6 +454,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 int row, int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
+            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
 
             label.setText((String) value);
 
@@ -474,6 +479,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 int row, int column) {
             label.setHorizontalAlignment(SwingConstants.RIGHT);
             label.setOpaque(true);
+            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
 
             label.setText((String) value);
 

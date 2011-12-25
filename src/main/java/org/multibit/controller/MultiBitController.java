@@ -1,6 +1,5 @@
 package org.multibit.controller;
 
-import java.awt.ComponentOrientation;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -18,6 +17,8 @@ import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Block;
@@ -25,8 +26,6 @@ import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * the MVC controller for Multibit - this is loosely based on the Apache Struts
@@ -571,5 +570,21 @@ public class MultiBitController implements PeerEventListener {
 
     public ApplicationDataDirectoryLocator getApplicationDataDirectoryLocator() {
         return applicationDataDirectoryLocator;
+    }
+
+    public int getNextView() {
+        return nextView;
+    }
+
+    public void setNextView(int nextView) {
+        this.nextView = nextView;
+    }
+
+    public int getCurrentView() {
+        return currentView;
+    }
+
+    public void setCurrentView(int currentView) {
+        this.currentView = currentView;
     }
 }

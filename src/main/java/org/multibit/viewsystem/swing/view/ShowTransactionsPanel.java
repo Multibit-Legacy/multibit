@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
 import java.awt.*;
 import java.text.SimpleDateFormat;
@@ -33,12 +35,19 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
     private static final String SPACER = "   "; // 3 spaces
 
+    private static final int TABLE_BORDER = 3;
+
     private static final String PROGRESS_0_ICON_FILE = "/images/progress0.png";
     private static final String PROGRESS_1_ICON_FILE = "/images/progress1.png";
     private static final String PROGRESS_2_ICON_FILE = "/images/progress2.png";
     private static final String PROGRESS_3_ICON_FILE = "/images/progress3.png";
     private static final String PROGRESS_4_ICON_FILE = "/images/progress4.png";
     private static final String PROGRESS_5_ICON_FILE = "/images/progress5.png";
+    private static final String RTL_PROGRESS_1_ICON_FILE = "/images/rtl_progress1.png";
+    private static final String RTL_PROGRESS_2_ICON_FILE = "/images/rtl_progress2.png";
+    private static final String RTL_PROGRESS_3_ICON_FILE = "/images/rtl_progress3.png";
+    private static final String RTL_PROGRESS_4_ICON_FILE = "/images/rtl_progress4.png";
+    private static final String RTL_PROGRESS_5_ICON_FILE = "/images/rtl_progress5.png";
     private static final String TICK_ICON_FILE = "/images/tick.png";
 
     public ShowTransactionsPanel(JFrame mainFrame, MultiBitController controller) {
@@ -77,8 +86,9 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
         JLabel label = (JLabel) renderer;
         label.setHorizontalAlignment(JLabel.CENTER);
-        
-        // description leading justified (set explicitly as it does not seem to work otherwise)
+
+        // description leading justified (set explicitly as it does not seem to
+        // work otherwise)
         if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
             table.getColumnModel().getColumn(2).setCellRenderer(new LeadingJustifiedRenderer());
         } else {
@@ -91,7 +101,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
         TableColumn tableColumn = table.getColumnModel().getColumn(0); // status
         tableColumn.setPreferredWidth(35);
- 
+
         tableColumn = table.getColumnModel().getColumn(1); // date
         tableColumn.setPreferredWidth(85);
 
@@ -167,6 +177,11 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         ImageIcon progress3Icon = MultiBitFrame.createImageIcon(PROGRESS_3_ICON_FILE);
         ImageIcon progress4Icon = MultiBitFrame.createImageIcon(PROGRESS_4_ICON_FILE);
         ImageIcon progress5Icon = MultiBitFrame.createImageIcon(PROGRESS_5_ICON_FILE);
+        ImageIcon rtlProgress1Icon = MultiBitFrame.createImageIcon(RTL_PROGRESS_1_ICON_FILE);
+        ImageIcon rtlProgress2Icon = MultiBitFrame.createImageIcon(RTL_PROGRESS_2_ICON_FILE);
+        ImageIcon rtlProgress3Icon = MultiBitFrame.createImageIcon(RTL_PROGRESS_3_ICON_FILE);
+        ImageIcon rtlProgress4Icon = MultiBitFrame.createImageIcon(RTL_PROGRESS_4_ICON_FILE);
+        ImageIcon rtlProgress5Icon = MultiBitFrame.createImageIcon(RTL_PROGRESS_5_ICON_FILE);
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
@@ -181,6 +196,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 numberOfBlocksEmbedded = 6;
             }
 
+            boolean isLeftToRight = ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight();
             switch (numberOfBlocksEmbedded) {
             case 0: {
                 label.setIcon(progress0Icon);
@@ -188,27 +204,47 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 break;
             }
             case 1: {
-                label.setIcon(progress1Icon);
+                if (isLeftToRight) {
+                    label.setIcon(progress1Icon);
+                } else {
+                    label.setIcon(rtlProgress1Icon);
+                }
                 label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
                 break;
             }
             case 2: {
-                label.setIcon(progress2Icon);
+                if (isLeftToRight) {
+                    label.setIcon(progress2Icon);
+                } else {
+                    label.setIcon(rtlProgress2Icon);
+                }
                 label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
                 break;
             }
             case 3: {
-                label.setIcon(progress3Icon);
+                if (isLeftToRight) {
+                    label.setIcon(progress3Icon);
+                } else {
+                    label.setIcon(rtlProgress3Icon);
+                }
                 label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
                 break;
             }
             case 4: {
-                label.setIcon(progress4Icon);
+                if (isLeftToRight) {
+                    label.setIcon(progress4Icon);
+                } else {
+                    label.setIcon(rtlProgress4Icon);
+                }
                 label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
                 break;
             }
             case 5: {
-                label.setIcon(progress5Icon);
+                if (isLeftToRight) {
+                    label.setIcon(progress5Icon);
+                } else {
+                    label.setIcon(rtlProgress5Icon);
+                }
                 label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
                 break;
             }
@@ -239,6 +275,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 int row, int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
+            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
 
             label.setText(value + SPACER);
             if (!label.getBackground().equals(table.getSelectionBackground())) {
@@ -259,6 +296,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 int row, int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
+            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
 
             String formattedDate = "";
             if (value != null) {
@@ -297,7 +335,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             label.setHorizontalAlignment(SwingConstants.LEADING);
             label.setBackground(MultiBitFrame.BACKGROUND_COLOR);
             label.setOpaque(true);
-
+            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
             label.setText((String) value);
 
             if (!label.getBackground().equals(table.getSelectionBackground())) {

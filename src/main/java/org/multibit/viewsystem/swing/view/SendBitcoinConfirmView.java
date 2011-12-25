@@ -1,5 +1,6 @@
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -59,6 +60,11 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         this.mainFrame = mainFrame;
 
         initUI();
+        
+        cancelButton.requestFocusInWindow();
+        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+ 
+        setVisible(true);
     }
 
     /**
@@ -310,8 +316,6 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(filler4, constraints);
-
-        setVisible(true);
     }
 
     public void setSendConfirmText(String confirm1, String confirm2) {

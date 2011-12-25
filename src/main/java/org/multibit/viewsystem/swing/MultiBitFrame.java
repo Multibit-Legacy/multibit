@@ -105,6 +105,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final String MULTIBIT_ICON_FILE = "/images/multibit.png";
     public static final String MULTIBIT_128_ICON_FILE = "/images/multibit128.png";
     private static final String WALLET_ICON_FILE = "/images/wallet.png";
+    private static final String RTL_WALLET_ICON_FILE = "/images/rtl_wallet.png";
     public static final String EXCLAMATION_MARK_ICON_FILE = "/images/exclamationMark.png";
 
     public static final String MULTIBIT_FONT_NAME = "Dialog";
@@ -380,7 +381,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.add(filler1, constraints);
 
         JLabel walletIconLabel = new JLabel();
-        walletIconLabel.setIcon(createImageIcon(WALLET_ICON_FILE));
+        if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
+            walletIconLabel.setIcon(createImageIcon(WALLET_ICON_FILE));
+        } else {
+            walletIconLabel.setIcon(createImageIcon(RTL_WALLET_ICON_FILE));
+        }
         walletIconLabel.setOpaque(false);
         walletIconLabel.setMinimumSize(new Dimension(60, 80));
         walletIconLabel.setMaximumSize(new Dimension(60, 80));

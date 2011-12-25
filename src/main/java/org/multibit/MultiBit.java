@@ -26,6 +26,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
+import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
@@ -98,6 +99,12 @@ public class MultiBit {
             // carry on
         }
 
+        // tweak the next view  - if it is the send confirm : display the send view
+        if (controller.getCurrentView() == View.SEND_BITCOIN_CONFIRM_VIEW) {
+            controller.setCurrentView(View.SEND_BITCOIN_VIEW);
+            controller.setNextView(View.SEND_BITCOIN_VIEW);
+        }
+
         // create the view systems
         // add the swing view system
         ViewSystem swingViewSystem = new MultiBitFrame(controller);
@@ -144,7 +151,6 @@ public class MultiBit {
             }
         }
 
-        // display the next view
         controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
 
         // see if the user wants to connect to a single node
