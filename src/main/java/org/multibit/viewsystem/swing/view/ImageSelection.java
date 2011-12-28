@@ -1,8 +1,11 @@
 package org.multibit.viewsystem.swing.view;
 
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -12,17 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.StringTokenizer;
-
-import javax.imageio.ImageIO;
-import javax.swing.AbstractButton;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.TransferHandler;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ImageSelection extends TransferHandler implements Transferable {
     private static final long serialVersionUID = 756395092284264645L;
@@ -98,7 +90,7 @@ public class ImageSelection extends TransferHandler implements Transferable {
 
             JLabel label = (JLabel) comp;
             image = getDropData(transferable, label);
-            log.debug("importData - 2 - image = " + image);
+            log.debug("importData - 2 - image = {}", image);
 
             return abstractTradePanel.processDroppedImage(image);
 
@@ -198,7 +190,7 @@ public class ImageSelection extends TransferHandler implements Transferable {
                     if (uri.startsWith("#") || uri.isEmpty()) {
                         // comment line, by RFC 2483
                     } else {
-                        log.debug("uri = " + uri);
+                        log.debug("uri = '{}'", uri);
                         java.awt.Image image = getURLImage(new URL(uri));
 
                         if (image != null) {
@@ -235,7 +227,7 @@ public class ImageSelection extends TransferHandler implements Transferable {
             if (transferable.isDataFlavorSupported(urlFlavor)) {
                 log.debug("urlFlavor is supported");
                 URL url = (URL) transferable.getTransferData(urlFlavor);
-                log.debug("url = " + url);
+                log.debug("url = '{}'", url);
                 java.awt.Image image = getURLImage(url);
 
                 if (image != null) {
@@ -291,11 +283,11 @@ public class ImageSelection extends TransferHandler implements Transferable {
         }
         // draw original image to thumbnail image object and
         // scale it to the new size on-the-fly
-        log.debug("toBufferedImage - 2.2, image = " + image + ",width = " + width + ", height = " + height);
+        log.debug("toBufferedImage - 2.2, image = {}, width = {}, height = {}", new Object[] {image,width,height});
 
         BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-        log.debug("toBufferedImage - 2.3, bufferedImage = " + bufferedImage);
+        log.debug("toBufferedImage - 2.3, bufferedImage = {}", bufferedImage);
 
         Graphics2D g2 = bufferedImage.createGraphics();
 

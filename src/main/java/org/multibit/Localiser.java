@@ -4,7 +4,6 @@ import com.google.bitcoin.core.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,7 +58,6 @@ public class Localiser {
      * create a Localiser using a ResourceBundle based on the specified
      * 'bundleName' with Locale 'locale'
      * 
-     * @param bundleName
      * @param locale
      */
     public Localiser(Locale locale) {

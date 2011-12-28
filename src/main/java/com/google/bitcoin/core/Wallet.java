@@ -208,7 +208,7 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
     @Override
     synchronized public void processPendingTransaction(Transaction transaction) {       
         if (transaction.isMine(this) && !transaction.sent(this)) {
-            log.debug("Wallet#receivePendingTransaction - received pending transaction: " + transaction);
+            log.debug("Wallet#receivePendingTransaction - received pending transaction: {}", transaction);
             // the main receive logic is not run yet - this is done when the block with this transaction is received
             transaction.setUpdatedAt(new Date());
             
@@ -797,7 +797,8 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
      *
      * Note: the estimated balance is usually the one you want to show to the end user - however attempting to
      * actually spend these coins may result in temporary failure. This method returns how much you can safely
-     * provide to {@link Wallet#createSend(Address, java.math.BigInteger)}.
+     * provide to {@link Wallet#createSend(Address, java.math.BigInteger, java.math.BigInteger)}.
+     * @return The available balance
      */
     public synchronized BigInteger getBalance() {
         return getBalance(BalanceType.AVAILABLE);
@@ -805,6 +806,7 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
 
     /**
      * Returns the balance of this wallet as calculated by the provided balanceType.
+     * @param balanceType The balance given by the balance type (e.g. AVAILABLE)
      */
     public synchronized BigInteger getBalance(BalanceType balanceType) {
         BigInteger available = BigInteger.ZERO;

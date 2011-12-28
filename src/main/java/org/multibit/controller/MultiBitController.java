@@ -1,40 +1,39 @@
 package org.multibit.controller;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EmptyStackException;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.Stack;
-
+import com.google.bitcoin.core.*;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Localiser;
+import org.multibit.action.ExitAction;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
+import org.multibit.platform.listener.*;
+import org.multibit.qrcode.BitcoinURI;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.Block;
-import com.google.bitcoin.core.Peer;
-import com.google.bitcoin.core.PeerEventListener;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Wallet;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.net.URI;
+import java.net.URLDecoder;
+import java.util.*;
 
 /**
  * the MVC controller for Multibit - this is loosely based on the Apache Struts
  * controller
- * 
+ *
  * @author jim
- * 
  */
-public class MultiBitController implements PeerEventListener {
+public class MultiBitController implements
+    PeerEventListener,
+    GenericOpenURIEventListener,
+    GenericPreferencesEventListener,
+    GenericAboutEventListener,
+    GenericQuitEventListener {
 
     private Logger log = LoggerFactory.getLogger(MultiBitController.class);
 
@@ -77,17 +76,24 @@ public class MultiBitController implements PeerEventListener {
      * the bitcoinj network interface
      */
     private MultiBitService multiBitService;
-    
+
     /**
      * class encapsulating File IO
      */
     private FileHandler fileHandler;
-    
+
     /**
      * class encapsulating the location of the Application Data Directory
      */
     private ApplicationDataDirectoryLocator applicationDataDirectoryLocator;
-    
+
+    /**
+     * Multiple threads will write to this variable so require it to be volatile to ensure
+     * that latest write is what gets read
+     */
+    private volatile URI rawBitcoinURI = null;
+
+    private volatile boolean applicationStarting = true;
 
     /**
      * used for testing only
@@ -98,7 +104,7 @@ public class MultiBitController implements PeerEventListener {
 
     public MultiBitController(Properties userPreferences, ApplicationDataDirectoryLocator applicationDataDirectoryLocator) {
         this.applicationDataDirectoryLocator = applicationDataDirectoryLocator;
-        
+
         viewSystems = new ArrayList<ViewSystem>();
 
         // initialise everything to look at the stored opened view and previous
@@ -128,20 +134,20 @@ public class MultiBitController implements PeerEventListener {
         this.previousView = previousView;
         currentView = initialView;
         nextView = initialView;
-        
+
         fileHandler = new FileHandler(this);
     }
 
     /**
      * set the action forward that will be used to determined the next view to
      * display
-     * 
+     *
      * normally called by the action once it has decided what the next view is
-     * 
+     *
      * this setActionForward should be used when the next view is a child of the
      * current view
-     * 
-     * @param actionForward
+     *
+     * @param actionForward The action forward
      */
     public void setActionForwardToChild(ActionForward actionForward) {
         // push current view onto the stack
@@ -153,8 +159,8 @@ public class MultiBitController implements PeerEventListener {
     /**
      * set the action forward that will be used to determined the next view to
      * display where the next view is a sibling of the current view
-     * 
-     * @param actionForward
+     *
+     * @param actionForward The action forward
      */
     public void setActionForwardToSibling(ActionForward actionForward) {
         determineNextView(actionForward);
@@ -165,8 +171,6 @@ public class MultiBitController implements PeerEventListener {
 
     /**
      * set the next view to be the parent of the current
-     * 
-     * @param actionForward
      */
     public void setActionForwardToParent() {
         try {
@@ -183,117 +187,116 @@ public class MultiBitController implements PeerEventListener {
     /**
      * set the action forward that will be used to determined the next view to
      * display
-     * 
+     *
      * normally called by the action once it has decided what the next view is
-     * 
+     *
      * this setActionForward should be used when the next view is a child of the
      * current view
-     * 
-     * @param actionForward
-     * @return next view (on View enum)
+     *
+     * @param actionForward The action forward
      */
     public void determineNextView(ActionForward actionForward) {
         switch (actionForward) {
-        case FORWARD_TO_SAME: {
-            // redisplay the sameView
-            nextView = currentView;
-            break;
-        }
-        case FORWARD_TO_PREVIOUS: {
-            // go back to the previously displayed view
-            nextView = previousView;
-            break;
-        }
-        case FORWARD_TO_OPEN_WALLET: {
-            // show the open wallet view
-            // should check actually on home page
-            nextView = View.OPEN_WALLET_VIEW;
-            break;
-        }
-        case FORWARD_TO_CREATE_NEW_WALLET: {
-            // show the open wallet view
-            // should check actually on home page
-            nextView = View.SAVE_WALLET_AS_VIEW;
-            break;
-        }
-        case FORWARD_TO_RECEIVE_BITCOIN: {
-            // show the receive bitcoin view
-            // should check actually on home page
-            nextView = View.RECEIVE_BITCOIN_VIEW;
-            break;
-        }
-        case FORWARD_TO_SEND_BITCOIN: {
-            // show the send bitcoin view
-            // should check actually on home page
-            nextView = View.SEND_BITCOIN_VIEW;
-            break;
-        }
-        case FORWARD_TO_SEND_BITCOIN_CONFIRM: {
-            // show the send bitcoin confirm view
-            // should check actually on send bitcoin view
-            nextView = View.SEND_BITCOIN_CONFIRM_VIEW;
-            break;
-        }
-        case FORWARD_TO_HELP_ABOUT: {
-            // show the help about view
-            // should check actually on home page
-            nextView = View.HELP_ABOUT_VIEW;
-            break;
-        }
-        case FORWARD_TO_HELP_CONTENTS: {
-            // show the help contents view
-            // should check actually on home page
-            nextView = View.HELP_CONTENTS_VIEW;
-            break;
-        }
+            case FORWARD_TO_SAME: {
+                // redisplay the sameView
+                nextView = currentView;
+                break;
+            }
+            case FORWARD_TO_PREVIOUS: {
+                // go back to the previously displayed view
+                nextView = previousView;
+                break;
+            }
+            case FORWARD_TO_OPEN_WALLET: {
+                // show the open wallet view
+                // should check actually on home page
+                nextView = View.OPEN_WALLET_VIEW;
+                break;
+            }
+            case FORWARD_TO_CREATE_NEW_WALLET: {
+                // show the open wallet view
+                // should check actually on home page
+                nextView = View.SAVE_WALLET_AS_VIEW;
+                break;
+            }
+            case FORWARD_TO_RECEIVE_BITCOIN: {
+                // show the receive bitcoin view
+                // should check actually on home page
+                nextView = View.RECEIVE_BITCOIN_VIEW;
+                break;
+            }
+            case FORWARD_TO_SEND_BITCOIN: {
+                // show the send bitcoin view
+                // should check actually on home page
+                nextView = View.SEND_BITCOIN_VIEW;
+                break;
+            }
+            case FORWARD_TO_SEND_BITCOIN_CONFIRM: {
+                // show the send bitcoin confirm view
+                // should check actually on send bitcoin view
+                nextView = View.SEND_BITCOIN_CONFIRM_VIEW;
+                break;
+            }
+            case FORWARD_TO_HELP_ABOUT: {
+                // show the help about view
+                // should check actually on home page
+                nextView = View.HELP_ABOUT_VIEW;
+                break;
+            }
+            case FORWARD_TO_HELP_CONTENTS: {
+                // show the help contents view
+                // should check actually on home page
+                nextView = View.HELP_CONTENTS_VIEW;
+                break;
+            }
 
-        case FORWARD_TO_PREFERENCES: {
-            // show the preferences view
-            // should check actually on home page
-            nextView = View.PREFERENCES_VIEW;
-            break;
-        }
+            case FORWARD_TO_PREFERENCES: {
+                // show the preferences view
+                // should check actually on home page
+                nextView = View.PREFERENCES_VIEW;
+                break;
+            }
 
-        case FORWARD_TO_TRANSACTIONS: {
-            // show the transactions page
-            nextView = View.TRANSACTIONS_VIEW;
-            break;
-        }
+            case FORWARD_TO_TRANSACTIONS: {
+                // show the transactions page
+                nextView = View.TRANSACTIONS_VIEW;
+                break;
+            }
 
-        case FORWARD_TO_VALIDATION_ERROR: {
-            // show the validation error view
-            nextView = View.VALIDATION_ERROR_VIEW;
-            break;
-        }
+            case FORWARD_TO_VALIDATION_ERROR: {
+                // show the validation error view
+                nextView = View.VALIDATION_ERROR_VIEW;
+                break;
+            }
 
-        case FORWARD_TO_YOUR_WALLETS: {
-            // show the your wallets view
-            nextView = View.YOUR_WALLETS_VIEW;
-            break;
-        }
+            case FORWARD_TO_YOUR_WALLETS: {
+                // show the your wallets view
+                nextView = View.YOUR_WALLETS_VIEW;
+                break;
+            }
 
-        case FORWARD_TO_CREATE_BULK_ADDRESSES_VIEW: {
-            // show the create bulk addresses view
-            nextView = View.CREATE_BULK_ADDRESSES_VIEW;
-            break;
-        }
+            case FORWARD_TO_CREATE_BULK_ADDRESSES_VIEW: {
+                // show the create bulk addresses view
+                nextView = View.CREATE_BULK_ADDRESSES_VIEW;
+                break;
+            }
 
-        case FORWARD_TO_RESET_TRANSACTIONS_VIEW: {
-            // show the reset transactions view
-            nextView = View.RESET_TRANSACTIONS_VIEW;
-            break;
-        }
+            case FORWARD_TO_RESET_TRANSACTIONS_VIEW: {
+                // show the reset transactions view
+                nextView = View.RESET_TRANSACTIONS_VIEW;
+                break;
+            }
 
-        default: {
-            nextView = View.YOUR_WALLETS_VIEW;
-            break;
-        }
+            default: {
+                nextView = View.YOUR_WALLETS_VIEW;
+                break;
+            }
         }
     }
 
     /**
      * @param relationshipOfNewViewToPrevious
-     *            - one of ViewSystem relationship constants
+     *         - one of ViewSystem relationship constants
      */
     public void displayNextView(int relationshipOfNewViewToPrevious) {
         if (nextView != 0) {
@@ -312,7 +315,7 @@ public class MultiBitController implements PeerEventListener {
             // no need to redisplay - already there and ok to keep
             return;
         }
-        
+
         // tell all views to close the previous view
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.navigateAwayFromView(previousView, currentView, relationshipOfNewViewToPrevious);
@@ -321,9 +324,9 @@ public class MultiBitController implements PeerEventListener {
         // for the top level views, clear the view stack
         // this makes the UI behaviour a bit more 'normal'
         if (currentView == View.YOUR_WALLETS_VIEW || currentView == View.TRANSACTIONS_VIEW
-                || currentView == View.RECEIVE_BITCOIN_VIEW || currentView == View.SEND_BITCOIN_VIEW
-                || currentView == View.HELP_ABOUT_VIEW || currentView == View.HELP_CONTENTS_VIEW
-                || currentView == View.PREFERENCES_VIEW) {
+            || currentView == View.RECEIVE_BITCOIN_VIEW || currentView == View.SEND_BITCOIN_VIEW
+            || currentView == View.HELP_ABOUT_VIEW || currentView == View.HELP_CONTENTS_VIEW
+            || currentView == View.PREFERENCES_VIEW) {
             clearViewStack();
         }
 
@@ -338,18 +341,18 @@ public class MultiBitController implements PeerEventListener {
 
     /**
      * register a new MultiBitViewSystem from the list of views that are managed
-     * 
-     * @param viewSystem
-     *            system
+     *
+     * @param viewSystem system
      */
     public void registerViewSystem(ViewSystem viewSystem) {
         viewSystems.add(viewSystem);
     }
 
     /**
-     * deregister a MultiBitViewSystem from the list of views being managed
-     * 
-     * @param viewSystem
+     * De-register a MultiBitViewSystem from the list of views being managed
+     * TODO Consider Refactor rename to "remove" not "deregister"
+     *
+     * @param viewSystem The view system
      */
     public void deregisterViewSystem(ViewSystem viewSystem) {
         viewSystems.remove(viewSystem);
@@ -393,6 +396,10 @@ public class MultiBitController implements PeerEventListener {
 
     /**
      * add a wallet to multibit from a filename
+     *
+     * @param walletFilename The wallet filename
+     *
+     * @return The model data
      */
     public PerWalletModelData addWalletFromFilename(String walletFilename) {
         PerWalletModelData perWalletModelDataToReturn = null;
@@ -422,9 +429,9 @@ public class MultiBitController implements PeerEventListener {
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.newWalletCreated();
-        }   
+        }
     }
-    
+
     /**
      * the wallet file has been changed
      */
@@ -434,6 +441,8 @@ public class MultiBitController implements PeerEventListener {
 
     /**
      * fire that all the views need recreating
+     *
+     * @param clearCache True if the cache should be cleared
      */
     public void fireRecreateAllViews(boolean clearCache) {
         // tell the viewSystems to refresh their views
@@ -455,10 +464,10 @@ public class MultiBitController implements PeerEventListener {
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         }
-        
+
         fireDataChanged();
     }
-    
+
     public Localiser getLocaliser() {
         return localiser;
     }
@@ -506,6 +515,8 @@ public class MultiBitController implements PeerEventListener {
 
     /**
      * method called by downloadListener to update download status
+     *
+     * @param downloadStatus The download status string
      */
     public void updateDownloadStatus(String downloadStatus) {
         for (ViewSystem viewSystem : viewSystems) {
@@ -541,10 +552,12 @@ public class MultiBitController implements PeerEventListener {
     }
 
     public void sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String sendLabel, String amount, BigInteger fee) throws IOException,
-            AddressFormatException {
+        AddressFormatException {
+        // TODO sendLabel is not used, consider Refactor change method signature
         // send the coins
         Transaction sendTransaction = multiBitService.sendCoins(perWalletModelData, sendAddressString, amount, fee);
         fireRecreateAllViews(false);
+        // TODO Require better confirmation here
         if (sendTransaction == null) {
             throw new IllegalStateException("No transaction was created after send.   The send may have failed.");
         }
@@ -587,4 +600,86 @@ public class MultiBitController implements PeerEventListener {
     public void setCurrentView(int currentView) {
         this.currentView = currentView;
     }
+
+    public void setApplicationStarting(boolean applicationStarting) {
+        this.applicationStarting = applicationStarting;
+    }
+
+    @Override
+    public synchronized void onOpenURIEvent(GenericOpenURIEvent event) {
+        rawBitcoinURI = event.getURI();
+        log.debug("Controller received open URI event with URI='{}'", rawBitcoinURI.toASCIIString());
+        if (!applicationStarting) {
+            handleOpenURI();
+        }
+    }
+
+    public synchronized void handleOpenURI() {
+        if (rawBitcoinURI == null) {
+            log.debug("No Bitcoin URI found to handle");
+            return;
+        }
+        // Process the URI
+        BitcoinURI bitcoinURI = new BitcoinURI(this, rawBitcoinURI.toString());
+        if (bitcoinURI.isParsedOk()) {
+            log.debug("Parsed Bitcoin URI successfully");
+
+            // Convert the URI data into suitably formatted view data
+            String address = bitcoinURI.getAddress().toString();
+            String label = "";
+            try {
+                // No label? Set it to a blank String otherwise perform a URL decode on it just to be sure
+                label = null == bitcoinURI.getLabel() ? "" : URLDecoder.decode(bitcoinURI.getLabel(), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                log.error("Could not decode the label in UTF-8. Unusual URI entry or platform.");
+            }
+            // No amount? Set it to zero
+            BigInteger numericAmount = null == bitcoinURI.getAmount() ? BigInteger.ZERO : bitcoinURI.getAmount();
+            String amount = getLocaliser().bitcoinValueToString(numericAmount, false, false);
+
+            // TODO Consider showing a dialog before altering the view - swabbing attack?
+
+            // Populate the model with the URI data
+            getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, address);
+            getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, label);
+            getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amount);
+
+            // Configure to work with the Send view
+            determineNextView(ActionForward.FORWARD_TO_SEND_BITCOIN);
+        } else {
+            log.warn("Failed to parse Bitcoin URI");
+        }
+
+        displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
+
+    }
+
+    @Override
+    public void onPreferencesEvent(GenericPreferencesEvent event) {
+        setActionForwardToSibling(ActionForward.FORWARD_TO_PREFERENCES);
+    }
+
+    @Override
+    public void onAboutEvent(GenericAboutEvent event) {
+        setActionForwardToSibling(ActionForward.FORWARD_TO_HELP_ABOUT);
+    }
+
+    @Override
+    public void onQuitEvent(GenericQuitEvent event, GenericQuitResponse response) {
+        if (isOKToQuit()) {
+            ExitAction exitAction = new ExitAction(this);
+            exitAction.execute(null);
+            response.performQuit();
+        } else {
+            response.cancelQuit();
+        }
+    }
+
+    /**
+     * @return True if the application can quit
+     */
+    private boolean isOKToQuit() {
+        return true;
+    }
+
 }

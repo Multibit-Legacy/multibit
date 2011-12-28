@@ -1,58 +1,10 @@
 package org.multibit.viewsystem.swing.view;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.RenderingHints;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListSelectionModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.TransferHandler;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.ProtocolException;
+import com.google.bitcoin.core.Transaction;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.AddressBookData;
-import org.multibit.model.Data;
-import org.multibit.model.DataProvider;
-import org.multibit.model.Item;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletInfo;
+import org.multibit.model.*;
 import org.multibit.qrcode.BitcoinURI;
 import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.qrcode.SwatchGenerator;
@@ -65,9 +17,20 @@ import org.multibit.viewsystem.swing.action.PasteSwatchAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.ProtocolException;
-import com.google.bitcoin.core.Transaction;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Abstract parent class for SendBitcoinPanel and ReceiveBitcoinPanel
@@ -766,7 +729,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         log.debug("importData - 2.3");
 
         String decodedString = qrCodeEncoderDecoder.decode(toBufferedImage(image, -1, -1));
-        log.debug("importData - 3 - decodedResult = " + decodedString);
+        log.debug("importData - 3 - decodedResult = {}", decodedString);
         log.info("importData = decodedString = {}", decodedString);
         return processDecodedString(decodedString, icon);
     }
@@ -953,11 +916,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         }
         // draw original image to thumbnail image object and
         // scale it to the new size on-the-fly
-        log.debug("toBufferedImage - 2.2, image = " + image + ",width = " + width + ", height = " + height);
+        log.debug("toBufferedImage - 2.2, image = {} ,width = {}, height = {}", new Object[] {image, width, height});
 
         BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-        log.debug("toBufferedImage - 2.3, bufferedImage = " + bufferedImage);
+        log.debug("toBufferedImage - 2.3, bufferedImage = {}", bufferedImage);
 
         Graphics2D g2 = bufferedImage.createGraphics();
 

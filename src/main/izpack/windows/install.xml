@@ -11,81 +11,93 @@
 
 <installation version="1.0">
 
-    <!-- 
-        The info section.
-        The meaning of the tags should be natural ...
-    -->
-    <info>
-        <appname>MultiBit</appname>
-        <appsubpath>MultiBit-0.2.0</appsubpath>
-        <appversion>0.2.0</appversion>
-        <url>http://multibit.org/</url>
-        <uninstaller write="yes" />
-        <javaversion>1.6</javaversion>
-        <run-privileged condition="izpack.windowsinstall.vista|izpack.windowsinstall.7"/> 
-    </info>
+  <!--
+      The info section.
+      The meaning of the tags should be natural ...
+  -->
+  <info>
+    <appname>MultiBit</appname>
+    <appsubpath>MultiBit-0.2.0beta4</appsubpath>
+    <appversion>0.2.0beta4</appversion>
+    <url>http://multibit.org/</url>
+    <uninstaller write="yes"/>
+    <javaversion>1.6</javaversion>
+    <run-privileged condition="izpack.windowsinstall.vista|izpack.windowsinstall.7"/>
+  </info>
 
-<variables>
-  <variable name="ShowCreateDirectoryMessage" value="false"/>
-  <variable name="DesktopShortcutCheckboxEnabled" value="true"/>
-</variables>
+  <variables>
+    <variable name="ShowCreateDirectoryMessage" value="false"/>
+    <variable name="DesktopShortcutCheckboxEnabled" value="true"/>
+  </variables>
 
-    <!-- 
-        The gui preferences indication.
-        Sets the installer window to 640x480. It will not be able to change the size.
-    -->
-    <guiprefs width="640" height="480" resizable="yes"/>
+  <!-- Register protocol handling for bitcoin: URI -->
+  <listeners>
+    <listener installer="RegistryInstallerListener"
+              uninstaller="RegistryUninstallerListener">
+      <os family="windows"/>
+    </listener>
+  </listeners>
 
-    <!-- 
-        The locale section.
-        Asks here to include the English langpacks.
-    -->
-    <locale>
-        <langpack iso3="eng"/>
-    </locale>
+  <native type="3rdparty" name="COIOSHelper.dll" stage="both">
+    <os family="windows"/>
+  </native>
 
-    <!-- 
-        The resources section.
-        The ids must be these ones if you want to use the LicencePanel and/or the InfoPanel.
-    -->
-    <resources>
-        <res id="LicencePanel.licence" src="COPYING"/>
-        <res id="InfoPanel.info" src="readme.txt"/>
-        <res id="Installer.image" src="installerLeft.png" />
-        <res src="shortcutSpec.xml" id="shortcutSpec.xml"/>
-    </resources>
+  <!--
+      The gui preferences indication.
+      Sets the installer window to 640x480. It will not be able to change the size.
+  -->
+  <guiprefs width="640" height="480" resizable="yes"/>
 
-    <!-- 
-        The panels section.
-        We indicate here which panels we want to use. The order will be respected.
-    -->
-    <panels>
-        <panel classname="HelloPanel"/>
-        <panel classname="InfoPanel"/>
-        <panel classname="LicencePanel"/>
-        <panel classname="TargetPanel"/>
-        <panel classname="ShortcutPanel"/>
-        <panel classname="InstallPanel"/>
-        <panel classname="FinishPanel"/>
-    </panels>
+  <!--
+      The locale section.
+      Asks here to include the English langpacks.
+  -->
+  <locale>
+    <langpack iso3="eng"/>
+  </locale>
 
-    <!-- 
-        The packs section.
-        We specify here our packs.
-    -->
-    <packs>
-        <pack name="MultiBit" required="yes">
-            <description>MultiBit install files.</description>
-            <file src="readme.txt" targetdir="$INSTALL_PATH"/>
-            <file src="configuration.txt" targetdir="$INSTALL_PATH"/>
-            <file src="multibit.ico" targetdir="$INSTALL_PATH"/>
-            <file src="multibit.blockchain" targetdir="$INSTALL_PATH"/>
-            <file src="release_notes.txt" targetdir="$INSTALL_PATH"/>
-            <file src="configuration.txt" targetdir="$INSTALL_PATH"/>
-            <file src="COPYING" targetdir="$INSTALL_PATH"/>
-            <file src="AUTHORS.txt" targetdir="$INSTALL_PATH"/>
-            <file src="multibit.exe" targetdir="$INSTALL_PATH"/>
-        </pack>
-    </packs>
-    <native type="izpack" name="ShellLink.dll"/>
+  <!--
+      The resources section.
+      The ids must be these ones if you want to use the LicencePanel and/or the InfoPanel.
+  -->
+  <resources>
+    <res id="LicencePanel.licence" src="COPYING"/>
+    <res id="InfoPanel.info" src="readme.txt"/>
+    <res id="Installer.image" src="installerLeft.png"/>
+    <res id="shortcutSpec.xml" src="shortcutSpec.xml"/>
+    <res id="RegistrySpec.xml" src="registrySpec.xml"/>
+  </resources>
+
+  <!--
+      The panels section.
+      We indicate here which panels we want to use. The order will be respected.
+  -->
+  <panels>
+    <panel classname="HelloPanel"/>
+    <panel classname="InfoPanel"/>
+    <panel classname="LicencePanel"/>
+    <panel classname="TargetPanel"/>
+    <panel classname="ShortcutPanel"/>
+    <panel classname="InstallPanel"/>
+    <panel classname="FinishPanel"/>
+  </panels>
+
+  <!--
+      The packs section.
+      We specify here our packs.
+  -->
+  <packs>
+    <pack name="MultiBit" required="yes">
+      <description>MultiBit install files.</description>
+      <file src="readme.txt" targetdir="$INSTALL_PATH"/>
+      <file src="multibit.ico" targetdir="$INSTALL_PATH"/>
+      <file src="multibit.blockchain" targetdir="$INSTALL_PATH"/>
+      <file src="release_notes.txt" targetdir="$INSTALL_PATH"/>
+      <file src="COPYING" targetdir="$INSTALL_PATH"/>
+      <file src="AUTHORS.txt" targetdir="$INSTALL_PATH"/>
+      <file src="multibit.exe" targetdir="$INSTALL_PATH"/>
+    </pack>
+  </packs>
+
+  <native type="izpack" name="ShellLink.dll"/>
 </installation>

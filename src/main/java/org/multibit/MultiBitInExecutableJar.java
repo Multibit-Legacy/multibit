@@ -16,17 +16,16 @@ package org.multibit;
  * limitations under the License.
  */
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.rolling.RollingFileAppender;
+import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.rolling.RollingFileAppender;
-import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 
 /**
  * Main MultiBit entry class for when running in an executable jar - put console
@@ -40,27 +39,40 @@ public class MultiBitInExecutableJar {
     public static final String CONSOLE_OUTPUT_FILENAME = "multibit_console.log";
     public static final String DEBUG_OUTPUT_FILENAME = "multibit_debug.log";
 
-    private static Logger log;
+    private static Logger log = LoggerFactory.getLogger(MultiBitInExecutableJar.class);
+
+    public static void main(String args[]) {
+        MultiBit.main(args);
+    }
+
 
     /**
-     * start multibit user interface when running in a jar
+     * Start multibit user interface when running in a jar
+     * This will adjust the logging framework output to ensure that console output is sent
+     * to a file appender in the client to ensure that no clues to failure are missed
+     * @param args The optional command line arguments ([0] can be a Bitcoin URI
      */
     @SuppressWarnings("rawtypes")
-    public static void main(String args[]) {
+    public static void main2(String args[]) {
         // TODO Refactor this to work with a different Logger appender
         // redirect the console output to a file
         PrintStream originalStream = null;
         PrintStream fileStream = null;
         try {
+            // Get the current data directory
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
+            
             String outputDirectory;
             String consoleOutputFilename;
             String debugOutputFilename;
+            
             if ("".equals(applicationDataDirectoryLocator.getApplicationDataDirectory())) {
+                // Use defaults
                 outputDirectory = OUTPUT_DIRECTORY;
                 consoleOutputFilename = OUTPUT_DIRECTORY + File.separator + CONSOLE_OUTPUT_FILENAME;
                 debugOutputFilename = OUTPUT_DIRECTORY + File.separator + DEBUG_OUTPUT_FILENAME;
             } else {
+                // Use defined data directory as the root
                 outputDirectory = applicationDataDirectoryLocator.getApplicationDataDirectory() + File.separator
                         + OUTPUT_DIRECTORY;
                 consoleOutputFilename = applicationDataDirectoryLocator.getApplicationDataDirectory() + File.separator
@@ -69,10 +81,11 @@ public class MultiBitInExecutableJar {
                         + OUTPUT_DIRECTORY + File.separator + DEBUG_OUTPUT_FILENAME;
             }
 
+            // Get the rolling file appender from Logback and adjust it to meet local requirements
             ch.qos.logback.classic.Logger logback_logger = (ch.qos.logback.classic.Logger) LoggerFactory
                     .getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
             RollingFileAppender<ILoggingEvent> rfappender = (RollingFileAppender<ILoggingEvent>) logback_logger
-                    .getAppender("FILE");
+                    .getAppender("DETAIL_APPENDER");
             rfappender.setFile(debugOutputFilename);
             TimeBasedRollingPolicy rollingPolicy = (TimeBasedRollingPolicy) rfappender.getRollingPolicy();
             rollingPolicy.setFileNamePattern(debugOutputFilename + ".%d{yyyy-MM-dd}.gz");

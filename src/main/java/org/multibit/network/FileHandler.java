@@ -1,22 +1,6 @@
 package org.multibit.network;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.channels.FileChannel;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Properties;
-
+import com.google.bitcoin.core.Wallet;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
@@ -25,8 +9,12 @@ import org.multibit.model.WalletInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Wallet;
+import java.io.*;
+import java.nio.channels.FileChannel;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Properties;
 
 /**
  * a class consolidating all the File IO in MultiBit
@@ -246,7 +234,8 @@ public class FileHandler {
      * keep a record of the wallet and wallet info files sizes and date last
      * modified
      * 
-     * @param walletFilename
+     * @param walletFile The wallet file
+     * @param walletInfo The wallet info
      */
     private void rememberFileSizesAndLastModified(File walletFile, WalletInfo walletInfo) {
         // get the files' last modified data and sizes and store them in the
@@ -269,6 +258,7 @@ public class FileHandler {
         walletInfo.put(MultiBitModel.WALLET_INFO_FILE_SIZE, "" + walletInfoFileSize);
         walletInfo.put(MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED, "" + walletInfoFileLastModified);
 
+        // TODO Fix this
         log.debug("Wallet filename " + walletFilename + " , " + MultiBitModel.WALLET_FILE_SIZE + " " + walletFileSize + " ,"
                 + MultiBitModel.WALLET_FILE_LAST_MODIFIED + " " + walletFileLastModified + " ,"
                 + MultiBitModel.WALLET_INFO_FILE_SIZE + " " + walletInfoFileSize + " ,"

@@ -1,20 +1,19 @@
 package org.multibit;
 
-import java.io.File;
-
 import org.multibit.network.FileHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
 
 public class ApplicationDataDirectoryLocator {
     private String applicationDataDirectory = null;
     
     private static final Logger log = LoggerFactory.getLogger(ApplicationDataDirectoryLocator.class);
 
-
     public ApplicationDataDirectoryLocator() {
         applicationDataDirectory = getApplicationDataDirectory();
-        log.info("Application data directory = '" + applicationDataDirectory + "'");
+        log.info("Application data directory = '{}'",applicationDataDirectory);
     }
     
     /**

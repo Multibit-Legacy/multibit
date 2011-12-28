@@ -44,5 +44,20 @@
 			<string>true</string>
 		</dict>
 	</dict>
+	<key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Shell</string>
+            <key>CFBundleURLIconFile</key>
+			<string>multibit.icns</string>
+			<key>CFBundleURLName</key>
+            <string>org.multibit.bitcoin.url</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>bitcoin</string>
+            </array>
+        </dict>
+    </array>
 </dict>
 </plist>

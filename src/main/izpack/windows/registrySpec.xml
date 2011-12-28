@@ -1,0 +1,42 @@
+<!--
+Require the following structure on Windows
+see http://msdn.microsoft.com/en-us/library/aa767914(v=vs.85).aspx
+
+bitcoin.reg:
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\bitcoin]
+@="URL:Bitcoin Protocol"
+"URL Protocol"=""
+
+[HKEY_CLASSES_ROOT\bitcoin\DefaultIcon]
+@="multibit.exe,1"
+
+[HKEY_CLASSES_ROOT\bitcoin\shell]
+
+[HKEY_CLASSES_ROOT\bitcoin\shell\open]
+
+[HKEY_CLASSES_ROOT\bitcoin\shell\open\command]
+@="\"C:\\Program Files\\MultiBit-0.2.0beta4\\multibit.exe\" \"%1\""
+
+
+-->
+<registry>
+  <pack name="MultiBit">
+    <key root="HKCR" keypath="bitcoin" />
+    <value root="HKCR" name="" keypath="bitcoin" string="URL:Bitcoin Protocol"/>
+    <value root="HKCR" name="URL Protocol" keypath="bitcoin" string=""/>
+    <value root="HKCR" name="UseOriginalUrlEncoding" keypath="bitcoin" dword="1"/>
+
+    <key root="HKCR" keypath="bitcoin\DefaultIcon" />
+    <value root="HKCR" name="" keypath="bitcoin\DefaultIcon" string="multibit.exe,1"/>
+
+    <key root="HKCR" keypath="bitcoin\shell" />
+
+    <key root="HKCR" keypath="bitcoin\shell\open" />
+
+    <key root="HKCR" keypath="bitcoin\shell\open\command" />
+    <value root="HKCR" keypath="bitcoin\shell\open\command" name="" string="&quot;$INSTALL_PATH\multibit.exe&quot; &quot;%1&quot;" />
+
+  </pack>
+</registry>

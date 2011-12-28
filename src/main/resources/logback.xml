@@ -1,26 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- Standard console appender for checking activity (short on detail) -->
+    <appender name="CONSOLE_APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- Simplified standard logging encoder -->
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %xEx%n</pattern>
         </encoder>
     </appender>
-    
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+    <!-- Detail appender, containing simplified format and more detail -->
+    <appender name="DETAIL_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- Each application gets it's own log -->
         <file>log/multibit_debug.log</file>
+
+        <!-- Rollover daily or when the file size exceeds 100Mb and keep a few -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- daily rollover -->
             <fileNamePattern>log/multibit_debug.%d{yyyy-MM-dd}.gz</fileNamePattern>
             <maxHistory>30</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>1MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
+
+        <!-- Standard logging encoder
+             Triggers on:
+             logger.error("Example", e); // Simple exception reporting
+             logger.error("Example {}", x, e); // {} will be populated with value of x
+        -->
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %xEx%n</pattern>
         </encoder>
+
     </appender>
-    
-    <root level="INFO">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE"/>
+
+    <root level="WARN">
+        <appender-ref ref="CONSOLE_APPENDER"/>
+        <appender-ref ref="DETAIL_APPENDER"/>
     </root>
+
+    <!-- Selected third-party frameworks can be enabled here for development if required -->
+    <!--<logger name="org.hibernate" level="DEBUG" />-->
+    <!--<logger name="org.hibernate.tool.hbm2ddl" level="DEBUG" />-->
+    <!--<logger name="org.hibernate.jdbc" level="DEBUG" />-->
+    <!--<logger name="org.springframework" level="INFO" />-->
+    <!--<logger name="org.springframework.transaction" level="DEBUG" />-->
+    <!--<logger name="org.springframework.beans.factory.config" level="DEBUG" />-->
+    <!--<logger name="httpclient.wire.header" level="DEBUG" />-->
+    <!--<logger name="org.springframework.web" level="DEBUG" />-->
+    <!--<logger name="oejs" level="DEBUG" />-->
+
+    <!-- Define logging for organisation applications only -->
+    <logger name="org.multibit" level="DEBUG" />
 </configuration>

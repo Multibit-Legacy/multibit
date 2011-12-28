@@ -1,9 +1,9 @@
 <project xmlns="http:/f/maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http:/f/maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.multibit</groupId>
   <artifactId>multibit</artifactId>
-  <version>0.2.0-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <name>MultiBit</name>
   <description>A Java swing client for bitcoin</description>
   <url>http://www.multibit.org</url>
@@ -26,14 +26,17 @@
       <comments>A business-friendly OSS license</comments>
     </license>
   </licenses>
+
   <issueManagement>
     <system>GitHub</system>
     <url>https://github.com/jim618/multibit/issues</url>
   </issueManagement>
+
   <scm>
     <!-- Public read-only source -->
     <url>https://github.com/jim618/multibit</url>
   </scm>
+
   <repositories>
     <repository>
       <id>bitcoinj-release</id>
@@ -45,18 +48,14 @@
       <snapshots/>
       <url>http://nexus.bitcoinj.org/content/repositories/snapshots</url>
     </repository>
-    <repository>
-      <id>macify</id>
-      <name>org.simplericity.macify</name>
-      <url>http://simplericity.org/repository/</url>
-    </repository>
     <!-- zxing repo -->
-	<repository>
+    <repository>
       <id>mvn-adamgent</id>
-        <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
-        <name>Adam Gent Maven Repository</name>
-      </repository>
+      <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
+      <name>Adam Gent Maven Repository</name>
+    </repository>
   </repositories>
+
   <build>
     <finalName>multibit</finalName>
     <plugins>
@@ -75,36 +74,37 @@
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
-         <!-- Put bitcoinj classes into target dir for production of the executable jar later -->       
-            <execution>
-             <id>unpack-bitcoinj-classes</id>
-             <phase>process-resources</phase>
-             <goals>
-               <goal>unpack</goal>
-             </goals>
-             <configuration>
-               <artifactItems>
-                 <artifactItem>
-                   <groupId>com.google</groupId>
-                   <artifactId>bitcoinj</artifactId>
-                   <version>0.3-SNAPSHOT</version>
-                   <type>jar</type>
-                   <overWrite>false</overWrite>
-                   <outputDirectory>${basedir}/target/bitcoinj</outputDirectory>
-                   <includes>**/*.*</includes>
-                   <!-- excludes classes that are duplicated in multibit -->
-                   <excludes>**/BlockChain.class, **/Peer.class, **/Peer$*.class,**/PeerGroup*.class, 
-                             **/Sha256Hash.class, 
-                             **/Transaction.class, **/Transaction$*.class, 
-                             **/TransactionInput.class, **/TransactionInput$*.class,
-                             **/Wallet.class, **/Wallet$*.class,
-                             **/WalletEventListener.class,
-                             **/DNSDiscovery.class</excludes>
-                 </artifactItem>
-               </artifactItems>
-              </configuration>
-           </execution>
- 
+          <!-- Put bitcoinj classes into target dir for production of the executable jar later -->
+          <execution>
+            <id>unpack-bitcoinj-classes</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>com.google</groupId>
+                  <artifactId>bitcoinj</artifactId>
+                  <version>0.3</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>${basedir}/target/bitcoinj</outputDirectory>
+                  <includes>**/*.*</includes>
+                  <!-- excludes classes that are duplicated in multibit -->
+                  <excludes>**/BlockChain.class, **/Peer.class, **/Peer$*.class,**/PeerGroup*.class,
+                    **/Sha256Hash.class,
+                    **/Transaction.class, **/Transaction$*.class,
+                    **/TransactionInput.class, **/TransactionInput$*.class,
+                    **/Wallet.class, **/Wallet$*.class,
+                    **/WalletEventListener.class,
+                    **/DNSDiscovery.class
+                  </excludes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+
           <!-- Put izPack2app into linux staging dir for production of linux installer later -->
           <execution>
             <id>unpack-shared-resources-ipack2app-linux</id>
@@ -121,9 +121,9 @@
               <outputDirectory>${staging.linux.dir}</outputDirectory>
             </configuration>
           </execution>
-          
+
           <!-- Put izPack2app into windows staging dir for production of windows installer later -->
-         <execution>
+          <execution>
             <id>unpack-shared-resources-ipack2app-windows</id>
             <goals>
               <goal>unpack-dependencies</goal>
@@ -138,7 +138,7 @@
               <outputDirectory>${staging.windows.dir}</outputDirectory>
             </configuration>
           </execution>
-         </executions>
+        </executions>
       </plugin>
 
       <!-- Create executable jar -->
@@ -218,8 +218,8 @@
               </resources>
             </configuration>
           </execution>
-     
-          <!-- Produce staging directory with all resources used in creation of the windows IzPack installer -->     
+
+          <!-- Produce staging directory with all resources used in creation of the windows IzPack installer -->
           <execution>
             <id>copy-resources-to-staging-windows</id>
             <phase>install</phase>
@@ -235,8 +235,9 @@
                     <include>install.xml</include>
                     <include>readme.txt</include>
                     <include>shortcutSpec.xml</include>
+                    <include>registrySpec.xml</include>
                   </includes>
-                </resource>               
+                </resource>
                 <resource>
                   <directory>src/main/resources/images</directory>
                   <includes>
@@ -268,7 +269,7 @@
               </resources>
             </configuration>
           </execution>
-          
+
           <!-- produce a Mac application bundle -->
           <!-- this plugin copies a skeleton App and then copies in the resources from the linux staging directory -->
           <!-- Note I have tried using http://mojo.codehaus.org/osxappbundle-maven-plugin/ but cannot get extra resources into my Java directory in the app -->
@@ -306,13 +307,13 @@
                     <include>configuration.txt</include>
                     <include>COPYING</include>
                     <include>AUTHORS.txt</include>
-                   </includes>
+                  </includes>
                 </resource>
                 <resource>
                   <directory>${basedir}/src/main/izpack/mac</directory>
                   <includes>
                     <include>readme.txt</include>
-                   </includes>
+                  </includes>
                 </resource>
               </resources>
             </configuration>
@@ -338,7 +339,7 @@
             </configuration>
           </execution>
           <execution>
-           <id>create-windows-installer</id>
+            <id>create-windows-installer</id>
             <phase>install</phase>
             <goals>
               <goal>izpack</goal>
@@ -347,7 +348,7 @@
               <izpackBasedir>${staging.windows.dir}</izpackBasedir>
               <installerFile>target/${project.build.finalName}-windows.jar</installerFile>
             </configuration>
-          </execution>     
+          </execution>
         </executions>
         <dependencies>
           <dependency>
@@ -372,19 +373,20 @@
 
                 <mkdir dir="${basedir}/target/MultiBit-mac/MultiBit.app"/>
                 <copy todir="${basedir}/target/MultiBit-mac/MultiBit.app">
-                  <fileset dir="${basedir}/target/MultiBit.app" includes="**"/>                 
+                  <fileset dir="${basedir}/target/MultiBit.app" includes="**"/>
                 </copy>
                 <copy file="${basedir}/src/main/izpack/mac/readme.txt" todir="${basedir}/target/MultiBit-mac"/>
- 
 
- 	            <!-- Create Applications Symbolic link -->
-	            <!-- WARNING, do not remove this symbolic link by Java(ant) -->
-	            <exec executable="ln" os="'Mac OS X'">
-		          <arg line="-s /Applications ${basedir}/target/MultiBit-mac/Applications"/>
-	            </exec> 
-	                     
+
+                <!-- Create Applications Symbolic link -->
+                <!-- WARNING, do not remove this symbolic link by Java(ant) -->
+                <exec executable="ln" os="'Mac OS X'">
+                  <arg line="-s /Applications ${basedir}/target/MultiBit-mac/Applications"/>
+                </exec>
+
                 <!-- Make the JavaApplicationStub in the MultiBit app (it loses its 'x' permission after the copy)  -->
-                <chmod file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/MacOS/JavaApplicationStub" perm="777"/>
+                <chmod file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/MacOS/JavaApplicationStub"
+                       perm="777"/>
 
                 <!-- create a DMG file -->
                 <exec executable="hdiutil" os="'Mac OS X'">
@@ -392,17 +394,17 @@
                   <arg value="-srcfolder"/>
                   <arg value="${basedir}/target/MultiBit-mac"/>
                   <arg path="${basedir}/target/MultiBit.dmg"/>
-                </exec>      
-                
+                </exec>
+
                 <!-- IMPORTANT! -->
-	            <!-- Remove symbolic link before deleting tmp dir -->
-	            <exec executable="rm" os="'Mac OS X'">
-		          <arg line="-R ${basedir}/target/MultiBit-mac/Applications"/>
-	            </exec>
+                <!-- Remove symbolic link before deleting tmp dir -->
+                <exec executable="rm" os="'Mac OS X'">
+                  <arg line="-R ${basedir}/target/MultiBit-mac/Applications"/>
+                </exec>
 
                 <!-- get rid of temporary directory -->
                 <delete includeEmptyDirs="true">
-    			   <fileset dir="${basedir}/target/MultiBit-mac"/>
+                  <fileset dir="${basedir}/target/MultiBit-mac"/>
                 </delete>
               </tasks>
             </configuration>
@@ -452,11 +454,11 @@
         </executions>
         <dependencies>
           <dependency>
-             <groupId>ant</groupId>
-             <artifactId>ant-nodeps</artifactId>
-             <version>1.6.5</version>
-           </dependency>
-         </dependencies>
+            <groupId>ant</groupId>
+            <artifactId>ant-nodeps</artifactId>
+            <version>1.6.5</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
@@ -491,28 +493,29 @@
       <groupId>com.google.zxing</groupId>
       <artifactId>javase</artifactId>
       <version>1.6</version>
-    </dependency>    
+    </dependency>
     <dependency>
-    	<groupId>org.simplericity.macify</groupId>
-    	<artifactId>macify</artifactId>
-    	<version>1.6</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
+      <groupId>org.simplericity.macify</groupId>
+      <artifactId>macify</artifactId>
+      <version>1.6</version>
+      <type>jar</type>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.google</groupId>
       <artifactId>bitcoinj</artifactId>
-      <version>0.3-SNAPSHOT</version>
+      <version>0.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-    	<groupId>org.codehaus.izpack</groupId>
-    	<artifactId>izpack</artifactId>
-    	<version>5.0.0-beta8</version>
-    	<type>pom</type>
-    	<scope>compile</scope>
+      <groupId>org.codehaus.izpack</groupId>
+      <artifactId>izpack</artifactId>
+      <version>5.0.0-beta8</version>
+      <type>pom</type>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
+
   <reporting>
     <plugins>
       <!-- PMD checking -->
@@ -541,6 +544,7 @@
       </plugin>
     </plugins>
   </reporting>
+
   <properties>
     <!-- Source encoding -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
