@@ -33,8 +33,6 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
 
     private MultiBitController controller;
 
-    private Localiser localiser;
-
     private JLabel sendAddressText;
     private JLabel sendLabelText;
     private JLabel sendAmountText;
@@ -53,10 +51,9 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
     /**
      * Creates a new {@link SendBitcoinConfirmView}.
      */
-    public SendBitcoinConfirmView(MultiBitController controller, Localiser localiser, MultiBitFrame mainFrame) {
+    public SendBitcoinConfirmView(MultiBitController controller, MultiBitFrame mainFrame) {
         super(mainFrame);
         this.controller = controller;
-        this.localiser = localiser;
         this.mainFrame = mainFrame;
 
         initUI();
@@ -73,18 +70,18 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
     public void initUI() {
         setMinimumSize(new Dimension(680, 320));
         positionDialogRelativeToParent(this, 0.5D, 0.47D);
-        setTitle(localiser.getString("sendBitcoinConfirmView.title"));
+        setTitle(controller.getLocaliser().getString("sendBitcoinConfirmView.title"));
 
         setLayout(new GridBagLayout());
         // get the data out of the wallet preferences
         sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
         sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
-        sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " BTC";
+        sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
         String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
         if (fee == null || fee == "") {
             fee = controller.getLocaliser().bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
         }
-        sendFee = fee + " BTC";
+        sendFee = fee + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
     
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -123,7 +120,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         add(bigIconLabel, constraints);
 
         JLabel explainLabel = new JLabel();
-        explainLabel.setText(localiser.getString("sendBitcoinConfirmView.message"));
+        explainLabel.setText(controller.getLocaliser().getString("sendBitcoinConfirmView.message"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 1;
@@ -149,7 +146,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         GridBagConstraints constraints2 = new GridBagConstraints();
         
         JLabel sendAddressLabel = new JLabel();
-        sendAddressLabel.setText(localiser.getString("sendBitcoinPanel.addressLabel"));
+        sendAddressLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel"));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 0;
         constraints2.gridy = 0;
@@ -181,7 +178,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         detailPanel.add(sendAddressText, constraints2);
 
         JLabel sendLabelLabel = new JLabel();
-        sendLabelLabel.setText(localiser.getString("sendBitcoinPanel.labelLabel"));
+        sendLabelLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel"));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 0;
         constraints2.gridy = 1;
@@ -203,7 +200,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         detailPanel.add(sendLabelText, constraints2);
 
         JLabel sendAmountLabel = new JLabel();
-        sendAmountLabel.setText(localiser.getString("sendBitcoinPanel.amountLabel"));
+        sendAmountLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel"));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 0;
         constraints2.gridy = 2;
@@ -235,7 +232,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         detailPanel.add(filler2, constraints2);
   
         JLabel sendFeeLabel = new JLabel();
-        sendFeeLabel.setText(localiser.getString("showPreferencesPanel.feeLabel.text"));
+        sendFeeLabel.setText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 0;
         constraints2.gridy = 4;
@@ -357,7 +354,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         // get the data out of the wallet preferences
         sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
         sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
-        sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " BTC";
+        sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
 
         sendAddressText.setText(sendAddress);
         sendLabelText.setText(sendLabel);

@@ -185,6 +185,19 @@ public class MultiBitController implements
     }
 
     /**
+     * pop the view stack and then move to a sibling
+     */
+    public void setActionForwardToSiblingOfParent(ActionForward actionForward) {
+        try {
+            viewStack.pop();
+        } catch (EmptyStackException ese) {
+            log.error("setActionForwardToSiblingOfParent stack failure", ese);
+        }
+        determineNextView(actionForward);
+        displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
+    }
+
+    /**
      * set the action forward that will be used to determined the next view to
      * display
      *
@@ -209,50 +222,42 @@ public class MultiBitController implements
             }
             case FORWARD_TO_OPEN_WALLET: {
                 // show the open wallet view
-                // should check actually on home page
                 nextView = View.OPEN_WALLET_VIEW;
                 break;
             }
             case FORWARD_TO_CREATE_NEW_WALLET: {
                 // show the open wallet view
-                // should check actually on home page
                 nextView = View.SAVE_WALLET_AS_VIEW;
                 break;
             }
             case FORWARD_TO_RECEIVE_BITCOIN: {
                 // show the receive bitcoin view
-                // should check actually on home page
                 nextView = View.RECEIVE_BITCOIN_VIEW;
                 break;
             }
             case FORWARD_TO_SEND_BITCOIN: {
                 // show the send bitcoin view
-                // should check actually on home page
                 nextView = View.SEND_BITCOIN_VIEW;
                 break;
             }
             case FORWARD_TO_SEND_BITCOIN_CONFIRM: {
                 // show the send bitcoin confirm view
-                // should check actually on send bitcoin view
                 nextView = View.SEND_BITCOIN_CONFIRM_VIEW;
                 break;
             }
             case FORWARD_TO_HELP_ABOUT: {
                 // show the help about view
-                // should check actually on home page
                 nextView = View.HELP_ABOUT_VIEW;
                 break;
             }
             case FORWARD_TO_HELP_CONTENTS: {
                 // show the help contents view
-                // should check actually on home page
                 nextView = View.HELP_CONTENTS_VIEW;
                 break;
             }
 
             case FORWARD_TO_PREFERENCES: {
                 // show the preferences view
-                // should check actually on home page
                 nextView = View.PREFERENCES_VIEW;
                 break;
             }
@@ -284,6 +289,12 @@ public class MultiBitController implements
             case FORWARD_TO_RESET_TRANSACTIONS_VIEW: {
                 // show the reset transactions view
                 nextView = View.RESET_TRANSACTIONS_VIEW;
+                break;
+            }
+
+            case FORWARD_TO_SHOW_OPEN_URI_VIEW: {
+                // show the open uri dialog
+                nextView = View.SHOW_OPEN_URI_DIALOG_VIEW;
                 break;
             }
 
@@ -615,6 +626,14 @@ public class MultiBitController implements
     }
 
     public synchronized void handleOpenURI() {
+        // get the open uri configuration information
+        String showOpenUriDialogText = getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
+        String useUriText = getModel().getUserPreference(MultiBitModel.OPEN_URI_USE_URI);
+        
+        if(Boolean.FALSE.toString().equalsIgnoreCase(useUriText) && Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
+            // ignore open uri request
+            return;
+        }
         if (rawBitcoinURI == null) {
             log.debug("No Bitcoin URI found to handle");
             return;
@@ -637,21 +656,31 @@ public class MultiBitController implements
             BigInteger numericAmount = null == bitcoinURI.getAmount() ? BigInteger.ZERO : bitcoinURI.getAmount();
             String amount = getLocaliser().bitcoinValueToString(numericAmount, false, false);
 
-            // TODO Consider showing a dialog before altering the view - swabbing attack?
-
-            // Populate the model with the URI data
-            getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, address);
-            getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, label);
-            getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amount);
-
-            // Configure to work with the Send view
-            determineNextView(ActionForward.FORWARD_TO_SEND_BITCOIN);
+            if (Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
+                // do not show confirm dialog - go straight to send view
+                // Populate the model with the URI data
+                getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, address);
+                getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, label);
+                getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amount);
+                log.debug("Routing straight to send view for address = " + address);
+                determineNextView(ActionForward.FORWARD_TO_SEND_BITCOIN);
+                displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
+                return;
+            } else {
+                // show the confirm dialog to see if the user wants to use URI
+                // Populate the model with the URI data
+                getModel().setUserPreference(MultiBitModel.OPEN_URI_ADDRESS, address);
+                getModel().setUserPreference(MultiBitModel.OPEN_URI_LABEL, label);
+                getModel().setUserPreference(MultiBitModel.OPEN_URI_AMOUNT, amount);
+                log.debug("Routing to show open uri view for address = " + address);
+                
+                determineNextView(ActionForward.FORWARD_TO_SHOW_OPEN_URI_VIEW);
+                displayNextView(ViewSystem.NEW_VIEW_IS_CHILD_OF_PREVIOUS);
+                return;
+            }
         } else {
             log.warn("Failed to parse Bitcoin URI");
         }
-
-        displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
-
     }
 
     @Override

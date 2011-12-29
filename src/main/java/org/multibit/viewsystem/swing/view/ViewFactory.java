@@ -81,7 +81,8 @@ public class ViewFactory {
         }
         
         case View.SEND_BITCOIN_CONFIRM_VIEW: {
-            viewToReturn = new SendBitcoinConfirmView(controller, controller.getLocaliser(), mainFrame);
+            viewToReturn = new SendBitcoinConfirmView(controller, mainFrame);
+            //viewToReturn = new ShowOpenUriView(controller, mainFrame);
             break;
         }
         
@@ -107,6 +108,11 @@ public class ViewFactory {
 
         case View.RESET_TRANSACTIONS_VIEW: {
             viewToReturn = new ResetTransactionsPanel(controller, mainFrame);
+            break;
+        }
+
+        case View.SHOW_OPEN_URI_DIALOG_VIEW: {
+            viewToReturn = new ShowOpenUriView(controller, mainFrame);
             break;
         }
 

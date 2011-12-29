@@ -26,7 +26,7 @@ public class SendBitcoinNowAction implements Action {
     private static final Logger log = LoggerFactory.getLogger(SendBitcoinNowAction.class);
 
     private MultiBitController controller;
-    
+
     private final static int MAX_LENGTH_OF_ERROR_MESSAGE = 70;
 
     public SendBitcoinNowAction(MultiBitController controller) {
@@ -34,56 +34,64 @@ public class SendBitcoinNowAction implements Action {
     }
 
     public void execute(DataProvider dataProvider) {
-        // TODO check if wallet has been changed by a different process
-        
-        // get the data out of the wallet preferences
-        String sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
-        String sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
-        String sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
-        String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
-        BigInteger fee;
-        if (sendFeeString == null || sendFeeString.equals("")) {
-            fee = MultiBitModel.SEND_MINIMUM_FEE;
-        } else {
-            fee = Utils.toNanoCoins(sendFeeString);
-        }
-
+        // check to see if the wallet files have changed
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
-        if (sendLabel != null && !sendLabel.equals("")) {
-            WalletInfo addressBook = perWalletModelData.getWalletInfo();
-            addressBook.addSendingAddress(new AddressBookData(sendLabel, sendAddress));
-        }
-        
-        Boolean sendWasSuccessful = Boolean.FALSE;
-        String errorMessage = " ";
-        try {
-            controller.sendCoins(perWalletModelData, sendAddress, sendLabel, sendAmount, fee);
-            sendWasSuccessful = Boolean.TRUE;
-            
-            // save the wallet
-            controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
+        boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
-            errorMessage = e.getMessage();
-        } catch (AddressFormatException e) {
-            log.error(e.getMessage(), e);
+        if (haveFilesChanged) {
+            // set on the perWalletModelData that files have changed and fire
+            // data changed
+            perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
+            controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
+        } else {
+            // get the data out of the wallet preferences
+            String sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
+            String sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
+            String sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
+            String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
+            BigInteger fee;
+            if (sendFeeString == null || sendFeeString.equals("")) {
+                fee = MultiBitModel.SEND_MINIMUM_FEE;
+            } else {
+                fee = Utils.toNanoCoins(sendFeeString);
+            }
 
-            errorMessage = e.getMessage();
-        } catch (Throwable t) {
-            // really trying to catch anything that goes wrong
-            log.error(t.getMessage(), t);
-            errorMessage = t.getMessage();
-        }
+            if (sendLabel != null && !sendLabel.equals("")) {
+                WalletInfo addressBook = perWalletModelData.getWalletInfo();
+                addressBook.addSendingAddress(new AddressBookData(sendLabel, sendAddress));
+            }
 
-//        // for testing
-//        sendWasSuccessful = Boolean.FALSE;
-//        errorMessage = "snuibbnfjhsbfjlsfbjslfbnsjkfb";
-        
-        if (errorMessage != null && errorMessage.length() > MAX_LENGTH_OF_ERROR_MESSAGE) {
-            errorMessage = errorMessage.substring(0, MAX_LENGTH_OF_ERROR_MESSAGE) + "...";
+            Boolean sendWasSuccessful = Boolean.FALSE;
+            String errorMessage = " ";
+            try {
+                controller.sendCoins(perWalletModelData, sendAddress, sendLabel, sendAmount, fee);
+                sendWasSuccessful = Boolean.TRUE;
+
+                // save the wallet
+                controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+
+                errorMessage = e.getMessage();
+            } catch (AddressFormatException e) {
+                log.error(e.getMessage(), e);
+
+                errorMessage = e.getMessage();
+            } catch (Throwable t) {
+                // really trying to catch anything that goes wrong
+                log.error(t.getMessage(), t);
+                errorMessage = t.getMessage();
+            }
+
+            // // for testing
+            // sendWasSuccessful = Boolean.FALSE;
+            // errorMessage = "snuibbnfjhsbfjlsfbjslfbnsjkfb";
+
+            if (errorMessage != null && errorMessage.length() > MAX_LENGTH_OF_ERROR_MESSAGE) {
+                errorMessage = errorMessage.substring(0, MAX_LENGTH_OF_ERROR_MESSAGE) + "...";
+            }
+            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_WAS_SUCCESSFUL, sendWasSuccessful.toString());
+            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ERROR_MESSAGE, errorMessage);
         }
-        controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_WAS_SUCCESSFUL, sendWasSuccessful.toString());
-        controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ERROR_MESSAGE, errorMessage);
     }
 }

@@ -23,6 +23,7 @@ public interface View {
     public static final int YOUR_WALLETS_VIEW = 11;
     public static final int CREATE_BULK_ADDRESSES_VIEW = 12;
     public static final int RESET_TRANSACTIONS_VIEW = 13;
+    public static final int SHOW_OPEN_URI_DIALOG_VIEW = 14;
  
     /**
      * display the view (including any screen drawing/ construction
