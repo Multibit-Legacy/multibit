@@ -44,7 +44,7 @@ public class DnsDiscovery implements PeerDiscovery {
         "bitseed.xf2.org",          // Static
         "bitseed.bitcoin.org.uk",    // Static
         "dnsseed.bluematt.me"      // Auto generated
-           };
+    };
 
     /**
      * Supports finding peers through DNS A records. Community run DNS entry points will be used.

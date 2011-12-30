@@ -8,6 +8,7 @@ Jonny Heggheim
 
 Internationalisation:
 ---------------------
+Arvis Lacis         - Latvian
 Azrael_PT           - Portuguese
 damnek              - Dutch
 Emin Gun Sirer      - Turkish
