@@ -16,6 +16,7 @@ package org.multibit;
  * limitations under the License.
  */
 
+import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.network.FileHandler;
@@ -199,6 +200,8 @@ public class MultiBit {
                         return uri;
                     }
                 };
+                // make sure the view stack has a next view populated (for use in the OpenURIEvent)
+                controller.determineNextView(ActionForward.FORWARD_TO_SAME);
                 // Call the event which will attempt validation against the Bitcoin URI specification
                 controller.onOpenURIEvent(event);
             } catch (URISyntaxException e) {
@@ -210,7 +213,6 @@ public class MultiBit {
             log.debug("No Bitcoin URI provided as an argument");
             // display the next view
             controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
-
         }
 
         // Indicate to the application that startup has completed

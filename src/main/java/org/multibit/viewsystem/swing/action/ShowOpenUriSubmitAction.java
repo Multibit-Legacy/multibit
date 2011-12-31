@@ -7,10 +7,8 @@ import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.SendBitcoinConfirmView;
 
 /**
  * This {@link Action} processes the open uri command

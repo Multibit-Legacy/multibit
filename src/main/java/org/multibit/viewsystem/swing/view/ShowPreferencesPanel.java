@@ -53,6 +53,10 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     private JTextField feeTextField;
     private String originalFee;
 
+    private JRadioButton ignoreAll;
+    private JRadioButton fillAutomatically;
+    private JRadioButton askEveryTime;
+    
     private Data data;
 
     /**
@@ -84,6 +88,22 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         }
         originalFee = sendFeeString;
         feeTextField.setText(sendFeeString);
+
+        String showDialogString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
+        String useUriString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_USE_URI);
+        
+        if (!(Boolean.FALSE.toString().equalsIgnoreCase(showDialogString))) {
+            // missing showDialog or it is set to true
+            askEveryTime.setSelected(true);
+        } else {
+            if (!(Boolean.FALSE.toString().equalsIgnoreCase(useUriString))) {
+                // missing useUri or it is set to true
+                fillAutomatically.setSelected(true);
+            } else {
+                // useUri set to false
+                ignoreAll.setSelected(true);
+            }
+        }
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
@@ -140,13 +160,22 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.gridy = 3;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
+        constraints.weighty = 1.6;
+        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
+        add(createBrowserIntegrationPanel(), constraints);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        constraints.gridwidth = 2;
+        constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         add(createFeePanel(), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 5;
         constraints.gridwidth = 1;
         constraints.weightx = 0.4;
         constraints.weighty = 0.06;
@@ -157,7 +186,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 6;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 20;
@@ -331,6 +360,67 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         return feePanel;
     }
 
+    private JPanel createBrowserIntegrationPanel() {
+        // radios
+        JPanel browserIntegrationPanel = new JPanel(new GridBagLayout());
+        browserIntegrationPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0),
+                BorderFactory.createTitledBorder(controller.getLocaliser().getString("showPreferencesPanel.browserIntegrationTitle"))));
+        browserIntegrationPanel.setOpaque(false);
+
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        JLabel messageLabel = new JLabel(controller.getLocaliser().getString("showPreferencesPanel.browserIntegration.messageText"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        browserIntegrationPanel.add(messageLabel, constraints);
+
+        ButtonGroup browserIntegrationGroup = new ButtonGroup();
+        ignoreAll = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.ignoreAll"));
+        ignoreAll.setOpaque(false);
+        
+        fillAutomatically = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.fillAutomatically"));
+        fillAutomatically.setOpaque(false);
+        
+        askEveryTime = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.askEveryTime"));
+        askEveryTime.setOpaque(false);
+        
+        browserIntegrationGroup.add(ignoreAll);
+        browserIntegrationGroup.add(fillAutomatically);
+        browserIntegrationGroup.add(askEveryTime);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        browserIntegrationPanel.add(ignoreAll, constraints);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        browserIntegrationPanel.add(fillAutomatically, constraints);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        browserIntegrationPanel.add(askEveryTime, constraints);
+
+        return browserIntegrationPanel;
+    }
+
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
@@ -395,6 +485,19 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         feeItem.setOriginalValue(originalFee);
         feeItem.setNewValue(feeTextField.getText());
         data.addItem(MultiBitModel.SEND_FEE, feeItem);
+        
+        Item showDialogItem = new Item(MultiBitModel.OPEN_URI_SHOW_DIALOG);
+        showDialogItem.setNewValue((new Boolean((askEveryTime.isSelected()))).toString());
+        data.addItem(MultiBitModel.OPEN_URI_SHOW_DIALOG, showDialogItem );
+
+        Item useUriItem = new Item(MultiBitModel.OPEN_URI_USE_URI);
+        boolean useUri = true;
+        if (ignoreAll.isSelected()) {
+            useUri = false;
+        }
+        useUriItem.setNewValue((new Boolean(useUri)).toString());
+        data.addItem(MultiBitModel.OPEN_URI_USE_URI, useUriItem );
+
         return data;
     }
 

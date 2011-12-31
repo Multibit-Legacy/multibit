@@ -82,6 +82,18 @@ public class ShowPreferencesSubmitAction implements Action {
                             (String) languageItem.getNewValue());
                     controller.fireLanguageChanged();
                 }
+
+                Item openURIDialogItem = data.getItem(MultiBitModel.OPEN_URI_SHOW_DIALOG);
+                if (openURIDialogItem != null && openURIDialogItem.getNewValue() != null) {
+                    controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG,
+                            (String) openURIDialogItem.getNewValue());
+                }
+
+                Item openURIUseUriItem = data.getItem(MultiBitModel.OPEN_URI_USE_URI);
+                if (openURIUseUriItem != null && openURIUseUriItem.getNewValue() != null) {
+                    controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI,
+                            (String) openURIUseUriItem.getNewValue());
+                }
             }
         }
 

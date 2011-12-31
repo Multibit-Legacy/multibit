@@ -210,6 +210,14 @@ public class ShowOpenUriView extends MultiBitDialog implements View, DataProvide
         sendLabel = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_LABEL);
         sendAmount = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_AMOUNT);
 
+        String showDialogString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
+       
+        if (!(Boolean.FALSE.toString().equalsIgnoreCase(showDialogString))) {
+            // missing showDialog or it is set to true
+            rememberCheckBox.setSelected(false);
+        } else {
+            rememberCheckBox.setSelected(true);
+        }
         setVisible(true);
     }
 
