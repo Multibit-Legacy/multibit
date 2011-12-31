@@ -84,6 +84,10 @@
             <file src="COPYING" targetdir="$INSTALL_PATH"/>
             <file src="AUTHORS.txt" targetdir="$INSTALL_PATH"/>
             <file src="multibit-exe.jar" targetdir="$INSTALL_PATH"/>
+            <file src="multibit-protocol-handler.sh" targetdir="$INSTALL_PATH" os="linux"/>
+            <parsable targetfile="$INSTALL_PATH/multibit-protocol-handler.sh"  os="linux"/>
+            <executable type="bin" stage="never" targetfile="$INSTALL_PATH/multibit-protocol-handler.sh" os="linux" />
+            <executable type="bin" stage="postinstall" targetfile="$INSTALL_PATH/multibit-protocol-handler.sh" os="linux" />
         </pack>
     </packs>
 </installation>

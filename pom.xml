@@ -185,6 +185,7 @@
                     <include>install.xml</include>
                     <include>readme.txt</include>
                     <include>Unix_shortcutSpec.xml</include>
+                    <include>multibit-protocol-handler.sh</include>
                   </includes>
                 </resource>
                 <resource>
