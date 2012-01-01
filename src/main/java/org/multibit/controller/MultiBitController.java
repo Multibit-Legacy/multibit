@@ -623,17 +623,23 @@ public class MultiBitController implements
         rawBitcoinURI = event.getURI();
         log.debug("Controller received open URI event with URI='{}'", rawBitcoinURI.toASCIIString());
         if (!applicationStarting) {
+            log.debug("Open URI event handled immediately");
             handleOpenURI();
+        } else {
+            log.debug("Open URI event not handled immediately because application is still starting");            
         }
     }
 
     public synchronized void handleOpenURI() {
+        log.debug("handleOpenURI called and rawBitcoinURI ='" + rawBitcoinURI + "'");
+        
         // get the open URI configuration information
         String showOpenUriDialogText = getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
         String useUriText = getModel().getUserPreference(MultiBitModel.OPEN_URI_USE_URI);
         
         if(Boolean.FALSE.toString().equalsIgnoreCase(useUriText) && Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
             // ignore open URI request
+            log.debug("Bitcoin URI ignored because useUriText = '" + useUriText + "', showOpenUriDialogText = '" + showOpenUriDialogText + "'");
             return;
         }
         if (rawBitcoinURI == null) {
