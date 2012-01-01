@@ -38,7 +38,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
     private final Logger log = LoggerFactory.getLogger(SendBitcoinPanel.class);
 
     private static final String SEND_BITCOIN_BIG_ICON_FILE = "/images/send-big.jpg";
-    
+
     private JButton pasteAddressButton;
     private JButton sendButton;
 
@@ -50,21 +50,22 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
     protected boolean isReceiveBitcoin() {
         return false;
     }
-   
+
     @Override
     protected Action getCreateNewAddressAction() {
         return new CreateNewSendingAddressAction(controller, this);
     }
-    
+
     @Override
     protected String getAddressConstant() {
         return MultiBitModel.SEND_ADDRESS;
     }
-    
+
     @Override
     protected String getLabelConstant() {
         return MultiBitModel.SEND_LABEL;
     }
+
     @Override
     protected String getAmountConstant() {
         return MultiBitModel.SEND_AMOUNT;
@@ -80,8 +81,8 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
      */
     @Override
     protected void populateLocalisationMap() {
-        localisationKeyConstantToKeyMap.put(ADDRESSES_TITLE, "sendBitcoinPanel.sendingAddressesTitle");                
-        localisationKeyConstantToKeyMap.put(CREATE_NEW_TOOLTIP, "createOrEditAddressAction.createSending.tooltip");       
+        localisationKeyConstantToKeyMap.put(ADDRESSES_TITLE, "sendBitcoinPanel.sendingAddressesTitle");
+        localisationKeyConstantToKeyMap.put(CREATE_NEW_TOOLTIP, "createOrEditAddressAction.createSending.tooltip");
     }
 
     protected JPanel createFormPanel() {
@@ -326,12 +327,23 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
             amountTextField.setText(amount);
         }
 
-        // if there is a pending 'handleopenURI' that needs pasting into the send form, do it
+        // if there is a pending 'handleopenURI' that needs pasting into the
+        // send form, do it
         String performPasteNow = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW);
         if (Boolean.TRUE.toString().equalsIgnoreCase(performPasteNow)) {
-        	processDecodedString(BitcoinURI.convertToBitcoinURI(address, amount, label), null);
+            processDecodedString(BitcoinURI.convertToBitcoinURI(address, amount, label), null);
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
             sendButton.requestFocusInWindow();
+
+            java.awt.EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    if (mainFrame != null) {
+                        mainFrame.toFront();
+                        mainFrame.repaint();
+                    }
+                }
+            });
         }
     }
 
@@ -366,7 +378,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
                 mainFrame.setUpdatesStoppedTooltip(pasteAddressButton);
             }
             titleLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.sendingAddressesTitle.mayBeOutOfDate"));
-            mainFrame.setUpdatesStoppedTooltip(titleLabel);                 
+            mainFrame.setUpdatesStoppedTooltip(titleLabel);
         } else {
             addressTextField.setToolTipText(null);
             addressTextField.setEditable(true);

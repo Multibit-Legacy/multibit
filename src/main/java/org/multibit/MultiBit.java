@@ -40,7 +40,7 @@ import java.util.Properties;
 
 /**
  * Main MultiBit entry class
- *
+ * 
  * @author jim
  */
 public class MultiBit {
@@ -48,12 +48,14 @@ public class MultiBit {
 
     /**
      * start multibit user interface
-     *
-     * @param args String encoding of arguments ([0]= Bitcoin URI)
+     * 
+     * @param args
+     *            String encoding of arguments ([0]= Bitcoin URI)
      */
     public static void main(String args[]) {
-
         log.info("Starting DefaultApplication");
+
+        ViewSystem swingViewSystem = null;
 
         ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
 
@@ -61,7 +63,7 @@ public class MultiBit {
         Properties userPreferences = FileHandler.loadUserPreferences(applicationDataDirectoryLocator);
 
         // create the controller
-        MultiBitController controller = new MultiBitController(userPreferences, applicationDataDirectoryLocator);
+        final MultiBitController controller = new MultiBitController(userPreferences, applicationDataDirectoryLocator);
 
         log.info("Configuring native event handling");
         GenericApplicationSpecification specification = new GenericApplicationSpecification();
@@ -70,6 +72,31 @@ public class MultiBit {
         specification.getAboutEventListeners().add(controller);
         specification.getQuitEventListeners().add(controller);
         GenericApplication genericApplication = GenericApplicationFactory.INSTANCE.buildGenericApplication(specification);
+
+        log.info("Checking to see if this is the primary MultiBit instance");
+        String rawURI = null;
+        if (args != null && args.length > 0) {
+            rawURI = args[0];
+        }
+        if (!ApplicationInstanceManager.registerInstance(rawURI)) {
+            // instance already running.
+            System.out.println("Another instance of MultiBit is already running.  Exiting.");
+            System.exit(0);
+        }
+
+        ApplicationInstanceManager.setApplicationInstanceListener(new ApplicationInstanceListener() {
+            public void newInstanceCreated(String rawURI) {
+                final String finalRawUri = rawURI;
+                System.out.println("New instance of MultiBit detected...");
+                Runnable doProcessCommandLine = new Runnable() {
+                    public void run() {
+                        processCommandLineURI(controller, finalRawUri);
+                    }
+                };
+
+                SwingUtilities.invokeLater(doProcessCommandLine);
+            }
+        });
 
         // if test or production is not specified, default to production
         String testOrProduction = userPreferences.getProperty(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
@@ -118,7 +145,7 @@ public class MultiBit {
         }
 
         log.debug("Creating views");
-        ViewSystem swingViewSystem = new MultiBitFrame(controller, genericApplication);
+        swingViewSystem = new MultiBitFrame(controller, genericApplication);
 
         log.debug("Registering with controller");
         controller.registerViewSystem(swingViewSystem);
@@ -173,42 +200,7 @@ public class MultiBit {
             for (int i = 0; i < args.length; i++) {
                 log.debug("Started with args[{}]: '{}'", i, args[i]);
             }
-            String rawURI = args[0];
-            try {
-                // Attempt to detect if the command line URI is valid
-                // Note that this is largely because IE6-8 strip URL encoding when passing in
-                // URIs to a protocol handler
-                // However, there is also the chance that anyone could hand-craft a URI and pass
-                // it in with non-ASCII character encoding present in the label
-                // This a really limited approach (no consideration of "amount=10.0&label=Black & White")
-                // but should be OK for early use cases
-                int queryParamIndex = rawURI.indexOf("?");
-                if (queryParamIndex > 0 && !rawURI.contains("%")) {
-                    // Possibly encoded but more likely not
-                    String encodedQueryParams = URLEncoder.encode(rawURI.substring(queryParamIndex + 1), "UTF-8");
-                    rawURI = rawURI.substring(0, queryParamIndex) + "?" + encodedQueryParams;
-                    rawURI = rawURI.replaceAll("%3D", "=");
-                    rawURI = rawURI.replaceAll("%26", "&");
-                }
-                final URI uri;
-                log.debug("Working with '{}' as a Bitcoin URI", rawURI);
-                // Construct an OpenURIEvent to simulate receiving this from a listener
-                uri = new URI(rawURI);
-                GenericOpenURIEvent event = new GenericOpenURIEvent() {
-                    @Override
-                    public URI getURI() {
-                        return uri;
-                    }
-                };
-                // make sure the view stack has a next view populated (for use in the OpenURIEvent)
-                controller.determineNextView(ActionForward.FORWARD_TO_SAME);
-                // Call the event which will attempt validation against the Bitcoin URI specification
-                controller.onOpenURIEvent(event);
-            } catch (URISyntaxException e) {
-                log.error("URI is malformed. Received: '{}'", args[0]);
-            } catch (UnsupportedEncodingException e) {
-                log.error("UTF=8 is not supported on this platform");
-            }
+            processCommandLineURI(controller, args[0]);
         } else {
             log.debug("No Bitcoin URI provided as an argument");
             // display the next view
@@ -224,5 +216,49 @@ public class MultiBit {
         log.debug("Downloading blockchain");
         // see if the user wants to connect to a single node
         multiBitService.downloadBlockChain();
+    }
+
+    static void processCommandLineURI(MultiBitController controller, String rawURI) {
+        try {
+            // Attempt to detect if the command line URI is valid
+            // Note that this is largely because IE6-8 strip URL encoding
+            // when passing in
+            // URIs to a protocol handler
+            // However, there is also the chance that anyone could
+            // hand-craft a URI and pass
+            // it in with non-ASCII character encoding present in the label
+            // This a really limited approach (no consideration of
+            // "amount=10.0&label=Black & White")
+            // but should be OK for early use cases
+            int queryParamIndex = rawURI.indexOf("?");
+            if (queryParamIndex > 0 && !rawURI.contains("%")) {
+                // Possibly encoded but more likely not
+                String encodedQueryParams = URLEncoder.encode(rawURI.substring(queryParamIndex + 1), "UTF-8");
+                rawURI = rawURI.substring(0, queryParamIndex) + "?" + encodedQueryParams;
+                rawURI = rawURI.replaceAll("%3D", "=");
+                rawURI = rawURI.replaceAll("%26", "&");
+            }
+            final URI uri;
+            log.debug("Working with '{}' as a Bitcoin URI", rawURI);
+            // Construct an OpenURIEvent to simulate receiving this from a
+            // listener
+            uri = new URI(rawURI);
+            GenericOpenURIEvent event = new GenericOpenURIEvent() {
+                @Override
+                public URI getURI() {
+                    return uri;
+                }
+            };
+            // make sure the view stack has a next view populated (for use
+            // in the OpenURIEvent)
+            controller.determineNextView(ActionForward.FORWARD_TO_SAME);
+            // Call the event which will attempt validation against the
+            // Bitcoin URI specification
+            controller.onOpenURIEvent(event);
+        } catch (URISyntaxException e) {
+            log.error("URI is malformed. Received: '{}'", rawURI);
+        } catch (UnsupportedEncodingException e) {
+            log.error("UTF=8 is not supported on this platform");
+        }
     }
 }

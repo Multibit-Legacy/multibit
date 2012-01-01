@@ -32,7 +32,7 @@
 </skeletonProperties>
 <skeletonProperties>
 <key>SingleInstance</key>
-<value>1</value>
+<value>0</value>
 </skeletonProperties>
 <skeletonProperties>
 <key>JniSmooth</key>
