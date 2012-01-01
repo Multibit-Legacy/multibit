@@ -7,6 +7,8 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.platform.GenericApplication;
+import org.multibit.qrcode.BitcoinURI;
+import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.*;
@@ -22,7 +24,10 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.URI;
+import java.net.URLDecoder;
 import java.util.Timer;
 
 /*

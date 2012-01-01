@@ -37,28 +37,31 @@ public class ShowOpenUriSubmitAction implements Action {
             controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
             // get the data out of the temporary data and put it in the wallet preferences
-
             Item sendAddressItem = dataProvider.getData().getItem(MultiBitModel.OPEN_URI_ADDRESS);
             Item sendLabelItem = dataProvider.getData().getItem(MultiBitModel.OPEN_URI_LABEL);
             Item sendAmountItem = dataProvider.getData().getItem(MultiBitModel.OPEN_URI_AMOUNT);
             Item showDialogItem = dataProvider.getData().getItem(MultiBitModel.OPEN_URI_SHOW_DIALOG);
  
             if (sendAddressItem != null) {
-                controller.getModel().setUserPreference(MultiBitModel.SEND_ADDRESS, (String)sendAddressItem.getNewValue());                
+                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, (String)sendAddressItem.getNewValue());                
             }
             if (sendLabelItem != null) {
-                controller.getModel().setUserPreference(MultiBitModel.SEND_LABEL, (String)sendLabelItem.getNewValue());                
+                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, (String)sendLabelItem.getNewValue());                
             }
             if (sendAmountItem != null) {
-                controller.getModel().setUserPreference(MultiBitModel.SEND_AMOUNT, (String)sendAmountItem.getNewValue());                
+                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, (String)sendAmountItem.getNewValue());                
             }
+            // we want the send view to paste in the send data
+            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "true");
+
+            // we want to set the user preference to use the uri as the user clicked yes
+            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI, "true");      
+            
+            // save as user preference whether to show dialog or not
             if (showDialogItem != null) {
                 controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG, (String)showDialogItem.getNewValue());                
             }
-
-            // we want to use the uri as the user clicked yes
-            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI, "true");   
-            
+             
             controller.setActionForwardToSiblingOfParent(ActionForward.FORWARD_TO_SEND_BITCOIN);
 
         }

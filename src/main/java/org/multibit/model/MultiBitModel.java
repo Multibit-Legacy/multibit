@@ -50,6 +50,7 @@ public class MultiBitModel {
     public static final String SEND_AMOUNT = "sendAmount";
     public static final String SEND_URI_IMAGE = "sendUriImage";
     public static final String SEND_FEE = "sendFee";
+    public static final String SEND_PERFORM_PASTE_NOW = "sendPerformPasteNow";
 
     // open uri 
     public static final String OPEN_URI_SHOW_DIALOG = "openUriShowDialog";

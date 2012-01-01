@@ -15,11 +15,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
+import org.multibit.qrcode.BitcoinURI;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopySendAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewSendingAddressAction;
@@ -321,6 +324,14 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         }
         if (amount != null) {
             amountTextField.setText(amount);
+        }
+
+        // if there is a pending 'handleopenURI' that needs pasting into the send form, do it
+        String performPasteNow = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW);
+        if (Boolean.TRUE.toString().equalsIgnoreCase(performPasteNow)) {
+        	processDecodedString(BitcoinURI.convertToBitcoinURI(address, amount, label), null);
+            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
+            sendButton.requestFocusInWindow();
         }
     }
 

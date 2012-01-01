@@ -42,7 +42,7 @@ public class PasteSwatchAction extends AbstractAction {
     }
 
     /**
-     * delegate to generic copy QRCode image action
+     * paste the swatch data
      */
     public void actionPerformed(ActionEvent e) {
         // check to see if the wallet files have changed

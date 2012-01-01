@@ -10,8 +10,10 @@ import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.listener.*;
 import org.multibit.qrcode.BitcoinURI;
+import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
+import org.multibit.viewsystem.swing.view.AbstractTradePanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -626,12 +628,12 @@ public class MultiBitController implements
     }
 
     public synchronized void handleOpenURI() {
-        // get the open uri configuration information
+        // get the open URI configuration information
         String showOpenUriDialogText = getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
         String useUriText = getModel().getUserPreference(MultiBitModel.OPEN_URI_USE_URI);
         
         if(Boolean.FALSE.toString().equalsIgnoreCase(useUriText) && Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
-            // ignore open uri request
+            // ignore open URI request
             return;
         }
         if (rawBitcoinURI == null) {
@@ -639,7 +641,7 @@ public class MultiBitController implements
             return;
         }
         // Process the URI
-        BitcoinURI bitcoinURI = new BitcoinURI(this, rawBitcoinURI.toString());
+        BitcoinURI bitcoinURI = new BitcoinURI(this, WhitespaceTrimmer.trim(rawBitcoinURI.toString()));
         if (bitcoinURI.isParsedOk()) {
             log.debug("Parsed Bitcoin URI successfully");
 
@@ -662,9 +664,10 @@ public class MultiBitController implements
                 getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, address);
                 getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, label);
                 getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amount);
+                getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "true");
                 log.debug("Routing straight to send view for address = " + address);
-                determineNextView(ActionForward.FORWARD_TO_SEND_BITCOIN);
-                displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
+                
+                setActionForwardToSibling(ActionForward.FORWARD_TO_SEND_BITCOIN);
                 return;
             } else {
                 // show the confirm dialog to see if the user wants to use URI
@@ -674,8 +677,7 @@ public class MultiBitController implements
                 getModel().setUserPreference(MultiBitModel.OPEN_URI_AMOUNT, amount);
                 log.debug("Routing to show open uri view for address = " + address);
                 
-                determineNextView(ActionForward.FORWARD_TO_SHOW_OPEN_URI_VIEW);
-                displayNextView(ViewSystem.NEW_VIEW_IS_CHILD_OF_PREVIOUS);
+                setActionForwardToChild(ActionForward.FORWARD_TO_SHOW_OPEN_URI_VIEW);
                 return;
             }
         } else {

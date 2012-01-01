@@ -107,9 +107,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         populateLocalisationMap();
 
         initUI();
-        loadForm();
-
+        
         labelTextArea.requestFocusInWindow();
+
+        loadForm();
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
     }
@@ -767,7 +768,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 log.debug("SendBitcoinPanel - ping 4");
                 String decodedLabel = bitcoinURI.getLabel();
 
-                log.debug("SendBitcoinPanel#imageSelection#importData = addressString = " + addressString + ", amountString = "
+                log.debug("SendBitcoinPanel#processDecodedString addressString = " + addressString + ", amountString = "
                         + amountString + ", label = " + decodedLabel);
                 log.debug("SendBitcoinPanel - ping 5");
 
