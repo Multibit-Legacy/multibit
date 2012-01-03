@@ -72,24 +72,7 @@
         <filtering>false</filtering>
         <excludes>
           <exclude>**/*.properties</exclude>
-        </excludes>
-      </resource>
-
-      <!-- filter XML and TXT files e.g. install.xml -->
-      <resource>
-        <directory>src/main/izpack</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>**/*.xml</include>
-          <include>**/*.txt</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>src/main/izpack</directory>
-        <filtering>false</filtering>
-        <excludes>
-          <exclude>**/*.xml</exclude>
-          <exclude>**/*.txt</exclude>
+          <exclude>**/*.blockchain</exclude>
         </excludes>
       </resource>
     </resources>
