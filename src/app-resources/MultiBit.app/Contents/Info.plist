@@ -7,7 +7,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>org.multibit</string>
 	<key>CFBundleVersion</key>
-	<string>0.2.0beta1</string>
+	<string>0.3.0-SNAPSHOT</string>
 	<key>CFBundleAllowMixedLocalizations</key>
 	<string>true</string>
 	<key>CFBundleExecutable</key>
@@ -23,9 +23,9 @@
 	<key>CFBundleIconFile</key>
 	<string>multibit.icns</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright Multibit developers 2011</string>
+	<string>Copyright Multibit developers 2012</string>
 	<key>CFBundleGetInfoString</key>
-	<string>MultiBit 0.2.0beta1, © 2011 MultiBit developers</string>
+	<string>MultiBit 0.3.0-SNAPSHOT, © 2012 MultiBit developers</string>
 	<key>CFBundleDisplayName</key>
 	<string>MultiBit</string>
 	<key>Java</key>
@@ -45,19 +45,19 @@
 		</dict>
 	</dict>
 	<key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleTypeRole</key>
-            <string>Shell</string>
-            <key>CFBundleURLIconFile</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Shell</string>
+			<key>CFBundleURLIconFile</key>
 			<string>multibit.icns</string>
 			<key>CFBundleURLName</key>
-            <string>org.multibit.bitcoin.url</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>bitcoin</string>
-            </array>
-        </dict>
-    </array>
+			<string>org.multibit.bitcoin.url</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>bitcoin</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

@@ -301,7 +301,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${basedir}/target/MultiBit.app</outputDirectory>
+              <outputDirectory>${basedir}/target/MultiBit-${project.version}.app</outputDirectory>
               <resources>
                 <resource>
                   <!-- skeleton app -->
@@ -317,7 +317,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <outputDirectory>${basedir}/target/MultiBit.app/Contents/Resources/Java</outputDirectory>
+              <outputDirectory>${basedir}/target/MultiBit-${project.version}.app/Contents/Resources/Java</outputDirectory>
               <resources>
                 <resource>
                   <directory>${basedir}/target/staging.linux</directory>
@@ -332,7 +332,6 @@
                 </resource>
                 <resource>
                   <directory>${basedir}/src/main/izpack/mac</directory>
-                  <filtering>true</filtering>
                   <includes>
                     <include>readme.txt</include>
                   </includes>
@@ -391,11 +390,11 @@
             <configuration>
               <tasks>
                 <!-- Make the JavaApplicationStub in the Mac application bundle executable (it loses its 'x' permission after the copy)  -->
-                <chmod file="${basedir}/target/MultiBit.app/Contents/MacOS/JavaApplicationStub" perm="777"/>
+                <chmod file="${basedir}/target/MultiBit-${project.version}.app/Contents/MacOS/JavaApplicationStub" perm="777"/>
 
-                <mkdir dir="${basedir}/target/MultiBit-mac/MultiBit.app"/>
-                <copy todir="${basedir}/target/MultiBit-mac/MultiBit.app">
-                  <fileset dir="${basedir}/target/MultiBit.app" includes="**"/>
+                <mkdir dir="${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app"/>
+                <copy todir="${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app">
+                  <fileset dir="${basedir}/target/MultiBit-${project.version}.app" includes="**"/>
                 </copy>
                 <copy file="${basedir}/src/main/izpack/mac/readme.txt" todir="${basedir}/target/MultiBit-mac"/>
 
@@ -407,7 +406,7 @@
                 </exec>
 
                 <!-- Make the JavaApplicationStub in the MultiBit app (it loses its 'x' permission after the copy)  -->
-                <chmod file="${basedir}/target/MultiBit-mac/MultiBit.app/Contents/MacOS/JavaApplicationStub"
+                <chmod file="${basedir}/target/MultiBit-mac/MultiBit-${project.version}.app/Contents/MacOS/JavaApplicationStub"
                        perm="777"/>
 
                 <!-- create a DMG file -->
