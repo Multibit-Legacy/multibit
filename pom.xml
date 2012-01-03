@@ -58,6 +58,41 @@
 
   <build>
     <finalName>multibit</finalName>
+    <resources>
+      <!-- filter properties files e.g. version.properties -->
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*.properties</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>**/*.properties</exclude>
+        </excludes>
+      </resource>
+
+      <!-- filter XML and TXT files e.g. install.xml -->
+      <resource>
+        <directory>src/main/izpack</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*.xml</include>
+          <include>**/*.txt</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/izpack</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>**/*.xml</exclude>
+          <exclude>**/*.txt</exclude>
+        </excludes>
+      </resource>
+    </resources>
     <plugins>
       <!-- Standard compile to ensure Java6 is used in all environments (e.g. Jenkins) -->
       <plugin>
@@ -86,7 +121,7 @@
                 <artifactItem>
                   <groupId>com.google</groupId>
                   <artifactId>bitcoinj</artifactId>
-                  <version>0.3</version>
+                  <version>${bitcoinj.version}</version>
                   <type>jar</type>
                   <overWrite>false</overWrite>
                   <outputDirectory>${basedir}/target/bitcoinj</outputDirectory>
@@ -181,6 +216,7 @@
               <resources>
                 <resource>
                   <directory>src/main/izpack/linux</directory>
+                  <filtering>true</filtering>
                   <includes>
                     <include>install.xml</include>
                     <include>readme.txt</include>
@@ -232,7 +268,8 @@
               <resources>
                 <resource>
                   <directory>src/main/izpack/windows</directory>
-                  <includes>
+                  <filtering>true</filtering>
+                   <includes>
                     <include>install.xml</include>
                     <include>readme.txt</include>
                     <include>shortcutSpec.xml</include>
@@ -312,6 +349,7 @@
                 </resource>
                 <resource>
                   <directory>${basedir}/src/main/izpack/mac</directory>
+                  <filtering>true</filtering>
                   <includes>
                     <include>readme.txt</include>
                   </includes>
@@ -336,7 +374,7 @@
             </goals>
             <configuration>
               <izpackBasedir>${staging.linux.dir}</izpackBasedir>
-              <installerFile>target/${project.build.finalName}-linux.jar</installerFile>
+              <installerFile>target/${project.build.finalName}-${project.version}-linux.jar</installerFile>
             </configuration>
           </execution>
           <execution>
@@ -394,7 +432,7 @@
                   <arg value="create"/>
                   <arg value="-srcfolder"/>
                   <arg value="${basedir}/target/MultiBit-mac"/>
-                  <arg path="${basedir}/target/MultiBit.dmg"/>
+                  <arg path="${basedir}/target/multibit-${project.version}.dmg"/>
                 </exec>
 
                 <!-- IMPORTANT! -->
@@ -425,7 +463,7 @@
                 </path>
                 <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen"
                          classpathref="jsmooth-classpathref"/>
-                <jsmoothgen project="exe.jsmooth" skeletonroot="src/main/jsmooth/skeletons"/>
+                <jsmoothgen project="src/main/jsmooth/exe.jsmooth" skeletonroot="src/main/jsmooth/skeletons"/>
               </tasks>
             </configuration>
             <goals>
@@ -445,7 +483,8 @@
                 </path>
                 <taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen"
                          classpathref="jsmooth-classpathref"/>
-                <jsmoothgen project="installer.jsmooth" skeletonroot="src/main/jsmooth/skeletons"/>
+                <jsmoothgen project="src/main/jsmooth/installer.jsmooth" skeletonroot="src/main/jsmooth/skeletons"/>
+                <move file="target/multibit-windows.exe" tofile="target/multibit-${project.version}-windows.exe"/>
               </tasks>
             </configuration>
             <goals>
@@ -505,7 +544,7 @@
     <dependency>
       <groupId>com.google</groupId>
       <artifactId>bitcoinj</artifactId>
-      <version>0.3</version>
+      <version>${bitcoinj.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -550,8 +589,11 @@
     <!-- Source encoding -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Location of staging directory for creation of linux IzPack installer -->
+    <!-- Version of bitcoinj to use -->
     <staging.linux.dir>${project.build.directory}/staging.linux</staging.linux.dir>
+
+    <!-- Location of staging directory for creation of linux IzPack installer -->
+    <bitcoinj.version>0.3-SNAPSHOT</bitcoinj.version>
 
     <!-- Location of staging directory for creation of windows IzPack installer -->
     <staging.windows.dir>${project.build.directory}/staging.windows</staging.windows.dir>

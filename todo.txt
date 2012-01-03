@@ -1,8 +1,5 @@
 Outstanding from 0.1.3rc2 testing
 ---------------------------------
-+ Produce a YouTube video of drag and drop with a mocked up website
-+ Show number of blocks.(Nibor)
-  Tooltip/message box/ panel with more network details including number of blocks.
 + Would be nice to drill down to transctions details/ look up in block explorer. (Nibor)
   Agreed.
 + Prioritise encryption. (Nibor).
@@ -10,33 +7,20 @@ Outstanding from 0.1.3rc2 testing
 + More flexibility with downloading block chain would be good. (Nibor).
   Agreed. 
 
-Logging, errors, virusscan
+Logging, errors
 ------------------
 + client does not go offline if you disconnect from network
-+ extend logging to all important classes
-+ submit releases to virustotal.com and add to release notes. Make release notes HTML, not ASCII.
++ improve error handling
 
 Outstanding Bugs
 ----------------
 + If you have a wallet offline it does not know about any blocks downloaded onto the blockchain
-+ If you close the 'open wallet' dialog with the window close button, then reopen it is tiny. (Now only happens sometimes).
-+ if you have two multibit open on the same wallet addressbook and wallet can be overwritten one by the other.
-  Will add open/ close times to info files and warn user.
-
 
 Improvements
 ------------
 + add ability to import/ export/ delete private keys.
-+ ensure switch from test to prod does not confuse which wallet is open. (last test/prod wallet setting ?)
 + add wallet encryption
-+ add in more test classes
 + add tests to check sending and receiving works reliably
-
-
-Patches to Mike
----------------
-+ Provide patch with Wallet.java for fees
-+ Provide patch with Peer, PeerGroup, Transaction, Transaction?input, Wallet, WalletEventListener for pending transactions
 
 
 

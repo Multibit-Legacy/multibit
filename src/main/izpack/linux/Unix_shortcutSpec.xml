@@ -6,7 +6,7 @@
   location="applications"/>
 
    <shortcut
-     name="MultiBit"
+     name="MultiBit ${project.version}"
      programGroup="yes"
      desktop="yes"
      applications="no"
@@ -19,10 +19,10 @@
      workingDirectory="$INSTALL_PATH"
      type="Application"
      encoding="UTF-8"
-     description="MultiBit">
+     description="MultiBit ${project.version}">
    </shortcut>
    <shortcut
-     name="Uninstall MultiBit"
+     name="Uninstall MultiBit ${project.version}"
      programGroup="yes"
      desktop="yes"
      applications="no"
@@ -34,7 +34,7 @@
      workingDirectory="$INSTALL_PATH"
      type="Application"
      encoding="UTF-8"
-     description="Uninstall MultiBit">
+     description="Uninstall MultiBit ${project.version}">
    </shortcut>
 </shortcuts>
 

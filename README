@@ -3,7 +3,7 @@ MultiBit is a bitcoin desktop client powered by bitcoinj
 
 How to Build MultiBit
 
-MultiBit now uses a Maven POM.XML.  
+MultiBit uses a Maven POM.XML.  
 The important targets are:
 
 maven clean package
@@ -14,9 +14,9 @@ maven install
 take the multibit.jar and create:
 + an executable jar = multibit-exe.jar
 + a Mac application bundle = MultiBit.app
-+ a Mac DMG file = MultiBit.dmg
-+ an installer for Windows = multibit-installer.exe
-+ a generic installer (for Linux) = multibit-installer.jar
++ a Mac DMG file = multibit-${project.version}.dmg
++ an installer for Windows = multibit--${project.version}-windows.exe
++ an installer for Linux = multibit-${project.version}-linux.jar
 
 
 To run MultiBit from the distributable, follow the instructions at:
@@ -34,4 +34,11 @@ If you want to connect to a single node set the following property in multibit.p
 singleConnectionNode=<node to connect to>
 
 The node can be specified as either a domain name (www.myNode.com) or an IP address.
+
+
+Show Merchant Menu
+-------------------
+To show the merchant menu, add a property in multibit.properties:
+showMerchantMenu=true
+
 
