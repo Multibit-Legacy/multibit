@@ -1,8 +1,9 @@
 MultiBit release notes.
 
-Version 0.2.1
+02 Jan 2012.   Version 0.2.1
 Enhancements
-+  Polish, Latvian translations added.
++  Polish, Latvian translations added. I18n files refreshed.
++  Now supports right-to-left languages e.g. Arabic.
 
 
 22 Dec 2011.   Version 0.2.0

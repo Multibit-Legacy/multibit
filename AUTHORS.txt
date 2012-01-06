@@ -12,17 +12,21 @@ Arvis Lacis         - Latvian
 Azrael_PT           - Portuguese
 damnek              - Dutch
 Emin Gun Sirer      - Turkish
+ffe                 - Arabic
 finway              - Simplified Chinese
 freemoney           - Spanish, German
 GSBank              - French
 HostFat             - Italian
+Jan-steenbergen     - Dutch
 Jonny Heggheim      - Norwegian
 Katya Rowe          - Russian
 Kishor Kumar        - Hindi
+Izsaver             - Russian
 Mats Henricson      - Swedish
+MemoryDealers       - Japanese
 mrmx                - Spanish
 raymccarthy         - Swedish
-technomage          - Finnish
+Technomage          - Finnish
 Piotr Waskiewicz    - Polish
 ziomik              - Italian
 
