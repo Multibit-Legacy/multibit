@@ -38,8 +38,7 @@ public class ResetTransactionsSubmitAction implements Action {
         boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
-            // set on the perWalletModelData that files have changed and fire
-            // data changed
+            // set on the perWalletModelData that files have changed and fire data changed
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
             controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
@@ -56,7 +55,7 @@ public class ResetTransactionsSubmitAction implements Action {
                     earliestTransactionDate = new Date(Long.parseLong(storedEarliestTransactionDate));
                     alreadyHaveEarliestTransactionDate = true;
                 } catch (NumberFormatException nfe) {
-                    // carry on - will work it out from scratch
+                    // carry on - we will work it out from scratch
                 }
             }
 
@@ -81,8 +80,7 @@ public class ResetTransactionsSubmitAction implements Action {
                         "" + earliestTransactionDate.getTime());
             }
 
-            // navigate backwards in the blockchain to work out how far back in
-            // time to go
+            // navigate backwards in the blockchain to work out how far back in time to go
             BlockChain blockChain = controller.getMultiBitService().getChain();
 
             StoredBlock storedBlock = blockChain.getChainHead();
@@ -106,13 +104,6 @@ public class ResetTransactionsSubmitAction implements Action {
             }
 
             if (!blockNavigationError) {
-                // shut down the PeerGroup and restart it again
-                // this is in case it is already downloading the up to date blockchain
-//                if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
-//                    controller.getMultiBitService().getPeerGroup().stop();
-//                    controller.getMultiBitService().getPeerGroup().start();
-//                }
-
                 // remove the transactions from the wallet
                 activePerWalletModelData.getWallet().removeAllTransactions();
                 
@@ -134,14 +125,12 @@ public class ResetTransactionsSubmitAction implements Action {
                     workerThread.start();
 
                 } catch (BlockStoreException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                     e.printStackTrace();
                 }
 
             }
 
-            // navigate back to the reset transactions page, telling user to
-            // restart MultiBit
+            // navigate back to the reset transactions page
             controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
         }
     }
