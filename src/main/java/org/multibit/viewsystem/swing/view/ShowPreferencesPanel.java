@@ -43,6 +43,9 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
     private static final long serialVersionUID = 191352298245057705L;
 
+    private static final int FEE_TEXT_FIELD_WIDTH = 100;
+    private static final int FEE_TEXT_FIELD_HEIGHT = 30;
+    
     private MultiBitController controller;
 
     SortedSet<LanguageData> languageDataSet;
@@ -330,6 +333,9 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         feeTextField = new JTextField(10);
         feeTextField.setHorizontalAlignment(JLabel.TRAILING);
+        feeTextField.setMinimumSize(new Dimension(FEE_TEXT_FIELD_WIDTH, FEE_TEXT_FIELD_HEIGHT));
+        feeTextField.setPreferredSize(new Dimension(FEE_TEXT_FIELD_WIDTH, FEE_TEXT_FIELD_HEIGHT));
+        feeTextField.setMaximumSize(new Dimension(FEE_TEXT_FIELD_WIDTH, FEE_TEXT_FIELD_HEIGHT));
 
         feeTextField.setText(sendFeeString);
         constraints.fill = GridBagConstraints.NONE;
