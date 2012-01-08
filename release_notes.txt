@@ -1,5 +1,16 @@
 MultiBit release notes.
 
+Version 0.3.0Beta1
+Enhancements
++  Bitcoin protocol handler registered and calls dealt with.
++  Transaction fee field width increased
+
+02 Jan 2012.   Version 0.2.1
+Enhancements
++  Polish and Latvian translation added. I18n files refreshed.
++  Now supports right-to-left languages e.g. Arabic
+
+
 22 Dec 2011.   Version 0.2.0
 Enhancements
 +  Finnish translation added.
