@@ -23,7 +23,7 @@ import java.lang.reflect.Proxy;
  * @since 0.3.0
  */
 public abstract class BaseMacInvocationHandler<H extends GenericHandler, E extends GenericEvent> implements InvocationHandler {
-    private static final Logger log = LoggerFactory.getLogger(QuitHandlerInvocationHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(BaseMacInvocationHandler.class);
 
     private final H genericHandler;
     private final Class<E> genericEventClass;
