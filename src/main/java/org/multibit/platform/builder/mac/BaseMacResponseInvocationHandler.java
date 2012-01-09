@@ -48,13 +48,16 @@ public abstract class BaseMacResponseInvocationHandler<H extends GenericHandler,
      * @throws Throwable If something goes wrong
      */
     @Override
+    @SuppressWarnings("unchecked")
     public Object invoke(Object object, Method nativeMethod, Object[] objects) throws Throwable {
 
         log.debug("Invoked response method. NativeMethod={}, method args length={}", nativeMethod.getName(), objects.length);
 
         // Create a bi-directional generic event using based on 2 parameters (the native event, the native response)
-        E event = createGenericEvent(objects[0]);
-        R response = createGenericResponse(objects[1]);
+        // Require unchecked casts here to avoid this issue:
+        // http://blog.sarathonline.com/2010/08/maven-only-type-parameters-of-x-cannot.html
+        E event = (E) createGenericEvent(objects[0]);
+        R response = (R) createGenericResponse(objects[1]);
         try {
             log.debug("Created event {}", genericEventClass.getSimpleName());
 
