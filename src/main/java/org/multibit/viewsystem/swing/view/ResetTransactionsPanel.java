@@ -7,7 +7,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -18,6 +17,8 @@ import org.multibit.model.DataProvider;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ResetTransactionsSubmitAction;
+import org.multibit.viewsystem.swing.view.components.MultiBitButton;
+import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 
 /**
  * The reset blockchain and transactions view
@@ -30,9 +31,9 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
 
     private Data data;
 
-    private JLabel walletFilenameLabel;
+    private MultiBitLabel walletFilenameLabel;
 
-    private JLabel walletDescriptionLabel;
+    private MultiBitLabel walletDescriptionLabel;
 
     /**
      * Creates a new {@link ResetTransactionsPanel}.
@@ -138,7 +139,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        JLabel explainLabel1 = new JLabel(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text1"));
+        MultiBitLabel explainLabel1 = new MultiBitLabel(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text1"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -170,7 +171,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.CENTER;
         explainPanel.add(filler2, constraints);
 
-        JLabel walletFilenameLabelLabel = new JLabel(controller.getLocaliser().getString(
+        MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "resetTransactionsPanel.walletFilenameLabel"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -181,7 +182,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_END;
         explainPanel.add(walletFilenameLabelLabel, constraints);
 
-        walletFilenameLabel = new JLabel(controller.getModel().getActiveWalletFilename());
+        walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 2;
@@ -191,7 +192,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         explainPanel.add(walletFilenameLabel, constraints);
 
-        JLabel walletDescriptionLabelLabel = new JLabel(controller.getLocaliser().getString(
+        MultiBitLabel walletDescriptionLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "resetTransactionsPanel.walletDescriptionLabel"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -202,7 +203,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_END;
         explainPanel.add(walletDescriptionLabelLabel, constraints);
 
-        walletDescriptionLabel = new JLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 3;
@@ -224,7 +225,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         explainPanel.add(filler3, constraints);
 
  
-        JLabel explainLabel2 = new JLabel(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text2"));
+        MultiBitLabel explainLabel2 = new MultiBitLabel(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text2"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 5;
@@ -245,7 +246,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         buttonPanel.setLayout(flowLayout);
 
         ResetTransactionsSubmitAction submitAction = new ResetTransactionsSubmitAction(controller, this);
-        JButton submitButton = new JButton(submitAction);
+        MultiBitButton submitButton = new MultiBitButton(submitAction);
         buttonPanel.add(submitButton);
 
         return buttonPanel;

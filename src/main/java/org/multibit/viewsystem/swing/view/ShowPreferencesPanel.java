@@ -18,14 +18,14 @@ import java.util.TreeSet;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
@@ -35,6 +35,10 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ShowPreferencesSubmitAction;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.MultiBitButton;
+import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 
 /**
  * The show preferences view
@@ -53,7 +57,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     private JRadioButton useDefaultLocale;
     private JComboBox languageComboBox;
 
-    private JTextField feeTextField;
+    private MultiBitTextField feeTextField;
     private String originalFee;
 
     private JRadioButton ignoreAll;
@@ -200,8 +204,11 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     private JPanel createLanguagePanel() {
         // language radios
         JPanel languagePanel = new JPanel(new GridBagLayout());
-        languagePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0),
-                BorderFactory.createTitledBorder(controller.getLocaliser().getString("showPreferencesPanel.languageTitle"))));
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString("showPreferencesPanel.languageTitle"));
+        titledBorder.setTitleFont(FontSizer.getAdjustedFont(MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE));
+        Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
+                
+        languagePanel.setBorder(border);
         languagePanel.setOpaque(false);
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -209,9 +216,11 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         ButtonGroup languageUsageGroup = new ButtonGroup();
         useDefaultLocale = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.useDefault"));
         useDefaultLocale.setOpaque(false);
+        FontSizer.setAdjustedFont(useDefaultLocale, MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE);
         
         JRadioButton useSpecific = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.useSpecific"));
         useSpecific.setOpaque(false);
+        FontSizer.setAdjustedFont(useSpecific, MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE);
         
         ItemListener itemListener = new ChangeLanguageUsageItemListener();
         useDefaultLocale.addItemListener(itemListener);
@@ -314,15 +323,18 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
     private JPanel createFeePanel() {
         JPanel feePanel = new JPanel(new GridBagLayout());
-        feePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0),
-                BorderFactory.createTitledBorder(controller.getLocaliser().getString("showPreferencesPanel.feeTitle"))));
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString("showPreferencesPanel.feeTitle"));
+        titledBorder.setTitleFont( FontSizer.getAdjustedFont(MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE));
+        Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
+        feePanel.setBorder(border);
+        
         feePanel.setOpaque(false);
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        JLabel feeLabel = new JLabel(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"));
+        MultiBitLabel feeLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"));
         feeLabel.setToolTipText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.tooltip"));
-        JLabel feeCurrencyLabel = new JLabel("BTC");
+        MultiBitLabel feeCurrencyLabel = new MultiBitLabel("BTC");
 
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
 
@@ -331,7 +343,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         }
         originalFee = sendFeeString;
 
-        feeTextField = new JTextField(10);
+        feeTextField = new MultiBitTextField("", 10);
         feeTextField.setHorizontalAlignment(JLabel.TRAILING);
         feeTextField.setMinimumSize(new Dimension(FEE_TEXT_FIELD_WIDTH, FEE_TEXT_FIELD_HEIGHT));
         feeTextField.setPreferredSize(new Dimension(FEE_TEXT_FIELD_WIDTH, FEE_TEXT_FIELD_HEIGHT));
@@ -369,13 +381,16 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     private JPanel createBrowserIntegrationPanel() {
         // radios
         JPanel browserIntegrationPanel = new JPanel(new GridBagLayout());
-        browserIntegrationPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0),
-                BorderFactory.createTitledBorder(controller.getLocaliser().getString("showPreferencesPanel.browserIntegrationTitle"))));
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString("showPreferencesPanel.browserIntegrationTitle"));
+        titledBorder.setTitleFont( FontSizer.getAdjustedFont(MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE));
+        Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
+        browserIntegrationPanel.setBorder(border);
+
         browserIntegrationPanel.setOpaque(false);
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        JLabel messageLabel = new JLabel(controller.getLocaliser().getString("showPreferencesPanel.browserIntegration.messageText"));
+        MultiBitLabel messageLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.browserIntegration.messageText"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -388,12 +403,15 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         ButtonGroup browserIntegrationGroup = new ButtonGroup();
         ignoreAll = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.ignoreAll"));
         ignoreAll.setOpaque(false);
+        FontSizer.setAdjustedFont(ignoreAll, MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE);
         
         fillAutomatically = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.fillAutomatically"));
         fillAutomatically.setOpaque(false);
+        FontSizer.setAdjustedFont(fillAutomatically, MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE);
         
         askEveryTime = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.askEveryTime"));
         askEveryTime.setOpaque(false);
+        FontSizer.setAdjustedFont(askEveryTime, MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE);
         
         browserIntegrationGroup.add(ignoreAll);
         browserIntegrationGroup.add(fillAutomatically);
@@ -435,7 +453,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         buttonPanel.setLayout(flowLayout);
 
         ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(controller, this);
-        JButton submitButton = new JButton(submitAction);
+        MultiBitButton submitButton = new MultiBitButton(submitAction);
         buttonPanel.add(submitButton);
 
         return buttonPanel;
@@ -507,18 +525,11 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         return data;
     }
 
-    public JPanel getFormPanel() {
-        return null;
-    }
-
-    public JTextField getLabelTextField() {
-        return null;
-    }
-
-    class ComboBoxRenderer extends JLabel implements ListCellRenderer {
+    class ComboBoxRenderer extends MultiBitLabel implements ListCellRenderer {
         private static final long serialVersionUID = -3301957214353702172L;
 
         public ComboBoxRenderer() {
+            super("");
             setOpaque(true);
             setHorizontalAlignment(LEADING);
             setVerticalAlignment(CENTER);

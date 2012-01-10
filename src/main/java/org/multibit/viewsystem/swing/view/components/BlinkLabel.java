@@ -1,4 +1,4 @@
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.components;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -9,7 +9,7 @@ import javax.swing.Timer;
 
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
-public class BlinkLabel extends JLabel {
+public class BlinkLabel extends MultiBitLabel {
     private static final long serialVersionUID = 1L;
 
     private static final int BLINKING_TIME = 1500; // in ms
@@ -22,7 +22,7 @@ public class BlinkLabel extends JLabel {
     private String previousBlinkText;
 
     public BlinkLabel() {
-        super();
+        super("");
         blinkEnabled = false;
         previousBlinkText = "";
         setOpaque(false);

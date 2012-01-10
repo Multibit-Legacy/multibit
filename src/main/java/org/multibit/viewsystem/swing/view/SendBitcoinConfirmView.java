@@ -1,16 +1,15 @@
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
@@ -21,6 +20,9 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
 import org.multibit.viewsystem.swing.action.OkBackToParentAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinNowAction;
+import org.multibit.viewsystem.swing.view.components.MultiBitButton;
+import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
+import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 
 /**
  * The send bitcoin confirm view
@@ -33,20 +35,20 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
 
     private MultiBitController controller;
 
-    private JLabel sendAddressText;
-    private JLabel sendLabelText;
-    private JLabel sendAmountText;
-    private JLabel sendFeeText;
+    private MultiBitLabel sendAddressText;
+    private MultiBitLabel sendLabelText;
+    private MultiBitLabel sendAmountText;
+    private MultiBitLabel sendFeeText;
 
     private String sendAddress;
     private String sendLabel;
     private String sendAmount;
     private String sendFee;
 
-    private JLabel confirmText1, confirmText2;
+    private MultiBitLabel confirmText1, confirmText2;
     
-    private JButton sendButton;
-    private JButton cancelButton;
+    private MultiBitButton sendButton;
+    private MultiBitButton cancelButton;
 
     /**
      * Creates a new {@link SendBitcoinConfirmView}.
@@ -72,7 +74,13 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         positionDialogRelativeToParent(this, 0.5D, 0.47D);
         setTitle(controller.getLocaliser().getString("sendBitcoinConfirmView.title"));
 
-        setLayout(new GridBagLayout());
+        JPanel mainPanel = new JPanel();
+        mainPanel.setOpaque(false);
+        
+        setLayout(new BorderLayout());
+        add(mainPanel, BorderLayout.CENTER);
+        
+        mainPanel.setLayout(new GridBagLayout());
         // get the data out of the wallet preferences
         sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
         sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
@@ -94,7 +102,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(filler00, constraints);
+        mainPanel.add(filler00, constraints);
 
         JLabel filler01 = new JLabel();
         constraints.fill = GridBagConstraints.BOTH;
@@ -105,7 +113,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(filler01, constraints);
+        mainPanel.add(filler01, constraints);
        
         ImageIcon bigIcon = createImageIcon(MultiBitFrame.MULTIBIT_128_ICON_FILE);
         constraints.fill = GridBagConstraints.BOTH;
@@ -117,9 +125,9 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.gridheight = 5;
         constraints.anchor = GridBagConstraints.CENTER;
         JLabel bigIconLabel = new JLabel(bigIcon);
-        add(bigIconLabel, constraints);
+        mainPanel.add(bigIconLabel, constraints);
 
-        JLabel explainLabel = new JLabel();
+        MultiBitLabel explainLabel = new MultiBitLabel("");
         explainLabel.setText(controller.getLocaliser().getString("sendBitcoinConfirmView.message"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
@@ -129,7 +137,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.gridwidth = 5;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(explainLabel, constraints);
+        mainPanel.add(explainLabel, constraints);
 
         JPanel detailPanel = new JPanel(new GridBagLayout());
         detailPanel.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
@@ -141,11 +149,11 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.gridwidth = 3;
         constraints.gridheight = 5;
         constraints.anchor = GridBagConstraints.CENTER;        
-        add(detailPanel, constraints);
+        mainPanel.add(detailPanel, constraints);
         
         GridBagConstraints constraints2 = new GridBagConstraints();
         
-        JLabel sendAddressLabel = new JLabel();
+        MultiBitLabel sendAddressLabel = new MultiBitLabel("");
         sendAddressLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel"));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 0;
@@ -166,7 +174,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints2.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(filler1, constraints2);
 
-        sendAddressText = new JLabel();
+        sendAddressText = new MultiBitLabel("");
         sendAddressText.setText(sendAddress);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
@@ -177,7 +185,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints2.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(sendAddressText, constraints2);
 
-        JLabel sendLabelLabel = new JLabel();
+        MultiBitLabel sendLabelLabel = new MultiBitLabel("");
         sendLabelLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel"));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 0;
@@ -188,7 +196,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints2.anchor = GridBagConstraints.LINE_END;
         detailPanel.add(sendLabelLabel, constraints2);
 
-        sendLabelText = new JLabel();
+        sendLabelText = new MultiBitLabel("");
         sendLabelText.setText(sendLabel);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
@@ -199,7 +207,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints2.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(sendLabelText, constraints2);
 
-        JLabel sendAmountLabel = new JLabel();
+        MultiBitLabel sendAmountLabel = new MultiBitLabel("");
         sendAmountLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel"));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 0;
@@ -210,7 +218,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints2.anchor = GridBagConstraints.LINE_END;
         detailPanel.add(sendAmountLabel, constraints2);
 
-        sendAmountText = new JLabel();
+        sendAmountText = new MultiBitLabel("");
         sendAmountText.setText(sendAmount);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
@@ -231,7 +239,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints2.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(filler2, constraints2);
   
-        JLabel sendFeeLabel = new JLabel();
+        MultiBitLabel sendFeeLabel = new MultiBitLabel("");
         sendFeeLabel.setText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 0;
@@ -242,7 +250,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints2.anchor = GridBagConstraints.LINE_END;
         detailPanel.add(sendFeeLabel, constraints2);
 
-        sendFeeText = new JLabel();
+        sendFeeText = new MultiBitLabel("");
         sendFeeText.setText(sendFee);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
@@ -254,6 +262,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         detailPanel.add(sendFeeText, constraints2);
      
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 7;
@@ -262,17 +271,17 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.gridwidth = 4;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
-        add(buttonPanel, constraints);
+        mainPanel.add(buttonPanel, constraints);
 
         CancelBackToParentAction cancelAction = new CancelBackToParentAction(controller);
-        cancelButton = new JButton(cancelAction);
+        cancelButton = new MultiBitButton(cancelAction);
         buttonPanel.add(cancelButton);
 
         SendBitcoinNowAction sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this);
-        sendButton = new JButton(sendBitcoinNowAction);
+        sendButton = new MultiBitButton(sendBitcoinNowAction);
         buttonPanel.add(sendButton);
 
-        confirmText1 = new JLabel();
+        confirmText1 = new MultiBitLabel("");
         confirmText1.setText(" ");
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -281,7 +290,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.weighty = 0.15;
         constraints.gridwidth = 4;
         constraints.anchor = GridBagConstraints.LINE_END;
-        add(confirmText1, constraints);
+        mainPanel.add(confirmText1, constraints);
         
         JLabel filler3 = new JLabel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -291,10 +300,9 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(filler3, constraints);
+        mainPanel.add(filler3, constraints);
 
-        confirmText2 = new JLabel();
-        confirmText2.setText(" ");
+        confirmText2 = new MultiBitLabel(" ");
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 9;
@@ -302,7 +310,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.weighty = 0.15;
         constraints.gridwidth = 4;
         constraints.anchor = GridBagConstraints.LINE_END;
-        add(confirmText2, constraints);
+        mainPanel.add(confirmText2, constraints);
         
         JLabel filler4 = new JLabel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -312,7 +320,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(filler4, constraints);
+        mainPanel.add(filler4, constraints);
     }
 
     public void setSendConfirmText(String confirm1, String confirm2) {

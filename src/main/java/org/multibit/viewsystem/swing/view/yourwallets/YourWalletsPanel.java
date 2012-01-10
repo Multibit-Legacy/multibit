@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -31,8 +30,9 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.WalletTableModel;
 import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
-import org.multibit.viewsystem.swing.view.AddressesPanel;
 import org.multibit.viewsystem.swing.view.ShowTransactionsPanel;
+import org.multibit.viewsystem.swing.view.components.GradientPanel;
+import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 
 /**
  * The your wallets view
@@ -197,7 +197,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
     }
 
     private JPanel createAddressesHeaderPanel() {
-        JPanel addressesHeaderPanel = new AddressesPanel();
+        JPanel addressesHeaderPanel = new GradientPanel();
 
         addressesHeaderPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
@@ -261,11 +261,11 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         headerPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 
         OpenWalletAction openWalletAction = new OpenWalletAction(controller, null);
-        JButton openWalletButton = new JButton(openWalletAction);
+        MultiBitButton openWalletButton = new MultiBitButton(openWalletAction);
         headerPanel.add(openWalletButton);
 
         CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller, null, mainFrame);
-        JButton createNewWalletButton = new JButton(createNewWalletAction);
+        MultiBitButton createNewWalletButton = new MultiBitButton(createNewWalletAction);
         headerPanel.add(createNewWalletButton);
 
         return headerPanel;

@@ -1,24 +1,44 @@
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SortOrder;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.WalletTableModel;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.table.*;
-import java.awt.*;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
 
 public class ShowTransactionsPanel extends JPanel implements DataProvider, View {
 
@@ -86,6 +106,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
         JLabel label = (JLabel) renderer;
         label.setHorizontalAlignment(JLabel.CENTER);
+        FontSizer.setAdjustedFont( table.getTableHeader(), MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE);
 
         // description leading justified (set explicitly as it does not seem to
         // work otherwise)
@@ -269,7 +290,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
-        JLabel label = new JLabel();
+        MultiBitLabel label = new MultiBitLabel("");
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
@@ -289,7 +310,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
-        JLabel label = new JLabel();
+        MultiBitLabel label = new MultiBitLabel("");
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
@@ -328,7 +349,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     class LeadingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
-        JLabel label = new JLabel();
+        MultiBitLabel label = new MultiBitLabel("");
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {

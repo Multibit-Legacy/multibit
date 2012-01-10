@@ -15,6 +15,8 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ResetTransactionsAction;
+import org.multibit.viewsystem.swing.view.components.MultiBitButton;
+import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +93,7 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.weightx = 1;
         constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.CENTER;
-        JLabel urlLabel = new JLabel(MULTIBIT_URL);
+        MultiBitLabel urlLabel = new MultiBitLabel(MULTIBIT_URL);
         add(urlLabel, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -101,7 +103,7 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.weightx = 1;
         constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.CENTER;
-        JLabel versionLabel = new JLabel(versionText);
+        MultiBitLabel versionLabel = new MultiBitLabel(versionText);
         add(versionLabel, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -123,7 +125,7 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
         ResetTransactionsAction resetTransactionsAction = new ResetTransactionsAction(controller, null);
-        JButton resetTransactionsButton = new JButton(resetTransactionsAction);
+        MultiBitButton resetTransactionsButton = new MultiBitButton(resetTransactionsAction);
         add(resetTransactionsButton, constraints);
         
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));

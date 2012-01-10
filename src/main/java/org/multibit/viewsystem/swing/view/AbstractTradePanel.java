@@ -14,6 +14,12 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
 import org.multibit.viewsystem.swing.action.CopyQRCodeTextAction;
 import org.multibit.viewsystem.swing.action.PasteSwatchAction;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.GradientPanel;
+import org.multibit.viewsystem.swing.view.components.MultiBitButton;
+import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
+import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,9 +59,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
     protected MultiBitController controller;
 
-    protected JTextArea labelTextArea;
+    protected MultiBitTextArea labelTextArea;
 
-    protected JTextField amountTextField;
+    protected MultiBitTextField amountTextField;
 
     protected JPanel formPanel;
 
@@ -63,25 +69,25 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
     protected JTable addressesTable;
 
-    protected JTextField addressTextField;
-    protected JTextArea addressTextArea;
+    protected MultiBitTextField addressTextField;
+    protected MultiBitTextArea addressTextArea;
 
     protected int selectedAddressRow;
 
     protected SelectionListener addressesListener;
 
-    protected JButton createNewButton;
+    protected MultiBitButton createNewButton;
 
     protected JLabel titleLabel;
 
     protected JPanel qrCodePanel;
-    protected JLabel qrCodeLabel;
+    protected MultiBitLabel qrCodeLabel;
 
     protected static final int QRCODE_WIDTH = 140;
     protected static final int QRCODE_HEIGHT = 140;
 
-    protected JButton copyQRCodeTextButton;
-    protected JButton pasteSwatchButton;;
+    protected MultiBitButton copyQRCodeTextButton;
+    protected MultiBitButton pasteSwatchButton;;
 
     private final AbstractTradePanel thisAbstractTradePanel;
 
@@ -116,7 +122,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     }
 
     /**
-     * is it the receive bitcion panel (return true) or the send bitcoin panel
+     * is it the receive bitcoin panel (return true) or the send bitcoin panel
      * (return false)
      */
     protected abstract boolean isReceiveBitcoin();
@@ -187,7 +193,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected abstract void loadForm();
 
     protected JPanel createAddressesHeaderPanel() {
-        JPanel addressesHeaderPanel = new AddressesPanel();
+        JPanel addressesHeaderPanel = new GradientPanel();
 
         addressesHeaderPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
@@ -202,7 +208,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         constraints.anchor = GridBagConstraints.LINE_START;
         addressesHeaderPanel.add(filler1, constraints);
 
-        createNewButton = new JButton(getCreateNewAddressAction());
+        createNewButton = new MultiBitButton(getCreateNewAddressAction());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 0;
@@ -270,6 +276,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         } else {
             label.setHorizontalAlignment(JLabel.RIGHT);
         }
+        FontSizer.setAdjustedFont( addressesTable.getTableHeader(), MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE);
+
 
         TableColumn tableColumn = addressesTable.getColumnModel().getColumn(0); // label
         tableColumn.setPreferredWidth(40);
@@ -362,7 +370,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     class LeadingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
-        JLabel label = new JLabel();
+        MultiBitLabel label = new MultiBitLabel("");
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
@@ -387,7 +395,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     class LeftJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549115L;
 
-        JLabel label = new JLabel();
+        MultiBitLabel label = new MultiBitLabel("");
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
@@ -412,7 +420,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1999545L;
 
-        JLabel label = new JLabel();
+        MultiBitLabel label = new MultiBitLabel("");
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
@@ -437,7 +445,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     class RightJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 2299545L;
 
-        JLabel label = new JLabel();
+        MultiBitLabel label = new MultiBitLabel("");
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
@@ -465,7 +473,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         qrCodePanel.setOpaque(true);
         qrCodePanel.setMinimumSize(new Dimension(280, 200));
         qrCodePanel.setLayout(new GridBagLayout());
-        qrCodeLabel = new JLabel("", null, JLabel.CENTER);
+        qrCodeLabel = new MultiBitLabel("", JLabel.CENTER);
         qrCodeLabel.setMinimumSize(new Dimension(QRCODE_WIDTH, QRCODE_HEIGHT));
 
         qrCodeLabel.setVerticalTextPosition(JLabel.BOTTOM);
@@ -564,16 +572,16 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         buttonPanel.setLayout(flowLayout);
 
         CopyQRCodeTextAction copyQRCodeTextAction = new CopyQRCodeTextAction(controller, this);
-        copyQRCodeTextButton = new JButton(copyQRCodeTextAction);
+        copyQRCodeTextButton = new MultiBitButton(copyQRCodeTextAction);
         buttonPanel.add(copyQRCodeTextButton);
 
         CopyQRCodeImageAction copyQRCodeImageAction = new CopyQRCodeImageAction(controller, this);
-        JButton copyQRCodeImageButton = new JButton(copyQRCodeImageAction);
+        MultiBitButton copyQRCodeImageButton = new MultiBitButton(copyQRCodeImageAction);
         buttonPanel.add(copyQRCodeImageButton);
 
         if (!isReceiveBitcoin()) {
             PasteSwatchAction pasteSwatchAction = new PasteSwatchAction(controller, this);
-            pasteSwatchButton = new JButton(pasteSwatchAction);
+            pasteSwatchButton = new MultiBitButton(pasteSwatchAction);
             buttonPanel.add(pasteSwatchButton);
         }
 

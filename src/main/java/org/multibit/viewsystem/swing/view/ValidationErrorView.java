@@ -1,15 +1,21 @@
 package org.multibit.viewsystem.swing.view;
 
-import org.multibit.Localiser;
-import org.multibit.action.OkBackToParentAction;
+import javax.swing.Action;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
+import org.multibit.viewsystem.swing.action.OkBackToParentAction;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.MultiBitButton;
+import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
 
 /**
  * The validation error view - used to tell the user their input is invalid
@@ -82,9 +88,11 @@ public class ValidationErrorView implements View {
         // get localised validation messages;
         String completeMessage = "";
 
+        int rows = 0;
         if (addressIsInvalidBoolean) {
             completeMessage = controller.getLocaliser().getString("validationErrorView.addressInvalidMessage",
                     new String[] { addressValue });
+            rows++;
         }
         if (amountIsMissingBoolean) {
             if (!"".equals(completeMessage)) {
@@ -92,6 +100,7 @@ public class ValidationErrorView implements View {
             }
             completeMessage = completeMessage
                     + controller.getLocaliser().getString("validationErrorView.amountIsMissingMessage");
+            rows++;
         }
         if (amountIsInvalidBoolean) {
             if (!"".equals(completeMessage)) {
@@ -100,6 +109,7 @@ public class ValidationErrorView implements View {
             completeMessage = completeMessage
                     + controller.getLocaliser().getString("validationErrorView.amountInvalidMessage",
                             new String[] { amountValue });
+            rows++;
         }
         if (amountIsNegativeOrZeroBoolean) {
             if (!"".equals(completeMessage)) {
@@ -107,6 +117,7 @@ public class ValidationErrorView implements View {
             }
             completeMessage = completeMessage
                     + controller.getLocaliser().getString("validationErrorView.amountIsNegativeOrZeroMessage");
+            rows++;
         }
         if (notEnoughFundsBoolean) {
             if (!"".equals(completeMessage)) {
@@ -119,25 +130,25 @@ public class ValidationErrorView implements View {
             completeMessage = completeMessage
                     + controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage",
                             new String[] { amountValue, fee });
+            rows++;
         }
         
         // tell user validation messages
-        Object[] options = { controller.getLocaliser().getString("validationErrorView.okOption") };
+        OkBackToParentAction okAction = new OkBackToParentAction(controller);
+        MultiBitButton okButton = new MultiBitButton(okAction);
 
-        JOptionPane optionPane = new JOptionPane(completeMessage, JOptionPane.ERROR_MESSAGE, JOptionPane.DEFAULT_OPTION, MultiBitFrame.createImageIcon(MultiBitFrame.EXCLAMATION_MARK_ICON_FILE),
+
+        Object[] options = { okButton };
+
+        MultiBitTextArea completeMessageTextArea = new MultiBitTextArea(completeMessage, rows, 20);
+        completeMessageTextArea.setOpaque(false);
+        completeMessageTextArea.setEditable(false);
+        
+        JOptionPane optionPane = new JOptionPane(completeMessageTextArea, JOptionPane.ERROR_MESSAGE, JOptionPane.DEFAULT_OPTION, MultiBitFrame.createImageIcon(MultiBitFrame.EXCLAMATION_MARK_ICON_FILE),
                 options, options[0]);
 
         messageDialog = optionPane.createDialog(mainFrame, controller.getLocaliser().getString("validationErrorView.title"));
         messageDialog.setVisible(true);
-
-        // if ok was pressed (i.e. not disposed by navigateAwayFromView) fire
-        // action forward else cancel
-        Object returnValue = optionPane.getValue();
-        // JOptionPane.showMessageDialog(mainFrame, optionPane.getValue());
-        if (returnValue instanceof String && options[0].equals(returnValue)) {
-            org.multibit.action.OkBackToParentAction okBackToParentAction = new OkBackToParentAction(controller);
-            okBackToParentAction.execute(null);
-        }
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {

@@ -1,6 +1,4 @@
-package org.multibit.viewsystem.swing.view;
-
-import java.awt.Font;
+package org.multibit.viewsystem.swing.view.components;
 
 import javax.swing.Action;
 import javax.swing.JButton;
@@ -12,15 +10,14 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
  * @author jim
  *
  */
-public class MultiBitButton extends JButton {
+public class MultiBitLargeButton extends JButton {
 
     private static final long serialVersionUID = 5674557290711815650L;
 
-    public MultiBitButton(Action action) {
+    public MultiBitLargeButton(Action action) {
         super(action);
         
-        Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE, MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE);
-        setFont(font);
+        FontSizer.setAdjustedFont(this, MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE);
         setOpaque(false);
         setRolloverEnabled(true);
     }

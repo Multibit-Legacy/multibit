@@ -12,22 +12,24 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.qrcode.BitcoinURI;
 import org.multibit.viewsystem.View;
-import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopySendAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewSendingAddressAction;
 import org.multibit.viewsystem.swing.action.PasteAddressAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
+import org.multibit.viewsystem.swing.view.components.DashedBorder;
+import org.multibit.viewsystem.swing.view.components.MultiBitButton;
+import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
+import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,8 +41,8 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
     private static final String SEND_BITCOIN_BIG_ICON_FILE = "/images/send-big.jpg";
 
-    private JButton pasteAddressButton;
-    private JButton sendButton;
+    private MultiBitButton pasteAddressButton;
+    private MultiBitButton sendButton;
 
     public SendBitcoinPanel(MultiBitFrame mainFrame, MultiBitController controller) {
         super(mainFrame, controller);
@@ -118,7 +120,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.anchor = GridBagConstraints.CENTER;
         formPanel.add(new JLabel(bigIcon), constraints);
 
-        JLabel helpLabel1 = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.helpLabel1.message"));
+        MultiBitLabel helpLabel1 = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.helpLabel1.message"));
         helpLabel1.setHorizontalAlignment(JLabel.LEADING);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -129,7 +131,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(helpLabel1, constraints);
 
-        JLabel helpLabel2 = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.helpLabel2.message"));
+        MultiBitLabel helpLabel2 = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.helpLabel2.message"));
         helpLabel2.setHorizontalAlignment(JLabel.LEADING);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -140,7 +142,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(helpLabel2, constraints);
 
-        JLabel helpLabel3 = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.helpLabel3.message"));
+        MultiBitLabel helpLabel3 = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.helpLabel3.message"));
         helpLabel3.setHorizontalAlignment(JLabel.LEADING);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -161,7 +163,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(filler2, constraints);
 
-        JLabel addressLabel = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel"));
+        MultiBitLabel addressLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel"));
         addressLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel.tooltip"));
         addressLabel.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -183,7 +185,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(filler4, constraints);
 
-        addressTextField = new JTextField(35);
+        addressTextField = new MultiBitTextField("", 35);
         addressTextField.setHorizontalAlignment(JTextField.LEADING);
         addressTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
         addressTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_LONG_FIELDS, 24));
@@ -199,7 +201,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
         ImageIcon copyIcon = MultiBitFrame.createImageIcon(MultiBitFrame.COPY_ICON_FILE);
         CopySendAddressAction copyAddressAction = new CopySendAddressAction(controller, this, copyIcon);
-        JButton copyAddressButton = new JButton(copyAddressAction);
+        MultiBitButton copyAddressButton = new MultiBitButton(copyAddressAction);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 6;
         constraints.gridy = 4;
@@ -210,7 +212,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
         ImageIcon pasteIcon = MultiBitFrame.createImageIcon(MultiBitFrame.PASTE_ICON_FILE);
         PasteAddressAction pasteAddressAction = new PasteAddressAction(controller, this, pasteIcon);
-        pasteAddressButton = new JButton(pasteAddressAction);
+        pasteAddressButton = new MultiBitButton(pasteAddressAction);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 7;
         constraints.gridy = 4;
@@ -219,7 +221,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(pasteAddressButton, constraints);
 
-        JLabel labelLabel = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel"));
+        MultiBitLabel labelLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel"));
         labelLabel.setBorder(BorderFactory.createMatteBorder(4, 0, 0, 0, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR));
         labelLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel.tooltip"));
         labelLabel.setHorizontalAlignment(JLabel.TRAILING);
@@ -233,7 +235,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         formPanel.add(labelLabel, constraints);
 
         JTextField aTextField = new JTextField();
-        labelTextArea = new JTextArea("", 2, 20);
+        labelTextArea = new MultiBitTextArea("", 2, 20);
         labelTextArea.setBorder(aTextField.getBorder());
         labelTextArea.addKeyListener(new QRCodeKeyListener());
 
@@ -262,7 +264,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(filler5, constraints);
 
-        JLabel amountLabel = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel"));
+        MultiBitLabel amountLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel"));
         amountLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel.tooltip"));
         amountLabel.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.NONE;
@@ -274,7 +276,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(amountLabel, constraints);
 
-        amountTextField = new JTextField("", 20);
+        amountTextField = new MultiBitTextField("", 20);
         amountTextField.setHorizontalAlignment(JTextField.TRAILING);
         amountTextField.setMinimumSize(new Dimension(MultiBitFrame.WIDTH_OF_AMOUNT_FIELD, 24));
         amountTextField.setMaximumSize(new Dimension(MultiBitFrame.WIDTH_OF_AMOUNT_FIELD, 24));
@@ -288,7 +290,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(amountTextField, constraints);
 
-        JLabel amountUnitLabel = new JLabel(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"));
+        MultiBitLabel amountUnitLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"));
         amountUnitLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel.tooltip"));
         constraints.gridx = 4;
         constraints.gridy = 6;
@@ -298,7 +300,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         formPanel.add(amountUnitLabel, constraints);
 
         SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, this);
-        sendButton = new JButton(sendBitcoinConfirmAction);
+        sendButton = new MultiBitButton(sendBitcoinConfirmAction);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 6;
         constraints.gridy = 6;

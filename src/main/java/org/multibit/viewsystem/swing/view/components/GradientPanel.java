@@ -1,4 +1,4 @@
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.components;
 
 import java.awt.Dimension;
 import java.awt.GradientPaint;
@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
-public class AddressesPanel extends JPanel {
+public class GradientPanel extends JPanel {
 
     private static final long serialVersionUID = 1992327373249499976L;
 

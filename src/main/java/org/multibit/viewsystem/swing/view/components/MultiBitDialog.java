@@ -1,4 +1,4 @@
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.components;
 
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;

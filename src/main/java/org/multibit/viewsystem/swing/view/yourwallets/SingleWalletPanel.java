@@ -15,14 +15,14 @@ import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.border.Border;
 
-import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.BlinkLabel;
+import org.multibit.viewsystem.swing.view.components.BlinkLabel;
+import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 
 import com.google.bitcoin.core.Wallet.BalanceType;
 
@@ -43,8 +43,8 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
 
     private static final Color BACKGROUND_COLOR_DATA_HAS_CHANGED = new Color(0xff, 0xff, 0xff);
 
-    private JLabel walletFilenameLabel;
-    private JTextField walletDescriptionTextField;
+    private MultiBitLabel walletFilenameLabel;
+    private MultiBitTextField walletDescriptionTextField;
     private Border walletDescriptionTextFieldBorder;
 
     private BlinkLabel amountLabel;
@@ -82,7 +82,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         add(filler1, constraints);
 
-        walletFilenameLabel = new JLabel();
+        walletFilenameLabel = new MultiBitLabel("");
         walletFilenameLabel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 0));
 
         String walletFilename = perWalletModelData.getWalletFilename();
@@ -104,7 +104,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         add(walletFilenameLabel, constraints);
 
-        walletDescriptionTextField = new JTextField(perWalletModelData.getWalletDescription());
+        walletDescriptionTextField = new MultiBitTextField(perWalletModelData.getWalletDescription(), 20);
         walletDescriptionTextField.setFocusable(true);
         walletDescriptionTextField.addActionListener(this);
         walletDescriptionTextField.addFocusListener(this);

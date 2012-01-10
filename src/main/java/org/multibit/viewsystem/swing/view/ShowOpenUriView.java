@@ -20,6 +20,7 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ShowOpenUriCancelAction;
 import org.multibit.viewsystem.swing.action.ShowOpenUriSubmitAction;
+import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 
 /**
  * The show open uri view
