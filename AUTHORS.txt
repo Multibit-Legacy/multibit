@@ -2,8 +2,8 @@ MultiBit
 
 Developers:
 -----------
+Jim Burton (lead developer)
 Gary Rowe
-Jim Burton
 Jonny Heggheim
 
 Internationalisation:
