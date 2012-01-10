@@ -94,6 +94,43 @@ public class ShowPreferencesSubmitAction implements Action {
                     controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI,
                             (String) openURIUseUriItem.getNewValue());
                 }
+                
+                // font data
+                boolean fontHasChanged = false;
+                Item fontNameItem = data.getItem(MultiBitModel.FONT_NAME);
+                if (fontNameItem != null && fontNameItem.getNewValue() != null) {
+                    controller.getModel().setUserPreference(MultiBitModel.FONT_NAME,
+                            (String) fontNameItem.getNewValue());
+                    
+                    if (!fontNameItem.getNewValue().equals(fontNameItem.getOriginalValue())) {
+                        fontHasChanged = true;
+                    }
+                }
+
+                Item fontStyleItem = data.getItem(MultiBitModel.FONT_STYLE);
+                if (fontStyleItem != null && fontStyleItem.getNewValue() != null) {
+                    controller.getModel().setUserPreference(MultiBitModel.FONT_STYLE,
+                            (String) fontStyleItem.getNewValue());
+                    
+                    if (!fontStyleItem.getNewValue().equals(fontStyleItem.getOriginalValue())) {
+                        fontHasChanged = true;
+                    }
+                }
+
+                Item fontSizeItem = data.getItem(MultiBitModel.FONT_SIZE);
+                if (fontSizeItem != null && fontSizeItem.getNewValue() != null) {
+                    controller.getModel().setUserPreference(MultiBitModel.FONT_SIZE,
+                            (String) fontSizeItem.getNewValue());
+                    
+                    if (!fontSizeItem.getNewValue().equals(fontSizeItem.getOriginalValue())) {
+                        fontHasChanged = true;
+                    }
+                }
+                
+                if (fontHasChanged) {
+                    // redo everything
+                    controller.fireLanguageChanged();
+                }
             }
         }
 

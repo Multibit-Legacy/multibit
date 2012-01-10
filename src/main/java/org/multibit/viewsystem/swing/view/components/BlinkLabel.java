@@ -4,9 +4,9 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JLabel;
 import javax.swing.Timer;
 
+import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 public class BlinkLabel extends MultiBitLabel {
@@ -21,8 +21,8 @@ public class BlinkLabel extends MultiBitLabel {
 
     private String previousBlinkText;
 
-    public BlinkLabel() {
-        super("");
+    public BlinkLabel(MultiBitController controller) {
+        super("", controller);
         blinkEnabled = false;
         previousBlinkText = "";
         setOpaque(false);

@@ -7,7 +7,6 @@ import java.awt.GridBagLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -71,12 +70,10 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.anchor = GridBagConstraints.CENTER;
         add(splashLabel, constraints);
 
-        JLabel titleLabel = new JLabel();
+        MultiBitLabel titleLabel = new MultiBitLabel("", controller);
         titleLabel.setHorizontalTextPosition(JLabel.CENTER);
         titleLabel.setText(controller.getLocaliser().getString("helpAboutAction.messageBoxTitle"));
-        Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE, MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
-        titleLabel.setFont(font);
- 
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 2;
@@ -93,7 +90,7 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.weightx = 1;
         constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.CENTER;
-        MultiBitLabel urlLabel = new MultiBitLabel(MULTIBIT_URL);
+        MultiBitLabel urlLabel = new MultiBitLabel(MULTIBIT_URL, controller);
         add(urlLabel, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -103,7 +100,7 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.weightx = 1;
         constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.CENTER;
-        MultiBitLabel versionLabel = new MultiBitLabel(versionText);
+        MultiBitLabel versionLabel = new MultiBitLabel(versionText, controller);
         add(versionLabel, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -125,7 +122,7 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
         ResetTransactionsAction resetTransactionsAction = new ResetTransactionsAction(controller, null);
-        MultiBitButton resetTransactionsButton = new MultiBitButton(resetTransactionsAction);
+        MultiBitButton resetTransactionsButton = new MultiBitButton(resetTransactionsAction, controller);
         add(resetTransactionsButton, constraints);
         
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));

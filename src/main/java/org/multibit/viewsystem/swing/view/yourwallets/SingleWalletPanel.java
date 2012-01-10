@@ -82,7 +82,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         add(filler1, constraints);
 
-        walletFilenameLabel = new MultiBitLabel("");
+        walletFilenameLabel = new MultiBitLabel("", controller);
         walletFilenameLabel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 0));
 
         String walletFilename = perWalletModelData.getWalletFilename();
@@ -104,7 +104,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         add(walletFilenameLabel, constraints);
 
-        walletDescriptionTextField = new MultiBitTextField(perWalletModelData.getWalletDescription(), 20);
+        walletDescriptionTextField = new MultiBitTextField(perWalletModelData.getWalletDescription(), 20, controller);
         walletDescriptionTextField.setFocusable(true);
         walletDescriptionTextField.addActionListener(this);
         walletDescriptionTextField.addFocusListener(this);
@@ -119,7 +119,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         constraints.anchor = GridBagConstraints.LINE_START;
         add(walletDescriptionTextField, constraints);
 
-        amountLabel = new BlinkLabel();
+        amountLabel = new BlinkLabel(controller);
         amountLabel.setBackground(BACKGROUND_COLOR_NORMAL);
         amountLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
         amountLabel.setText(controller.getLocaliser().bitcoinValueToString4(perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED),

@@ -4,24 +4,49 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Toolkit;
 
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
+
+import org.multibit.controller.MultiBitController;
+import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 public class FontSizer {
     private static final double NORMAL_SCREEN_RESOLUTION = 72.0;
 
-    public static void setAdjustedFont(Component component, int unadjustedFontSize) {
-        int screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
-        int fontSize = (int) Math.round(unadjustedFontSize * screenResolution / NORMAL_SCREEN_RESOLUTION);
+    private MultiBitController controller;
 
-        Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE, fontSize);
-        component.setFont(font);
+    public FontSizer(MultiBitController controller) {
+        this.controller = controller;
     }
-    
-    public static Font getAdjustedFont(int unadjustedFontSize) {
+
+    public void setAdjustedFont(Component component, int unadjustedFontSize) {
+        component.setFont(getAdjustedFont(unadjustedFontSize));
+    }
+
+    public void setAdjustedFont(TitledBorder border, int unadjustedFontSize) {
+        border.setTitleFont(getAdjustedFont(unadjustedFontSize));
+    }
+
+    public Font getAdjustedFont(int unadjustedFontSize) {
         int screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
         int fontSize = (int) Math.round(unadjustedFontSize * screenResolution / NORMAL_SCREEN_RESOLUTION);
 
-        Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE, fontSize);
+        String fontStyleString = controller.getModel().getUserPreference(MultiBitModel.FONT_STYLE);
+        int fontStyle = MultiBitFrame.MULTIBIT_DEFAULT_FONT_STYLE;
+
+        try {
+            fontStyle = Integer.parseInt(fontStyleString);
+        } catch (NumberFormatException nfe) {
+            // use default
+        }
+
+        String fontName = controller.getModel().getUserPreference(MultiBitModel.FONT_NAME);
+        if (fontName == null || "".equals(fontName)) {
+            fontName = MultiBitFrame.MULTIBIT_DEFAULT_FONT_NAME;
+        }
+
+        Font font = new Font(fontName, fontStyle, fontSize);
         return font;
     }
 }

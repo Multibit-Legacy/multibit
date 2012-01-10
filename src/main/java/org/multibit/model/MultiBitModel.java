@@ -103,11 +103,19 @@ public class MultiBitModel {
        
     // reset transactions 
     public static final String EARLIEST_TRANSACTION_DATE = "earliestTransactionDate";
+   
+    // user preference font
+    public static final String FONT_NAME = "fontName";
+    public static final String FONT_STYLE = "fontStyle";
+    public static final String FONT_SIZE = "fontSize";
+       
     // main controller class
     private final MultiBitController controller;
 
     // user preferences
     private Properties userPreferences;
+    
+   
 
     /**
      * list of each wallet's total model data

@@ -32,6 +32,7 @@ import javax.swing.table.TableRowSorter;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
+import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.WalletTableModel;
@@ -106,7 +107,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
         JLabel label = (JLabel) renderer;
         label.setHorizontalAlignment(JLabel.CENTER);
-        FontSizer.setAdjustedFont( table.getTableHeader(), MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE);
+        setAdjustedFont(table.getTableHeader());
 
         // description leading justified (set explicitly as it does not seem to
         // work otherwise)
@@ -184,6 +185,20 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
     public Data getData() {
         return data;
+    }
+   
+    private void setAdjustedFont(Component component) {
+        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+        FontSizer fontSizer = new FontSizer(controller);
+        if (fontSizeString == null || "".equals(fontSizeString)) {
+            fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
+        } else {
+            try {
+                fontSizer.setAdjustedFont(component, Integer.parseInt(fontSizeString));
+            } catch (NumberFormatException nfe) {
+                fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
+            }
+        }
     }
 
     class ImageRenderer extends DefaultTableCellRenderer {
@@ -290,7 +305,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
-        MultiBitLabel label = new MultiBitLabel("");
+        MultiBitLabel label = new MultiBitLabel("", controller);
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
@@ -310,7 +325,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
-        MultiBitLabel label = new MultiBitLabel("");
+        MultiBitLabel label = new MultiBitLabel("", controller);
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
@@ -349,7 +364,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     class LeadingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
-        MultiBitLabel label = new MultiBitLabel("");
+        MultiBitLabel label = new MultiBitLabel("", controller);
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {

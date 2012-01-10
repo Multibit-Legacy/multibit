@@ -113,7 +113,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         populateLocalisationMap();
 
         initUI();
-        
+
         labelTextArea.requestFocusInWindow();
 
         loadForm();
@@ -208,7 +208,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         constraints.anchor = GridBagConstraints.LINE_START;
         addressesHeaderPanel.add(filler1, constraints);
 
-        createNewButton = new MultiBitButton(getCreateNewAddressAction());
+        createNewButton = new MultiBitButton(getCreateNewAddressAction(), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 0;
@@ -221,9 +221,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         titleLabel = new JLabel();
         titleLabel.setHorizontalTextPosition(JLabel.CENTER);
         titleLabel.setText(getLocalisationString(ADDRESSES_TITLE, null));
-        Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE,
-                MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
-        titleLabel.setFont(font);
+        setAdjustedFont(titleLabel);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
@@ -276,9 +274,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         } else {
             label.setHorizontalAlignment(JLabel.RIGHT);
         }
-        FontSizer.setAdjustedFont( addressesTable.getTableHeader(), MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE);
-
-
+        setAdjustedFont2(addressesTable.getTableHeader());
+        
         TableColumn tableColumn = addressesTable.getColumnModel().getColumn(0); // label
         tableColumn.setPreferredWidth(40);
         if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
@@ -286,7 +283,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         } else {
             tableColumn.setCellRenderer(new RightJustifiedRenderer());
         }
-   
+
         // description leading justified (set explicitly as it does not seem to
         // work otherwise)
         tableColumn = addressesTable.getColumnModel().getColumn(1); // address
@@ -351,8 +348,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 if (rowData != null) {
                     controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAddressConstant(),
                             rowData.getAddress());
-                    controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getLabelConstant(),
-                            rowData.getLabel());
+                    controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getLabelConstant(), rowData.getLabel());
                     if (addressTextArea != null) {
                         addressTextArea.setText(rowData.getAddress());
                     }
@@ -370,10 +366,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     class LeadingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
-        MultiBitLabel label = new MultiBitLabel("");
+        MultiBitLabel label = new MultiBitLabel("", controller);
 
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-                int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
             label.setHorizontalAlignment(SwingConstants.LEADING);
             label.setOpaque(true);
             label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
@@ -395,10 +391,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     class LeftJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549115L;
 
-        MultiBitLabel label = new MultiBitLabel("");
+        MultiBitLabel label = new MultiBitLabel("", controller);
 
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-                int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
             label.setHorizontalAlignment(SwingConstants.LEFT);
             label.setOpaque(true);
             label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
@@ -420,10 +416,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1999545L;
 
-        MultiBitLabel label = new MultiBitLabel("");
+        MultiBitLabel label = new MultiBitLabel("", controller);
 
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-                int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
             label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
@@ -445,10 +441,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     class RightJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 2299545L;
 
-        MultiBitLabel label = new MultiBitLabel("");
+        MultiBitLabel label = new MultiBitLabel("", controller);
 
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-                int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
             label.setHorizontalAlignment(SwingConstants.RIGHT);
             label.setOpaque(true);
             label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
@@ -473,7 +469,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         qrCodePanel.setOpaque(true);
         qrCodePanel.setMinimumSize(new Dimension(280, 200));
         qrCodePanel.setLayout(new GridBagLayout());
-        qrCodeLabel = new MultiBitLabel("", JLabel.CENTER);
+        qrCodeLabel = new MultiBitLabel("", JLabel.CENTER, controller);
         qrCodeLabel.setMinimumSize(new Dimension(QRCODE_WIDTH, QRCODE_HEIGHT));
 
         qrCodeLabel.setVerticalTextPosition(JLabel.BOTTOM);
@@ -572,16 +568,16 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         buttonPanel.setLayout(flowLayout);
 
         CopyQRCodeTextAction copyQRCodeTextAction = new CopyQRCodeTextAction(controller, this);
-        copyQRCodeTextButton = new MultiBitButton(copyQRCodeTextAction);
+        copyQRCodeTextButton = new MultiBitButton(copyQRCodeTextAction, controller);
         buttonPanel.add(copyQRCodeTextButton);
 
         CopyQRCodeImageAction copyQRCodeImageAction = new CopyQRCodeImageAction(controller, this);
-        MultiBitButton copyQRCodeImageButton = new MultiBitButton(copyQRCodeImageAction);
+        MultiBitButton copyQRCodeImageButton = new MultiBitButton(copyQRCodeImageAction, controller);
         buttonPanel.add(copyQRCodeImageButton);
 
         if (!isReceiveBitcoin()) {
             PasteSwatchAction pasteSwatchAction = new PasteSwatchAction(controller, this);
-            pasteSwatchButton = new MultiBitButton(pasteSwatchAction);
+            pasteSwatchButton = new MultiBitButton(pasteSwatchAction, controller);
             buttonPanel.add(pasteSwatchButton);
         }
 
@@ -684,6 +680,37 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             controller.getModel().getActivePerWalletModelData().setDirty(true);
 
             displaySwatch(address, amount, label);
+        }
+    }
+
+    protected void setAdjustedFont(Component component) {
+        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+        FontSizer fontSizer = new FontSizer(controller);
+        if (fontSizeString == null || "".equals(fontSizeString)) {
+            fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE + 2
+                    * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
+        } else {
+            try {
+                fontSizer.setAdjustedFont(component, Integer.parseInt(fontSizeString) + 2
+                        * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
+            } catch (NumberFormatException nfe) {
+                fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE + 2
+                        * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
+            }
+        }
+    }
+    
+    protected void setAdjustedFont2(Component component) {
+        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+        FontSizer fontSizer = new FontSizer(controller);
+        if (fontSizeString == null || "".equals(fontSizeString)) {
+            fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE );
+        } else {
+            try {
+                fontSizer.setAdjustedFont(component, Integer.parseInt(fontSizeString));
+            } catch (NumberFormatException nfe) {
+                fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
+            }
         }
     }
 
@@ -925,7 +952,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         }
         // draw original image to thumbnail image object and
         // scale it to the new size on-the-fly
-        log.debug("toBufferedImage - 2.2, image = {} ,width = {}, height = {}", new Object[] {image, width, height});
+        log.debug("toBufferedImage - 2.2, image = {} ,width = {}, height = {}", new Object[] { image, width, height });
 
         BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 

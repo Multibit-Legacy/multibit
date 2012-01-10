@@ -34,6 +34,7 @@ import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.action.ChooseFontAction;
 import org.multibit.viewsystem.swing.action.ShowPreferencesSubmitAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
@@ -64,19 +65,32 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     private JRadioButton fillAutomatically;
     private JRadioButton askEveryTime;
     
-    private Data data;
+    private MultiBitLabel fontNameTextLabel;
+    private MultiBitLabel fontStyleTextLabel;
+    private MultiBitLabel fontSizeTextLabel;
+    
+    private String originalFontName;
+    private String originalFontStyle;
+    private String originalFontSize;
+    
+    private Data data;   
+  
+    private Font selectedFont;
+    private FontSizer fontSizer;
+    
 
     /**
      * Creates a new {@link ShowPreferencesPanel}.
      */
     public ShowPreferencesPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
-
+   
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
                 BorderFactory.createMatteBorder(1, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
         setBackground(MultiBitFrame.BACKGROUND_COLOR);
 
         this.controller = controller;
+        fontSizer = new FontSizer(controller);
 
         data = new Data();
 
@@ -111,6 +125,36 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
                 ignoreAll.setSelected(true);
             }
         }
+        
+        String fontNameString = controller.getModel().getUserPreference(MultiBitModel.FONT_NAME);
+        if (fontNameString == null || "".equals(fontNameString)) {
+            fontNameString = MultiBitFrame.MULTIBIT_DEFAULT_FONT_NAME;
+        }
+        originalFontName = fontNameString;
+       
+        int fontStyle = MultiBitFrame.MULTIBIT_DEFAULT_FONT_STYLE;
+        String fontStyleString = controller.getModel().getUserPreference(MultiBitModel.FONT_STYLE);
+        if (fontStyleString != null && !"".equals(fontStyleString)) {
+            try {
+                fontStyle = Integer.parseInt(fontStyleString);
+            } catch (NumberFormatException nfe) {
+                // use default
+            }
+        }      
+        originalFontStyle = "" + fontStyle;
+
+        int fontSize = MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE;
+        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+        if (fontSizeString != null && !"".equals(fontSizeString)) {
+            try {
+                fontSize = Integer.parseInt(fontSizeString);
+            } catch (NumberFormatException nfe) {
+                // use default
+            }
+        }               
+        originalFontSize = "" + fontSize;
+       
+        setSelectedFont(new Font(fontNameString, fontStyle, fontSize));
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
@@ -137,12 +181,9 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         fillerPanel1.setOpaque(false);
         add(fillerPanel1, constraints);
 
-        JLabel titleLabel = new JLabel();
+        MultiBitLabel titleLabel = new MultiBitLabel("", controller);
         titleLabel.setHorizontalTextPosition(JLabel.LEADING);
         titleLabel.setText(controller.getLocaliser().getString("showPreferencesPanel.title"));
-        Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE,
-                MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
-        titleLabel.setFont(font);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -160,7 +201,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.weightx = 1;
         constraints.weighty = 1.6;
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
-        add(createLanguagePanel(), constraints);
+        add(createFontChooserPanel(), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -169,11 +210,20 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.weightx = 1;
         constraints.weighty = 1.6;
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
-        add(createBrowserIntegrationPanel(), constraints);
+        add(createLanguagePanel(), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 4;
+        constraints.gridwidth = 2;
+        constraints.weightx = 1;
+        constraints.weighty = 1.6;
+        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
+        add(createBrowserIntegrationPanel(), constraints);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 5;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1;
@@ -182,7 +232,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 6;
         constraints.gridwidth = 1;
         constraints.weightx = 0.4;
         constraints.weighty = 0.06;
@@ -193,7 +243,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 6;
+        constraints.gridy = 7;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 20;
@@ -205,7 +255,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         // language radios
         JPanel languagePanel = new JPanel(new GridBagLayout());
         TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString("showPreferencesPanel.languageTitle"));
-        titledBorder.setTitleFont(FontSizer.getAdjustedFont(MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE));
+        setAdjustedFont(titledBorder);
         Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
                 
         languagePanel.setBorder(border);
@@ -216,11 +266,12 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         ButtonGroup languageUsageGroup = new ButtonGroup();
         useDefaultLocale = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.useDefault"));
         useDefaultLocale.setOpaque(false);
-        FontSizer.setAdjustedFont(useDefaultLocale, MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE);
+        
+        setAdjustedFont(useDefaultLocale);
         
         JRadioButton useSpecific = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.useSpecific"));
         useSpecific.setOpaque(false);
-        FontSizer.setAdjustedFont(useSpecific, MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE);
+        setAdjustedFont(useSpecific);
         
         ItemListener itemListener = new ChangeLanguageUsageItemListener();
         useDefaultLocale.addItemListener(itemListener);
@@ -324,7 +375,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     private JPanel createFeePanel() {
         JPanel feePanel = new JPanel(new GridBagLayout());
         TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString("showPreferencesPanel.feeTitle"));
-        titledBorder.setTitleFont( FontSizer.getAdjustedFont(MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE));
+        setAdjustedFont(titledBorder);
         Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
         feePanel.setBorder(border);
         
@@ -332,9 +383,9 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        MultiBitLabel feeLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"));
+        MultiBitLabel feeLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"), controller);
         feeLabel.setToolTipText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.tooltip"));
-        MultiBitLabel feeCurrencyLabel = new MultiBitLabel("BTC");
+        MultiBitLabel feeCurrencyLabel = new MultiBitLabel("BTC", controller);
 
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
 
@@ -343,7 +394,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         }
         originalFee = sendFeeString;
 
-        feeTextField = new MultiBitTextField("", 10);
+        feeTextField = new MultiBitTextField("", 10, controller);
         feeTextField.setHorizontalAlignment(JLabel.TRAILING);
         feeTextField.setMinimumSize(new Dimension(FEE_TEXT_FIELD_WIDTH, FEE_TEXT_FIELD_HEIGHT));
         feeTextField.setPreferredSize(new Dimension(FEE_TEXT_FIELD_WIDTH, FEE_TEXT_FIELD_HEIGHT));
@@ -378,11 +429,95 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         return feePanel;
     }
 
+    private JPanel createFontChooserPanel() {
+        JPanel fontChooserPanel = new JPanel(new GridBagLayout());
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString("showPreferencesPanel.fontChooserTitle"));
+        setAdjustedFont(titledBorder);
+        Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
+        fontChooserPanel.setBorder(border);
+        
+        fontChooserPanel.setOpaque(false);
+
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        MultiBitLabel fontNameLabel = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontName"), controller);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.5;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        fontChooserPanel.add(fontNameLabel, constraints);
+        
+        fontNameTextLabel = new MultiBitLabel("", controller);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.5;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        fontChooserPanel.add(fontNameTextLabel, constraints);
+
+        MultiBitLabel fontStyleLabel = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontStyle"), controller);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.5;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        fontChooserPanel.add(fontStyleLabel, constraints);        
+
+        fontStyleTextLabel = new MultiBitLabel("", controller);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.5;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        fontChooserPanel.add(fontStyleTextLabel, constraints);
+        
+        MultiBitLabel fontSizeLabel = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontSize"), controller);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.5;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        fontChooserPanel.add(fontSizeLabel, constraints);
+        
+        fontSizeTextLabel = new MultiBitLabel("", controller);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 2;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.5;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        fontChooserPanel.add(fontSizeTextLabel, constraints);
+        
+        ChooseFontAction chooseFontAction = new ChooseFontAction(controller, this, null);
+        MultiBitButton fontChooserButton = new MultiBitButton(chooseFontAction, controller);
+        
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.5;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        fontChooserPanel.add(fontChooserButton, constraints);
+
+        return fontChooserPanel;
+    }
     private JPanel createBrowserIntegrationPanel() {
-        // radios
         JPanel browserIntegrationPanel = new JPanel(new GridBagLayout());
         TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString("showPreferencesPanel.browserIntegrationTitle"));
-        titledBorder.setTitleFont( FontSizer.getAdjustedFont(MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE));
+        setAdjustedFont(titledBorder);
         Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
         browserIntegrationPanel.setBorder(border);
 
@@ -390,7 +525,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        MultiBitLabel messageLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.browserIntegration.messageText"));
+        MultiBitLabel messageLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.browserIntegration.messageText"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -403,15 +538,15 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         ButtonGroup browserIntegrationGroup = new ButtonGroup();
         ignoreAll = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.ignoreAll"));
         ignoreAll.setOpaque(false);
-        FontSizer.setAdjustedFont(ignoreAll, MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE);
+        setAdjustedFont(ignoreAll);
         
         fillAutomatically = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.fillAutomatically"));
         fillAutomatically.setOpaque(false);
-        FontSizer.setAdjustedFont(fillAutomatically, MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE);
+        setAdjustedFont(fillAutomatically);
         
         askEveryTime = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.askEveryTime"));
         askEveryTime.setOpaque(false);
-        FontSizer.setAdjustedFont(askEveryTime, MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE);
+        setAdjustedFont(askEveryTime);
         
         browserIntegrationGroup.add(ignoreAll);
         browserIntegrationGroup.add(fillAutomatically);
@@ -453,7 +588,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         buttonPanel.setLayout(flowLayout);
 
         ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(controller, this);
-        MultiBitButton submitButton = new MultiBitButton(submitAction);
+        MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
         return buttonPanel;
@@ -522,6 +657,21 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         useUriItem.setNewValue((new Boolean(useUri)).toString());
         data.addItem(MultiBitModel.OPEN_URI_USE_URI, useUriItem );
 
+        Item fontNameItem = new Item(MultiBitModel.FONT_NAME);
+        fontNameItem.setOriginalValue(originalFontName);
+        fontNameItem.setNewValue(selectedFont.getFamily());
+        data.addItem(MultiBitModel.FONT_NAME, fontNameItem );
+        
+        Item fontStyleItem = new Item(MultiBitModel.FONT_STYLE);
+        fontStyleItem.setOriginalValue(originalFontStyle);
+        fontStyleItem.setNewValue("" + selectedFont.getStyle());
+        data.addItem(MultiBitModel.FONT_STYLE, fontStyleItem );
+        
+        Item fontSizeItem = new Item(MultiBitModel.FONT_SIZE);
+        fontSizeItem.setOriginalValue(originalFontSize);
+        fontSizeItem.setNewValue("" + selectedFont.getSize());
+        data.addItem(MultiBitModel.FONT_SIZE, fontSizeItem );
+        
         return data;
     }
 
@@ -529,7 +679,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         private static final long serialVersionUID = -3301957214353702172L;
 
         public ComboBoxRenderer() {
-            super("");
+            super("", controller);
             setOpaque(true);
             setHorizontalAlignment(LEADING);
             setVerticalAlignment(CENTER);
@@ -591,5 +741,49 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     public void updateView() {
         // TODO Auto-generated method stub
         
+    }
+
+    private void setAdjustedFont(Component component) {
+        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+        FontSizer fontSizer = new FontSizer(controller);
+        if (fontSizeString == null || "".equals(fontSizeString)) {
+            fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
+        } else {
+            try {
+                fontSizer.setAdjustedFont(component, Integer.parseInt(fontSizeString));
+            } catch (NumberFormatException nfe) {
+                fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
+            }
+        }
+    }
+      
+    protected void setAdjustedFont(TitledBorder border) {
+        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+        FontSizer fontSizer = new FontSizer(controller);
+        if (fontSizeString == null || "".equals(fontSizeString)) {
+            fontSizer.setAdjustedFont(border, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
+        } else {
+            try {
+                fontSizer.setAdjustedFont(border, Integer.parseInt(fontSizeString));
+            } catch (NumberFormatException nfe) {
+                fontSizer.setAdjustedFont(border,  MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
+            }
+        }
+    }
+    
+    public void setSelectedFont(Font selectedFont) {
+        this.selectedFont = selectedFont;
+        
+        fontNameTextLabel.setText(selectedFont.getFamily());
+        fontStyleTextLabel.setText("" + selectedFont.getStyle());              
+        fontSizeTextLabel.setText("" + selectedFont.getSize());
+        
+        invalidate();
+        validate();
+        repaint();
+    }
+
+    public Font getSelectedFont() {
+        return selectedFont;
     }
 }

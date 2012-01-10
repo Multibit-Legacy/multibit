@@ -10,13 +10,17 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
+import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ResetTransactionsSubmitAction;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 
@@ -85,12 +89,9 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         fillerPanel1.setOpaque(false);
         add(fillerPanel1, constraints);
 
-        JLabel titleLabel = new JLabel();
+        MultiBitLabel titleLabel = new MultiBitLabel("", controller);
         titleLabel.setHorizontalTextPosition(JLabel.LEFT);
         titleLabel.setText(controller.getLocaliser().getString("resetTransactionsPanel.title"));
-        Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE,
-                MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
-        titleLabel.setFont(font);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -133,13 +134,15 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
 
     private JPanel createExplainPanel() {
         JPanel explainPanel = new JPanel(new GridBagLayout());
-        explainPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0),
-                BorderFactory.createTitledBorder(controller.getLocaliser().getString("resetTransactionsPanel.explainTitle"))));
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString("resetTransactionsPanel.explainTitle"));
+        explainPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder));
         explainPanel.setOpaque(false);
+        
+        setAdjustedFont(titledBorder);
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        MultiBitLabel explainLabel1 = new MultiBitLabel(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text1"));
+        MultiBitLabel explainLabel1 = new MultiBitLabel(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text1"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -172,7 +175,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         explainPanel.add(filler2, constraints);
 
         MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
-                "resetTransactionsPanel.walletFilenameLabel"));
+                "resetTransactionsPanel.walletFilenameLabel"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 2;
@@ -182,7 +185,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_END;
         explainPanel.add(walletFilenameLabelLabel, constraints);
 
-        walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename());
+        walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename(), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 2;
@@ -193,7 +196,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         explainPanel.add(walletFilenameLabel, constraints);
 
         MultiBitLabel walletDescriptionLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
-                "resetTransactionsPanel.walletDescriptionLabel"));
+                "resetTransactionsPanel.walletDescriptionLabel"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 3;
@@ -203,7 +206,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_END;
         explainPanel.add(walletDescriptionLabelLabel, constraints);
 
-        walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription(), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 3;
@@ -225,7 +228,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         explainPanel.add(filler3, constraints);
 
  
-        MultiBitLabel explainLabel2 = new MultiBitLabel(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text2"));
+        MultiBitLabel explainLabel2 = new MultiBitLabel(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text2"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 5;
@@ -246,12 +249,25 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         buttonPanel.setLayout(flowLayout);
 
         ResetTransactionsSubmitAction submitAction = new ResetTransactionsSubmitAction(controller, this);
-        MultiBitButton submitButton = new MultiBitButton(submitAction);
+        MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
         return buttonPanel;
     }
-
+     
+    protected void setAdjustedFont(TitledBorder border) {
+        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+        FontSizer fontSizer = new FontSizer(controller);
+        if (fontSizeString == null || "".equals(fontSizeString)) {
+            fontSizer.setAdjustedFont(border, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
+        } else {
+            try {
+                fontSizer.setAdjustedFont(border, Integer.parseInt(fontSizeString));
+            } catch (NumberFormatException nfe) {
+                fontSizer.setAdjustedFont(border,  MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
+            }
+        }
+    }
     public Data getData() {
         return data;
     }

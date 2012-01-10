@@ -2,6 +2,7 @@ package org.multibit.viewsystem.swing.view.yourwallets;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -24,6 +25,7 @@ import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
+import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -31,6 +33,7 @@ import org.multibit.viewsystem.swing.WalletTableModel;
 import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.ShowTransactionsPanel;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.GradientPanel;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 
@@ -205,10 +208,9 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         transactionsTitleLabel = new JLabel();
         transactionsTitleLabel.setHorizontalTextPosition(JLabel.CENTER);
         transactionsTitleLabel.setText(controller.getLocaliser().getString("showTransactionsAction.text"));
-        Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE,
-                MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
-        transactionsTitleLabel.setFont(font);
 
+        setAdjustedFont(transactionsTitleLabel);
+        
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -261,14 +263,31 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         headerPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 
         OpenWalletAction openWalletAction = new OpenWalletAction(controller, null);
-        MultiBitButton openWalletButton = new MultiBitButton(openWalletAction);
+        MultiBitButton openWalletButton = new MultiBitButton(openWalletAction, controller);
         headerPanel.add(openWalletButton);
 
         CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller, null, mainFrame);
-        MultiBitButton createNewWalletButton = new MultiBitButton(createNewWalletAction);
+        MultiBitButton createNewWalletButton = new MultiBitButton(createNewWalletAction, controller);
         headerPanel.add(createNewWalletButton);
 
         return headerPanel;
+    }
+    
+    private void setAdjustedFont(Component component) {
+        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+        FontSizer fontSizer = new FontSizer(controller);
+        if (fontSizeString == null || "".equals(fontSizeString)) {
+            fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE + 2
+                    * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
+        } else {
+            try {
+                fontSizer.setAdjustedFont(component, Integer.parseInt(fontSizeString) + 2
+                        * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
+            } catch (NumberFormatException nfe) {
+                fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE + 2
+                        * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
+            }
+        }
     }
 
     class WalletMouseListener extends MouseAdapter implements MouseListener {

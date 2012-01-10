@@ -135,12 +135,12 @@ public class ValidationErrorView implements View {
         
         // tell user validation messages
         OkBackToParentAction okAction = new OkBackToParentAction(controller);
-        MultiBitButton okButton = new MultiBitButton(okAction);
+        MultiBitButton okButton = new MultiBitButton(okAction, controller);
 
 
         Object[] options = { okButton };
 
-        MultiBitTextArea completeMessageTextArea = new MultiBitTextArea(completeMessage, rows, 20);
+        MultiBitTextArea completeMessageTextArea = new MultiBitTextArea(completeMessage, rows, 20, controller);
         completeMessageTextArea.setOpaque(false);
         completeMessageTextArea.setEditable(false);
         

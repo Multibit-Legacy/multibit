@@ -92,9 +92,8 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         JLabel titleLabel = new JLabel();
         titleLabel.setHorizontalTextPosition(JLabel.LEFT);
         titleLabel.setText(controller.getLocaliser().getString("createBulkAddressesPanel.title"));
-        Font font = new Font(MultiBitFrame.MULTIBIT_FONT_NAME, MultiBitFrame.MULTIBIT_FONT_STYLE,
-                MultiBitFrame.MULTIBIT_LARGE_FONT_SIZE + 2);
-        titleLabel.setFont(font);
+        FontSizer fontSizer = new FontSizer(controller);
+        fontSizer.setAdjustedFont(titleLabel, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE + 2 * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -151,7 +150,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
     private JPanel createFileNamePanel() {
         JPanel filenamePanel = new JPanel(new GridBagLayout());
         TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString("createBulkAddressesPanel.filename.title"));
-        titledBorder.setTitleFont( FontSizer.getAdjustedFont(MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE));
+        setAdjustedFont(titledBorder);
         Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
         filenamePanel.setBorder(border);
 
@@ -159,7 +158,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        MultiBitLabel filenameLabel = new MultiBitLabel(controller.getLocaliser().getString("createBulkAddressesPanel.filenameLabel.text"));
+        MultiBitLabel filenameLabel = new MultiBitLabel(controller.getLocaliser().getString("createBulkAddressesPanel.filenameLabel.text"), controller);
         filenameLabel.setToolTipText(controller.getLocaliser().getString("createBulkAddressesPanel.filenameLabel.tooltip"));
         filenameLabel.setOpaque(false);
         
@@ -169,7 +168,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         
         String defaultOutputFilename = applicationDataDirectory + File.separator + DEFAULT_BULK_ADDRESSES_FILENAME;
 
-        actualFilenameLabel = new MultiBitLabel(defaultOutputFilename);
+        actualFilenameLabel = new MultiBitLabel(defaultOutputFilename, controller);
         actualFilenameLabel.setOpaque(false);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -214,18 +213,18 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         numberOfAddressesPanel.setMinimumSize(new Dimension(300, 50));
         numberOfAddressesPanel.setPreferredSize(new Dimension(300, 50));
         TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString("createBulkAddressesPanel.numberOfAddresses.title"));
-        titledBorder.setTitleFont( FontSizer.getAdjustedFont(MultiBitFrame.MULTIBIT_NORMAL_FONT_SIZE));
+        setAdjustedFont(titledBorder);
         Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
         numberOfAddressesPanel.setBorder(border);
         numberOfAddressesPanel.setOpaque(false);
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        MultiBitLabel numberOfAddressesLabel = new MultiBitLabel(controller.getLocaliser().getString("createBulkAddressesPanel.numberOfAddresses.text"));
+        MultiBitLabel numberOfAddressesLabel = new MultiBitLabel(controller.getLocaliser().getString("createBulkAddressesPanel.numberOfAddresses.text"), controller);
         numberOfAddressesLabel.setToolTipText(controller.getLocaliser().getString("createBulkAddressesPanel.numberOfAddresses.tooltip"));
         numberOfAddressesLabel.setOpaque(false);
         
-        actualNumberOfAddressesLabel = new MultiBitLabel("" + DEFAULT_NUMBER_OF_ADDRESSES);
+        actualNumberOfAddressesLabel = new MultiBitLabel("" + DEFAULT_NUMBER_OF_ADDRESSES, controller);
         actualNumberOfAddressesLabel.setOpaque(false);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -268,7 +267,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         buttonPanel.setLayout(flowLayout);
 
         CreateBulkAddressesSubmitAction submitAction = new CreateBulkAddressesSubmitAction(controller, this);
-        MultiBitButton submitButton = new MultiBitButton(submitAction);
+        MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
         return buttonPanel;
@@ -291,5 +290,19 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
     public void updateView() {
         // TODO Auto-generated method stub
         
+    }
+       
+    protected void setAdjustedFont(TitledBorder border) {
+        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+        FontSizer fontSizer = new FontSizer(controller);
+        if (fontSizeString == null || "".equals(fontSizeString)) {
+            fontSizer.setAdjustedFont(border, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
+        } else {
+            try {
+                fontSizer.setAdjustedFont(border, Integer.parseInt(fontSizeString));
+            } catch (NumberFormatException nfe) {
+                fontSizer.setAdjustedFont(border,  MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
+            }
+        }
     }
 }
