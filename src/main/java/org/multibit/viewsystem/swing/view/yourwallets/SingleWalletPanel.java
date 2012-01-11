@@ -119,7 +119,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         constraints.anchor = GridBagConstraints.LINE_START;
         add(walletDescriptionTextField, constraints);
 
-        amountLabel = new BlinkLabel(controller);
+        amountLabel = new BlinkLabel(controller, false);
         amountLabel.setBackground(BACKGROUND_COLOR_NORMAL);
         amountLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
         amountLabel.setText(controller.getLocaliser().bitcoinValueToString4(perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED),

@@ -95,6 +95,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static final int TOOLBAR_HEIGHT = 120;
     public static final String COPY_ICON_FILE = "/images/copy.png";
     public static final String PASTE_ICON_FILE = "/images/paste.png";
+    public static final String TICK_ICON_FILE = "/images/tick.png";
+    public static final String RED_CROSS_ICON_FILE = "/images/redCross.png";
 
     private static final String YOUR_WALLETS_ICON_FILE = "/images/yourWallets.png";
     public static final String SINGLE_WALLET_ICON_FILE = "/images/singleWallet.png";
@@ -415,10 +417,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(filler2, constraints);
 
-        estimatedBalanceTextLabel = new BlinkLabel(controller);
+        estimatedBalanceTextLabel = new BlinkLabel(controller, true);
         estimatedBalanceTextLabel.setHorizontalAlignment(JTextField.LEFT);
 
-        fontSizer.setAdjustedFont(estimatedBalanceTextLabel, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE + 3 * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
         estimatedBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
 
         constraints.gridx = 3;
@@ -428,8 +429,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.add(estimatedBalanceTextLabel, constraints);
 
         availableBalanceTextLabel = new MultiBitLabel("", controller);
-        fontSizer.setAdjustedFont(availableBalanceTextLabel, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
-
         availableBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.availableToSpend.tooltip"));
 
         constraints.gridx = 4;

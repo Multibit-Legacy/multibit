@@ -1,6 +1,9 @@
 package org.multibit.action;
 
+import java.awt.Font;
 import java.math.BigInteger;
+
+import javax.swing.UIManager;
 
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
@@ -128,6 +131,11 @@ public class ShowPreferencesSubmitAction implements Action {
                 }
                 
                 if (fontHasChanged) {
+                    Item fontItem = data.getItem(MultiBitModel.FONT);
+                    if (fontItem != null && fontItem.getNewValue() != null) {
+                        UIManager.put("ToolTip.font",(Font)fontItem.getNewValue());   
+                    }
+                    
                     // redo everything
                     controller.fireLanguageChanged();
                 }

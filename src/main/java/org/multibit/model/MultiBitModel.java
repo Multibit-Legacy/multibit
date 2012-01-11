@@ -105,6 +105,7 @@ public class MultiBitModel {
     public static final String EARLIEST_TRANSACTION_DATE = "earliestTransactionDate";
    
     // user preference font
+    public static final String FONT= "font";
     public static final String FONT_NAME = "fontName";
     public static final String FONT_STYLE = "fontStyle";
     public static final String FONT_SIZE = "fontSize";

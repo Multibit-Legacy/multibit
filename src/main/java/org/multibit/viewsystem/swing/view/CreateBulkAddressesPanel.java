@@ -89,11 +89,9 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         fillerPanel1.setOpaque(false);
         add(fillerPanel1, constraints);
 
-        JLabel titleLabel = new JLabel();
+        MultiBitLabel titleLabel = new MultiBitLabel("", controller);
         titleLabel.setHorizontalTextPosition(JLabel.LEFT);
         titleLabel.setText(controller.getLocaliser().getString("createBulkAddressesPanel.title"));
-        FontSizer fontSizer = new FontSizer(controller);
-        fontSizer.setAdjustedFont(titleLabel, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE + 2 * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;

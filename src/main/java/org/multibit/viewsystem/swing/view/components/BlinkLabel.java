@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.Timer;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 public class BlinkLabel extends MultiBitLabel {
@@ -21,8 +22,12 @@ public class BlinkLabel extends MultiBitLabel {
 
     private String previousBlinkText;
 
-    public BlinkLabel(MultiBitController controller) {
+    public BlinkLabel(MultiBitController controller, boolean isLarge) {
         super("", controller);
+        
+        if (isLarge) {
+            setLargeAdjustedFont();
+        }
         blinkEnabled = false;
         previousBlinkText = "";
         setOpaque(false);
@@ -71,5 +76,20 @@ public class BlinkLabel extends MultiBitLabel {
 
     public void setBlinkEnabled(boolean blinkEnabled) {
         this.blinkEnabled = blinkEnabled;
+    }
+    
+
+    private void setLargeAdjustedFont() {
+        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+        FontSizer fontSizer = new FontSizer(controller);
+        if (fontSizeString == null || "".equals(fontSizeString)) {
+            fontSizer.setAdjustedFont(this, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE + 3 * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
+        } else {
+            try {
+                fontSizer.setAdjustedFont(this, Integer.parseInt(fontSizeString) + 3 * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
+            } catch (NumberFormatException nfe) {
+                fontSizer.setAdjustedFont(this, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE + 3 * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
+            }
+        }
     }
 }

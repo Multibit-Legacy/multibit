@@ -1,5 +1,6 @@
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
@@ -23,6 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
@@ -76,8 +78,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     private Data data;   
   
     private Font selectedFont;
-    private FontSizer fontSizer;
-    
+   
 
     /**
      * Creates a new {@link ShowPreferencesPanel}.
@@ -90,7 +91,6 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         setBackground(MultiBitFrame.BACKGROUND_COLOR);
 
         this.controller = controller;
-        fontSizer = new FontSizer(controller);
 
         data = new Data();
 
@@ -166,9 +166,12 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
     private void initUI() {
         setMinimumSize(new Dimension(550, 160));
-
+        setLayout(new BorderLayout());
+        JPanel mainPanel = new JPanel();
+        mainPanel.setOpaque(false);
+        
         GridBagConstraints constraints = new GridBagConstraints();
-        setLayout(new GridBagLayout());
+        mainPanel.setLayout(new GridBagLayout());
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -179,7 +182,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.anchor = GridBagConstraints.CENTER;
         JPanel fillerPanel1 = new JPanel();
         fillerPanel1.setOpaque(false);
-        add(fillerPanel1, constraints);
+        mainPanel.add(fillerPanel1, constraints);
 
         MultiBitLabel titleLabel = new MultiBitLabel("", controller);
         titleLabel.setHorizontalTextPosition(JLabel.LEADING);
@@ -192,7 +195,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.weightx = 1.8;
         constraints.weighty = 0.06;
         constraints.anchor = GridBagConstraints.CENTER;
-        add(titleLabel, constraints);
+        mainPanel.add(titleLabel, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -201,7 +204,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.weightx = 1;
         constraints.weighty = 1.6;
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
-        add(createFontChooserPanel(), constraints);
+        mainPanel.add(createFontChooserPanel(), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -210,7 +213,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.weightx = 1;
         constraints.weighty = 1.6;
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
-        add(createLanguagePanel(), constraints);
+        mainPanel.add(createLanguagePanel(), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -219,7 +222,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.weightx = 1;
         constraints.weighty = 1.6;
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
-        add(createBrowserIntegrationPanel(), constraints);
+        mainPanel.add(createBrowserIntegrationPanel(), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -228,16 +231,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
-        add(createFeePanel(), constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 6;
-        constraints.gridwidth = 1;
-        constraints.weightx = 0.4;
-        constraints.weighty = 0.06;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        add(createButtonPanel(), constraints);
+        mainPanel.add(createFeePanel(), constraints);
 
         JLabel filler1 = new JLabel();
         filler1.setOpaque(false);
@@ -248,7 +242,19 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.weightx = 1;
         constraints.weighty = 20;
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
-        add(filler1, constraints);
+        mainPanel.add(filler1, constraints);
+        
+        JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        mainScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, MultiBitFrame.DARK_BACKGROUND_COLOR));
+        mainScrollPane.setOpaque(true);
+        mainScrollPane.setBackground(MultiBitFrame.BACKGROUND_COLOR);
+
+        add(mainScrollPane, BorderLayout.CENTER);
+        
+        JPanel buttonPanel = createButtonPanel();
+        buttonPanel.setMinimumSize(new Dimension(80, 80));
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 
     private JPanel createLanguagePanel() {
@@ -321,6 +327,8 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
             index++;
         }
         languageComboBox = new JComboBox(indexArray);
+        setAdjustedFont(languageComboBox);
+
         ComboBoxRenderer renderer = new ComboBoxRenderer();
         renderer.setPreferredSize(new Dimension(150, 30));
         languageComboBox.setRenderer(renderer);
@@ -584,7 +592,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
         FlowLayout flowLayout = new FlowLayout();
-        flowLayout.setAlignment(FlowLayout.TRAILING);
+        flowLayout.setAlignment(FlowLayout.LEADING);
         buttonPanel.setLayout(flowLayout);
 
         ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(controller, this);
@@ -657,6 +665,10 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         useUriItem.setNewValue((new Boolean(useUri)).toString());
         data.addItem(MultiBitModel.OPEN_URI_USE_URI, useUriItem );
 
+        Item fontItem = new Item(MultiBitModel.FONT);
+        fontItem.setNewValue(selectedFont);
+        data.addItem(MultiBitModel.FONT, fontItem );
+        
         Item fontNameItem = new Item(MultiBitModel.FONT_NAME);
         fontNameItem.setOriginalValue(originalFontName);
         fontNameItem.setNewValue(selectedFont.getFamily());

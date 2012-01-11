@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ImageIcon;
 
 import org.multibit.controller.MultiBitController;
 
@@ -20,7 +21,14 @@ public class CancelBackToParentAction extends AbstractAction {
      * Creates a new {@link CancelBackToParentAction}.
      */
     public CancelBackToParentAction(MultiBitController controller) {
-        super(controller.getLocaliser().getString("cancelBackToParentAction.text"));
+        this(controller, null);
+    }
+
+    /**
+     * Creates a new {@link CancelBackToParentAction}.
+     */
+    public CancelBackToParentAction(MultiBitController controller, ImageIcon icon) {
+        super(controller.getLocaliser().getString("cancelBackToParentAction.text"), icon);
         this.controller = controller;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
