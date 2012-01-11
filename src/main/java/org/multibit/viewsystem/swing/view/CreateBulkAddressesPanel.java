@@ -3,6 +3,7 @@ package org.multibit.viewsystem.swing.view;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
@@ -208,20 +209,24 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
     private JPanel createNumberOfAddressesPanel() {
         JPanel numberOfAddressesPanel = new JPanel(new GridBagLayout());
         numberOfAddressesPanel.setOpaque(false);
-        numberOfAddressesPanel.setMinimumSize(new Dimension(300, 50));
-        numberOfAddressesPanel.setPreferredSize(new Dimension(300, 50));
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString("createBulkAddressesPanel.numberOfAddresses.title"));
+        String titleText = controller.getLocaliser().getString("createBulkAddressesPanel.numberOfAddresses.title");
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(titleText);
         setAdjustedFont(titledBorder);
         Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
         numberOfAddressesPanel.setBorder(border);
         numberOfAddressesPanel.setOpaque(false);
-
+ 
         GridBagConstraints constraints = new GridBagConstraints();
 
         MultiBitLabel numberOfAddressesLabel = new MultiBitLabel(controller.getLocaliser().getString("createBulkAddressesPanel.numberOfAddresses.text"), controller);
         numberOfAddressesLabel.setToolTipText(controller.getLocaliser().getString("createBulkAddressesPanel.numberOfAddresses.tooltip"));
         numberOfAddressesLabel.setOpaque(false);
-        
+ 
+        FontMetrics fontMetrics = numberOfAddressesLabel.getFontMetrics(numberOfAddressesLabel.getFont());
+        Dimension preferredSize = new Dimension(fontMetrics.stringWidth(titleText) + 100, fontMetrics.getHeight() * 2 + 20);
+        numberOfAddressesPanel.setMinimumSize(preferredSize);
+        numberOfAddressesPanel.setPreferredSize(preferredSize);
+
         actualNumberOfAddressesLabel = new MultiBitLabel("" + DEFAULT_NUMBER_OF_ADDRESSES, controller);
         actualNumberOfAddressesLabel.setOpaque(false);
 

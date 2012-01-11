@@ -23,6 +23,7 @@ import org.multibit.viewsystem.swing.action.ResetTransactionsSubmitAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 
 /**
  * The reset blockchain and transactions view
@@ -228,7 +229,8 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         explainPanel.add(filler3, constraints);
 
  
-        MultiBitLabel explainLabel2 = new MultiBitLabel(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text2"), controller);
+        MultiBitTextArea explainTextArea = new MultiBitTextArea(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text2"), 40, 2, controller);
+        explainTextArea.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 5;
@@ -236,7 +238,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         constraints.weighty = 0.3;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        explainPanel.add(explainLabel2, constraints);
+        explainPanel.add(explainTextArea, constraints);
 
         return explainPanel;
     }

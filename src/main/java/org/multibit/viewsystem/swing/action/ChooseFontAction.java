@@ -38,7 +38,7 @@ public class ChooseFontAction extends AbstractAction {
      * show font chooser dialog
      */
     public void actionPerformed(ActionEvent e) {
-        JFontChooser fontChooser = new JFontChooser(controller.getLocaliser());
+        JFontChooser fontChooser = new JFontChooser(controller);
         fontChooser.setSelectedFont(showPreferencesPanel.getSelectedFont());
         int result = fontChooser.showDialog(showPreferencesPanel);
         if (result == JFontChooser.OK_OPTION) {

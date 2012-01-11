@@ -18,15 +18,13 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.InputMap;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -38,6 +36,7 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
@@ -47,7 +46,9 @@ import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
 
-import org.multibit.Localiser;
+import org.multibit.controller.MultiBitController;
+import org.multibit.model.MultiBitModel;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
  * The <code>JFontChooser</code> class is a swing component for font selection.
@@ -87,7 +88,7 @@ public class JFontChooser extends JComponent {
      **/
     public static final int ERROR_OPTION = -1;
     private static final Font DEFAULT_SELECTED_FONT = new Font("Serif", Font.PLAIN, 13);
-    private static final Font DEFAULT_FONT = new Font("Dialog", Font.PLAIN, 13);
+    private static Font defaultFont = new Font("Dialog", Font.PLAIN, 13);
     private static final int[] FONT_STYLE_CODES = { Font.PLAIN, Font.BOLD, Font.ITALIC, Font.BOLD | Font.ITALIC };
     private static final String[] DEFAULT_FONT_SIZE_STRINGS = {"10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"};
 
@@ -97,9 +98,9 @@ public class JFontChooser extends JComponent {
     private String[] fontStyleNames = null;
     private String[] fontFamilyNames = null;
     private String[] fontSizeStrings = null;
-    private JTextField fontFamilyTextField = null;
-    private JTextField fontStyleTextField = null;
-    private JTextField fontSizeTextField = null;
+    private MultiBitTextField fontFamilyTextField = null;
+    private MultiBitTextField fontStyleTextField = null;
+    private MultiBitTextField fontSizeTextField = null;
     private JList fontNameList = null;
     private JList fontStyleList = null;
     private JList fontSizeList = null;
@@ -109,15 +110,18 @@ public class JFontChooser extends JComponent {
     private JPanel samplePanel = null;
     private JTextField sampleText = null;
     
-    private Localiser localiser;
+    private MultiBitController controller;
 
     /**
      * Constructs a <code>JFontChooser</code> object.
      **/
-    public JFontChooser(Localiser localiser) {
-        this.localiser = localiser;
+    public JFontChooser(MultiBitController controller) {
+        this.controller = controller;
         this.fontSizeStrings = DEFAULT_FONT_SIZE_STRINGS;
 
+        MultiBitLabel testLabel = new MultiBitLabel("", controller);
+        defaultFont = testLabel.getFont();
+        
         JPanel selectPanel = new JPanel();
         selectPanel.setLayout(new BoxLayout(selectPanel, BoxLayout.X_AXIS));
         selectPanel.add(getFontFamilyPanel());
@@ -137,33 +141,33 @@ public class JFontChooser extends JComponent {
 
     public JTextField getFontFamilyTextField() {
         if (fontFamilyTextField == null) {
-            fontFamilyTextField = new JTextField();
+            fontFamilyTextField = new MultiBitTextField("", 40, controller);
             fontFamilyTextField.addFocusListener(new TextFieldFocusHandlerForTextSelection(fontFamilyTextField));
             fontFamilyTextField.addKeyListener(new TextFieldKeyHandlerForListSelectionUpDown(getFontFamilyList()));
             fontFamilyTextField.getDocument().addDocumentListener(new ListSearchTextFieldDocumentHandler(getFontFamilyList()));
-            fontFamilyTextField.setFont(DEFAULT_FONT);
+            fontFamilyTextField.setFont(defaultFont);
         }
         return fontFamilyTextField;
     }
 
     public JTextField getFontStyleTextField() {
         if (fontStyleTextField == null) {
-            fontStyleTextField = new JTextField();
+            fontStyleTextField = new MultiBitTextField("", 40, controller);
             fontStyleTextField.addFocusListener(new TextFieldFocusHandlerForTextSelection(fontStyleTextField));
             fontStyleTextField.addKeyListener(new TextFieldKeyHandlerForListSelectionUpDown(getFontStyleList()));
             fontStyleTextField.getDocument().addDocumentListener(new ListSearchTextFieldDocumentHandler(getFontStyleList()));
-            fontStyleTextField.setFont(DEFAULT_FONT);
+            fontStyleTextField.setFont(defaultFont);
         }
         return fontStyleTextField;
     }
 
     public JTextField getFontSizeTextField() {
         if (fontSizeTextField == null) {
-            fontSizeTextField = new JTextField();
+            fontSizeTextField = new MultiBitTextField("", 40, controller);
             fontSizeTextField.addFocusListener(new TextFieldFocusHandlerForTextSelection(fontSizeTextField));
             fontSizeTextField.addKeyListener(new TextFieldKeyHandlerForListSelectionUpDown(getFontSizeList()));
             fontSizeTextField.getDocument().addDocumentListener(new ListSearchTextFieldDocumentHandler(getFontSizeList()));
-            fontSizeTextField.setFont(DEFAULT_FONT);
+            fontSizeTextField.setFont(defaultFont);
         }
         return fontSizeTextField;
     }
@@ -174,7 +178,7 @@ public class JFontChooser extends JComponent {
             fontNameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             fontNameList.addListSelectionListener(new ListSelectionHandler(getFontFamilyTextField()));
             fontNameList.setSelectedIndex(0);
-            fontNameList.setFont(DEFAULT_FONT);
+            fontNameList.setFont(defaultFont);
             fontNameList.setFocusable(false);
         }
         return fontNameList;
@@ -186,7 +190,7 @@ public class JFontChooser extends JComponent {
             fontStyleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             fontStyleList.addListSelectionListener(new ListSelectionHandler(getFontStyleTextField()));
             fontStyleList.setSelectedIndex(0);
-            fontStyleList.setFont(DEFAULT_FONT);
+            fontStyleList.setFont(defaultFont);
             fontStyleList.setFocusable(false);
         }
         return fontStyleList;
@@ -198,7 +202,7 @@ public class JFontChooser extends JComponent {
             fontSizeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             fontSizeList.addListSelectionListener(new ListSelectionHandler(getFontSizeTextField()));
             fontSizeList.setSelectedIndex(0);
-            fontSizeList.setFont(DEFAULT_FONT);
+            fontSizeList.setFont(defaultFont);
             fontSizeList.setFocusable(false);
         }
         return fontSizeList;
@@ -510,7 +514,7 @@ public class JFontChooser extends JComponent {
             this.dialog = dialog;
             putValue(Action.DEFAULT, ACTION_NAME);
             putValue(Action.ACTION_COMMAND_KEY, ACTION_NAME);
-            putValue(Action.NAME, localiser.getString("fontChooser.ok"));
+            putValue(Action.NAME, controller.getLocaliser().getString("fontChooser.ok"));
         }
 
         public void actionPerformed(ActionEvent e) {
@@ -527,7 +531,7 @@ public class JFontChooser extends JComponent {
             this.dialog = dialog;
             putValue(Action.DEFAULT, ACTION_NAME);
             putValue(Action.ACTION_COMMAND_KEY, ACTION_NAME);
-            putValue(Action.NAME, localiser.getString("fontChooser.cancel"));
+            putValue(Action.NAME, controller.getLocaliser().getString("fontChooser.cancel"));
         }
 
         public void actionPerformed(ActionEvent e) {
@@ -538,15 +542,13 @@ public class JFontChooser extends JComponent {
 
     protected JDialog createDialog(Component parent) {
         Frame frame = parent instanceof Frame ? (Frame) parent : (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent);
-        JDialog dialog = new JDialog(frame, localiser.getString("fontChooser.selectFont"), true);
+        JDialog dialog = new JDialog(frame, controller.getLocaliser().getString("fontChooser.selectFont"), true);
 
         Action okAction = new DialogOKAction(dialog);
         Action cancelAction = new DialogCancelAction(dialog);
 
-        JButton okButton = new JButton(okAction);
-        okButton.setFont(DEFAULT_FONT);
-        JButton cancelButton = new JButton(cancelAction);
-        cancelButton.setFont(DEFAULT_FONT);
+        MultiBitButton okButton = new MultiBitButton(okAction, controller);
+        MultiBitButton cancelButton = new MultiBitButton(cancelAction, controller);
 
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new GridLayout(2, 1));
@@ -593,7 +595,7 @@ public class JFontChooser extends JComponent {
             p.add(getFontFamilyTextField(), BorderLayout.NORTH);
             p.add(scrollPane, BorderLayout.CENTER);
 
-            JLabel label = new JLabel(localiser.getString("fontChooser.fontName"));
+            MultiBitLabel label = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontName"), controller);
             label.setHorizontalAlignment(JLabel.LEFT);
             label.setHorizontalTextPosition(JLabel.LEFT);
             label.setLabelFor(getFontFamilyTextField());
@@ -622,7 +624,7 @@ public class JFontChooser extends JComponent {
             p.add(getFontStyleTextField(), BorderLayout.NORTH);
             p.add(scrollPane, BorderLayout.CENTER);
 
-            JLabel label = new JLabel(localiser.getString("fontChooser.fontStyle"));
+            MultiBitLabel label = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontStyle"), controller);
             label.setHorizontalAlignment(JLabel.LEFT);
             label.setHorizontalTextPosition(JLabel.LEFT);
             label.setLabelFor(getFontStyleTextField());
@@ -650,7 +652,7 @@ public class JFontChooser extends JComponent {
             p.add(getFontSizeTextField(), BorderLayout.NORTH);
             p.add(scrollPane, BorderLayout.CENTER);
 
-            JLabel label = new JLabel(localiser.getString("fontChooser.fontSize"));
+            MultiBitLabel label = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontSize"), controller);
             label.setHorizontalAlignment(JLabel.LEFT);
             label.setHorizontalTextPosition(JLabel.LEFT);
             label.setLabelFor(getFontSizeTextField());
@@ -664,10 +666,11 @@ public class JFontChooser extends JComponent {
 
     protected JPanel getSamplePanel() {
         if (samplePanel == null) {
-            Border titledBorder = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), localiser.getString("fontChooser.sampleText"));
+            TitledBorder titledBorder = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), controller.getLocaliser().getString("fontChooser.sampleText"));
             Border empty = BorderFactory.createEmptyBorder(5, 10, 10, 10);
             Border border = BorderFactory.createCompoundBorder(titledBorder, empty);
 
+            setAdjustedFont(titledBorder);
             samplePanel = new JPanel();
             samplePanel.setLayout(new BorderLayout());
             samplePanel.setBorder(border);
@@ -681,7 +684,7 @@ public class JFontChooser extends JComponent {
         if (sampleText == null) {
             Border lowered = BorderFactory.createLoweredBevelBorder();
 
-            sampleText = new JTextField(localiser.getString("fontChooser.sampleText"));
+            sampleText = new JTextField(controller.getLocaliser().getString("fontChooser.sampleText"));
             sampleText.setBorder(lowered);
             sampleText.setPreferredSize(new Dimension(300, 100));
         }
@@ -700,11 +703,26 @@ public class JFontChooser extends JComponent {
         if (fontStyleNames == null) {
             int i = 0;
             fontStyleNames = new String[4];
-            fontStyleNames[i++] = localiser.getString("fontChooser.plain");
-            fontStyleNames[i++] = localiser.getString("fontChooser.bold");
-            fontStyleNames[i++] = localiser.getString("fontChooser.italic");
-            fontStyleNames[i++] = localiser.getString("fontChooser.boldItalic");
+            fontStyleNames[i++] = controller.getLocaliser().getString("fontChooser.plain");
+            fontStyleNames[i++] = controller.getLocaliser().getString("fontChooser.bold");
+            fontStyleNames[i++] = controller.getLocaliser().getString("fontChooser.italic");
+            fontStyleNames[i++] = controller.getLocaliser().getString("fontChooser.boldItalic");
         }
         return fontStyleNames;
+    }
+    
+    
+    private void setAdjustedFont(TitledBorder border) {
+        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+        FontSizer fontSizer = new FontSizer(controller);
+        if (fontSizeString == null || "".equals(fontSizeString)) {
+            fontSizer.setAdjustedFont(border, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
+        } else {
+            try {
+                fontSizer.setAdjustedFont(border, Integer.parseInt(fontSizeString));
+            } catch (NumberFormatException nfe) {
+                fontSizer.setAdjustedFont(border, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);                
+            }
+        }
     }
 }
