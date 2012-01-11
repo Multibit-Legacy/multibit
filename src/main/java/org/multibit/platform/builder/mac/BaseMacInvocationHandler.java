@@ -23,7 +23,7 @@ import java.lang.reflect.Proxy;
  * @since 0.3.0
  */
 public abstract class BaseMacInvocationHandler<H extends GenericHandler, E extends GenericEvent> implements InvocationHandler {
-    private static final Logger log = LoggerFactory.getLogger(QuitHandlerInvocationHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(BaseMacInvocationHandler.class);
 
     private final H genericHandler;
     private final Class<E> genericEventClass;
@@ -45,12 +45,15 @@ public abstract class BaseMacInvocationHandler<H extends GenericHandler, E exten
      * @throws Throwable If something goes wrong
      */
     @Override
+    @SuppressWarnings("unchecked")
     public Object invoke(Object object, Method nativeMethod, Object[] objects) throws Throwable {
 
         log.debug("Invoked. NativeMethod={}, method args length={}", nativeMethod.getName(), objects.length);
 
         // Create a uni-directional generic event based on a single parameter (the native event)
-        E event = createGenericEvent(objects[0]);
+        // Require an unchecked cast here to avoid this issue:
+        // http://blog.sarathonline.com/2010/08/maven-only-type-parameters-of-x-cannot.html
+        E event = (E) createGenericEvent(objects[0]);
         try {
             log.debug("Created event {}", genericEventClass.getSimpleName());
 

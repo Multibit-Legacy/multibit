@@ -526,7 +526,7 @@
     <dependency>
       <groupId>com.google</groupId>
       <artifactId>bitcoinj</artifactId>
-      <version>${bitcoinj.version}</version>
+      <version>0.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -571,11 +571,11 @@
     <!-- Source encoding -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Version of bitcoinj to use -->
+    <!-- Location of staging directory for creation of linux IzPack installer -->
     <staging.linux.dir>${project.build.directory}/staging.linux</staging.linux.dir>
 
-    <!-- Location of staging directory for creation of linux IzPack installer -->
-    <bitcoinj.version>0.3-SNAPSHOT</bitcoinj.version>
+    <!-- Version of BitCoinJ to use (multiple uses) -->
+    <bitcoinj.version>0.3</bitcoinj.version>
 
     <!-- Location of staging directory for creation of windows IzPack installer -->
     <staging.windows.dir>${project.build.directory}/staging.windows</staging.windows.dir>
