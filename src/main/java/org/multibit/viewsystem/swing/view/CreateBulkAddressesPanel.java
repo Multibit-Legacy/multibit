@@ -33,6 +33,10 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
  */
 public class CreateBulkAddressesPanel extends JPanel implements View, DataProvider {
 
+    private static final int DIALOG_HEIGHT_DELTA = 20;
+
+    private static final int DIALOG_WIDTH_DELTA = 100;
+
     private static final String DEFAULT_BULK_ADDRESSES_FILENAME = "bulkAddresses.csv";
 
     private static final int DEFAULT_NUMBER_OF_ADDRESSES = 1000;
@@ -149,7 +153,8 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
     private JPanel createFileNamePanel() {
         JPanel filenamePanel = new JPanel(new GridBagLayout());
         TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString("createBulkAddressesPanel.filename.title"));
-        setAdjustedFont(titledBorder);
+        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+
         Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
         filenamePanel.setBorder(border);
 
@@ -211,7 +216,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         numberOfAddressesPanel.setOpaque(false);
         String titleText = controller.getLocaliser().getString("createBulkAddressesPanel.numberOfAddresses.title");
         TitledBorder titledBorder = BorderFactory.createTitledBorder(titleText);
-        setAdjustedFont(titledBorder);
+        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
         numberOfAddressesPanel.setBorder(border);
         numberOfAddressesPanel.setOpaque(false);
@@ -222,8 +227,8 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         numberOfAddressesLabel.setToolTipText(controller.getLocaliser().getString("createBulkAddressesPanel.numberOfAddresses.tooltip"));
         numberOfAddressesLabel.setOpaque(false);
  
-        FontMetrics fontMetrics = numberOfAddressesLabel.getFontMetrics(numberOfAddressesLabel.getFont());
-        Dimension preferredSize = new Dimension(fontMetrics.stringWidth(titleText) + 100, fontMetrics.getHeight() * 2 + 20);
+        FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        Dimension preferredSize = new Dimension(fontMetrics.stringWidth(titleText) + DIALOG_WIDTH_DELTA, fontMetrics.getHeight() * 2 + DIALOG_HEIGHT_DELTA);
         numberOfAddressesPanel.setMinimumSize(preferredSize);
         numberOfAddressesPanel.setPreferredSize(preferredSize);
 
@@ -293,19 +298,5 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
     public void updateView() {
         // TODO Auto-generated method stub
         
-    }
-       
-    protected void setAdjustedFont(TitledBorder border) {
-        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
-        FontSizer fontSizer = new FontSizer(controller);
-        if (fontSizeString == null || "".equals(fontSizeString)) {
-            fontSizer.setAdjustedFont(border, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
-        } else {
-            try {
-                fontSizer.setAdjustedFont(border, Integer.parseInt(fontSizeString));
-            } catch (NumberFormatException nfe) {
-                fontSizer.setAdjustedFont(border,  MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
-            }
-        }
     }
 }

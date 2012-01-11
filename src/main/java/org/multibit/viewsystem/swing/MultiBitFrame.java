@@ -8,6 +8,9 @@ import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
@@ -40,6 +43,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.border.Border;
+import javax.swing.plaf.metal.MetalComboBoxUI;
 
 import org.multibit.Localiser;
 import org.multibit.controller.ActionForward;
@@ -134,8 +138,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.72D;
 
+    public static final String EXAMPLE_LONG_FIELD_TEXT = "TheQuickBrownFoxJumpsOverTheLazyDog";
     public static final int WIDTH_OF_LONG_FIELDS = 320;
     public static final int WIDTH_OF_AMOUNT_FIELD = 160;
+    public static final int ONLINE_LABEL_DELTA = 10;
 
     private static final long serialVersionUID = 7621813615342923041L;
 
@@ -189,8 +195,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private JPanel headerPanel;
 
-    private FontSizer fontSizer;
-
     @SuppressWarnings("deprecation")
     public MultiBitFrame(MultiBitController controller, GenericApplication application) {
         this.controller = controller;
@@ -198,8 +202,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         this.localiser = controller.getLocaliser();
         this.thisFrame = this;
         this.application = application;
-        
-        fontSizer = new FontSizer(controller);
+
+        FontSizer.INSTANCE.initialise(controller);
 
         setCursor(Cursor.WAIT_CURSOR);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -354,7 +358,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         statusLabel = new MultiBitLabel("", controller);
 
-        statusBar.addZone("online", onlineLabel, "12%", "left");
+        int onlineWidth = Math.max(
+                getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
+                        localiser.getString("multiBitFrame.onlineText")),
+                getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
+                        localiser.getString("multiBitFrame.offlineText")))
+                + ONLINE_LABEL_DELTA;
+
+        statusBar.addZone("online", onlineLabel, "" + onlineWidth, "left");
         statusBar.addZone("network", statusLabel, "*", "");
         statusBar.addZone("filler2", new JPanel(), "0", "right");
 
@@ -465,23 +476,22 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
 
-        FontSizer fontSizer = new FontSizer(controller);
-
         // Build the File menu.
         JMenu fileMenu = new JMenu(localiser.getString("multiBitFrame.fileMenuText"));
-        setAdjustedFont(fileMenu);
+        fileMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+
         fileMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.fileMenuMnemonic"));
         menuBar.add(fileMenu);
 
         // Build the Trade menu.
         JMenu tradeMenu = new JMenu(localiser.getString("multiBitFrame.tradeMenuText"));
-        setAdjustedFont(tradeMenu);
+        tradeMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         tradeMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.tradeMenuMnemonic"));
         menuBar.add(tradeMenu);
 
         // Build the View menu.
         JMenu viewMenu = new JMenu(localiser.getString("multiBitFrame.viewMenuText"));
-        setAdjustedFont(viewMenu);
+        viewMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         viewMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.viewMenuMnemonic"));
         menuBar.add(viewMenu);
 
@@ -492,28 +502,28 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         JMenu merchantMenu = null;
         if (showMerchantMenu) {
             merchantMenu = new JMenu(localiser.getString("multiBitFrame.merchantMenuText"));
-            setAdjustedFont(merchantMenu);
+            merchantMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
             merchantMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.merchantMenuMnemonic"));
             menuBar.add(merchantMenu);
         }
 
         // Build the Help menu.
         JMenu helpMenu = new JMenu(localiser.getString("multiBitFrame.helpMenuText"));
-        setAdjustedFont(helpMenu);
+        helpMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         helpMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.helpMenuMnemonic"));
         menuBar.add(helpMenu);
 
         // open wallet action
         OpenWalletAction openWalletAction = new OpenWalletAction(controller, createImageIcon(OPEN_WALLET_ICON_FILE));
         JMenuItem menuItem = new JMenuItem(openWalletAction);
-        setAdjustedFont(menuItem);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         fileMenu.add(menuItem);
 
         // create new wallet action
         CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller, createImageIcon(CREATE_NEW_ICON_FILE),
                 this);
         menuItem = new JMenuItem(createNewWalletAction);
-        setAdjustedFont(menuItem);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         fileMenu.add(menuItem);
 
         // exit action
@@ -522,7 +532,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             fileMenu.addSeparator();
 
             menuItem = new JMenuItem(new ExitAction(controller));
-            setAdjustedFont(menuItem);
+            menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
             fileMenu.add(menuItem);
         }
 
@@ -530,7 +540,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         ShowHelpContentsAction showHelpContentsAction = new ShowHelpContentsAction(controller, localiser,
                 createImageIcon(HELP_CONTENTS_ICON_FILE));
         menuItem = new JMenuItem(showHelpContentsAction);
-        setAdjustedFont(menuItem);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         helpMenu.add(menuItem);
 
         if (!application.isMac()) {
@@ -538,7 +548,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             // help about action
             HelpAboutAction helpAboutAction = new HelpAboutAction(controller, createImageIcon(MULTIBIT_SMALL_ICON_FILE), this);
             menuItem = new JMenuItem(helpAboutAction);
-            setAdjustedFont(menuItem);
+            menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
             helpMenu.add(menuItem);
         }
 
@@ -549,7 +559,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         YourWalletsAction myWalletsAction = new YourWalletsAction(controller, createImageIcon(YOUR_WALLETS_ICON_FILE));
         menuItem = new JMenuItem(myWalletsAction);
-        setAdjustedFont(menuItem);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         viewMenu.add(menuItem);
 
         yourWalletsButton = new MultiBitLargeButton(myWalletsAction, controller);
@@ -570,7 +580,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         ReceiveBitcoinAction receiveBitcoinAction = new ReceiveBitcoinAction(controller, localiser,
                 createImageIcon(RECEIVE_BITCOIN_ICON_FILE), this);
         menuItem = new JMenuItem(receiveBitcoinAction);
-        setAdjustedFont(menuItem);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         tradeMenu.add(menuItem);
         receiveBitcoinButton = new MultiBitLargeButton(receiveBitcoinAction, controller);
 
@@ -579,7 +589,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // send bitcoin action
         SendBitcoinAction sendBitcoinAction = new SendBitcoinAction(controller, createImageIcon(SEND_BITCOIN_ICON_FILE), this);
         menuItem = new JMenuItem(sendBitcoinAction);
-        setAdjustedFont(menuItem);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         tradeMenu.add(menuItem);
 
         sendBitcoinPanel = new JPanel(new BorderLayout());
@@ -596,7 +606,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             // help about action
             ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller,
                     createImageIcon(PREFERENCES_ICON_FILE));
-            setAdjustedFont(viewMenu);
+            viewMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
             viewMenu.add(showPreferencesAction);
         }
 
@@ -604,7 +614,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             // create bulk addresses action
             ShowCreateBulkAddressesAction createBulkAddressesAction = new ShowCreateBulkAddressesAction(controller, null);
             menuItem = new JMenuItem(createBulkAddressesAction);
-            setAdjustedFont(menuItem);
+            menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
             merchantMenu.add(menuItem);
         }
 
@@ -1086,7 +1096,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             indexArray[index] = index;
             index++;
         }
+
         activeWalletComboBox = new JComboBox(indexArray);
+        activeWalletComboBox.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        activeWalletComboBox.setUI(new MetalComboBoxUI());
+        activeWalletComboBox.setBackground(DARK_BACKGROUND_COLOR);
+
         activeWalletComboBox.setOpaque(false);
         activeWalletPanel.setBorder(normalBorder);
 
@@ -1120,21 +1135,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         return activeWalletComboBox;
     }
-   
-    protected void setAdjustedFont(Component component) {
-        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
-        FontSizer fontSizer = new FontSizer(controller);
-        if (fontSizeString == null || "".equals(fontSizeString)) {
-            fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE + MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
-        } else {
-            try {
-                fontSizer.setAdjustedFont(component, Integer.parseInt(fontSizeString) + MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
-            } catch (NumberFormatException nfe) {
-                fontSizer.setAdjustedFont(component,  MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE + MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
-            }
-        }
-    }
-    
+
     class ChangeActiveWalletItemListener implements ItemListener {
         public ChangeActiveWalletItemListener() {
 
@@ -1225,8 +1226,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     class ComboBoxRenderer extends JLabel implements ListCellRenderer {
         private static final long serialVersionUID = -3301957214353702172L;
 
+        private boolean isSelected;
+        private boolean cellHasFocus;
+        private JList list;
+
         public ComboBoxRenderer() {
-            setOpaque(true);
+            setOpaque(false);
             setHorizontalAlignment(LEFT);
             setVerticalAlignment(CENTER);
         }
@@ -1236,6 +1241,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
          * value and returns the label, set up to display the text and image.
          */
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            this.isSelected = isSelected;
+            this.cellHasFocus = cellHasFocus;
+            this.list = list;
+
             // Get the selected index. (The index param isn't
             // always valid, so just use the value.)
             int selectedIndex = 0;
@@ -1278,12 +1287,61 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
             return this;
         }
+
+        @Override
+        public void paint(Graphics g) {
+
+            int width = getWidth();
+            int height = getHeight();
+
+            if (!cellHasFocus && !isSelected) {
+                // Create the gradient paint
+                GradientPaint paint = new GradientPaint(0, 0, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR, 0, height,
+                        MultiBitFrame.DARK_BACKGROUND_COLOR, true);
+
+                // we need to cast to Graphics2D for this operation
+                Graphics2D g2d = (Graphics2D) g;
+
+                // save the old paint
+                java.awt.Paint oldPaint = g2d.getPaint();
+
+                // set the paint to use for this operation
+                g2d.setPaint(paint);
+
+                // fill the background using the paint
+                g2d.fillRect(0, 0, width, height);
+
+                // restore the original paint
+                g2d.setPaint(oldPaint);
+            } else {
+                // Create the gradient paint
+                GradientPaint paint = new GradientPaint(0, 0, list.getSelectionBackground(), 0, height,
+                        list.getSelectionBackground(), true);
+
+                // we need to cast to Graphics2D for this operation
+                Graphics2D g2d = (Graphics2D) g;
+
+                // save the old paint
+                java.awt.Paint oldPaint = g2d.getPaint();
+
+                // set the paint to use for this operation
+                g2d.setPaint(paint);
+
+                // fill the background using the paint
+                g2d.fillRect(0, 0, width, height);
+
+                // restore the original paint
+                g2d.setPaint(oldPaint);
+            }
+
+            super.paint(g);
+        }
     }
 
     @Override
     public void newWalletCreated() {
         activeWalletPanel.remove(activeWalletComboBox);
-        activeWalletComboBox = this.createActiveWalletComboBox();
+        activeWalletComboBox = createActiveWalletComboBox();
         activeWalletComboBox.setFont(yourWalletsButton.getFont());
 
         ComboBoxRenderer renderer = new ComboBoxRenderer();

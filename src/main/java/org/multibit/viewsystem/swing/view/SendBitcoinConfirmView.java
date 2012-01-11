@@ -3,6 +3,7 @@ package org.multibit.viewsystem.swing.view;
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -20,6 +21,7 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
 import org.multibit.viewsystem.swing.action.OkBackToParentAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinNowAction;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
@@ -31,6 +33,9 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
 
     private static final long serialVersionUID = 191435612345057705L;
 
+    private static final int HEIGHT_DELTA = 125;
+    private static final int WIDTH_DELTA = 250;
+    
     private MultiBitFrame mainFrame;
 
     private MultiBitController controller;
@@ -70,7 +75,11 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
      * show send bitcoin confirm view
      */
     public void initUI() {
-        setMinimumSize(new Dimension(680, 320));
+        FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        
+        int minimumHeight = fontMetrics.getHeight() * 8 + HEIGHT_DELTA;
+        int minimumWidth = Math.max(fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT), fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinConfirmView.message"))) + WIDTH_DELTA;
+        setMinimumSize(new Dimension(minimumWidth, minimumHeight));
         positionDialogRelativeToParent(this, 0.5D, 0.47D);
         setTitle(controller.getLocaliser().getString("sendBitcoinConfirmView.title"));
 

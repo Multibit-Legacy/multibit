@@ -109,6 +109,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         this.controller = controller;
         this.thisAbstractTradePanel = this;
 
+        setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(2 * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE));
+
         localisationKeyConstantToKeyMap = new HashMap<String, String>();
         populateLocalisationMap();
 
@@ -221,7 +223,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         titleLabel = new JLabel();
         titleLabel.setHorizontalTextPosition(JLabel.CENTER);
         titleLabel.setText(getLocalisationString(ADDRESSES_TITLE, null));
-        setAdjustedFont(titleLabel);
+        titleLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE));
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
@@ -265,6 +267,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         addressesTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         addressesTable.setRowSelectionAllowed(true);
         addressesTable.setColumnSelectionAllowed(false);
+        addressesTable.setRowHeight(getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight());
+
         // TODO make sure table cannot be edited by double click
         // justify column headers
         TableCellRenderer renderer = addressesTable.getTableHeader().getDefaultRenderer();
@@ -274,8 +278,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         } else {
             label.setHorizontalAlignment(JLabel.RIGHT);
         }
-        setAdjustedFont2(addressesTable.getTableHeader());
-        
+        addressesTable.getTableHeader().setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+
         TableColumn tableColumn = addressesTable.getColumnModel().getColumn(0); // label
         tableColumn.setPreferredWidth(40);
         if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
@@ -680,37 +684,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             controller.getModel().getActivePerWalletModelData().setDirty(true);
 
             displaySwatch(address, amount, label);
-        }
-    }
-
-    protected void setAdjustedFont(Component component) {
-        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
-        FontSizer fontSizer = new FontSizer(controller);
-        if (fontSizeString == null || "".equals(fontSizeString)) {
-            fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE + 2
-                    * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
-        } else {
-            try {
-                fontSizer.setAdjustedFont(component, Integer.parseInt(fontSizeString) + 2
-                        * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
-            } catch (NumberFormatException nfe) {
-                fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE + 2
-                        * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
-            }
-        }
-    }
-    
-    protected void setAdjustedFont2(Component component) {
-        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
-        FontSizer fontSizer = new FontSizer(controller);
-        if (fontSizeString == null || "".equals(fontSizeString)) {
-            fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE );
-        } else {
-            try {
-                fontSizer.setAdjustedFont(component, Integer.parseInt(fontSizeString));
-            } catch (NumberFormatException nfe) {
-                fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
-            }
         }
     }
 

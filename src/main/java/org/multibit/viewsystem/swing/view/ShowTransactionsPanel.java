@@ -96,7 +96,8 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         table.setOpaque(true);
         table.setBorder(BorderFactory.createEmptyBorder());
         table.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
+        table.setRowHeight(getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight());
+        
         // use status icons
         table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
 
@@ -107,7 +108,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
         JLabel label = (JLabel) renderer;
         label.setHorizontalAlignment(JLabel.CENTER);
-        setAdjustedFont(table.getTableHeader());
+        table.getTableHeader().setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         // description leading justified (set explicitly as it does not seem to
         // work otherwise)
@@ -187,20 +188,6 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         return data;
     }
    
-    private void setAdjustedFont(Component component) {
-        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
-        FontSizer fontSizer = new FontSizer(controller);
-        if (fontSizeString == null || "".equals(fontSizeString)) {
-            fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
-        } else {
-            try {
-                fontSizer.setAdjustedFont(component, Integer.parseInt(fontSizeString));
-            } catch (NumberFormatException nfe) {
-                fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
-            }
-        }
-    }
-
     class ImageRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 154545L;
 

@@ -11,6 +11,7 @@ import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 import com.google.bitcoin.core.Utils;
 
@@ -132,6 +133,7 @@ public class ShowPreferencesSubmitAction implements Action {
                 
                 if (fontHasChanged) {
                     Item fontItem = data.getItem(MultiBitModel.FONT);
+                    FontSizer.INSTANCE.initialise(controller);
                     if (fontItem != null && fontItem.getNewValue() != null) {
                         UIManager.put("ToolTip.font",(Font)fontItem.getNewValue());   
                     }

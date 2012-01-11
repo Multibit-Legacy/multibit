@@ -139,7 +139,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         explainPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder));
         explainPanel.setOpaque(false);
         
-        setAdjustedFont(titledBorder);
+        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -257,19 +257,6 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         return buttonPanel;
     }
      
-    protected void setAdjustedFont(TitledBorder border) {
-        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
-        FontSizer fontSizer = new FontSizer(controller);
-        if (fontSizeString == null || "".equals(fontSizeString)) {
-            fontSizer.setAdjustedFont(border, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
-        } else {
-            try {
-                fontSizer.setAdjustedFont(border, Integer.parseInt(fontSizeString));
-            } catch (NumberFormatException nfe) {
-                fontSizer.setAdjustedFont(border,  MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
-            }
-        }
-    }
     public Data getData() {
         return data;
     }

@@ -85,8 +85,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
 
         // get the wallets from the model
         String activeWalletFilename = controller.getModel().getActiveWalletFilename();
-        PerWalletModelData activePerModelData = controller.getModel().getPerWalletModelDataByWalletFilename(
-                activeWalletFilename);
+        PerWalletModelData activePerModelData = controller.getModel().getPerWalletModelDataByWalletFilename(activeWalletFilename);
 
         if (walletPanels != null) {
             for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
@@ -105,9 +104,8 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
 
         if (controller.getModel().getActivePerWalletModelData() != null) {
             if (controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                transactionsTitleLabel.setText(controller.getLocaliser()
-                        .getString("showTransactionsAction.mayBeOutOfDate.text"));
-                mainFrame.setUpdatesStoppedTooltip(transactionsTitleLabel);                 
+                transactionsTitleLabel.setText(controller.getLocaliser().getString("showTransactionsAction.mayBeOutOfDate.text"));
+                mainFrame.setUpdatesStoppedTooltip(transactionsTitleLabel);
             } else {
                 transactionsTitleLabel.setText(controller.getLocaliser().getString("showTransactionsAction.text"));
                 transactionsTitleLabel.setToolTipText(null);
@@ -162,8 +160,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         add(headerPanel, constraints);
 
         createWalletListPanel();
-        JScrollPane scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setViewportView(walletListPanel);
         scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
         scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker()));
@@ -208,9 +205,9 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         transactionsTitleLabel = new JLabel();
         transactionsTitleLabel.setHorizontalTextPosition(JLabel.CENTER);
         transactionsTitleLabel.setText(controller.getLocaliser().getString("showTransactionsAction.text"));
+        transactionsTitleLabel.setFont(FontSizer.INSTANCE
+                .getAdjustedDefaultFontWithDelta(2 * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE));
 
-        setAdjustedFont(transactionsTitleLabel);
-        
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -259,7 +256,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         headerPanel.setBorder(BorderFactory.createEmptyBorder(8, 2, 0, 2));
         headerPanel.setOpaque(false);
         headerPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
- 
+
         headerPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 
         OpenWalletAction openWalletAction = new OpenWalletAction(controller, null);
@@ -271,23 +268,6 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         headerPanel.add(createNewWalletButton);
 
         return headerPanel;
-    }
-    
-    private void setAdjustedFont(Component component) {
-        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
-        FontSizer fontSizer = new FontSizer(controller);
-        if (fontSizeString == null || "".equals(fontSizeString)) {
-            fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE + 2
-                    * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
-        } else {
-            try {
-                fontSizer.setAdjustedFont(component, Integer.parseInt(fontSizeString) + 2
-                        * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
-            } catch (NumberFormatException nfe) {
-                fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE + 2
-                        * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE);
-            }
-        }
     }
 
     class WalletMouseListener extends MouseAdapter implements MouseListener {
@@ -306,8 +286,8 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
             if (selectedWalletPanel != null) {
                 if (!selectedWalletPanel.getPerWalletModelData().getWalletFilename()
                         .equals(controller.getModel().getActiveWalletFilename())) {
-                    controller.getModel().setActiveWalletByFilename(
-                            selectedWalletPanel.getPerWalletModelData().getWalletFilename());
+                    controller.getModel()
+                            .setActiveWalletByFilename(selectedWalletPanel.getPerWalletModelData().getWalletFilename());
 
                     controller.fireWalletChanged();
                     controller.fireDataChanged();

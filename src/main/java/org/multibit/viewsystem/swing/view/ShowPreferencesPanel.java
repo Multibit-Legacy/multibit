@@ -7,6 +7,7 @@ import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -28,6 +29,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
+import javax.swing.plaf.metal.MetalComboBoxUI;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
@@ -49,6 +51,11 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
     private static final long serialVersionUID = 191352298245057705L;
+
+    private static final String TYPICAL_LANGUAGE = "Lithuanian";
+    private static final int LANGUAGE_COMBO_WIDTH_DELTA = 20;
+    private static final int LANGUAGE_COMBO_HEIGHT_DELTA = 5;
+    
 
     private static final int FEE_TEXT_FIELD_WIDTH = 100;
     private static final int FEE_TEXT_FIELD_HEIGHT = 30;
@@ -261,7 +268,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         JPanel languagePanel = new JPanel(new GridBagLayout());
         TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString(
                 "showPreferencesPanel.languageTitle"));
-        setAdjustedFont(titledBorder);
+        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
 
         languagePanel.setBorder(border);
@@ -272,12 +279,11 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         ButtonGroup languageUsageGroup = new ButtonGroup();
         useDefaultLocale = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.useDefault"));
         useDefaultLocale.setOpaque(false);
-
-        setAdjustedFont(useDefaultLocale);
+        useDefaultLocale.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         JRadioButton useSpecific = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.useSpecific"));
         useSpecific.setOpaque(false);
-        setAdjustedFont(useSpecific);
+        useSpecific.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         ItemListener itemListener = new ChangeLanguageUsageItemListener();
         useDefaultLocale.addItemListener(itemListener);
@@ -328,11 +334,18 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
             index++;
         }
         languageComboBox = new JComboBox(indexArray);
-        setAdjustedFont(languageComboBox);
-
+        languageComboBox.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        languageComboBox.setUI(new MetalComboBoxUI());
+        languageComboBox.setOpaque(false);
         ComboBoxRenderer renderer = new ComboBoxRenderer();
-        renderer.setPreferredSize(new Dimension(150, 30));
+        
+         
+        FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        Dimension preferredSize = new Dimension(fontMetrics.stringWidth(TYPICAL_LANGUAGE) + LANGUAGE_COMBO_WIDTH_DELTA, fontMetrics.getHeight() + LANGUAGE_COMBO_HEIGHT_DELTA);
+        renderer.setPreferredSize(preferredSize);
+
         languageComboBox.setRenderer(renderer);
+        languageComboBox.setBackground(Color.WHITE);
 
         // get the languageCode value stored in the model
         String userLanguageCode = controller.getModel().getUserPreference(MultiBitModel.USER_LANGUAGE_CODE);
@@ -385,7 +398,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         JPanel feePanel = new JPanel(new GridBagLayout());
         TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString(
                 "showPreferencesPanel.feeTitle"));
-        setAdjustedFont(titledBorder);
+        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
         feePanel.setBorder(border);
 
@@ -444,7 +457,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         JPanel fontChooserPanel = new JPanel(new GridBagLayout());
         TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString(
                 "showPreferencesPanel.fontChooserTitle"));
-        setAdjustedFont(titledBorder);
+        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
         fontChooserPanel.setBorder(border);
 
@@ -531,7 +544,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         JPanel browserIntegrationPanel = new JPanel(new GridBagLayout());
         TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString(
                 "showPreferencesPanel.browserIntegrationTitle"));
-        setAdjustedFont(titledBorder);
+        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
         browserIntegrationPanel.setBorder(border);
 
@@ -553,15 +566,15 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         ButtonGroup browserIntegrationGroup = new ButtonGroup();
         ignoreAll = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.ignoreAll"));
         ignoreAll.setOpaque(false);
-        setAdjustedFont(ignoreAll);
+        ignoreAll.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         fillAutomatically = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.fillAutomatically"));
         fillAutomatically.setOpaque(false);
-        setAdjustedFont(fillAutomatically);
+        fillAutomatically.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         askEveryTime = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.askEveryTime"));
         askEveryTime.setOpaque(false);
-        setAdjustedFont(askEveryTime);
+        askEveryTime.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         browserIntegrationGroup.add(ignoreAll);
         browserIntegrationGroup.add(fillAutomatically);
@@ -704,7 +717,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
             setVerticalAlignment(CENTER);
 
             setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        }
+         }
 
         /*
          * This method finds the image and text corresponding to the selected
@@ -759,34 +772,6 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     public void updateView() {
         // TODO Auto-generated method stub
 
-    }
-
-    private void setAdjustedFont(Component component) {
-        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
-        FontSizer fontSizer = new FontSizer(controller);
-        if (fontSizeString == null || "".equals(fontSizeString)) {
-            fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
-        } else {
-            try {
-                fontSizer.setAdjustedFont(component, Integer.parseInt(fontSizeString));
-            } catch (NumberFormatException nfe) {
-                fontSizer.setAdjustedFont(component, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
-            }
-        }
-    }
-
-    protected void setAdjustedFont(TitledBorder border) {
-        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
-        FontSizer fontSizer = new FontSizer(controller);
-        if (fontSizeString == null || "".equals(fontSizeString)) {
-            fontSizer.setAdjustedFont(border, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
-        } else {
-            try {
-                fontSizer.setAdjustedFont(border, Integer.parseInt(fontSizeString));
-            } catch (NumberFormatException nfe) {
-                fontSizer.setAdjustedFont(border, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
-            }
-        }
     }
 
     public void setSelectedFont(Font selectedFont) {

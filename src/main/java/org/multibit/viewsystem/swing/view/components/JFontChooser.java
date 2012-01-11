@@ -8,6 +8,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
@@ -47,7 +48,6 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
@@ -68,6 +68,10 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
  **/
 public class JFontChooser extends JComponent {
     private static final long serialVersionUID = 7081944796802758452L;
+    
+    private static final int WIDTH_DELTA = 140;
+    private static final int HEIGHT_DELTA = 100;
+    
     // class variables
     /**
      * Return value from <code>showDialog()</code>.
@@ -111,6 +115,7 @@ public class JFontChooser extends JComponent {
     private JTextField sampleText = null;
     
     private MultiBitController controller;
+    private FontMetrics fontMetrics;
 
     /**
      * Constructs a <code>JFontChooser</code> object.
@@ -119,8 +124,15 @@ public class JFontChooser extends JComponent {
         this.controller = controller;
         this.fontSizeStrings = DEFAULT_FONT_SIZE_STRINGS;
 
-        MultiBitLabel testLabel = new MultiBitLabel("", controller);
-        defaultFont = testLabel.getFont();
+        defaultFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
+        
+        fontMetrics = getFontMetrics(defaultFont);
+        
+        int minimumWidth = fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT) + WIDTH_DELTA;
+        int minimumHeight = 12 * fontMetrics.getHeight() + HEIGHT_DELTA;
+        setMinimumSize(new Dimension(minimumWidth, minimumHeight));
+        setPreferredSize(new Dimension(minimumWidth, minimumHeight));
+               
         
         JPanel selectPanel = new JPanel();
         selectPanel.setLayout(new BoxLayout(selectPanel, BoxLayout.X_AXIS));
@@ -130,8 +142,8 @@ public class JFontChooser extends JComponent {
 
         JPanel contentsPanel = new JPanel();
         contentsPanel.setLayout(new GridLayout(2, 1));
-        contentsPanel.add(selectPanel, BorderLayout.NORTH);
-        contentsPanel.add(getSamplePanel(), BorderLayout.CENTER);
+        contentsPanel.add(selectPanel, BorderLayout.CENTER);
+        contentsPanel.add(getSamplePanel(), BorderLayout.SOUTH);
 
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         this.add(contentsPanel);
@@ -653,6 +665,10 @@ public class JFontChooser extends JComponent {
             p.add(scrollPane, BorderLayout.CENTER);
 
             MultiBitLabel label = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontSize"), controller);
+            Dimension requiredSize = new Dimension(fontMetrics.stringWidth(controller.getLocaliser().getString("fontChooser.fontSize")), fontMetrics.getHeight());
+            label.setMinimumSize(requiredSize);
+            label.setMaximumSize(requiredSize);
+            label.setPreferredSize(requiredSize);
             label.setHorizontalAlignment(JLabel.LEFT);
             label.setHorizontalTextPosition(JLabel.LEFT);
             label.setLabelFor(getFontSizeTextField());
@@ -670,7 +686,7 @@ public class JFontChooser extends JComponent {
             Border empty = BorderFactory.createEmptyBorder(5, 10, 10, 10);
             Border border = BorderFactory.createCompoundBorder(titledBorder, empty);
 
-            setAdjustedFont(titledBorder);
+            titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
             samplePanel = new JPanel();
             samplePanel.setLayout(new BorderLayout());
             samplePanel.setBorder(border);
@@ -709,20 +725,5 @@ public class JFontChooser extends JComponent {
             fontStyleNames[i++] = controller.getLocaliser().getString("fontChooser.boldItalic");
         }
         return fontStyleNames;
-    }
-    
-    
-    private void setAdjustedFont(TitledBorder border) {
-        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
-        FontSizer fontSizer = new FontSizer(controller);
-        if (fontSizeString == null || "".equals(fontSizeString)) {
-            fontSizer.setAdjustedFont(border, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);
-        } else {
-            try {
-                fontSizer.setAdjustedFont(border, Integer.parseInt(fontSizeString));
-            } catch (NumberFormatException nfe) {
-                fontSizer.setAdjustedFont(border, MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE);                
-            }
-        }
     }
 }

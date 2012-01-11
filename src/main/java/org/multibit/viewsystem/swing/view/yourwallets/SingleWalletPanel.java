@@ -3,6 +3,7 @@ package org.multibit.viewsystem.swing.view.yourwallets;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -21,6 +22,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 
@@ -30,9 +32,10 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
 
     private static final long serialVersionUID = -7110340338285836548L;
 
-    public static final int MINIMUM_WALLET_WIDTH = 220;
-    public static final int MINIMUM_WALLET_HEIGHT = 90;
-
+    private static final String TYPICAL_DESCRIPTION = "One Quick Brown Fox Description";
+    private static final int WALLET_WIDTH_DELTA = 20;
+    private static final int WALLET_HEIGHT_DELTA = 40;
+    
     private static final Dimension ABOVE_BASELINE_LEADING_CORNER_PADDING = new Dimension(5, 12);
     private static final Dimension BELOW_BASELINE_TRAILING_CORNER_PADDING = new Dimension(9, 12);
 
@@ -58,8 +61,12 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         this.controller = controller;
         this.mainFrame = mainFrame;
         setLayout(new GridBagLayout());
-        setMinimumSize(new Dimension(MINIMUM_WALLET_WIDTH, MINIMUM_WALLET_HEIGHT));
-        setPreferredSize(new Dimension(MINIMUM_WALLET_WIDTH, MINIMUM_WALLET_HEIGHT));
+
+        FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        Dimension preferredSize = new Dimension(fontMetrics.stringWidth(TYPICAL_DESCRIPTION) + WALLET_WIDTH_DELTA, fontMetrics.getHeight() * 3 + WALLET_HEIGHT_DELTA);
+        setMinimumSize(preferredSize);
+        setPreferredSize(preferredSize);
+
         setOpaque(false);
         setFocusable(true);
         setBackground(BACKGROUND_COLOR_NORMAL);
