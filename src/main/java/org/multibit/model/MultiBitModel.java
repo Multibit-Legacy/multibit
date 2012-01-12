@@ -110,11 +110,24 @@ public class MultiBitModel {
     public static final String FONT_STYLE = "fontStyle";
     public static final String FONT_SIZE = "fontSize";
        
+    public static final String PREVIOUS_FONT_NAME = "previousFontName";
+    public static final String PREVIOUS_FONT_STYLE = "previousFontStyle";
+    public static final String PREVIOUS_FONT_SIZE = "previousFontSize";
+
+    // user preferences undo
+    public static final String PREVIOUS_OPEN_URI_SHOW_DIALOG = "previousOpenUriShowDialog";
+    public static final String PREVIOUS_OPEN_URI_USE_URI = "previousOpenUriUseUri";
+    public static final String PREVIOUS_SEND_FEE = "previousSendFee";
+    public static final String PREVIOUS_USER_LANGUAGE_CODE = "previousLanguageCode";
+    public static final String PREVIOUS_UNDO_CHANGES_TEXT = "previousUndoChangesText";
+    public static final String CAN_UNDO_PREFERENCES_CHANGES = "canUndoPreferencesChanges";
+
     // main controller class
     private final MultiBitController controller;
 
     // user preferences
     private Properties userPreferences;
+
     
    
 

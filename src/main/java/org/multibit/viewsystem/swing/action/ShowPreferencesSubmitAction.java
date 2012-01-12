@@ -9,7 +9,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
 
 /**
- * This {@link Action} views the BitCoinJ preferences
+ * This {@link Action} applies changes to the preferences panel
  */
 public class ShowPreferencesSubmitAction extends AbstractAction {
 

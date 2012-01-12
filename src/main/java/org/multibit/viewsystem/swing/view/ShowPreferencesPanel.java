@@ -40,6 +40,7 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ChooseFontAction;
 import org.multibit.viewsystem.swing.action.ShowPreferencesSubmitAction;
+import org.multibit.viewsystem.swing.action.UndoPreferencesChangesSubmitAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
@@ -87,6 +88,11 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     private String originalFontName;
     private String originalFontStyle;
     private String originalFontSize;
+    
+    private String originalShowDialogString;
+    private String originalUseUriString;
+    
+    private MultiBitButton undoChangesButton;
 
     private Data data;
 
@@ -123,14 +129,14 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         originalFee = sendFeeString;
         feeTextField.setText(sendFeeString);
 
-        String showDialogString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
-        String useUriString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_USE_URI);
+        originalShowDialogString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
+        originalUseUriString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_USE_URI);
 
-        if (!(Boolean.FALSE.toString().equalsIgnoreCase(showDialogString))) {
+        if (!(Boolean.FALSE.toString().equalsIgnoreCase(originalShowDialogString))) {
             // missing showDialog or it is set to true
             askEveryTime.setSelected(true);
         } else {
-            if (!(Boolean.FALSE.toString().equalsIgnoreCase(useUriString))) {
+            if (!(Boolean.FALSE.toString().equalsIgnoreCase(originalUseUriString))) {
                 // missing useUri or it is set to true
                 fillAutomatically.setSelected(true);
             } else {
@@ -168,6 +174,26 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         originalFontSize = "" + fontSize;
 
         setSelectedFont(new Font(fontNameString, fontStyle, fontSize));
+        
+        String canUndoPreferencesChanges = controller.getModel().getUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES);
+        if(Boolean.TRUE.toString().equals(canUndoPreferencesChanges)) {
+            undoChangesButton.setEnabled(true);
+            String previousUndoChangesText = controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT);
+            if (previousUndoChangesText != null && !"".equals(previousUndoChangesText)) {
+                undoChangesButton.setText(previousUndoChangesText);
+            }
+            String previousFontName = controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_FONT_NAME);
+
+            if (previousFontName != null && !"".equals(previousFontName)) {
+                undoChangesButton.setFont(new Font(previousFontName, FontSizer.INSTANCE.getAdjustedDefaultFont().getStyle(), FontSizer.INSTANCE.getAdjustedDefaultFont().getSize()));
+            }
+        } else {
+            undoChangesButton.setEnabled(false);
+        }
+        
+        invalidate();
+        validate();
+        repaint();
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
@@ -640,6 +666,11 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
+        UndoPreferencesChangesSubmitAction undoChangesAction = new UndoPreferencesChangesSubmitAction(controller, this);
+        undoChangesButton = new MultiBitButton(undoChangesAction, controller);
+
+        buttonPanel.add(undoChangesButton);
+
         return buttonPanel;
     }
 
@@ -671,6 +702,10 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     }
 
     public Data getData() {
+        Item previousUndoChangesTextItem = new Item(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT);
+        previousUndoChangesTextItem.setOriginalValue(controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.text"));
+        data.addItem(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT, previousUndoChangesTextItem);
+        
         Item languageItem = data.getItem(MultiBitModel.USER_LANGUAGE_CODE);
         if (useDefaultLocale.isSelected()) {
             languageItem.setNewValue(MultiBitModel.USER_LANGUAGE_IS_DEFAULT);
@@ -695,6 +730,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         data.addItem(MultiBitModel.SEND_FEE, feeItem);
 
         Item showDialogItem = new Item(MultiBitModel.OPEN_URI_SHOW_DIALOG);
+        showDialogItem.setOriginalValue(originalShowDialogString);
         showDialogItem.setNewValue((new Boolean((askEveryTime.isSelected()))).toString());
         data.addItem(MultiBitModel.OPEN_URI_SHOW_DIALOG, showDialogItem);
 
@@ -703,9 +739,11 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         if (ignoreAll.isSelected()) {
             useUri = false;
         }
+        useUriItem.setOriginalValue(originalUseUriString);
         useUriItem.setNewValue((new Boolean(useUri)).toString());
         data.addItem(MultiBitModel.OPEN_URI_USE_URI, useUriItem);
 
+        // put in for convenience - not stored in user properties so no original
         Item fontItem = new Item(MultiBitModel.FONT);
         fontItem.setNewValue(selectedFont);
         data.addItem(MultiBitModel.FONT, fontItem);

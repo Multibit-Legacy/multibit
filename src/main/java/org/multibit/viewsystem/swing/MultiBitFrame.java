@@ -8,12 +8,8 @@ import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -43,6 +39,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 
@@ -71,8 +68,8 @@ import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.GradientPanel;
-import org.multibit.viewsystem.swing.view.components.MultiBitLargeButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.view.components.MultiBitLargeButton;
 import org.multibit.viewsystem.swing.view.yourwallets.YourWalletsPanel;
 import org.simplericity.macify.eawt.ApplicationEvent;
 import org.simplericity.macify.eawt.ApplicationListener;
@@ -205,6 +202,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         this.application = application;
 
         FontSizer.INSTANCE.initialise(controller);
+        UIManager.put("ToolTip.font",FontSizer.INSTANCE.getAdjustedDefaultFont());   
 
         setCursor(Cursor.WAIT_CURSOR);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

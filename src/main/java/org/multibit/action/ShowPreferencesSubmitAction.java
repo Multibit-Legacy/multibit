@@ -36,8 +36,14 @@ public class ShowPreferencesSubmitAction implements Action {
             Data data = dataProvider.getData();
 
             if (data != null) {
+                Item previousUndoChangesTextItem = data.getItem(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT);
+                if (previousUndoChangesTextItem != null) {
+                    controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT, (String)previousUndoChangesTextItem.getOriginalValue());                   
+                }
+                
                 Item feeItem = data.getItem(MultiBitModel.SEND_FEE);
                 if (feeItem != null) {
+                    controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_SEND_FEE, (String)feeItem.getOriginalValue());
                     // check fee is set
                     if (feeItem.getNewValue() == null || "".equals(feeItem.getNewValue())) {
                         // fee must be set validation error
@@ -79,6 +85,9 @@ public class ShowPreferencesSubmitAction implements Action {
                 }
 
                 Item languageItem = data.getItem(MultiBitModel.USER_LANGUAGE_CODE);
+                if (languageItem != null) {
+                    controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_USER_LANGUAGE_CODE, (String)languageItem.getOriginalValue());
+                }
                 if (languageItem != null && languageItem.getNewValue() != null
                         && !languageItem.getNewValue().equals(languageItem.getOriginalValue())) {
                     // new language to set on model
@@ -88,12 +97,18 @@ public class ShowPreferencesSubmitAction implements Action {
                 }
 
                 Item openURIDialogItem = data.getItem(MultiBitModel.OPEN_URI_SHOW_DIALOG);
+                if (openURIDialogItem != null) {
+                    controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_OPEN_URI_SHOW_DIALOG, (String) openURIDialogItem.getOriginalValue());
+                }
                 if (openURIDialogItem != null && openURIDialogItem.getNewValue() != null) {
                     controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG,
                             (String) openURIDialogItem.getNewValue());
                 }
 
                 Item openURIUseUriItem = data.getItem(MultiBitModel.OPEN_URI_USE_URI);
+                if (openURIUseUriItem != null) {
+                    controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_OPEN_URI_USE_URI, (String) openURIUseUriItem.getOriginalValue());
+                }
                 if (openURIUseUriItem != null && openURIUseUriItem.getNewValue() != null) {
                     controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI,
                             (String) openURIUseUriItem.getNewValue());
@@ -102,6 +117,9 @@ public class ShowPreferencesSubmitAction implements Action {
                 // font data
                 boolean fontHasChanged = false;
                 Item fontNameItem = data.getItem(MultiBitModel.FONT_NAME);
+                if (fontNameItem != null) {
+                    controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_NAME, (String) fontNameItem.getOriginalValue());                    
+                }
                 if (fontNameItem != null && fontNameItem.getNewValue() != null) {
                     controller.getModel().setUserPreference(MultiBitModel.FONT_NAME,
                             (String) fontNameItem.getNewValue());
@@ -112,6 +130,9 @@ public class ShowPreferencesSubmitAction implements Action {
                 }
 
                 Item fontStyleItem = data.getItem(MultiBitModel.FONT_STYLE);
+                if (fontStyleItem != null) {
+                    controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_STYLE, (String) fontStyleItem.getOriginalValue());                    
+                }
                 if (fontStyleItem != null && fontStyleItem.getNewValue() != null) {
                     controller.getModel().setUserPreference(MultiBitModel.FONT_STYLE,
                             (String) fontStyleItem.getNewValue());
@@ -122,7 +143,11 @@ public class ShowPreferencesSubmitAction implements Action {
                 }
 
                 Item fontSizeItem = data.getItem(MultiBitModel.FONT_SIZE);
-                if (fontSizeItem != null && fontSizeItem.getNewValue() != null) {
+                if (fontSizeItem != null) {
+                    controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_SIZE, (String) fontSizeItem.getOriginalValue());                    
+                }
+                controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_SIZE, (String) controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_FONT_SIZE));
+                    if (fontSizeItem != null && fontSizeItem.getNewValue() != null) {
                     controller.getModel().setUserPreference(MultiBitModel.FONT_SIZE,
                             (String) fontSizeItem.getNewValue());
                     
@@ -131,6 +156,8 @@ public class ShowPreferencesSubmitAction implements Action {
                     }
                 }
                 
+                controller.getModel().setUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES, "true");
+
                 if (fontHasChanged) {
                     Item fontItem = data.getItem(MultiBitModel.FONT);
                     FontSizer.INSTANCE.initialise(controller);
@@ -144,7 +171,7 @@ public class ShowPreferencesSubmitAction implements Action {
             }
         }
 
-        // return to parent view
+        // return to the same view
         controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
 
         if (feeValidationError) {
