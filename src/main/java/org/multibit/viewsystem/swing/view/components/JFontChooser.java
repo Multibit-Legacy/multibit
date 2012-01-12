@@ -158,6 +158,7 @@ public class JFontChooser extends JComponent {
             fontFamilyTextField.addKeyListener(new TextFieldKeyHandlerForListSelectionUpDown(getFontFamilyList()));
             fontFamilyTextField.getDocument().addDocumentListener(new ListSearchTextFieldDocumentHandler(getFontFamilyList()));
             fontFamilyTextField.setFont(defaultFont);
+            fontFamilyTextField.setEditable(false);
         }
         return fontFamilyTextField;
     }
@@ -169,6 +170,7 @@ public class JFontChooser extends JComponent {
             fontStyleTextField.addKeyListener(new TextFieldKeyHandlerForListSelectionUpDown(getFontStyleList()));
             fontStyleTextField.getDocument().addDocumentListener(new ListSearchTextFieldDocumentHandler(getFontStyleList()));
             fontStyleTextField.setFont(defaultFont);
+            fontStyleTextField.setEditable(false);
         }
         return fontStyleTextField;
     }
@@ -180,6 +182,7 @@ public class JFontChooser extends JComponent {
             fontSizeTextField.addKeyListener(new TextFieldKeyHandlerForListSelectionUpDown(getFontSizeList()));
             fontSizeTextField.getDocument().addDocumentListener(new ListSearchTextFieldDocumentHandler(getFontSizeList()));
             fontSizeTextField.setFont(defaultFont);
+            fontSizeTextField.setEditable(false);
         }
         return fontSizeTextField;
     }

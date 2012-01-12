@@ -50,17 +50,23 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
  */
 public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
+    private static final int LANGUAGE_CODE_VERTICAL_INSET = 2;
+
+    private static final int LANGUAGE_CODE_IMAGE_HEIGHT = 20;
+
+    private static final int LANGUAGE_CODE_IMAGE_WIDTH = 26;
+
     private static final long serialVersionUID = 191352298245057705L;
 
-    private static final String TYPICAL_LANGUAGE = "Lithuanian";
-    private static final int LANGUAGE_COMBO_WIDTH_DELTA = 20;
+    private static final String A_LONG_LANGUAGE_NAME = "LithuanianXY";
+    private static final int LANGUAGE_COMBO_WIDTH_DELTA = 40;
     private static final int LANGUAGE_COMBO_HEIGHT_DELTA = 5;
-    
 
-    private static final int FEE_TEXT_FIELD_WIDTH = 100;
     private static final int FEE_TEXT_FIELD_HEIGHT = 30;
+    private static final int FEE_TEXT_FIELD_WIDTH = 200;
 
     private MultiBitController controller;
+    private MultiBitFrame mainFrame;
 
     SortedSet<LanguageData> languageDataSet;
 
@@ -91,6 +97,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
      */
     public ShowPreferencesPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
+        this.mainFrame = mainFrame;
 
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
                 BorderFactory.createMatteBorder(1, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
@@ -335,13 +342,15 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         }
         languageComboBox = new JComboBox(indexArray);
         languageComboBox.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        languageComboBox.setUI(new MetalComboBoxUI());
+        if (mainFrame.getApplication().isMac()) {
+            languageComboBox.setUI(new MetalComboBoxUI());
+        }
         languageComboBox.setOpaque(false);
         ComboBoxRenderer renderer = new ComboBoxRenderer();
-        
-         
+
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        Dimension preferredSize = new Dimension(fontMetrics.stringWidth(TYPICAL_LANGUAGE) + LANGUAGE_COMBO_WIDTH_DELTA, fontMetrics.getHeight() + LANGUAGE_COMBO_HEIGHT_DELTA);
+        Dimension preferredSize = new Dimension(fontMetrics.stringWidth(A_LONG_LANGUAGE_NAME) + LANGUAGE_COMBO_WIDTH_DELTA + LANGUAGE_CODE_IMAGE_WIDTH,
+                fontMetrics.getHeight() + LANGUAGE_COMBO_HEIGHT_DELTA);
         renderer.setPreferredSize(preferredSize);
 
         languageComboBox.setRenderer(renderer);
@@ -475,9 +484,21 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.anchor = GridBagConstraints.LINE_START;
         fontChooserPanel.add(fontNameLabel, constraints);
 
-        fontNameTextLabel = new MultiBitLabel("", controller);
+        JLabel filler1 = new JLabel();
+        filler1.setMinimumSize(new Dimension(20, 10));
+        filler1.setPreferredSize(new Dimension(20, 10));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.5;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        fontChooserPanel.add(filler1, constraints);
+
+        fontNameTextLabel = new MultiBitLabel("", controller);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
         constraints.gridy = 0;
         constraints.weightx = 0.3;
         constraints.weighty = 0.5;
@@ -497,7 +518,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         fontStyleTextLabel = new MultiBitLabel("", controller);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
+        constraints.gridx = 2;
         constraints.gridy = 1;
         constraints.weightx = 0.3;
         constraints.weighty = 0.5;
@@ -517,7 +538,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         fontSizeTextLabel = new MultiBitLabel("", controller);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
+        constraints.gridx = 2;
         constraints.gridy = 2;
         constraints.weightx = 0.3;
         constraints.weighty = 0.5;
@@ -528,12 +549,12 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         ChooseFontAction chooseFontAction = new ChooseFontAction(controller, this, null);
         MultiBitButton fontChooserButton = new MultiBitButton(chooseFontAction, controller);
 
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 3;
-        constraints.weightx = 0.3;
+        constraints.weightx = 1;
         constraints.weighty = 0.5;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         fontChooserPanel.add(fontChooserButton, constraints);
 
@@ -637,14 +658,14 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     }
 
     private ImageIcon createImageIcon(String text) {
-        Font font = new Font("Dialog", Font.PLAIN, 16);
+        Font font = new Font("Dialog", Font.PLAIN, LANGUAGE_CODE_IMAGE_HEIGHT - 2 * LANGUAGE_CODE_VERTICAL_INSET);
 
-        BufferedImage bimg = new BufferedImage(26, 20, BufferedImage.TYPE_INT_RGB);
+        BufferedImage bimg = new BufferedImage(LANGUAGE_CODE_IMAGE_WIDTH, LANGUAGE_CODE_IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = bimg.createGraphics();
 
         g2.setColor(Color.WHITE);
         g2.setFont(font);
-        g2.drawString(text, 3, 16);
+        g2.drawString(text, LANGUAGE_CODE_VERTICAL_INSET + 1, LANGUAGE_CODE_IMAGE_HEIGHT - 2 * LANGUAGE_CODE_VERTICAL_INSET);
 
         return new ImageIcon(bimg);
     }
@@ -717,7 +738,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
             setVerticalAlignment(CENTER);
 
             setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-         }
+        }
 
         /*
          * This method finds the image and text corresponding to the selected

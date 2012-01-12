@@ -86,6 +86,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected static final int QRCODE_WIDTH = 140;
     protected static final int QRCODE_HEIGHT = 140;
 
+    protected static final int TEXTFIELD_VERTICAL_DELTA = 6;
+
     protected MultiBitButton copyQRCodeTextButton;
     protected MultiBitButton pasteSwatchButton;;
 

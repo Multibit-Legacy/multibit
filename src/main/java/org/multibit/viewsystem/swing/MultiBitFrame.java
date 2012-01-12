@@ -13,6 +13,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -257,6 +258,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         fileChangeTimer = new Timer();
         // fires once every minute
         fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), 0, 60000);
+    }
+
+    public GenericApplication getApplication() {
+        return application;
     }
 
     private void sizeAndCenter() {
@@ -606,8 +611,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             // help about action
             ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller,
                     createImageIcon(PREFERENCES_ICON_FILE));
-            viewMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-            viewMenu.add(showPreferencesAction);
+            menuItem = new JMenuItem(showPreferencesAction);
+            menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+            viewMenu.add(menuItem);
         }
 
         if (showMerchantMenu) {
@@ -1099,7 +1105,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         activeWalletComboBox = new JComboBox(indexArray);
         activeWalletComboBox.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        activeWalletComboBox.setUI(new MetalComboBoxUI());
+
+        // override default Mac combo box - it does not size with the font
+        if (application.isMac()) {
+            activeWalletComboBox.setUI(new MetalComboBoxUI());
+        }
         activeWalletComboBox.setBackground(DARK_BACKGROUND_COLOR);
 
         activeWalletComboBox.setOpaque(false);
@@ -1231,7 +1241,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         private JList list;
 
         public ComboBoxRenderer() {
-            setOpaque(false);
+            setOpaque(true);
             setHorizontalAlignment(LEFT);
             setVerticalAlignment(CENTER);
         }
@@ -1288,54 +1298,40 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             return this;
         }
 
-        @Override
-        public void paint(Graphics g) {
-
-            int width = getWidth();
-            int height = getHeight();
-
-            if (!cellHasFocus && !isSelected) {
-                // Create the gradient paint
-                GradientPaint paint = new GradientPaint(0, 0, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR, 0, height,
-                        MultiBitFrame.DARK_BACKGROUND_COLOR, true);
-
-                // we need to cast to Graphics2D for this operation
-                Graphics2D g2d = (Graphics2D) g;
-
-                // save the old paint
-                java.awt.Paint oldPaint = g2d.getPaint();
-
-                // set the paint to use for this operation
-                g2d.setPaint(paint);
-
-                // fill the background using the paint
-                g2d.fillRect(0, 0, width, height);
-
-                // restore the original paint
-                g2d.setPaint(oldPaint);
-            } else {
-                // Create the gradient paint
-                GradientPaint paint = new GradientPaint(0, 0, list.getSelectionBackground(), 0, height,
-                        list.getSelectionBackground(), true);
-
-                // we need to cast to Graphics2D for this operation
-                Graphics2D g2d = (Graphics2D) g;
-
-                // save the old paint
-                java.awt.Paint oldPaint = g2d.getPaint();
-
-                // set the paint to use for this operation
-                g2d.setPaint(paint);
-
-                // fill the background using the paint
-                g2d.fillRect(0, 0, width, height);
-
-                // restore the original paint
-                g2d.setPaint(oldPaint);
-            }
-
-            super.paint(g);
-        }
+        // @Override
+        // public void paint(Graphics g) {
+        // int width = getWidth();
+        // int height = getHeight();
+        //
+        // if (isSelected) {
+        // // solid selection background color
+        // g.setColor(list.getSelectionBackground());
+        // g.fillRect(0, 0, width, height);
+        // } else {
+        // // put gradient paint in background of rendered label
+        // // Create the gradient paint
+        // GradientPaint paint = new GradientPaint(0, 0,
+        // MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR, 0, height,
+        // MultiBitFrame.DARK_BACKGROUND_COLOR, true);
+        //
+        // // we need to cast to Graphics2D for this operation
+        // Graphics2D g2d = (Graphics2D) g;
+        //
+        // // save the old paint
+        // java.awt.Paint oldPaint = g2d.getPaint();
+        //
+        // // set the paint to use for this operation
+        // g2d.setPaint(paint);
+        //
+        // // fill the background using the paint
+        // g2d.fillRect(0, 0, width, height);
+        //
+        // // restore the original paint
+        // g2d.setPaint(oldPaint);
+        // }
+        //
+        // super.paint(g);
+        // }
     }
 
     @Override

@@ -162,7 +162,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
 
         MultiBitLabel addressLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel"), controller);
         addressLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel.tooltip"));
-        addressLabel.setBorder(BorderFactory.createMatteBorder(2, 0, 2, 0, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR));
+        addressLabel.setBorder(BorderFactory.createMatteBorder((int)(TEXTFIELD_VERTICAL_DELTA * 0.5), 0, (int)(TEXTFIELD_VERTICAL_DELTA * 0.5), 0, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR));
         addressLabel.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
@@ -170,7 +170,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.weightx = 1;
         constraints.weighty = 0.15;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
+        constraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
         formPanel.add(addressLabel, constraints);
 
         JLabel filler4 = new JLabel("");
@@ -190,8 +190,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         addressTextArea.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 2, 0, 4, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR),
                 BorderFactory.createMatteBorder(2, 0, 0, 0, Color.WHITE)));
-        addressTextArea.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));
-        addressTextArea.setPreferredSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));
+        addressTextArea.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + TEXTFIELD_VERTICAL_DELTA));
+        addressTextArea.setPreferredSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + TEXTFIELD_VERTICAL_DELTA));
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 3;
@@ -270,9 +270,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
 
         amountTextField = new MultiBitTextField("", 20, controller);
         amountTextField.setHorizontalAlignment(JTextField.TRAILING);
-        amountTextField.setMinimumSize(new Dimension((int)(longFieldWidth * 0.5), getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));
-        amountTextField.setMaximumSize(new Dimension((int)(longFieldWidth * 0.5), getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));        
-        amountTextField.setPreferredSize(new Dimension((int)(longFieldWidth * 0.5), getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));
+        amountTextField.setMinimumSize(new Dimension((int)(longFieldWidth * 0.5), getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + TEXTFIELD_VERTICAL_DELTA));
+        amountTextField.setPreferredSize(new Dimension((int)(longFieldWidth * 0.5), getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + TEXTFIELD_VERTICAL_DELTA));
         
         amountTextField.addKeyListener(new QRCodeKeyListener());
 

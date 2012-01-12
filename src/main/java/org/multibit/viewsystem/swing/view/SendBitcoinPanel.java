@@ -190,9 +190,8 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         int longFieldWidth = fontMetric.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT);
         addressTextField = new MultiBitTextField("", 35, controller);
         addressTextField.setHorizontalAlignment(JTextField.LEADING);
-        addressTextField.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + 2));
-        addressTextField.setPreferredSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + 2));
-        addressTextField.setMaximumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + 2));
+        addressTextField.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + TEXTFIELD_VERTICAL_DELTA));
+        addressTextField.setPreferredSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + TEXTFIELD_VERTICAL_DELTA));
 
         addressTextField.addKeyListener(new QRCodeKeyListener());
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -282,9 +281,8 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
         amountTextField = new MultiBitTextField("", 20, controller);
         amountTextField.setHorizontalAlignment(JTextField.TRAILING);
-        amountTextField.setMinimumSize(new Dimension((int)(longFieldWidth * 0.5), getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));
-        amountTextField.setPreferredSize(new Dimension((int)(longFieldWidth * 0.5), getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));
-        amountTextField.setMaximumSize(new Dimension((int)(longFieldWidth * 0.5), getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));
+        amountTextField.setMinimumSize(new Dimension((int)(longFieldWidth * 0.5), getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + TEXTFIELD_VERTICAL_DELTA));
+        amountTextField.setPreferredSize(new Dimension((int)(longFieldWidth * 0.5), getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + TEXTFIELD_VERTICAL_DELTA));
         amountTextField.addKeyListener(new QRCodeKeyListener());
 
         constraints.fill = GridBagConstraints.NONE;

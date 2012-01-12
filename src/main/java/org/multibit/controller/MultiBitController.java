@@ -1,6 +1,17 @@
 package org.multibit.controller;
 
-import com.google.bitcoin.core.*;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.net.URI;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EmptyStackException;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.Stack;
+
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Localiser;
 import org.multibit.action.ExitAction;
@@ -8,21 +19,28 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
-import org.multibit.platform.listener.*;
+import org.multibit.platform.listener.GenericAboutEvent;
+import org.multibit.platform.listener.GenericAboutEventListener;
+import org.multibit.platform.listener.GenericOpenURIEvent;
+import org.multibit.platform.listener.GenericOpenURIEventListener;
+import org.multibit.platform.listener.GenericPreferencesEvent;
+import org.multibit.platform.listener.GenericPreferencesEventListener;
+import org.multibit.platform.listener.GenericQuitEvent;
+import org.multibit.platform.listener.GenericQuitEventListener;
+import org.multibit.platform.listener.GenericQuitResponse;
 import org.multibit.qrcode.BitcoinURI;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
-import org.multibit.viewsystem.swing.view.AbstractTradePanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.net.URI;
-import java.net.URLDecoder;
-import java.util.*;
+import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.Block;
+import com.google.bitcoin.core.Peer;
+import com.google.bitcoin.core.PeerEventListener;
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.Wallet;
 
 /**
  * the MVC controller for Multibit - this is loosely based on the Apache Struts
