@@ -1,10 +1,53 @@
 package org.multibit.viewsystem.swing.view;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.ProtocolException;
-import com.google.bitcoin.core.Transaction;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.RenderingHints;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.TransferHandler;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.*;
+import org.multibit.model.AddressBookData;
+import org.multibit.model.Data;
+import org.multibit.model.DataProvider;
+import org.multibit.model.Item;
+import org.multibit.model.MultiBitModel;
+import org.multibit.model.PerWalletModelData;
+import org.multibit.model.WalletInfo;
 import org.multibit.qrcode.BitcoinURI;
 import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.qrcode.SwatchGenerator;
@@ -23,20 +66,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.bitcoin.core.Address;
 
 /**
  * Abstract parent class for SendBitcoinPanel and ReceiveBitcoinPanel
@@ -757,11 +787,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
             return false;
         } else {
-            if (decodedString.startsWith("btctx:")) {
-                processTx(decodedString);
-                return true;
-            }
-
             // decode the string to an AddressBookData
             BitcoinURI bitcoinURI = new BitcoinURI(controller, decodedString);
 
@@ -942,52 +967,4 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         g2.dispose();
         return bufferedImage;
     }
-
-    // Transaction test code
-
-    private void processTx(String txString) {
-        // strip off btctx: prefix
-        txString = txString.substring("btctx:".length());
-        sun.misc.BASE64Decoder decoder = new sun.misc.BASE64Decoder();
-        ObjectInputStream inputStream = null;
-        try {
-            byte[] txBytes = decoder.decodeBuffer(txString);
-            System.out.println("AbstractTradePanel#decoded " + (txBytes == null ? 0 : txBytes.length) + " bytes.\n");
-            for (int i = 0; i < txBytes.length; i++) {
-                String hexString = Integer.toHexString(txBytes[i]);
-                if (hexString.length() > 2) {
-                    hexString = hexString.substring(hexString.length() - 2);
-                }
-                if (hexString.length() < 2) {
-                    hexString = '0' + hexString;
-                }
-                System.out.print(hexString + " ");
-                if (i % 16 == 15) {
-                    System.out.print("\n");
-                }
-            }
-            System.out.println("\n");
-            final Transaction transaction = new Transaction(controller.getMultiBitService().getNetworkParameters(), txBytes);
-            System.out.println("AbstractTradePanel#created transaction " + transaction);
-
-            boolean wasBroadcasted = controller.getMultiBitService().getPeerGroup().broadcastTransaction(transaction);
-            System.out.println("AbstractTradePanel#result of broadcastTransaction was " + wasBroadcasted);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
 }
