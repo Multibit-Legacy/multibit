@@ -114,11 +114,29 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
             transactionsTitleLabel.revalidate();
             transactionsTitleLabel.repaint();
         }
-
+        
+        String grabFocus = controller.getModel().getUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET);
+        if (Boolean.TRUE.toString().equals(grabFocus)) {
+            this.grabFocusByWalletFilename(activeWalletFilename);
+        }
+        controller.getModel().setUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "false");
         invalidate();
         revalidate();
         repaint();
 
+    }
+    
+    public void grabFocusByWalletFilename(String walletFilename) {
+        if (walletPanels != null) {
+            for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
+                if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename() != null) {
+                    if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename()
+                            .equals(walletFilename)) {
+                        loopSingleWalletPanel.requestWalletDescriptionFocus();
+                    } 
+                }
+            }
+        }
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {

@@ -202,7 +202,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         this.application = application;
 
         FontSizer.INSTANCE.initialise(controller);
-        UIManager.put("ToolTip.font",FontSizer.INSTANCE.getAdjustedDefaultFont());   
+        UIManager.put("ToolTip.font", FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         setCursor(Cursor.WAIT_CURSOR);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -216,6 +216,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // TODO Examine how this fits in with the controller onQuit() event
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent arg0) {
+                thisFrame.setCursor(Cursor.WAIT_CURSOR);
                 org.multibit.action.ExitAction exitAction = new org.multibit.action.ExitAction(finalController);
                 exitAction.execute(null);
             }
@@ -534,7 +535,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             // non Macs have an Exit Menu item
             fileMenu.addSeparator();
 
-            menuItem = new JMenuItem(new ExitAction(controller));
+            menuItem = new JMenuItem(new ExitAction(controller, this));
             menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
             fileMenu.add(menuItem);
         }
@@ -1203,7 +1204,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     @Deprecated
     public void handleQuit(ApplicationEvent event) {
-        ExitAction exitAction = new ExitAction(controller);
+        ExitAction exitAction = new ExitAction(controller, this);
         exitAction.actionPerformed(null);
     }
 

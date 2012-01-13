@@ -63,6 +63,7 @@ public class CreateNewWalletSubmitAction implements Action {
                             if (perWalletModelData != null) {
                                 controller.getModel().setActiveWalletByFilename(perWalletModelData.getWalletFilename());
                                 controller.fireNewWalletCreated();
+                                controller.getModel().setUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "true");
                             }
                         } else {
                             // create a new wallet
@@ -80,6 +81,9 @@ public class CreateNewWalletSubmitAction implements Action {
                             // start using the new file as the wallet
                             controller.addWalletFromFilename(newWalletFile.getAbsolutePath());
                             controller.getModel().setActiveWalletByFilename(newWalletFilename);
+
+                            controller.getModel().setUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "true");
+
                             controller.fireNewWalletCreated();
                         }
                     } catch (IOException e) {

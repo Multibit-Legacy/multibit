@@ -179,7 +179,6 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
                 walletDescriptionTextField.setBorder(walletDescriptionTextFieldBorder);
                 walletDescriptionTextField.setSelectedTextColor(MultiBitFrame.SELECTION_FOREGROUND_COLOR);
                 walletDescriptionTextField.setSelectionColor(MultiBitFrame.SELECTION_BACKGROUND_COLOR);
-                walletDescriptionTextField.requestFocusInWindow();
             } else {
                 walletDescriptionTextField.setEditable(false);
                 walletDescriptionTextField.setBorder(BorderFactory.createEmptyBorder(5, 7, 5, 5));
@@ -197,6 +196,10 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
             perWalletModelData.setWalletDescription(text);
             mainFrame.setActiveWalletTooltip(new File(perWalletModelData.getWalletFilename()), text);
         }
+    }
+    
+    public void requestWalletDescriptionFocus() {
+        walletDescriptionTextField.requestFocusInWindow();
     }
 
     public PerWalletModelData getPerWalletModelData() {

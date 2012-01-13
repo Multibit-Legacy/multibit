@@ -43,6 +43,7 @@ public class MultiBitModel {
     public static final String WALLET_FILENAME_PREFIX = "walletFilename.";
     public static final String WALLET_DESCRIPTION_PREFIX = "walletDescription.";
     public static final String NUMBER_OF_WALLETS = "numberOfWallets";
+    public static final String GRAB_FOCUS_FOR_ACTIVE_WALLET = "grabFocusForActiveWallet";
 
     // send bitcoin and send bitcoin confirm
     public static final String SEND_ADDRESS = "sendAddress";
