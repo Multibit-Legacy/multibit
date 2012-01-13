@@ -1346,4 +1346,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         recreateAllViews(true);
     }
+
+    public void bringToFront() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                toFront();
+                repaint();
+            }
+        });
+    }
 }

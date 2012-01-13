@@ -175,7 +175,7 @@ public class ShowPreferencesSubmitAction implements Action {
         controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
 
         if (feeValidationError) {
-            controller.updateDownloadStatus(updateStatusText);
+            controller.updateStatusLabel(updateStatusText);
         }
     }
 }

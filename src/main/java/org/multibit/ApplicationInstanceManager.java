@@ -29,10 +29,14 @@ public class ApplicationInstanceManager {
 
     /**
      * Multibit message end - must end with newline (nonsense text to make it
-     * unlikely it appears in a URI
+     * unlikely it appears in a URI)
      */
     public static final String MESSAGE_END = "\n$$X9Q3J7MessageEnd$$\n";
 
+    private static Thread instanceListenerThread;
+    
+    private static boolean shutdownSocket = false;
+    
     /**
      * Registers this instance of the application. Passing in the rawURI that
      * was passed in on the command line
@@ -51,15 +55,16 @@ public class ApplicationInstanceManager {
             final ServerSocket socket = new ServerSocket(MULTIBIT_NETWORK_SOCKET, 10, InetAddress.getByAddress(new byte[] { 127, 0,
                     0, 1 }));
             log.debug("Listening for application instances on socket " + MULTIBIT_NETWORK_SOCKET);
-            Thread instanceListenerThread = new Thread(new Runnable() {
+            instanceListenerThread = new Thread(new Runnable() {
                 public void run() {
                     boolean socketClosed = false;
-                    while (!socketClosed) {
+                    Socket client = null;
+                    while (!socketClosed && !shutdownSocket) {
                         if (socket.isClosed()) {
                             socketClosed = true;
                         } else {
                             try {
-                                Socket client = socket.accept();
+                                client = socket.accept();
                                 BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                                 String messageStart = in.readLine();
                                 if (MESSAGE_START.trim().equals(messageStart.trim())) {
@@ -96,6 +101,23 @@ public class ApplicationInstanceManager {
                             } catch (IOException e) {
                                 socketClosed = true;
                             }
+                        }
+                    }
+                    // exited while due to shutdown request - shutdown socket
+                    if (client != null) {
+                        try {
+                            client.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }    
+                    
+                    if (socket != null) {
+                        try {
+                            log.debug("Shutting down socket.");
+                            socket.close();
+                        } catch (IOException e) {
+                             e.printStackTrace();
                         }
                     }
                 }
@@ -139,5 +161,11 @@ public class ApplicationInstanceManager {
         if (subListener != null) {
             subListener.newInstanceCreated(rawURI);
         }
+    }
+    
+    public static void shutdownSocket() {
+        log.debug("Making request to shut down socket ...");
+
+        shutdownSocket = true;
     }
 }

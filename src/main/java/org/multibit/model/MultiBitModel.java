@@ -59,6 +59,7 @@ public class MultiBitModel {
     public static final String OPEN_URI_ADDRESS = "openUriAddress";
     public static final String OPEN_URI_LABEL = "openUriLabel";
     public static final String OPEN_URI_AMOUNT = "openUriAmount";
+    public static final String BRING_TO_FRONT = "bringToFront";
 
     // default is min fee of 0.0005 BTC
     public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("10000");

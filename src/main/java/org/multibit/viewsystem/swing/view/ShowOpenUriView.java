@@ -50,6 +50,11 @@ public class ShowOpenUriView extends MultiBitDialog implements View, DataProvide
         this.controller = controller;
         this.mainFrame = mainFrame;
 
+        ImageIcon imageIcon = createImageIcon(MultiBitFrame.MULTIBIT_ICON_FILE);
+        if (imageIcon != null) {
+            setIconImage(imageIcon.getImage());
+        }
+    
         initUI();
         
         cancelButton.requestFocusInWindow();
@@ -220,11 +225,24 @@ public class ShowOpenUriView extends MultiBitDialog implements View, DataProvide
             rememberCheckBox.setSelected(true);
         }
         setVisible(true);
+        
+        // bring this dialog to the front
+        bringToFront();
     }
 
     @Override
     public void updateView() {
         // TODO Auto-generated method stub
         
+    }
+    
+    private void bringToFront() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                toFront();
+                repaint();
+            }
+        });
     }
 }

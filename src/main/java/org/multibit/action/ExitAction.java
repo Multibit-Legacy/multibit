@@ -2,6 +2,7 @@ package org.multibit.action;
 
 import java.util.List;
 
+import org.multibit.ApplicationInstanceManager;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
@@ -52,6 +53,8 @@ public class ExitAction implements Action {
             controller.getMultiBitService().getPeerGroup().stop();
         }
 
+        ApplicationInstanceManager.shutdownSocket();
+        
         System.exit(0);
     }
 }

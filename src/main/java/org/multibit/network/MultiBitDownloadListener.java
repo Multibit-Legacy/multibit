@@ -64,7 +64,7 @@ public class MultiBitDownloadListener extends DownloadListener {
                             (int) pct,
                             DateFormat.getDateInstance(DateFormat.MEDIUM,
                                     controller.getLocaliser().getLocale()).format(date) });
-            controller.updateDownloadStatus(downloadStatusText);
+            controller.updateStatusLabel(downloadStatusText);
             controller.fireBlockDownloaded();
         }
     }
@@ -87,7 +87,7 @@ public class MultiBitDownloadListener extends DownloadListener {
                 startDownloadText = controller.getLocaliser().getString(
                         "multiBitDownloadListener.startDownloadTextLong", new Object[] { blocks });
             }
-            controller.updateDownloadStatus(startDownloadText);
+            controller.updateStatusLabel(startDownloadText);
             controller.fireBlockDownloaded();
         }
     }
@@ -98,7 +98,7 @@ public class MultiBitDownloadListener extends DownloadListener {
     protected void doneDownload() {
         String downloadStatusText = controller.getLocaliser().getString(
                 "multiBitDownloadListener.doneDownloadText");
-        controller.updateDownloadStatus(downloadStatusText);
+        controller.updateStatusLabel(downloadStatusText);
         controller.fireBlockDownloaded();
     }
 }

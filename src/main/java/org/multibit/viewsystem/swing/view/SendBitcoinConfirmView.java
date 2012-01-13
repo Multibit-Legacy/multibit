@@ -67,6 +67,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         if (imageIcon != null) {
             setIconImage(imageIcon.getImage());
         }
+        
         initUI();
         
         cancelButton.requestFocusInWindow();

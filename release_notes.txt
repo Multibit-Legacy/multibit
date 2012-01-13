@@ -3,7 +3,12 @@ MultiBit release notes.
 Version 0.3.0Beta1
 Enhancements
 +  Bitcoin protocol handler registered and calls dealt with.
-+  Transaction fee field width increased
++  Can now specify font for application
+
+Bug fixes
++  Issue 4 - Can now press enter to navigate out of wallet description
++  Transaction fee field width fixed for Linux
+
 
 02 Jan 2012.   Version 0.2.1
 Enhancements

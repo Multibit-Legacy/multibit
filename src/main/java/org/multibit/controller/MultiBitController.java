@@ -547,11 +547,11 @@ public class MultiBitController implements
     /**
      * method called by downloadListener to update download status
      *
-     * @param downloadStatus The download status string
+     * @param newStatusText The download status string
      */
-    public void updateDownloadStatus(String downloadStatus) {
+    public void updateStatusLabel(String newStatusText) {
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.updateStatusLabel(downloadStatus);
+            viewSystem.updateStatusLabel(newStatusText);
         }
     }
 
@@ -658,10 +658,13 @@ public class MultiBitController implements
         if(Boolean.FALSE.toString().equalsIgnoreCase(useUriText) && Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
             // ignore open URI request
             log.debug("Bitcoin URI ignored because useUriText = '" + useUriText + "', showOpenUriDialogText = '" + showOpenUriDialogText + "'");
+            setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
+            updateStatusLabel(localiser.getString("showOpenUriView.paymentRequestIgnored"));
             return;
         }
         if (rawBitcoinURI == null) {
             log.debug("No Bitcoin URI found to handle");
+            setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
             return;
         }
         // Process the URI
@@ -691,6 +694,7 @@ public class MultiBitController implements
                 getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "true");
                 log.debug("Routing straight to send view for address = " + address);
                 
+                getModel().setUserPreference(MultiBitModel.BRING_TO_FRONT, "true");
                 setActionForwardToSibling(ActionForward.FORWARD_TO_SEND_BITCOIN);
                 return;
             } else {

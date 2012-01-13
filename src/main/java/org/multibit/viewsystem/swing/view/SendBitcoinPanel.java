@@ -340,15 +340,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
             sendButton.requestFocusInWindow();
 
-            java.awt.EventQueue.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    if (mainFrame != null) {
-                        mainFrame.toFront();
-                        mainFrame.repaint();
-                    }
-                }
-            });
+            mainFrame.bringToFront();
         }
     }
 
@@ -356,11 +348,18 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         addressTextField.setText(addressBookData.getAddress());
         addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRow, false);
     }
-
+    
     @Override
     public void displayView() {
         super.displayView();
         updateView();
+        
+        String bringToFront = controller.getModel().getUserPreference(MultiBitModel.BRING_TO_FRONT);
+        if (Boolean.TRUE.toString().equals(bringToFront)) {
+            controller.getModel().setUserPreference(MultiBitModel.BRING_TO_FRONT, "false");
+            mainFrame.bringToFront();
+        }
+
     }
 
     @Override
