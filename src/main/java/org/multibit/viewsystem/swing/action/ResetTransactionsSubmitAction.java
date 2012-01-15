@@ -27,7 +27,7 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
         this.dataProvider = dataProvider;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("resetTansactionsSubmitAction.tooltip"));
+        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("resetTransactionsSubmitAction.tooltip"));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("resetTransactionsSubmitAction.mnemonicKey"));
     }
 

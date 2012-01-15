@@ -1,6 +1,6 @@
 MultiBit release notes.
 
-Version 0.3.0Beta1
+15 Jan 2012    Version 0.3.0Beta1
 Enhancements
 +  Bitcoin protocol handler registered and calls dealt with.
 +  Can now specify font for application
