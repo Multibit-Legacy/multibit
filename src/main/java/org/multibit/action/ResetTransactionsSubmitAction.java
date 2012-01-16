@@ -135,8 +135,6 @@ public class ResetTransactionsSubmitAction implements Action {
 
             }
 
-            // navigate back to the reset transactions page, telling user to
-            // restart MultiBit
             controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
         }
     }
