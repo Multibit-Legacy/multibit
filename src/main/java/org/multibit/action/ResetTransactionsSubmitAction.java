@@ -106,24 +106,20 @@ public class ResetTransactionsSubmitAction implements Action {
             }
 
             if (!blockNavigationError) {
-                // shut down the PeerGroup and restart it again
-                // this is in case it is already downloading the up to date blockchain
-//                if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
-//                    controller.getMultiBitService().getPeerGroup().stop();
-//                    controller.getMultiBitService().getPeerGroup().start();
-//                }
-
                 // remove the transactions from the wallet
                 activePerWalletModelData.getWallet().removeAllTransactions();
                 
                 // save the wallet without the transactions
                 controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
-
-                // set the block chain head to the block just before the
-                // earliest transaction in the wallet
                 try {
+
+                    // set the block chain head to the block just before the
+                    // earliest transaction in the wallet
                     blockChain.setChainHead(storedBlock);
 
+                    // clear any cached data in the BlockStore
+                    controller.getMultiBitService().clearBlockStoreCache();
+                    
                     // start thread to redownload the block chain
                     Thread workerThread = new Thread(new Runnable() {
                         @Override
@@ -134,7 +130,6 @@ public class ResetTransactionsSubmitAction implements Action {
                     workerThread.start();
 
                 } catch (BlockStoreException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
 

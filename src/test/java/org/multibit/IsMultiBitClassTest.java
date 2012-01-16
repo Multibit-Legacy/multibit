@@ -16,18 +16,19 @@ import org.junit.Test;
  * 
  */
 public class IsMultiBitClassTest extends TestCase {
-    private static final String GOOGLE_PREFIX = "com.google.bitcoin.core.";
+    private static final String GOOGLE_PREFIX = "com.google.bitcoin.";
 
     @Test
     public void testIsMultiBitClass() throws ClassNotFoundException {
-        checkClass("BlockChain");
-        checkClass("Peer");
-        checkClass("PeerGroup");
-        checkClass("Sha256Hash");
-        checkClass("Transaction");
-        checkClass("TransactionInput");
-        checkClass("Wallet");
-        checkClass("WalletEventListener");
+        checkClass("core.BlockChain");
+        checkClass("store.BoundedOverheadBlockStore");
+        checkClass("core.Peer");
+        checkClass("core.PeerGroup");
+        checkClass("core.Sha256Hash");
+        checkClass("core.Transaction");
+        checkClass("core.TransactionInput");
+        checkClass("core.Wallet");
+        checkClass("core.WalletEventListener");
     }
 
     private void checkClass(String className) throws ClassNotFoundException {

@@ -69,7 +69,7 @@ public class MultiBitService {
 
     private BlockChain blockChain;
 
-    private BlockStore blockStore;
+    private BoundedOverheadBlockStore blockStore;
     
     private boolean useTestNet;
 
@@ -327,5 +327,9 @@ public class MultiBitService {
 
     public BlockStore getBlockStore() {
         return blockStore;
+    }
+    
+    public void clearBlockStoreCache() {
+        blockStore.clearCaches();
     }
 }

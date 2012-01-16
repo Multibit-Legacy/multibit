@@ -45,11 +45,11 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     private long version;
     private ArrayList<TransactionInput> inputs;
     //a cached copy to prevent constantly rewrapping
-//    private transient List<TransactionInput> immutableInputs;
+    //private transient List<TransactionInput> immutableInputs;
 
     private ArrayList<TransactionOutput> outputs;
     //a cached copy to prevent constantly rewrapping
-//    private transient List<TransactionOutput> immutableOutputs;
+    //private transient List<TransactionOutput> immutableOutputs;
 
     private long lockTime;
 

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.multibit</groupId>
   <artifactId>multibit</artifactId>
-  <version>0.3.0-beta1</version>
+  <version>0.3.0-beta2</version>
   <name>MultiBit</name>
   <description>A Java swing client for bitcoin</description>
   <url>http://www.multibit.org</url>
@@ -110,13 +110,13 @@
                   <outputDirectory>${basedir}/target/bitcoinj</outputDirectory>
                   <includes>**/*.*</includes>
                   <!-- excludes classes that are duplicated in multibit -->
-                  <excludes>**/BlockChain.class, **/Peer.class, **/Peer$*.class,**/PeerGroup*.class,
+                  <excludes>**/BlockChain.class, **/BoundedOverheadBlockStore.class,  **/BoundedOverheadBlockStore$*.class,
+                    **/Peer.class, **/Peer$*.class,**/PeerGroup*.class,
                     **/Sha256Hash.class,
                     **/Transaction.class, **/Transaction$*.class,
                     **/TransactionInput.class, **/TransactionInput$*.class,
                     **/Wallet.class, **/Wallet$*.class,
-                    **/WalletEventListener.class,
-                    **/DNSDiscovery.class
+                    **/WalletEventListener.class
                   </excludes>
                 </artifactItem>
               </artifactItems>

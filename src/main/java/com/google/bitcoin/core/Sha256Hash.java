@@ -42,13 +42,17 @@ public class Sha256Hash implements Serializable, IsMultiBitClass {
         this.bytes = bytes;
     }
 
-    /** Creates a Sha256Hash by decoding the given hex string. It must be 64 characters long. */
+    /**
+     * Creates a Sha256Hash by decoding the given hex string. It must be 64 characters long.
+     */
     public Sha256Hash(String string) {
         assert string.length() == 64;
         this.bytes = Hex.decode(string);
     }
 
-    /** Calculates the (one-time) hash of contents and returns it as a new wrapped hash. */
+    /**
+     * Calculates the (one-time) hash of contents and returns it as a new wrapped hash.
+     */
     public static Sha256Hash create(byte[] contents) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -58,11 +62,13 @@ public class Sha256Hash implements Serializable, IsMultiBitClass {
         }
     }
 
-    /** Returns true if the hashes are equal. */
+    /**
+     * Returns true if the hashes are equal.
+     */
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof Sha256Hash)) return false;
-        return Arrays.equals(bytes, ((Sha256Hash)other).bytes);
+        return Arrays.equals(bytes, ((Sha256Hash) other).bytes);
     }
 
     /**
@@ -80,7 +86,9 @@ public class Sha256Hash implements Serializable, IsMultiBitClass {
         return Utils.bytesToHexString(bytes);
     }
 
-    /** Returns the bytes interpreted as a positive integer. */
+    /**
+     * Returns the bytes interpreted as a positive integer.
+     */
     public BigInteger toBigInteger() {
         return new BigInteger(1, bytes);
     }
