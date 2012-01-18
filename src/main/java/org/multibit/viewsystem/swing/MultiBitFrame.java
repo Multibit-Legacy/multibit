@@ -474,6 +474,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // Create the menu bar
         JMenuBar menuBar = new JMenuBar();
 
+        ComponentOrientation componentOrientation = ComponentOrientation.getOrientation(controller.getLocaliser().getLocale());
+        
         // Create the toolBar
         JPanel toolBarPanel = new JPanel();
         toolBarPanel.setOpaque(false);
@@ -483,6 +485,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // Build the File menu.
         JMenu fileMenu = new JMenu(localiser.getString("multiBitFrame.fileMenuText"));
         fileMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        fileMenu.setComponentOrientation(componentOrientation);
 
         fileMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.fileMenuMnemonic"));
         menuBar.add(fileMenu);
@@ -490,12 +493,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // Build the Trade menu.
         JMenu tradeMenu = new JMenu(localiser.getString("multiBitFrame.tradeMenuText"));
         tradeMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        tradeMenu.setComponentOrientation(componentOrientation);
         tradeMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.tradeMenuMnemonic"));
         menuBar.add(tradeMenu);
 
         // Build the View menu.
         JMenu viewMenu = new JMenu(localiser.getString("multiBitFrame.viewMenuText"));
         viewMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        viewMenu.setComponentOrientation(componentOrientation);
         viewMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.viewMenuMnemonic"));
         menuBar.add(viewMenu);
 
@@ -507,6 +512,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (showMerchantMenu) {
             merchantMenu = new JMenu(localiser.getString("multiBitFrame.merchantMenuText"));
             merchantMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+            merchantMenu.setComponentOrientation(componentOrientation);
             merchantMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.merchantMenuMnemonic"));
             menuBar.add(merchantMenu);
         }
@@ -514,6 +520,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // Build the Help menu.
         JMenu helpMenu = new JMenu(localiser.getString("multiBitFrame.helpMenuText"));
         helpMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        helpMenu.setComponentOrientation(componentOrientation);
         helpMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.helpMenuMnemonic"));
         menuBar.add(helpMenu);
 
@@ -521,6 +528,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         OpenWalletAction openWalletAction = new OpenWalletAction(controller, createImageIcon(OPEN_WALLET_ICON_FILE));
         JMenuItem menuItem = new JMenuItem(openWalletAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
         fileMenu.add(menuItem);
 
         // create new wallet action
@@ -528,6 +536,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 this);
         menuItem = new JMenuItem(createNewWalletAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
         fileMenu.add(menuItem);
 
         // exit action
@@ -537,6 +546,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
             menuItem = new JMenuItem(new ExitAction(controller, this));
             menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+            menuItem.setComponentOrientation(componentOrientation);
             fileMenu.add(menuItem);
         }
 
@@ -545,6 +555,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 createImageIcon(HELP_CONTENTS_ICON_FILE));
         menuItem = new JMenuItem(showHelpContentsAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
         helpMenu.add(menuItem);
 
         if (!application.isMac()) {
@@ -553,6 +564,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             HelpAboutAction helpAboutAction = new HelpAboutAction(controller, createImageIcon(MULTIBIT_SMALL_ICON_FILE), this);
             menuItem = new JMenuItem(helpAboutAction);
             menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+            menuItem.setComponentOrientation(componentOrientation);
             helpMenu.add(menuItem);
         }
 
@@ -564,6 +576,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         YourWalletsAction myWalletsAction = new YourWalletsAction(controller, createImageIcon(YOUR_WALLETS_ICON_FILE));
         menuItem = new JMenuItem(myWalletsAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
         viewMenu.add(menuItem);
 
         yourWalletsButton = new MultiBitLargeButton(myWalletsAction, controller);
@@ -585,6 +598,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 createImageIcon(RECEIVE_BITCOIN_ICON_FILE), this);
         menuItem = new JMenuItem(receiveBitcoinAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
         tradeMenu.add(menuItem);
         receiveBitcoinButton = new MultiBitLargeButton(receiveBitcoinAction, controller);
 
@@ -594,6 +608,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         SendBitcoinAction sendBitcoinAction = new SendBitcoinAction(controller, createImageIcon(SEND_BITCOIN_ICON_FILE), this);
         menuItem = new JMenuItem(sendBitcoinAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
         tradeMenu.add(menuItem);
 
         sendBitcoinPanel = new JPanel(new BorderLayout());
@@ -612,6 +627,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     createImageIcon(PREFERENCES_ICON_FILE));
             menuItem = new JMenuItem(showPreferencesAction);
             menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+            menuItem.setComponentOrientation(componentOrientation);
             viewMenu.add(menuItem);
         }
 
@@ -620,6 +636,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             ShowCreateBulkAddressesAction createBulkAddressesAction = new ShowCreateBulkAddressesAction(controller, null);
             menuItem = new JMenuItem(createBulkAddressesAction);
             menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+            menuItem.setComponentOrientation(componentOrientation);
             merchantMenu.add(menuItem);
         }
 
