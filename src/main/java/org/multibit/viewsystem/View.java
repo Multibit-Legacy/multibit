@@ -24,8 +24,8 @@ public interface View {
     public static final int CREATE_BULK_ADDRESSES_VIEW = 12;
     public static final int RESET_TRANSACTIONS_VIEW = 13;
     public static final int SHOW_OPEN_URI_DIALOG_VIEW = 14;
-    public static final int SHOW_PRIVATE_KEY_EXPORT_VIEW = 15;
-    public static final int SHOW_PRIVATE_KEY_IMPORT_VIEW = 16;
+    public static final int SHOW_IMPORT_PRIVATE_KEYS_VIEW = 15;
+    public static final int SHOW_EXPORT_PRIVATE_KEYS_VIEW = 16;
  
     /**
      * display the view (including any screen drawing/ construction

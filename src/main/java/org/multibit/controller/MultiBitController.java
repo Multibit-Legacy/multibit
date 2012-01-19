@@ -318,15 +318,15 @@ public class MultiBitController implements
                 break;
             }
 
-            case FORWARD_TO_SHOW_PRIVATE_KEY_EXPORT_VIEW: {
-                // show the private key export view
-                nextView = View.SHOW_PRIVATE_KEY_EXPORT_VIEW;
+            case FORWARD_TO_SHOW_IMPORT_PRIVATE_KEYS_VIEW: {
+                // show the private key import view
+                nextView = View.SHOW_IMPORT_PRIVATE_KEYS_VIEW;
                 break;
             }
 
-            case FORWARD_TO_SHOW_PRIVATE_KEY_IMPORT_VIEW: {
-                // show the private key import view
-                nextView = View.SHOW_PRIVATE_KEY_IMPORT_VIEW;
+            case FORWARD_TO_SHOW_EXPORT_PRIVATE_KEYS_VIEW: {
+                // show the private key export view
+                nextView = View.SHOW_EXPORT_PRIVATE_KEYS_VIEW;
                 break;
             }
 

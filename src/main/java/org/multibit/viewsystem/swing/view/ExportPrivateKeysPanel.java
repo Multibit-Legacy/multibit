@@ -89,7 +89,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
 
         MultiBitLabel titleLabel = new MultiBitLabel("", controller);
         titleLabel.setHorizontalTextPosition(JLabel.LEFT);
-        titleLabel.setText(controller.getLocaliser().getString("resetTransactionsPanel.title"));
+        titleLabel.setText(controller.getLocaliser().getString("showExportPrivateKeysAction.text"));
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;

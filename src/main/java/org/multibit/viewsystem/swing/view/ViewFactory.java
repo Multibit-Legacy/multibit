@@ -6,6 +6,7 @@ import java.util.Map;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.action.ShowImportPrivateKeysAction;
 import org.multibit.viewsystem.swing.view.yourwallets.YourWalletsPanel;
 
 /**
@@ -113,6 +114,16 @@ public class ViewFactory {
 
         case View.SHOW_OPEN_URI_DIALOG_VIEW: {
             viewToReturn = new ShowOpenUriView(controller, mainFrame);
+            break;
+        }
+
+        case View.SHOW_IMPORT_PRIVATE_KEYS_VIEW: {
+            viewToReturn = new ImportPrivateKeysPanel(controller, mainFrame);
+            break;
+        }
+
+        case View.SHOW_EXPORT_PRIVATE_KEYS_VIEW: {
+            viewToReturn = new ExportPrivateKeysPanel(controller, mainFrame);
             break;
         }
 

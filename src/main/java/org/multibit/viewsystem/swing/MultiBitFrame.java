@@ -59,7 +59,9 @@ import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.action.ReceiveBitcoinAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinAction;
 import org.multibit.viewsystem.swing.action.ShowCreateBulkAddressesAction;
+import org.multibit.viewsystem.swing.action.ShowExportPrivateKeysAction;
 import org.multibit.viewsystem.swing.action.ShowHelpContentsAction;
+import org.multibit.viewsystem.swing.action.ShowImportPrivateKeysAction;
 import org.multibit.viewsystem.swing.action.ShowPreferencesAction;
 import org.multibit.viewsystem.swing.action.YourWalletsAction;
 import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
@@ -115,6 +117,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static final String WALLET_ICON_FILE = "/images/wallet.png";
     private static final String RTL_WALLET_ICON_FILE = "/images/rtl_wallet.png";
     public static final String EXCLAMATION_MARK_ICON_FILE = "/images/exclamationMark.png";
+    public static final String IMPORT_PRIVATE_KEYS_ICON_FILE = "/images/importKey.png";
+    public static final String EXPORT_PRIVATE_KEYS_ICON_FILE = "/images/exportKey.png";
 
     public static final String MULTIBIT_DEFAULT_FONT_NAME = "Dialog";
     public static final int MULTIBIT_DEFAULT_FONT_STYLE = Font.PLAIN;
@@ -504,6 +508,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.viewMenuMnemonic"));
         menuBar.add(viewMenu);
 
+        // Build the Tools menu.
+        JMenu toolsMenu = new JMenu(localiser.getString("multiBitFrame.toolsMenuText"));
+        toolsMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        toolsMenu.setComponentOrientation(componentOrientation);
+        toolsMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.toolsMenuMnemonic"));
+        menuBar.add(toolsMenu);
+
         // Build the Merchant menu.
         // see if it is required
         String showMerchantMenuString = controller.getModel().getUserPreference(MultiBitModel.SHOW_MERCHANT_MENU);
@@ -630,6 +641,20 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             menuItem.setComponentOrientation(componentOrientation);
             viewMenu.add(menuItem);
         }
+
+        // import private keys
+        ShowImportPrivateKeysAction showImportPrivateKeysAction = new ShowImportPrivateKeysAction(controller, createImageIcon(IMPORT_PRIVATE_KEYS_ICON_FILE));
+        menuItem = new JMenuItem(showImportPrivateKeysAction);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        toolsMenu.add(menuItem);
+
+        // export private keys
+        ShowExportPrivateKeysAction showExportPrivateKeysAction = new ShowExportPrivateKeysAction(controller, createImageIcon(EXPORT_PRIVATE_KEYS_ICON_FILE));
+        menuItem = new JMenuItem(showExportPrivateKeysAction);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        toolsMenu.add(menuItem);
 
         if (showMerchantMenu) {
             // create bulk addresses action
