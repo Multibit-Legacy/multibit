@@ -26,7 +26,7 @@ public class SendBitcoinNowAction extends AbstractAction {
     /**
      * Creates a new {@link SendBitcoinNowAction}.
      */
-    public SendBitcoinNowAction(MultiBitFrame mainFrame, MultiBitController controller, DataProvider dataProvider,ImageIcon icon) {
+    public SendBitcoinNowAction(MultiBitFrame mainFrame, MultiBitController controller, DataProvider dataProvider, ImageIcon icon) {
         super(controller.getLocaliser().getString("sendBitcoinConfirmAction.text"), icon);
         this.controller = controller;
         this.dataProvider = dataProvider;

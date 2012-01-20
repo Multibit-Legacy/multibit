@@ -49,6 +49,8 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
 
     private MultiBitLabel outputFilenameLabel;
 
+    private MultiBitLabel messageLabel;
+
     private String outputFilename;
 
     /**
@@ -67,14 +69,14 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
         data = new Data();
 
         outputFilename = "";
+        
+        // clear any old message info
+        controller.getModel().setUserPreference(MultiBitModel.DISPLAY_EXPORT_PRIVATE_KEYS_MESSAGE, "false");
+        controller.getModel().setUserPreference(MultiBitModel.EXPORT_PRIVATE_KEYS_MESSAGE, " ");
 
         initUI();
     }
 
-    /**
-     * show explanatory text for resetting blockchain and transactions and a
-     * button to do it
-     */
     public void displayView() {
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
@@ -82,6 +84,13 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
         if (outputFilename == null || "".equals(outputFilename)) {
             outputFilename = createDefaultKeyFilename(controller.getModel().getActiveWalletFilename());
             outputFilenameLabel.setText(outputFilename);
+        }
+        
+        if (Boolean.TRUE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.DISPLAY_EXPORT_PRIVATE_KEYS_MESSAGE))) {
+            messageLabel.setText("  " + controller.getModel().getUserPreference(MultiBitModel.EXPORT_PRIVATE_KEYS_MESSAGE));
+            controller.getModel().setUserPreference(MultiBitModel.DISPLAY_EXPORT_PRIVATE_KEYS_MESSAGE, "false");
+        } else {
+            messageLabel.setText(" ");
         }
     }
 
@@ -129,7 +138,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(createInputWalletPanel(), constraints);
+        add(createWalletPanel(), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -138,7 +147,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(createOutputFilenamePanel(), constraints);
+        add(createFilenamePanel(), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -149,22 +158,34 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createButtonPanel(), constraints);
 
+        messageLabel = new MultiBitLabel("", controller);
+        messageLabel.setOpaque(false);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 5;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.06;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(messageLabel, constraints);
+        
         JLabel filler1 = new JLabel();
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 6;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 20;
         constraints.anchor = GridBagConstraints.CENTER;
         add(filler1, constraints);
+
     }
 
-    private JPanel createInputWalletPanel() {
+    private JPanel createWalletPanel() {
         JPanel inputWalletPanel = new JPanel(new GridBagLayout());
         TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString(
-                "showExportPrivateKeysPanel.inputWallet.title"));
+                "showExportPrivateKeysPanel.wallet.title"));
         inputWalletPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder));
         inputWalletPanel.setOpaque(false);
 
@@ -173,7 +194,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
         GridBagConstraints constraints = new GridBagConstraints();
 
         MultiBitLabel explainLabel1 = new MultiBitLabel(controller.getLocaliser().getString(
-                "showExportPrivateKeysPanel.inputWallet.text"), controller);
+                "showExportPrivateKeysPanel.wallet.text"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -262,10 +283,10 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
         return inputWalletPanel;
     }
 
-    private JPanel createOutputFilenamePanel() {
+    private JPanel createFilenamePanel() {
         JPanel outputFilenamePanel = new JPanel(new GridBagLayout());
         TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString(
-                "showExportPrivateKeysPanel.outputFilename.title"));
+                "showExportPrivateKeysPanel.filename.title"));
         outputFilenamePanel
                 .setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder));
         outputFilenamePanel.setOpaque(false);
@@ -286,13 +307,13 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
         outputFilenamePanel.add(filler1, constraints);
 
         JButton chooseOutputFilenameButton = new JButton(controller.getLocaliser().getString(
-                "showExportPrivateKeysPanel.outputFilename.text"));
+                "showExportPrivateKeysPanel.filename.text"));
 
         chooseOutputFilenameButton.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                chooseOutputFile();
+                chooseFile();
             }
         });
 
@@ -347,7 +368,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        ExportPrivateKeysSubmitAction submitAction = new ExportPrivateKeysSubmitAction(controller, this);
+        ExportPrivateKeysSubmitAction submitAction = new ExportPrivateKeysSubmitAction(controller, this, MultiBitFrame.createImageIcon(MultiBitFrame.EXPORT_PRIVATE_KEYS_ICON_FILE));
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
@@ -376,7 +397,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
 
     }
 
-    private void chooseOutputFile() {
+    private void chooseFile() {
         JFileChooser.setDefaultLocale(controller.getLocaliser().getLocale());
         fileChooser = new JFileChooser();
         fileChooser.setLocale(controller.getLocaliser().getLocale());

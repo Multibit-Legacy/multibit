@@ -7,6 +7,7 @@ import org.multibit.model.MultiBitModel;
 
 public class PrivateKeyFileFilter extends javax.swing.filechooser.FileFilter {
 
+    private static final String MAC_APPLICATION_SUFFIX = ".app";
     private MultiBitController controller;
     
     public PrivateKeyFileFilter(MultiBitController controller) {
@@ -14,7 +15,7 @@ public class PrivateKeyFileFilter extends javax.swing.filechooser.FileFilter {
     }
     
     public boolean accept(File file) {
-        return (file.isDirectory()) || (file.getName().toLowerCase().endsWith(MultiBitModel.PRIVATE_KEY_FILE_EXTENSION));
+        return (file.isDirectory() && !(file.getName().toLowerCase().endsWith(MAC_APPLICATION_SUFFIX))) || (file.getName().toLowerCase().endsWith(MultiBitModel.PRIVATE_KEY_FILE_EXTENSION));
     }
 
     public String getDescription() {

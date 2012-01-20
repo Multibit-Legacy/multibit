@@ -1,6 +1,5 @@
 package org.multibit.action;
 
-import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -45,10 +44,14 @@ public class ExportPrivateKeysSubmitAction implements Action {
 
     public ExportPrivateKeysSubmitAction(MultiBitController controller) {
         this.controller = controller;
+        
+        // date format is UTC with century, T time separator and Z for UTC timezone
         formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     }
 
-    public void execute(DataProvider dataProvider) {
+    public void execute(DataProvider dataProvider) { 
+         String message = controller.getLocaliser().getString("showExportPrivateKeysAction.noDataWasWritten");
+        
         // get the required output file
         if (dataProvider != null) {
             Data data = dataProvider.getData();
@@ -73,23 +76,18 @@ public class ExportPrivateKeysSubmitAction implements Action {
 
                         // Close the output stream
                         out.close();
+                        
+                        message = controller.getLocaliser().getString("showExportPrivateKeysAction.privateKeysExportSuccess");
                     } catch (Exception e) {// Catch exception if any
-                        System.err.println("Error: " + e.getMessage());
+                        log.error(e.getClass().getName() + " " + e.getMessage());
+                        message = controller.getLocaliser().getString("showExportPrivateKeysAction.privateKeysExportFailure", new Object[] {e.getClass().getName() + " " + e.getMessage()});
                     }
-
-                    // output comment text to file - this is always in English
-                    // as
-                    // the file
-                    // is ASCII
-
-                    // output private keys
-
-                    // send back a summary text of whether the write was
-                    // successful
-                    // or not
                 }
             }
         }
+        
+        controller.getModel().setUserPreference(MultiBitModel.DISPLAY_EXPORT_PRIVATE_KEYS_MESSAGE, "true");
+        controller.getModel().setUserPreference(MultiBitModel.EXPORT_PRIVATE_KEYS_MESSAGE, message);
         controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
     }
 
