@@ -48,7 +48,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
 
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
                 BorderFactory.createMatteBorder(1, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
-        setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
 
         this.controller = controller;
 
@@ -109,7 +109,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.anchor = GridBagConstraints.LINE_START;
         add(createExplainPanel(), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -118,7 +118,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         constraints.gridwidth = 1;
         constraints.weightx = 0.4;
         constraints.weighty = 0.06;
-        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.anchor = GridBagConstraints.LINE_START;
         add(createButtonPanel(), constraints);
 
         JLabel filler1 = new JLabel();
@@ -129,7 +129,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 20;
-        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.anchor = GridBagConstraints.LINE_START;
         add(filler1, constraints);
     }
 
