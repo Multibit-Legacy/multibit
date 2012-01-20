@@ -1,5 +1,3 @@
-package org.multibit;
-
 /**
  * Copyright 2011 multibit.org
  *
@@ -15,6 +13,7 @@ package org.multibit;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.multibit;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.rolling.RollingFileAppender;
