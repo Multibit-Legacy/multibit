@@ -61,7 +61,7 @@ public class MultiBitModel {
     public static final String OPEN_URI_AMOUNT = "openUriAmount";
     public static final String BRING_TO_FRONT = "bringToFront";
 
-    // default is min fee of 0.0005 BTC
+    // default is min fee of 0.0001 BTC
     public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("10000");
     // min fee of 0.0001 BTC
     public static final BigInteger SEND_MINIMUM_FEE = new BigInteger("10000");
@@ -87,7 +87,11 @@ public class MultiBitModel {
     public static final String VALIDATION_AMOUNT_VALUE = "validationAmountValue";
 
     public static final String WALLET_FILE_EXTENSION = "wallet";
-
+    
+    // private key import and export
+    public static final String PRIVATE_KEY_FILE_EXTENSION = "key";
+    public static final String PRIVATE_KEY_FILENAME = "privateKeyFilename";
+    
     // connect to single node
     public static final String SINGLE_NODE_CONNECTION = "singleNodeConnection";
     

@@ -57,17 +57,6 @@ public class FileHandler {
         WalletInfo walletInfo = new WalletInfo(walletFilename);
         perWalletModelData.setWalletInfo(walletInfo);
 
-        // remove all the transactions from the wallet
-//        log.info("Wallet details for wallet file before clear= " + walletFilename + "\n" + wallet.toString());
-//        wallet.dead.clear();
-//        wallet.inactive.clear();
-//        wallet.pending.clear();
-//        wallet.spent.clear();
-//        wallet.unspent.clear();
-//        log.info("Wallet details for wallet file after clear= " + walletFilename + "\n" + wallet.toString());
-//
-//        savePerWalletModelData(perWalletModelData, false);
-
         rememberFileSizesAndLastModified(walletFile, walletInfo);
 
         perWalletModelData.setDirty(false);
@@ -86,7 +75,8 @@ public class FileHandler {
      *            force the write of the perWalletModelData
      */
     public void savePerWalletModelData(PerWalletModelData perWalletModelData, boolean forceWrite) {
-
+        // WARNING: This wallet.toString() puts private keys in the log !
+        
         //log.info("Wallet details for wallet file = " + perWalletModelData.getWalletFilename() + "\n"
         //        + perWalletModelData.getWallet().toString());
 
