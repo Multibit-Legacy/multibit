@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2012 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.network;
+package org.multibit.file;
 
 import com.google.bitcoin.core.Wallet;
 import org.multibit.ApplicationDataDirectoryLocator;
@@ -21,6 +21,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
+import org.multibit.network.MultiBitService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,7 @@ import java.util.Date;
 import java.util.Properties;
 
 /**
- * a class consolidating all the File IO in MultiBit
+ * a class consolidating the File IO in MultiBit for wallets and wallet infos
  * 
  * it also has responsibility for determining the directory used for storing the
  * user specific application data
@@ -91,9 +92,10 @@ public class FileHandler {
      */
     public void savePerWalletModelData(PerWalletModelData perWalletModelData, boolean forceWrite) {
         // WARNING: This wallet.toString() puts private keys in the log !
-        
-        //log.info("Wallet details for wallet file = " + perWalletModelData.getWalletFilename() + "\n"
-        //        + perWalletModelData.getWallet().toString());
+
+        // log.info("Wallet details for wallet file = " +
+        // perWalletModelData.getWalletFilename() + "\n"
+        // + perWalletModelData.getWallet().toString());
 
         try {
             if (perWalletModelData == null) {
@@ -101,7 +103,8 @@ public class FileHandler {
                 return;
             }
 
-            // save the perWalletModelData if it is dirty or if forceWrite is true
+            // save the perWalletModelData if it is dirty or if forceWrite is
+            // true
             if (perWalletModelData.isDirty() || perWalletModelData.isTransactionDirty() || forceWrite) {
                 // check dates and sizes of files
                 boolean filesHaveChanged = haveFilesChanged(perWalletModelData);
@@ -209,8 +212,7 @@ public class FileHandler {
                         haveFilesChanged = true;
                     }
 
-                    if (!walletInfoFileLastModified
-                            .equals(walletInfo.getProperty(MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED))) {
+                    if (!walletInfoFileLastModified.equals(walletInfo.getProperty(MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED))) {
                         haveFilesChanged = true;
                     }
                 }
@@ -239,8 +241,10 @@ public class FileHandler {
      * keep a record of the wallet and wallet info files sizes and date last
      * modified
      * 
-     * @param walletFile The wallet file
-     * @param walletInfo The wallet info
+     * @param walletFile
+     *            The wallet file
+     * @param walletInfo
+     *            The wallet info
      */
     private void rememberFileSizesAndLastModified(File walletFile, WalletInfo walletInfo) {
         // get the files' last modified data and sizes and store them in the
@@ -407,14 +411,14 @@ public class FileHandler {
             destinationFile.createNewFile();
         }
         FileInputStream fileInputStream = null;
-        FileOutputStream fileOutpurStream = null;
+        FileOutputStream fileOutputStream = null;
         FileChannel source = null;
         FileChannel destination = null;
         try {
             fileInputStream = new FileInputStream(sourceFile);
             source = fileInputStream.getChannel();
-            fileOutpurStream = new FileOutputStream(destinationFile);
-            destination = fileOutpurStream.getChannel();
+            fileOutputStream = new FileOutputStream(destinationFile);
+            destination = fileOutputStream.getChannel();
             long transfered = 0;
             long bytes = source.size();
             while (transfered < bytes) {
@@ -429,8 +433,8 @@ public class FileHandler {
             }
             if (destination != null) {
                 destination.close();
-            } else if (fileOutpurStream != null) {
-                fileOutpurStream.close();
+            } else if (fileOutputStream != null) {
+                fileOutputStream.close();
             }
         }
     }

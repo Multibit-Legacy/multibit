@@ -1,0 +1,54 @@
+multiBit.info,1
+walletVersion,1
+receive,162zJokk8matsjGGGmyJTCBLTDc3juRxEs,From Peter
+receive,1NcfaCrfNTRMBhCrF8uw8W6U6sRWYAH6QK,50% of LoveBitcoins.org subs
+receive,1GtMVgFstm6hLNJnMVMfqBV3tW1S7as67v,general
+receive,1KPNYRuDJoBexHAcCwuA5EhGdzoVHTRNTX,From savings account
+ssss
+receive,15ZLe7GCAfdTTMMkbm38KTtahq9y549rB2,Gift card from Bitcoin Books
+receive,166ofzumkuBB8gpDqd3usn3PypRXA4wTS6,General receipts
+receive,13FHXieWVDMMPuVgx9mRYmMEJTRrrSU3Ct,From Simone
+receive,13T5wgZj4VsWx5np4L2NNkWR8bLxzYz3b6,Wesolych Swiat Bozego Narodzenia
+send,1M7qAsXrE2dye8cHmT5DaiCXx24dQS3UsE,Instawallet
+send,15GkaJG5eAsGhHu9Y23WcTw52vmJQy3fh5,multibit wallet receive address
+send,13FHXieWVDMMPuVgx9mRYmMEJTRrrSU3Ct,from Simone
+send,14M3dRDqj44KxYnoAaReK2t4HqdLKbpqFg,Monday send test
+send,18cT65hZya3xKjHhAJ15PxHUKkfdRzKGLM,Donate to help keep this blog running :-)
+please donate
+send,1KPNYRuDJoBexHAcCwuA5EhGdzoVHTRNTX,From savings account
+send,19iPayacMRqw674JubytFq6uLGDfsKrxsr,default
+send,1CkJpnRXw87nKTMX2NJzC3r38TLErnRtAv,wed test
+send,16VNfZZ6mu3Q8Qn4Pjm9t5JnAuh9mgwTVF,wed test 2
+send,1MQPaZDkaMtEjPfzXxG2DqqYDu63BBXqD5,my new wallet
+send,1Pp5DMMAmXGDsFstsmiVc3Ghovu2k9GRRi,Arvis Lācis (Latvian)
+send,1KzTSfqjF2iKCduwz59nv2uqh1W2JsTxZH,Agile Stack
+send,1CVxDbfd3v4vTqBot3qG7pFZmAYWr9SpHj,Win XP - test1 - Default
+send,1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty,Please donate to multibit.org
+send,1GsyjQvGwiYnCCE2rdxtf9NzCQmhgzoLwJ,The Bitcoin Trader
+send,1C869zkFmtqXyGjy7zxiYrmKBkx2NgZgjk,default- XP - myNewWallet
+send,12xwdub8AqVTM5g8KBRkWH1WMyCmTJQqmH,default receive - multibit - Ubuntu
+send,1QF4MvVeQ5CQ2TciReUJ5DBssYdqpEPuWP,default receive - multibit - XP
+send,1KqnxT4ERDMjue8GvCWsaCcxRcZPNZg399,petty cash 1
+property,receiveAddress,1NcfaCrfNTRMBhCrF8uw8W6U6sRWYAH6QK
+property,openUriShowDialog,false
+property,validationAmountIsMissing,false
+property,walletInfoFileLastModified,1327144869000
+property,receiveAmount,0.05
+property,sendWasSuccessful,true
+property,sendPerformPasteNow,false
+property,walletDescription,Test wallet 1
+property,walletFileSize,1771198
+property,sendErrorMessage, 
+property,walletFileLastModified,1327144870000
+property,validationAmountValue,9.1464
+property,validationNotEnoughFunds,false
+property,validationAddressValue,1KqnxT4ERDMjue8GvCWsaCcxRcZPNZg399
+property,validationAmountIsNegativeOrZero,false
+property,validationAddressIsInvalid,false
+property,validationAmountIsInvalid,false
+property,walletInfoFileSize,2673
+property,receiveLabel,50% of LoveBitcoins.org subs
+property,sendAmount,9.1464
+property,earliestTransactionDate,1318003097000
+property,sendAddress,1KqnxT4ERDMjue8GvCWsaCcxRcZPNZg399
+property,sendLabel,petty cash 1

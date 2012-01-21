@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.TimerTask;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.file.FileHandler;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.network.FileHandler;
 
 /**
  * TimerTask to detect whether wallet files have been changed by some external

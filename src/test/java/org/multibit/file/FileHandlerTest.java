@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2012 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.network;
+package org.multibit.file;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
+import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.slf4j.Logger;

@@ -15,7 +15,7 @@
  */
 package org.multibit;
 
-import org.multibit.network.FileHandler;
+import org.multibit.file.FileHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

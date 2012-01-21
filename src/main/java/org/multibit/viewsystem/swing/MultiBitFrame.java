@@ -249,6 +249,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 .createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SELECTION_BACKGROUND_COLOR),
                         BorderFactory.createEmptyBorder(0, 0, 3, 0)));
 
+        viewFactory = new ViewFactory(controller, this);
+
         initUI();
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));

@@ -17,8 +17,8 @@ package org.multibit;
 
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
+import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
-import org.multibit.network.FileHandler;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
