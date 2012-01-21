@@ -18,17 +18,12 @@ package org.multibit.action;
 import java.util.Date;
 import java.util.Set;
 
-import javax.swing.SwingWorker;
-
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 
-import com.google.bitcoin.core.Block;
-import com.google.bitcoin.core.BlockChain;
-import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.store.BlockStoreException;
 
@@ -39,7 +34,6 @@ import com.google.bitcoin.store.BlockStoreException;
  * 
  */
 public class ResetTransactionsSubmitAction implements Action {
-    private static final int NUMBER_OF_MILLISECOND_IN_A_SECOND = 1000;
     private MultiBitController controller;
 
     public ResetTransactionsSubmitAction(MultiBitController controller) {
@@ -48,7 +42,6 @@ public class ResetTransactionsSubmitAction implements Action {
 
     public void execute(DataProvider dataProvider) {
         // check to see if another process has changed the active wallet
-        // check to see if the wallet files have changed
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
@@ -96,59 +89,25 @@ public class ResetTransactionsSubmitAction implements Action {
                         "" + earliestTransactionDate.getTime());
             }
 
-            // navigate backwards in the blockchain to work out how far back in
-            // time to go
-            BlockChain blockChain = controller.getMultiBitService().getChain();
+            // remove the transactions from the wallet
+            activePerWalletModelData.getWallet().removeAllTransactions();
 
-            StoredBlock storedBlock = blockChain.getChainHead();
-            boolean haveGoneBackInTimeEnough = false;
-            boolean blockNavigationError = false;
+            // save the wallet without the transactions
+            controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
 
-            while (!haveGoneBackInTimeEnough && !blockNavigationError) {
-                Block header = storedBlock.getHeader();
-                long headerTimeInSeconds = header.getTimeSeconds();
-                if (headerTimeInSeconds < (earliestTransactionDate.getTime() / NUMBER_OF_MILLISECOND_IN_A_SECOND)) {
-                    haveGoneBackInTimeEnough = true;
-                } else {
+            // start thread to redownload the block chain
+            final Date finalEarliestTransactionDate = earliestTransactionDate;
+            Thread workerThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
                     try {
-                        storedBlock = storedBlock.getPrev(controller.getMultiBitService().getBlockStore());
+                        controller.getMultiBitService().replayBlockChain(finalEarliestTransactionDate);
                     } catch (BlockStoreException e) {
                         e.printStackTrace();
-                        // we have to stop - fail
-                        blockNavigationError = true;
                     }
                 }
-            }
-
-            if (!blockNavigationError) {
-                // remove the transactions from the wallet
-                activePerWalletModelData.getWallet().removeAllTransactions();
-                
-                // save the wallet without the transactions
-                controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
-                try {
-
-                    // set the block chain head to the block just before the
-                    // earliest transaction in the wallet
-                    blockChain.setChainHead(storedBlock);
-
-                    // clear any cached data in the BlockStore
-                    controller.getMultiBitService().clearBlockStoreCache();
-                    
-                    // start thread to redownload the block chain
-                    Thread workerThread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            controller.getMultiBitService().downloadBlockChain();
-                        }
-                    });
-                    workerThread.start();
-
-                } catch (BlockStoreException e) {
-                    e.printStackTrace();
-                }
-
-            }
+            });
+            workerThread.start();
 
             controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
         }

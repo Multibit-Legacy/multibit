@@ -258,7 +258,7 @@ public class PrivateKeysHandler {
         }
     }
 
-    private void processLine(String line,  ArrayList<PrivateKeyAndDate> parseResults) {
+    private void processLine(String line, ArrayList<PrivateKeyAndDate> parseResults) {
         if (line == null || line.trim().equals("") || line.startsWith(COMMENT_STRING_PREFIX)) {
             // nothing to do
         } else {
@@ -270,20 +270,21 @@ public class PrivateKeysHandler {
                 String createdAtAsString = "";
                 if (scanner.hasNext()) {
                     sipaKey = scanner.next();
-                    
+
                 }
                 if (scanner.hasNext()) {
                     createdAtAsString = scanner.next();
                 }
-                
+
                 DumpedPrivateKey dumpedPrivateKey = new DumpedPrivateKey(networkParameters, sipaKey);
                 PrivateKeyAndDate privateKeyAndDate = new PrivateKeyAndDate();
-                
+
                 privateKeyAndDate.setKey(dumpedPrivateKey.getKey());
-                    
+
                 try {
                     if (createdAtAsString != null && !"".equals(createdAtAsString)) {
-                    Date date =formatter.parse(createdAtAsString);
+                        Date date = formatter.parse(createdAtAsString);
+                        privateKeyAndDate.setDate(date);
                     }
                 } catch (ParseException pe) {
                     pe.printStackTrace();

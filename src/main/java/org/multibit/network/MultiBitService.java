@@ -15,12 +15,14 @@
  */
 package org.multibit.network;
 
-import com.google.bitcoin.core.*;
-import com.google.bitcoin.discovery.DnsDiscovery;
-import com.google.bitcoin.discovery.IrcDiscovery;
-import com.google.bitcoin.store.BlockStore;
-import com.google.bitcoin.store.BlockStoreException;
-import com.google.bitcoin.store.BoundedOverheadBlockStore;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Date;
+
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
@@ -28,12 +30,22 @@ import org.multibit.model.WalletInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.Block;
+import com.google.bitcoin.core.BlockChain;
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.PeerAddress;
+import com.google.bitcoin.core.PeerGroup;
+import com.google.bitcoin.core.StoredBlock;
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.discovery.DnsDiscovery;
+import com.google.bitcoin.discovery.IrcDiscovery;
+import com.google.bitcoin.store.BlockStoreException;
+import com.google.bitcoin.store.BoundedOverheadBlockStore;
 
 /**
  * <p>
@@ -51,6 +63,10 @@ import java.util.ArrayList;
 public class MultiBitService {
     private static final Logger log = LoggerFactory.getLogger(MultiBitService.class);
 
+    private static final int NUMBER_OF_MILLISECOND_IN_A_SECOND = 1000;
+
+    private static final int MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN = 6;
+    
     public static final String MULTIBIT_PREFIX = "multibit";
     public static final String TEST_NET_PREFIX = "testnet";
     public static final String SEPARATOR = "-";
@@ -66,10 +82,12 @@ public class MultiBitService {
 
     private PeerGroup peerGroup;
 
+    private String blockchainFilename;
+
     private BlockChain blockChain;
 
     private BoundedOverheadBlockStore blockStore;
-    
+
     private boolean useTestNet;
 
     private MultiBitController controller;
@@ -101,23 +119,24 @@ public class MultiBitService {
         this.controller = controller;
 
         networkParameters = useTestNet ? NetworkParameters.testNet() : NetworkParameters.prodNet();
-       
+
         try {
             // Load the block chain
             String filePrefix = getFilePrefix();
-            String blockchainFilename;
             if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
                 blockchainFilename = filePrefix + BLOCKCHAIN_SUFFIX;
             } else {
-                blockchainFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator + filePrefix + BLOCKCHAIN_SUFFIX;                              
+                blockchainFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
+                        + filePrefix + BLOCKCHAIN_SUFFIX;
             }
-            
-            // check to see if the user has a blockchain and copy over the installed one if they do not
+
+            // check to see if the user has a blockchain and copy over the
+            // installed one if they do not
             controller.getFileHandler().copyBlockChainFromInstallationDirectory(this, blockchainFilename);
-            
+
             log.debug("Reading block store '{}' from disk", blockchainFilename);
 
-            blockStore = new BoundedOverheadBlockStore(networkParameters, new File(blockchainFilename));
+            blockStore = new BoundedOverheadBlockStore(networkParameters, new File(blockchainFilename), false);
 
             log.debug("Connecting ...");
             blockChain = new BlockChain(networkParameters, blockStore);
@@ -145,11 +164,11 @@ public class MultiBitService {
             peerGroup.addEventListener(controller);
             peerGroup.start();
         } catch (BlockStoreException e) {
-            controller.displayMessage("multiBitService.errorText",
-                    new Object[] { e.getClass().getName() + " " + e.getMessage() }, "multiBitService.errorTitleText");
+            controller.displayMessage("multiBitService.errorText", new Object[] { e.getClass().getName() + " " + e.getMessage() },
+                    "multiBitService.errorTitleText");
         } catch (Exception e) {
-            controller.displayMessage("multiBitService.errorText",
-                    new Object[] { e.getClass().getName() + " " + e.getMessage() }, "multiBitService.errorTitleText");
+            controller.displayMessage("multiBitService.errorText", new Object[] { e.getClass().getName() + " " + e.getMessage() },
+                    "multiBitService.errorTitleText");
         }
     }
 
@@ -192,7 +211,8 @@ public class MultiBitService {
             if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
                 walletFilename = getFilePrefix() + WALLET_SUFFIX;
             } else {
-                walletFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator + getFilePrefix() + WALLET_SUFFIX;
+                walletFilename = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory() + File.separator
+                        + getFilePrefix() + WALLET_SUFFIX;
             }
 
             walletFile = new File(walletFilename);
@@ -222,8 +242,7 @@ public class MultiBitService {
                 perWalletModelDataToReturn.setWalletInfo(walletInfo);
 
                 // set a default description
-                String defaultDescription = controller.getLocaliser().getString(
-                        "createNewWalletSubmitAction.defaultDescription");
+                String defaultDescription = controller.getLocaliser().getString("createNewWalletSubmitAction.defaultDescription");
                 perWalletModelDataToReturn.setWalletDescription(defaultDescription);
 
                 controller.getFileHandler().savePerWalletModelData(perWalletModelDataToReturn, true);
@@ -268,6 +287,72 @@ public class MultiBitService {
     }
 
     /**
+     * replay blockchain
+     * 
+     * @param dateToReplayFrom
+     *            the date on the blockchain to replay from - if missing replay
+     *            from genesis block
+     */
+    public void replayBlockChain(Date dateToReplayFrom) throws BlockStoreException{
+        // navigate backwards in the blockchain to work out how far back in
+        // time to go
+ 
+        if (dateToReplayFrom == null) {
+            // create empty new block chain
+            blockStore = new BoundedOverheadBlockStore(networkParameters, new File(blockchainFilename), true);
+
+            log.debug("Creating new blockStore - need to redownload from Genesis block");
+            blockChain = new BlockChain(networkParameters, blockStore);
+            
+            // TODO Peers need to be updated with the new block chain
+        } else {
+            StoredBlock storedBlock = blockChain.getChainHead();
+            
+            boolean haveGoneBackInTimeEnough = false;
+            int numberOfBlocksGoneBackward = 0;
+
+            while (!haveGoneBackInTimeEnough) {
+                Block header = storedBlock.getHeader();
+                long headerTimeInSeconds = header.getTimeSeconds();
+                if (headerTimeInSeconds < (dateToReplayFrom.getTime() / NUMBER_OF_MILLISECOND_IN_A_SECOND)) {
+                    haveGoneBackInTimeEnough = true;
+                } else {
+                    try {
+                        storedBlock = storedBlock.getPrev(blockStore);
+                        numberOfBlocksGoneBackward++;
+                    } catch (BlockStoreException e) {
+                        e.printStackTrace();
+                        // we have to stop - fail
+                        break;
+                    }
+                }
+            }
+            
+            // in case the chain head was on an alternate fork go back more blocks to ensure 
+            // back on the main chain
+            while (numberOfBlocksGoneBackward < MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN) {
+                try {
+                    storedBlock = storedBlock.getPrev(blockStore);
+                    numberOfBlocksGoneBackward++;
+                } catch (BlockStoreException e) {
+                    e.printStackTrace();
+                    // we have to stop - fail
+                    break;
+                }
+            }
+            
+            // set the block chain head to the block just before the
+            // earliest transaction in the wallet
+            blockChain.setChainHead(storedBlock);
+
+            // clear any cached data in the BlockStore
+            blockStore.clearCaches();
+        }
+
+        downloadBlockChain();
+    }
+
+    /**
      * download the block chain
      */
     public void downloadBlockChain() {
@@ -289,8 +374,8 @@ public class MultiBitService {
             throws java.io.IOException, AddressFormatException {
         // send the coins
         Address sendAddress = new Address(networkParameters, sendAddressString);
-        Transaction sendTransaction = perWalletModelData.getWallet().sendCoins(peerGroup, sendAddress,
-                Utils.toNanoCoins(amount), fee);
+        Transaction sendTransaction = perWalletModelData.getWallet().sendCoins(peerGroup, sendAddress, Utils.toNanoCoins(amount),
+                fee);
         assert sendTransaction != null; // We should never try to send more
         // coins than we have!
         // throw an exception if sendTransaction is null - no money
@@ -318,17 +403,5 @@ public class MultiBitService {
 
     public NetworkParameters getNetworkParameters() {
         return networkParameters;
-    }
-
-    public boolean isUseTestNet() {
-        return useTestNet;
-    }
-
-    public BlockStore getBlockStore() {
-        return blockStore;
-    }
-    
-    public void clearBlockStoreCache() {
-        blockStore.clearCaches();
     }
 }

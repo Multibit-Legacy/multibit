@@ -550,5 +550,4 @@ public class PeerGroup implements IsMultiBitClass {
             }
         }
     }
-
 }
