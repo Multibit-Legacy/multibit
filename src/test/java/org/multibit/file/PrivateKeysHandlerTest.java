@@ -19,7 +19,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigInteger;
+import java.util.ArrayList;
 
 import junit.framework.TestCase;
 
@@ -27,10 +27,7 @@ import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
-import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.network.MultiBitService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,9 +43,13 @@ public class PrivateKeysHandlerTest extends TestCase {
     public static final String TEST1_WALLET_FILE = "test1.wallet";
     public static final String TEST1_PRIVATE_KEYS_FILE = "test1.key";
     public static final String EXPECTED_TEST1_PRIVATE_KEYS_FILE = "expectedTest1.key";
+    
+    public static final String[] EXPECTED_ADDRESSES_FOR_TEST1_WALLET = new String[]{"15ZLe7GCAfdTTMMkbm38KTtahq9y549rB2", 
+        "1KPNYRuDJoBexHAcCwuA5EhGdzoVHTRNTX", "162zJokk8matsjGGGmyJTCBLTDc3juRxEs", "13FHXieWVDMMPuVgx9mRYmMEJTRrrSU3Ct",
+        "166ofzumkuBB8gpDqd3usn3PypRXA4wTS6", "1NcfaCrfNTRMBhCrF8uw8W6U6sRWYAH6QK", "13T5wgZj4VsWx5np4L2NNkWR8bLxzYz3b6"};
 
     @Test
-    public void testLoadTest1() throws IOException {
+    public void testExport() throws IOException {
         MultiBitController controller = new MultiBitController();
         
         Localiser localiser = new Localiser();
@@ -58,7 +59,8 @@ public class PrivateKeysHandlerTest extends TestCase {
         controller.setModel(model);   
 
         PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(NetworkParameters.prodNet());
-
+        assertNotNull(privateKeysHandler);
+        
         File directory = new File(".");
         String currentPath = directory.getAbsolutePath();
 
@@ -84,9 +86,35 @@ public class PrivateKeysHandlerTest extends TestCase {
 
         assertEquals(expectedFileContents, actualFileContents);
     }
+    
+    @Test
+    public void testImport() throws IOException {
+        NetworkParameters prodNet = NetworkParameters.prodNet();
+        PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(prodNet);
+        assertNotNull(privateKeysHandler);
+        
+        File directory = new File(".");
+        String currentPath = directory.getAbsolutePath();
+
+        String testDirectory = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator
+                + PRIVATE_KEYS_TESTDATA_DIRECTORY;
+        String expectedPrivateKeysFile = testDirectory + File.separator + EXPECTED_TEST1_PRIVATE_KEYS_FILE;
+
+        ArrayList<PrivateKeyAndDate> parsedPrivateKeysAndDates = privateKeysHandler.importPrivateKeys(new File(expectedPrivateKeysFile));
+        
+        System.out.println("PrivateKeysHandlerTest#testImport parsedPrivateKeysAndDates = '" + parsedPrivateKeysAndDates + "'");
+        assertNotNull(parsedPrivateKeysAndDates);
+        assertEquals(7, parsedPrivateKeysAndDates.size());
+        
+        int count = 0;
+        for (PrivateKeyAndDate privateKeyAndDate : parsedPrivateKeysAndDates) {
+            assertEquals(EXPECTED_ADDRESSES_FOR_TEST1_WALLET[count], privateKeyAndDate.getKey().toAddress(prodNet).toString());
+            count++;
+        }
+    }
+
 
     private String readFile(File inputFile) throws IOException {
-
         StringBuffer contents = new StringBuffer();
         BufferedReader reader = null;
         String lineSeparator = System.getProperty("line.separator");

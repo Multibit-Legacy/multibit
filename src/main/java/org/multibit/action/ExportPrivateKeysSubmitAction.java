@@ -84,6 +84,7 @@ public class ExportPrivateKeysSubmitAction implements Action {
                         message = controller.getLocaliser().getString("showExportPrivateKeysAction.privateKeysExportSuccess");
                     } catch (IOException ioe) {
                         log.error(ioe.getClass().getName() + " " + ioe.getMessage());
+                        
                         //failure
                         message = controller.getLocaliser().getString("showExportPrivateKeysAction.privateKeysExportFailure",
                                 new Object[] { ioe.getClass().getName() + " " + ioe.getMessage() });

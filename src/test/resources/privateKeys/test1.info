@@ -29,26 +29,26 @@ send,1C869zkFmtqXyGjy7zxiYrmKBkx2NgZgjk,default- XP - myNewWallet
 send,12xwdub8AqVTM5g8KBRkWH1WMyCmTJQqmH,default receive - multibit - Ubuntu
 send,1QF4MvVeQ5CQ2TciReUJ5DBssYdqpEPuWP,default receive - multibit - XP
 send,1KqnxT4ERDMjue8GvCWsaCcxRcZPNZg399,petty cash 1
-property,receiveAddress,1NcfaCrfNTRMBhCrF8uw8W6U6sRWYAH6QK
+property,receiveAddress,13T5wgZj4VsWx5np4L2NNkWR8bLxzYz3b6
 property,openUriShowDialog,false
 property,validationAmountIsMissing,false
-property,walletInfoFileLastModified,1327144869000
+property,walletInfoFileLastModified,1327147897000
 property,receiveAmount,0.05
 property,sendWasSuccessful,true
 property,sendPerformPasteNow,false
 property,walletDescription,Test wallet 1
-property,walletFileSize,1771198
+property,walletFileSize,1772036
 property,sendErrorMessage, 
-property,walletFileLastModified,1327144870000
+property,walletFileLastModified,1327146122000
 property,validationAmountValue,9.1464
 property,validationNotEnoughFunds,false
 property,validationAddressValue,1KqnxT4ERDMjue8GvCWsaCcxRcZPNZg399
 property,validationAmountIsNegativeOrZero,false
 property,validationAddressIsInvalid,false
 property,validationAmountIsInvalid,false
-property,walletInfoFileSize,2673
-property,receiveLabel,50% of LoveBitcoins.org subs
+property,walletInfoFileSize,2656
 property,sendAmount,9.1464
-property,earliestTransactionDate,1318003097000
+property,receiveLabel,Wesolych Swiat Bozego Narodzenia
 property,sendAddress,1KqnxT4ERDMjue8GvCWsaCcxRcZPNZg399
+property,earliestTransactionDate,1318003097000
 property,sendLabel,petty cash 1

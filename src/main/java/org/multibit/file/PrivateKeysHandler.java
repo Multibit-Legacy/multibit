@@ -16,21 +16,25 @@
 package org.multibit.file;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.DumpedPrivateKey;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
@@ -42,28 +46,32 @@ import com.google.bitcoin.core.Wallet;
 
 /**
  * Class for handling reading and writing of private keys to a file
+ * 
  * @author jim
- *
+ * 
  */
 public class PrivateKeysHandler {
     private Logger log = LoggerFactory.getLogger(PrivateKeysHandler.class);
-    
+
+    private static final String COMMENT_STRING_PREFIX = "#";
+
     private SimpleDateFormat formatter;
 
     private NetworkParameters networkParameters;
     private static final String SEPARATOR = " ";
-    
-    public PrivateKeysHandler(NetworkParameters networkParameters) {      
-        // date format is UTC with century, T time separator and Z for UTC timezone
+
+    public PrivateKeysHandler(NetworkParameters networkParameters) {
+        // date format is UTC with century, T time separator and Z for UTC
+        // timezone
         formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-        
+
         if (networkParameters == null) {
             throw new IllegalArgumentException("NetworkParameters must be supplied");
         }
         this.networkParameters = networkParameters;
     }
-    
+
     public void exportPrivateKeys(File exportFile, Wallet wallet) throws IOException {
         FileWriter fileWriter = null;
         PrintWriter printWriter = null;
@@ -78,7 +86,7 @@ public class PrivateKeysHandler {
 
             // close the output stream
             printWriter.close();
-            
+
         } finally {
             if (printWriter != null) {
                 printWriter.close();
@@ -86,7 +94,33 @@ public class PrivateKeysHandler {
             if (fileWriter != null) {
                 fileWriter.close();
             }
-       }
+        }
+    }
+
+    public ArrayList<PrivateKeyAndDate> importPrivateKeys(File importFile) throws IOException {
+        ArrayList<PrivateKeyAndDate> parseResults = new ArrayList<PrivateKeyAndDate>();
+
+        try {
+            Scanner scanner = new Scanner(new FileReader(importFile));
+            try {
+                // first use a Scanner to get each line
+                while (scanner.hasNextLine()) {
+                    processLine(scanner.nextLine(), parseResults);
+                }
+            } finally {
+                // ensure the underlying stream is always closed
+                // this only has any effect if the item passed
+                // to the Scanner
+                // constructor implements Closeable (which it
+                // does in this case).
+                scanner.close();
+            }
+
+        } catch (Exception e) {// Catch exception if any
+            log.error(e.getClass().getName() + " " + e.getMessage());
+        }
+
+        return parseResults;
     }
 
     private void outputHeaderComment(PrintWriter out) throws IOException {
@@ -221,6 +255,48 @@ public class PrivateKeysHandler {
             return false;
         } catch (ScriptException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void processLine(String line,  ArrayList<PrivateKeyAndDate> parseResults) {
+        if (line == null || line.trim().equals("") || line.startsWith(COMMENT_STRING_PREFIX)) {
+            // nothing to do
+        } else {
+            Scanner scanner = null;
+            try {
+                scanner = new Scanner(line);
+
+                String sipaKey = "";
+                String createdAtAsString = "";
+                if (scanner.hasNext()) {
+                    sipaKey = scanner.next();
+                    
+                }
+                if (scanner.hasNext()) {
+                    createdAtAsString = scanner.next();
+                }
+                
+                DumpedPrivateKey dumpedPrivateKey = new DumpedPrivateKey(networkParameters, sipaKey);
+                PrivateKeyAndDate privateKeyAndDate = new PrivateKeyAndDate();
+                
+                privateKeyAndDate.setKey(dumpedPrivateKey.getKey());
+                    
+                try {
+                    if (createdAtAsString != null && !"".equals(createdAtAsString)) {
+                    Date date =formatter.parse(createdAtAsString);
+                    }
+                } catch (ParseException pe) {
+                    pe.printStackTrace();
+                }
+                parseResults.add(privateKeyAndDate);
+            } catch (AddressFormatException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } finally {
+                if (scanner != null) {
+                    scanner.close();
+                }
+            }
         }
     }
 }
