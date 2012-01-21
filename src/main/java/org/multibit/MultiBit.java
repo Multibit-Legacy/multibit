@@ -213,7 +213,6 @@ public class MultiBit {
         controller.handleOpenURI();
 
         log.debug("Downloading blockchain");
-        // see if the user wants to connect to a single node
         multiBitService.downloadBlockChain();
     }
 

@@ -16,8 +16,11 @@
 package org.multibit.action;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+
+import javax.swing.SwingWorker;
 
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
@@ -75,22 +78,24 @@ public class ImportPrivateKeysSubmitAction implements Action {
                             ArrayList<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.importPrivateKeys(new File(
                                     importFilename));
 
-                            // add to wallet and keep track of earliest transaction date
+                            // add to wallet and keep track of earliest
+                            // transaction date
                             // go backwards from now
-                            Date earliestTransactionDate = new Date();  
+                            Date earliestTransactionDate = new Date();
                             if (privateKeyAndDateArray != null) {
                                 for (PrivateKeyAndDate privateKeyAndDate : privateKeyAndDateArray) {
                                     ECKey keyToAdd = privateKeyAndDate.getKey();
                                     if (keyToAdd != null) {
                                         perWalletModelData.getWallet().addKey(keyToAdd);
                                     }
-                                    
+
                                     if (privateKeyAndDate.getDate() == null) {
                                         // need to go back to the genesis block
                                         earliestTransactionDate = null;
                                     } else {
                                         if (earliestTransactionDate != null) {
-                                            earliestTransactionDate = earliestTransactionDate.before(privateKeyAndDate.getDate()) ? earliestTransactionDate : privateKeyAndDate.getDate();
+                                            earliestTransactionDate = earliestTransactionDate.before(privateKeyAndDate.getDate()) ? earliestTransactionDate
+                                                    : privateKeyAndDate.getDate();
                                         }
                                     }
                                 }
@@ -101,20 +106,34 @@ public class ImportPrivateKeysSubmitAction implements Action {
                             // begin blockchain replay
                             // start thread to redownload the block chain
                             final Date finalEarliestTransactionDate = earliestTransactionDate;
-                            Thread workerThread = new Thread(new Runnable() {
+                            @SuppressWarnings("rawtypes")
+                            SwingWorker worker = new SwingWorker() {
                                 @Override
-                                public void run() {
+                                protected Object doInBackground() throws Exception {
                                     try {
                                         controller.getMultiBitService().replayBlockChain(finalEarliestTransactionDate);
                                     } catch (BlockStoreException e) {
                                         e.printStackTrace();
                                     }
-                               }
-                            });
-                            workerThread.start();
+                                    return null; // return not used
+                                }
+                            };
+                            worker.execute();
+                            // System.out.println(worker.get().toString());
+                            // Thread workerThread = new Thread(new Runnable() {
+                            // @Override
+                            // public void run() {
+                            // try {
+                            // controller.getMultiBitService().replayBlockChain(finalEarliestTransactionDate);
+                            // } catch (BlockStoreException e) {
+                            // e.printStackTrace();
+                            // }
+                            // }
+                            // });
+                            // workerThread.start();
 
                             message = controller.getLocaliser().getString("showImportPrivateKeysAction.privateKeysImportSuccess");
-                        } catch (Exception e) {// Catch exception if any
+                        } catch (IOException e) {
                             log.error(e.getClass().getName() + " " + e.getMessage());
                             message = controller.getLocaliser().getString("showImportPrivateKeysAction.privateKeysImportFailure",
                                     new Object[] { e.getClass().getName() + " " + e.getMessage() });

@@ -32,23 +32,23 @@ send,1KqnxT4ERDMjue8GvCWsaCcxRcZPNZg399,petty cash 1
 property,receiveAddress,13T5wgZj4VsWx5np4L2NNkWR8bLxzYz3b6
 property,openUriShowDialog,false
 property,validationAmountIsMissing,false
-property,walletInfoFileLastModified,1327147897000
+property,walletInfoFileLastModified,1327185188000
 property,receiveAmount,0.05
 property,sendWasSuccessful,true
 property,sendPerformPasteNow,false
 property,walletDescription,Test wallet 1
-property,walletFileSize,1772036
+property,walletFileSize,2092297
 property,sendErrorMessage, 
-property,walletFileLastModified,1327146122000
+property,walletFileLastModified,1327185188000
 property,validationAmountValue,9.1464
 property,validationNotEnoughFunds,false
 property,validationAddressValue,1KqnxT4ERDMjue8GvCWsaCcxRcZPNZg399
 property,validationAmountIsNegativeOrZero,false
 property,validationAddressIsInvalid,false
 property,validationAmountIsInvalid,false
-property,walletInfoFileSize,2656
-property,sendAmount,9.1464
+property,walletInfoFileSize,2660
 property,receiveLabel,Wesolych Swiat Bozego Narodzenia
-property,sendAddress,1KqnxT4ERDMjue8GvCWsaCcxRcZPNZg399
+property,sendAmount,9.1464
 property,earliestTransactionDate,1318003097000
+property,sendAddress,1KqnxT4ERDMjue8GvCWsaCcxRcZPNZg399
 property,sendLabel,petty cash 1

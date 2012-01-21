@@ -18,6 +18,8 @@ package org.multibit.action;
 import java.util.Date;
 import java.util.Set;
 
+import javax.swing.SwingWorker;
+
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
@@ -95,19 +97,32 @@ public class ResetTransactionsSubmitAction implements Action {
             // save the wallet without the transactions
             controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
 
-            // start thread to redownload the block chain
+            // start worker thread to redownload the block chain
             final Date finalEarliestTransactionDate = earliestTransactionDate;
-            Thread workerThread = new Thread(new Runnable() {
+            @SuppressWarnings("rawtypes")
+            SwingWorker worker = new SwingWorker() {
                 @Override
-                public void run() {
+                protected Object doInBackground() throws Exception {
                     try {
                         controller.getMultiBitService().replayBlockChain(finalEarliestTransactionDate);
                     } catch (BlockStoreException e) {
                         e.printStackTrace();
                     }
+                    return null; // return not used
                 }
-            });
-            workerThread.start();
+            };
+            worker.execute();
+//            Thread workerThread = new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        controller.getMultiBitService().replayBlockChain(finalEarliestTransactionDate);
+//                    } catch (BlockStoreException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            });
+//            workerThread.start();
 
             controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
         }
