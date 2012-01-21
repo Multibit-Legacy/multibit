@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -54,7 +55,7 @@ public class PrivateKeysHandler {
     
     public PrivateKeysHandler(NetworkParameters networkParameters) {      
         // date format is UTC with century, T time separator and Z for UTC timezone
-        formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         
         if (networkParameters == null) {
