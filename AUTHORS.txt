@@ -8,20 +8,29 @@ Jonny Heggheim
 
 Internationalisation:
 ---------------------
+Arvis Lacis         - Latvian
 Azrael_PT           - Portuguese
+bitcoin.hu          - Hungarian
 damnek              - Dutch
 Emin Gun Sirer      - Turkish
 finway              - Simplified Chinese
+ffe                 - Arabic
 freemoney           - Spanish, German
 GSBank              - French
+guillo.92199        - French
 HostFat             - Italian
+Izsaver             - Russian
+Jan-steenbergen     - Dutch
 Jonny Heggheim      - Norwegian
 Katya Rowe          - Russian
 Kishor Kumar        - Hindi
+Marx1996xvx         - Polish
 Mats Henricson      - Swedish
+Memory Dealers      - Japanese
 mrmx                - Spanish
-raymccarthy         - Swedish
-technomage          - Finnish
 Piotr Waskiewicz    - Polish
+raymccarthy         - Swedish
+Technomage          - Finnish
+Wissam Idrissi      - Arabic
 ziomik              - Italian
 

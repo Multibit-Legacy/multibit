@@ -1,5 +1,11 @@
 MultiBit release notes.
 
+22 Jan 2012    Version 0.3.0Beta2
+Enhancements
++  Hungarian added
++  Initial version of public key export and reimport added.
+
+
 15 Jan 2012    Version 0.3.0Beta1
 Enhancements
 +  Bitcoin protocol handler registered and calls dealt with.
