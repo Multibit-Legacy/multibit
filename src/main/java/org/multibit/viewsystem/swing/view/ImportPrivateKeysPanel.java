@@ -321,7 +321,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         outputFilenamePanel.add(filler1, constraints);
 
-        JButton chooseFilenameButton = new JButton(controller.getLocaliser().getString(
+        MultiBitButton chooseFilenameButton = new MultiBitButton(controller.getLocaliser().getString(
                 "showImportPrivateKeysPanel.filename.text"));
 
         chooseFilenameButton.addActionListener(new ActionListener() {

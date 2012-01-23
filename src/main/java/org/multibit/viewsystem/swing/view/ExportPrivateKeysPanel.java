@@ -321,7 +321,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         outputFilenamePanel.add(filler1, constraints);
 
-        JButton chooseOutputFilenameButton = new JButton(controller.getLocaliser().getString(
+        MultiBitButton chooseOutputFilenameButton = new MultiBitButton(controller.getLocaliser().getString(
                 "showExportPrivateKeysPanel.filename.text"));
 
         chooseOutputFilenameButton.addActionListener(new ActionListener() {

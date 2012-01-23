@@ -73,7 +73,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
 
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
                 BorderFactory.createMatteBorder(1, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
-        setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
 
         this.controller = controller;
 
