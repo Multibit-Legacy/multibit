@@ -35,10 +35,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.Block;
+import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.DumpedPrivateKey;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.ScriptException;
+import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionInput;
 import com.google.bitcoin.core.TransactionOutput;
@@ -54,6 +57,7 @@ public class PrivateKeysHandler {
     private Logger log = LoggerFactory.getLogger(PrivateKeysHandler.class);
 
     private static final String COMMENT_STRING_PREFIX = "#";
+    private static final int NUMBER_OF_MILLISECONDS_IN_A_SECOND = 1000;
 
     private SimpleDateFormat formatter;
 
@@ -72,7 +76,7 @@ public class PrivateKeysHandler {
         this.networkParameters = networkParameters;
     }
 
-    public void exportPrivateKeys(File exportFile, Wallet wallet) throws IOException {
+    public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain) throws IOException {
         FileWriter fileWriter = null;
         PrintWriter printWriter = null;
         try {
@@ -82,7 +86,7 @@ public class PrivateKeysHandler {
             outputHeaderComment(printWriter);
 
             // get the wallet's private keys and output them
-            outputKeys(printWriter, wallet);
+            outputKeys(printWriter, wallet, blockChain);
 
             // close the output stream
             printWriter.close();
@@ -138,7 +142,7 @@ public class PrivateKeysHandler {
         out.println("#");
     }
 
-    private void outputKeys(PrintWriter out, Wallet wallet) throws IOException {
+    private void outputKeys(PrintWriter out, Wallet wallet, BlockChain blockChain) throws IOException {
         if (wallet != null) {
             ArrayList<ECKey> keychain = wallet.keychain;
             Set<Transaction> allTransactions = wallet.getTransactions(true, true);
@@ -191,6 +195,31 @@ public class PrivateKeysHandler {
                     }
                     if (earliestUsageDate != null) {
                         keyToEarliestUsageDateMap.put(ecKey, earliestUsageDate);
+                    }
+                }
+
+                // if there are no transactions in the wallet
+                // overallLastUsageDate will be null.
+                // we do not want keys output with a missing date as this forces
+                // a replay from
+                // the genesis block
+                // In this case we know there are no transactions up to the date
+                // of the head of the
+                // chain so can set the overallLastUsageDate to then
+                // On import this will replay from the current chain head to
+                // include any future tx.
+                if (overallLastUsageDate == null) {
+                    if (blockChain != null) {
+                        StoredBlock chainHead = blockChain.getChainHead();
+                        if (chainHead != null) {
+                            Block header = chainHead.getHeader();
+                            if (header != null) {
+                                long timeSeconds = header.getTimeSeconds();
+                                if (timeSeconds != 0) {
+                                    overallLastUsageDate = new Date(timeSeconds * NUMBER_OF_MILLISECONDS_IN_A_SECOND);
+                                }
+                            }
+                        }
                     }
                 }
 

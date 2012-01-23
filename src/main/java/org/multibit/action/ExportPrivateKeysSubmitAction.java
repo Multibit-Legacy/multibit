@@ -78,7 +78,8 @@ public class ExportPrivateKeysSubmitAction implements Action {
                     // overwrite
 
                     try {
-                        privateKeysHandler.exportPrivateKeys(new File(outputFilename),  controller.getModel().getActivePerWalletModelData().getWallet());
+                        privateKeysHandler.exportPrivateKeys(new File(outputFilename),  controller.getModel().getActivePerWalletModelData().getWallet(),
+                                controller.getMultiBitService().getChain());
                       
                         // success
                         message = controller.getLocaliser().getString("showExportPrivateKeysAction.privateKeysExportSuccess");

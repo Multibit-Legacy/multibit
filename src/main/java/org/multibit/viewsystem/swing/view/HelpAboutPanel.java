@@ -129,17 +129,6 @@ public class HelpAboutPanel extends JPanel implements View {
         fillerPanel2.setOpaque(false);
         add(fillerPanel2, constraints);
 
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 6;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0.1;
-        constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
-        ResetTransactionsAction resetTransactionsAction = new ResetTransactionsAction(controller, null);
-        MultiBitButton resetTransactionsButton = new MultiBitButton(resetTransactionsAction, controller);
-        add(resetTransactionsButton, constraints);
-        
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
     }
 

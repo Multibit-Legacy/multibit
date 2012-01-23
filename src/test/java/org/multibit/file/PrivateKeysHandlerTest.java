@@ -76,8 +76,8 @@ public class PrivateKeysHandlerTest extends TestCase {
 
         assertNotNull(testWallet);
 
-        // write private keys file for wallet
-        privateKeysHandler.exportPrivateKeys(new File(testPrivateKeysFile), testWallet);
+        // write private keys file for wallet - no blockchain
+        privateKeysHandler.exportPrivateKeys(new File(testPrivateKeysFile), testWallet, null);
 
         // read in the created private keys file and the expected one and
         // compare

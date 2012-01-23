@@ -72,6 +72,7 @@ import org.multibit.viewsystem.swing.action.HelpAboutAction;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.action.ReceiveBitcoinAction;
+import org.multibit.viewsystem.swing.action.ResetTransactionsAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinAction;
 import org.multibit.viewsystem.swing.action.ShowCreateBulkAddressesAction;
 import org.multibit.viewsystem.swing.action.ShowExportPrivateKeysAction;
@@ -85,6 +86,7 @@ import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.GradientPanel;
+import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitLargeButton;
 import org.multibit.viewsystem.swing.view.yourwallets.YourWalletsPanel;
@@ -669,6 +671,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // export private keys
         ShowExportPrivateKeysAction showExportPrivateKeysAction = new ShowExportPrivateKeysAction(controller, createImageIcon(EXPORT_PRIVATE_KEYS_ICON_FILE));
         menuItem = new JMenuItem(showExportPrivateKeysAction);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        toolsMenu.add(menuItem);
+        
+        toolsMenu.addSeparator();
+        
+        ResetTransactionsAction resetTransactionsAction = new ResetTransactionsAction(controller, null);
+        menuItem = new JMenuItem(resetTransactionsAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
         toolsMenu.add(menuItem);
