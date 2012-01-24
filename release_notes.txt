@@ -1,10 +1,10 @@
 MultiBit release notes.
 
-22 Jan 2012    Version 0.3.0Beta2
+23 Jan 2012    Version 0.3.0Beta2
 Enhancements
 +  Includes fix for February 20th 2012 Bitcoin network change
 +  Hungarian added
-+  Initial version of public key export and reimport available
++  Initial version of private key export and reimport available
 +  'Reset blockchain and transactions' moved to Tools menu
 
 
