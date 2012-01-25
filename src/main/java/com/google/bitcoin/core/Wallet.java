@@ -129,6 +129,10 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
      */
     public final ArrayList<ECKey> keychain;
 
+    public ArrayList<ECKey> getKeychain() {
+        return keychain;
+    }
+
     private final NetworkParameters params;
 
     transient private ArrayList<WalletEventListener> eventListeners;

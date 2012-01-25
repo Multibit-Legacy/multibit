@@ -104,26 +104,20 @@ public class PrivateKeysHandler {
     public ArrayList<PrivateKeyAndDate> importPrivateKeys(File importFile) throws IOException {
         ArrayList<PrivateKeyAndDate> parseResults = new ArrayList<PrivateKeyAndDate>();
 
+        Scanner scanner = new Scanner(new FileReader(importFile));
         try {
-            Scanner scanner = new Scanner(new FileReader(importFile));
-            try {
-                // first use a Scanner to get each line
-                while (scanner.hasNextLine()) {
-                    processLine(scanner.nextLine(), parseResults);
-                }
-            } finally {
-                // ensure the underlying stream is always closed
-                // this only has any effect if the item passed
-                // to the Scanner
-                // constructor implements Closeable (which it
-                // does in this case).
-                scanner.close();
+            // first use a Scanner to get each line
+            while (scanner.hasNextLine()) {
+                processLine(scanner.nextLine(), parseResults);
             }
-
-        } catch (Exception e) {// Catch exception if any
-            log.error(e.getClass().getName() + " " + e.getMessage());
+        } finally {
+            // ensure the underlying stream is always closed
+            // this only has any effect if the item passed
+            // to the Scanner
+            // constructor implements Closeable (which it
+            // does in this case).
+            scanner.close();
         }
-
         return parseResults;
     }
 

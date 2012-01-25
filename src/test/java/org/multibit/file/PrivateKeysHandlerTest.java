@@ -102,7 +102,7 @@ public class PrivateKeysHandlerTest extends TestCase {
 
         ArrayList<PrivateKeyAndDate> parsedPrivateKeysAndDates = privateKeysHandler.importPrivateKeys(new File(expectedPrivateKeysFile));
         
-        System.out.println("PrivateKeysHandlerTest#testImport parsedPrivateKeysAndDates = '" + parsedPrivateKeysAndDates + "'");
+        //System.out.println("PrivateKeysHandlerTest#testImport parsedPrivateKeysAndDates = '" + parsedPrivateKeysAndDates + "'");
         assertNotNull(parsedPrivateKeysAndDates);
         assertEquals(7, parsedPrivateKeysAndDates.size());
         
@@ -112,7 +112,6 @@ public class PrivateKeysHandlerTest extends TestCase {
             count++;
         }
     }
-
 
     private String readFile(File inputFile) throws IOException {
         StringBuffer contents = new StringBuffer();

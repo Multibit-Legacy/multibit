@@ -18,6 +18,7 @@ package org.multibit.action;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.swing.SwingWorker;
@@ -35,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.store.BlockStoreException;
 
 /**
@@ -70,10 +72,8 @@ public class ImportPrivateKeysSubmitAction implements Action {
                         // no import file - nothing to do
                         message = controller.getLocaliser().getString("showImportPrivateKeysAction.privateKeysNothingToDo");
                     } else {
-
                         try {
-                            PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService()
-                                    .getNetworkParameters());
+                            PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService().getNetworkParameters());
 
                             ArrayList<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.importPrivateKeys(new File(
                                     importFilename));
@@ -81,23 +81,29 @@ public class ImportPrivateKeysSubmitAction implements Action {
                             // add to wallet and keep track of earliest
                             // transaction date
                             // go backwards from now
+                            Wallet walletToAddKeysTo = perWalletModelData.getWallet();
                             Date earliestTransactionDate = new Date();
                             if (privateKeyAndDateArray != null) {
                                 for (PrivateKeyAndDate privateKeyAndDate : privateKeyAndDateArray) {
                                     ECKey keyToAdd = privateKeyAndDate.getKey();
                                     if (keyToAdd != null) {
-                                        perWalletModelData.getWallet().addKey(keyToAdd);
-                                    }
+                                        if (walletToAddKeysTo != null && !keyChainContainsPrivateKey(walletToAddKeysTo.getKeychain(), keyToAdd)) {
+                                            walletToAddKeysTo.addKey(keyToAdd);
 
-                                    if (privateKeyAndDate.getDate() == null) {
-                                        // need to go back to the genesis block
-                                        earliestTransactionDate = null;
-                                    } else {
-                                        if (earliestTransactionDate != null) {
-                                            earliestTransactionDate = earliestTransactionDate.before(privateKeyAndDate.getDate()) ? earliestTransactionDate
-                                                    : privateKeyAndDate.getDate();
+                                            // update earliest transaction date
+                                            if (privateKeyAndDate.getDate() == null) {
+                                                // need to go back to the
+                                                // genesis block
+                                                earliestTransactionDate = null;
+                                            } else {
+                                                if (earliestTransactionDate != null) {
+                                                    earliestTransactionDate = earliestTransactionDate.before(privateKeyAndDate
+                                                            .getDate()) ? earliestTransactionDate : privateKeyAndDate.getDate();
+                                                }
+                                            }
                                         }
                                     }
+
                                 }
                             }
                             controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
@@ -146,5 +152,21 @@ public class ImportPrivateKeysSubmitAction implements Action {
         controller.getModel().setUserPreference(MultiBitModel.DISPLAY_IMPORT_PRIVATE_KEYS_MESSAGE, "true");
         controller.getModel().setUserPreference(MultiBitModel.IMPORT_PRIVATE_KEYS_MESSAGE, message);
         controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
+    }
+    
+    /**
+     * this method is here because there is no equals on ECKey
+     */
+    private boolean keyChainContainsPrivateKey(ArrayList<ECKey> keyChain, ECKey keyToAdd) {
+        if (keyChain == null || keyToAdd == null) {
+            return false;
+        } else {
+            for (ECKey loopKey : keyChain) {
+                if (Arrays.equals(keyToAdd.getPrivKeyBytes(), loopKey.getPrivKeyBytes())) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }
