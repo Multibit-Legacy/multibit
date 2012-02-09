@@ -1,5 +1,10 @@
 MultiBit release notes.
 
+Version 0.3.0Beta3
+Enhancements
++  Moved to bitcoinj V4-SNAPSHOT
+
+
 23 Jan 2012    Version 0.3.0Beta2
 Enhancements
 +  Includes fix for February 20th 2012 Bitcoin network change

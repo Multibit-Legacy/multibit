@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.multibit</groupId>
   <artifactId>multibit</artifactId>
-  <version>0.3.0-beta2</version>
+  <version>0.3.0-beta3</version>
   <name>MultiBit</name>
   <description>A Java swing client for bitcoin</description>
   <url>http://www.multibit.org</url>
@@ -575,7 +575,7 @@
     <staging.linux.dir>${project.build.directory}/staging.linux</staging.linux.dir>
 
     <!-- Version of BitCoinJ to use (multiple uses) -->
-    <bitcoinj.version>0.3</bitcoinj.version>
+    <bitcoinj.version>0.4-SNAPSHOT</bitcoinj.version>
 
     <!-- Location of staging directory for creation of windows IzPack installer -->
     <staging.windows.dir>${project.build.directory}/staging.windows</staging.windows.dir>
