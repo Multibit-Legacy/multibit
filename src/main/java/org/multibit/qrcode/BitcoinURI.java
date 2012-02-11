@@ -165,7 +165,7 @@ public class BitcoinURI {
             if (FIELD_AMOUNT.equals(tokens[i].toLowerCase())) {
                 // Check for a pair
                 if (last) {
-                    throw new BitcoinURIParseException("'" + tokens[i] + "' does not have a value");
+                    throw new OptionalFieldValidationException("'" + tokens[i] + "' does not have a value");
                 }
 
                 // Decode the amount (contains an optional decimal component to 8dp)
@@ -173,7 +173,7 @@ public class BitcoinURI {
                 try {
                     amount = Utils.toNanoCoins(tokens[i + 1]);
                 } catch (NumberFormatException e) {
-                    throw new BitcoinURIParseException("'" + tokens[i] + "' value is not valid", e);
+                    throw new OptionalFieldValidationException("'" + tokens[i] + "' value is not valid", e);
                 }
                 putWithValidation(tokens[i], amount);
                 // Skip over the value
@@ -185,7 +185,7 @@ public class BitcoinURI {
             if (FIELD_LABEL.equals(tokens[i].toLowerCase())) {
                 // Check for a pair
                 if (last) {
-                    throw new BitcoinURIParseException("'" + tokens[i] + "' does not have a value");
+                    throw new OptionalFieldValidationException("'" + tokens[i] + "' does not have a value");
                 }
                 putWithValidation(tokens[i], tokens[i + 1]);
                 // Skip over the value
@@ -197,7 +197,7 @@ public class BitcoinURI {
             if (FIELD_MESSAGE.equals(tokens[i].toLowerCase())) {
                 // Check for a pair
                 if (last) {
-                    throw new BitcoinURIParseException("'" + tokens[i] + "' does not have a value");
+                    throw new OptionalFieldValidationException("'" + tokens[i] + "' does not have a value");
                 }
                 putWithValidation(tokens[i], tokens[i + 1]);
                 // Skip over the value
@@ -209,7 +209,7 @@ public class BitcoinURI {
             if (FIELD_REQ_EXPIRES.equals(tokens[i].toLowerCase())) {
                 // Check for a pair
                 if (last) {
-                    throw new BitcoinURIParseException("'" + tokens[i] + "' does not have a value");
+                    throw new OptionalFieldValidationException("'" + tokens[i] + "' does not have a value");
                 }
                 // Attempt to parse as a ISO8601 UTC date (always use new SDF to avoid threading issues)
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -218,11 +218,11 @@ public class BitcoinURI {
                 try {
                     reqExpires = sdf.parse(tokens[i + 1]);
                 } catch (ParseException e) {
-                    throw new BitcoinURIParseException("'" + tokens[i] + "' is not in the correct format (ISO8601 UTC)");
+                    throw new RequiredFieldValidationException("'" + tokens[i] + "' is not in the correct format (ISO8601 UTC)");
                 }
                 // Check for expiry
                 if (reqExpires.before(new Date())) {
-                    throw new BitcoinURIParseException("'" + tokens[i] + "' has expired, this URI is not valid");
+                    throw new RequiredFieldValidationException("'" + tokens[i] + "' has expired, this URI is not valid");
                 }
                 putWithValidation(tokens[i], reqExpires);
                 // Skip over the value
@@ -234,7 +234,7 @@ public class BitcoinURI {
 
             // Check for required parameters
             if (tokens[i].startsWith("req-")) {
-                throw new BitcoinURIParseException("'" + tokens[i] + "' is required but not known, this URI is not valid");
+                throw new RequiredFieldValidationException("'" + tokens[i] + "' is required but not known, this URI is not valid");
             }
 
             // Must be unknown and optional to be here - assume name/value pairing
