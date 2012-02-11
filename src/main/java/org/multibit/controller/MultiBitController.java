@@ -13,7 +13,6 @@ import org.multibit.qrcode.BitcoinURI;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
-import org.multibit.viewsystem.swing.view.AbstractTradePanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -647,7 +646,8 @@ public class MultiBitController implements
             return;
         }
         // Process the URI
-        BitcoinURI bitcoinURI = new BitcoinURI(this, WhitespaceTrimmer.trim(rawBitcoinURI.toString()));
+        // TODO Consider handling the possible runtime exception at a suitable level for recovery
+        BitcoinURI bitcoinURI = new BitcoinURI(this.getMultiBitService().getNetworkParameters(), WhitespaceTrimmer.trim(rawBitcoinURI.toString()));
         if (bitcoinURI.isParsedOk()) {
             log.debug("Parsed Bitcoin URI successfully");
 

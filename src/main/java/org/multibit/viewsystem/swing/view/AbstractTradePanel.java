@@ -753,7 +753,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             }
 
             // decode the string to an AddressBookData
-            BitcoinURI bitcoinURI = new BitcoinURI(controller, decodedString);
+            // TODO Consider handling the possible runtime exception at a suitable level for recovery
+            BitcoinURI bitcoinURI = new BitcoinURI(controller.getMultiBitService().getNetworkParameters(), decodedString);
 
             if (bitcoinURI.isParsedOk()) {
                 log.debug("SendBitcoinPanel - ping 1");
