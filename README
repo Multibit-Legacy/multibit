@@ -13,7 +13,7 @@ Package the multibit classes into a multibit.jar
 maven install
 take the multibit.jar and create:
 + an executable jar = multibit-exe.jar
-+ a Mac application bundle = MultiBit.app
++ a Mac application bundle = MultiBit-${project.version}.app
 + a Mac DMG file = multibit-${project.version}.dmg
 + an installer for Windows = multibit--${project.version}-windows.exe
 + an installer for Linux = multibit-${project.version}-linux.jar

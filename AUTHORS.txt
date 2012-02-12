@@ -19,7 +19,7 @@ freemoney           - Spanish, German
 GSBank              - French
 guillo.92199        - French
 HostFat             - Italian
-Izsaver             - Russian
+lzsaver             - Russian
 Jan-steenbergen     - Dutch
 Jonny Heggheim      - Norwegian
 Katya Rowe          - Russian
