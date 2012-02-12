@@ -3,6 +3,7 @@ MultiBit release notes.
 Version 0.3.0Beta3
 Enhancements
 +  Moved to bitcoinj V4-SNAPSHOT
++  I18N refresh - including Russian update.
 
 
 23 Jan 2012    Version 0.3.0Beta2
