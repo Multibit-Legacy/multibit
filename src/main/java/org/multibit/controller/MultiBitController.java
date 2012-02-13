@@ -695,7 +695,8 @@ public class MultiBitController implements
             return;
         }
         // Process the URI
-        BitcoinURI bitcoinURI = new BitcoinURI(this, WhitespaceTrimmer.trim(rawBitcoinURI.toString()));
+        // TODO Consider handling the possible runtime exception at a suitable level for recovery
+        BitcoinURI bitcoinURI = new BitcoinURI(this.getMultiBitService().getNetworkParameters(), WhitespaceTrimmer.trim(rawBitcoinURI.toString()));
         if (bitcoinURI.isParsedOk()) {
             log.debug("Parsed Bitcoin URI successfully");
 
