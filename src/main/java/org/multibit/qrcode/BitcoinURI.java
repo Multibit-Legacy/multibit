@@ -67,7 +67,7 @@ import java.util.TimeZone;
  * @author Andreas Schildbach (initial code)
  * @author Jim Burton (enhancements for MultiBit)
  * @author Gary Rowe (BIP21 support)
- * @see <a href="https://en.bitcoin.it/wiki/URI_Scheme">The Bitcoin URI specification</a>
+ * @see <a href="https://en.bitcoin.it/wiki/BIP_0021">BOP 0021</a>
  */
 public class BitcoinURI {
 
@@ -135,9 +135,9 @@ public class BitcoinURI {
         parseParameters(networkParameters, tokens);
 
         // Apply non-null default values if not present
-        if (!parameterMap.containsKey(FIELD_AMOUNT)) {
-            parameterMap.put(FIELD_AMOUNT, BigInteger.ZERO);
-        }
+//        if (!parameterMap.containsKey(FIELD_AMOUNT)) {
+//            parameterMap.put(FIELD_AMOUNT, BigInteger.ZERO);
+//        }
 
     }
 
@@ -277,6 +277,7 @@ public class BitcoinURI {
 
     /**
      * @return The amount name encoded using a pure integer value based at 10,000,000 units is 1 BTC
+     *         May be null if no amount is specified
      */
     public BigInteger getAmount() {
         return (BigInteger) parameterMap.get(FIELD_AMOUNT);

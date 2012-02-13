@@ -35,7 +35,7 @@ public class BitcoinURITest {
 
         testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":" + PRODNET_GOOD_ADDRESS);
         assertNotNull(testObject);
-        assertEquals("Unexpected amount", BigInteger.ZERO, testObject.getAmount());
+        assertNull("Unexpected amount", testObject.getAmount());
         assertNull("Unexpected label", testObject.getLabel());
         assertEquals("Unexpected label", 20, testObject.getAddress().getHash160().length);
 
@@ -357,11 +357,11 @@ public class BitcoinURITest {
 
         // Unknown not required field
         testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":" + PRODNET_GOOD_ADDRESS + "?aardvark=true");
-        assertEquals("BitcoinURI['address'='1KzTSfqjF2iKCduwz59nv2uqh1W2JsTxZH','aardvark'='true','amount'='0']", testObject.toString());
+        assertEquals("BitcoinURI['address'='1KzTSfqjF2iKCduwz59nv2uqh1W2JsTxZH','aardvark'='true']", testObject.toString());
 
         // Unknown not required field (isolated)
         testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":" + PRODNET_GOOD_ADDRESS + "?aardvark");
-        assertEquals("BitcoinURI['address'='1KzTSfqjF2iKCduwz59nv2uqh1W2JsTxZH','aardvark'='aardvark','amount'='0']", testObject.toString());
+        assertEquals("BitcoinURI['address'='1KzTSfqjF2iKCduwz59nv2uqh1W2JsTxZH','aardvark'='aardvark']", testObject.toString());
 
         // Unknown and required field
         try {
