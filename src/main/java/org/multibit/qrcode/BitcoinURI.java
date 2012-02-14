@@ -39,32 +39,46 @@ import java.util.Map;
 import java.util.TimeZone;
 
 /**
- * <p>Provides a standard implementation of a Bitcoin URI with support for the following:</p>
+ * <p>
+ * Provides a standard implementation of a Bitcoin URI with support for the
+ * following:
+ * </p>
  * <ul>
  * <li>URLEncoded URIs (as passed in by IE on the command line)</li>
  * <li>BIP21 names (including the "req-" prefix handling requirements)</li>
  * </ul>
  * <h2>Accepted formats</h2>
- * <p>The following input forms are accepted</p>
+ * <p>
+ * The following input forms are accepted
+ * </p>
  * <ul>
  * <li>{@code bitcoin:<address>}</li>
- * <li>{@code bitcoin:<address>?<name1>=<value1>&<name2>=<value2>} with multiple additional name/value pairs</li>
+ * <li>{@code bitcoin:<address>?<name1>=<value1>&<name2>=<value2>} with multiple
+ * additional name/value pairs</li>
  * </ul>
- * <p>The name/value pairs are processed as follows:</p>
+ * <p>
+ * The name/value pairs are processed as follows:
+ * </p>
  * <ul>
  * <li>URL encoding is stripped and treated as UTF-8</li>
- * <li>names prefixed with {@code req-} are treated as required and if unknown or conflicting cause a parse exception</li>
- * <li>Unknown names not prefixed with {@code req-} are silently ignored unless they are malformed</li>
- * <li>Known names not prefixed with {@code req-} are processed unless they are malformed</li>
+ * <li>names prefixed with {@code req-} are treated as required and if unknown
+ * or conflicting cause a parse exception</li>
+ * <li>Unknown names not prefixed with {@code req-} are silently ignored unless
+ * they are malformed</li>
+ * <li>Known names not prefixed with {@code req-} are processed unless they are
+ * malformed</li>
  * </ul>
- * <p>The following names are known and have the following formats</p>
+ * <p>
+ * The following names are known and have the following formats
+ * </p>
  * <ul>
- * <li>{@code amount} decimal value to 8 dp (e.g. 0.12345678) <b>Note that the exponent notation is not supported any more</b></li>
+ * <li>{@code amount} decimal value to 8 dp (e.g. 0.12345678) <b>Note that the
+ * exponent notation is not supported any more</b></li>
  * <li>{@code label} any alphanumeric</li>
  * <li>{@code message} any alphanumeric</li>
  * <li>{@code req-expires} an ISO8601 UTC timestamp (e.g. 2000-12-31T23:59:59Z)</li>
  * </ul>
- *
+ * 
  * @author Andreas Schildbach (initial code)
  * @author Jim Burton (enhancements for MultiBit)
  * @author Gary Rowe (BIP21 support)
@@ -94,13 +108,18 @@ public class BitcoinURI {
     private final Map<String, Object> parameterMap = new LinkedHashMap<String, Object>();
 
     /**
-     * @param networkParameters The BitCoinJ network parameters that determine which network the URI is from
-     * @param input             The raw URI data to be parsed (see class comments for accepted formats)
-     * @throws BitcoinURIParseException If the input fails Bitcoin URI syntax and semantic checks
+     * @param networkParameters
+     *            The BitCoinJ network parameters that determine which network
+     *            the URI is from
+     * @param input
+     *            The raw URI data to be parsed (see class comments for accepted
+     *            formats)
+     * @throws BitcoinURIParseException
+     *             If the input fails Bitcoin URI syntax and semantic checks
      */
     public BitcoinURI(NetworkParameters networkParameters, String input) {
 
-        // Basic validation            
+        // Basic validation
         if (networkParameters == null) {
             throw new IllegalArgumentException("networkParameters cannot be null");
         }
@@ -110,6 +129,10 @@ public class BitcoinURI {
 
         log.debug("Attempting to parse '{}' for {}", input, networkParameters.port == 8333 ? "prodNet" : "testNet");
 
+        // early MultiBit versions did not URL encode the label hence may
+        // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER i.e be lenient
+        input = input.replace(" ", ENCODED_SPACE_CHARACTER);
+
         // URI validation
         if (!input.startsWith(BITCOIN_SCHEME)) {
             throw new BitcoinURIParseException("Bad scheme - expecting '" + BITCOIN_SCHEME + "'");
@@ -118,19 +141,21 @@ public class BitcoinURI {
         // Attempt to form the URI (fail fast syntax checking to official standards)
         URI uri;
         try {
-            // early MultiBit versions did not URL encode the label hence may have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER
-            input = input.replace(" ", ENCODED_SPACE_CHARACTER);
             uri = new URI(input);
         } catch (URISyntaxException e) {
             throw new BitcoinURIParseException("Bad URI syntax", e);
         }
 
         // Examine the scheme specific part in detail
-        String schemeSpecificPart = uri.getSchemeSpecificPart();
+        // Note getSchemeSpecificPart() is not used as it unescapes the label and message contents too and parse then fails
+        String schemeSpecificPart = "";
+        if (uri.toString().startsWith(BITCOIN_SCHEME + ":")) {
+            schemeSpecificPart = uri.toString().substring(BITCOIN_SCHEME.length() + 1);
+        }
 
         // Split the parameters using the known literals
         String[] tokens = schemeSpecificPart.split("[\\?\\&\\=]");
-        if (tokens == null || tokens.length == 0) {
+        if (tokens == null || tokens.length == 0 || (tokens.length == 1 && tokens[0].equals(""))) {
             throw new BitcoinURIParseException("Missing address");
         }
 
@@ -139,8 +164,11 @@ public class BitcoinURI {
     }
 
     /**
-     * @param networkParameters The network parameters
-     * @param tokens            The tokens representing the parameters (assumed to be in pairs)
+     * @param networkParameters
+     *            The network parameters
+     * @param tokens
+     *            The tokens representing the parameters (assumed to be in
+     *            pairs)
      */
     private void parseParameters(NetworkParameters networkParameters, String[] tokens) {
         // Attempt to parse the first entry as a Bitcoin address for this network
@@ -165,7 +193,8 @@ public class BitcoinURI {
                     throw new OptionalFieldValidationException("'" + tokens[i] + "' does not have a value");
                 }
 
-                // Decode the amount (contains an optional decimal component to 8dp)
+                // Decode the amount (contains an optional decimal component to
+                // 8dp)
                 BigInteger amount;
                 try {
                     amount = Utils.toNanoCoins(tokens[i + 1]);
@@ -208,7 +237,8 @@ public class BitcoinURI {
                 if (last) {
                     throw new OptionalFieldValidationException("'" + tokens[i] + "' does not have a value");
                 }
-                // Attempt to parse as a ISO8601 UTC date (always use new SDF to avoid threading issues)
+                // Attempt to parse as a ISO8601 UTC date (always use new SDF to
+                // avoid threading issues)
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
                 sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
                 Date reqExpires;
@@ -243,7 +273,8 @@ public class BitcoinURI {
                 i++;
                 continue;
             } else {
-                // Isolated parameter at the end so treat as itself and rely on external application to deal with it
+                // Isolated parameter at the end so treat as itself and rely on
+                // external application to deal with it
                 putWithValidation(tokens[i], tokens[i]);
             }
         }
@@ -251,10 +282,15 @@ public class BitcoinURI {
     }
 
     /**
-     * <p>Put the value against the key in the map checking for duplication This avoids address field overwrite etc.</p>
-     *
-     * @param key   The key for the map
-     * @param value The value to store
+     * <p>
+     * Put the value against the key in the map checking for duplication This
+     * avoids address field overwrite etc.
+     * </p>
+     * 
+     * @param key
+     *            The key for the map
+     * @param value
+     *            The value to store
      */
     private void putWithValidation(String key, Object value) {
         if (parameterMap.containsKey(key)) {
@@ -272,22 +308,22 @@ public class BitcoinURI {
     }
 
     /**
-     * @return The amount name encoded using a pure integer value based at 10,000,000 units is 1 BTC
-     *         May be null if no amount is specified
+     * @return The amount name encoded using a pure integer value based at
+     *         10,000,000 units is 1 BTC May be null if no amount is specified
      */
     public BigInteger getAmount() {
         return (BigInteger) parameterMap.get(FIELD_AMOUNT);
     }
 
     /**
-     * @return The label from the URI
+     * @return The label from the URI. This is URL escaped.
      */
     public String getLabel() {
         return (String) parameterMap.get(FIELD_LABEL);
     }
 
     /**
-     * @return The message from the URI
+     * @return The message from the URI. This is URL escaped.
      */
     public String getMessage() {
         return (String) parameterMap.get(FIELD_MESSAGE);
@@ -318,24 +354,36 @@ public class BitcoinURI {
     }
 
     /**
-     * <p>Simple Bitcoin URI builder using known good fields</p>
-     *
-     * @param address The Bitcoin address
-     * @param amount  A String representation of the amount in BTC (decimal)
-     * @param label   The label
+     * <p>
+     * Simple Bitcoin URI builder using known good fields
+     * </p>
+     * 
+     * @param address
+     *            The Bitcoin address
+     * @param amount
+     *            A String representation of the amount in BTC (decimal)
+     * @param label
+     *            The label
      * @return A String containing the Bitcoin URI
      */
     public static String convertToBitcoinURI(String address, String amount, String label) {
+        return String.format("%s:%s?%s=%s&%s=%s", BITCOIN_SCHEME, address, FIELD_AMOUNT, amount, FIELD_LABEL,
+                encodeHTMLString(label));
+    }
+
+    /**
+     * <p>
+     * Encode a string using HTML encoding
+     * </p>
+     * 
+     * @param stringToEncode
+     *            The string to HTML encode
+     */
+    public static String encodeHTMLString(String stringToEncode) {
         try {
-            return String.format("%s:%s?%s=%s&%s=%s",
-                    BITCOIN_SCHEME,
-                    address,
-                    FIELD_AMOUNT,
-                    amount,
-                    FIELD_LABEL,
-                    java.net.URLEncoder.encode(label, "UTF-8").replace("+", ENCODED_SPACE_CHARACTER));
+            return java.net.URLEncoder.encode(stringToEncode, "UTF-8").replace("+", ENCODED_SPACE_CHARACTER);
         } catch (UnsupportedEncodingException e) {
-            // should not happen - UTF-8 is valid encoding
+            // should not happen - UTF-8 is a valid encoding
             return null;
         }
     }

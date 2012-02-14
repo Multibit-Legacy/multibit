@@ -32,6 +32,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -817,7 +818,13 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 amountString = controller.getLocaliser().bitcoinValueToString(bitcoinURI.getAmount(), false, false);
             }
             log.debug("SendBitcoinPanel - ping 4");
-            String decodedLabel = bitcoinURI.getLabel();
+            String decodedLabel = null;
+            try {
+                decodedLabel = java.net.URLDecoder.decode(bitcoinURI.getLabel(), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
             log.debug("SendBitcoinPanel#processDecodedString addressString = " + addressString + ", amountString = " + amountString
                     + ", label = " + decodedLabel);

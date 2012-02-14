@@ -116,7 +116,7 @@ public class ImageSelection extends TransferHandler implements Transferable {
     // Transferable
     public Object getTransferData(DataFlavor flavor) {
         if (isDataFlavorSupported(flavor)) {
-            if (DataFlavor.imageFlavor.equals(flavor)) {
+            if (DataFlavor.imageFlavor.equals(flavor) && image != null && image.getHeight(null) > 0) {
                 return image;
             }
 
@@ -150,10 +150,6 @@ public class ImageSelection extends TransferHandler implements Transferable {
 
         }
         return null;
-        
-        //java.awt.datatransfer.DataFlavor[mimetype=image/x-pict;representationclass=java.io.InputStream], 
-        //java.awt.datatransfer.DataFlavor[mimetype=image/x-java-image;representationclass=java.awt.Image], 
-
     }
 
     public DataFlavor[] getTransferDataFlavors() {
@@ -163,7 +159,15 @@ public class ImageSelection extends TransferHandler implements Transferable {
     public boolean isDataFlavorSupported(DataFlavor flavor) {
         for (int j = 0, m = flavors.length; j < m; j++) {
             if (flavor.equals(flavors[j])) {
-                return true;
+                if (DataFlavor.imageFlavor.equals(flavor)) {
+                    if ( image != null && image.getHeight(null) > 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                   return true;
+                }
             }
         }
         return false;
