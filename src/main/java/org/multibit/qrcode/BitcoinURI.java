@@ -27,6 +27,7 @@ import com.google.bitcoin.core.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -71,6 +72,8 @@ import java.util.TimeZone;
  */
 public class BitcoinURI {
 
+    private static final String ENCODED_SPACE_CHARACTER = "%20";
+
     /**
      * Provides logging for this class
      */
@@ -82,8 +85,6 @@ public class BitcoinURI {
     private static final String FIELD_LABEL = "label";
     private static final String FIELD_AMOUNT = "amount";
     private static final String FIELD_ADDRESS = "address";
-
-//    private static final Pattern FIELD_AMOUNT_PATTERN = Pattern.compile("([\\d.]+)(?:X(\\d+))?");
 
     public static final String BITCOIN_SCHEME = "bitcoin";
 
@@ -117,6 +118,8 @@ public class BitcoinURI {
         // Attempt to form the URI (fail fast syntax checking to official standards)
         URI uri;
         try {
+            // early MultiBit versions did not URL encode the label hence may have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER
+            input = input.replace(" ", ENCODED_SPACE_CHARACTER);
             uri = new URI(input);
         } catch (URISyntaxException e) {
             throw new BitcoinURIParseException("Bad URI syntax", e);
@@ -133,12 +136,6 @@ public class BitcoinURI {
 
         // Attempt to parse the rest of the URI parameters
         parseParameters(networkParameters, tokens);
-
-        // Apply non-null default values if not present
-//        if (!parameterMap.containsKey(FIELD_AMOUNT)) {
-//            parameterMap.put(FIELD_AMOUNT, BigInteger.ZERO);
-//        }
-
     }
 
     /**
@@ -270,7 +267,6 @@ public class BitcoinURI {
     /**
      * @return The Bitcoin Address from the URI
      */
-
     public Address getAddress() {
         return (Address) parameterMap.get(FIELD_ADDRESS);
     }
@@ -304,15 +300,6 @@ public class BitcoinURI {
         return (Date) parameterMap.get(FIELD_REQ_EXPIRES);
     }
 
-    /**
-     * @return True if the Bitcoin URI has been parsed successfully
-     * @deprecated Remove when ready since it is always true
-     */
-    @Deprecated
-    public boolean isParsedOk() {
-        return true;
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("BitcoinURI[");
@@ -339,12 +326,17 @@ public class BitcoinURI {
      * @return A String containing the Bitcoin URI
      */
     public static String convertToBitcoinURI(String address, String amount, String label) {
-        return String.format("%s:%s?%s=%s&%s=%s",
-                BITCOIN_SCHEME,
-                address,
-                FIELD_AMOUNT,
-                amount,
-                FIELD_LABEL,
-                label);
+        try {
+            return String.format("%s:%s?%s=%s&%s=%s",
+                    BITCOIN_SCHEME,
+                    address,
+                    FIELD_AMOUNT,
+                    amount,
+                    FIELD_LABEL,
+                    java.net.URLEncoder.encode(label, "UTF-8").replace("+", ENCODED_SPACE_CHARACTER));
+        } catch (UnsupportedEncodingException e) {
+            // should not happen - UTF-8 is valid encoding
+            return null;
+        }
     }
 }

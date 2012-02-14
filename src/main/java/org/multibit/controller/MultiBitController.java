@@ -60,15 +60,11 @@ import com.google.bitcoin.core.Wallet;
 /**
  * the MVC controller for Multibit - this is loosely based on the Apache Struts
  * controller
- *
+ * 
  * @author jim
  */
-public class MultiBitController implements
-    PeerEventListener,
-    GenericOpenURIEventListener,
-    GenericPreferencesEventListener,
-    GenericAboutEventListener,
-    GenericQuitEventListener {
+public class MultiBitController implements PeerEventListener, GenericOpenURIEventListener, GenericPreferencesEventListener,
+        GenericAboutEventListener, GenericQuitEventListener {
 
     private Logger log = LoggerFactory.getLogger(MultiBitController.class);
 
@@ -123,8 +119,8 @@ public class MultiBitController implements
     private ApplicationDataDirectoryLocator applicationDataDirectoryLocator;
 
     /**
-     * Multiple threads will write to this variable so require it to be volatile to ensure
-     * that latest write is what gets read
+     * Multiple threads will write to this variable so require it to be volatile
+     * to ensure that latest write is what gets read
      */
     private volatile URI rawBitcoinURI = null;
 
@@ -176,13 +172,14 @@ public class MultiBitController implements
     /**
      * set the action forward that will be used to determined the next view to
      * display
-     *
+     * 
      * normally called by the action once it has decided what the next view is
-     *
+     * 
      * this setActionForward should be used when the next view is a child of the
      * current view
-     *
-     * @param actionForward The action forward
+     * 
+     * @param actionForward
+     *            The action forward
      */
     public void setActionForwardToChild(ActionForward actionForward) {
         // push current view onto the stack
@@ -194,8 +191,9 @@ public class MultiBitController implements
     /**
      * set the action forward that will be used to determined the next view to
      * display where the next view is a sibling of the current view
-     *
-     * @param actionForward The action forward
+     * 
+     * @param actionForward
+     *            The action forward
      */
     public void setActionForwardToSibling(ActionForward actionForward) {
         determineNextView(actionForward);
@@ -235,126 +233,127 @@ public class MultiBitController implements
     /**
      * set the action forward that will be used to determined the next view to
      * display
-     *
+     * 
      * normally called by the action once it has decided what the next view is
-     *
+     * 
      * this setActionForward should be used when the next view is a child of the
      * current view
-     *
-     * @param actionForward The action forward
+     * 
+     * @param actionForward
+     *            The action forward
      */
     public void determineNextView(ActionForward actionForward) {
         switch (actionForward) {
-            case FORWARD_TO_SAME: {
-                // redisplay the sameView
-                nextView = currentView;
-                break;
-            }
-            case FORWARD_TO_PREVIOUS: {
-                // go back to the previously displayed view
-                nextView = previousView;
-                break;
-            }
-            case FORWARD_TO_OPEN_WALLET: {
-                // show the open wallet view
-                nextView = View.OPEN_WALLET_VIEW;
-                break;
-            }
-            case FORWARD_TO_CREATE_NEW_WALLET: {
-                // show the open wallet view
-                nextView = View.SAVE_WALLET_AS_VIEW;
-                break;
-            }
-            case FORWARD_TO_RECEIVE_BITCOIN: {
-                // show the receive bitcoin view
-                nextView = View.RECEIVE_BITCOIN_VIEW;
-                break;
-            }
-            case FORWARD_TO_SEND_BITCOIN: {
-                // show the send bitcoin view
-                nextView = View.SEND_BITCOIN_VIEW;
-                break;
-            }
-            case FORWARD_TO_SEND_BITCOIN_CONFIRM: {
-                // show the send bitcoin confirm view
-                nextView = View.SEND_BITCOIN_CONFIRM_VIEW;
-                break;
-            }
-            case FORWARD_TO_HELP_ABOUT: {
-                // show the help about view
-                nextView = View.HELP_ABOUT_VIEW;
-                break;
-            }
-            case FORWARD_TO_HELP_CONTENTS: {
-                // show the help contents view
-                nextView = View.HELP_CONTENTS_VIEW;
-                break;
-            }
+        case FORWARD_TO_SAME: {
+            // redisplay the sameView
+            nextView = currentView;
+            break;
+        }
+        case FORWARD_TO_PREVIOUS: {
+            // go back to the previously displayed view
+            nextView = previousView;
+            break;
+        }
+        case FORWARD_TO_OPEN_WALLET: {
+            // show the open wallet view
+            nextView = View.OPEN_WALLET_VIEW;
+            break;
+        }
+        case FORWARD_TO_CREATE_NEW_WALLET: {
+            // show the open wallet view
+            nextView = View.SAVE_WALLET_AS_VIEW;
+            break;
+        }
+        case FORWARD_TO_RECEIVE_BITCOIN: {
+            // show the receive bitcoin view
+            nextView = View.RECEIVE_BITCOIN_VIEW;
+            break;
+        }
+        case FORWARD_TO_SEND_BITCOIN: {
+            // show the send bitcoin view
+            nextView = View.SEND_BITCOIN_VIEW;
+            break;
+        }
+        case FORWARD_TO_SEND_BITCOIN_CONFIRM: {
+            // show the send bitcoin confirm view
+            nextView = View.SEND_BITCOIN_CONFIRM_VIEW;
+            break;
+        }
+        case FORWARD_TO_HELP_ABOUT: {
+            // show the help about view
+            nextView = View.HELP_ABOUT_VIEW;
+            break;
+        }
+        case FORWARD_TO_HELP_CONTENTS: {
+            // show the help contents view
+            nextView = View.HELP_CONTENTS_VIEW;
+            break;
+        }
 
-            case FORWARD_TO_PREFERENCES: {
-                // show the preferences view
-                nextView = View.PREFERENCES_VIEW;
-                break;
-            }
+        case FORWARD_TO_PREFERENCES: {
+            // show the preferences view
+            nextView = View.PREFERENCES_VIEW;
+            break;
+        }
 
-            case FORWARD_TO_TRANSACTIONS: {
-                // show the transactions page
-                nextView = View.TRANSACTIONS_VIEW;
-                break;
-            }
+        case FORWARD_TO_TRANSACTIONS: {
+            // show the transactions page
+            nextView = View.TRANSACTIONS_VIEW;
+            break;
+        }
 
-            case FORWARD_TO_VALIDATION_ERROR: {
-                // show the validation error view
-                nextView = View.VALIDATION_ERROR_VIEW;
-                break;
-            }
+        case FORWARD_TO_VALIDATION_ERROR: {
+            // show the validation error view
+            nextView = View.VALIDATION_ERROR_VIEW;
+            break;
+        }
 
-            case FORWARD_TO_YOUR_WALLETS: {
-                // show the your wallets view
-                nextView = View.YOUR_WALLETS_VIEW;
-                break;
-            }
+        case FORWARD_TO_YOUR_WALLETS: {
+            // show the your wallets view
+            nextView = View.YOUR_WALLETS_VIEW;
+            break;
+        }
 
-            case FORWARD_TO_CREATE_BULK_ADDRESSES_VIEW: {
-                // show the create bulk addresses view
-                nextView = View.CREATE_BULK_ADDRESSES_VIEW;
-                break;
-            }
+        case FORWARD_TO_CREATE_BULK_ADDRESSES_VIEW: {
+            // show the create bulk addresses view
+            nextView = View.CREATE_BULK_ADDRESSES_VIEW;
+            break;
+        }
 
-            case FORWARD_TO_RESET_TRANSACTIONS_VIEW: {
-                // show the reset transactions view
-                nextView = View.RESET_TRANSACTIONS_VIEW;
-                break;
-            }
+        case FORWARD_TO_RESET_TRANSACTIONS_VIEW: {
+            // show the reset transactions view
+            nextView = View.RESET_TRANSACTIONS_VIEW;
+            break;
+        }
 
-            case FORWARD_TO_SHOW_OPEN_URI_VIEW: {
-                // show the open uri dialog
-                nextView = View.SHOW_OPEN_URI_DIALOG_VIEW;
-                break;
-            }
+        case FORWARD_TO_SHOW_OPEN_URI_VIEW: {
+            // show the open uri dialog
+            nextView = View.SHOW_OPEN_URI_DIALOG_VIEW;
+            break;
+        }
 
-            case FORWARD_TO_SHOW_IMPORT_PRIVATE_KEYS_VIEW: {
-                // show the private key import view
-                nextView = View.SHOW_IMPORT_PRIVATE_KEYS_VIEW;
-                break;
-            }
+        case FORWARD_TO_SHOW_IMPORT_PRIVATE_KEYS_VIEW: {
+            // show the private key import view
+            nextView = View.SHOW_IMPORT_PRIVATE_KEYS_VIEW;
+            break;
+        }
 
-            case FORWARD_TO_SHOW_EXPORT_PRIVATE_KEYS_VIEW: {
-                // show the private key export view
-                nextView = View.SHOW_EXPORT_PRIVATE_KEYS_VIEW;
-                break;
-            }
+        case FORWARD_TO_SHOW_EXPORT_PRIVATE_KEYS_VIEW: {
+            // show the private key export view
+            nextView = View.SHOW_EXPORT_PRIVATE_KEYS_VIEW;
+            break;
+        }
 
-            default: {
-                nextView = View.YOUR_WALLETS_VIEW;
-                break;
-            }
+        default: {
+            nextView = View.YOUR_WALLETS_VIEW;
+            break;
+        }
         }
     }
 
     /**
      * @param relationshipOfNewViewToPrevious
-     *         - one of ViewSystem relationship constants
+     *            - one of ViewSystem relationship constants
      */
     public void displayNextView(int relationshipOfNewViewToPrevious) {
         if (nextView != 0) {
@@ -382,9 +381,9 @@ public class MultiBitController implements
         // for the top level views, clear the view stack
         // this makes the UI behaviour a bit more 'normal'
         if (currentView == View.YOUR_WALLETS_VIEW || currentView == View.TRANSACTIONS_VIEW
-            || currentView == View.RECEIVE_BITCOIN_VIEW || currentView == View.SEND_BITCOIN_VIEW
-            || currentView == View.HELP_ABOUT_VIEW || currentView == View.HELP_CONTENTS_VIEW
-            || currentView == View.PREFERENCES_VIEW) {
+                || currentView == View.RECEIVE_BITCOIN_VIEW || currentView == View.SEND_BITCOIN_VIEW
+                || currentView == View.HELP_ABOUT_VIEW || currentView == View.HELP_CONTENTS_VIEW
+                || currentView == View.PREFERENCES_VIEW) {
             clearViewStack();
         }
 
@@ -399,8 +398,9 @@ public class MultiBitController implements
 
     /**
      * register a new MultiBitViewSystem from the list of views that are managed
-     *
-     * @param viewSystem system
+     * 
+     * @param viewSystem
+     *            system
      */
     public void registerViewSystem(ViewSystem viewSystem) {
         viewSystems.add(viewSystem);
@@ -409,8 +409,9 @@ public class MultiBitController implements
     /**
      * De-register a MultiBitViewSystem from the list of views being managed
      * TODO Consider Refactor rename to "remove" not "deregister"
-     *
-     * @param viewSystem The view system
+     * 
+     * @param viewSystem
+     *            The view system
      */
     public void deregisterViewSystem(ViewSystem viewSystem) {
         viewSystems.remove(viewSystem);
@@ -454,9 +455,10 @@ public class MultiBitController implements
 
     /**
      * add a wallet to multibit from a filename
-     *
-     * @param walletFilename The wallet filename
-     *
+     * 
+     * @param walletFilename
+     *            The wallet filename
+     * 
      * @return The model data
      */
     public PerWalletModelData addWalletFromFilename(String walletFilename) {
@@ -473,7 +475,7 @@ public class MultiBitController implements
     public void fireLanguageChanged() {
         Locale newLocale = new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE));
         localiser.setLocale(newLocale);
- 
+
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.recreateAllViews(true, true);
@@ -499,8 +501,9 @@ public class MultiBitController implements
 
     /**
      * fire that all the views need recreating
-     *
-     * @param clearCache True if the cache should be cleared
+     * 
+     * @param clearCache
+     *            True if the cache should be cleared
      */
     public void fireRecreateAllViews(boolean clearCache) {
         // tell the viewSystems to refresh their views
@@ -573,8 +576,9 @@ public class MultiBitController implements
 
     /**
      * method called by downloadListener to update download status
-     *
-     * @param newStatusText The download status string
+     * 
+     * @param newStatusText
+     *            The download status string
      */
     public void updateStatusLabel(String newStatusText) {
         for (ViewSystem viewSystem : viewSystems) {
@@ -609,8 +613,8 @@ public class MultiBitController implements
         }
     }
 
-    public void sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String sendLabel, String amount, BigInteger fee) throws IOException,
-        AddressFormatException {
+    public void sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String sendLabel, String amount,
+            BigInteger fee) throws IOException, AddressFormatException {
         // TODO sendLabel is not used, consider Refactor change method signature
         // send the coins
         Transaction sendTransaction = multiBitService.sendCoins(perWalletModelData, sendAddressString, amount, fee);
@@ -671,20 +675,22 @@ public class MultiBitController implements
             log.debug("Open URI event handled immediately");
             handleOpenURI();
         } else {
-            log.debug("Open URI event not handled immediately because application is still starting");            
+            log.debug("Open URI event not handled immediately because application is still starting");
         }
     }
 
     public synchronized void handleOpenURI() {
         log.debug("handleOpenURI called and rawBitcoinURI ='" + rawBitcoinURI + "'");
-        
+
         // get the open URI configuration information
         String showOpenUriDialogText = getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
         String useUriText = getModel().getUserPreference(MultiBitModel.OPEN_URI_USE_URI);
-        
-        if(Boolean.FALSE.toString().equalsIgnoreCase(useUriText) && Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
+
+        if (Boolean.FALSE.toString().equalsIgnoreCase(useUriText)
+                && Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
             // ignore open URI request
-            log.debug("Bitcoin URI ignored because useUriText = '" + useUriText + "', showOpenUriDialogText = '" + showOpenUriDialogText + "'");
+            log.debug("Bitcoin URI ignored because useUriText = '" + useUriText + "', showOpenUriDialogText = '"
+                    + showOpenUriDialogText + "'");
             setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
             updateStatusLabel(localiser.getString("showOpenUriView.paymentRequestIgnored"));
             return;
@@ -695,49 +701,47 @@ public class MultiBitController implements
             return;
         }
         // Process the URI
-        // TODO Consider handling the possible runtime exception at a suitable level for recovery
-        BitcoinURI bitcoinURI = new BitcoinURI(this.getMultiBitService().getNetworkParameters(), WhitespaceTrimmer.trim(rawBitcoinURI.toString()));
-        if (bitcoinURI.isParsedOk()) {
-            log.debug("Parsed Bitcoin URI successfully");
+        // TODO Consider handling the possible runtime exception at a suitable
+        // level for recovery
+        BitcoinURI bitcoinURI = new BitcoinURI(this.getMultiBitService().getNetworkParameters(),
+                WhitespaceTrimmer.trim(rawBitcoinURI.toString()));
 
-            // Convert the URI data into suitably formatted view data
-            String address = bitcoinURI.getAddress().toString();
-            String label = "";
-            try {
-                // No label? Set it to a blank String otherwise perform a URL decode on it just to be sure
-                label = null == bitcoinURI.getLabel() ? "" : URLDecoder.decode(bitcoinURI.getLabel(), "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                log.error("Could not decode the label in UTF-8. Unusual URI entry or platform.");
-            }
-            // No amount? Set it to zero
-            BigInteger numericAmount = null == bitcoinURI.getAmount() ? BigInteger.ZERO : bitcoinURI.getAmount();
-            String amount = getLocaliser().bitcoinValueToString(numericAmount, false, false);
+        // Convert the URI data into suitably formatted view data
+        String address = bitcoinURI.getAddress().toString();
+        String label = "";
+        try {
+            // No label? Set it to a blank String otherwise perform a URL decode
+            // on it just to be sure
+            label = null == bitcoinURI.getLabel() ? "" : URLDecoder.decode(bitcoinURI.getLabel(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            log.error("Could not decode the label in UTF-8. Unusual URI entry or platform.");
+        }
+        // No amount? Set it to zero
+        BigInteger numericAmount = null == bitcoinURI.getAmount() ? BigInteger.ZERO : bitcoinURI.getAmount();
+        String amount = getLocaliser().bitcoinValueToString(numericAmount, false, false);
 
-            if (Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
-                // do not show confirm dialog - go straight to send view
-                // Populate the model with the URI data
-                getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, address);
-                getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, label);
-                getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amount);
-                getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "true");
-                log.debug("Routing straight to send view for address = " + address);
-                
-                getModel().setUserPreference(MultiBitModel.BRING_TO_FRONT, "true");
-                setActionForwardToSibling(ActionForward.FORWARD_TO_SEND_BITCOIN);
-                return;
-            } else {
-                // show the confirm dialog to see if the user wants to use URI
-                // Populate the model with the URI data
-                getModel().setUserPreference(MultiBitModel.OPEN_URI_ADDRESS, address);
-                getModel().setUserPreference(MultiBitModel.OPEN_URI_LABEL, label);
-                getModel().setUserPreference(MultiBitModel.OPEN_URI_AMOUNT, amount);
-                log.debug("Routing to show open uri view for address = " + address);
-                
-                setActionForwardToChild(ActionForward.FORWARD_TO_SHOW_OPEN_URI_VIEW);
-                return;
-            }
+        if (Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
+            // do not show confirm dialog - go straight to send view
+            // Populate the model with the URI data
+            getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, address);
+            getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, label);
+            getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amount);
+            getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "true");
+            log.debug("Routing straight to send view for address = " + address);
+
+            getModel().setUserPreference(MultiBitModel.BRING_TO_FRONT, "true");
+            setActionForwardToSibling(ActionForward.FORWARD_TO_SEND_BITCOIN);
+            return;
         } else {
-            log.warn("Failed to parse Bitcoin URI");
+            // show the confirm dialog to see if the user wants to use URI
+            // Populate the model with the URI data
+            getModel().setUserPreference(MultiBitModel.OPEN_URI_ADDRESS, address);
+            getModel().setUserPreference(MultiBitModel.OPEN_URI_LABEL, label);
+            getModel().setUserPreference(MultiBitModel.OPEN_URI_AMOUNT, amount);
+            log.debug("Routing to show open uri view for address = " + address);
+
+            setActionForwardToChild(ActionForward.FORWARD_TO_SHOW_OPEN_URI_VIEW);
+            return;
         }
     }
 

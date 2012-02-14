@@ -98,21 +98,6 @@ public class BitcoinURITest {
             assertTrue(e.getMessage().contains("Bad URI syntax"));
         }
 
-        try {
-            testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":" + PRODNET_GOOD_ADDRESS + " hello");
-            fail("Expecting BitcoinURIParseException");
-        } catch (BitcoinURIParseException e) {
-            assertTrue(e.getMessage().contains("Bad URI syntax"));
-        }
-
-        // No URL encoding
-        try {
-            testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":" + PRODNET_GOOD_ADDRESS + "?label=Hello World");
-            fail("Expecting BitcoinURIParseException");
-        } catch (BitcoinURIParseException e) {
-            assertTrue(e.getMessage().contains("Bad URI syntax"));
-        }
-
         // Separator without field
         try {
             testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":");
@@ -193,9 +178,21 @@ public class BitcoinURITest {
      */
     @Test
     public void testGood_Message() throws BitcoinURIParseException {
-
         // Test the integer parsing
         testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":" + PRODNET_GOOD_ADDRESS + "?message=Hello%20World");
+        assertEquals("Hello World", testObject.getMessage());
+
+    }
+
+    /**
+     * Handles a simple message with no URL encoding (early MultiBit URLs did not encode spaces)
+     *
+     * @throws BitcoinURIParseException If something goes wrong
+     */
+    @Test
+    public void testGood_Message_Wrong_Space_Encoding() throws BitcoinURIParseException {
+        // Test the integer parsing
+        testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":" + PRODNET_GOOD_ADDRESS + "?message=Hello World");
         assertEquals("Hello World", testObject.getMessage());
 
     }

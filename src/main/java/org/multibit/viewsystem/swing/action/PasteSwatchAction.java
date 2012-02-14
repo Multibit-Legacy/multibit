@@ -70,25 +70,25 @@ public class PasteSwatchAction extends AbstractAction {
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
             controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
-            // see if text was pasted
-            TextTransfer textTransfer = new TextTransfer();
-            String stringToPaste = textTransfer.getClipboardContents();
-            if (stringToPaste != null) {
-                // some text was pasted
-                stringToPaste = WhitespaceTrimmer.trim(stringToPaste);
-
-                if (dataProvider != null) {
-                    AbstractTradePanel abstractTradePanel = (AbstractTradePanel) dataProvider;
-                    abstractTradePanel.processDecodedString(stringToPaste, null);
-                }
-            }
-
             // see if an image was pasted
             Image image = getImageFromClipboard();
             if (image != null) {
                 if (dataProvider != null) {
                     AbstractTradePanel abstractTradePanel = (AbstractTradePanel) dataProvider;
                     abstractTradePanel.processDroppedImage(image);
+                }
+            } else {
+                // see if text was pasted
+                TextTransfer textTransfer = new TextTransfer();
+                String stringToPaste = textTransfer.getClipboardContents();
+                if (stringToPaste != null) {
+                    // some text was pasted
+                    stringToPaste = WhitespaceTrimmer.trim(stringToPaste);
+
+                    if (dataProvider != null) {
+                        AbstractTradePanel abstractTradePanel = (AbstractTradePanel) dataProvider;
+                        abstractTradePanel.processDecodedString(stringToPaste, null);
+                    }
                 }
             }
 
