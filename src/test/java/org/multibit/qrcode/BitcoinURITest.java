@@ -1,3 +1,21 @@
+/*
+ * Copyright 2012 the original author or authors.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
 package org.multibit.qrcode;
 
 import static org.junit.Assert.assertEquals;
@@ -5,6 +23,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.io.UnsupportedEncodingException;
 
 import org.junit.Test;
 
@@ -24,8 +44,12 @@ public class BitcoinURITest {
      */
     @Test
     public void testConvertToBitcoinURI() throws BitcoinURIParseException {
+        // simple example
         assertEquals("bitcoin:abc123?amount=12.34&label=Hello&message=AMessage", BitcoinURI.convertToBitcoinURI("abc123", "12.34", "Hello", "AMessage"));
         
+        // example with spaces, ampersand and plus
+        assertEquals("bitcoin:abc123?amount=12.34&label=Hello%20World&message=Mess%20%26%20age%20%2B%20hope", BitcoinURI.convertToBitcoinURI("abc123", "12.34", "Hello World", "Mess & age + hope"));
+               
         // address null
         try {
             BitcoinURI.convertToBitcoinURI(null, "0.1", "hope", "glory");
@@ -97,14 +121,14 @@ public class BitcoinURITest {
             testObject = new BitcoinURI(null, "blimpcoin:" + PRODNET_GOOD_ADDRESS);
             fail("Expecting IllegalArgumentException");
         } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage().contains("networkParameters"));
+            assertTrue(e.getMessage().contains("NetworkParameters"));
         }
 
         try {
             testObject = new BitcoinURI(NetworkParameters.prodNet(), null);
             fail("Expecting IllegalArgumentException");
         } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage().contains("input"));
+            assertTrue(e.getMessage().contains("Input"));
         }
     }
 
@@ -164,7 +188,7 @@ public class BitcoinURITest {
     }
 
     /**
-     * Test a broken URI (missing address)
+     * Test a broken URI (bad address type)
      */
     @Test
     public void testBad_IncorrectAddressType() {
@@ -210,21 +234,23 @@ public class BitcoinURITest {
     public void testGood_Label() throws BitcoinURIParseException {
         testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":" + PRODNET_GOOD_ADDRESS
                 + "?label=Hello%20World");
-        assertEquals("Hello%20World", testObject.getLabel());
+        assertEquals("Hello World", testObject.getLabel());
     }
 
     /**
-     * Handles a simple label with an embedded ampersand
+     * Handles a simple label with an embedded ampersand and plus
      * 
      * @throws BitcoinURIParseException
      *             If something goes wrong
+     * @throws UnsupportedEncodingException 
      */
     @Test
-    public void testGood_LabelWithAmpersand() throws BitcoinURIParseException {
-        String encodedLabel = BitcoinURI.encodeURLString("Hello Earth & Mars");
+    public void testGood_LabelWithAmpersandAndPlus() throws BitcoinURIParseException, UnsupportedEncodingException {
+        String testString = "Hello Earth & Mars + Venus";
+        String encodedLabel = BitcoinURI.encodeURLString(testString);
         testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":" + PRODNET_GOOD_ADDRESS + "?label="
                 + encodedLabel);
-        assertEquals(encodedLabel, testObject.getLabel());
+        assertEquals(testString, testObject.getLabel());
     }
 
     /**
@@ -232,17 +258,16 @@ public class BitcoinURITest {
      * 
      * @throws BitcoinURIParseException
      *             If something goes wrong
+     * @throws UnsupportedEncodingException 
      */
     @Test
-    public void testGood_LabelWithRussian() throws BitcoinURIParseException {
-        String encodedLabel = BitcoinURI.encodeURLString("\u041c\u043e\u0441\u043a\u0432\u0430"); // Moscow
-                                                                                                  // in
-                                                                                                  // Russian
-                                                                                                  // in
-                                                                                                  // Cyrillic
+    public void testGood_LabelWithRussian() throws BitcoinURIParseException, UnsupportedEncodingException {
+        // Moscow in Russian in Cyrillic
+        String moscowString = "\u041c\u043e\u0441\u043a\u0432\u0430";
+        String encodedLabel = BitcoinURI.encodeURLString(moscowString); 
         testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":" + PRODNET_GOOD_ADDRESS + "?label="
                 + encodedLabel);
-        assertEquals(encodedLabel, testObject.getLabel());
+        assertEquals(moscowString, testObject.getLabel());
     }
 
     /**
@@ -255,7 +280,7 @@ public class BitcoinURITest {
     public void testGood_Message() throws BitcoinURIParseException {
         testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":" + PRODNET_GOOD_ADDRESS
                 + "?message=Hello%20World");
-        assertEquals("Hello%20World", testObject.getMessage());
+        assertEquals("Hello World", testObject.getMessage());
     }
 
     /**
@@ -269,7 +294,7 @@ public class BitcoinURITest {
     public void testGood_Message_Wrong_Space_Encoding() throws BitcoinURIParseException {
         testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":" + PRODNET_GOOD_ADDRESS
                 + "?message=Hello World");
-        assertEquals("Hello%20World", testObject.getMessage());
+        assertEquals("Hello World", testObject.getMessage());
     }
 
     /**
@@ -283,7 +308,7 @@ public class BitcoinURITest {
         testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":" + PRODNET_GOOD_ADDRESS
                 + "?amount=9876543210&label=Hello%20World&message=Be%20well");
         assertEquals(
-                "BitcoinURI['address'='1KzTSfqjF2iKCduwz59nv2uqh1W2JsTxZH','amount'='987654321000000000','label'='Hello%20World','message'='Be%20well']",
+                "BitcoinURI['address'='1KzTSfqjF2iKCduwz59nv2uqh1W2JsTxZH','amount'='987654321000000000','label'='Hello World','message'='Be well']",
                 testObject.toString());
     }
 
@@ -298,7 +323,7 @@ public class BitcoinURITest {
         testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":" + PRODNET_GOOD_ADDRESS
                 + "?amount=9876543210&label=Hello%20World&message=Be%20well");
         assertEquals(
-                "BitcoinURI['address'='1KzTSfqjF2iKCduwz59nv2uqh1W2JsTxZH','amount'='987654321000000000','label'='Hello%20World','message'='Be%20well']",
+                "BitcoinURI['address'='1KzTSfqjF2iKCduwz59nv2uqh1W2JsTxZH','amount'='987654321000000000','label'='Hello World','message'='Be well']",
                 testObject.toString());
     }
 
@@ -377,6 +402,40 @@ public class BitcoinURITest {
             fail("Expecting BitcoinURIParseException");
         } catch (BitcoinURIParseException e) {
             assertTrue(e.getMessage().contains("address"));
+        }
+    }
+
+    /**
+     * Handles case when there are too many equals
+     * 
+     * @throws BitcoinURIParseException
+     *             If something goes wrong
+     */
+    @Test
+    public void testBad_TooManyEquals() throws BitcoinURIParseException {
+        try {
+            testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":" + PRODNET_GOOD_ADDRESS
+                    + "?label=aardvark=zebra");
+            fail("Expecting BitcoinURIParseException");
+        } catch (BitcoinURIParseException e) {
+            assertTrue(e.getMessage().contains("too many equals"));
+        }
+    }
+
+    /**
+     * Handles case when there are too many question marks
+     * 
+     * @throws BitcoinURIParseException
+     *             If something goes wrong
+     */
+    @Test
+    public void testBad_TooManyQuestionMarks() throws BitcoinURIParseException {
+        try {
+            testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":" + PRODNET_GOOD_ADDRESS
+                    + "?label=aardvark?message=zebra");
+            fail("Expecting BitcoinURIParseException");
+        } catch (BitcoinURIParseException e) {
+            assertTrue(e.getMessage().contains("Too many question marks"));
         }
     }
 

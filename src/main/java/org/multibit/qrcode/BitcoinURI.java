@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -114,10 +115,10 @@ public class BitcoinURI {
     public BitcoinURI(NetworkParameters networkParameters, String input) {
         // Basic validation
         if (networkParameters == null) {
-            throw new IllegalArgumentException("networkParameters cannot be null");
+            throw new IllegalArgumentException("NetworkParameters cannot be null");
         }
         if (input == null) {
-            throw new IllegalArgumentException("input cannot be null");
+            throw new IllegalArgumentException("Input cannot be null");
         }
 
         log.debug("Attempting to parse '{}' for {}", input, networkParameters.port == 8333 ? "prodNet" : "testNet");
@@ -155,9 +156,13 @@ public class BitcoinURI {
         }
         String addressToken = addressSplitTokens[0];
 
-        String[] nameValuePairTokens = new String[]{};
-        if (addressSplitTokens.length > 1) {
+        String[] nameValuePairTokens = new String[] {};
+        if (addressSplitTokens.length == 2) {
             nameValuePairTokens = addressSplitTokens[1].split("[\\&]");
+        } else {
+            if (addressSplitTokens.length > 2) {
+                throw new BitcoinURIParseException("Too many question marks in URI '" + input + "'");
+            }
         }
 
         // Attempt to parse the rest of the URI parameters
@@ -181,45 +186,51 @@ public class BitcoinURI {
         }
         
         // Attempt to decode the rest of the tokens into a parameter map
-        for (int i = 0; i < nameValuePairTokens.length; i++) {
+        if (nameValuePairTokens != null) {
+            for (int i = 0; i < nameValuePairTokens.length; i++) {
 
-            String[] tokens = nameValuePairTokens[i].split("[//=]");
-            if (tokens == null || tokens.length == 0 || tokens[0] == null || "".equals(tokens[0])) {
-                throw new BitcoinURIParseException("Malformed Bitcoin URI - cannot parse parameters '" + nameValuePairTokens + "'");
-            }
-            String nameToken = tokens[0].toLowerCase();
-            
-            if (tokens.length < 2) {
-                throw new OptionalFieldValidationException("'" + nameToken + "' does not have a value");
-            }
-            String valueToken = tokens[1];
-
-            // Parse the amount
-            if (FIELD_AMOUNT.equals(nameToken)) {
-                // Decode the amount (contains an optional decimal component to 8dp)
-                try {
-                    BigInteger amount = Utils.toNanoCoins(valueToken);
-                    putWithValidation(FIELD_AMOUNT, amount);
-                } catch (NumberFormatException e) {
-                    throw new OptionalFieldValidationException("'" + valueToken + "' value is not a valid amount", e);
+                String[] tokens = nameValuePairTokens[i].split("[//=]");
+                if (tokens == null || tokens.length == 0 || tokens[0] == null || "".equals(tokens[0])) {
+                    throw new BitcoinURIParseException("Malformed Bitcoin URI - cannot parse parameters '" + nameValuePairTokens + "'");
                 }
-            } else {
-                if (FIELD_LABEL.equals(nameToken) || FIELD_MESSAGE.equals(nameToken)) {
-                    // fields we know about
-                    putWithValidation(nameToken, valueToken);
+                String nameToken = tokens[0].toLowerCase();
+
+                if (tokens.length < 2) {
+                    throw new OptionalFieldValidationException("'" + nameToken + "' does not have a value");
+                }
+                String valueToken = tokens[1];
+
+                if (tokens.length > 2) {
+                    throw new BitcoinURIParseException("Malformed Bitcoin URI - too many equals for '" + nameValuePairTokens[i] + "'");
+                }
+
+                // Parse the amount
+                if (FIELD_AMOUNT.equals(nameToken)) {
+                    // Decode the amount (contains an optional decimal component to 8dp)
+                    try {
+                        BigInteger amount = Utils.toNanoCoins(valueToken);
+                        putWithValidation(FIELD_AMOUNT, amount);
+                    } catch (NumberFormatException e) {
+                        throw new OptionalFieldValidationException("'" + valueToken + "' value is not a valid amount", e);
+                    }
                 } else {
                     // unknown fields
                     if (nameToken.startsWith("req-")) {
                         // A required parameter that we do not know about
-                        throw new RequiredFieldValidationException("'" + nameToken+ "' is required but not known, this URI is not valid");
+                        throw new RequiredFieldValidationException("'" + nameToken + "' is required but not known, this URI is not valid");
                     } else {
-                        // An unknown parameter that is optional
-                        putWithValidation(nameToken, valueToken);
+                        // Known fields and unknown parameters that are optional
+                        try {
+                            putWithValidation(nameToken, URLDecoder.decode(valueToken, "UTF-8"));
+                        } catch (UnsupportedEncodingException e) {
+                            // should not happen as UTF-8 is valid encoding
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
 
-            // To the future - when you want to implement 'req-expires' have a look at commit 410a53791841 which had it in  
+            // Note to the future : when you want to implement 'req-expires' have a look at commit 410a53791841 which had it in
         }
     }
 
@@ -290,7 +301,6 @@ public class BitcoinURI {
                 builder.append(",");
             }
             builder.append("'").append(entry.getKey()).append("'=").append("'").append(entry.getValue().toString()).append("'");
-            ;
         }
         builder.append("]");
         return builder.toString();
