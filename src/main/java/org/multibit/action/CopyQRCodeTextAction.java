@@ -73,7 +73,7 @@ public class CopyQRCodeTextAction implements Action {
                     label = (String) labelItem.getNewValue();
                 }
 
-                String bitcoinURI = BitcoinURI.convertToBitcoinURI(address, amount, label);
+                String bitcoinURI = BitcoinURI.convertToBitcoinURI(address, amount, label, null);
 
                 // copy to clipboard
                 TextTransfer textTransfer = new TextTransfer();

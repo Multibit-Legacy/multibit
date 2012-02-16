@@ -125,7 +125,7 @@ public class SwatchGenerator {
         fontToFontMetricsMap.put(amountFont, emptyGraphics.getFontMetrics(amountFont));
 
         // initialise statics for extra speed later
-        BitcoinURI.convertToBitcoinURI("1", "1", "1");
+        BitcoinURI.convertToBitcoinURI("1", "1", "1", "1");
 
         // make sure fonts are loaded
         JFrame frame = new JFrame();
@@ -144,7 +144,7 @@ public class SwatchGenerator {
      */
     public BufferedImage generateSwatch(String address, String amount, String label) {
         // long time0 = (new Date()).getTime();
-        String bitcoinURI = BitcoinURI.convertToBitcoinURI(address, amount, label);
+        String bitcoinURI = BitcoinURI.convertToBitcoinURI(address, amount, label, null);
 
         // get a byte matrix for the data
         ByteMatrix matrix;

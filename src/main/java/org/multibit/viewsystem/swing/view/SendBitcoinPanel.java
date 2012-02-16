@@ -351,7 +351,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         // send form, do it
         String performPasteNow = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW);
         if (Boolean.TRUE.toString().equalsIgnoreCase(performPasteNow)) {
-            processDecodedString(BitcoinURI.convertToBitcoinURI(address, amount, label), null);
+            processDecodedString(BitcoinURI.convertToBitcoinURI(address, amount, label, null), null);
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
             sendButton.requestFocusInWindow();
 
