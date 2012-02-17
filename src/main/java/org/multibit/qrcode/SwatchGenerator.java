@@ -51,7 +51,11 @@ import javax.swing.JOptionPane;
 
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.MultiBitModel;
 
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.Utils;
 import com.google.zxing.WriterException;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
@@ -124,9 +128,6 @@ public class SwatchGenerator {
         fontToFontMetricsMap.put(labelFont, emptyGraphics.getFontMetrics(labelFont));
         fontToFontMetricsMap.put(amountFont, emptyGraphics.getFontMetrics(amountFont));
 
-        // initialise statics for extra speed later
-        BitcoinURI.convertToBitcoinURI("1", "1", "1", "1");
-
         // make sure fonts are loaded
         JFrame frame = new JFrame();
     }
@@ -144,7 +145,14 @@ public class SwatchGenerator {
      */
     public BufferedImage generateSwatch(String address, String amount, String label) {
         // long time0 = (new Date()).getTime();
-        String bitcoinURI = BitcoinURI.convertToBitcoinURI(address, amount, label, null);
+        String bitcoinURI = "";
+        try {
+            Address decodeAddress = new Address(controller.getMultiBitService().getNetworkParameters(), address);
+            bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amount), label, null);
+            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
+        } catch (AddressFormatException e) {
+            throw new RuntimeException(e);
+        }
 
         // get a byte matrix for the data
         ByteMatrix matrix;

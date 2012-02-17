@@ -31,12 +31,14 @@ public class CopyQRCodeTextAction extends AbstractAction {
     private static final long serialVersionUID = 191352235465057705L;
     
     private DataProvider dataProvider;
+    private MultiBitController controller;
 
     /**
      * Creates a new {@link CopyQRCodeTextAction}.
      */
     public CopyQRCodeTextAction(MultiBitController controller, DataProvider dataProvider) {
         super(controller.getLocaliser().getString("copyQRCodeTextAction.text"));
+        this.controller = controller;
         this.dataProvider = dataProvider;
         
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
@@ -48,7 +50,7 @@ public class CopyQRCodeTextAction extends AbstractAction {
      * delegate to generic copy QRCode text action
      */
     public void actionPerformed(ActionEvent e) {
-        org.multibit.action.CopyQRCodeTextAction genericQRCodeTextAction = new org.multibit.action.CopyQRCodeTextAction();
+        org.multibit.action.CopyQRCodeTextAction genericQRCodeTextAction = new org.multibit.action.CopyQRCodeTextAction(controller);
         genericQRCodeTextAction.execute(dataProvider);
     }
 }

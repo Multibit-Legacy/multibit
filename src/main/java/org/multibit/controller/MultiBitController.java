@@ -703,8 +703,11 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         // Process the URI
         // TODO Consider handling the possible runtime exception at a suitable
         // level for recovery
-        BitcoinURI bitcoinURI = new BitcoinURI(this.getMultiBitService().getNetworkParameters(),
-                WhitespaceTrimmer.trim(rawBitcoinURI.toString()));
+        
+        // Early MultiBit versions did not URL encode the label hence may
+        // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER i.e be lenient
+        String uriString = rawBitcoinURI.toString().replace(" ", BitcoinURI.ENCODED_SPACE_CHARACTER);
+        BitcoinURI bitcoinURI = new BitcoinURI(this.getMultiBitService().getNetworkParameters(), uriString);
 
         // Convert the URI data into suitably formatted view data
         String address = bitcoinURI.getAddress().toString();

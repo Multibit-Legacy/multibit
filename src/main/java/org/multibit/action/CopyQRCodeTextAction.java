@@ -15,12 +15,17 @@
  */
 package org.multibit.action;
 
+import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.qrcode.BitcoinURI;
 import org.multibit.viewsystem.swing.action.TextTransfer;
+
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.Utils;
 
 /**
  * an action to copy the bitcoin URI in the supplied formbean to the system
@@ -31,7 +36,10 @@ import org.multibit.viewsystem.swing.action.TextTransfer;
  */
 public class CopyQRCodeTextAction implements Action {
 
-    public CopyQRCodeTextAction() {
+    private MultiBitController controller;
+    
+    public CopyQRCodeTextAction(MultiBitController controller) {
+        this.controller = controller;
     }
 
     public void execute(DataProvider dataProvider) {
@@ -73,7 +81,12 @@ public class CopyQRCodeTextAction implements Action {
                     label = (String) labelItem.getNewValue();
                 }
 
-                String bitcoinURI = BitcoinURI.convertToBitcoinURI(address, amount, label, null);
+                String bitcoinURI;
+                try {
+                    bitcoinURI = BitcoinURI.convertToBitcoinURI(new Address(controller.getMultiBitService().getNetworkParameters(), address), Utils.toNanoCoins(amount), label, null);
+                } catch (AddressFormatException e) {
+                    throw new RuntimeException(e);
+                }
 
                 // copy to clipboard
                 TextTransfer textTransfer = new TextTransfer();

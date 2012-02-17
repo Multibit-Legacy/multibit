@@ -806,7 +806,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             // decode the string to an AddressBookData
             // TODO Consider handling the possible runtime exception at a
             // suitable level for recovery
-            BitcoinURI bitcoinURI = new BitcoinURI(controller.getMultiBitService().getNetworkParameters(), decodedString);
+            
+            // Early MultiBit versions did not URL encode the label hence may
+            // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER i.e be lenient
+            String uriString = decodedString.toString().replace(" ", BitcoinURI.ENCODED_SPACE_CHARACTER);
+            BitcoinURI bitcoinURI = new BitcoinURI(controller.getMultiBitService().getNetworkParameters(), uriString);
 
             log.debug("SendBitcoinPanel - ping 1");
             Address address = bitcoinURI.getAddress();

@@ -18,7 +18,8 @@
 
 package org.multibit.qrcode;
 
-import static org.junit.Assert.assertEquals;
+import static com.google.bitcoin.core.Utils.toNanoCoins;
+import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -28,7 +29,10 @@ import java.io.UnsupportedEncodingException;
 
 import org.junit.Test;
 
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Utils;
 
 public class BitcoinURITest {
 
@@ -41,60 +45,61 @@ public class BitcoinURITest {
      * 
      * @throws BitcoinURIParseException
      *             If something goes wrong
+     * @throws AddressFormatException 
      */
     @Test
-    public void testConvertToBitcoinURI() throws BitcoinURIParseException {
+    public void testConvertToBitcoinURI() throws BitcoinURIParseException, AddressFormatException {
+        Address goodAddress = new Address(NetworkParameters.prodNet(), PRODNET_GOOD_ADDRESS);
+        
         // simple example
-        assertEquals("bitcoin:abc123?amount=12.34&label=Hello&message=AMessage", BitcoinURI.convertToBitcoinURI("abc123", "12.34", "Hello", "AMessage"));
+        assertEquals("bitcoin:" + PRODNET_GOOD_ADDRESS + "?amount=12.34&label=Hello&message=AMessage", BitcoinURI.convertToBitcoinURI(goodAddress, Utils.toNanoCoins("12.34"), "Hello", "AMessage"));
         
         // example with spaces, ampersand and plus
-        assertEquals("bitcoin:abc123?amount=12.34&label=Hello%20World&message=Mess%20%26%20age%20%2B%20hope", BitcoinURI.convertToBitcoinURI("abc123", "12.34", "Hello World", "Mess & age + hope"));
+        assertEquals("bitcoin:" + PRODNET_GOOD_ADDRESS + "?amount=12.34&label=Hello%20World&message=Mess%20%26%20age%20%2B%20hope", BitcoinURI.convertToBitcoinURI(goodAddress, Utils.toNanoCoins("12.34"), "Hello World", "Mess & age + hope"));
                
         // address null
         try {
-            BitcoinURI.convertToBitcoinURI(null, "0.1", "hope", "glory");
+            BitcoinURI.convertToBitcoinURI(null, Utils.toNanoCoins("0.1"), "hope", "glory");
             fail("Expecting IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("address"));
         }
-        
-        // address empty string
+
+        // amount negative
         try {
-            BitcoinURI.convertToBitcoinURI("", "0.1", "hope", "glory");
+            BitcoinURI.convertToBitcoinURI(goodAddress, Utils.toNanoCoins("-0.1"), "hope", "glory");
             fail("Expecting IllegalArgumentException");
         } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage().contains("address"));
+            assertTrue(e.getMessage().contains("Amount must be positive"));
         }
 
         // no amount, label present, message present
-        assertEquals("bitcoin:abc123?label=Hello&message=glory", BitcoinURI.convertToBitcoinURI("abc123", null, "Hello", "glory"));
-        assertEquals("bitcoin:abc123?label=Hello&message=glory", BitcoinURI.convertToBitcoinURI("abc123", "", "Hello", "glory"));
+        assertEquals("bitcoin:" + PRODNET_GOOD_ADDRESS + "?label=Hello&message=glory", BitcoinURI.convertToBitcoinURI(goodAddress, null, "Hello", "glory"));
         
         // amount present, no label, message present
-        assertEquals("bitcoin:abc123?amount=0.1&message=glory", BitcoinURI.convertToBitcoinURI("abc123", "0.1", null, "glory"));
-        assertEquals("bitcoin:abc123?amount=0.1&message=glory", BitcoinURI.convertToBitcoinURI("abc123", "0.1", "", "glory"));
+        assertEquals("bitcoin:" + PRODNET_GOOD_ADDRESS + "?amount=0.1&message=glory", BitcoinURI.convertToBitcoinURI(goodAddress, Utils.toNanoCoins("0.1"), null, "glory"));
+        assertEquals("bitcoin:" + PRODNET_GOOD_ADDRESS + "?amount=0.1&message=glory", BitcoinURI.convertToBitcoinURI(goodAddress, Utils.toNanoCoins("0.1"), "", "glory"));
 
         // amount present, label present, no message
-        assertEquals("bitcoin:abc123?amount=0.2&label=Hello", BitcoinURI.convertToBitcoinURI("abc123", "0.2", "Hello", null));
-        assertEquals("bitcoin:abc123?amount=0.2&label=Hello", BitcoinURI.convertToBitcoinURI("abc123", "0.2", "Hello", ""));
+        assertEquals("bitcoin:" + PRODNET_GOOD_ADDRESS + "?amount=12.34&label=Hello", BitcoinURI.convertToBitcoinURI(goodAddress,Utils.toNanoCoins("12.34"), "Hello", null));
+        assertEquals("bitcoin:" + PRODNET_GOOD_ADDRESS + "?amount=12.34&label=Hello", BitcoinURI.convertToBitcoinURI(goodAddress, Utils.toNanoCoins("12.34"), "Hello", ""));
         
         
         // amount present, no label, no message
-        assertEquals("bitcoin:abc123?amount=0.1", BitcoinURI.convertToBitcoinURI("abc123", "0.1", null, null));
-        assertEquals("bitcoin:abc123?amount=0.1", BitcoinURI.convertToBitcoinURI("abc123", "0.1", "", ""));
+        assertEquals("bitcoin:" + PRODNET_GOOD_ADDRESS + "?amount=1000", BitcoinURI.convertToBitcoinURI(goodAddress, Utils.toNanoCoins("1000"), null, null));
+        assertEquals("bitcoin:" + PRODNET_GOOD_ADDRESS + "?amount=1000", BitcoinURI.convertToBitcoinURI(goodAddress, Utils.toNanoCoins("1000"), "", ""));
         
         // no amount, label present, no message
-        assertEquals("bitcoin:abc123?label=Hello", BitcoinURI.convertToBitcoinURI("abc123", null, "Hello", null));
-        assertEquals("bitcoin:abc123?label=Hello", BitcoinURI.convertToBitcoinURI("abc123", "", "Hello", ""));
+        assertEquals("bitcoin:" + PRODNET_GOOD_ADDRESS + "?label=Hello", BitcoinURI.convertToBitcoinURI(goodAddress, null, "Hello", null));
         
         // no amount, no label, message present
-        assertEquals("bitcoin:abc123?message=Agatha", BitcoinURI.convertToBitcoinURI("abc123", null, null, "Agatha"));
-        assertEquals("bitcoin:abc123?message=Agatha", BitcoinURI.convertToBitcoinURI("abc123", "", "", "Agatha"));
+        assertEquals("bitcoin:" + PRODNET_GOOD_ADDRESS + "?message=Agatha", BitcoinURI.convertToBitcoinURI(goodAddress, null, null, "Agatha"));
+        assertEquals("bitcoin:" + PRODNET_GOOD_ADDRESS + "?message=Agatha", BitcoinURI.convertToBitcoinURI(goodAddress, null, "", "Agatha"));
  
         
         // no amount, no label, no message
-        assertEquals("bitcoin:abc123", BitcoinURI.convertToBitcoinURI("abc123", null, null, null));
-        assertEquals("bitcoin:abc123", BitcoinURI.convertToBitcoinURI("abc123", "", "", ""));
+        assertEquals("bitcoin:" + PRODNET_GOOD_ADDRESS, BitcoinURI.convertToBitcoinURI(goodAddress, null, null, null));
+        assertEquals("bitcoin:" + PRODNET_GOOD_ADDRESS, BitcoinURI.convertToBitcoinURI(goodAddress, null, "", ""));
     }
 
     /**
@@ -284,20 +289,6 @@ public class BitcoinURITest {
     }
 
     /**
-     * Handles a simple message with no URL encoding (early MultiBit URLs did
-     * not encode spaces so it is lenient)
-     * 
-     * @throws BitcoinURIParseException
-     *             If something goes wrong
-     */
-    @Test
-    public void testGood_Message_Wrong_Space_Encoding() throws BitcoinURIParseException {
-        testObject = new BitcoinURI(NetworkParameters.prodNet(), BitcoinURI.BITCOIN_SCHEME + ":" + PRODNET_GOOD_ADDRESS
-                + "?message=Hello World");
-        assertEquals("Hello World", testObject.getMessage());
-    }
-
-    /**
      * Handles various well-formed combinations
      * 
      * @throws BitcoinURIParseException
@@ -418,7 +409,7 @@ public class BitcoinURITest {
                     + "?label=aardvark=zebra");
             fail("Expecting BitcoinURIParseException");
         } catch (BitcoinURIParseException e) {
-            assertTrue(e.getMessage().contains("too many equals"));
+            assertTrue(e.getMessage().contains("cannot parse name value pair"));
         }
     }
 
@@ -438,7 +429,7 @@ public class BitcoinURITest {
             assertTrue(e.getMessage().contains("Too many question marks"));
         }
     }
-
+    
     /**
      * Handles unknown fields (required and not required)
      * 
@@ -460,7 +451,7 @@ public class BitcoinURITest {
                     + "?aardvark");
             fail("Expecting BitcoinURIParseException");
         } catch (BitcoinURIParseException e) {
-            assertTrue(e.getMessage().contains("does not have a value"));
+            assertTrue(e.getMessage().contains("cannot parse name value pair"));
         }
 
         // Unknown and required field
@@ -472,4 +463,41 @@ public class BitcoinURITest {
             assertTrue(e.getMessage().contains("req-aardvark"));
         }
     }
+    
+    /**
+     * Test the bitcoin amount formatter variant that has no trailing zeroes
+     */
+    @Test
+    public void testBitcoinValueToFriendlyStringWithNoTrailingZeroes() {
+        // null argument check
+        try {
+            BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(null);
+            fail("Expecting IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("Value cannot be null"));
+        }
+
+        assertEquals("1.23", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("1.23")));
+        assertEquals("-1.23", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("-1.23")));
+        
+        assertEquals("0.1", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("0.1")));
+        assertEquals("1.1", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("1.1")));
+        assertEquals("21.12", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("21.12")));
+        assertEquals("321.123", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("321.123")));
+        assertEquals("4321.1234", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("4321.1234")));
+        assertEquals("54321.12345", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("54321.12345")));
+        assertEquals("654321.123456", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("654321.123456")));
+        assertEquals("7654321.1234567", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("7654321.1234567")));
+        assertEquals("87654321.12345678", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("87654321.12345678")));
+
+        // check there are no trailing zeros
+        assertEquals("1", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("1.0")));
+        assertEquals("2", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("2.00")));
+        assertEquals("3", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("3.000")));
+        assertEquals("4", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("4.0000")));
+        assertEquals("5", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("5.00000")));
+        assertEquals("6", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("6.000000")));
+        assertEquals("7", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("7.0000000")));
+        assertEquals("8", BitcoinURI.bitcoinValueToFriendlyStringWithNoTrailingZeroes(toNanoCoins("8.00000000")));
+    }    
 }
