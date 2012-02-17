@@ -66,6 +66,8 @@ import com.google.bitcoin.core.Wallet;
 public class MultiBitController implements PeerEventListener, GenericOpenURIEventListener, GenericPreferencesEventListener,
         GenericAboutEventListener, GenericQuitEventListener {
 
+    public static final String ENCODED_SPACE_CHARACTER = "%20";
+
     private Logger log = LoggerFactory.getLogger(MultiBitController.class);
 
     /**
@@ -706,7 +708,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         
         // Early MultiBit versions did not URL encode the label hence may
         // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER i.e be lenient
-        String uriString = rawBitcoinURI.toString().replace(" ", BitcoinURI.ENCODED_SPACE_CHARACTER);
+        String uriString = rawBitcoinURI.toString().replace(" ", ENCODED_SPACE_CHARACTER);
         BitcoinURI bitcoinURI = new BitcoinURI(this.getMultiBitService().getNetworkParameters(), uriString);
 
         // Convert the URI data into suitably formatted view data

@@ -809,7 +809,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             
             // Early MultiBit versions did not URL encode the label hence may
             // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER i.e be lenient
-            String uriString = decodedString.toString().replace(" ", BitcoinURI.ENCODED_SPACE_CHARACTER);
+            String uriString = decodedString.toString().replace(" ", MultiBitController.ENCODED_SPACE_CHARACTER);
             BitcoinURI bitcoinURI = new BitcoinURI(controller.getMultiBitService().getNetworkParameters(), uriString);
 
             log.debug("SendBitcoinPanel - ping 1");

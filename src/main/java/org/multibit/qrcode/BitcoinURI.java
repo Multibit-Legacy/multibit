@@ -19,11 +19,11 @@
 package org.multibit.qrcode;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
-import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -93,7 +93,7 @@ public class BitcoinURI {
     private static final String FIELD_ADDRESS = "address";
 
     public static final String BITCOIN_SCHEME = "bitcoin";
-    public static final String ENCODED_SPACE_CHARACTER = "%20";
+    private static final String ENCODED_SPACE_CHARACTER = "%20";
     private static final String AMPERSAND_SEPARATOR = "&";
     private static final String QUESTION_MARK_SEPARATOR = "?";
     private static final String COLON_SEPARATOR = ":";
@@ -330,7 +330,7 @@ public class BitcoinURI {
         
         if (amount != null) {
             builder.append(QUESTION_MARK_SEPARATOR).append(FIELD_AMOUNT).append("=");
-            builder.append(bitcoinValueToFriendlyStringWithNoTrailingZeroes(amount));
+            builder.append(bitcoinValueToPlainString(amount));
             questionMarkHasBeenOutput = true;
         }
         
@@ -365,7 +365,7 @@ public class BitcoinURI {
      * @param stringToEncode
      *            The string to URL encode
      */
-    public static String encodeURLString(String stringToEncode) {
+    static String encodeURLString(String stringToEncode) {
         try {
             return java.net.URLEncoder.encode(stringToEncode, "UTF-8").replace("+", ENCODED_SPACE_CHARACTER);
         } catch (UnsupportedEncodingException e) {
@@ -376,27 +376,21 @@ public class BitcoinURI {
     
     /**
      * <p>
-     * Returns the given value in nanocoins as a string with no trailing zeroes.
-     * (this would be a good candidate method to go into com.google.bitcoin.core.Utils)
+     * Returns the given value as a plain string denominated in BTC.   
+     * The result is unformatted with no trailing zeroes.
+     * For instance, an input value of BigInteger.valueOf(150000) nanocoin gives an output string of "0.0015" BTC
      * </p>
      * 
-     * @param value The value, in nanocoins, to convert to a string
+     * @param value The value in nanocoins to convert to a string (denominated in BTC)
      * @throws IllegalArgumentException
      *            If the input value is null
      */
-    public static String bitcoinValueToFriendlyStringWithNoTrailingZeroes(BigInteger value) {
+    static String bitcoinValueToPlainString(BigInteger value) {
         if (value == null) {
             throw new IllegalArgumentException("Value cannot be null");
         }
-        
-        boolean negative = value.compareTo(BigInteger.ZERO) < 0;
-        if (negative) {
-            value = value.negate();
-        }
-        BigInteger coins = value.divide(Utils.COIN);
-        BigInteger fraction = value.remainder(Utils.COIN);
-        
-        DecimalFormat valueFormatter = new DecimalFormat("#.########");
-        return  (negative ? "-" : "") + valueFormatter.format(coins.intValue() + ((double)fraction.intValue()) / Utils.COIN.intValue());
+                
+        BigDecimal valueInBTC = new BigDecimal(value).divide(new BigDecimal(Utils.COIN));
+        return valueInBTC.toPlainString();
     }
 }
