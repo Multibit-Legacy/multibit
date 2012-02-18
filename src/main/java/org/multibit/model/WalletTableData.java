@@ -80,11 +80,19 @@ public class WalletTableData {
 
     public Date getDate() {
         // Avoids exposing internal state
-        return new Date(date.getTime());
+        if (date == null) {
+            return null;
+        } else {
+            return new Date(date.getTime());
+        }
     }
 
     public void setDate(Date date) {
-        this.date = new Date(date.getTime());
+        if (date == null) {
+            this.date = null;
+        } else {
+            this.date = new Date(date.getTime());
+        }
     }
 
     public String getDescription() {

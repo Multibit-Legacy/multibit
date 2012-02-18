@@ -642,11 +642,14 @@ public class MultiBitModel {
                     Sha256Hash appearsInHash = iterator.next();
                     StoredBlock appearsInStoredBlock;
                     try {
-                        appearsInStoredBlock = controller.getMultiBitService().getBlockStore().get(appearsInHash);
-                        Block appearsInBlock = appearsInStoredBlock.getHeader();
-                        // set the time of the block to be the time of the
-                        // transaction - TODO get transaction time
-                        return new Date(appearsInBlock.getTimeSeconds() * 1000);
+                        if (controller != null && controller.getMultiBitService() != null
+                                && controller.getMultiBitService().getBlockStore() != null) {
+                            appearsInStoredBlock = controller.getMultiBitService().getBlockStore().get(appearsInHash);
+                            Block appearsInBlock = appearsInStoredBlock.getHeader();
+                            // set the time of the block to be the time of the
+                            // transaction - TODO get transaction time
+                            return new Date(appearsInBlock.getTimeSeconds() * 1000);
+                        }
                     } catch (BlockStoreException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -671,11 +674,12 @@ public class MultiBitModel {
                 // just take the first i.e. ignore impact of side chains
                 if (iterator.hasNext()) {
                     Sha256Hash appearsInHash = iterator.next();
-                    StoredBlock appearsInStoredBlock;
                     try {
-                        appearsInStoredBlock = controller.getMultiBitService().getBlockStore().get(appearsInHash);
-                        if (appearsInStoredBlock != null) {
-                            return appearsInStoredBlock.getHeight();
+                        if (controller != null && controller.getMultiBitService() != null && controller.getMultiBitService().getBlockStore() != null) {
+                            StoredBlock appearsInStoredBlock = controller.getMultiBitService().getBlockStore().get(appearsInHash);
+                            if (appearsInStoredBlock != null) {
+                                return appearsInStoredBlock.getHeight();
+                            }
                         }
                     } catch (BlockStoreException e) {
                         // TODO Auto-generated catch block
