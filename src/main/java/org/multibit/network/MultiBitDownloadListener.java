@@ -61,11 +61,12 @@ public class MultiBitDownloadListener extends DownloadListener {
             doneDownload();
         } else {
             String downloadStatusText = controller.getLocaliser().getString(
-                    "multiBitDownloadListener.progressText",
-                    new Object[] {
-                            (int) pct,
-                            DateFormat.getDateInstance(DateFormat.MEDIUM,
-                                    controller.getLocaliser().getLocale()).format(date) }) + "(" + blocksSoFar + ")";
+                    "multiBitDownloadListener.startDownloadTextShort",
+                    new Object[] {blocksSoFar}) + " " +
+                    controller.getLocaliser().getString(
+                            "multiBitDownloadListener.blockDateText",
+                            new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM,
+                                    controller.getLocaliser().getLocale()).format(date) }) ;
             controller.updateStatusLabel(downloadStatusText);
             controller.fireBlockDownloaded();
         }
