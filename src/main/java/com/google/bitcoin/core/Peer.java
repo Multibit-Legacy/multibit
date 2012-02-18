@@ -438,7 +438,7 @@ public class Peer implements IsMultiBitClass {
         setDownloadData(true);
         // TODO: peer might still have blocks that we don't have, and even have a heavier
         // chain even if the chain block count is lower.
-        if (getPeerBlocksToGet() >= 0) {
+        //if (getPeerBlocksToGet() >= 0) {
             for (PeerEventListener listener : eventListeners) {
                 synchronized (listener) {
                     listener.onChainDownloadStarted(this, getPeerBlocksToGet());
@@ -447,7 +447,7 @@ public class Peer implements IsMultiBitClass {
 
             // When we just want as many blocks as possible, we can set the target hash to zero.
             blockChainDownload(Sha256Hash.ZERO_HASH);
-        }
+        //}
     }
 
     /**

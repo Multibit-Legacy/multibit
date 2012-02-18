@@ -45,7 +45,6 @@ import org.multibit.platform.listener.GenericQuitEvent;
 import org.multibit.platform.listener.GenericQuitEventListener;
 import org.multibit.platform.listener.GenericQuitResponse;
 import org.multibit.qrcode.BitcoinURI;
-import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.slf4j.Logger;
@@ -795,8 +794,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     @Override
     public void onTransaction(Peer peer, Transaction t) {
-        // TODO Auto-generated method stub
-        
+        log.debug("MultiBitController heard a transaction '" + t.toString() + "' from peer " + peer);
     }
 
     @Override

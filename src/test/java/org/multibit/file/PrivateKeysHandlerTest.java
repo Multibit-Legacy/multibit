@@ -28,16 +28,11 @@ import org.multibit.Constants;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
 
 public class PrivateKeysHandlerTest extends TestCase {
-
-    private static final Logger log = LoggerFactory.getLogger(PrivateKeysHandlerTest.class);
-
     public static final String PRIVATE_KEYS_TESTDATA_DIRECTORY = "privateKeys";
 
     public static final String TEST1_WALLET_FILE = "test1.wallet";
