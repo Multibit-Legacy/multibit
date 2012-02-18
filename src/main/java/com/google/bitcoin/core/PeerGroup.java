@@ -231,7 +231,7 @@ public class PeerGroup implements IsMultiBitClass {
         synchronized (peers) {
             for (Peer peer : peers) {
                 try {
-                    peer.broadcastTransaction(tx);
+                    peer.sendMessage(tx);
                     success = true;
                 } catch (IOException e) {
                     log.error("failed to broadcast to " + peer, e);

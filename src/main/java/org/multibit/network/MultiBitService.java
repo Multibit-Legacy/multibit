@@ -27,6 +27,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
+import org.multibit.store.ReplayableBlockStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +45,8 @@ import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.discovery.DnsDiscovery;
 import com.google.bitcoin.discovery.IrcDiscovery;
+import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
-import com.google.bitcoin.store.BoundedOverheadBlockStore;
 
 /**
  * <p>
@@ -86,7 +87,11 @@ public class MultiBitService {
 
     private BlockChain blockChain;
 
-    private BoundedOverheadBlockStore blockStore;
+    private ReplayableBlockStore blockStore;
+
+    public ReplayableBlockStore getBlockStore() {
+        return blockStore;
+    }
 
     private boolean useTestNet;
 
@@ -136,7 +141,7 @@ public class MultiBitService {
 
             log.debug("Reading block store '{}' from disk", blockchainFilename);
 
-            blockStore = new BoundedOverheadBlockStore(networkParameters, new File(blockchainFilename), false);
+            blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), false);
 
             log.debug("Connecting ...");
             blockChain = new BlockChain(networkParameters, blockStore);
@@ -299,10 +304,10 @@ public class MultiBitService {
  
         if (dateToReplayFrom == null) {
             // create empty new block chain
-            blockStore = new BoundedOverheadBlockStore(networkParameters, new File(blockchainFilename), true);
+            blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), true);
 
             log.debug("Creating new blockStore - need to redownload from Genesis block");
-            blockChain = new BlockChain(networkParameters, blockStore);
+            blockChain = new BlockChain(networkParameters, (BlockStore)blockStore);
             
             // TODO Peers need to be updated with the new block chain
         } else {
@@ -374,8 +379,10 @@ public class MultiBitService {
             throws java.io.IOException, AddressFormatException {
         // send the coins
         Address sendAddress = new Address(networkParameters, sendAddressString);
-        Transaction sendTransaction = perWalletModelData.getWallet().sendCoins(peerGroup, sendAddress, Utils.toNanoCoins(amount),
-                fee);
+
+        Transaction sendTransaction = perWalletModelData.getWallet().sendCoins(peerGroup, sendAddress, Utils.toNanoCoins(amount), fee);
+        controller.getMultiBitService().getPeerGroup().broadcastTransaction(sendTransaction);
+
         assert sendTransaction != null; // We should never try to send more
         // coins than we have!
         // throw an exception if sendTransaction is null - no money

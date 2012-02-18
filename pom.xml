@@ -110,7 +110,7 @@
                   <outputDirectory>${basedir}/target/bitcoinj</outputDirectory>
                   <includes>**/*.*</includes>
                   <!-- excludes classes that are duplicated in multibit -->
-                  <excludes>**/BlockChain.class, **/BoundedOverheadBlockStore.class,  **/BoundedOverheadBlockStore$*.class,
+                  <excludes>**/BlockChain.class,
                     **/Peer.class, **/Peer$*.class,**/PeerGroup*.class,
                     **/Sha256Hash.class, **/TCPNetworkConnection.class,
                     **/Transaction.class, **/Transaction$*.class,
@@ -526,7 +526,7 @@
     <dependency>
       <groupId>com.google</groupId>
       <artifactId>bitcoinj</artifactId>
-      <version>0.3</version>
+      <version>${bitcoinj.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

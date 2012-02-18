@@ -50,11 +50,13 @@ public class MultiBitDownloadListener extends DownloadListener {
      * 
      * @param pct
      *            the percentage of chain downloaded, estimated
+     * @param blocksSoFar
+     *            number of blocks so far
      * @param date
      *            the date of the last block downloaded
      */
-    protected void progress(double pct, Date date) {
-        if (pct > DONE_FOR_DOUBLES) {
+    protected void progress(double pct, int blocksSoFar, Date date) {
+         if (pct > DONE_FOR_DOUBLES) {
             // we are done downloading
             doneDownload();
         } else {
@@ -63,7 +65,7 @@ public class MultiBitDownloadListener extends DownloadListener {
                     new Object[] {
                             (int) pct,
                             DateFormat.getDateInstance(DateFormat.MEDIUM,
-                                    controller.getLocaliser().getLocale()).format(date) });
+                                    controller.getLocaliser().getLocale()).format(date) }) + "(" + blocksSoFar + ")";
             controller.updateStatusLabel(downloadStatusText);
             controller.fireBlockDownloaded();
         }

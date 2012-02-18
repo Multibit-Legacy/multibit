@@ -93,9 +93,9 @@ public class FileHandler {
     public void savePerWalletModelData(PerWalletModelData perWalletModelData, boolean forceWrite) {
         // WARNING: This wallet.toString() puts private keys in the log !
 
-        log.info("Wallet details for wallet file = " +
-         perWalletModelData.getWalletFilename() + "\n"
-         + perWalletModelData.getWallet().toString());
+        //log.info("Wallet details for wallet file = " +
+        // perWalletModelData.getWalletFilename() + "\n"
+        // + perWalletModelData.getWallet().toString());
 
         try {
             if (perWalletModelData == null) {

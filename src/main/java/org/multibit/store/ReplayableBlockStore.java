@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package com.google.bitcoin.store;
+package org.multibit.store;
 
 import com.google.bitcoin.core.*;
+import com.google.bitcoin.store.BlockStore;
+import com.google.bitcoin.store.BlockStoreException;
 
 import org.multibit.IsMultiBitClass;
 import org.slf4j.Logger;
@@ -33,58 +35,45 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Stores the block chain to disk.
- * <p>
- * 
- * This implementation is designed to have constant memory usage, regardless of
- * the size of the block chain being stored. It exploits operating system level
- * buffering and the fact that get() requests are, in normal usage, localized in
- * chain space.
- * <p>
- * 
- * Blocks are stored sequentially. Most blocks are fetched out of a small
- * in-memory cache. The slowest part is traversing difficulty transition points,
- * which requires seeking backwards over around 2000 blocks. On a Google Nexus S
- * phone this takes a couple of seconds. On a MacBook Pro it takes around
- * 50msec.
- * <p>
- * 
- * The store has much room for optimization. Expanding the size of the cache
- * will likely allow us to traverse difficulty transitions without using too
- * much memory and without hitting the disk at all, for the case of initial
- * block chain download. Storing the hashes on disk would allow us to avoid
- * deserialization and hashing which is expensive on Android.
+ * Stores the block chain to disk.<p>
+ *
+ * This implementation is designed to have constant memory usage, regardless of the size of the block chain being
+ * stored. It exploits operating system level buffering and the fact that get() requests are, in normal usage,
+ * localized in chain space.<p>
+ *
+ * Blocks are stored sequentially. Most blocks are fetched out of a small in-memory cache. The slowest part is
+ * traversing difficulty transition points, which requires seeking backwards over around 2000 blocks. On a Google
+ * Nexus S phone this takes a couple of seconds. On a MacBook Pro it takes around 50msec.<p>
+ *
+ * The store has much room for optimization. Expanding the size of the cache will likely allow us to traverse
+ * difficulty transitions without using too much memory and without hitting the disk at all, for the case of initial
+ * block chain download. Storing the hashes on disk would allow us to avoid deserialization and hashing which is
+ * expensive on Android.
  */
-public class BoundedOverheadBlockStore implements BlockStore, IsMultiBitClass {
-    private static final Logger log = LoggerFactory.getLogger(BoundedOverheadBlockStore.class);
+public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
+    private static final Logger log = LoggerFactory.getLogger(ReplayableBlockStore.class);
     private static final byte FILE_FORMAT_VERSION = 1;
 
     private RandomAccessFile file;
-    // We keep some recently found blocks in the blockCache. It can help to
-    // optimize some cases where we are
-    // looking up blocks we recently stored or requested. When the cache gets
-    // too big older entries are deleted.
+    // We keep some recently found blocks in the blockCache. It can help to optimize some cases where we are
+    // looking up blocks we recently stored or requested. When the cache gets too big older entries are deleted.
     private LinkedHashMap<Sha256Hash, StoredBlock> blockCache = new LinkedHashMap<Sha256Hash, StoredBlock>() {
         @Override
         protected boolean removeEldestEntry(Map.Entry<Sha256Hash, StoredBlock> entry) {
-            return size() > 2050; // Slightly more than the difficulty
-                                  // transition period.
+            return size() > 2050;  // Slightly more than the difficulty transition period.
         }
     };
-    // Use a separate cache to track get() misses. This is to efficiently handle
-    // the case of an unconnected block
-    // during chain download. Each new block will do a get() on the unconnected
-    // block so if we haven't seen it yet we
+    // Use a separate cache to track get() misses. This is to efficiently handle the case of an unconnected block
+    // during chain download. Each new block will do a get() on the unconnected block so if we haven't seen it yet we
     // must efficiently respond.
     //
-    // We don't care about the value in this cache. It is always notFoundMarker.
-    // Unfortunately LinkedHashSet does not
+    // We don't care about the value in this cache. It is always notFoundMarker. Unfortunately LinkedHashSet does not
     // provide the removeEldestEntry control.
     private static final StoredBlock notFoundMarker = new StoredBlock(null, null, -1);
     private LinkedHashMap<Sha256Hash, StoredBlock> notFoundCache = new LinkedHashMap<Sha256Hash, StoredBlock>() {
         @Override
         protected boolean removeEldestEntry(Map.Entry<Sha256Hash, StoredBlock> entry) {
-            return size() > 100; // This was chosen arbitrarily.
+            return size() > 100;  // This was chosen arbitrarily.
         }
     };
 
@@ -93,16 +82,14 @@ public class BoundedOverheadBlockStore implements BlockStore, IsMultiBitClass {
     private FileChannel channel;
 
     private static class Record {
-        // A BigInteger representing the total amount of work done so far on
-        // this chain. As of May 2011 it takes 8
-        // bytes to represent this field, so 16 bytes should be plenty for a
-        // long time.
+        // A BigInteger representing the total amount of work done so far on this chain. As of May 2011 it takes 8
+        // bytes to represent this field, so 16 bytes should be plenty for a long time.
         private static final int CHAIN_WORK_BYTES = 16;
         private static final byte[] EMPTY_BYTES = new byte[CHAIN_WORK_BYTES];
 
-        private int height; // 4 bytes
-        private byte[] chainWork; // 16 bytes
-        private byte[] blockHeader; // 80 bytes
+        private int height;           // 4 bytes
+        private byte[] chainWork;     // 16 bytes
+        private byte[] blockHeader;   // 80 bytes
 
         public static final int SIZE = 4 + Record.CHAIN_WORK_BYTES + Block.HEADER_SIZE;
 
@@ -159,7 +146,7 @@ public class BoundedOverheadBlockStore implements BlockStore, IsMultiBitClass {
         }
     }
 
-    public BoundedOverheadBlockStore(NetworkParameters params, File file, boolean createNewStore) throws BlockStoreException {
+    public ReplayableBlockStore(NetworkParameters params, File file, boolean createNewStore) throws BlockStoreException {
         this.params = params;
         if (createNewStore) {
             createNewStore(params, file);
@@ -174,8 +161,7 @@ public class BoundedOverheadBlockStore implements BlockStore, IsMultiBitClass {
     }
 
     private void createNewStore(NetworkParameters params, File file) throws BlockStoreException {
-        // Create a new block store if the file wasn't found or anything went
-        // wrong whilst reading.
+        // Create a new block store if the file wasn't found or anything went wrong whilst reading.
         blockCache.clear();
         notFoundCache.clear();
         try {
@@ -192,15 +178,14 @@ public class BoundedOverheadBlockStore implements BlockStore, IsMultiBitClass {
             throw new BlockStoreException(e1);
         }
         try {
-            // Set up the genesis block. When we start out fresh, it is by
-            // definition the top of the chain.
+            // Set up the genesis block. When we start out fresh, it is by definition the top of the chain.
             Block genesis = params.genesisBlock.cloneAsHeader();
             StoredBlock storedGenesis = new StoredBlock(genesis, genesis.getWork(), 0);
             this.chainHead = storedGenesis.getHeader().getHash();
             this.file.write(this.chainHead.getBytes());
             put(storedGenesis);
         } catch (VerificationException e1) {
-            throw new RuntimeException(e1); // Cannot happen.
+            throw new RuntimeException(e1);  // Cannot happen.
         } catch (IOException e) {
             throw new BlockStoreException(e);
         }
@@ -279,8 +264,7 @@ public class BoundedOverheadBlockStore implements BlockStore, IsMultiBitClass {
 
     private Record getRecord(Sha256Hash hash) throws BlockStoreException, IOException, ProtocolException {
         long startPos = channel.position();
-        // Use our own file pointer within the tight loop as updating channel
-        // positions is really expensive.
+        // Use our own file pointer within the tight loop as updating channel positions is really expensive.
         long pos = startPos;
         Record record = new Record();
         do {
@@ -316,8 +300,7 @@ public class BoundedOverheadBlockStore implements BlockStore, IsMultiBitClass {
     public synchronized void setChainHead(StoredBlock chainHead) throws BlockStoreException {
         try {
             this.chainHead = chainHead.getHeader().getHash();
-            // Write out new hash to the first 32 bytes of the file past one
-            // (first byte is version number).
+            // Write out new hash to the first 32 bytes of the file past one (first byte is version number).
             channel.write(ByteBuffer.wrap(this.chainHead.getBytes()), 1);
         } catch (IOException e) {
             throw new BlockStoreException(e);

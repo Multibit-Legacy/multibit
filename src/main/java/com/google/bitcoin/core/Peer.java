@@ -367,14 +367,12 @@ public class Peer implements IsMultiBitClass {
             latch.countDown();
         }
     }
-
+   
     /**
-     * Send the given Transaction, ie, make a payment with BitCoins. To create a transaction you can broadcast, use
-     * a {@link Wallet}. After the broadcast completes, confirm the send using the wallet confirmSend() method.
-     * @throws IOException
+     * Sends the given message on the peers network connection. Just uses {@link NetworkConnection#writeMessage(Message)}.
      */
-    void broadcastTransaction(Transaction tx) throws IOException {
-        conn.writeMessage(tx);
+    public void sendMessage(Message m) throws IOException {
+        conn.writeMessage(m);
     }
 
     private void blockChainDownload(Sha256Hash toHash) throws IOException {

@@ -23,6 +23,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EmptyStackException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Stack;
@@ -52,6 +53,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Block;
+import com.google.bitcoin.core.GetDataMessage;
+import com.google.bitcoin.core.Message;
 import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
 import com.google.bitcoin.core.Transaction;
@@ -603,6 +606,12 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         }
     }
 
+    public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+        for (ViewSystem viewSystem : viewSystems) {
+            // TODO
+        }
+    }
+
     public void onPendingCoinsReceived(Wallet wallet, Transaction transaction) {
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onPendingCoinsReceived(wallet, transaction);
@@ -776,6 +785,24 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      */
     private boolean isOKToQuit() {
         return true;
+    }
+
+    @Override
+    public Message onPreMessageReceived(Peer peer, Message m) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void onTransaction(Peer peer, Transaction t) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public List<Message> getData(Peer peer, GetDataMessage m) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

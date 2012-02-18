@@ -92,7 +92,7 @@ public class ResetTransactionsSubmitAction implements Action {
             }
 
             // remove the transactions from the wallet
-            activePerWalletModelData.getWallet().removeAllTransactions();
+            activePerWalletModelData.getWallet().clearTransactions(0);
 
             // save the wallet without the transactions
             controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
@@ -112,17 +112,6 @@ public class ResetTransactionsSubmitAction implements Action {
                 }
             };
             worker.execute();
-//            Thread workerThread = new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    try {
-//                        controller.getMultiBitService().replayBlockChain(finalEarliestTransactionDate);
-//                    } catch (BlockStoreException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            });
-//            workerThread.start();
 
             controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
         }

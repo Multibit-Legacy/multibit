@@ -17,6 +17,8 @@ package org.multibit.model;
 
 import com.google.bitcoin.core.*;
 import com.google.bitcoin.core.Wallet.BalanceType;
+import com.google.bitcoin.store.BlockStoreException;
+
 import org.multibit.controller.MultiBitController;
 import org.multibit.network.MultiBitService;
 import org.slf4j.Logger;
@@ -68,7 +70,7 @@ public class MultiBitModel {
     public static final String SEND_FEE = "sendFee";
     public static final String SEND_PERFORM_PASTE_NOW = "sendPerformPasteNow";
 
-    // open uri 
+    // open uri
     public static final String OPEN_URI_SHOW_DIALOG = "openUriShowDialog";
     public static final String OPEN_URI_USE_URI = "openUriUseUri";
     public static final String OPEN_URI_ADDRESS = "openUriAddress";
@@ -102,7 +104,7 @@ public class MultiBitModel {
     public static final String VALIDATION_AMOUNT_VALUE = "validationAmountValue";
 
     public static final String WALLET_FILE_EXTENSION = "wallet";
-    
+
     // private key import and export
     public static final String PRIVATE_KEY_FILE_EXTENSION = "key";
     public static final String PRIVATE_KEY_FILENAME = "privateKeyFilename";
@@ -110,10 +112,10 @@ public class MultiBitModel {
     public static final String EXPORT_PRIVATE_KEYS_MESSAGE = "exportPrivateKeyMessage";
     public static final String DISPLAY_IMPORT_PRIVATE_KEYS_MESSAGE = "displayImportPrivateKeyMessage";
     public static final String IMPORT_PRIVATE_KEYS_MESSAGE = "importPrivateKeyMessage";
-    
+
     // connect to single node
     public static final String SINGLE_NODE_CONNECTION = "singleNodeConnection";
-    
+
     // sizes and last modified dates of files
     public static final String WALLET_FILE_SIZE = "walletFileSize";
     public static final String WALLET_FILE_LAST_MODIFIED = "walletFileLastModified";
@@ -125,16 +127,16 @@ public class MultiBitModel {
     public static final String SHOW_MERCHANT_MENU = "showMerchantMenu";
     public static final String MERCHANT_BULK_ADDRESSES_NUMBER_OF_ADDRESSES = "merchantBulkAddressesNumberOfAddresses";
     public static final String MERCHANT_BULK_ADDRESSES_OUTPUT_FILENAME = "merchantBulkAddressesOutputFilename";
-       
-    // reset transactions 
+
+    // reset transactions
     public static final String EARLIEST_TRANSACTION_DATE = "earliestTransactionDate";
-   
+
     // user preference font
-    public static final String FONT= "font";
+    public static final String FONT = "font";
     public static final String FONT_NAME = "fontName";
     public static final String FONT_STYLE = "fontStyle";
     public static final String FONT_SIZE = "fontSize";
-       
+
     public static final String PREVIOUS_FONT_NAME = "previousFontName";
     public static final String PREVIOUS_FONT_STYLE = "previousFontStyle";
     public static final String PREVIOUS_FONT_SIZE = "previousFontSize";
@@ -152,9 +154,6 @@ public class MultiBitModel {
 
     // user preferences
     private Properties userPreferences;
-
-    
-   
 
     /**
      * list of each wallet's total model data
@@ -221,7 +220,7 @@ public class MultiBitModel {
     public PerWalletModelData getActivePerWalletModelData() {
         return activeWalletModelData;
     }
-    
+
     /**
      * get a wallet preference from the active wallet
      * 
@@ -245,7 +244,7 @@ public class MultiBitModel {
     public void setActiveWalletPreference(String key, String value) {
         if (activeWalletModelData.getWalletInfo() != null && value != null) {
             activeWalletModelData.getWalletInfo().put(key, value);
-            activeWalletModelData.setDirty(true);            
+            activeWalletModelData.setDirty(true);
         }
     }
 
@@ -320,7 +319,7 @@ public class MultiBitModel {
             }
         }
     }
-    
+
     /**
      * set a wallet description, given a wallet filename
      * 
@@ -340,7 +339,7 @@ public class MultiBitModel {
             }
         }
     }
-    
+
     /**
      * add a new wallet to the list of managed wallets
      */
@@ -376,9 +375,14 @@ public class MultiBitModel {
         // wire up the controller as a wallet event listener
         if (wallet != null) {
             wallet.addEventListener(new WalletEventListener() {
-                public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
-                        BigInteger newBalance) {
+                public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
                     controller.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
+                }
+
+                @Override
+                public void onCoinsSent(Wallet wallet, Transaction tx, BigInteger prevBalance, BigInteger newBalance) {
+                    // TODO Auto-generated method stub
+
                 }
 
                 public void onPendingCoinsReceived(Wallet wallet, Transaction transaction) {
@@ -399,7 +403,7 @@ public class MultiBitModel {
 
         createWalletData(walletFilename);
         createAddressBookReceivingAddresses(walletFilename);
-        
+
         return newPerWalletModelData;
     }
 
@@ -424,7 +428,7 @@ public class MultiBitModel {
         if (walletFilename == null) {
             return walletData;
         }
-        
+
         PerWalletModelData perWalletModelData = null;
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
@@ -629,17 +633,24 @@ public class MultiBitModel {
         }
 
         // other wise return the date of the block it first appeared in
-        Set<StoredBlock> appearsIn = transaction.getAppearsIn();
+        Collection<Sha256Hash> appearsIn = transaction.getAppearsInHashes();
         if (appearsIn != null) {
             if (!appearsIn.isEmpty()) {
-                Iterator<StoredBlock> iterator = appearsIn.iterator();
+                Iterator<Sha256Hash> iterator = appearsIn.iterator();
                 // just take the first i.e. ignore impact of side chains
                 if (iterator.hasNext()) {
-                    StoredBlock appearsInStoredBlock = iterator.next();
-                    Block appearsInBlock = appearsInStoredBlock.getHeader();
-                    // set the time of the block to be the time of the
-                    // transaction - TODO get transaction time
-                    return new Date(appearsInBlock.getTimeSeconds() * 1000);
+                    Sha256Hash appearsInHash = iterator.next();
+                    StoredBlock appearsInStoredBlock;
+                    try {
+                        appearsInStoredBlock = controller.getMultiBitService().getBlockStore().get(appearsInHash);
+                        Block appearsInBlock = appearsInStoredBlock.getHeader();
+                        // set the time of the block to be the time of the
+                        // transaction - TODO get transaction time
+                        return new Date(appearsInBlock.getTimeSeconds() * 1000);
+                    } catch (BlockStoreException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -653,16 +664,24 @@ public class MultiBitModel {
      * @return
      */
     private int workOutHeight(Transaction transaction) {
-        Set<StoredBlock> appearsIn = transaction.getAppearsIn();
+        Collection<Sha256Hash> appearsIn = transaction.getAppearsInHashes();
         if (appearsIn != null) {
             if (!appearsIn.isEmpty()) {
-                Iterator<StoredBlock> iterator = appearsIn.iterator();
+                Iterator<Sha256Hash> iterator = appearsIn.iterator();
                 // just take the first i.e. ignore impact of side chains
                 if (iterator.hasNext()) {
-                    StoredBlock appearsInStoredBlock = iterator.next();
-                    if (appearsInStoredBlock != null) {
-                        return appearsInStoredBlock.getHeight();
+                    Sha256Hash appearsInHash = iterator.next();
+                    StoredBlock appearsInStoredBlock;
+                    try {
+                        appearsInStoredBlock = controller.getMultiBitService().getBlockStore().get(appearsInHash);
+                        if (appearsInStoredBlock != null) {
+                            return appearsInStoredBlock.getHeight();
+                        }
+                    } catch (BlockStoreException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
                     }
+
                 }
             }
         }
@@ -681,7 +700,7 @@ public class MultiBitModel {
         if (walletFilename == null) {
             return null;
         }
-        
+
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
                 if (walletFilename.equals(loopPerWalletModelData.getWalletFilename())) {

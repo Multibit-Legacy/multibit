@@ -34,10 +34,15 @@ import static com.google.bitcoin.core.Utils.*;
  * It implements TWO serialization protocols - the BitCoin proprietary format which is identical to the C++
  * implementation and is used for reading/writing transactions to the wire and for hashing. It also implements Java
  * serialization which is used for the wallet. This allows us to easily add extra fields used for our own accounting
- * or UI purposes.
+ * or UI purposes.<p>
+ *     
+ * All Bitcoin transactions are at risk of being reversed, though the risk is much less than with traditional payment 
+ * systems. Transactions have <i>confidence levels</i>, which help you decide whether to trust a transaction or not.
+ * Whether to trust a transaction is something that needs to be decided on a case by case basis - a rule that makes 
+ * sense for selling MP3s might not make sense for selling cars, or accepting payments from a family member. If you
+ * are building a wallet, how to present confidence to your users is something to consider carefully.
  */
 public class Transaction extends ChildMessage implements Serializable, IsMultiBitClass {
-    @SuppressWarnings("unused")
     private static final Logger log = LoggerFactory.getLogger(Transaction.class);
     private static final long serialVersionUID = -8567546957352643140L;
 
@@ -53,15 +58,9 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
 
     private long lockTime;
 
-    // This is only stored in Java serialization. It records which blocks (and their height + work) the transaction
-    // has been included in. For most transactions this set will have a single member. In the case of a chain split a
-    // transaction may appear in multiple blocks but only one of them is part of the best chain. It's not valid to
-    // have an identical transaction appear in two blocks in the same chain but this invariant is expensive to check,
-    // so it's not directly enforced anywhere.
-    //
-    // If this transaction is not stored in the wallet, appearsIn is null.
+    // This is being migrated to appearsInHashes. It's set to null after migration.
     Set<StoredBlock> appearsIn;
-
+    
     // Stored only in Java serialization. This is either the time the transaction was broadcast as measured from the
     // local clock, or the time from the block in which it was included. Note that this can be changed by re-orgs so
     // the wallet may update this field. Old serialized transactions don't have this field, thus null is valid.
@@ -71,15 +70,39 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
 
     // This is an in memory helper only.
     transient Sha256Hash hash;
+    
+    // Data about how confirmed this tx is. Serialized, may be null. 
+    private TransactionConfidence confidence;
 
-    Transaction(NetworkParameters params) {
+    // This records which blocks the transaction
+    // has been included in. For most transactions this set will have a single member. In the case of a chain split a
+    // transaction may appear in multiple blocks but only one of them is part of the best chain. It's not valid to
+    // have an identical transaction appear in two blocks in the same chain but this invariant is expensive to check,
+    // so it's not directly enforced anywhere.
+    //
+    // If this transaction is not stored in the wallet, appearsInHashes is null.
+    Set<Sha256Hash> appearsInHashes;
+
+    public Transaction(NetworkParameters params) {
         super(params);
         version = 1;
         inputs = new ArrayList<TransactionInput>();
         outputs = new ArrayList<TransactionOutput>();
         // We don't initialize appearsIn deliberately as it's only useful for transactions stored in the wallet.
-        length = 10; //8 for std fields + 1 for each 0 varint
+        length = 10; // 8 for std fields + 1 for each 0 varint
         
+        updatedAt = new Date();
+    }
+
+    public Transaction(NetworkParameters params, int version, Sha256Hash hash) {
+        super(params);
+        this.version = version & ((1L<<32) - 1); // this field is unsigned - remove any sign extension
+        inputs = new ArrayList<TransactionInput>();
+        outputs = new ArrayList<TransactionOutput>();
+        this.hash = hash;
+        // We don't initialize appearsIn deliberately as it's only useful for transactions stored in the wallet.
+        length = 10; //8 for std fields + 1 for each 0 varint
+               
         updatedAt = new Date();
     }
 
@@ -103,7 +126,6 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * @param params NetworkParameters object.
      * @param msg Bitcoin protocol formatted byte array containing message content.
      * @param offset The location of the first msg byte within the array.
-     * @param protocolVersion Bitcoin protocol version.
      * @param parseLazy Whether to perform a full parse immediately or delay until a read is requested.
      * @param parseRetain Whether to retain the backing byte array for quick reserialization.  
      * If true and the backing byte array is invalidated due to modification of a field then 
@@ -177,26 +199,69 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * Returns a set of blocks which contain the transaction, or null if this transaction doesn't have that data
      * because it's not stored in the wallet or because it has never appeared in a block.
      */
-    public Set<StoredBlock> getAppearsIn() {
-        return appearsIn;
+    public Collection<Sha256Hash> getAppearsInHashes() {
+        if (appearsInHashes != null)
+            return appearsInHashes;
+        
+        if (appearsIn != null) {
+            assert appearsInHashes == null;
+            log.info("Migrating a tx to appearsInHashes");
+            appearsInHashes = new HashSet<Sha256Hash>(appearsIn.size());
+            for (StoredBlock block : appearsIn) {
+                appearsInHashes.add(block.getHeader().getHash());
+            }
+            appearsIn = null;
+        }
+        
+        return appearsInHashes;
     }
 
     /**
-     * Adds the given block to the internal serializable set of blocks in which this transaction appears. This is
+     * Convenience wrapper around getConfidence().getConfidenceType()
+     * @return true if this transaction hasn't been seen in any block yet.
+     */
+    public boolean isPending() {
+        return getConfidence().getConfidenceType() == TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN;
+    }
+
+    /**
+     * Puts the given block in the internal serializable set of blocks in which this transaction appears. This is
      * used by the wallet to ensure transactions that appear on side chains are recorded properly even though the
-     * block stores do not save the transaction data at all.
+     * block stores do not save the transaction data at all.<p>
      *
+     * <p>If there is a re-org this will be called once for each block that was previously seen, to update which block
+     * is the best chain. The best chain block is guaranteed to be called last. So this must be idempotent.
+     *
+     * <p>Sets updatedAt to be the earliest valid block time where this tx was seen
+     * 
      * @param block     The {@link StoredBlock} in which the transaction has appeared.
      * @param bestChain whether to set the updatedAt timestamp from the block header (only if not already set)
      */
-    void addBlockAppearance(StoredBlock block, boolean bestChain) {
-        if (bestChain && updatedAt == null) {
-            updatedAt = new Date(block.getHeader().getTimeSeconds() * 1000);
+    public void setBlockAppearance(StoredBlock block, boolean bestChain) {
+        long blockTime = block.getHeader().getTimeSeconds() * 1000;
+        if (bestChain && (updatedAt == null || updatedAt.getTime() == 0 || updatedAt.getTime() > blockTime)) {
+            updatedAt = new Date(blockTime);
         }
-        if (appearsIn == null) {
-            appearsIn = new HashSet<StoredBlock>();
+        
+        addBlockAppearance(block.getHeader().getHash());
+
+        if (bestChain) {
+            // This can cause event listeners on TransactionConfidence to run. After this line completes, the wallets
+            // state may have changed!
+            getConfidence().setAppearedAtChainHeight(block.getHeight());
         }
-        appearsIn.add(block);
+    }
+
+    public void addBlockAppearance(final Sha256Hash blockHash) {
+        if (appearsInHashes == null) {
+            appearsInHashes = new HashSet<Sha256Hash>();
+        }
+        appearsInHashes.add(blockHash);
+    }
+
+    /** Called by the wallet once a re-org means we don't appear in the best chain anymore. */
+    void notifyNotOnBestChain() {
+        getConfidence().setConfidenceType(TransactionConfidence.ConfidenceType.NOT_IN_BEST_CHAIN);
     }
 
     /**
@@ -261,7 +326,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     }
 
     /**
-     * @return true if every output is marked as spent.
+     * Returns true if every output is marked as spent.
      */
     public boolean isEveryOutputSpent() {
         maybeParse();
@@ -273,29 +338,31 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     }
 
     /**
+     * Returns true if every output owned by the given wallet is spent.
+     */
+    public boolean isEveryOwnedOutputSpent(Wallet wallet) {
+        maybeParse();
+        for (TransactionOutput output : outputs) {
+            if (output.isAvailableForSpending() && output.isMine(wallet))
+                return false;
+        }
+        return true;
+    }
+
+    /**
      * Returns the earliest time at which the transaction was seen (broadcast or included into the chain),
-     * or null if that information isn't available.
+     * or the epoch if that information isn't available.
      */
     public Date getUpdateTime() {
         if (updatedAt == null) {
-            // Older wallets did not store this field. If we can, fill it out based on the block pointers. We might
-            // "guess wrong" in the case of transactions appearing on chain forks, but this is unlikely to matter in
-            // practice. Note, some patched copies of BitCoinJ store dates in this field that do not correspond to any
-            // block but rather broadcast time.
-            if (appearsIn == null || appearsIn.size() == 0) {
-                // Transaction came from somewhere that doesn't provide time info.
-                return null;
-            }
-            long earliestTimeSecs = Long.MAX_VALUE;
-            // We might return a time that is different to the best chain, as we don't know here which block is part
-            // of the active chain and which are simply inactive. We just ignore this for now.
-            // TODO: At some point we'll want to store storing full block headers in the wallet. Remove at that time.
-            for (StoredBlock b : appearsIn) {
-                earliestTimeSecs = Math.min(b.getHeader().getTimeSeconds(), earliestTimeSecs);
-            }
-            updatedAt = new Date(earliestTimeSecs * 1000);
+            // Older wallets did not store this field. Set to the epoch.
+            updatedAt = new Date(0);
         }
         return updatedAt;
+    }
+    
+    public void setUpdateTime(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     /**
@@ -383,7 +450,6 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         cursor = offset;
 
         version = readUint32();
-        int marker = cursor;
 
         // First come the inputs.
         long numInputs = readVarInt();
@@ -442,9 +508,10 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
 
             try {
                 s.append(in.getScriptSig().getFromAddress().toString());
+                s.append(" / ");
+                s.append(in.getOutpoint().toString());
             } catch (Exception e) {
                 s.append("[exception: ").append(e.getMessage()).append("]");
-                throw new RuntimeException(e);
             }
             s.append("\n");
         }
@@ -457,6 +524,13 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
                 s.append(" ");
                 s.append(bitcoinValueToFriendlyString(out.getValue()));
                 s.append(" BTC");
+                if (!out.isAvailableForSpending()) {
+                    s.append(" Spent");
+                }
+                if (out.getSpentBy() != null) {
+                    s.append(" by ");
+                    s.append(out.getSpentBy().getParentTransaction().getHashAsString());
+                }
             } catch (Exception e) {
                 s.append("[exception: ").append(e.getMessage()).append("]");
             }
@@ -497,6 +571,13 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
 
         outputs.add(to);
         adjustLength(to.length);
+    }
+
+    /**
+     * Creates an output based on the given address and value, adds it to this transaction.
+     */
+    public void addOutput(BigInteger value, Address address) {
+        addOutput(new TransactionOutput(params, this, value, address));
     }
 
     /**
@@ -569,7 +650,17 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         // Every input is now complete.
     }
 
-    private byte[] hashTransactionForSignature(SigHash type, boolean anyoneCanPay) {
+    /**
+     * Calculates a signature hash, that is, a hash of a simplified form of the transaction. How exactly the transaction
+     * is simplified is specified by the type and anyoneCanPay parameters.<p>
+     *
+     * You don't normally ever need to call this yourself. It will become more useful in future as the contracts
+     * features of Bitcoin are developed.
+     *
+     * @param type Should be SigHash.ALL
+     * @param anyoneCanPay should be false.
+     */
+    public byte[] hashTransactionForSignature(SigHash type, boolean anyoneCanPay) {
         try {
             ByteArrayOutputStream bos = new UnsafeByteArrayOutputStream(length == UNKNOWN_LENGTH ? 256 : length + 4);
             bitcoinSerialize(bos);
@@ -637,6 +728,18 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     public List<TransactionOutput> getOutputs() {
         maybeParse();
         return Collections.unmodifiableList(outputs);
+    }
+    
+    public synchronized TransactionConfidence getConfidence() {
+        if (confidence == null) {
+            confidence = new TransactionConfidence(this);
+        }
+        return confidence;
+    }
+
+    /** Check if the transaction has a known confidence */
+    public boolean hasConfidence() {
+        return confidence != null && confidence.getConfidenceType() != TransactionConfidence.ConfidenceType.UNKNOWN;
     }
 
     @Override

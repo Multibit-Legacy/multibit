@@ -16,15 +16,13 @@
 
 package com.google.bitcoin.core;
 
+import org.multibit.IsMultiBitClass;
+
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Map;
-
-import org.multibit.IsMultiBitClass;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A transfer of coins from one address to another creates a transaction in which the outputs
@@ -32,9 +30,8 @@ import org.slf4j.LoggerFactory;
  * transaction as being a module which is wired up to others, the inputs of one have to be wired
  * to the outputs of another. The exceptions are coinbase transactions, which create new coins.
  */
-public class TransactionInput extends ChildMessage implements Serializable, IsMultiBitClass {
-    private static final Logger log = LoggerFactory.getLogger(TransactionInput.class);
-    
+public class TransactionInput extends ChildMessage implements Serializable {
+    public static final long NO_SEQUENCE = 0xFFFFFFFFL;
     private static final long serialVersionUID = 2;
     public static final byte[] EMPTY_ARRAY = new byte[0];
 
@@ -60,8 +57,20 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
     TransactionInput(NetworkParameters params, Transaction parentTransaction, byte[] scriptBytes) {
         super(params);
         this.scriptBytes = scriptBytes;
-        this.outpoint = new TransactionOutPoint(params, -1, null);
-        this.sequence = 0xFFFFFFFFL;
+        this.outpoint = new TransactionOutPoint(params, -1, (Transaction)null);
+        this.sequence = NO_SEQUENCE;
+        this.parentTransaction = parentTransaction;
+
+        length = 40 + (scriptBytes == null ? 1 : VarInt.sizeOf(scriptBytes.length) + scriptBytes.length);
+    }
+
+    public TransactionInput(NetworkParameters params, Transaction parentTransaction,
+            byte[] scriptBytes,
+            TransactionOutPoint outpoint) {
+        super(params);
+        this.scriptBytes = scriptBytes;
+        this.outpoint = outpoint;
+        this.sequence = NO_SEQUENCE;
         this.parentTransaction = parentTransaction;
 
         length = 40 + (scriptBytes == null ? 1 : VarInt.sizeOf(scriptBytes.length) + scriptBytes.length);
@@ -75,7 +84,7 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
         long outputIndex = output.getIndex();
         outpoint = new TransactionOutPoint(params, outputIndex, output.parentTransaction);
         scriptBytes = EMPTY_ARRAY;
-        sequence = 0xFFFFFFFFL;
+        sequence = NO_SEQUENCE;
         this.parentTransaction = parentTransaction;
 
         length = 41;
@@ -301,6 +310,10 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
         maybeParse();
         out.defaultWriteObject();
     }
+
+    public boolean hasSequence() {
+        return sequence != NO_SEQUENCE;
+    }
     
     /** Mostly copied from transaction output */
     public boolean isMine(Wallet wallet) {
@@ -308,9 +321,7 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
             byte[] pubkey = getScriptSig().getPubKey();
             return wallet.isPubKeyMine(pubkey);
         } catch (ScriptException e) {
-            log.error("Could not parse tx output script: {}", e.toString());
             return false;
         }
     }
-
 }

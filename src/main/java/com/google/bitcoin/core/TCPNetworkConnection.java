@@ -77,7 +77,7 @@ public class TCPNetworkConnection implements NetworkConnection, IsMultiBitClass 
         InetSocketAddress address = new InetSocketAddress(remoteIp, port);
         socket = new Socket();
         socket.connect(address, connectTimeoutMsec);
-        
+
         out = socket.getOutputStream();
         in = socket.getInputStream();
 
@@ -105,9 +105,9 @@ public class TCPNetworkConnection implements NetworkConnection, IsMultiBitClass 
         // Switch to the new protocol version.
         int peerVersion = versionMessage.clientVersion;
         log.info("Connected to peer: version={}, subVer='{}', services=0x{}, time={}, blocks={}", new Object[] {
-                peerVersion, 
+                peerVersion,
                 versionMessage.subVer,
-                versionMessage.localServices, 
+                versionMessage.localServices,
                 new Date(versionMessage.time * 1000),
                 versionMessage.bestHeight
         });
