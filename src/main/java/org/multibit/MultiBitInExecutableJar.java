@@ -110,9 +110,6 @@ public class MultiBitInExecutableJar {
             System.setOut(fileStream);
             // Redirecting runtime exceptions to file
             System.setErr(fileStream);
-
-            // call the main MultiBit code
-            MultiBit.main(args);
         } catch (FileNotFoundException e) {
             if (log != null) {
                 log.error("Error in IO Redirection", e);
@@ -123,6 +120,9 @@ public class MultiBitInExecutableJar {
                 log.debug("Redirecting output & exceptions to file", e);
             }
         } finally {
+            // call the main MultiBit code
+            MultiBit.main(args);
+
             // Restoring back to console
             System.setOut(originalStream);
             // Gets printed in the console

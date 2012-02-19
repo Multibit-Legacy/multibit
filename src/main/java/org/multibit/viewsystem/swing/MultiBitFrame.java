@@ -34,6 +34,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.Timer;
 
 import javax.swing.BorderFactory;
@@ -86,7 +87,6 @@ import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.GradientPanel;
-import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitLargeButton;
 import org.multibit.viewsystem.swing.view.yourwallets.YourWalletsPanel;
@@ -104,7 +104,7 @@ import com.google.bitcoin.core.Wallet;
 /*
  * JFrame displaying Swing version of MultiBit
  *
- * TODO Consider breaking this into smaller classes
+ * TODO Consider breaking this into smaller classes - good idea
  */
 public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationListener {
 
@@ -161,6 +161,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final int WIDTH_OF_LONG_FIELDS = 320;
     public static final int WIDTH_OF_AMOUNT_FIELD = 160;
     public static final int ONLINE_LABEL_DELTA = 10;
+    
+    private static final int MINIMUM_STATUS_LABEL_DISPLAY_TIME = 800; // millisecond
+    
+    private long lastStatusUpdateTime = 0;
+ 
 
     private static final long serialVersionUID = 7621813615342923041L;
 
@@ -353,6 +358,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewPanel = new JPanel(new BorderLayout()); // initally blank
         viewPanel.setOpaque(true);
         viewPanel.setBackground(BACKGROUND_COLOR);
+        viewPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
+                BorderFactory.createMatteBorder(1, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 2;
@@ -862,6 +870,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
                 if (nextViewFinal instanceof JPanel) {
                     viewPanel.removeAll();
+                    viewPanel.setBorder(BorderFactory.createEmptyBorder());
                     viewPanel.add((JPanel) nextViewFinal, BorderLayout.CENTER);
                 }
 
@@ -925,6 +934,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         final String finalNewStatusLabel = newStatusLabel;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                Date now = new Date();
+                if (now.getTime() - lastStatusUpdateTime < MINIMUM_STATUS_LABEL_DISPLAY_TIME) {
+                    try {
+                        Thread.sleep(MINIMUM_STATUS_LABEL_DISPLAY_TIME - (now.getTime() - lastStatusUpdateTime));
+                    } catch (InterruptedException e) {
+                        // no problem if interrupted
+                    }
+                }
+                lastStatusUpdateTime = now.getTime();
+                         
                 statusLabel.setText(finalNewStatusLabel);
             }
         });
@@ -1366,40 +1385,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             return this;
         }
 
-        // @Override
-        // public void paint(Graphics g) {
-        // int width = getWidth();
-        // int height = getHeight();
-        //
-        // if (isSelected) {
-        // // solid selection background color
-        // g.setColor(list.getSelectionBackground());
-        // g.fillRect(0, 0, width, height);
-        // } else {
-        // // put gradient paint in background of rendered label
-        // // Create the gradient paint
-        // GradientPaint paint = new GradientPaint(0, 0,
-        // MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR, 0, height,
-        // MultiBitFrame.DARK_BACKGROUND_COLOR, true);
-        //
-        // // we need to cast to Graphics2D for this operation
-        // Graphics2D g2d = (Graphics2D) g;
-        //
-        // // save the old paint
-        // java.awt.Paint oldPaint = g2d.getPaint();
-        //
-        // // set the paint to use for this operation
-        // g2d.setPaint(paint);
-        //
-        // // fill the background using the paint
-        // g2d.fillRect(0, 0, width, height);
-        //
-        // // restore the original paint
-        // g2d.setPaint(oldPaint);
-        // }
-        //
-        // super.paint(g);
-        // }
     }
 
     @Override

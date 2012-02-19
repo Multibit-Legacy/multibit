@@ -22,6 +22,7 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Locale;
@@ -129,7 +130,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     private volatile URI rawBitcoinURI = null;
 
     private volatile boolean applicationStarting = true;
-
+   
     /**
      * used for testing only
      */
@@ -585,7 +586,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      *            The download status string
      */
     public void updateStatusLabel(String newStatusText) {
-        for (ViewSystem viewSystem : viewSystems) {
+       for (ViewSystem viewSystem : viewSystems) {
             viewSystem.updateStatusLabel(newStatusText);
         }
     }

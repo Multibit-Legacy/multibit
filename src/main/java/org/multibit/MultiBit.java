@@ -176,6 +176,8 @@ public class MultiBit {
                         // load up ith wallet filename
                         String loopWalletFilename = userPreferences.getProperty(MultiBitModel.WALLET_FILENAME_PREFIX + i);
                         log.debug("Loading wallet from '{}'", loopWalletFilename);
+                        controller.updateStatusLabel(controller.getLocaliser().getString("multiBit.loadingWalletFrom", new Object[]{loopWalletFilename}));
+                        
                         if (activeWalletFilename != null && activeWalletFilename.equals(loopWalletFilename)) {
                             controller.addWalletFromFilename(loopWalletFilename);
                             controller.getModel().setActiveWalletByFilename(loopWalletFilename);
