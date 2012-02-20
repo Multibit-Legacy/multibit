@@ -41,6 +41,10 @@ public class ApplicationDataDirectoryLocator {
      * directory This is for backwards compatibility and for running everything
      * from a USB drive
      * 
+     * 2. On Mac only.  See if there is a multibit.properties 4 levels up
+     * This is for running everything from a USB drive where you want to
+     * "escape" from inside the Mac app 
+     * 
      * 2. Otherwise set the working directory as follows:
      * 
      * PC System.getenv("APPDATA")/MultiBit
@@ -72,7 +76,11 @@ public class ApplicationDataDirectoryLocator {
             } else {
                 if (operatingSystemName.startsWith("Mac")) {
                     // Mac os
-                    applicationDataDirectory = System.getProperty("user.home") + "/Library/Application Support/MultiBit";
+                    if ( (new File("../../../../" + FileHandler.USER_PROPERTIES_FILE_NAME)).exists()) {
+                        applicationDataDirectory = new File("../../../..").getAbsolutePath();
+                    } else {
+                        applicationDataDirectory = System.getProperty("user.home") + "/Library/Application Support/MultiBit";
+                    }
                 } else {
                     // treat as Linux/ unix variant
                     applicationDataDirectory = System.getProperty("user.home") + "/MultiBit";
