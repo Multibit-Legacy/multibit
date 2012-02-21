@@ -789,8 +789,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     @Override
     public Message onPreMessageReceived(Peer peer, Message m) {
-        // TODO Auto-generated method stub
-        return null;
+        return m;
     }
 
     @Override

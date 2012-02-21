@@ -125,19 +125,6 @@ public class ImportPrivateKeysSubmitAction implements Action {
                                 }
                             };
                             worker.execute();
-                            // System.out.println(worker.get().toString());
-                            // Thread workerThread = new Thread(new Runnable() {
-                            // @Override
-                            // public void run() {
-                            // try {
-                            // controller.getMultiBitService().replayBlockChain(finalEarliestTransactionDate);
-                            // } catch (BlockStoreException e) {
-                            // e.printStackTrace();
-                            // }
-                            // }
-                            // });
-                            // workerThread.start();
-
                             message = controller.getLocaliser().getString("showImportPrivateKeysAction.privateKeysImportSuccess");
                         } catch (IOException e) {
                             log.error(e.getClass().getName() + " " + e.getMessage());
