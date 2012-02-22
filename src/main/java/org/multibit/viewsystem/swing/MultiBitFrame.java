@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2012 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
@@ -27,13 +26,10 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.math.BigInteger;
-import java.util.Date;
 import java.util.Timer;
 
 import javax.swing.BorderFactory;
@@ -107,9 +103,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitFrame.class);
 
-    private static final int A_SMALL_NUMBER_OF_PIXELS = 100;
-    private static final int A_LARGE_NUMBER_OF_PIXELS = 1000000;
-    private static final int STATUSBAR_HEIGHT = 30;
+    private static final int TOOLBAR_WIDTH = 100;
     private static final int TOOLBAR_HEIGHT = 120;
 
     private Border normalBorder;
@@ -120,12 +114,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final String EXAMPLE_LONG_FIELD_TEXT = "TheQuickBrownFoxJumpsOverTheLazyDog";
     public static final int WIDTH_OF_LONG_FIELDS = 320;
     public static final int WIDTH_OF_AMOUNT_FIELD = 160;
-    public static final int ONLINE_LABEL_DELTA = 10;
-    
-    private static final int MINIMUM_STATUS_LABEL_DISPLAY_TIME = 800; // millisecond
-    
-    private long lastStatusUpdateTime = 0;
- 
+
+    private StatusBar statusBar;
 
     private static final long serialVersionUID = 7621813615342923041L;
 
@@ -134,6 +124,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private Localiser localiser;
 
     private BlinkLabel estimatedBalanceTextLabel;
+
+    public BlinkLabel getEstimatedBalanceTextLabel() {
+        return estimatedBalanceTextLabel;
+    }
+
     private MultiBitLabel availableBalanceTextLabel;
 
     private JPanel activeWalletPanel;
@@ -142,10 +137,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private JPanel yourWalletsPanel;
     private JPanel receiveBitcoinPanel;
     private JPanel sendBitcoinPanel;
-
-    private MultiBitLabel onlineLabel;
-    private MultiBitLabel statusLabel;
-    private boolean isOnline;
 
     private MultiBitFrame thisFrame;
 
@@ -213,7 +204,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         normalBorder = BorderFactory.createEmptyBorder(0, 4, 7, 4);
         underlineBorder = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 4, 3, 4), BorderFactory
-                .createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorAndFontConstants.SELECTION_BACKGROUND_COLOR),
+                .createCompoundBorder(
+                        BorderFactory.createMatteBorder(0, 0, 1, 0, ColorAndFontConstants.SELECTION_BACKGROUND_COLOR),
                         BorderFactory.createEmptyBorder(0, 0, 3, 0)));
 
         viewFactory = new ViewFactory(controller, this);
@@ -224,9 +216,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         recreateAllViews(false);
 
-        // initialise status bar settings
-        nowOffline();
-        updateStatusLabel("");
+        // initialise status bar
+        statusBar.initialise();
 
         estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString4(model.getActiveWalletEstimatedBalance(),
                 true, false));
@@ -293,7 +284,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.add(balancePanel, constraints);
 
         JPanel toolBarPanel = addMenuBarAndCreateToolBar(constraints, contentPane);
-        toolBarPanel.setMaximumSize(new Dimension(A_SMALL_NUMBER_OF_PIXELS, TOOLBAR_HEIGHT));
+        toolBarPanel.setMaximumSize(new Dimension(TOOLBAR_WIDTH, TOOLBAR_HEIGHT));
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -330,39 +321,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.anchor = GridBagConstraints.LINE_START;
         contentPane.add(viewPanel, constraints);
 
-        StatusBar statusBar = new StatusBar(controller);
-        statusBar.setMaximumSize(new Dimension(A_LARGE_NUMBER_OF_PIXELS, STATUSBAR_HEIGHT));
-        statusBar.setMaximumSize(new Dimension(A_SMALL_NUMBER_OF_PIXELS, STATUSBAR_HEIGHT));
-        onlineLabel = new MultiBitLabel("", controller);
-        onlineLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        onlineLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent arg0) {
-                int blockHeight = -1;
-                if (controller.getMultiBitService() != null) {
-                    if (controller.getMultiBitService().getChain() != null) {
-                        if (controller.getMultiBitService().getChain().getChainHead() != null) {
-                            blockHeight = controller.getMultiBitService().getChain().getChainHead().getHeight();
-                            onlineLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.numberOfBlocks",
-                                    new Object[] { "" + blockHeight }));
-                        }
-                    }
-                }
-            }
-        });
-
-        statusLabel = new MultiBitLabel("", controller);
-
-        int onlineWidth = Math.max(
-                getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
-                        localiser.getString("multiBitFrame.onlineText")),
-                getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
-                        localiser.getString("multiBitFrame.offlineText")))
-                + ONLINE_LABEL_DELTA;
-
-        statusBar.addZone("online", onlineLabel, "" + onlineWidth, "left");
-        statusBar.addZone("network", statusLabel, "*", "");
-        statusBar.addZone("filler2", new JPanel(), "0", "right");
+        statusBar = new StatusBar(controller, this);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -466,7 +425,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         JMenuBar menuBar = new JMenuBar();
 
         ComponentOrientation componentOrientation = ComponentOrientation.getOrientation(controller.getLocaliser().getLocale());
-        
+
         // Create the toolBar
         JPanel toolBarPanel = new JPanel();
         toolBarPanel.setOpaque(false);
@@ -523,15 +482,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuBar.add(helpMenu);
 
         // open wallet action
-        OpenWalletAction openWalletAction = new OpenWalletAction(controller, ImageLoader.createImageIcon(ImageLoader.OPEN_WALLET_ICON_FILE));
+        OpenWalletAction openWalletAction = new OpenWalletAction(controller,
+                ImageLoader.createImageIcon(ImageLoader.OPEN_WALLET_ICON_FILE));
         JMenuItem menuItem = new JMenuItem(openWalletAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
         fileMenu.add(menuItem);
 
         // create new wallet action
-        CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller, ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE),
-                this);
+        CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller,
+                ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE), this);
         menuItem = new JMenuItem(createNewWalletAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -559,7 +519,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (!application.isMac()) {
             // non Macs have a Help About menu item
             // help about action
-            HelpAboutAction helpAboutAction = new HelpAboutAction(controller, ImageLoader.createImageIcon(ImageLoader.MULTIBIT_SMALL_ICON_FILE), this);
+            HelpAboutAction helpAboutAction = new HelpAboutAction(controller,
+                    ImageLoader.createImageIcon(ImageLoader.MULTIBIT_SMALL_ICON_FILE), this);
             menuItem = new JMenuItem(helpAboutAction);
             menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
             menuItem.setComponentOrientation(componentOrientation);
@@ -571,7 +532,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         yourWalletsPanel.setBorder(normalBorder);
         yourWalletsPanel.setOpaque(false);
 
-        YourWalletsAction myWalletsAction = new YourWalletsAction(controller, ImageLoader.createImageIcon(ImageLoader.YOUR_WALLETS_ICON_FILE));
+        YourWalletsAction myWalletsAction = new YourWalletsAction(controller,
+                ImageLoader.createImageIcon(ImageLoader.YOUR_WALLETS_ICON_FILE));
         menuItem = new JMenuItem(myWalletsAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -603,7 +565,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         receiveBitcoinPanel.add(receiveBitcoinButton);
 
         // send bitcoin action
-        SendBitcoinAction sendBitcoinAction = new SendBitcoinAction(controller, ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE), this);
+        SendBitcoinAction sendBitcoinAction = new SendBitcoinAction(controller,
+                ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE), this);
         menuItem = new JMenuItem(sendBitcoinAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -630,21 +593,23 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
 
         // import private keys
-        ShowImportPrivateKeysAction showImportPrivateKeysAction = new ShowImportPrivateKeysAction(controller, ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE));
+        ShowImportPrivateKeysAction showImportPrivateKeysAction = new ShowImportPrivateKeysAction(controller,
+                ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE));
         menuItem = new JMenuItem(showImportPrivateKeysAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
         toolsMenu.add(menuItem);
 
         // export private keys
-        ShowExportPrivateKeysAction showExportPrivateKeysAction = new ShowExportPrivateKeysAction(controller, ImageLoader.createImageIcon(ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE));
+        ShowExportPrivateKeysAction showExportPrivateKeysAction = new ShowExportPrivateKeysAction(controller,
+                ImageLoader.createImageIcon(ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE));
         menuItem = new JMenuItem(showExportPrivateKeysAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
         toolsMenu.add(menuItem);
-        
+
         toolsMenu.addSeparator();
-        
+
         ResetTransactionsAction resetTransactionsAction = new ResetTransactionsAction(controller, null);
         menuItem = new JMenuItem(resetTransactionsAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -712,7 +677,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             initUI();
             applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         }
-        updateOnlineStatusText();
+        statusBar.refreshOnlineStatusText();
 
         updateHeader();
 
@@ -852,48 +817,21 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     public void nowOnline() {
-        isOnline = true;
-        updateOnlineStatusText();
+        if (statusBar != null) {
+            statusBar.updateOnlineStatusText(true);
+        }
     }
 
     public void nowOffline() {
-        isOnline = false;
-        updateOnlineStatusText();
-    }
-
-    public void updateOnlineStatusText() {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                String onlineStatus = isOnline ? localiser.getString("multiBitFrame.onlineText") : localiser
-                        .getString("multiBitFrame.offlineText");
-                if (isOnline) {
-                    onlineLabel.setForeground(new Color(0, 100, 0));
-                    estimatedBalanceTextLabel.setBlinkEnabled(true);
-                } else {
-                    onlineLabel.setForeground(new Color(180, 0, 0));
-                }
-                onlineLabel.setText(onlineStatus);
-            }
-        });
+        if (statusBar != null) {
+            statusBar.updateOnlineStatusText(false);
+        }
     }
 
     public void updateStatusLabel(String newStatusLabel) {
-        final String finalNewStatusLabel = newStatusLabel;
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                Date now = new Date();
-                if (now.getTime() - lastStatusUpdateTime < MINIMUM_STATUS_LABEL_DISPLAY_TIME) {
-                    try {
-                        Thread.sleep(MINIMUM_STATUS_LABEL_DISPLAY_TIME - (now.getTime() - lastStatusUpdateTime));
-                    } catch (InterruptedException e) {
-                        // no problem if interrupted
-                    }
-                }
-                lastStatusUpdateTime = now.getTime();
-                         
-                statusLabel.setText(finalNewStatusLabel);
-            }
-        });
+        if (statusBar != null) {
+            statusBar.updateStatusLabel(newStatusLabel);
+        }
     }
 
     public void blockDownloaded() {
@@ -913,8 +851,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        // loop through all the wallets, updating them as required with the new
-        // transaction
+        // loop through all the wallets, updating them as required with the new transaction
         try {
             java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
@@ -980,8 +917,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     public void onPendingCoinsReceived(Wallet wallet, Transaction transaction) {
-        // loop through all the wallets, updating them as required with the new
-        // transaction
+        // loop through all the wallets, updating them as required with the new transaction
         try {
             java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 

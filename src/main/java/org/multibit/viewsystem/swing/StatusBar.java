@@ -34,6 +34,9 @@ package org.multibit.viewsystem.swing;
  */
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.viewsystem.swing.view.components.BlinkLabel;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,42 +49,171 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.View;
 import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Locale;
 
 /**
  * StatusBar. <BR>
  * A status bar is made of multiple zones. A zone can be any JComponent.
+ * 
+ * In MultiBit the StatusBar is responsible for :
+ * 
+ * 1) Online/ Connecting status label 2) Status messages - multiple status
+ * messages are remembered and can be accessed by the user using a JCombo drop
+ * down
  */
 public class StatusBar extends JComponent {
 
     private static final long serialVersionUID = 7824115980324911080L;
+
+    private static final int A_SMALL_NUMBER_OF_PIXELS = 100;
+    private static final int A_LARGE_NUMBER_OF_PIXELS = 1000000;
+    private static final int STATUSBAR_HEIGHT = 30;
+
+    public static final int ONLINE_LABEL_DELTA = 10;
+
+    private MultiBitLabel onlineLabel;
+    private MultiBitLabel statusLabel;
+    private boolean isOnline;
+
+    private static final int MINIMUM_STATUS_LABEL_DISPLAY_TIME = 800; // millisecond
+
+    private long lastStatusUpdateTime = 0;
 
     /**
      * The key used to identified the default zone
      */
     public final static String DEFAULT_ZONE = "default";
 
-    // TODO Consider using HashMap
-    private Hashtable<String, Component> idToZones;
+    private HashMap<String, Component> idToZones;
     private Border zoneBorder;
+
+    private MultiBitController controller;
+    private MultiBitFrame mainFrame;
 
     /**
      * Construct a new StatusBar
      * 
      */
-    public StatusBar(MultiBitController controller) {
+    public StatusBar(MultiBitController controller, MultiBitFrame mainFrame) {
+        this.controller = controller;
+        this.mainFrame = mainFrame;
+
         setLayout(LookAndFeelTweaks.createHorizontalPercentLayout(controller.getLocaliser().getLocale()));
-        idToZones = new Hashtable<String, Component>();
+        idToZones = new HashMap<String, Component>();
         setZoneBorder(BorderFactory.createEmptyBorder());
         setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
 
+        setMaximumSize(new Dimension(A_LARGE_NUMBER_OF_PIXELS, STATUSBAR_HEIGHT));
+        setMaximumSize(new Dimension(A_SMALL_NUMBER_OF_PIXELS, STATUSBAR_HEIGHT));
+
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
+        final MultiBitController finalController = controller;
+        onlineLabel = new MultiBitLabel("", controller);
+        onlineLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        onlineLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent arg0) {
+                int blockHeight = -1;
+                if (finalController.getMultiBitService() != null) {
+                    if (finalController.getMultiBitService().getChain() != null) {
+                        if (finalController.getMultiBitService().getChain().getChainHead() != null) {
+                            blockHeight = finalController.getMultiBitService().getChain().getChainHead().getHeight();
+                            onlineLabel.setToolTipText(finalController.getLocaliser().getString("multiBitFrame.numberOfBlocks",
+                                    new Object[] { "" + blockHeight }));
+                        }
+                    }
+                }
+            }
+        });
+
+        statusLabel = new MultiBitLabel("", controller);
+
+        int onlineWidth = Math.max(
+                getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
+                        controller.getLocaliser().getString("multiBitFrame.onlineText")),
+                getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
+                        controller.getLocaliser().getString("multiBitFrame.offlineText")))
+                + ONLINE_LABEL_DELTA;
+
+        addZone("online", onlineLabel, "" + onlineWidth, "left");
+        addZone("network", statusLabel, "*", "");
+        addZone("filler2", new JPanel(), "0", "right");
     }
 
-    public void setZoneBorder(Border border) {
+    /**
+     * initialise the statusbar;
+     */
+    public void initialise() {
+        updateOnlineStatusText(false);
+        updateStatusLabel("");
+    }
+
+    /**
+     * refresh online status text with existing value
+     */
+    public void refreshOnlineStatusText() {
+        updateOnlineStatusText(isOnline);
+    }
+
+    /**
+     * update online status text with new value
+     * 
+     * @param isOnline
+     *            True if online, false if offline
+     */
+    public void updateOnlineStatusText(boolean isOnline) {
+        this.isOnline = isOnline;
+        final boolean finalIsOnline = isOnline;
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                String onlineStatus = finalIsOnline ? controller.getLocaliser().getString("multiBitFrame.onlineText") : controller
+                        .getLocaliser().getString("multiBitFrame.offlineText");
+                if (finalIsOnline) {
+                    onlineLabel.setForeground(new Color(0, 100, 0));
+                    if (mainFrame != null) {
+                        BlinkLabel estimatedBalanceTextLabel = mainFrame.getEstimatedBalanceTextLabel();
+                        if (estimatedBalanceTextLabel != null) {
+                            estimatedBalanceTextLabel.setBlinkEnabled(true);
+                        }
+                    }
+                } else {
+                    onlineLabel.setForeground(new Color(180, 0, 0));
+                }
+                onlineLabel.setText(onlineStatus);
+            }
+        });
+    }
+
+    public void updateStatusLabel(String newStatusLabel) {
+        final String finalNewStatusLabel = newStatusLabel;
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                Date now = new Date();
+                if (now.getTime() - lastStatusUpdateTime < MINIMUM_STATUS_LABEL_DISPLAY_TIME) {
+                    try {
+                        Thread.sleep(MINIMUM_STATUS_LABEL_DISPLAY_TIME - (now.getTime() - lastStatusUpdateTime));
+                    } catch (InterruptedException e) {
+                        // no problem if interrupted
+                    }
+                }
+                lastStatusUpdateTime = now.getTime();
+
+                if (statusLabel != null) {
+                    statusLabel.setText(finalNewStatusLabel);
+                }
+            }
+        });
+    }
+
+    private void setZoneBorder(Border border) {
         zoneBorder = border;
     }
 
@@ -94,7 +226,7 @@ public class StatusBar extends JComponent {
      *            one of the constraint support by the
      *            com.l2fprod.common.swing.PercentLayout
      */
-    public void addZone(String id, Component zone, String constraints, String tweak) {
+    private void addZone(String id, Component zone, String constraints, String tweak) {
         // is there already a zone with this id?
         Component previousZone = getZone(id);
         if (previousZone != null) {
