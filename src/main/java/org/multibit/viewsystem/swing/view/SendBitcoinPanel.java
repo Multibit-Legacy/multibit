@@ -35,6 +35,7 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.qrcode.BitcoinURI;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopySendAddressAction;
@@ -111,7 +112,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
     protected JPanel createFormPanel() {
         formPanel = new JPanel();
         formPanel.setBorder(new DashedBorder(controller.getLocaliser().getLocale()));
-        formPanel.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
+        formPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         JPanel buttonPanel = new JPanel();
         FlowLayout flowLayout = new FlowLayout();
@@ -251,7 +252,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         formPanel.add(pasteAddressButton, constraints);
 
         MultiBitLabel labelLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel"), controller);
-        labelLabel.setBorder(BorderFactory.createMatteBorder(4, 0, 0, 0, MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR));
+        labelLabel.setBorder(BorderFactory.createMatteBorder(4, 0, 0, 0, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
         labelLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel.tooltip"));
         labelLabel.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.NONE;
@@ -270,9 +271,9 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
         JScrollPane labelScrollPane = new JScrollPane(labelTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        labelScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, MultiBitFrame.DARK_BACKGROUND_COLOR));
+        labelScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.DARK_BACKGROUND_COLOR));
         labelScrollPane.setOpaque(true);
-        labelScrollPane.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
+        labelScrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 3;
         constraints.gridy = 5;

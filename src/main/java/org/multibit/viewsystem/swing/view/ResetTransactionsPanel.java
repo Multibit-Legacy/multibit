@@ -33,6 +33,7 @@ import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ResetTransactionsSubmitAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -62,8 +63,8 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         this.controller = controller;
 
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
-                BorderFactory.createMatteBorder(1, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
-        setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
+                BorderFactory.createMatteBorder(1, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
+        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         this.controller = controller;
 

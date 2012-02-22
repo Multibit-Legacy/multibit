@@ -26,6 +26,7 @@ import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.browser.Browser;
 
@@ -49,7 +50,7 @@ public class HelpContentsPanel extends JPanel implements View {
         setLayout(new BorderLayout());
         firstTimeLoaded = true;
 
-        setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
         final MultiBitController  finalController = controller;
         final MultiBitFrame finalMainFrame = mainFrame;
@@ -64,7 +65,7 @@ public class HelpContentsPanel extends JPanel implements View {
                 JScrollPane scrollPane = new JScrollPane(browser);
                 scrollPane.setPreferredSize(new Dimension(800, 400));
                 scrollPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0), 
-                        BorderFactory.createMatteBorder(1, 0, 1, 0,  MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
+                        BorderFactory.createMatteBorder(1, 0, 1, 0,  ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
 
                 add(scrollPane, BorderLayout.CENTER);          
             }

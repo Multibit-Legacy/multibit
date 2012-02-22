@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.ComponentOrientation;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -27,9 +26,8 @@ import javax.swing.JPanel;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.action.ResetTransactionsAction;
-import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +49,8 @@ public class HelpAboutPanel extends JPanel implements View {
      * Creates a new {@link HelpAboutPanel}.
      */
     public HelpAboutPanel(MultiBitController controller, MultiBitFrame mainFrame) {        
-        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0), BorderFactory.createMatteBorder(1, 0, 1, 0,  MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
-        setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0), BorderFactory.createMatteBorder(1, 0, 1, 0,  ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
+        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
         String versionNumber = controller.getLocaliser().getVersionNumber();
 

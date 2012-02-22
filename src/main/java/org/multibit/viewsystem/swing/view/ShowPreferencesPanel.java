@@ -52,6 +52,7 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ChooseFontAction;
 import org.multibit.viewsystem.swing.action.ShowPreferencesSubmitAction;
@@ -121,8 +122,8 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         this.mainFrame = mainFrame;
 
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
-                BorderFactory.createMatteBorder(1, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
-        setBackground(MultiBitFrame.BACKGROUND_COLOR);
+                BorderFactory.createMatteBorder(1, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
+        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
         this.controller = controller;
 
@@ -162,11 +163,11 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         String fontNameString = controller.getModel().getUserPreference(MultiBitModel.FONT_NAME);
         if (fontNameString == null || "".equals(fontNameString)) {
-            fontNameString = MultiBitFrame.MULTIBIT_DEFAULT_FONT_NAME;
+            fontNameString = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_NAME;
         }
         originalFontName = fontNameString;
 
-        int fontStyle = MultiBitFrame.MULTIBIT_DEFAULT_FONT_STYLE;
+        int fontStyle = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_STYLE;
         String fontStyleString = controller.getModel().getUserPreference(MultiBitModel.FONT_STYLE);
         if (fontStyleString != null && !"".equals(fontStyleString)) {
             try {
@@ -177,7 +178,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         }
         originalFontStyle = "" + fontStyle;
 
-        int fontSize = MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE;
+        int fontSize = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
         String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
         if (fontSizeString != null && !"".equals(fontSizeString)) {
             try {
@@ -300,9 +301,9 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        mainScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, MultiBitFrame.DARK_BACKGROUND_COLOR));
+        mainScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.DARK_BACKGROUND_COLOR));
         mainScrollPane.setOpaque(true);
-        mainScrollPane.setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        mainScrollPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
         add(mainScrollPane, BorderLayout.CENTER);
 

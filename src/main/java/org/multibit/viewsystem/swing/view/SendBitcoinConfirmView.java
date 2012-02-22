@@ -32,6 +32,7 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
@@ -170,7 +171,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         mainPanel.add(explainLabel, constraints);
 
         JPanel detailPanel = new JPanel(new GridBagLayout());
-        detailPanel.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
+        detailPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 2;

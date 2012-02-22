@@ -26,6 +26,7 @@ import java.util.Locale;
 
 import javax.swing.JPanel;
 
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
@@ -62,7 +63,7 @@ public class RoundedPanel extends JPanel {
     public RoundedPanel(Locale locale) {
         super();
         setOpaque(false);
-        setBackground(MultiBitFrame.DARK_BACKGROUND_COLOR);
+        setBackground(ColorAndFontConstants.DARK_BACKGROUND_COLOR);
         applyComponentOrientation(ComponentOrientation.getOrientation(locale));
     }
 
@@ -98,7 +99,7 @@ public class RoundedPanel extends JPanel {
         graphics.fillRoundRect(0, 0, width - shadowGap, height - shadowGap, arcs.width, arcs.height);
 
         if (selected) {
-            graphics.setColor(MultiBitFrame.SELECTION_BACKGROUND_COLOR);
+            graphics.setColor(ColorAndFontConstants.SELECTION_BACKGROUND_COLOR);
             graphics.setStroke(new BasicStroke(strokeSize + 1));
         } else {
             graphics.setColor(getForeground());

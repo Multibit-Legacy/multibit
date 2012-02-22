@@ -69,6 +69,7 @@ import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.qrcode.SwatchGenerator;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
 import org.multibit.viewsystem.swing.action.CopyQRCodeTextAction;
@@ -157,7 +158,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         this.controller = controller;
         this.thisAbstractTradePanel = this;
 
-        setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(2 * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE));
+        setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(2 * ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));
 
         localisationKeyConstantToKeyMap = new HashMap<String, String>();
         populateLocalisationMap();
@@ -209,7 +210,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         setMinimumSize(new Dimension(550, 220));
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
         setLayout(new GridBagLayout());
-        setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
@@ -271,7 +272,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         titleLabel = new JLabel();
         titleLabel.setHorizontalTextPosition(JLabel.CENTER);
         titleLabel.setText(getLocalisationString(ADDRESSES_TITLE, null));
-        titleLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE));
+        titleLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
@@ -299,7 +300,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected JPanel createAddressesPanel() {
         JPanel addressPanel = new JPanel();
         addressPanel.setOpaque(true);
-        addressPanel.setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        addressPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
         addressPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
 
@@ -359,9 +360,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
         JScrollPane scrollPane = new JScrollPane(addressesTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.getViewport().setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
-        scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker()));
+        scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker()));
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -432,7 +433,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -457,7 +458,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -482,7 +483,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -507,7 +508,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -517,7 +518,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
     protected JPanel createQRCodePanel() {
         qrCodePanel = new JPanel();
-        qrCodePanel.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
+        qrCodePanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         qrCodePanel.setOpaque(true);
         qrCodePanel.setMinimumSize(new Dimension(280, 200));
         qrCodePanel.setLayout(new GridBagLayout());
@@ -526,7 +527,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
         qrCodeLabel.setVerticalTextPosition(JLabel.BOTTOM);
         qrCodeLabel.setHorizontalTextPosition(JLabel.CENTER);
-        qrCodeLabel.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
+        qrCodeLabel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         qrCodeLabel.setOpaque(true);
 
         if (!isReceiveBitcoin()) {
@@ -576,7 +577,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
         JScrollPane scrollPane = new JScrollPane(qrCodeLabel);
         scrollPane.setOpaque(true);
-        scrollPane.setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
+        scrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());

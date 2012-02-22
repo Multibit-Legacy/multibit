@@ -22,8 +22,7 @@ import java.awt.event.ActionListener;
 import javax.swing.Timer;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 
 public class BlinkLabel extends MultiBitLabel {
     private static final long serialVersionUID = 1L;
@@ -41,7 +40,7 @@ public class BlinkLabel extends MultiBitLabel {
         super("", controller);
         
         if (isLarge) {
-            setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(3 * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE));
+            setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(3 * ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));
         }
         blinkEnabled = false;
         previousBlinkText = "";
@@ -52,8 +51,8 @@ public class BlinkLabel extends MultiBitLabel {
         if (blinkEnabled) {
             if (checkTextHasChanged(newLabelText)) {
                 originalBackgroundColor = getBackground();
-                setForeground(MultiBitFrame.SELECTION_FOREGROUND_COLOR);
-                setBackground(MultiBitFrame.SELECTION_BACKGROUND_COLOR);
+                setForeground(ColorAndFontConstants.SELECTION_FOREGROUND_COLOR);
+                setBackground(ColorAndFontConstants.SELECTION_BACKGROUND_COLOR);
                 setOpaque(true);
  
                 this.invalidate();

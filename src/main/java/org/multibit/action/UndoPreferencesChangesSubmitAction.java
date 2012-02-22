@@ -23,7 +23,7 @@ import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 /**
@@ -51,7 +51,7 @@ public class UndoPreferencesChangesSubmitAction implements Action {
             // just use 0 = plain
         }
         String previousFontSize = (String) controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_FONT_SIZE);
-        int previousFontSizeAsInt = MultiBitFrame.MULTIBIT_DEFAULT_FONT_SIZE;
+        int previousFontSizeAsInt = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
         try {
             previousFontSizeAsInt = Integer.parseInt(previousFontStyle);
         } catch (NumberFormatException nfe) {

@@ -48,6 +48,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.WalletTableModel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -100,7 +101,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     }
 
     private void createWalletPanel() {
-        setBackground(MultiBitFrame.VERY_LIGHT_BACKGROUND_COLOR);
+        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         setLayout(new GridBagLayout());
         setOpaque(true);
         GridBagConstraints constraints = new GridBagConstraints();
@@ -185,7 +186,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        scrollPane.getViewport().setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -296,7 +297,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             }
 
             if (!label.getBackground().equals(table.getSelectionBackground())) {
-                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
             }
             return label;
@@ -316,7 +317,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
             label.setText(value + SPACER);
             if (!label.getBackground().equals(table.getSelectionBackground())) {
-                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
             }
             return label;
@@ -355,7 +356,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             label.setText(formattedDate + SPACER);
 
             if (!label.getBackground().equals(table.getSelectionBackground())) {
-                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
             }
             return label;
@@ -370,13 +371,13 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
             label.setHorizontalAlignment(SwingConstants.LEADING);
-            label.setBackground(MultiBitFrame.BACKGROUND_COLOR);
+            label.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
             label.setOpaque(true);
             label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
             label.setText((String) value);
 
             if (!label.getBackground().equals(table.getSelectionBackground())) {
-                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : MultiBitFrame.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
             }
             return label;

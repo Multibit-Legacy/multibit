@@ -41,6 +41,7 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.WalletTableModel;
 import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
@@ -194,7 +195,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         JScrollPane scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setViewportView(walletListPanel);
         scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
-        scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker()));
+        scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker()));
         scrollPane.getViewport().setBackground(Color.WHITE);
         scrollPane.getViewport().setOpaque(true);
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -237,7 +238,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         transactionsTitleLabel.setHorizontalTextPosition(JLabel.CENTER);
         transactionsTitleLabel.setText(controller.getLocaliser().getString("showTransactionsAction.text"));
         transactionsTitleLabel.setFont(FontSizer.INSTANCE
-                .getAdjustedDefaultFontWithDelta(2 * MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE));
+                .getAdjustedDefaultFontWithDelta(2 * ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;

@@ -75,7 +75,7 @@ public class StatusBar extends JComponent {
         setLayout(LookAndFeelTweaks.createHorizontalPercentLayout(controller.getLocaliser().getLocale()));
         idToZones = new Hashtable<String, Component>();
         setZoneBorder(BorderFactory.createEmptyBorder());
-        setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));

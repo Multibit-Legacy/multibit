@@ -114,21 +114,21 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static final int STATUSBAR_HEIGHT = 30;
     private static final int TOOLBAR_HEIGHT = 120;
 
-    public static final String MULTIBIT_DEFAULT_FONT_NAME = "Dialog";
-    public static final int MULTIBIT_DEFAULT_FONT_STYLE = Font.PLAIN;
-    public static final int MULTIBIT_DEFAULT_FONT_SIZE = 13;
-    public static final int MULTIBIT_LARGE_FONT_INCREASE = 2;
-
-    public static final Color GOLD_COLOR = new Color(212, 160, 23);
-
-    public static final Color BACKGROUND_COLOR = new Color(244, 244, 246);
-    public static final Color VERY_LIGHT_BACKGROUND_COLOR = new Color(254, 254, 255);
-    public static final Color DARK_BACKGROUND_COLOR = new Color(188, 212, 230); // beau
-    // blue
-
-    private static JTable COLOR_TABLE = new JTable();
-    public static Color SELECTION_FOREGROUND_COLOR = COLOR_TABLE.getSelectionForeground();
-    public static Color SELECTION_BACKGROUND_COLOR = COLOR_TABLE.getSelectionBackground();
+//    public static final String MULTIBIT_DEFAULT_FONT_NAME = "Dialog";
+//    public static final int MULTIBIT_DEFAULT_FONT_STYLE = Font.PLAIN;
+//    public static final int MULTIBIT_DEFAULT_FONT_SIZE = 13;
+//    public static final int MULTIBIT_LARGE_FONT_INCREASE = 2;
+//
+//    public static final Color GOLD_COLOR = new Color(212, 160, 23);
+//
+//    public static final Color BACKGROUND_COLOR = new Color(244, 244, 246);
+//    public static final Color VERY_LIGHT_BACKGROUND_COLOR = new Color(254, 254, 255);
+//    public static final Color DARK_BACKGROUND_COLOR = new Color(188, 212, 230); // beau
+//    // blue
+//
+//    private static JTable COLOR_TABLE = new JTable();
+//    public static Color SELECTION_FOREGROUND_COLOR = COLOR_TABLE.getSelectionForeground();
+//    public static Color SELECTION_BACKGROUND_COLOR = COLOR_TABLE.getSelectionBackground();
     private Border normalBorder;
     private Border underlineBorder;
 
@@ -225,12 +225,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
         });
 
-        getContentPane().setBackground(MultiBitFrame.BACKGROUND_COLOR);
+        getContentPane().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         sizeAndCenter();
 
         normalBorder = BorderFactory.createEmptyBorder(0, 4, 7, 4);
         underlineBorder = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 4, 3, 4), BorderFactory
-                .createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SELECTION_BACKGROUND_COLOR),
+                .createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorAndFontConstants.SELECTION_BACKGROUND_COLOR),
                         BorderFactory.createEmptyBorder(0, 0, 3, 0)));
 
         viewFactory = new ViewFactory(controller, this);
@@ -334,9 +334,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         viewPanel = new JPanel(new BorderLayout()); // initally blank
         viewPanel.setOpaque(true);
-        viewPanel.setBackground(BACKGROUND_COLOR);
+        viewPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         viewPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
-                BorderFactory.createMatteBorder(1, 0, 1, 0, MultiBitFrame.DARK_BACKGROUND_COLOR.darker())));
+                BorderFactory.createMatteBorder(1, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -1174,7 +1174,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (application.isMac()) {
             activeWalletComboBox.setUI(new MetalComboBoxUI());
         }
-        activeWalletComboBox.setBackground(DARK_BACKGROUND_COLOR);
+        activeWalletComboBox.setBackground(ColorAndFontConstants.DARK_BACKGROUND_COLOR);
 
         activeWalletComboBox.setOpaque(false);
         activeWalletPanel.setBorder(normalBorder);

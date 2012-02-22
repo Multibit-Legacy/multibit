@@ -22,7 +22,7 @@ import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
-import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 
 public class GradientPanel extends JPanel {
 
@@ -33,8 +33,8 @@ public class GradientPanel extends JPanel {
         Graphics2D g2d = (Graphics2D)g;
         Dimension d = this.getSize();
 
-        g2d.setPaint(new GradientPaint(0, 0, MultiBitFrame.BACKGROUND_COLOR,
-            0, d.height, MultiBitFrame.DARK_BACKGROUND_COLOR, true));
+        g2d.setPaint(new GradientPaint(0, 0, ColorAndFontConstants.BACKGROUND_COLOR,
+            0, d.height, ColorAndFontConstants.DARK_BACKGROUND_COLOR, true));
         g2d.fillRect(0, 0, d.width , d.height);
     }
 }

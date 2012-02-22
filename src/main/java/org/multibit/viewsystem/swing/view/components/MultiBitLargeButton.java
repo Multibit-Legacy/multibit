@@ -19,7 +19,7 @@ import javax.swing.Action;
 import javax.swing.JButton;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 
 /**
  * button used in toolbar on MultiBit Swing UI
@@ -33,7 +33,7 @@ public class MultiBitLargeButton extends JButton {
     public MultiBitLargeButton(Action action, MultiBitController controller) {
         super(action);
 
-        setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(MultiBitFrame.MULTIBIT_LARGE_FONT_INCREASE));
+        setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));
 
         setOpaque(false);
         setRolloverEnabled(true);
