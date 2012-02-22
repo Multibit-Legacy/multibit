@@ -37,6 +37,7 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletInfo;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyReceiveAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewReceivingAddressAction;
@@ -216,7 +217,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(addressTextArea, constraints);
 
-        ImageIcon copyIcon = MultiBitFrame.createImageIcon(MultiBitFrame.COPY_ICON_FILE);
+        ImageIcon copyIcon = ImageLoader.createImageIcon(ImageLoader.COPY_ICON_FILE);
         CopyReceiveAddressAction copyAddressAction = new CopyReceiveAddressAction(controller, this, copyIcon);
         MultiBitButton copyAddressButton = new MultiBitButton(copyAddressAction, controller);
         constraints.fill = GridBagConstraints.NONE;

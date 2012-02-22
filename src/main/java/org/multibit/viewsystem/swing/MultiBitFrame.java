@@ -104,7 +104,6 @@ import com.google.bitcoin.core.Wallet;
 /*
  * JFrame displaying Swing version of MultiBit
  *
- * TODO Consider breaking this into smaller classes - good idea
  */
 public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationListener {
 
@@ -114,28 +113,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static final int A_LARGE_NUMBER_OF_PIXELS = 1000000;
     private static final int STATUSBAR_HEIGHT = 30;
     private static final int TOOLBAR_HEIGHT = 120;
-    public static final String COPY_ICON_FILE = "/images/copy.png";
-    public static final String PASTE_ICON_FILE = "/images/paste.png";
-    public static final String TICK_ICON_FILE = "/images/tick.png";
-    public static final String RED_CROSS_ICON_FILE = "/images/redCross.png";
-
-    private static final String YOUR_WALLETS_ICON_FILE = "/images/yourWallets.png";
-    public static final String SINGLE_WALLET_ICON_FILE = "/images/singleWallet.png";
-    private static final String CREATE_NEW_ICON_FILE = "/images/createNew.png";
-    public static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
-    private static final String SEND_BITCOIN_ICON_FILE = "/images/send.jpg";
-    private static final String RECEIVE_BITCOIN_ICON_FILE = "/images/receive.jpg";
-    private static final String PREFERENCES_ICON_FILE = "/images/preferences.png";
-    private static final String HELP_CONTENTS_ICON_FILE = "/images/helpContents.png";
-    private static final String MULTIBIT_SMALL_ICON_FILE = "/images/multibit-small.png";
-    public static final String MULTIBIT_ICON_FILE = "/images/multibit.png";
-    public static final String MULTIBIT_128_ICON_FILE = "/images/multibit128.png";
-    public static final String QUESTION_MARK_ICON_FILE = "/images/questionMark.png";
-    private static final String WALLET_ICON_FILE = "/images/wallet.png";
-    private static final String RTL_WALLET_ICON_FILE = "/images/rtl_wallet.png";
-    public static final String EXCLAMATION_MARK_ICON_FILE = "/images/exclamationMark.png";
-    public static final String IMPORT_PRIVATE_KEYS_ICON_FILE = "/images/importKey.png";
-    public static final String EXPORT_PRIVATE_KEYS_ICON_FILE = "/images/exportKey.png";
 
     public static final String MULTIBIT_DEFAULT_FONT_NAME = "Dialog";
     public static final int MULTIBIT_DEFAULT_FONT_STYLE = Font.PLAIN;
@@ -312,7 +289,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         GridBagConstraints constraints = new GridBagConstraints();
 
         // set the application icon
-        ImageIcon imageIcon = createImageIcon(MULTIBIT_ICON_FILE);
+        ImageIcon imageIcon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_ICON_FILE);
         if (imageIcon != null) {
             setIconImage(imageIcon.getImage());
         }
@@ -436,9 +413,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         JLabel walletIconLabel = new JLabel();
         if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
-            walletIconLabel.setIcon(createImageIcon(WALLET_ICON_FILE));
+            walletIconLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.WALLET_ICON_FILE));
         } else {
-            walletIconLabel.setIcon(createImageIcon(RTL_WALLET_ICON_FILE));
+            walletIconLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.RTL_WALLET_ICON_FILE));
         }
         walletIconLabel.setOpaque(false);
         walletIconLabel.setMinimumSize(new Dimension(60, 80));
@@ -563,14 +540,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuBar.add(helpMenu);
 
         // open wallet action
-        OpenWalletAction openWalletAction = new OpenWalletAction(controller, createImageIcon(OPEN_WALLET_ICON_FILE));
+        OpenWalletAction openWalletAction = new OpenWalletAction(controller, ImageLoader.createImageIcon(ImageLoader.OPEN_WALLET_ICON_FILE));
         JMenuItem menuItem = new JMenuItem(openWalletAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
         fileMenu.add(menuItem);
 
         // create new wallet action
-        CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller, createImageIcon(CREATE_NEW_ICON_FILE),
+        CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller, ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE),
                 this);
         menuItem = new JMenuItem(createNewWalletAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -590,7 +567,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // show help contents action
         ShowHelpContentsAction showHelpContentsAction = new ShowHelpContentsAction(controller, localiser,
-                createImageIcon(HELP_CONTENTS_ICON_FILE));
+                ImageLoader.createImageIcon(ImageLoader.HELP_CONTENTS_ICON_FILE));
         menuItem = new JMenuItem(showHelpContentsAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -599,7 +576,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (!application.isMac()) {
             // non Macs have a Help About menu item
             // help about action
-            HelpAboutAction helpAboutAction = new HelpAboutAction(controller, createImageIcon(MULTIBIT_SMALL_ICON_FILE), this);
+            HelpAboutAction helpAboutAction = new HelpAboutAction(controller, ImageLoader.createImageIcon(ImageLoader.MULTIBIT_SMALL_ICON_FILE), this);
             menuItem = new JMenuItem(helpAboutAction);
             menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
             menuItem.setComponentOrientation(componentOrientation);
@@ -611,7 +588,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         yourWalletsPanel.setBorder(normalBorder);
         yourWalletsPanel.setOpaque(false);
 
-        YourWalletsAction myWalletsAction = new YourWalletsAction(controller, createImageIcon(YOUR_WALLETS_ICON_FILE));
+        YourWalletsAction myWalletsAction = new YourWalletsAction(controller, ImageLoader.createImageIcon(ImageLoader.YOUR_WALLETS_ICON_FILE));
         menuItem = new JMenuItem(myWalletsAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -633,7 +610,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         receiveBitcoinPanel.setOpaque(false);
 
         ReceiveBitcoinAction receiveBitcoinAction = new ReceiveBitcoinAction(controller, localiser,
-                createImageIcon(RECEIVE_BITCOIN_ICON_FILE), this);
+                ImageLoader.createImageIcon(ImageLoader.RECEIVE_BITCOIN_ICON_FILE), this);
         menuItem = new JMenuItem(receiveBitcoinAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -643,7 +620,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         receiveBitcoinPanel.add(receiveBitcoinButton);
 
         // send bitcoin action
-        SendBitcoinAction sendBitcoinAction = new SendBitcoinAction(controller, createImageIcon(SEND_BITCOIN_ICON_FILE), this);
+        SendBitcoinAction sendBitcoinAction = new SendBitcoinAction(controller, ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE), this);
         menuItem = new JMenuItem(sendBitcoinAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -662,7 +639,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             // non Macs have a Preferences menu item
             // help about action
             ShowPreferencesAction showPreferencesAction = new ShowPreferencesAction(controller,
-                    createImageIcon(PREFERENCES_ICON_FILE));
+                    ImageLoader.createImageIcon(ImageLoader.PREFERENCES_ICON_FILE));
             menuItem = new JMenuItem(showPreferencesAction);
             menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
             menuItem.setComponentOrientation(componentOrientation);
@@ -670,14 +647,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
 
         // import private keys
-        ShowImportPrivateKeysAction showImportPrivateKeysAction = new ShowImportPrivateKeysAction(controller, createImageIcon(IMPORT_PRIVATE_KEYS_ICON_FILE));
+        ShowImportPrivateKeysAction showImportPrivateKeysAction = new ShowImportPrivateKeysAction(controller, ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE));
         menuItem = new JMenuItem(showImportPrivateKeysAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
         toolsMenu.add(menuItem);
 
         // export private keys
-        ShowExportPrivateKeysAction showExportPrivateKeysAction = new ShowExportPrivateKeysAction(controller, createImageIcon(EXPORT_PRIVATE_KEYS_ICON_FILE));
+        ShowExportPrivateKeysAction showExportPrivateKeysAction = new ShowExportPrivateKeysAction(controller, ImageLoader.createImageIcon(ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE));
         menuItem = new JMenuItem(showExportPrivateKeysAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);

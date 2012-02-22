@@ -35,6 +35,7 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.qrcode.BitcoinURI;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopySendAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewSendingAddressAction;
@@ -227,7 +228,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(addressTextField, constraints);
 
-        ImageIcon copyIcon = MultiBitFrame.createImageIcon(MultiBitFrame.COPY_ICON_FILE);
+        ImageIcon copyIcon = ImageLoader.createImageIcon(ImageLoader.COPY_ICON_FILE);
         CopySendAddressAction copyAddressAction = new CopySendAddressAction(controller, this, copyIcon);
         MultiBitButton copyAddressButton = new MultiBitButton(copyAddressAction, controller);
         constraints.fill = GridBagConstraints.NONE;
@@ -238,7 +239,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(copyAddressButton, constraints);
 
-        ImageIcon pasteIcon = MultiBitFrame.createImageIcon(MultiBitFrame.PASTE_ICON_FILE);
+        ImageIcon pasteIcon = ImageLoader.createImageIcon(ImageLoader.PASTE_ICON_FILE);
         PasteAddressAction pasteAddressAction = new PasteAddressAction(controller, this, pasteIcon);
         pasteAddressButton = new MultiBitButton(pasteAddressAction, controller);
         constraints.fill = GridBagConstraints.NONE;

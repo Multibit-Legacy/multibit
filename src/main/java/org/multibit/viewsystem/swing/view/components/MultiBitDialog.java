@@ -94,15 +94,4 @@ abstract public class MultiBitDialog extends JDialog {
         final Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
         return new Rectangle(0, 0, s.width, s.height);
     }
-    
-    /** Returns an ImageIcon, or null if the path was invalid. */
-    protected ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = MultiBitFrame.class.getResource(path);
-        if (imgURL != null) {
-            return new ImageIcon(imgURL);
-        } else {
-            log.error("MultiBitDialog#createImageIcon: Could not find file: '{}'", path);
-            return null;
-        }
-    } 
 }

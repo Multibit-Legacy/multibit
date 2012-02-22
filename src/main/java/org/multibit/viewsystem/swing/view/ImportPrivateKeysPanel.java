@@ -37,6 +37,7 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ExportPrivateKeysSubmitAction;
 import org.multibit.viewsystem.swing.action.ImportPrivateKeysSubmitAction;
@@ -383,7 +384,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        ImportPrivateKeysSubmitAction submitAction = new ImportPrivateKeysSubmitAction(controller, this, MultiBitFrame.createImageIcon(MultiBitFrame.IMPORT_PRIVATE_KEYS_ICON_FILE));
+        ImportPrivateKeysSubmitAction submitAction = new ImportPrivateKeysSubmitAction(controller, this, ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE));
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 

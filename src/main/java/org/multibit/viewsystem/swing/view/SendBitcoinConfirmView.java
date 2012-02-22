@@ -32,6 +32,7 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
 import org.multibit.viewsystem.swing.action.OkBackToParentAction;
@@ -78,7 +79,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         this.controller = controller;
         this.mainFrame = mainFrame;
 
-        ImageIcon imageIcon = createImageIcon(MultiBitFrame.MULTIBIT_ICON_FILE);
+        ImageIcon imageIcon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_ICON_FILE);
         if (imageIcon != null) {
             setIconImage(imageIcon.getImage());
         }
@@ -144,7 +145,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(filler01, constraints);
        
-        ImageIcon bigIcon = createImageIcon(MultiBitFrame.MULTIBIT_128_ICON_FILE);
+        ImageIcon bigIcon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_128_ICON_FILE);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 2;
@@ -302,11 +303,11 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.anchor = GridBagConstraints.LINE_END;
         mainPanel.add(buttonPanel, constraints);
 
-        CancelBackToParentAction cancelAction = new CancelBackToParentAction(controller, createImageIcon(MultiBitFrame.RED_CROSS_ICON_FILE));
+        CancelBackToParentAction cancelAction = new CancelBackToParentAction(controller, ImageLoader.createImageIcon(ImageLoader.RED_CROSS_ICON_FILE));
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        SendBitcoinNowAction sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this, createImageIcon(MultiBitFrame.TICK_ICON_FILE));
+        SendBitcoinNowAction sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this, ImageLoader.createImageIcon(ImageLoader.TICK_ICON_FILE));
         sendButton = new MultiBitButton(sendBitcoinNowAction, controller);
         buttonPanel.add(sendButton);
 
@@ -397,7 +398,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         sendLabelText.setText(sendLabel);
         sendAmountText.setText(sendAmount);
 
-        SendBitcoinNowAction sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this, createImageIcon(MultiBitFrame.TICK_ICON_FILE));
+        SendBitcoinNowAction sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this, ImageLoader.createImageIcon(ImageLoader.TICK_ICON_FILE));
         sendButton.setAction(sendBitcoinNowAction);
         confirmText1.setText(" ");
         confirmText2.setText(" ");

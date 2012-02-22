@@ -22,6 +22,7 @@ import javax.swing.JOptionPane;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
 import org.multibit.viewsystem.swing.action.OkBackToParentAction;
@@ -159,7 +160,7 @@ public class ValidationErrorView implements View {
         completeMessageTextArea.setOpaque(false);
         completeMessageTextArea.setEditable(false);
         
-        JOptionPane optionPane = new JOptionPane(completeMessageTextArea, JOptionPane.ERROR_MESSAGE, JOptionPane.DEFAULT_OPTION, MultiBitFrame.createImageIcon(MultiBitFrame.EXCLAMATION_MARK_ICON_FILE),
+        JOptionPane optionPane = new JOptionPane(completeMessageTextArea, JOptionPane.ERROR_MESSAGE, JOptionPane.DEFAULT_OPTION, ImageLoader.createImageIcon(ImageLoader.EXCLAMATION_MARK_ICON_FILE),
                 options, options[0]);
 
         messageDialog = optionPane.createDialog(mainFrame, controller.getLocaliser().getString("validationErrorView.title"));

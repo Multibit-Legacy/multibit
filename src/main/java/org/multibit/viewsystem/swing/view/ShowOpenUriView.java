@@ -32,6 +32,7 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ShowOpenUriCancelAction;
 import org.multibit.viewsystem.swing.action.ShowOpenUriSubmitAction;
@@ -65,7 +66,7 @@ public class ShowOpenUriView extends MultiBitDialog implements View, DataProvide
         this.controller = controller;
         this.mainFrame = mainFrame;
 
-        ImageIcon imageIcon = createImageIcon(MultiBitFrame.MULTIBIT_ICON_FILE);
+        ImageIcon imageIcon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_ICON_FILE);
         if (imageIcon != null) {
             setIconImage(imageIcon.getImage());
         }
@@ -115,7 +116,7 @@ public class ShowOpenUriView extends MultiBitDialog implements View, DataProvide
         constraints.anchor = GridBagConstraints.LINE_START;
         add(filler01, constraints);
        
-        ImageIcon bigIcon = createImageIcon(MultiBitFrame.QUESTION_MARK_ICON_FILE);
+        ImageIcon bigIcon = ImageLoader.createImageIcon(ImageLoader.QUESTION_MARK_ICON_FILE);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 1;

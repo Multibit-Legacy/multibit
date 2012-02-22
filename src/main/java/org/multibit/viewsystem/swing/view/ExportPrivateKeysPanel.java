@@ -24,7 +24,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -37,6 +36,7 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ExportPrivateKeysSubmitAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -383,7 +383,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        ExportPrivateKeysSubmitAction submitAction = new ExportPrivateKeysSubmitAction(controller, this, MultiBitFrame.createImageIcon(MultiBitFrame.EXPORT_PRIVATE_KEYS_ICON_FILE));
+        ExportPrivateKeysSubmitAction submitAction = new ExportPrivateKeysSubmitAction(controller, this, ImageLoader.createImageIcon(ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE));
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
