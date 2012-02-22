@@ -119,9 +119,10 @@ public class ApplicationInstanceManager {
                         }
                     }
                     // exited while due to shutdown request - shutdown socket
+                     
                     if (client != null) {
                         try {
-                            client.close();
+                           client.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -129,12 +130,12 @@ public class ApplicationInstanceManager {
                     
                     if (socket != null) {
                         try {
-                            log.debug("Shutting down socket.");
                             socket.close();
                         } catch (IOException e) {
                              e.printStackTrace();
                         }
                     }
+                    log.debug("Socket is shutdown.");
                 }
             });
             instanceListenerThread.start();

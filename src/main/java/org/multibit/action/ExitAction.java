@@ -17,11 +17,15 @@ package org.multibit.action;
 
 import java.util.List;
 
+import javax.swing.JFrame;
+
 import org.multibit.ApplicationInstanceManager;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * exit the application
@@ -31,9 +35,13 @@ import org.multibit.model.PerWalletModelData;
  */
 public class ExitAction implements Action {
     private MultiBitController controller;
+    private JFrame mainFrame;
 
-    public ExitAction(MultiBitController controller) {
+    private static final Logger log = LoggerFactory.getLogger(ExitAction.class);
+
+    public ExitAction(MultiBitController controller, JFrame mainFrame) {
         this.controller = controller;
+        this.mainFrame = mainFrame;
     }
 
     public void execute(DataProvider dataProvider) {
@@ -53,23 +61,30 @@ public class ExitAction implements Action {
                         controller.getModel().setUserPreference(MultiBitModel.WALLET_FILENAME_PREFIX + i,
                                 perWalletModelData.getWalletFilename());
                         // save the ith wallet, including the wallet info
+                        controller.updateStatusLabel("Saving wallet '" + perWalletModelData.getWalletFilename() + "'...");
                         controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
                     }
                 }
-
             }
-
         }
 
+        log.debug("Saving user preferences ...");
         controller.getFileHandler().writeUserPreferences();
 
-        // shut down the PeerGroup
+        log.debug("Shutting down Bitcoin URI checker ...");
+        ApplicationInstanceManager.shutdownSocket();
+
+        // shut down the PeerGroup - this can take a while so we close the
+        // window
+        if (mainFrame != null) {
+            mainFrame.setVisible(false);
+        }
+
         if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
+            log.debug("Closing Bitcoin network connection...");
             controller.getMultiBitService().getPeerGroup().stop();
         }
 
-        ApplicationInstanceManager.shutdownSocket();
-        
         System.exit(0);
     }
 }

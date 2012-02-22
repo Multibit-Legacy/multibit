@@ -53,7 +53,7 @@ public class ExitAction extends AbstractAction {
     @SuppressWarnings("deprecation")
     public void actionPerformed(ActionEvent e) {
         mainFrame.setCursor(Cursor.WAIT_CURSOR);
-        org.multibit.action.ExitAction exitAction = new org.multibit.action.ExitAction(controller);
+        org.multibit.action.ExitAction exitAction = new org.multibit.action.ExitAction(controller, mainFrame);
         exitAction.execute(null);
     }
 }
