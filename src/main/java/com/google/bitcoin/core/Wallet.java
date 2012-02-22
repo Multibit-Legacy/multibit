@@ -37,7 +37,7 @@ import static com.google.bitcoin.core.Utils.bitcoinValueToFriendlyString;
  * use the built in Java serialization to avoid the need to pull in a potentially large (code-size) third party
  * serialization library.<p>
  */
-public class Wallet implements Serializable, IsMultiBitClass, PendingTransactionListener {
+public class Wallet implements Serializable, IsMultiBitClass {
     private static final Logger log = LoggerFactory.getLogger(Wallet.class);
     private static final long serialVersionUID = 2L;
 
@@ -135,10 +135,6 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
      * A list of public/private EC keys owned by this user.
      */
     public final ArrayList<ECKey> keychain;
-
-    public ArrayList<ECKey> getKeychain() {
-        return keychain;
-    }
 
     private final NetworkParameters params;
 
@@ -277,36 +273,6 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
             // edge case until old wallets have gone away.
         }
         hasTransactionConfidences = true;
-    }
-
-    /**
-     * Called by (@link Peer) when we receive a pending transaction that sends coins to one of our addresses.
-     * Note that these are unconfirmed transactions
-     * 
-     * @param transaction
-     * @throws VerificationException
-     * @throws ScriptException
-     */
-    @Override
-    synchronized public void processPendingTransaction(Transaction transaction) {       
-        if (transaction.isMine(this) && !transaction.sent(this)) {
-            log.debug("Wallet#receivePendingTransaction - received pending transaction: {}", transaction);
-            // the main receive logic is not run yet - this is done when the block with this transaction is received
-            transaction.setUpdatedAt(new Date());
-            
-            // mark all the transaction outputs as being unspent (with respect to this wallet)
-            for (TransactionOutput transactionOutput : transaction.getOutputs()) {
-                transactionOutput.markAsUnspent();
-            }
-            pending.put(transaction.getHash(), transaction);
-            
-            // notify listeners
-            for (WalletEventListener walletEventListener : eventListeners) {
-                synchronized (walletEventListener) {
-                    walletEventListener.onPendingCoinsReceived(this, transaction);
-                }
-            }
-        }    
     }
 
     /**
@@ -722,29 +688,6 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
     }
 
     /**
-     * Call this when we have successfully transmitted the send tx to the network, to update the wallet.
-     */
-    synchronized void confirmSend(Transaction tx) {
-        assert !pending.containsKey(tx.getHash()) : "confirmSend called on the same transaction twice";
-        log.info("confirmSend of {}", tx.getHashAsString());
-        // Mark the outputs of the used transcations as spent, so we don't try and spend it again.
-        for (TransactionInput input : tx.getInputs()) {
-            TransactionOutput connectedOutput = input.getOutpoint().getConnectedOutput();
-            connectedOutput.markAsSpent(input);
-        }
-        // Some of the outputs probably send coins back to us, eg for change or because this transaction is just
-        // consolidating the wallet. Mark any output that is NOT back to us as spent. Then add this TX to the
-        // pending pool.
-        for (TransactionOutput output : tx.getOutputs()) {
-            if (!output.isMine(this)) {
-                // This output didn't go to us, so by definition it is now spent.
-                output.markAsSpent(null);
-            }
-        }
-        pending.put(tx.getHash(), tx);
-    }
-
-    /**
      * Updates the wallet with the given transaction: puts it into the pending pool and sets the spent flags. Used in
      * two situations:<p>
      *
@@ -958,8 +901,8 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
     }
 
     /**
-     * Statelessly creates a transaction that sends the given number of nanocoins to address with specified fee. 
-     * The change is sent to {@link Wallet#getChangeAddress()}, so you must have added at least one key.<p>
+     * Statelessly creates a transaction that sends the given number of nanocoins to address. The change is sent to
+     * {@link Wallet#getChangeAddress()}, so you must have added at least one key.<p>
      * <p/>
      * This method is stateless in the sense that calling it twice with the same inputs will result in two
      * Transaction objects which are equal. The wallet is not updated to track its pending status or to mark the
@@ -989,7 +932,7 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
         }
         return tx;
     }
-    
+
     /**
      * Sends coins to the given address, via the given {@link PeerGroup}. Change is returned to {@link Wallet#getChangeAddress()}.
      * The transaction will be announced to any connected nodes asynchronously. If you would like to know when
@@ -1015,49 +958,105 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
     }
 
     /**
-     * Sends coins to the given address, via the given {@link PeerGroup}.
-     * Change is returned to the first key in the wallet.
+     * Sends coins to the given address, via the given {@link PeerGroup}. Change is returned to {@link Wallet#getChangeAddress()}.
+     * The method will block until the transaction has been announced to at least one node.
      *
+     * @param peerGroup a PeerGroup to use for broadcast or null.
      * @param to        Which address to send coins to.
      * @param nanocoins How many nanocoins to send. You can use Utils.toNanoCoins() to calculate this.
      * @param fee How much fee to offer, in nanocoins.
      * @return The {@link Transaction} that was created or null if there was insufficient balance to send the coins.
-     * @throws IOException if there was a problem broadcasting the transaction
      */
     public synchronized Transaction sendCoins(PeerGroup peerGroup, Address to, BigInteger nanocoins, final BigInteger fee) throws IOException {        
+        Transaction tx = sendCoinsOffline(to, nanocoins, fee);
+        if (tx == null)
+            return null;  // Not enough money.
+        try {
+            return peerGroup.broadcastTransaction(tx).get();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Sends coins to the given address, via the given {@link Peer}. Change is returned to {@link Wallet#getChangeAddress()}.
+     * If an exception is thrown by {@link Peer#sendMessage(Message)} the transaction is still committed, so the
+     * pending transaction must be broadcast <b>by you</b> at some other time.
+     *
+     * @param to        Which address to send coins to.
+     * @param nanocoins How many nanocoins to send. You can use Utils.toNanoCoins() to calculate this.
+     * @return The {@link Transaction} that was created or null if there was insufficient balance to send the coins.
+     * @throws IOException if there was a problem broadcasting the transaction
+     */
+    public synchronized Transaction sendCoins(Peer peer, Address to, BigInteger nanocoins, BigInteger fee) throws IOException {
+        // TODO: This API is fairly questionable and the function isn't tested. If anything goes wrong during sending
+        // on the peer you don't get access to the created Transaction object and must fish it out of the wallet then
+        // do your own retry later.
+
         Transaction tx = createSend(to, nanocoins, fee);
         if (tx == null)   // Not enough money! :-(
             return null;
-        if (!peerGroup.broadcastTransaction(tx)) {
-            throw new IOException("Failed to broadcast tx to all connected peers");
+        try {
+            commitTx(tx);
+        } catch (VerificationException e) {
+            throw new RuntimeException(e);  // Cannot happen unless there's a bug, as we just created this ourselves.
         }
-
-        // TODO - retry logic
-        confirmSend(tx);
+        peer.sendMessage(tx);
         return tx;
     }
-    
+
     /**
      * Creates a transaction that sends $coins.$cents BTC to the given address.<p>
-     *
+     * <p/>
      * IMPORTANT: This method does NOT update the wallet. If you call createSend again you may get two transactions
-     * that spend the same coins. You have to call confirmSend on the created transaction to prevent this,
+     * that spend the same coins. You have to call commitTx on the created transaction to prevent this,
      * but that should only occur once the transaction has been accepted by the network. This implies you cannot have
      * more than one outstanding sending tx at once.
      *
-     * @param address The BitCoin address to send the money to.
-     * @param nanocoins How much currency to send, in nanocoins.
+     * @param address       The BitCoin address to send the money to.
+     * @param nanocoins     How much currency to send, in nanocoins.
      * @param fee How much currency to send as fee
      * @param changeAddress Which address to send the change to, in case we can't make exactly the right value from
-     * our coins. This should be an address we own (is in the keychain).
+     *                      our coins. This should be an address we own (is in the keychain).
      * @return a new {@link Transaction} or null if we cannot afford this send.
      */
     synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, Address changeAddress) {
-        final BigInteger total = nanocoins.add(fee);
         log.info("Creating send tx to " + address.toString() + " for " +
-                bitcoinValueToFriendlyString(total));
+                bitcoinValueToFriendlyString(nanocoins));
+
+        Transaction sendTx = new Transaction(params);
+        sendTx.addOutput(nanocoins, address);
+
+        if (completeTx(sendTx, changeAddress, fee)) {
+            return sendTx;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Takes a transaction with arbitrary outputs, gathers the necessary inputs for spending, and signs it
+     * @param sendTx           The transaction to complete
+     * @param changeAddress    Which address to send the change to, in case we can't make exactly the right value from
+     *                         our coins. This should be an address we own (is in the keychain).
+     * @param fee              How much currency to send as fee
+     * @return False if we cannot afford this send, true otherwise
+     */
+    public synchronized boolean completeTx(Transaction sendTx, Address changeAddress, BigInteger fee) {
+        // Calculate the transaction total
+        BigInteger nanocoins = BigInteger.ZERO;
+        for(TransactionOutput output : sendTx.getOutputs()) {
+            nanocoins = nanocoins.add(output.getValue());
+        }
+        final BigInteger total = nanocoins.add(fee);
+
+        log.info("Completing send tx with {} outputs totalling {}", sendTx.getOutputs().size(), bitcoinValueToFriendlyString(nanocoins));
+
         // To send money to somebody else, we need to do gather up transactions with unspent outputs until we have
         // sufficient value. Many coin selection algorithms are possible, we use a simple but suboptimal one.
+        // TODO: Sort coins so we use the smallest first, to combat wallet fragmentation and reduce fees.
         BigInteger valueGathered = BigInteger.ZERO;
         List<TransactionOutput> gathered = new LinkedList<TransactionOutput>();
         for (Transaction tx : unspent.values()) {
@@ -1072,13 +1071,12 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
         // Can we afford this?
         if (valueGathered.compareTo(total) < 0) {
             log.info("Insufficient value in wallet for send, missing " +
-                    bitcoinValueToFriendlyString(total.subtract(valueGathered)));
+                    bitcoinValueToFriendlyString(nanocoins.subtract(valueGathered)));
             // TODO: Should throw an exception here.
-            return null;
+            return false;
         }
         assert gathered.size() > 0;
-        Transaction sendTx = new Transaction(params);
-        sendTx.addOutput(new TransactionOutput(params, sendTx, nanocoins, address));
+        sendTx.getConfidence().setConfidenceType(TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN);
         BigInteger change = valueGathered.subtract(total);
         if (change.compareTo(BigInteger.ZERO) > 0) {
             // The value of the inputs is greater than what we want to send. Just like in real life then,
@@ -1102,21 +1100,21 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
         
         // keep a track of the date the tx was created (used in MultiBitService to work out the block it appears in)
         sendTx.setUpdatedAt(new Date());
-        
-        log.info("  created {}", sendTx.getHashAsString());
-        return sendTx;
-    }
 
+        log.info("  completed {}", sendTx.getHashAsString());
+        return true;
+    }
 
     /**
      * Takes a transaction with arbitrary outputs, gathers the necessary inputs for spending, and signs it.
      * Change goes to {@link Wallet#getChangeAddress()}
      * @param sendTx           The transaction to complete
+     * @param fee              How much currency to send as fee
      * @return False if we cannot afford this send, true otherwise
      */
-//    public synchronized boolean completeTx(Transaction sendTx) {
-//        return completeTx(sendTx, getChangeAddress());
-//    }
+    public synchronized boolean completeTx(Transaction sendTx, BigInteger fee) {
+        return completeTx(sendTx, getChangeAddress(), fee);
+    }
 
     synchronized Address getChangeAddress() {
         // For now let's just pick the first key in our keychain. In future we might want to do something else to
@@ -1460,6 +1458,8 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
                 l.onReorganize(this);
             }
         }
+        
+        assert isConsistent();
     }
 
     private void reprocessTxAfterReorg(Map<Sha256Hash, Transaction> pool, Transaction tx) {
@@ -1554,7 +1554,8 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
     private transient PeerEventListener peerEventListener;
 
     /**
-     * remove all transactions from the wallet
+     * Use the returned object can be used to connect the wallet to a {@link Peer} or {@link PeerGroup} in order to
+     * receive and process blocks and transactions.
      */
     public synchronized PeerEventListener getPeerEventListener() {
         if (peerEventListener == null) {
@@ -1577,4 +1578,9 @@ public class Wallet implements Serializable, IsMultiBitClass, PendingTransaction
         }
         return peerEventListener;
     }
+    
+    public ArrayList<ECKey> getKeychain() {
+        return keychain;
+    }
+
 }

@@ -38,6 +38,7 @@ import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerAddress;
+import com.google.bitcoin.core.PeerEventListener;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
@@ -81,7 +82,7 @@ public class MultiBitService {
 
     private Wallet wallet;
 
-    private PeerGroup peerGroup;
+    private MultiBitPeerGroup peerGroup;
 
     private String blockchainFilename;
 
@@ -146,7 +147,9 @@ public class MultiBitService {
             log.debug("Connecting ...");
             blockChain = new BlockChain(networkParameters, blockStore);
 
-            peerGroup = new MultiBitPeerGroup(controller, blockStore, networkParameters, blockChain);
+            peerGroup = new MultiBitPeerGroup(controller, networkParameters, blockChain);
+            peerGroup.setFastCatchupTimeSecs(0); // genesis block
+            peerGroup.setUserAgent("MultiBit",controller.getLocaliser().getVersionNumber());
 
             String singleNodeConnection = controller.getModel().getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
             if (singleNodeConnection != null && !singleNodeConnection.equals("")) {
@@ -280,8 +283,8 @@ public class MultiBitService {
             // add wallet to blockchain
             blockChain.addWallet(wallet);
 
-            // add wallet as PendingTransactionListener to PeerGroup
-            peerGroup.addPendingTransactionListener(wallet);
+            // add wallet to PeerGroup
+            peerGroup.addWallet(wallet);
 
             if (newWalletCreated) {
                 controller.fireNewWalletCreated();
@@ -393,7 +396,7 @@ public class MultiBitService {
 
             // notify all of the pendingTransactionsListeners about the new
             // transaction
-            peerGroup.processPendingTransaction(sendTransaction);
+            //peerGroup.processPendingTransaction(sendTransaction);
         } else {
             // transaction was null
         }

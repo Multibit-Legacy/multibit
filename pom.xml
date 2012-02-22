@@ -111,8 +111,7 @@
                   <includes>**/*.*</includes>
                   <!-- excludes classes that are duplicated in multibit -->
                   <excludes>**/BlockChain.class,
-                    **/Peer.class, **/Peer$*.class,**/PeerGroup*.class,
-                    **/Sha256Hash.class, **/TCPNetworkConnection.class,
+                    **/Sha256Hash.class,
                     **/Transaction.class, **/Transaction$*.class,
                     **/TransactionInput.class, **/TransactionInput$*.class,
                     **/Wallet.class, **/Wallet$*.class,

@@ -32,10 +32,7 @@ public class IsMultiBitClassTest extends TestCase {
     @Test
     public void testIsMultiBitClass() throws ClassNotFoundException {
         checkClass("core.BlockChain");
-        checkClass("core.Peer");
-        checkClass("core.PeerGroup");
         checkClass("core.Sha256Hash");
-        checkClass("core.TCPNetworkConnection");
         checkClass("core.Transaction");
         checkClass("core.TransactionInput");
         checkClass("core.Wallet");

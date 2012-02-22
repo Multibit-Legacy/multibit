@@ -752,8 +752,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 icon = new ImageIcon();
             }
             qrCodeLabel.setIcon(icon);
-        } catch (IllegalArgumentException iae) {
-            log.error(iae.getMessage(), iae);
+        } catch (RuntimeException re) {
+            // swatch generation failed
+            log.error(re.getMessage(), re);
         }
     }
 

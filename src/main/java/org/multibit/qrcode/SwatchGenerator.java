@@ -148,13 +148,15 @@ public class SwatchGenerator {
         String bitcoinURI = "";
         try {
             Address decodeAddress = new Address(controller.getMultiBitService().getNetworkParameters(), address);
-            if (amount != null) {
+            if (amount != null && !"".equals(amount)) {
                bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amount), label, null);
             } else {
                 bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, null, label, null);                
             }
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
         } catch (AddressFormatException e) {
+            throw new RuntimeException(e);
+        }  catch (NumberFormatException e) {
             throw new RuntimeException(e);
         }
 

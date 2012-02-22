@@ -22,7 +22,6 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Locale;
@@ -558,10 +557,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     public void onPeerConnected(Peer peer, int peerCount) {
-        // if now online, notify viewSystems
-        // log.debug("MultiBitController#onPeerConnected called - peerCount = "
-        // + peerCount);
-        if (peerCount == 1) {
+        log.debug("Peer = " + peer + " connected.  PeerCount =  " + peerCount);
+        if (peerCount >= 1) {
             for (ViewSystem viewSystem : viewSystems) {
                 viewSystem.nowOnline();
             }
@@ -569,9 +566,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     public void onPeerDisconnected(Peer peer, int peerCount) {
-        // log.debug("MultiBitController#onPeerDisconnected called - peerCount = "
-        // + peerCount);
-        // if now offline, notify viewSystems
+        log.debug("Peer = " + peer + " disconnected.  PeerCount =  " + peerCount);
         if (peerCount == 0) {
             for (ViewSystem viewSystem : viewSystems) {
                 viewSystem.nowOffline();
@@ -586,6 +581,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      *            The download status string
      */
     public void updateStatusLabel(String newStatusText) {
+        log.debug("Update status label with '" + newStatusText + "'");
        for (ViewSystem viewSystem : viewSystems) {
             viewSystem.updateStatusLabel(newStatusText);
         }
@@ -595,6 +591,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      * method called by downloadListener whenever a block is downloaded
      */
     public void fireBlockDownloaded() {
+        log.debug("Fire blockdownloaded");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.blockDownloaded();
         }
@@ -794,7 +791,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     @Override
     public void onTransaction(Peer peer, Transaction t) {
-        log.debug("MultiBitController heard a transaction '" + t.toString() + "' from peer " + peer);
+        // individual transaction notifications are currently not used for anything
+        //log.debug("MultiBitController heard a transaction '" + t.toString() + "' from peer " + peer);
     }
 
     @Override
