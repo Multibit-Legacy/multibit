@@ -110,21 +110,13 @@ public class ImportPrivateKeysSubmitAction implements Action {
                             controller.getModel().createAddressBookReceivingAddresses(perWalletModelData.getWalletFilename());
 
                             // begin blockchain replay
-                            // start thread to redownload the block chain
-                            final Date finalEarliestTransactionDate = earliestTransactionDate;
-                            @SuppressWarnings("rawtypes")
-                            SwingWorker worker = new SwingWorker() {
-                                @Override
-                                protected Object doInBackground() throws Exception {
-                                    try {
-                                        controller.getMultiBitService().replayBlockChain(finalEarliestTransactionDate);
-                                    } catch (BlockStoreException e) {
-                                        e.printStackTrace();
-                                    }
-                                    return null; // return not used
-                                }
-                            };
-                            worker.execute();
+                            try {
+                                controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
+                            } catch (BlockStoreException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+
                             message = controller.getLocaliser().getString("showImportPrivateKeysAction.privateKeysImportSuccess");
                         } catch (IOException e) {
                             log.error(e.getClass().getName() + " " + e.getMessage());

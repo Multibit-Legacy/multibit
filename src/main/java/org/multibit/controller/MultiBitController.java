@@ -550,17 +550,17 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      */
 
     public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
-        log.debug("onBlocksDownloaded called");
+        //log.debug("onBlocksDownloaded called");
         fireBlockDownloaded();
     }
 
     public void onChainDownloadStarted(Peer peer, int blocksLeft) {
-        log.debug("onChainDownloadStarted called");
+        //log.debug("onChainDownloadStarted called");
         fireBlockDownloaded();
     }
 
     public void onPeerConnected(Peer peer, int peerCount) {
-        log.debug("Peer = " + peer + " connected.  PeerCount =  " + peerCount);
+        //log.debug("Peer = " + peer + " connected.  PeerCount =  " + peerCount);
         if (peerCount >= 1) {
             for (ViewSystem viewSystem : viewSystems) {
                 viewSystem.nowOnline();
@@ -569,7 +569,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     public void onPeerDisconnected(Peer peer, int peerCount) {
-        log.debug("Peer = " + peer + " disconnected.  PeerCount =  " + peerCount);
+        //log.debug("Peer = " + peer + " disconnected.  PeerCount =  " + peerCount);
         if (peerCount == 0) {
             for (ViewSystem viewSystem : viewSystems) {
                 viewSystem.nowOffline();
@@ -584,7 +584,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      *            The download status string
      */
     public void updateStatusLabel(String newStatusText) {
-        log.debug("Update status label with '" + newStatusText + "'");
+        //log.debug("Update status label with '" + newStatusText + "'");
        for (ViewSystem viewSystem : viewSystems) {
             viewSystem.updateStatusLabel(newStatusText);
         }
@@ -594,7 +594,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      * method called by downloadListener whenever a block is downloaded
      */
     public void fireBlockDownloaded() {
-        log.debug("Fire blockdownloaded");
+        //log.debug("Fire blockdownloaded");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.blockDownloaded();
         }

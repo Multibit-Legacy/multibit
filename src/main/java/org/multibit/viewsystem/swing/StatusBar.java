@@ -196,16 +196,6 @@ public class StatusBar extends JComponent {
         final String finalNewStatusLabel = newStatusLabel;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                Date now = new Date();
-                if (now.getTime() - lastStatusUpdateTime < MINIMUM_STATUS_LABEL_DISPLAY_TIME) {
-                    try {
-                        Thread.sleep(MINIMUM_STATUS_LABEL_DISPLAY_TIME - (now.getTime() - lastStatusUpdateTime));
-                    } catch (InterruptedException e) {
-                        // no problem if interrupted
-                    }
-                }
-                lastStatusUpdateTime = now.getTime();
-
                 if (statusLabel != null) {
                     statusLabel.setText(finalNewStatusLabel);
                 }

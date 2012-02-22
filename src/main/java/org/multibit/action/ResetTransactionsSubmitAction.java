@@ -104,21 +104,12 @@ public class ResetTransactionsSubmitAction implements Action {
             // save the wallet without the transactions
             controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
 
-            // start worker thread to redownload the block chain
-            final Date finalEarliestTransactionDate = earliestTransactionDate;
-            @SuppressWarnings("rawtypes")
-            SwingWorker worker = new SwingWorker() {
-                @Override
-                protected Object doInBackground() throws Exception {
-                    try {
-                        controller.getMultiBitService().replayBlockChain(finalEarliestTransactionDate);
-                    } catch (BlockStoreException e) {
-                        e.printStackTrace();
-                    }
-                    return null; // return not used
-                }
-            };
-            worker.execute();
+            try {
+                controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
+            } catch (BlockStoreException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
             controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
         }

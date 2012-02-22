@@ -23,6 +23,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.SwingWorker;
+
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
@@ -68,7 +70,7 @@ public class MultiBitService {
     private static final int NUMBER_OF_MILLISECOND_IN_A_SECOND = 1000;
 
     private static final int MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN = 6;
-    
+
     public static final String MULTIBIT_PREFIX = "multibit";
     public static final String TEST_NET_PREFIX = "testnet";
     public static final String SEPARATOR = "-";
@@ -149,7 +151,7 @@ public class MultiBitService {
 
             peerGroup = new MultiBitPeerGroup(controller, networkParameters, blockChain);
             peerGroup.setFastCatchupTimeSecs(0); // genesis block
-            peerGroup.setUserAgent("MultiBit",controller.getLocaliser().getVersionNumber());
+            peerGroup.setUserAgent("MultiBit", controller.getLocaliser().getVersionNumber());
 
             String singleNodeConnection = controller.getModel().getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
             if (singleNodeConnection != null && !singleNodeConnection.equals("")) {
@@ -301,21 +303,21 @@ public class MultiBitService {
      *            the date on the blockchain to replay from - if missing replay
      *            from genesis block
      */
-    public void replayBlockChain(Date dateToReplayFrom) throws BlockStoreException{
+    public void replayBlockChain(Date dateToReplayFrom) throws BlockStoreException {
         // navigate backwards in the blockchain to work out how far back in
         // time to go
- 
+
         if (dateToReplayFrom == null) {
             // create empty new block chain
             blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), true);
 
             log.debug("Creating new blockStore - need to redownload from Genesis block");
-            blockChain = new BlockChain(networkParameters, (BlockStore)blockStore);
-            
+            blockChain = new BlockChain(networkParameters, (BlockStore) blockStore);
+
             // TODO Peers need to be updated with the new block chain
         } else {
             StoredBlock storedBlock = blockChain.getChainHead();
-            
+
             boolean haveGoneBackInTimeEnough = false;
             int numberOfBlocksGoneBackward = 0;
 
@@ -335,8 +337,9 @@ public class MultiBitService {
                     }
                 }
             }
-            
-            // in case the chain head was on an alternate fork go back more blocks to ensure 
+
+            // in case the chain head was on an alternate fork go back more
+            // blocks to ensure
             // back on the main chain
             while (numberOfBlocksGoneBackward < MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN) {
                 try {
@@ -348,7 +351,7 @@ public class MultiBitService {
                     break;
                 }
             }
-            
+
             // set the block chain head to the block just before the
             // earliest transaction in the wallet
             blockChain.setChainHead(storedBlock);
@@ -364,7 +367,15 @@ public class MultiBitService {
      * download the block chain
      */
     public void downloadBlockChain() {
-        peerGroup.downloadBlockChain();
+        @SuppressWarnings("rawtypes")
+        SwingWorker worker = new SwingWorker() {
+            @Override
+            protected Object doInBackground() throws Exception {
+                peerGroup.downloadBlockChain();
+                return null; // return not used
+            }
+        };
+        worker.execute();
     }
 
     /**
@@ -383,7 +394,8 @@ public class MultiBitService {
         // send the coins
         Address sendAddress = new Address(networkParameters, sendAddressString);
 
-        Transaction sendTransaction = perWalletModelData.getWallet().sendCoins(peerGroup, sendAddress, Utils.toNanoCoins(amount), fee);
+        Transaction sendTransaction = perWalletModelData.getWallet().sendCoins(peerGroup, sendAddress, Utils.toNanoCoins(amount),
+                fee);
         controller.getMultiBitService().getPeerGroup().broadcastTransaction(sendTransaction);
 
         assert sendTransaction != null; // We should never try to send more
@@ -396,7 +408,7 @@ public class MultiBitService {
 
             // notify all of the pendingTransactionsListeners about the new
             // transaction
-            //peerGroup.processPendingTransaction(sendTransaction);
+            // peerGroup.processPendingTransaction(sendTransaction);
         } else {
             // transaction was null
         }
