@@ -18,12 +18,12 @@ package org.multibit.network;
 import org.multibit.controller.MultiBitController;
 
 import com.google.bitcoin.core.BlockChain;
-import com.google.bitcoin.core.DownloadListener;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerGroup;
 
 public class MultiBitPeerGroup extends PeerGroup {
     MultiBitController controller;
+    MultiBitDownloadListener multiBitDownloadListener = null;
     
     public MultiBitPeerGroup(MultiBitController controller, NetworkParameters params, BlockChain chain) {
         super(params, chain);
@@ -38,13 +38,15 @@ public class MultiBitPeerGroup extends PeerGroup {
      */
     @Override
     public void downloadBlockChain() {
-        DownloadListener listener = new MultiBitDownloadListener(controller);
-        startBlockChainDownload(listener);
-        try {
-            listener.await();
-        } catch (InterruptedException e) {
-            throw new IllegalStateException(e);
+        if (multiBitDownloadListener == null) {
+            multiBitDownloadListener = new MultiBitDownloadListener(controller);
         }
+        startBlockChainDownload(multiBitDownloadListener);
+//        try {
+//            multiBitDownloadListener.await();
+//        } catch (InterruptedException e) {
+//            throw new IllegalStateException(e);
+//        }
     }
 
 }

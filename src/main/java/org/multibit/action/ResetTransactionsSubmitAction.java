@@ -87,8 +87,15 @@ public class ResetTransactionsSubmitAction implements Action {
                         }
                     }
                 }
+
+                // also look at the earliest key creation time
+                long earliestKeyCreationTime = activePerWalletModelData.getWallet().getEarliestKeyCreationTime();
+                if (earliestKeyCreationTime != 0 && earliestKeyCreationTime < earliestTransactionDate.getTime()) {
+                    earliestTransactionDate = new Date(earliestKeyCreationTime);
+                }
                 activePerWalletModelData.getWalletInfo().put(MultiBitModel.EARLIEST_TRANSACTION_DATE,
                         "" + earliestTransactionDate.getTime());
+
             }
 
             // remove the transactions from the wallet
