@@ -114,8 +114,7 @@
                     **/Sha256Hash.class,
                     **/Transaction.class, **/Transaction$*.class,
                     **/TransactionInput.class, **/TransactionInput$*.class,
-                    **/Wallet.class, **/Wallet$*.class,
-                    **/WalletEventListener.class
+                    **/Wallet.class, **/Wallet$*.class
                   </excludes>
                 </artifactItem>
               </artifactItems>
