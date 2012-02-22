@@ -124,7 +124,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(filler1, constraints);
 
-        ImageIcon bigIcon = MultiBitFrame.createImageIcon(RECEIVE_BITCOIN_BIG_ICON_FILE);
+        ImageIcon bigIcon = ImageLoader.createImageIcon(RECEIVE_BITCOIN_BIG_ICON_FILE);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 1;

@@ -132,7 +132,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(filler1, constraints);
 
-        ImageIcon bigIcon = MultiBitFrame.createImageIcon(SEND_BITCOIN_BIG_ICON_FILE);
+        ImageIcon bigIcon = ImageLoader.createImageIcon(SEND_BITCOIN_BIG_ICON_FILE);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 1;

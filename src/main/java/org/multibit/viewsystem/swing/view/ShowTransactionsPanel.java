@@ -49,7 +49,7 @@ import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
-import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.ImageLoader;
 import org.multibit.viewsystem.swing.WalletTableModel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
@@ -208,18 +208,18 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
         JLabel label = new JLabel();
 
-        ImageIcon tickIcon = MultiBitFrame.createImageIcon(TICK_ICON_FILE);
-        ImageIcon progress0Icon = MultiBitFrame.createImageIcon(PROGRESS_0_ICON_FILE);
-        ImageIcon progress1Icon = MultiBitFrame.createImageIcon(PROGRESS_1_ICON_FILE);
-        ImageIcon progress2Icon = MultiBitFrame.createImageIcon(PROGRESS_2_ICON_FILE);
-        ImageIcon progress3Icon = MultiBitFrame.createImageIcon(PROGRESS_3_ICON_FILE);
-        ImageIcon progress4Icon = MultiBitFrame.createImageIcon(PROGRESS_4_ICON_FILE);
-        ImageIcon progress5Icon = MultiBitFrame.createImageIcon(PROGRESS_5_ICON_FILE);
-        ImageIcon rtlProgress1Icon = MultiBitFrame.createImageIcon(RTL_PROGRESS_1_ICON_FILE);
-        ImageIcon rtlProgress2Icon = MultiBitFrame.createImageIcon(RTL_PROGRESS_2_ICON_FILE);
-        ImageIcon rtlProgress3Icon = MultiBitFrame.createImageIcon(RTL_PROGRESS_3_ICON_FILE);
-        ImageIcon rtlProgress4Icon = MultiBitFrame.createImageIcon(RTL_PROGRESS_4_ICON_FILE);
-        ImageIcon rtlProgress5Icon = MultiBitFrame.createImageIcon(RTL_PROGRESS_5_ICON_FILE);
+        ImageIcon tickIcon = ImageLoader.createImageIcon(TICK_ICON_FILE);
+        ImageIcon progress0Icon = ImageLoader.createImageIcon(PROGRESS_0_ICON_FILE);
+        ImageIcon progress1Icon = ImageLoader.createImageIcon(PROGRESS_1_ICON_FILE);
+        ImageIcon progress2Icon = ImageLoader.createImageIcon(PROGRESS_2_ICON_FILE);
+        ImageIcon progress3Icon = ImageLoader.createImageIcon(PROGRESS_3_ICON_FILE);
+        ImageIcon progress4Icon = ImageLoader.createImageIcon(PROGRESS_4_ICON_FILE);
+        ImageIcon progress5Icon = ImageLoader.createImageIcon(PROGRESS_5_ICON_FILE);
+        ImageIcon rtlProgress1Icon = ImageLoader.createImageIcon(RTL_PROGRESS_1_ICON_FILE);
+        ImageIcon rtlProgress2Icon = ImageLoader.createImageIcon(RTL_PROGRESS_2_ICON_FILE);
+        ImageIcon rtlProgress3Icon = ImageLoader.createImageIcon(RTL_PROGRESS_3_ICON_FILE);
+        ImageIcon rtlProgress4Icon = ImageLoader.createImageIcon(RTL_PROGRESS_4_ICON_FILE);
+        ImageIcon rtlProgress5Icon = ImageLoader.createImageIcon(RTL_PROGRESS_5_ICON_FILE);
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {

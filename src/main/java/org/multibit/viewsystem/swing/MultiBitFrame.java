@@ -22,7 +22,6 @@ import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
@@ -49,7 +48,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
@@ -114,21 +112,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static final int STATUSBAR_HEIGHT = 30;
     private static final int TOOLBAR_HEIGHT = 120;
 
-//    public static final String MULTIBIT_DEFAULT_FONT_NAME = "Dialog";
-//    public static final int MULTIBIT_DEFAULT_FONT_STYLE = Font.PLAIN;
-//    public static final int MULTIBIT_DEFAULT_FONT_SIZE = 13;
-//    public static final int MULTIBIT_LARGE_FONT_INCREASE = 2;
-//
-//    public static final Color GOLD_COLOR = new Color(212, 160, 23);
-//
-//    public static final Color BACKGROUND_COLOR = new Color(244, 244, 246);
-//    public static final Color VERY_LIGHT_BACKGROUND_COLOR = new Color(254, 254, 255);
-//    public static final Color DARK_BACKGROUND_COLOR = new Color(188, 212, 230); // beau
-//    // blue
-//
-//    private static JTable COLOR_TABLE = new JTable();
-//    public static Color SELECTION_FOREGROUND_COLOR = COLOR_TABLE.getSelectionForeground();
-//    public static Color SELECTION_BACKGROUND_COLOR = COLOR_TABLE.getSelectionBackground();
     private Border normalBorder;
     private Border underlineBorder;
 
@@ -697,19 +680,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         setJMenuBar(menuBar);
 
         return toolBarPanel;
-    }
-
-    /**
-     * Returns an ImageIcon, or null if the path was invalid.
-     */
-    public static ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = MultiBitFrame.class.getResource(path);
-        if (imgURL != null) {
-            return new ImageIcon(imgURL);
-        } else {
-            log.error("org.multibit.MultiBitFrame#createImageIcon: Could not find file: " + path);
-            return null;
-        }
     }
 
     // MultiBitView methods
