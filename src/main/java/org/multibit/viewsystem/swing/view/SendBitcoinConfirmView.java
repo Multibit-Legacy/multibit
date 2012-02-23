@@ -89,8 +89,6 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         
         cancelButton.requestFocusInWindow();
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
- 
-        setVisible(true);
     }
 
     /**
