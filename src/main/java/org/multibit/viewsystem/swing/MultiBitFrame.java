@@ -92,7 +92,9 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.TransactionInput;
+import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 
 /*
@@ -849,52 +851,66 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
         });
     }
-
+    
+    @Override
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+        processNewCoin(wallet, transaction);
+    }
+
+    private void processNewCoin(Wallet wallet, Transaction transaction) {        
         // loop through all the wallets, updating them as required with the new transaction
         try {
             java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
             TransactionInput input = transaction.getInputs().get(0);
             Address from = input.getFromAddress();
+            
             boolean dataHasChanged = false;
+            
             if (perWalletModelDataList != null) {
                 for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                    boolean addToWallet = false;
+
                     // check bitcoin sent to me
                     BigInteger valueSentToMe = transaction.getValueSentToMe(perWalletModelData.getWallet());
                     if (valueSentToMe != null && valueSentToMe.compareTo(BigInteger.ZERO) > 0) {
                         logger.debug("Received " + controller.getLocaliser().bitcoinValueToString4(valueSentToMe, true, false)
                                 + " from " + from.toString() + " to wallet '" + perWalletModelData.getWalletDescription() + "'");
+                        addToWallet = true;
 
-                        // the perWalletModelData is marked as transactionDirty
-                        // but is not written out immediately
-                        // this is to avoid unnecessary 'Updates have stopped'
-                        // when two MultiBit have a single wallet open.
-                        // they will both get the incoming transaction
-                        perWalletModelData.setTransactionDirty(true);
-                        dataHasChanged = true;
                     }
+                    
                     // check bitcoin sent from me
                     BigInteger valueSentFromMe = transaction.getValueSentFromMe(perWalletModelData.getWallet());
                     if (valueSentFromMe != null && valueSentFromMe.compareTo(BigInteger.ZERO) > 0) {
                         logger.debug("Sent " + controller.getLocaliser().bitcoinValueToString4(valueSentFromMe, true, false)
                                 + " from " + from.toString() + " from wallet '" + perWalletModelData.getWalletDescription() + "'");
-
-                        // the perWalletModelData is marked as transactionDirty
-                        // but is not written out immediately
-                        // this is to avoid unnecessary 'Updates have stopped'
-                        // when two MultiBit have a single wallet open.
-                        // they will both get the incoming transaction
-                        perWalletModelData.setTransactionDirty(true);
-                        dataHasChanged = true;
+                        addToWallet = true;
                     }
+
                     // check to see if the tx is mine, even though there is
                     // nothing sent to or from me
                     // this may be a transfer intrawallet
-                    if (!dataHasChanged && transaction.isMine(perWalletModelData.getWallet())) {
+                    if (!addToWallet && transaction.isMine(perWalletModelData.getWallet())) {
                         logger.debug("Transaction " + transaction.getHashAsString()
                                 + " is mine so wallet is marked transactionDirty  for wallet '"
                                 + perWalletModelData.getWalletDescription() + "'");
+                        addToWallet = true;
+                    }
+                    
+                    if (addToWallet) {
+                        // make sure the transaction is in the wallet (it could be an intrawallet transaction)
+                        try {
+                            Wallet loopWallet = perWalletModelData.getWallet();
+                            if (loopWallet.getTransaction(transaction.getHash()) == null) {
+                                if (transaction.getConfidence().getConfidenceType() == TransactionConfidence.ConfidenceType.UNKNOWN ||
+                                        transaction.getConfidence().getConfidenceType() == TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN) {
+                                    loopWallet.receivePending(transaction);
+                                }
+                            }
+                        } catch (VerificationException e) {
+                            e.printStackTrace();
+                        }
 
                         // the perWalletModelData is marked as transactionDirty
                         // but is not written out immediately
@@ -916,76 +932,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
     }
 
-    public void onPendingCoinsReceived(Wallet wallet, Transaction transaction) {
-        // loop through all the wallets, updating them as required with the new transaction
-        try {
-            java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
-
-            TransactionInput input = transaction.getInputs().get(0);
-            Address from = input.getFromAddress();
-            boolean dataHasChanged = false;
-            if (perWalletModelDataList != null) {
-                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
-                    BigInteger value = transaction.getValueSentToMe(perWalletModelData.getWallet());
-                    if (value != null && value.compareTo(BigInteger.ZERO) > 0) {
-                        logger.debug("Received " + controller.getLocaliser().bitcoinValueToString4(value, true, false) + " from "
-                                + from.toString() + " to wallet '" + perWalletModelData.getWalletDescription() + "'");
-                        // the perWalletModelData is marked as transactionDirty
-                        // but is not written out immediately
-                        // this is to avoid unnecessary 'Updates have stopped'
-                        // when two MultiBit have a single wallet open.
-                        // they will both get the incoming transaction
-                        perWalletModelData.setTransactionDirty(true);
-                        dataHasChanged = true;
-                    }
-                    // check bitcoin sent from me
-                    BigInteger valueSentFromMe = transaction.getValueSentFromMe(perWalletModelData.getWallet());
-                    if (valueSentFromMe != null && valueSentFromMe.compareTo(BigInteger.ZERO) > 0) {
-                        logger.debug("Sent " + controller.getLocaliser().bitcoinValueToString4(valueSentFromMe, true, false)
-                                + " from " + from.toString() + " from wallet '" + perWalletModelData.getWalletDescription() + "'");
-
-                        // the perWalletModelData is marked as transactionDirty
-                        // but is not written out immediately
-                        // this is to avoid unnecessary 'Updates have stopped'
-                        // when two MultiBit have a single wallet open.
-                        // they will both get the incoming transaction
-                        perWalletModelData.setTransactionDirty(true);
-                        dataHasChanged = true;
-                    }
-                    // check to see if the tx is mine, even though there is
-                    // nothing sent to or from me
-                    // this may be a transfer intrawallet
-                    if (!dataHasChanged && transaction.isMine(perWalletModelData.getWallet())) {
-                        logger.debug("Transaction " + transaction.getHashAsString()
-                                + " is mine so wallet is marked transactionDirty  for wallet '"
-                                + perWalletModelData.getWalletDescription() + "'");
-
-                        // the perWalletModelData is marked as transactionDirty
-                        // but is not written out immediately
-                        // this is to avoid unnecessary 'Updates have stopped'
-                        // when two MultiBit have a single wallet open.
-                        // they will both get the incoming transaction
-                        perWalletModelData.setTransactionDirty(true);
-                        dataHasChanged = true;
-                    }
-                    if (dataHasChanged) {
-                        if (perWalletModelData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
-                            // blink the total
-                            estimatedBalanceTextLabel.blink(controller.getLocaliser().bitcoinValueToString4(
-                                    controller.getModel().getActiveWalletEstimatedBalance(), true, false));
-                        }
-
-                    }
-                }
-            }
-            if (dataHasChanged) {
-                fireDataChanged();
-            }
-        } catch (ScriptException e) {
-            // If we didn't understand the scriptSig, just crash.
-            log.error(e.getMessage(), e);
-            throw new IllegalStateException(e);
-        }
+    @Override
+    public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+        processNewCoin(wallet, transaction);
     }
 
     /**

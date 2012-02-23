@@ -424,7 +424,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         boolean bestChain = blockType == BlockChain.NewBlockType.BEST_CHAIN;
         boolean sideChain = blockType == BlockChain.NewBlockType.SIDE_CHAIN;
 
-        boolean spendToMyself = false;
+//        boolean spendToMyself = false;
         
         BigInteger valueSentFromMe = tx.getValueSentFromMe(this);
         BigInteger valueSentToMe = tx.getValueSentToMe(this);
@@ -505,13 +505,13 @@ public class Wallet implements Serializable, IsMultiBitClass {
         // Inform anyone interested that we have new coins. Note: we may be re-entered by the event listener,
         // so we must not make assumptions about our state after this loop returns! For example the balance we just
         // received might already be spent!
-        if (!reorg && bestChain && (valueDifference.compareTo(BigInteger.ZERO) > 0 || spendToMyself)) {
-            for (WalletEventListener l : eventListeners) {
-                synchronized (l) {
-                    l.onCoinsReceived(this, tx, prevBalance, getBalance());
-                }
-            }
-        }
+//        if (!reorg && bestChain && (valueDifference.compareTo(BigInteger.ZERO) > 0 || spendToMyself)) {
+//            for (WalletEventListener l : eventListeners) {
+//                synchronized (l) {
+//                    l.onCoinsReceived(this, tx, prevBalance, getBalance());
+//                }
+//            }
+//        }
         
         // Inform anyone interested that we have received or sent coins but only if:
         //  - This is not due to a re-org.

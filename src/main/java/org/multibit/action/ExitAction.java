@@ -74,12 +74,6 @@ public class ExitAction implements Action {
         log.debug("Shutting down Bitcoin URI checker ...");
         ApplicationInstanceManager.shutdownSocket();
 
-        // shut down the PeerGroup - this can take a while so we close the
-        // window
-        if (mainFrame != null) {
-            mainFrame.setVisible(false);
-        }
-
         if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
             log.debug("Closing Bitcoin network connection...");
             controller.getMultiBitService().getPeerGroup().stop();

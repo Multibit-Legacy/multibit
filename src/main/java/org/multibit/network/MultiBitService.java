@@ -367,6 +367,8 @@ public class MultiBitService {
                 }
             }
 
+            assert storedBlock != null;
+
             // set the block chain head to the block just before the
             // earliest transaction in the wallet
             blockChain.setChainHead(storedBlock);

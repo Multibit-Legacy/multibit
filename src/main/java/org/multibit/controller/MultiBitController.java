@@ -584,7 +584,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      *            The download status string
      */
     public void updateStatusLabel(String newStatusText) {
-       log.debug("Update status label with '" + newStatusText + "'");
+       //log.debug("Update status label with '" + newStatusText + "'");
        for (ViewSystem viewSystem : viewSystems) {
             viewSystem.updateStatusLabel(newStatusText);
         }
@@ -608,13 +608,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
         for (ViewSystem viewSystem : viewSystems) {
-            // TODO
-        }
-    }
-
-    public void onPendingCoinsReceived(Wallet wallet, Transaction transaction) {
-        for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.onPendingCoinsReceived(wallet, transaction);
+            viewSystem.onCoinsSent(wallet, transaction, prevBalance, newBalance);
         }
     }
 
@@ -624,11 +618,21 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         }
     }
 
-    public void sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String sendLabel, String amount,
-            BigInteger fee) throws IOException, AddressFormatException {
-        // TODO sendLabel is not used, consider Refactor change method signature
+    public void sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee) throws IOException, AddressFormatException {
         // send the coins
         Transaction sendTransaction = multiBitService.sendCoins(perWalletModelData, sendAddressString, amount, fee);
+        
+        // notify other wallets of the send (it might be a send to them)
+        List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
+        
+        if (perWalletModelDataList != null) {
+            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+                if (!perWalletModelData.getWalletFilename().equals(loopPerWalletModelData.getWalletFilename())) {
+                    onCoinsReceived(loopPerWalletModelData.getWallet(), sendTransaction, null, null);
+                }
+            }
+        }
+        
         fireRecreateAllViews(false);
         // TODO Require better confirmation here
         if (sendTransaction == null) {

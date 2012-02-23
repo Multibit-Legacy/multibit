@@ -379,9 +379,8 @@ public class MultiBitModel {
                 }
 
                 @Override
-                public void onCoinsSent(Wallet wallet, Transaction tx, BigInteger prevBalance, BigInteger newBalance) {
-                    // TODO Auto-generated method stub
-
+                public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+                    controller.onCoinsSent(wallet, transaction, prevBalance, newBalance);
                 }
 
                 @Override

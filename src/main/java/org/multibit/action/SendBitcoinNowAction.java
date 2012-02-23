@@ -79,7 +79,7 @@ public class SendBitcoinNowAction implements Action {
             Boolean sendWasSuccessful = Boolean.FALSE;
             String errorMessage = " ";
             try {
-                controller.sendCoins(perWalletModelData, sendAddress, sendLabel, sendAmount, fee);
+                controller.sendCoins(perWalletModelData, sendAddress, sendAmount, fee);
                 sendWasSuccessful = Boolean.TRUE;
 
                 // save the wallet

@@ -111,8 +111,11 @@ public interface ViewSystem {
      * WalletEventListener callback method
      * @param wallet
      * @param transaction
+     * @param prevBalance
+     * @param newBalance
      */
-    public void onPendingCoinsReceived(Wallet wallet, Transaction transaction);
+    public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance,
+            BigInteger newBalance);
     
     /**
      * WalletEventListener callback method
