@@ -55,7 +55,11 @@ public class OpenWalletSubmitAction implements Action {
                         controller.getModel().setActiveWalletByFilename(walletFilename);
                         controller.fireNewWalletCreated();
                     }
-                }
+                } else {
+                    // same wallet was chosen - this fire is to stop the next open dialog being small
+                    // TODO - make open wallet a little action on the "Your Wallets" panel
+                    controller.fireNewWalletCreated();
+                                   }
             }
             controller.setActionForwardToParent();
 
