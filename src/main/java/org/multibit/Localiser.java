@@ -134,8 +134,8 @@ public class Localiser {
                 return MISSING_RESOURCE_TEXT + key + " (cce)";
             } catch (MissingResourceException mre) {
                 return MISSING_RESOURCE_TEXT + key + " (mre)";
-            } catch (StringIndexOutOfBoundsException e) {
-                return MISSING_RESOURCE_TEXT + key + " (e)";
+            } catch (StringIndexOutOfBoundsException sioobe) {
+                return MISSING_RESOURCE_TEXT + key + " (sioobe)";
             }
         } else {
             return MISSING_RESOURCE_TEXT + key;

@@ -171,9 +171,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private Timer fileChangeTimer;
 
     private JPanel headerPanel;
-    
-//    private StartupAndShutdownDialog startupAndShutdownDialog;
-    
+
+    // private StartupAndShutdownDialog startupAndShutdownDialog;
 
     @SuppressWarnings("deprecation")
     public MultiBitFrame(MultiBitController controller, GenericApplication application) {
@@ -187,15 +186,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         UIManager.put("ToolTip.font", FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         setCursor(Cursor.WAIT_CURSOR);
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         setTitle(localiser.getString("multiBitFrame.title"));
 
         ToolTipManager.sharedInstance().setDismissDelay(TOOLTIP_DISMISSAL_DELAY);
 
         final MultiBitController finalController = controller;
-          
-         // TODO Examine how this fits in with the controller onQuit() event
+
+        // TODO Examine how this fits in with the controller onQuit() event
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent arg0) {
                 org.multibit.action.ExitAction exitAction = new org.multibit.action.ExitAction(finalController, thisFrame);
@@ -215,7 +214,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewFactory = new ViewFactory(controller, this);
 
         initUI();
-        
+
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         recreateAllViews(false);
@@ -240,9 +239,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         fileChangeTimer = new Timer();
         // fires once every minute
         fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), 0, 60000);
-        
-        //startupAndShutdownDialog = new StartupAndShutdownDialog(controller, this);
-        //startupAndShutdownDialog.setVisible(true);
+
+        // startupAndShutdownDialog = new StartupAndShutdownDialog(controller,
+        // this);
+        // startupAndShutdownDialog.setVisible(true);
     }
 
     public GenericApplication getApplication() {
@@ -842,36 +842,36 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     public void blockDownloaded() {
-        logger.debug("blockDownloaded");
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 // update screen in case status bars have changed
                 thisFrame.fireDataChanged();
-                viewPanel.invalidate();
-                viewPanel.validate();
-                viewPanel.repaint();
-                thisFrame.invalidate();
-                thisFrame.validate();
-                thisFrame.repaint();
+//                viewPanel.invalidate();
+//                viewPanel.validate();
+//                viewPanel.repaint();
+//                thisFrame.invalidate();
+//                thisFrame.validate();
+//                thisFrame.repaint();
             }
         });
     }
-    
+
     @Override
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
         processNewCoin(wallet, transaction);
     }
 
-    private void processNewCoin(Wallet wallet, Transaction transaction) {        
-        // loop through all the wallets, updating them as required with the new transaction
+    private void processNewCoin(Wallet wallet, Transaction transaction) {
+        // loop through all the wallets, updating them as required with the new
+        // transaction
         try {
             java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
             TransactionInput input = transaction.getInputs().get(0);
             Address from = input.getFromAddress();
-            
+
             boolean dataHasChanged = false;
-            
+
             if (perWalletModelDataList != null) {
                 for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
                     boolean addToWallet = false;
@@ -884,7 +884,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         addToWallet = true;
 
                     }
-                    
+
                     // check bitcoin sent from me
                     BigInteger valueSentFromMe = transaction.getValueSentFromMe(perWalletModelData.getWallet());
                     if (valueSentFromMe != null && valueSentFromMe.compareTo(BigInteger.ZERO) > 0) {
@@ -902,14 +902,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                                 + perWalletModelData.getWalletDescription() + "'");
                         addToWallet = true;
                     }
-                    
+
                     if (addToWallet) {
-                        // make sure the transaction is in the wallet (it could be an intrawallet transaction)
+                        // make sure the transaction is in the wallet (it could
+                        // be an intrawallet transaction)
                         try {
                             Wallet loopWallet = perWalletModelData.getWallet();
                             if (loopWallet.getTransaction(transaction.getHash()) == null) {
-                                if (transaction.getConfidence().getConfidenceType() == TransactionConfidence.ConfidenceType.UNKNOWN ||
-                                        transaction.getConfidence().getConfidenceType() == TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN) {
+                                if (transaction.getConfidence().getConfidenceType() == TransactionConfidence.ConfidenceType.UNKNOWN
+                                        || transaction.getConfidence().getConfidenceType() == TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN) {
                                     loopWallet.receivePending(transaction);
                                 }
                             }

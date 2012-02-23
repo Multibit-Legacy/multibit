@@ -44,10 +44,9 @@ public class ExitAction implements Action {
         this.mainFrame = mainFrame;
     }
 
-    @SuppressWarnings("deprecation")
     public void execute(DataProvider dataProvider) {
         if (mainFrame != null) {
-            mainFrame.setCursor(Cursor.WAIT_CURSOR);
+            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         }
         // write the user properties
         // save all the wallets and put their filenames in the user preferences
@@ -79,16 +78,15 @@ public class ExitAction implements Action {
         log.debug("Shutting down Bitcoin URI checker ...");
         ApplicationInstanceManager.shutdownSocket();
 
+        // for some odd reason this helps shutdown
+//        if (mainFrame != null) {
+//            mainFrame.setBounds(mainFrame.getBounds().x, mainFrame.getBounds().y , 100, 100);
+//        }
+        
         if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
             log.debug("Closing Bitcoin network connection...");
             //controller.updateStatusLabel("Closing Bitcoin network connection...");
             controller.getMultiBitService().getPeerGroup().stop();
-
-            try {
-                Thread.sleep(800);
-            } catch (InterruptedException e) {
-                // do nothing
-            }
         }
 
         if (mainFrame != null) {

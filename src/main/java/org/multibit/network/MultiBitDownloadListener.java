@@ -20,6 +20,8 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import org.multibit.controller.MultiBitController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.DownloadListener;
 
@@ -36,9 +38,11 @@ import com.google.bitcoin.core.DownloadListener;
  * 
  */
 public class MultiBitDownloadListener extends DownloadListener {
+    private static final Logger log = LoggerFactory.getLogger(MultiBitDownloadListener.class);
+    
     private static final double DONE_FOR_DOUBLES = 99.99;  // not quite 100 per cent to cater for rounding
     private static final int CRITERIA_LARGE_NUMBER_OF_BLOCKS = 1000;
-
+   
     MultiBitController controller;
 
     public MultiBitDownloadListener(MultiBitController controller) {
@@ -60,6 +64,7 @@ public class MultiBitDownloadListener extends DownloadListener {
             // we are done downloading
             doneDownload();
         } else {
+            log.debug("Download - blocksSoFar = " + blocksSoFar);
             String downloadStatusText = controller.getLocaliser().getString(
                     "multiBitDownloadListener.startDownloadTextShort",
                     new Object[] {new Integer(blocksSoFar)}) + " " +
@@ -85,10 +90,10 @@ public class MultiBitDownloadListener extends DownloadListener {
             String startDownloadText;
             if (blocks <= CRITERIA_LARGE_NUMBER_OF_BLOCKS) {
                 startDownloadText = controller.getLocaliser().getString(
-                        "multiBitDownloadListener.startDownloadTextShort", new Object[] { blocks });
+                        "multiBitDownloadListener.startDownloadTextShort", new Object[] { new Integer(blocks) });
             } else {
                 startDownloadText = controller.getLocaliser().getString(
-                        "multiBitDownloadListener.startDownloadTextLong", new Object[] { blocks });
+                        "multiBitDownloadListener.startDownloadTextLong", new Object[] { new Integer(blocks) });
             }
             controller.updateStatusLabel(startDownloadText);
             controller.fireBlockDownloaded();

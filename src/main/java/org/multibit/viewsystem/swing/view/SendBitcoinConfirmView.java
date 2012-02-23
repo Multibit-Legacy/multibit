@@ -408,6 +408,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
             fee = controller.getLocaliser().bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
         }
         sendFee = fee + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
+        sendFeeText.setText(sendFee);
         
         setVisible(true);
     }
