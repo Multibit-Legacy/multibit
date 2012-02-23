@@ -171,6 +171,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private Timer fileChangeTimer;
 
     private JPanel headerPanel;
+    
+//    private StartupAndShutdownDialog startupAndShutdownDialog;
+    
 
     @SuppressWarnings("deprecation")
     public MultiBitFrame(MultiBitController controller, GenericApplication application) {
@@ -184,18 +187,17 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         UIManager.put("ToolTip.font", FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         setCursor(Cursor.WAIT_CURSOR);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         setTitle(localiser.getString("multiBitFrame.title"));
 
         ToolTipManager.sharedInstance().setDismissDelay(TOOLTIP_DISMISSAL_DELAY);
 
         final MultiBitController finalController = controller;
-
-        // TODO Examine how this fits in with the controller onQuit() event
-        this.addWindowListener(new WindowAdapter() {
+          
+         // TODO Examine how this fits in with the controller onQuit() event
+        addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent arg0) {
-                thisFrame.setCursor(Cursor.WAIT_CURSOR);
                 org.multibit.action.ExitAction exitAction = new org.multibit.action.ExitAction(finalController, thisFrame);
                 exitAction.execute(null);
             }
@@ -213,7 +215,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewFactory = new ViewFactory(controller, this);
 
         initUI();
-
+        
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         recreateAllViews(false);
@@ -238,6 +240,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         fileChangeTimer = new Timer();
         // fires once every minute
         fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), 0, 60000);
+        
+        //startupAndShutdownDialog = new StartupAndShutdownDialog(controller, this);
+        //startupAndShutdownDialog.setVisible(true);
     }
 
     public GenericApplication getApplication() {

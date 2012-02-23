@@ -41,11 +41,6 @@ public class MultiBitInExecutableJar {
 
     private static Logger log = LoggerFactory.getLogger(MultiBitInExecutableJar.class);
 
-    public static void main2(String args[]) {
-        MultiBit.main(args);
-    }
-
-
     /**
      * Start multibit user interface when running in a jar
      * This will adjust the logging framework output to ensure that console output is sent
@@ -118,7 +113,7 @@ public class MultiBitInExecutableJar {
         } catch (Exception e) {
             // Gets printed in the file
             if (log != null) {
-                log.debug("Redirecting output & exceptions to file", e);
+                log.debug("Error in redirecting output & exceptions to file", e);
             }
         } finally {
             // call the main MultiBit code

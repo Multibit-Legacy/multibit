@@ -15,7 +15,6 @@
  */
 package org.multibit.controller;
 
-import java.awt.Cursor;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -28,8 +27,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Stack;
-
-import javax.swing.JFrame;
 
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Localiser;
@@ -776,11 +773,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     @Override
     public void onQuitEvent(GenericQuitEvent event, GenericQuitResponse response) {
         if (isOKToQuit()) {
-            for (ViewSystem viewSystem : viewSystems) {
-                if (viewSystem instanceof JFrame) {
-                    ((JFrame)viewSystem).setCursor(Cursor.WAIT_CURSOR);
-                }
-            }
             ExitAction exitAction = new ExitAction(this, null);
             exitAction.execute(null);
             response.performQuit();

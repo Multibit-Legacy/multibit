@@ -15,13 +15,17 @@
  */
 package org.multibit.viewsystem.swing.view.components;
 
-import org.multibit.viewsystem.swing.MultiBitFrame;
+import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.lang.reflect.Method;
+
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
-import java.awt.*;
-import java.lang.reflect.Method;
 /**
  * JDialog with some utility methods to position on screen
 

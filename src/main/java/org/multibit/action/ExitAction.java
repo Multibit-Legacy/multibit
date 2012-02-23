@@ -15,15 +15,15 @@
  */
 package org.multibit.action;
 
+import java.awt.Cursor;
 import java.util.List;
-
-import javax.swing.JFrame;
 
 import org.multibit.ApplicationInstanceManager;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,16 +35,20 @@ import org.slf4j.LoggerFactory;
  */
 public class ExitAction implements Action {
     private MultiBitController controller;
-    private JFrame mainFrame;
+    private MultiBitFrame mainFrame;
 
     private static final Logger log = LoggerFactory.getLogger(ExitAction.class);
 
-    public ExitAction(MultiBitController controller, JFrame mainFrame) {
+    public ExitAction(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
     }
 
+    @SuppressWarnings("deprecation")
     public void execute(DataProvider dataProvider) {
+        if (mainFrame != null) {
+            mainFrame.setCursor(Cursor.WAIT_CURSOR);
+        }
         // write the user properties
         // save all the wallets and put their filenames in the user preferences
         if (controller.getModel().getPerWalletModelDataList() != null) {
@@ -61,7 +65,7 @@ public class ExitAction implements Action {
                         controller.getModel().setUserPreference(MultiBitModel.WALLET_FILENAME_PREFIX + i,
                                 perWalletModelData.getWalletFilename());
                         // save the ith wallet, including the wallet info
-                        controller.updateStatusLabel("Saving wallet '" + perWalletModelData.getWalletFilename() + "'...");
+                        //controller.updateStatusLabel("Saving wallet '" + perWalletModelData.getWalletFilename() + "'...");
                         controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
                     }
                 }
@@ -69,6 +73,7 @@ public class ExitAction implements Action {
         }
 
         log.debug("Saving user preferences ...");
+        //controller.updateStatusLabel("Saving user preferences ...");
         controller.getFileHandler().writeUserPreferences();
 
         log.debug("Shutting down Bitcoin URI checker ...");
@@ -76,9 +81,19 @@ public class ExitAction implements Action {
 
         if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
             log.debug("Closing Bitcoin network connection...");
+            //controller.updateStatusLabel("Closing Bitcoin network connection...");
             controller.getMultiBitService().getPeerGroup().stop();
+
+            try {
+                Thread.sleep(800);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
         }
 
+        if (mainFrame != null) {
+            mainFrame.dispose();
+        }
         System.exit(0);
     }
 }
