@@ -62,7 +62,7 @@ public class MultiBitDownloadListener extends DownloadListener {
         } else {
             String downloadStatusText = controller.getLocaliser().getString(
                     "multiBitDownloadListener.startDownloadTextShort",
-                    new Object[] {blocksSoFar}) + " " +
+                    new Object[] {new Integer(blocksSoFar)}) + " " +
                     controller.getLocaliser().getString(
                             "multiBitDownloadListener.blockDateText",
                             new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM,

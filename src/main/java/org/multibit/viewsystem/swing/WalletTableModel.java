@@ -15,16 +15,17 @@
  */
 package org.multibit.viewsystem.swing;
 
-import com.google.bitcoin.core.StoredBlock;
-import org.multibit.Localiser;
+import java.math.BigInteger;
+import java.util.Date;
+import java.util.Vector;
+
+import javax.swing.table.AbstractTableModel;
+
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletTableData;
 
-import javax.swing.table.AbstractTableModel;
-import java.math.BigInteger;
-import java.util.Date;
-import java.util.Vector;
+import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 
 public class WalletTableModel extends AbstractTableModel {
 
@@ -73,25 +74,10 @@ public class WalletTableModel extends AbstractTableModel {
 
         switch (column) {
         case 0: {
-            // work out the difference between the wallet data height and the
-            // current head
-            StoredBlock currentHead;
-            if (controller.getMultiBitService() != null && controller.getMultiBitService().getChain() != null
-                    && controller.getMultiBitService().getChain().getChainHead() != null) {
-                currentHead = controller.getMultiBitService().getChain().getChainHead();
+            if (walletDataRow.getTransaction() != null && walletDataRow.getTransaction().getConfidence() != null) {
+                return walletDataRow.getTransaction().getConfidence();
             } else {
-                return 0; // we do not know yet
-            }
-            int currentHeight = Integer.MIN_VALUE;
-            if (currentHead != null) {
-                currentHeight = currentHead.getHeight();
-            }
-            if (walletDataRow.getHeight() != -1) {
-              return currentHeight - walletDataRow.getHeight() + 1;
-            } else {
-                // do not know the height - probably a send that is not
-                // confirmed
-                return 0; // not confirmed yet
+                return  ConfidenceType.UNKNOWN;
             }
         }
         case 1: {

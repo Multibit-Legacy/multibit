@@ -56,6 +56,9 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.TransactionConfidence;
+import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
+
 public class ShowTransactionsPanel extends JPanel implements DataProvider, View {
 
     private static final Logger log = LoggerFactory.getLogger(ShowTransactionsPanel.class);
@@ -112,7 +115,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         table.setBorder(BorderFactory.createEmptyBorder());
         table.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         table.setRowHeight(getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight());
-        
+
         // use status icons
         table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
 
@@ -202,7 +205,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     public Data getData() {
         return data;
     }
-   
+
     class ImageRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 154545L;
 
@@ -221,79 +224,59 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         ImageIcon rtlProgress4Icon = ImageLoader.createImageIcon(RTL_PROGRESS_4_ICON_FILE);
         ImageIcon rtlProgress5Icon = ImageLoader.createImageIcon(RTL_PROGRESS_5_ICON_FILE);
 
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-                int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
             label.setHorizontalAlignment(SwingConstants.CENTER);
             label.setOpaque(true);
 
-            int numberOfBlocksEmbedded = (Integer) value;
-            if (numberOfBlocksEmbedded < 0) {
-                numberOfBlocksEmbedded = 0;
-            }
-            if (numberOfBlocksEmbedded > 6) {
-                numberOfBlocksEmbedded = 6;
-            }
+            TransactionConfidence confidence = (TransactionConfidence) value;
 
-            boolean isLeftToRight = ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight();
-            switch (numberOfBlocksEmbedded) {
-            case 0: {
+            ConfidenceType confidenceType = null;
+            if (confidence != null) {
+                confidenceType = confidence.getConfidenceType();
+            }
+            if (confidenceType == null) {
+                confidenceType = ConfidenceType.UNKNOWN;
+            }
+            switch (confidenceType) {
+            case UNKNOWN: {
+                label.setText("?");
+                // label.setIcon(progress0Icon);
+                // label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.notConfirmed"));
+                break;
+            }
+            case BUILDING: {
+                int numberOfBlocksEmbedded = confidence.getDepthInBlocks(controller.getMultiBitService().getChain());
+                ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded);
+                label.setIcon(buildingIcon);
+                if (numberOfBlocksEmbedded >= 6) {
+                    label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.isConfirmed"));
+                } else {
+                    label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
+                }
+                break;
+            }
+            case NOT_SEEN_IN_CHAIN: {
                 label.setIcon(progress0Icon);
                 label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.notConfirmed"));
+
+                // label.setText("NSIC");
                 break;
             }
-            case 1: {
-                if (isLeftToRight) {
-                    label.setIcon(progress1Icon);
-                } else {
-                    label.setIcon(rtlProgress1Icon);
-                }
-                label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
-                break;
-            }
-            case 2: {
-                if (isLeftToRight) {
-                    label.setIcon(progress2Icon);
-                } else {
-                    label.setIcon(rtlProgress2Icon);
-                }
-                label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
-                break;
-            }
-            case 3: {
-                if (isLeftToRight) {
-                    label.setIcon(progress3Icon);
-                } else {
-                    label.setIcon(rtlProgress3Icon);
-                }
-                label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
-                break;
-            }
-            case 4: {
-                if (isLeftToRight) {
-                    label.setIcon(progress4Icon);
-                } else {
-                    label.setIcon(rtlProgress4Icon);
-                }
-                label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
-                break;
-            }
-            case 5: {
-                if (isLeftToRight) {
-                    label.setIcon(progress5Icon);
-                } else {
-                    label.setIcon(rtlProgress5Icon);
-                }
-                label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
-                break;
-            }
-            case 6: {
-                label.setIcon(tickIcon);
-                label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.isConfirmed"));
-                break;
-            }
-            default:
+            case NOT_IN_BEST_CHAIN: {
                 label.setIcon(progress0Icon);
                 label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.notConfirmed"));
+                // label.setText("NSIBC");
+                break;
+            }
+            case OVERRIDDEN_BY_DOUBLE_SPEND: {
+                label.setText("DS");
+                break;
+            }
+            default: {
+                label.setText("?");
+                break;
+            }
             }
 
             if (!label.getBackground().equals(table.getSelectionBackground())) {
@@ -302,6 +285,63 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             }
             return label;
         }
+
+        private ImageIcon getBuildingIcon(int numberOfBlocksEmbedded) {
+            if (numberOfBlocksEmbedded < 0) {
+                numberOfBlocksEmbedded = 0;
+            }
+            if (numberOfBlocksEmbedded > 6) {
+                numberOfBlocksEmbedded = 6;
+            }
+
+            boolean isLeftToRight = ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight();
+
+            switch (numberOfBlocksEmbedded) {
+            case 0: {
+                return progress0Icon;
+            }
+            case 1: {
+                if (isLeftToRight) {
+                    return progress1Icon;
+                } else {
+                    return rtlProgress1Icon;
+                }
+            }
+            case 2: {
+                if (isLeftToRight) {
+                    return progress2Icon;
+                } else {
+                    return rtlProgress2Icon;
+                }
+            }
+            case 3: {
+                if (isLeftToRight) {
+                    return progress3Icon;
+                } else {
+                    return rtlProgress3Icon;
+                }
+            }
+            case 4: {
+                if (isLeftToRight) {
+                    return progress4Icon;
+                } else {
+                    return rtlProgress4Icon;
+                }
+            }
+            case 5: {
+                if (isLeftToRight) {
+                    return progress5Icon;
+                } else {
+                    return rtlProgress5Icon;
+                }
+            }
+            case 6: {
+                return tickIcon;
+            }
+            default:
+                return progress0Icon;
+            }
+        }
     }
 
     class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
@@ -309,8 +349,8 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
         MultiBitLabel label = new MultiBitLabel("", controller);
 
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-                int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
             label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
@@ -330,8 +370,8 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         MultiBitLabel label = new MultiBitLabel("", controller);
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-                int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
             label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
@@ -368,8 +408,8 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
         MultiBitLabel label = new MultiBitLabel("", controller);
 
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-                int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
             label.setHorizontalAlignment(SwingConstants.LEADING);
             label.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
             label.setOpaque(true);

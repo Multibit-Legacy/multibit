@@ -39,8 +39,7 @@ public class MultiBitModel {
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitModel.class);
 
-    // constants used in the multibit.properties and in data provider data
-    // payloads
+    // constants used in the multibit.properties and in data provider data payloads
 
     // MultiBit start up
     public static final String TEST_OR_PRODUCTION_NETWORK = "testOrProductionNetwork";
@@ -385,10 +384,6 @@ public class MultiBitModel {
 
                 }
 
-                public void onPendingCoinsReceived(Wallet wallet, Transaction transaction) {
-                    controller.onPendingCoinsReceived(wallet, transaction);
-                }
-
                 @Override
                 public void onReorganize(Wallet wallet) {
                     controller.onReorganise(wallet);
@@ -667,28 +662,28 @@ public class MultiBitModel {
      * @return
      */
     private int workOutHeight(Transaction transaction) {
-        Collection<Sha256Hash> appearsIn = transaction.getAppearsInHashes();
-        if (appearsIn != null) {
-            if (!appearsIn.isEmpty()) {
-                Iterator<Sha256Hash> iterator = appearsIn.iterator();
-                // just take the first i.e. ignore impact of side chains
-                if (iterator.hasNext()) {
-                    Sha256Hash appearsInHash = iterator.next();
-                    try {
-                        if (controller != null && controller.getMultiBitService() != null && controller.getMultiBitService().getBlockStore() != null) {
-                            StoredBlock appearsInStoredBlock = controller.getMultiBitService().getBlockStore().get(appearsInHash);
-                            if (appearsInStoredBlock != null) {
-                                return appearsInStoredBlock.getHeight();
-                            }
-                        }
-                    } catch (BlockStoreException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        }
+//        Collection<Sha256Hash> appearsIn = transaction.getAppearsInHashes();
+//        if (appearsIn != null) {
+//            if (!appearsIn.isEmpty()) {
+//                Iterator<Sha256Hash> iterator = appearsIn.iterator();
+//                // just take the first i.e. ignore impact of side chains
+//                if (iterator.hasNext()) {
+//                    Sha256Hash appearsInHash = iterator.next();
+//                    try {
+//                        if (controller != null && controller.getMultiBitService() != null && controller.getMultiBitService().getBlockStore() != null) {
+//                            StoredBlock appearsInStoredBlock = controller.getMultiBitService().getBlockStore().get(appearsInHash);
+//                            if (appearsInStoredBlock != null) {
+//                                return appearsInStoredBlock.getHeight();
+//                            }
+//                        }
+//                    } catch (BlockStoreException e) {
+//                        // TODO Auto-generated catch block
+//                        e.printStackTrace();
+//                    }
+//
+//                }
+//            }
+//        }
         return -1; // -1 = we do not know
     }
 

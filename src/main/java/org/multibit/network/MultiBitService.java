@@ -40,7 +40,6 @@ import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerAddress;
-import com.google.bitcoin.core.PeerEventListener;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
@@ -308,7 +307,7 @@ public class MultiBitService {
         // time to go
 
         if (dateToReplayFrom == null) {
-            // create empty new block chain
+            // create empty new block store
             blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), true);
 
             log.debug("Creating new blockStore - need to redownload from Genesis block");
@@ -316,19 +315,35 @@ public class MultiBitService {
 
             // TODO Peers need to be updated with the new block chain
         } else {
-            StoredBlock storedBlock = blockChain.getChainHead();
+            StoredBlock storedBlock = blockStore.getChainHead();
 
+            assert storedBlock != null;
+            
             boolean haveGoneBackInTimeEnough = false;
             int numberOfBlocksGoneBackward = 0;
 
             while (!haveGoneBackInTimeEnough) {
+                if (storedBlock == null) {
+                    // null result of previous get previous - will have to stop
+                    break;
+                }
                 Block header = storedBlock.getHeader();
+                if (header == null) {
+                   log.debug("No header for stored block " + storedBlock.getHeight());
+                   break;
+                }
+                
                 long headerTimeInSeconds = header.getTimeSeconds();
                 if (headerTimeInSeconds < (dateToReplayFrom.getTime() / NUMBER_OF_MILLISECOND_IN_A_SECOND)) {
                     haveGoneBackInTimeEnough = true;
                 } else {
                     try {
+                        StoredBlock originalBlock = storedBlock;
                         storedBlock = storedBlock.getPrev(blockStore);
+                        if (storedBlock == null) {
+                            log.debug("Could not navigate backwards form storedBlock " + originalBlock.getHeight());
+                            break;
+                        }
                         numberOfBlocksGoneBackward++;
                     } catch (BlockStoreException e) {
                         e.printStackTrace();
