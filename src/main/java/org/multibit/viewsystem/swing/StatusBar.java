@@ -98,7 +98,7 @@ public class StatusBar extends JComponent {
     private MultiBitLabel statusLabel;
     private boolean isOnline;
 
-    public static final long TIMER_REPEAT_TIME = 4000; // millisecond
+    public static final long TIMER_REPEAT_TIME = 6000; // millisecond
     public static final int NUMBER_OF_REPEATS = 15;
 
     private Timer statusClearTimer;
