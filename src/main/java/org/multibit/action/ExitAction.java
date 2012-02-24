@@ -78,10 +78,10 @@ public class ExitAction implements Action {
         log.debug("Shutting down Bitcoin URI checker ...");
         ApplicationInstanceManager.shutdownSocket();
 
-        // for some odd reason this helps shutdown
-//        if (mainFrame != null) {
-//            mainFrame.setBounds(mainFrame.getBounds().x, mainFrame.getBounds().y , 100, 100);
-//        }
+        // get rid of main display
+        if (mainFrame != null) {
+            mainFrame.setVisible(false);
+        }
         
         if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
             log.debug("Closing Bitcoin network connection...");
@@ -92,6 +92,7 @@ public class ExitAction implements Action {
         if (mainFrame != null) {
             mainFrame.dispose();
         }
+        
         System.exit(0);
     }
 }
