@@ -79,7 +79,7 @@ public class MultiBitDownloadListener extends DownloadListener {
                                         .format(date) });
 
                 // when busy occasionally the localiser fails to localise
-                if (!downloadStatusText.startsWith("multiBitDownloadListener")) {
+                if (!(downloadStatusText.indexOf("multiBitDownloadListener") > -1)) {
                     controller.updateStatusLabel(downloadStatusText);
                 }
             }
@@ -97,17 +97,19 @@ public class MultiBitDownloadListener extends DownloadListener {
         if (blocks == 0) {
             doneDownload();
         } else {
-            String startDownloadText;
-            if (blocks <= CRITERIA_LARGE_NUMBER_OF_BLOCKS) {
-                startDownloadText = controller.getLocaliser().getString("multiBitDownloadListener.startDownloadTextShort",
-                        new Object[] { new Integer(blocks) });
-            } else {
-                startDownloadText = controller.getLocaliser().getString("multiBitDownloadListener.startDownloadTextLong",
-                        new Object[] { new Integer(blocks) });
-            }
-            // when busy occasionally the localiser fails to localise
-            if (!startDownloadText.startsWith("multiBitDownloadListener")) {
-                controller.updateStatusLabel(startDownloadText);
+            synchronized (lockObject) {
+                String startDownloadText;
+                if (blocks <= CRITERIA_LARGE_NUMBER_OF_BLOCKS) {
+                    startDownloadText = controller.getLocaliser().getString("multiBitDownloadListener.startDownloadTextShort",
+                            new Object[] { new Integer(blocks) });
+                } else {
+                    startDownloadText = controller.getLocaliser().getString("multiBitDownloadListener.startDownloadTextLong",
+                            new Object[] { new Integer(blocks) });
+                }
+                // when busy occasionally the localiser fails to localise
+                if (!(startDownloadText.indexOf("multiBitDownloadListener") > -1)) {
+                    controller.updateStatusLabel(startDownloadText);
+                }
             }
             controller.fireBlockDownloaded();
         }
