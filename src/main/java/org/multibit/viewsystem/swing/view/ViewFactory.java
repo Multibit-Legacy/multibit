@@ -74,12 +74,7 @@ public class ViewFactory {
             viewToReturn = new HelpContentsPanel(controller, mainFrame);
             break;
         }
-        
-        case View.SAVE_WALLET_AS_VIEW: {
-            viewToReturn = new CreateNewWalletView(controller, controller.getLocaliser(), mainFrame);
-            break;
-        }
-        
+               
         case View.RECEIVE_BITCOIN_VIEW: {
             viewToReturn = new ReceiveBitcoinPanel(mainFrame, controller);
             break;

@@ -152,8 +152,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
                 try {
                     int initialViewInProperties = Integer.parseInt(viewString);
 
-                    // do not open on open wallet view or create wallet view -
-                    // confusing
+                    // do not open on open wallet view or create wallet view - these are obselete
                     if (View.OPEN_WALLET_VIEW != initialViewInProperties && View.SAVE_WALLET_AS_VIEW != initialViewInProperties) {
                         initialView = initialViewInProperties;
                     }
@@ -255,11 +254,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         case FORWARD_TO_PREVIOUS: {
             // go back to the previously displayed view
             nextView = previousView;
-            break;
-        }
-        case FORWARD_TO_CREATE_NEW_WALLET: {
-            // show the open wallet view
-            nextView = View.SAVE_WALLET_AS_VIEW;
             break;
         }
         case FORWARD_TO_RECEIVE_BITCOIN: {
@@ -784,7 +778,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     @Override
     public List<Message> getData(Peer peer, GetDataMessage m) {
-        // TODO Auto-generated method stub
         return null;
     }
 
