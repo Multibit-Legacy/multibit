@@ -142,8 +142,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
         viewSystems = new ArrayList<ViewSystem>();
 
-        // initialise everything to look at the stored opened view and previous
-        // view
+        // initialise everything to look at the stored opened view and previous view
         // if no properties passed in just initialise to the my wallets view
         int previousView = View.YOUR_WALLETS_VIEW;
         int initialView = View.YOUR_WALLETS_VIEW;
@@ -258,11 +257,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             nextView = previousView;
             break;
         }
-        case FORWARD_TO_OPEN_WALLET: {
-            // show the open wallet view
-            nextView = View.OPEN_WALLET_VIEW;
-            break;
-        }
         case FORWARD_TO_CREATE_NEW_WALLET: {
             // show the open wallet view
             nextView = View.SAVE_WALLET_AS_VIEW;
@@ -293,7 +287,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             nextView = View.HELP_CONTENTS_VIEW;
             break;
         }
-
+        
         case FORWARD_TO_PREFERENCES: {
             // show the preferences view
             nextView = View.PREFERENCES_VIEW;
@@ -465,7 +459,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      * 
      * @return The model data
      */
-    public PerWalletModelData addWalletFromFilename(String walletFilename) {
+    public PerWalletModelData addWalletFromFilename(String walletFilename) throws IOException {
         PerWalletModelData perWalletModelDataToReturn = null;
         if (multiBitService != null) {
             perWalletModelDataToReturn = multiBitService.addWalletFromFilename(walletFilename);

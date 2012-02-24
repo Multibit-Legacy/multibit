@@ -131,7 +131,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         
         String grabFocus = controller.getModel().getUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET);
         if (Boolean.TRUE.toString().equals(grabFocus)) {
-            this.grabFocusByWalletFilename(activeWalletFilename);
+            grabFocusByWalletFilename(activeWalletFilename);
         }
         controller.getModel().setUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "false");
         invalidate();
@@ -291,7 +291,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
 
         headerPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 
-        OpenWalletAction openWalletAction = new OpenWalletAction(controller, null);
+        OpenWalletAction openWalletAction = new OpenWalletAction(controller, null, mainFrame);
         MultiBitButton openWalletButton = new MultiBitButton(openWalletAction, controller);
         headerPanel.add(openWalletButton);
 
@@ -349,8 +349,13 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         return null;
     }
 
+    public void updateViewForNewWallet() {
+        initialised = false;
+        displayView();
+    }
+
     @Override
-    public void updateView() {
+    public void updateView() {       
         if (walletPanels != null) {
             for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
                 // make sure the totals displayed are correct

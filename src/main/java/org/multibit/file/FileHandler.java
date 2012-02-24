@@ -30,6 +30,7 @@ import java.nio.channels.FileChannel;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -43,7 +44,7 @@ import java.util.Properties;
  */
 public class FileHandler {
 
-    private Logger log = LoggerFactory.getLogger(FileHandler.class);
+    private static Logger log = LoggerFactory.getLogger(FileHandler.class);
 
     public static final String USER_PROPERTIES_FILE_NAME = "multibit.properties";
     public static final String USER_PROPERTIES_HEADER_TEXT = "multibit";
@@ -93,9 +94,9 @@ public class FileHandler {
     public void savePerWalletModelData(PerWalletModelData perWalletModelData, boolean forceWrite) {
         // WARNING: This wallet.toString() puts private keys in the log !
 
-        log.info("Wallet details for wallet file = " +
-        perWalletModelData.getWalletFilename() + "\n"
-         + perWalletModelData.getWallet().toString());
+        //log.info("Wallet details for wallet file = " +
+        //perWalletModelData.getWalletFilename() + "\n"
+        // + perWalletModelData.getWallet().toString());
 
         try {
             if (perWalletModelData == null) {
@@ -267,14 +268,33 @@ public class FileHandler {
         walletInfo.put(MultiBitModel.WALLET_INFO_FILE_SIZE, "" + walletInfoFileSize);
         walletInfo.put(MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED, "" + walletInfoFileLastModified);
 
-        // TODO Fix this
+        // TODO Fix this - create a toString()
         log.debug("Wallet filename " + walletFilename + " , " + MultiBitModel.WALLET_FILE_SIZE + " " + walletFileSize + " ,"
                 + MultiBitModel.WALLET_FILE_LAST_MODIFIED + " " + walletFileLastModified + " ,"
                 + MultiBitModel.WALLET_INFO_FILE_SIZE + " " + walletInfoFileSize + " ,"
                 + MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED + " " + walletInfoFileLastModified);
     }
 
-    public void writeUserPreferences() {
+    public static void writeUserPreferences(MultiBitController controller) {
+        // save all the wallets' filenames in the user preferences
+        if (controller.getModel().getPerWalletModelDataList() != null) {
+            List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+
+            int numberOfWallets = perWalletModelDataList.size();
+            controller.getModel().setUserPreference(MultiBitModel.NUMBER_OF_WALLETS, numberOfWallets + "");
+            controller.getModel().setUserPreference(MultiBitModel.ACTIVE_WALLET_FILENAME,
+                    controller.getModel().getActiveWalletFilename());
+            if (numberOfWallets > 0) {
+                for (int i = 1; i <= numberOfWallets; i++) {
+                    PerWalletModelData perWalletModelData = perWalletModelDataList.get(i - 1);
+                    if (perWalletModelData.getWalletFilename() != null) {
+                        controller.getModel().setUserPreference(MultiBitModel.WALLET_FILENAME_PREFIX + i,
+                                perWalletModelData.getWalletFilename());
+                    }
+                }
+            }
+        }
+        
         // write the user preference properties
         Properties userPreferences = controller.getModel().getAllUserPreferences();
         OutputStream outputStream;
@@ -296,6 +316,10 @@ public class FileHandler {
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
+    }
+    
+    public void writeUserPreferences() {
+        writeUserPreferences(controller);
     }
 
     public static Properties loadUserPreferences(ApplicationDataDirectoryLocator applicationDataDirectoryLocator) {

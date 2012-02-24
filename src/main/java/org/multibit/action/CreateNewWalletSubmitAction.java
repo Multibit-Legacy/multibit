@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.file.FileHandler;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
@@ -98,7 +99,10 @@ public class CreateNewWalletSubmitAction implements Action {
                             controller.getModel().setActiveWalletByFilename(newWalletFilename);
 
                             controller.getModel().setUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "true");
-
+                                                    
+                            // save the user properties to disk
+                            FileHandler.writeUserPreferences(controller);
+    
                             controller.fireNewWalletCreated();
                         }
                     } catch (IOException e) {

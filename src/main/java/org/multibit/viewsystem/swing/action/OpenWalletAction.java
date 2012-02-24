@@ -15,30 +15,48 @@
  */
 package org.multibit.viewsystem.swing.action;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.SwingWorker;
 
-import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
+import org.multibit.file.FileHandler;
+import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.WalletFileFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This {@link Action} opens a wallet from a file
  */
 public class OpenWalletAction extends AbstractAction {
 
+    public Logger log = LoggerFactory.getLogger(MultiBitFrame.class.getName());
+
     private static final long serialVersionUID = 1913592460523457705L;
 
     private MultiBitController controller;
-    
+
+    private MultiBitFrame mainFrame;
+
+    private JFileChooser fileChooser;
+
+    private String selectedWalletFilename;
+
     /**
      * Creates a new {@link OpenWalletAction}.
      */
-    public OpenWalletAction(MultiBitController controller, ImageIcon icon) {
+    public OpenWalletAction(MultiBitController controller, ImageIcon icon, MultiBitFrame mainFrame) {
         super(controller.getLocaliser().getString("openWalletAction.text"), icon);
         this.controller = controller;
+        this.mainFrame = mainFrame;
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
 
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("openWalletAction.tooltip"));
@@ -46,9 +64,97 @@ public class OpenWalletAction extends AbstractAction {
     }
 
     /**
-     * froward to open wallet view
+     * show open file chooser and load wallet
      */
-    public void actionPerformed(ActionEvent e) { 
-        controller.setActionForwardToChild(ActionForward.FORWARD_TO_OPEN_WALLET);      
+    public void actionPerformed(ActionEvent e) {
+        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        setEnabled(false);
+
+        try {
+            if (fileChooser == null) {
+                fileChooser = new JFileChooser();
+                fileChooser.setLocale(controller.getLocaliser().getLocale());
+
+                if (controller.getModel() != null && controller.getModel().getActiveWalletFilename() != null) {
+                    fileChooser.setCurrentDirectory(new File(controller.getModel().getActiveWalletFilename()));
+                }
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                fileChooser.setFileFilter(new WalletFileFilter(controller));
+            }
+
+            int returnVal = fileChooser.showOpenDialog(mainFrame);
+
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                if (file != null) {
+                    if (!file.isDirectory()) {
+                        selectedWalletFilename = file.getAbsolutePath();
+                        openWalletInBackground(selectedWalletFilename);
+                    }
+                } else {
+                    selectedWalletFilename = null;
+                    fileChooser = null;
+                }
+            } else {
+                selectedWalletFilename = null;
+                fileChooser = null;
+            }
+        } finally {
+            setEnabled(true);
+            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        }
+    }
+
+    /**
+     * open a wallet in a background Swing worker thread
+     * @param selectedWalletFilename Filename of wallet to open
+     */
+    private void openWalletInBackground(String selectedWalletFilename) {
+        final String selectedWalletFilenameFinal = selectedWalletFilename;
+
+        SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
+            
+            private String message = null;
+            
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                try {
+                    log.debug("Opening wallet '" + selectedWalletFilenameFinal + "' in background swing worker");
+
+                    controller.addWalletFromFilename(selectedWalletFilenameFinal);
+                    controller.getModel().setActiveWalletByFilename(selectedWalletFilenameFinal);
+
+                    message = controller.getLocaliser().getString("openWalletAction.walletOpenedSuccessfully", new Object[]{selectedWalletFilenameFinal});
+ 
+                    // save the user properties to disk
+                    FileHandler.writeUserPreferences(controller);
+                    log.debug("User preferences with new wallet written successfully");
+
+                    return Boolean.TRUE;
+                } catch (IOException e) {
+                    message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
+                    return Boolean.FALSE;
+                }
+            }
+            
+            protected void done() {
+                try {
+                    Boolean wasSuccessful = get();
+                    if (wasSuccessful) {
+                        log.debug(message);
+                        controller.updateStatusLabel(message);  
+                        controller.fireNewWalletCreated();
+                    } else {
+                        log.error(message);
+                        controller.updateStatusLabel(message);
+                    }
+                } catch (Exception e) {
+                    // not really used but caught so that SwingWorker shuts down cleanly
+                    log.error(e.getClass() + " " + e.getMessage());
+                }         
+            }
+        };
+        log.debug("Executing open of wallet '" + selectedWalletFilenameFinal + "' in background swing worker");
+        worker.execute();
     }
 }

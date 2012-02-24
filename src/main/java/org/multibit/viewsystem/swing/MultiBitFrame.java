@@ -485,7 +485,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // open wallet action
         OpenWalletAction openWalletAction = new OpenWalletAction(controller,
-                ImageLoader.createImageIcon(ImageLoader.OPEN_WALLET_ICON_FILE));
+                ImageLoader.createImageIcon(ImageLoader.OPEN_WALLET_ICON_FILE), this);
         JMenuItem menuItem = new JMenuItem(openWalletAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -685,19 +685,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         setTitle(localiser.getString("multiBitFrame.title"));
 
-        invalidate();
-        validate();
-        repaint();
-
         // recreate the views
-        View yourWalletsView = null;
+        YourWalletsPanel yourWalletsView = null;
         if (!clearCache && viewFactory != null) {
-            yourWalletsView = viewFactory.getView(View.YOUR_WALLETS_VIEW);
+            yourWalletsView = (YourWalletsPanel) viewFactory.getView(View.YOUR_WALLETS_VIEW);
         }
         viewFactory = new ViewFactory(controller, this);
         if (!clearCache && yourWalletsView != null) {
             viewFactory.addView(View.YOUR_WALLETS_VIEW, yourWalletsView);
         }
+
+        invalidate();
+        validate();
+        repaint();
     }
 
     public void setWalletFilename(String walletFilename) {
@@ -747,13 +747,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     /**
-     * display next view - this may be on another thread hence the
-     * SwingUtilities.invokeLater
+     * display next view on Swing event dispatch thread
      */
     public void displayView(int viewToDisplay) {
+        // open wallet view obselete - show Your wallets
+        if (View.OPEN_WALLET_VIEW == viewToDisplay) {
+            viewToDisplay = View.OPEN_WALLET_VIEW;
+        }
         currentView = viewToDisplay;
-
-        updateStatusLabel("");
 
         final View nextViewFinal = viewFactory.getView(viewToDisplay);
         final MultiBitFrame thisFrame = this;
@@ -766,34 +767,36 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 sendBitcoinPanel.setBorder(normalBorder);
                 receiveBitcoinPanel.setBorder(normalBorder);
 
-                if (nextViewFinal instanceof YourWalletsPanel) {
-                    if (yourWalletsPanel != null) {
-                        yourWalletsPanel.setBorder(underlineBorder);
-                    }
-                } else if (nextViewFinal instanceof SendBitcoinPanel) {
-                    if (sendBitcoinPanel != null) {
-                        sendBitcoinPanel.setBorder(underlineBorder);
-                    }
-                } else {
-                    if (nextViewFinal instanceof ReceiveBitcoinPanel) {
-                        if (receiveBitcoinPanel != null) {
-                            receiveBitcoinPanel.setBorder(underlineBorder);
+                if (nextViewFinal != null) {
+                    if (nextViewFinal instanceof YourWalletsPanel) {
+                        if (yourWalletsPanel != null) {
+                            yourWalletsPanel.setBorder(underlineBorder);
+                        }
+                    } else if (nextViewFinal instanceof SendBitcoinPanel) {
+                        if (sendBitcoinPanel != null) {
+                            sendBitcoinPanel.setBorder(underlineBorder);
+                        }
+                    } else {
+                        if (nextViewFinal instanceof ReceiveBitcoinPanel) {
+                            if (receiveBitcoinPanel != null) {
+                                receiveBitcoinPanel.setBorder(underlineBorder);
+                            }
                         }
                     }
-                }
 
-                if (nextViewFinal instanceof JPanel) {
-                    viewPanel.removeAll();
-                    viewPanel.setBorder(BorderFactory.createEmptyBorder());
-                    viewPanel.add((JPanel) nextViewFinal, BorderLayout.CENTER);
-                }
+                    if (nextViewFinal instanceof JPanel) {
+                        viewPanel.removeAll();
+                        viewPanel.setBorder(BorderFactory.createEmptyBorder());
+                        viewPanel.add((JPanel) nextViewFinal, BorderLayout.CENTER);
+                    }
 
-                nextViewFinal.displayView();
+                    nextViewFinal.displayView();
 
-                if (nextViewFinal instanceof JPanel) {
-                    viewPanel.invalidate();
-                    viewPanel.validate();
-                    viewPanel.repaint();
+                    if (nextViewFinal instanceof JPanel) {
+                        viewPanel.invalidate();
+                        viewPanel.validate();
+                        viewPanel.repaint();
+                    }
                 }
 
                 thisFrame.setCursor(Cursor.DEFAULT_CURSOR);
@@ -851,8 +854,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     private void processNewCoin(Wallet wallet, Transaction transaction) {
-        // loop through all the wallets, updating them as required with the new
-        // transaction
+        // loop through all the wallets, updating them as required with the new transaction
         try {
             java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
@@ -1215,17 +1217,26 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     @Override
+    /**
+     * a new wallet has been created or opened
+     * (this may be called from a SwingWorker thread 
+     */
     public void newWalletCreated() {
-        activeWalletPanel.remove(activeWalletComboBox);
-        activeWalletComboBox = createActiveWalletComboBox();
-        activeWalletComboBox.setFont(yourWalletsButton.getFont());
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                activeWalletPanel.remove(activeWalletComboBox);
+                activeWalletComboBox = createActiveWalletComboBox();
+                activeWalletComboBox.setFont(yourWalletsButton.getFont());
 
-        ComboBoxRenderer renderer = new ComboBoxRenderer();
-        renderer.setMinimumSize(new Dimension(200, 50));
-        activeWalletComboBox.setRenderer(renderer);
-        activeWalletPanel.add(activeWalletComboBox, BorderLayout.CENTER);
+                ComboBoxRenderer renderer = new ComboBoxRenderer();
+                renderer.setMinimumSize(new Dimension(200, 50));
+                activeWalletComboBox.setRenderer(renderer);
+                activeWalletPanel.add(activeWalletComboBox, BorderLayout.CENTER);
 
-        recreateAllViews(true);
+                recreateAllViews(true);
+                displayView(currentView);
+            }
+        });
     }
 
     public void bringToFront() {

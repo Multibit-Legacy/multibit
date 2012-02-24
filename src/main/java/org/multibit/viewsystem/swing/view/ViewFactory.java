@@ -21,7 +21,6 @@ import java.util.Map;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.action.ShowImportPrivateKeysAction;
 import org.multibit.viewsystem.swing.view.yourwallets.YourWalletsPanel;
 
 /**
@@ -73,11 +72,6 @@ public class ViewFactory {
 
         case View.HELP_CONTENTS_VIEW: {
             viewToReturn = new HelpContentsPanel(controller, mainFrame);
-            break;
-        }
-
-        case View.OPEN_WALLET_VIEW: {
-            viewToReturn = new OpenWalletView(controller, controller.getLocaliser(), mainFrame);
             break;
         }
         

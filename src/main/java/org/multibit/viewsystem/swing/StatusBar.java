@@ -33,14 +33,33 @@ package org.multibit.viewsystem.swing;
  * limitations under the License.
  */
 
-import org.multibit.controller.MultiBitController;
-import org.multibit.viewsystem.swing.view.components.BlinkLabel;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.LayoutManager2;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -48,14 +67,13 @@ import javax.swing.plaf.UIResource;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.View;
 import javax.swing.text.html.HTMLDocument;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Locale;
+
+import org.multibit.controller.MultiBitController;
+import org.multibit.viewsystem.swing.view.components.BlinkLabel;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * StatusBar. <BR>
@@ -63,9 +81,8 @@ import java.util.Locale;
  * 
  * In MultiBit the StatusBar is responsible for :
  * 
- * 1) Online/ Connecting status label 2) Status messages - multiple status
- * messages are remembered and can be accessed by the user using a JCombo drop
- * down
+ * 1) Online/ Connecting status label 
+ * 2) Status messages - these are cleared after a period of time
  */
 public class StatusBar extends JComponent {
 
@@ -81,9 +98,10 @@ public class StatusBar extends JComponent {
     private MultiBitLabel statusLabel;
     private boolean isOnline;
 
-    private static final int MINIMUM_STATUS_LABEL_DISPLAY_TIME = 800; // millisecond
+    public static final long TIMER_REPEAT_TIME = 4000; // millisecond
+    public static final int NUMBER_OF_REPEATS = 15;
 
-    private long lastStatusUpdateTime = 0;
+    private Timer statusClearTimer;
 
     /**
      * The key used to identified the default zone
@@ -146,6 +164,9 @@ public class StatusBar extends JComponent {
         addZone("online", onlineLabel, "" + onlineWidth, "left");
         addZone("network", statusLabel, "*", "");
         addZone("filler2", new JPanel(), "0", "right");
+
+        statusClearTimer = new java.util.Timer();
+        statusClearTimer.schedule(new StatusClearTask(statusLabel), TIMER_REPEAT_TIME, TIMER_REPEAT_TIME);
     }
 
     /**
@@ -639,6 +660,47 @@ class PercentLayout implements LayoutManager2 {
         }
     }
 
+}
+
+class StatusClearTask extends TimerTask {
+
+    JLabel statusLabel;
+    private String previousStatusLabelText = null;
+    private int previousLabelRepeats = 0;
+
+    StatusClearTask(JLabel statusLabel) {
+        this.statusLabel = statusLabel;
+    }
+
+    @Override
+    public void run() {
+        String currentStatusLabelText = statusLabel.getText();
+
+        boolean hasReset = false;
+
+        if (previousLabelRepeats > StatusBar.NUMBER_OF_REPEATS) {
+            if (currentStatusLabelText != null && !"".equals(currentStatusLabelText)
+                    && currentStatusLabelText.equals(previousStatusLabelText)) {
+                // clear label
+                statusLabel.setText("");
+                previousStatusLabelText = "";
+                previousLabelRepeats = 0;
+                hasReset = true;
+            }
+        }
+        if (currentStatusLabelText != null && !currentStatusLabelText.equals(previousStatusLabelText)) {
+            // different - reset
+            previousStatusLabelText = currentStatusLabelText;
+            previousLabelRepeats = 0;
+        } else {
+            if (currentStatusLabelText != null && currentStatusLabelText.equals(previousStatusLabelText)) {
+                if (!hasReset) {
+                    // label is the same as before
+                    previousLabelRepeats++;
+                }
+            }
+        }
+    }
 }
 
 /**

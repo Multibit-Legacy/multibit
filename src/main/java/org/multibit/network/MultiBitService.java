@@ -73,7 +73,6 @@ public class MultiBitService {
     private static final Logger log = LoggerFactory.getLogger(MultiBitService.class);
 
     private static final int NUMBER_OF_MILLISECOND_IN_A_SECOND = 1000;
-    @SuppressWarnings("deprecation")
     private static final int MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN = 6;
 
     public static final String MULTIBIT_PREFIX = "multibit";
@@ -208,7 +207,7 @@ public class MultiBitService {
      * @param walletFilename
      * @return perWalletModelData
      */
-    public PerWalletModelData addWalletFromFilename(String walletFilename) {
+    public PerWalletModelData addWalletFromFilename(String walletFilename) throws IOException {
         PerWalletModelData perWalletModelDataToReturn = null;
 
         File walletFile = null;
@@ -220,15 +219,12 @@ public class MultiBitService {
             if (walletFile.isDirectory()) {
                 walletFileIsADirectory = true;
             } else {
-                try {
-                    perWalletModelDataToReturn = controller.getFileHandler().loadFromFile(walletFile);
-                    if (perWalletModelDataToReturn != null) {
-                        wallet = perWalletModelDataToReturn.getWallet();
-                    }
-                } catch (IOException ioe) {
-                    // TODO need to report back to user or will create a new
-                    // wallet
+
+                perWalletModelDataToReturn = controller.getFileHandler().loadFromFile(walletFile);
+                if (perWalletModelDataToReturn != null) {
+                    wallet = perWalletModelDataToReturn.getWallet();
                 }
+
             }
         }
 
@@ -245,16 +241,12 @@ public class MultiBitService {
 
             if (walletFile.exists()) {
                 // wallet file exists with default name
-                try {
-                    perWalletModelDataToReturn = controller.getFileHandler().loadFromFile(walletFile);
-                    if (perWalletModelDataToReturn != null) {
-                        wallet = perWalletModelDataToReturn.getWallet();
-                    }
-
-                    newWalletCreated = true;
-                } catch (IOException e) {
-                    e.printStackTrace();
+                perWalletModelDataToReturn = controller.getFileHandler().loadFromFile(walletFile);
+                if (perWalletModelDataToReturn != null) {
+                    wallet = perWalletModelDataToReturn.getWallet();
                 }
+
+                newWalletCreated = true;
             } else {
                 // create a brand new wallet
                 wallet = new Wallet(networkParameters);
@@ -304,9 +296,9 @@ public class MultiBitService {
             // add wallet to PeerGroup
             peerGroup.addWallet(wallet);
 
-            if (newWalletCreated) {
-                controller.fireNewWalletCreated();
-            }
+            // if (newWalletCreated) {
+            // controller.fireNewWalletCreated();
+            // }
         }
 
         return perWalletModelDataToReturn;
@@ -331,7 +323,8 @@ public class MultiBitService {
             log.debug("Creating new blockStore - need to redownload from Genesis block");
             blockChain = new BlockChain(networkParameters, (BlockStore) blockStore);
 
-            // TODO PeerGroup and Peers need to be updated with the new block chain
+            // TODO PeerGroup and Peers need to be updated with the new block
+            // chain
         } else {
             StoredBlock storedBlock = blockStore.getChainHead();
 
@@ -371,7 +364,7 @@ public class MultiBitService {
                     }
                 }
             }
-
+            
             // in case the chain head was on an alternate fork go back more
             // blocks to ensure
             // back on the main chain
