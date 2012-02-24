@@ -18,8 +18,6 @@ package org.multibit.action;
 import java.util.Date;
 import java.util.Set;
 
-import javax.swing.SwingWorker;
-
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
@@ -37,6 +35,8 @@ import com.google.bitcoin.store.BlockStoreException;
  */
 public class ResetTransactionsSubmitAction implements Action {
     private MultiBitController controller;
+   
+    private static final int NUMBER_OF_MILLISECOND_IN_A_SECOND = 1000;
 
     public ResetTransactionsSubmitAction(MultiBitController controller) {
         this.controller = controller;
@@ -58,17 +58,17 @@ public class ResetTransactionsSubmitAction implements Action {
 
             Date earliestTransactionDate = new Date();
             boolean alreadyHaveEarliestTransactionDate = false;
-            String storedEarliestTransactionDate = activePerWalletModelData.getWalletInfo().getProperty(
-                    MultiBitModel.EARLIEST_TRANSACTION_DATE);
-            if (storedEarliestTransactionDate != null && !"".equals(storedEarliestTransactionDate)) {
-                // already have this date computed
-                try {
-                    earliestTransactionDate = new Date(Long.parseLong(storedEarliestTransactionDate));
-                    alreadyHaveEarliestTransactionDate = true;
-                } catch (NumberFormatException nfe) {
-                    // carry on - will work it out from scratch
-                }
-            }
+//            String storedEarliestTransactionDate = activePerWalletModelData.getWalletInfo().getProperty(
+//                    MultiBitModel.EARLIEST_TRANSACTION_DATE);
+//            if (storedEarliestTransactionDate != null && !"".equals(storedEarliestTransactionDate)) {
+//                // already have this date computed
+//                try {
+//                    earliestTransactionDate = new Date(Long.parseLong(storedEarliestTransactionDate));
+//                    alreadyHaveEarliestTransactionDate = true;
+//                } catch (NumberFormatException nfe) {
+//                    // carry on - will work it out from scratch
+//                }
+//            }
 
             // if do not have earliest date stored for wallet - work it out
             if (!alreadyHaveEarliestTransactionDate) {
@@ -88,14 +88,13 @@ public class ResetTransactionsSubmitAction implements Action {
                     }
                 }
 
-                // also look at the earliest key creation time
-                long earliestKeyCreationTime = activePerWalletModelData.getWallet().getEarliestKeyCreationTime();
+                // also look at the earliest key creation time - this is returned in seconds and is converted to milliseconds
+                long earliestKeyCreationTime = activePerWalletModelData.getWallet().getEarliestKeyCreationTime() * NUMBER_OF_MILLISECOND_IN_A_SECOND;
                 if (earliestKeyCreationTime != 0 && earliestKeyCreationTime < earliestTransactionDate.getTime()) {
                     earliestTransactionDate = new Date(earliestKeyCreationTime);
                 }
-                activePerWalletModelData.getWalletInfo().put(MultiBitModel.EARLIEST_TRANSACTION_DATE,
-                        "" + earliestTransactionDate.getTime());
-
+//                activePerWalletModelData.getWalletInfo().put(MultiBitModel.EARLIEST_TRANSACTION_DATE,
+//                        "" + earliestTransactionDate.getTime());
             }
 
             // remove the transactions from the wallet

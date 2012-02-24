@@ -42,11 +42,5 @@ public class MultiBitPeerGroup extends PeerGroup {
             multiBitDownloadListener = new MultiBitDownloadListener(controller);
         }
         startBlockChainDownload(multiBitDownloadListener);
-//        try {
-//            multiBitDownloadListener.await();
-//        } catch (InterruptedException e) {
-//            throw new IllegalStateException(e);
-//        }
     }
-
 }

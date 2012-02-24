@@ -20,9 +20,13 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.SimpleTimeZone;
 
 import javax.swing.SwingWorker;
 
@@ -69,7 +73,7 @@ public class MultiBitService {
     private static final Logger log = LoggerFactory.getLogger(MultiBitService.class);
 
     private static final int NUMBER_OF_MILLISECOND_IN_A_SECOND = 1000;
-
+    @SuppressWarnings("deprecation")
     private static final int MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN = 6;
 
     public static final String MULTIBIT_PREFIX = "multibit";
@@ -103,6 +107,8 @@ public class MultiBitService {
 
     private final NetworkParameters networkParameters;
 
+    private Date genesisBlockCreationDate;
+
     /**
      * 
      * @param useTestNet
@@ -112,6 +118,15 @@ public class MultiBitService {
      */
     public MultiBitService(boolean useTestNet, MultiBitController controller) {
         this(useTestNet, controller.getModel().getUserPreference(MultiBitModel.WALLET_FILENAME), controller);
+
+        java.text.SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        java.util.Calendar cal = Calendar.getInstance(new SimpleTimeZone(0, "GMT"));
+        format.setCalendar(cal);
+        try {
+            genesisBlockCreationDate = format.parse("2009-01-03 18:15:05");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -307,15 +322,16 @@ public class MultiBitService {
     public void replayBlockChain(Date dateToReplayFrom) throws BlockStoreException {
         // navigate backwards in the blockchain to work out how far back in
         // time to go
+        log.debug("Starting replay of blockchain from date = '" + dateToReplayFrom + "'");
 
-        if (dateToReplayFrom == null) {
+        if (dateToReplayFrom == null || genesisBlockCreationDate.after(dateToReplayFrom)) {
             // create empty new block store
             blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), true);
 
             log.debug("Creating new blockStore - need to redownload from Genesis block");
             blockChain = new BlockChain(networkParameters, (BlockStore) blockStore);
 
-            // TODO Peers need to be updated with the new block chain
+            // TODO PeerGroup and Peers need to be updated with the new block chain
         } else {
             StoredBlock storedBlock = blockStore.getChainHead();
 
@@ -340,11 +356,12 @@ public class MultiBitService {
                     haveGoneBackInTimeEnough = true;
                 } else {
                     try {
-                        StoredBlock originalBlock = storedBlock;
-                        storedBlock = storedBlock.getPrev(blockStore);
-                        if (storedBlock == null) {
-                            log.debug("Could not navigate backwards form storedBlock " + originalBlock.getHeight());
+                        StoredBlock previousBlock = storedBlock.getPrev(blockStore);
+                        if (previousBlock == null) {
+                            log.debug("Could not navigate backwards form storedBlock " + storedBlock.getHeight());
                             break;
+                        } else {
+                            storedBlock = previousBlock;
                         }
                         numberOfBlocksGoneBackward++;
                     } catch (BlockStoreException e) {
@@ -360,7 +377,13 @@ public class MultiBitService {
             // back on the main chain
             while (numberOfBlocksGoneBackward < MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN) {
                 try {
-                    storedBlock = storedBlock.getPrev(blockStore);
+                    StoredBlock previousBlock = storedBlock.getPrev(blockStore);
+                    if (previousBlock == null) {
+                        log.debug("Could not navigate backwards form storedBlock " + storedBlock.getHeight());
+                        break;
+                    } else {
+                        storedBlock = previousBlock;
+                    }
                     numberOfBlocksGoneBackward++;
                 } catch (BlockStoreException e) {
                     e.printStackTrace();

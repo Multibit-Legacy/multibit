@@ -128,7 +128,7 @@ public class MultiBitModel {
     public static final String MERCHANT_BULK_ADDRESSES_OUTPUT_FILENAME = "merchantBulkAddressesOutputFilename";
 
     // reset transactions
-    public static final String EARLIEST_TRANSACTION_DATE = "earliestTransactionDate";
+//    public static final String EARLIEST_TRANSACTION_DATE = "earliestTransactionDate";
 
     // user preference font
     public static final String FONT = "font";
