@@ -39,11 +39,15 @@ import com.google.bitcoin.core.DownloadListener;
  */
 public class MultiBitDownloadListener extends DownloadListener {
     private static final Logger log = LoggerFactory.getLogger(MultiBitDownloadListener.class);
-    
-    private static final double DONE_FOR_DOUBLES = 99.99;  // not quite 100 per cent to cater for rounding
+
+    private static final double DONE_FOR_DOUBLES = 99.99; // not quite 100 per
+                                                          // cent to cater for
+                                                          // rounding
     private static final int CRITERIA_LARGE_NUMBER_OF_BLOCKS = 1000;
-   
+
     MultiBitController controller;
+
+    private Object lockObject = new Object();
 
     public MultiBitDownloadListener(MultiBitController controller) {
         this.controller = controller;
@@ -60,19 +64,25 @@ public class MultiBitDownloadListener extends DownloadListener {
      *            the date of the last block downloaded
      */
     protected void progress(double pct, int blocksSoFar, Date date) {
-         if (pct > DONE_FOR_DOUBLES) {
+        if (pct > DONE_FOR_DOUBLES) {
             // we are done downloading
             doneDownload();
         } else {
             log.debug("Download - blocksSoFar = " + blocksSoFar);
-            String downloadStatusText = controller.getLocaliser().getString(
-                    "multiBitDownloadListener.startDownloadTextShort",
-                    new Object[] {new Integer(blocksSoFar)}) + " " +
-                    controller.getLocaliser().getString(
-                            "multiBitDownloadListener.blockDateText",
-                            new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM,
-                                    controller.getLocaliser().getLocale()).format(date) }) ;
-            controller.updateStatusLabel(downloadStatusText);
+            synchronized (lockObject) {
+                String downloadStatusText = controller.getLocaliser().getString("multiBitDownloadListener.startDownloadTextShort",
+                        new Object[] { new Integer(blocksSoFar) })
+                        + " "
+                        + controller.getLocaliser().getString(
+                                "multiBitDownloadListener.blockDateText",
+                                new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale())
+                                        .format(date) });
+
+                // when busy occasionally the localiser fails to localise
+                if (!downloadStatusText.startsWith("multiBitDownloadListener")) {
+                    controller.updateStatusLabel(downloadStatusText);
+                }
+            }
             controller.fireBlockDownloaded();
         }
     }
@@ -89,13 +99,16 @@ public class MultiBitDownloadListener extends DownloadListener {
         } else {
             String startDownloadText;
             if (blocks <= CRITERIA_LARGE_NUMBER_OF_BLOCKS) {
-                startDownloadText = controller.getLocaliser().getString(
-                        "multiBitDownloadListener.startDownloadTextShort", new Object[] { new Integer(blocks) });
+                startDownloadText = controller.getLocaliser().getString("multiBitDownloadListener.startDownloadTextShort",
+                        new Object[] { new Integer(blocks) });
             } else {
-                startDownloadText = controller.getLocaliser().getString(
-                        "multiBitDownloadListener.startDownloadTextLong", new Object[] { new Integer(blocks) });
+                startDownloadText = controller.getLocaliser().getString("multiBitDownloadListener.startDownloadTextLong",
+                        new Object[] { new Integer(blocks) });
             }
-            controller.updateStatusLabel(startDownloadText);
+            // when busy occasionally the localiser fails to localise
+            if (!startDownloadText.startsWith("multiBitDownloadListener")) {
+                controller.updateStatusLabel(startDownloadText);
+            }
             controller.fireBlockDownloaded();
         }
     }
@@ -104,8 +117,7 @@ public class MultiBitDownloadListener extends DownloadListener {
      * Called when we are done downloading the block chain.
      */
     protected void doneDownload() {
-        String downloadStatusText = controller.getLocaliser().getString(
-                "multiBitDownloadListener.doneDownloadText");
+        String downloadStatusText = controller.getLocaliser().getString("multiBitDownloadListener.doneDownloadText");
         controller.updateStatusLabel(downloadStatusText);
         controller.fireBlockDownloaded();
     }

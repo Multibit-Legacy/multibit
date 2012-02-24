@@ -846,12 +846,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             public void run() {
                 // update screen in case status bars have changed
                 thisFrame.fireDataChanged();
-//                viewPanel.invalidate();
-//                viewPanel.validate();
-//                viewPanel.repaint();
-//                thisFrame.invalidate();
-//                thisFrame.validate();
-//                thisFrame.repaint();
             }
         });
     }
