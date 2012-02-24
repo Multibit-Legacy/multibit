@@ -619,17 +619,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         // send the coins
         Transaction sendTransaction = multiBitService.sendCoins(perWalletModelData, sendAddressString, amount, fee);
         
-        // notify other wallets of the send (it might be a send to them)
-        List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
-        
-        if (perWalletModelDataList != null) {
-            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
-                if (!perWalletModelData.getWalletFilename().equals(loopPerWalletModelData.getWalletFilename())) {
-                    onCoinsReceived(loopPerWalletModelData.getWallet(), sendTransaction, null, null);
-                }
-            }
-        }
-        
         fireRecreateAllViews(false);
         // TODO Require better confirmation here
         if (sendTransaction == null) {

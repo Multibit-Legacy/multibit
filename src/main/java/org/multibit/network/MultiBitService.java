@@ -22,6 +22,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.SwingWorker;
 
@@ -41,6 +42,7 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.PeerGroup;
+import com.google.bitcoin.core.ProtocolException;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
@@ -318,7 +320,7 @@ public class MultiBitService {
             StoredBlock storedBlock = blockStore.getChainHead();
 
             assert storedBlock != null;
-            
+
             boolean haveGoneBackInTimeEnough = false;
             int numberOfBlocksGoneBackward = 0;
 
@@ -329,10 +331,10 @@ public class MultiBitService {
                 }
                 Block header = storedBlock.getHeader();
                 if (header == null) {
-                   log.debug("No header for stored block " + storedBlock.getHeight());
-                   break;
+                    log.debug("No header for stored block " + storedBlock.getHeight());
+                    break;
                 }
-                
+
                 long headerTimeInSeconds = header.getTimeSeconds();
                 if (headerTimeInSeconds < (dateToReplayFrom.getTime() / NUMBER_OF_MILLISECOND_IN_A_SECOND)) {
                     haveGoneBackInTimeEnough = true;
@@ -423,9 +425,29 @@ public class MultiBitService {
 
             controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
 
-            // notify all of the pendingTransactionsListeners about the new
-            // transaction
-            // peerGroup.processPendingTransaction(sendTransaction);
+            // clone the sent transaction
+            try {
+                Transaction clonedSentTransaction = new Transaction(networkParameters, sendTransaction.bitcoinSerialize());
+                // modify the transaction so that its TransactionOutputs are
+                // unspent
+                // what is spent from the perspective of the sender is available
+                // to the receipient
+                clonedSentTransaction.markOutputsAsSpendable();
+
+                // notify other wallets of the send (it might be a send to them)
+                List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+
+                if (perWalletModelDataList != null) {
+                    for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+                        if (!perWalletModelData.getWalletFilename().equals(loopPerWalletModelData.getWalletFilename())) {
+                            controller.onCoinsReceived(loopPerWalletModelData.getWallet(), clonedSentTransaction, null, null);
+                        }
+                    }
+                }
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+            }
+
         } else {
             // transaction was null
         }
