@@ -31,6 +31,8 @@ import org.multibit.model.PerWalletModelData;
  */
 public class FileChangeTimerTask extends TimerTask {
 
+    public static final int DEFAULT_REPEAT_RATE = 120000; // milliseconds
+    
     private final MultiBitController controller;
     private final MultiBitFrame mainFrame;
     private final FileHandler fileHandler;

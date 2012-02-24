@@ -237,12 +237,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         setVisible(true);
 
         fileChangeTimer = new Timer();
-        // fires once every minute
-        fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), 0, 60000);
-
-        // startupAndShutdownDialog = new StartupAndShutdownDialog(controller,
-        // this);
-        // startupAndShutdownDialog.setVisible(true);
+        fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), 0, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
     }
 
     public GenericApplication getApplication() {
