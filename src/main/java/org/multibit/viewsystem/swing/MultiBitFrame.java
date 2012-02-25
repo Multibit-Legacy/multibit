@@ -118,6 +118,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final int WIDTH_OF_AMOUNT_FIELD = 160;
 
     private StatusBar statusBar;
+    private boolean online = false;
 
     private static final long serialVersionUID = 7621813615342923041L;
 
@@ -324,9 +325,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         contentPane.add(viewPanel, constraints);
 
         statusBar = new StatusBar(controller, this);
-        if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
-            statusBar.updateOnlineStatusText(controller.getMultiBitService().getPeerGroup().numPeers() > 0);
-        }
+        statusBar.updateOnlineStatusText(online);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -677,6 +676,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             initUI();
             applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         }
+
         statusBar.refreshOnlineStatusText();
 
         updateHeader();
@@ -688,7 +688,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (!clearCache && viewFactory != null) {
             yourWalletsView = (YourWalletsPanel) viewFactory.getView(View.YOUR_WALLETS_VIEW);
         }
+
         viewFactory = new ViewFactory(controller, this);
+
         if (!clearCache && yourWalletsView != null) {
             viewFactory.addView(View.YOUR_WALLETS_VIEW, yourWalletsView);
         }
@@ -820,12 +822,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     public void nowOnline() {
+        online = true;
         if (statusBar != null) {
             statusBar.updateOnlineStatusText(true);
         }
     }
 
     public void nowOffline() {
+        online = false;
         if (statusBar != null) {
             statusBar.updateOnlineStatusText(false);
         }
