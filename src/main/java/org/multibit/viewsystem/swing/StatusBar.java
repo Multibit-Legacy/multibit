@@ -219,7 +219,7 @@ public class StatusBar extends JComponent {
     }
 
     public void updateStatusLabel(String newStatusLabel, Boolean clearAutomatically) {
-        this.clearAutomatically = clearAutomatically;
+        StatusBar.clearAutomatically = clearAutomatically;
         final String finalNewStatusLabel = newStatusLabel;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

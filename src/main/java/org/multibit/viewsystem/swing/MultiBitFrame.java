@@ -324,6 +324,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         contentPane.add(viewPanel, constraints);
 
         statusBar = new StatusBar(controller, this);
+        if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
+            statusBar.updateOnlineStatusText(controller.getMultiBitService().getPeerGroup().numPeers() > 0);
+        }
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -854,7 +857,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     private void processNewCoin(Wallet wallet, Transaction transaction) {
-        // loop through all the wallets, updating them as required with the new transaction
+        // loop through all the wallets, updating them as required with the new
+        // transaction
         try {
             java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
@@ -1235,7 +1239,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
                 recreateAllViews(true);
                 displayView(currentView);
-                
+
                 viewPanel.invalidate();
                 thisFrame.invalidate();
                 viewPanel.validate();
