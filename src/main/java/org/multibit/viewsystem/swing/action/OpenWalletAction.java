@@ -89,6 +89,7 @@ public class OpenWalletAction extends AbstractAction {
                 if (file != null) {
                     if (!file.isDirectory()) {
                         selectedWalletFilename = file.getAbsolutePath();
+                        controller.updateStatusLabel(controller.getLocaliser().getString("multiBit.openingWallet", new Object[]{selectedWalletFilename}));
                         openWalletInBackground(selectedWalletFilename);
                     }
                 } else {
@@ -121,16 +122,15 @@ public class OpenWalletAction extends AbstractAction {
                 try {
                     log.debug("Opening wallet '" + selectedWalletFilenameFinal + "' in background swing worker");
 
-                    message = controller.getLocaliser().getString("multiBit.openingWallet", new Object[]{selectedWalletFilenameFinal});
                     controller.addWalletFromFilename(selectedWalletFilenameFinal);
                     controller.getModel().setActiveWalletByFilename(selectedWalletFilenameFinal);
 
-                    message = controller.getLocaliser().getString("multiBit.openingWalletIsDone", new Object[]{selectedWalletFilenameFinal});
- 
                     // save the user properties to disk
                     FileHandler.writeUserPreferences(controller);
                     log.debug("User preferences with new wallet written successfully");
-
+ 
+                    message = controller.getLocaliser().getString("multiBit.openingWalletIsDone", new Object[]{selectedWalletFilenameFinal});
+                    
                     return Boolean.TRUE;
                 } catch (IOException e) {
                     message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
