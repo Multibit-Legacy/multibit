@@ -121,10 +121,11 @@ public class OpenWalletAction extends AbstractAction {
                 try {
                     log.debug("Opening wallet '" + selectedWalletFilenameFinal + "' in background swing worker");
 
+                    message = controller.getLocaliser().getString("multiBit.openingWallet", new Object[]{selectedWalletFilenameFinal});
                     controller.addWalletFromFilename(selectedWalletFilenameFinal);
                     controller.getModel().setActiveWalletByFilename(selectedWalletFilenameFinal);
 
-                    message = controller.getLocaliser().getString("openWalletAction.walletOpenedSuccessfully", new Object[]{selectedWalletFilenameFinal});
+                    message = controller.getLocaliser().getString("multiBit.openingWalletIsDone", new Object[]{selectedWalletFilenameFinal});
  
                     // save the user properties to disk
                     FileHandler.writeUserPreferences(controller);

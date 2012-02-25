@@ -173,10 +173,9 @@ public class MultiBit {
                 controller.fireWalletChanged();
                 controller.fireDataChanged();
             } catch (IOException e) {
-                // TODO localize
-                String errorMessage = "Could not open wallet '" + activeWalletFilename + "', error = " + e.getMessage();
-                controller.updateStatusLabel(errorMessage);
-                log.error(errorMessage);
+                String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{activeWalletFilename, e.getMessage()});
+                controller.updateStatusLabel(message);
+                log.error(message);
             }
         } else {
             try {
@@ -187,7 +186,7 @@ public class MultiBit {
                         // load up ith wallet filename
                         String loopWalletFilename = userPreferences.getProperty(MultiBitModel.WALLET_FILENAME_PREFIX + i);
                         log.debug("Loading wallet from '{}'", loopWalletFilename);
-                        controller.updateStatusLabel(controller.getLocaliser().getString("multiBit.loadingWalletFrom",
+                        controller.updateStatusLabel(controller.getLocaliser().getString("multiBit.openingWallet",
                                 new Object[] { loopWalletFilename }));
                         try {
                             if (activeWalletFilename != null && activeWalletFilename.equals(loopWalletFilename)) {
@@ -196,14 +195,13 @@ public class MultiBit {
                             } else {
                                 controller.addWalletFromFilename(loopWalletFilename);
                             }
-                            controller.updateStatusLabel(controller.getLocaliser().getString("multiBit.loadingWalletFromAndDone",
+                            controller.updateStatusLabel(controller.getLocaliser().getString("multiBit.openingWalletIsDone",
                                     new Object[] { loopWalletFilename }));
                         } catch (IOException e) {
-                            // TODO localize
-                            String errorMessage = "Could not open wallet '" + activeWalletFilename + "', error = " + e.getMessage();
-                            controller.updateStatusLabel(errorMessage);
-                            log.error(errorMessage);
-                        }
+                            String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{activeWalletFilename, e.getMessage()});
+                            controller.updateStatusLabel(message);
+                            log.error(message);
+                       }
                     }
                     controller.fireNewWalletCreated();
                     controller.fireWalletChanged();
