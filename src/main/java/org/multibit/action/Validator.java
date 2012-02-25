@@ -27,6 +27,7 @@ import com.google.bitcoin.core.Wallet.BalanceType;
 
 /**
  * a class to validate String addresses and amounts
+ * TODO - this should create a validation state object and have a getter
  * 
  * @author jim
  * 
@@ -90,15 +91,15 @@ public class Validator {
                     amountValidatesOk = Boolean.FALSE;
                 }
             } catch (NumberFormatException nfe) {
-                amountValidatesOk = false;
+                amountValidatesOk = Boolean.FALSE;
                 amountIsInvalid = Boolean.TRUE;
             } catch (ArithmeticException ae) {
-                amountValidatesOk = false;
+                amountValidatesOk = Boolean.FALSE;
                 amountIsInvalid = Boolean.TRUE;
             }
 
             // see if the amount is negative or zero
-            if (amountValidatesOk) {
+            if (amountValidatesOk.booleanValue()) {
                 if (amountBigInteger.compareTo(BigInteger.ZERO) <= 0) {
                     amountValidatesOk = Boolean.FALSE;
                     amountIsNegativeOrZero = Boolean.TRUE;
@@ -116,7 +117,7 @@ public class Validator {
                         // there is enough money
                     } else {
                         // not enough funds
-                        amountValidatesOk = false;
+                        amountValidatesOk = Boolean.FALSE;
                         notEnoughFunds = Boolean.TRUE;
                     }
                 }
@@ -128,7 +129,7 @@ public class Validator {
         controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID, amountIsInvalid.toString());
         controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS, notEnoughFunds.toString());
 
-        return amountValidatesOk;
+        return amountValidatesOk.booleanValue();
     }
 
     private boolean validateAddress(String address) {
@@ -156,8 +157,7 @@ public class Validator {
 
     public void clearValidationState() {
         controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_MISSING, Boolean.FALSE.toString());
-        controller.getModel()
-                .setActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO, Boolean.FALSE.toString());
+        controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO, Boolean.FALSE.toString());
         controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID, Boolean.FALSE.toString());
         controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS, Boolean.FALSE.toString());
         controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID, Boolean.FALSE.toString());

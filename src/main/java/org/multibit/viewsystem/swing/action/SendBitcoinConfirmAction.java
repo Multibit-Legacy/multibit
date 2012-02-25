@@ -15,7 +15,6 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.Dialog.ModalityType;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
@@ -74,7 +73,6 @@ public class SendBitcoinConfirmAction extends AbstractAction {
         } else {
             validationErrorDialog = new ValidationErrorDialog(controller, mainFrame);
             validationErrorDialog.setVisible(true);
-            validationErrorDialog.setModalityType(ModalityType.APPLICATION_MODAL);
         }
     }
 }
