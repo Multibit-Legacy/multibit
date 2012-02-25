@@ -89,8 +89,9 @@ public interface ViewSystem {
     /**
      * update download status
      * @param updateDownloadStatus
+     * @param clearAutomatically
      */
-    public void updateStatusLabel(String updateDownloadStatus);
+    public void updateStatusLabel(String updateDownloadStatus, boolean clearAutomatically);
   
     /**
      * notification that a block has been downloaded

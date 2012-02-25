@@ -48,9 +48,9 @@ public class ActivatedHyperlinkListener implements HyperlinkListener {
         HyperlinkEvent.EventType type = hyperlinkEvent.getEventType();
         final URL url = hyperlinkEvent.getURL();
         if (type == HyperlinkEvent.EventType.ENTERED) {
-            mainFrame.updateStatusLabel(SPACER + url.toString());
+            mainFrame.updateStatusLabel(SPACER + url.toString(), true);
         } else if (type == HyperlinkEvent.EventType.EXITED) {
-            mainFrame.updateStatusLabel(SPACER + currentUrl);
+            mainFrame.updateStatusLabel(SPACER + currentUrl, true);
         } else if (type == HyperlinkEvent.EventType.ACTIVATED) {
             Runnable runner = new Runnable() {
                 public void run() {

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,12 +39,14 @@ import org.multibit.store.ReplayableBlockStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.AbstractPeerEventListener;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.ProtocolException;
@@ -84,6 +87,8 @@ public class MultiBitService {
 
     public static final String IRC_CHANNEL_TEST = "#bitcoinTEST";;
 
+    static boolean restartListenerHasBeenAddedToPeerGroup = false;
+
     public Logger logger = LoggerFactory.getLogger(MultiBitService.class.getName());
 
     private Wallet wallet;
@@ -117,15 +122,6 @@ public class MultiBitService {
      */
     public MultiBitService(boolean useTestNet, MultiBitController controller) {
         this(useTestNet, controller.getModel().getUserPreference(MultiBitModel.WALLET_FILENAME), controller);
-
-        java.text.SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        java.util.Calendar cal = Calendar.getInstance(new SimpleTimeZone(0, "GMT"));
-        format.setCalendar(cal);
-        try {
-            genesisBlockCreationDate = format.parse("2009-01-03 18:15:05");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -140,6 +136,15 @@ public class MultiBitService {
     public MultiBitService(boolean useTestNet, String walletFilename, MultiBitController controller) {
         this.useTestNet = useTestNet;
         this.controller = controller;
+
+        java.text.SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        java.util.Calendar cal = Calendar.getInstance(new SimpleTimeZone(0, "GMT"));
+        format.setCalendar(cal);
+        try {
+            genesisBlockCreationDate = format.parse("2009-01-03 18:15:05");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         networkParameters = useTestNet ? NetworkParameters.testNet() : NetworkParameters.prodNet();
 
@@ -164,29 +169,7 @@ public class MultiBitService {
             log.debug("Connecting ...");
             blockChain = new BlockChain(networkParameters, blockStore);
 
-            peerGroup = new MultiBitPeerGroup(controller, networkParameters, blockChain);
-            peerGroup.setFastCatchupTimeSecs(0); // genesis block
-            peerGroup.setUserAgent("MultiBit", controller.getLocaliser().getVersionNumber());
-
-            String singleNodeConnection = controller.getModel().getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
-            if (singleNodeConnection != null && !singleNodeConnection.equals("")) {
-                try {
-                    peerGroup.addAddress(new PeerAddress(InetAddress.getByName(singleNodeConnection)));
-                    peerGroup.setMaxConnections(1);
-                } catch (UnknownHostException e) {
-                    log.error(e.getMessage(), e);
-
-                }
-            } else {
-                // use DNS for production, IRC for test
-                if (useTestNet) {
-                    peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
-                } else {
-                    peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
-                }
-            }
-            // add the controller as a PeerEventListener
-            peerGroup.addEventListener(controller);
+            peerGroup = createNewPeerGroup();
             peerGroup.start();
         } catch (BlockStoreException e) {
             controller.displayMessage("multiBitService.errorText", new Object[] { e.getClass().getName() + " " + e.getMessage() },
@@ -195,6 +178,36 @@ public class MultiBitService {
             controller.displayMessage("multiBitService.errorText", new Object[] { e.getClass().getName() + " " + e.getMessage() },
                     "multiBitService.errorTitleText");
         }
+    }
+
+    private MultiBitPeerGroup createNewPeerGroup() {
+        MultiBitPeerGroup peerGroup = new MultiBitPeerGroup(controller, networkParameters, blockChain);
+        peerGroup.setFastCatchupTimeSecs(0); // genesis block
+        peerGroup.setUserAgent("MultiBit", controller.getLocaliser().getVersionNumber());
+        
+        // this event listener puts the number of peers to the log
+        peerGroup.addEventListener(new CountPeerEventListener());
+
+        String singleNodeConnection = controller.getModel().getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
+        if (singleNodeConnection != null && !singleNodeConnection.equals("")) {
+            try {
+                peerGroup.addAddress(new PeerAddress(InetAddress.getByName(singleNodeConnection)));
+                peerGroup.setMaxConnections(1);
+            } catch (UnknownHostException e) {
+                log.error(e.getMessage(), e);
+
+            }
+        } else {
+            // use DNS for production, IRC for test
+            if (useTestNet) {
+                peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
+            } else {
+                peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
+            }
+        }
+        // add the controller as a PeerEventListener
+        peerGroup.addEventListener(controller);
+        return peerGroup;
     }
 
     public String getFilePrefix() {
@@ -336,6 +349,7 @@ public class MultiBitService {
             while (!haveGoneBackInTimeEnough) {
                 if (storedBlock == null) {
                     // null result of previous get previous - will have to stop
+                    // navigating backwards
                     break;
                 }
                 Block header = storedBlock.getHeader();
@@ -359,12 +373,12 @@ public class MultiBitService {
                         numberOfBlocksGoneBackward++;
                     } catch (BlockStoreException e) {
                         e.printStackTrace();
-                        // we have to stop - fail
+                        // we have to stop navigating backwards
                         break;
                     }
                 }
             }
-            
+
             // in case the chain head was on an alternate fork go back more
             // blocks to ensure
             // back on the main chain
@@ -389,12 +403,21 @@ public class MultiBitService {
 
             // set the block chain head to the block just before the
             // earliest transaction in the wallet
-            blockChain.setChainHead(storedBlock);
+            blockChain.setChainHeadAndClearCaches(storedBlock);
 
             // clear any cached data in the BlockStore
             blockStore.clearCaches();
         }
 
+        // restart peerGroup and download
+        peerGroup.stop();
+        // reset to zero peers
+        controller.onPeerDisconnected(null, 0);
+        String message = controller.getLocaliser().getString("resetTransactionSubmitAction.replayingBlockchain", new Object[]{DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale())
+                .format(dateToReplayFrom)});
+        controller.updateStatusLabel(message);
+        peerGroup = createNewPeerGroup();
+        peerGroup.start();
         downloadBlockChain();
     }
 
@@ -406,6 +429,7 @@ public class MultiBitService {
         SwingWorker worker = new SwingWorker() {
             @Override
             protected Object doInBackground() throws Exception {
+                logger.debug("Downloading blockchain");
                 peerGroup.downloadBlockChain();
                 return null; // return not used
             }
@@ -481,4 +505,14 @@ public class MultiBitService {
     public NetworkParameters getNetworkParameters() {
         return networkParameters;
     }
+
+    class CountPeerEventListener extends AbstractPeerEventListener {
+        public void onPeerDisconnected(Peer peer, int peerCount) {
+            logger.debug("Number of peers is now " + peerCount);
+        }
+
+        public void onPeerConnected(Peer peer, int peerCount) {
+            logger.debug("Number of peers is now " + peerCount);
+        }
+    };
 }

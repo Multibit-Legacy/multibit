@@ -833,9 +833,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
     }
 
-    public void updateStatusLabel(String newStatusLabel) {
+    public void updateStatusLabel(String newStatusLabel, boolean clearAutomatically) {
         if (statusBar != null) {
-            statusBar.updateStatusLabel(newStatusLabel);
+            statusBar.updateStatusLabel(newStatusLabel, clearAutomatically);
         }
     }
 
@@ -946,7 +946,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (controller.getModel().getActiveWalletFilename() != null
                 && controller.getModel().getActiveWalletFilename().equals(perWalletModelData.getWalletFilename())) {
             updateStatusLabel(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.1") + " "
-                    + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.2"));
+                    + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.2"), true);
         }
         fireDataChanged();
     }
@@ -1235,6 +1235,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
                 recreateAllViews(true);
                 displayView(currentView);
+                
+                viewPanel.invalidate();
+                thisFrame.invalidate();
+                viewPanel.validate();
+                thisFrame.validate();
+                thisFrame.repaint();
             }
         });
     }

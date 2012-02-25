@@ -37,14 +37,14 @@ public class HelpContentsPanel extends JPanel implements View {
     private Browser browser;
     private String initialUrl;
 
-    private MultiBitFrame mainFrame;
+    private MultiBitController controller;
   
     public static final String SPACER = "   "; // 3 spaces
 
     boolean firstTimeLoaded = false;
 
     public HelpContentsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.mainFrame = mainFrame;
+        this.controller = controller;
         this.initialUrl = "http://www.multibit.org/help_contents.html";
 
         setLayout(new BorderLayout());
@@ -84,7 +84,7 @@ public class HelpContentsPanel extends JPanel implements View {
     }
 
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
-        mainFrame.updateStatusLabel("");
+        controller.updateStatusLabel("");
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {

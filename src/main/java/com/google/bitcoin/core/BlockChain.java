@@ -347,6 +347,20 @@ public class BlockChain implements IsMultiBitClass {
             this.chainHead = chainHead;
         }
     }
+    
+    /**
+     * set the chainhead and clear any cached blocks
+     * (used for blockchain replay)
+     * @param chainHead
+     * @throws BlockStoreException
+     */
+    public void setChainHeadAndClearCaches(StoredBlock chainHead) throws BlockStoreException {
+        blockStore.setChainHead(chainHead);
+        synchronized (chainHeadLock) {
+            this.chainHead = chainHead;
+            unconnectedBlocks.clear();
+        }
+    }
 
     /**
      * For each block in unconnectedBlocks, see if we can now fit it on top of the chain and if so, do so.

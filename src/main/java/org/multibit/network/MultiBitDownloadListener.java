@@ -80,7 +80,7 @@ public class MultiBitDownloadListener extends DownloadListener {
 
                 // when busy occasionally the localiser fails to localise
                 if (!(downloadStatusText.indexOf("multiBitDownloadListener") > -1)) {
-                    controller.updateStatusLabel(downloadStatusText);
+                    controller.updateStatusLabel(downloadStatusText, false);
                 }
             }
             controller.fireBlockDownloaded();
@@ -108,7 +108,7 @@ public class MultiBitDownloadListener extends DownloadListener {
                 }
                 // when busy occasionally the localiser fails to localise
                 if (!(startDownloadText.indexOf("multiBitDownloadListener") > -1)) {
-                    controller.updateStatusLabel(startDownloadText);
+                    controller.updateStatusLabel(startDownloadText, false);
                 }
             }
             controller.fireBlockDownloaded();

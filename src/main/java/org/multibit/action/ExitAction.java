@@ -18,6 +18,8 @@ package org.multibit.action;
 import java.awt.Cursor;
 import java.util.List;
 
+import javax.swing.SwingWorker;
+
 import org.multibit.ApplicationInstanceManager;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
@@ -78,7 +80,15 @@ public class ExitAction implements Action {
         if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
             log.debug("Closing Bitcoin network connection...");
             //controller.updateStatusLabel("Closing Bitcoin network connection...");
-            controller.getMultiBitService().getPeerGroup().stop();
+            @SuppressWarnings("rawtypes")
+            SwingWorker worker = new SwingWorker() {
+                @Override
+                protected Object doInBackground() throws Exception {
+                    controller.getMultiBitService().getPeerGroup().stop();
+                    return null; // return not used
+                }
+            };
+            worker.execute();
         }
 
         if (mainFrame != null) {

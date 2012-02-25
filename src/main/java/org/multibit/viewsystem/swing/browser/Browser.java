@@ -84,7 +84,7 @@ public class Browser extends javax.swing.JEditorPane implements PropertyChangeLi
             return true; // Return success
         } catch (IOException ex) { // If page loading fails
             stopAnimation();
-            mainFrame.updateStatusLabel("Cannot load page: " + ex.getMessage());
+            mainFrame.updateStatusLabel("Cannot load page: " + ex.getMessage(), true);
             return false; // Return failure
         }
     }
@@ -123,7 +123,7 @@ public class Browser extends javax.swing.JEditorPane implements PropertyChangeLi
     /** Display the next frame. Called by the animator timer */
     void animate() {
         String frame = animationFrames[animationFrame++]; // Get next frame
-        mainFrame.updateStatusLabel(animationMessage + " " + frame); // Update
+        mainFrame.updateStatusLabel(animationMessage + " " + frame, true); // Update
                                                                      // msgline
         animationFrame = animationFrame % animationFrames.length;
     }
@@ -140,7 +140,7 @@ public class Browser extends javax.swing.JEditorPane implements PropertyChangeLi
     /** Stop the animation. Called by propertyChanged() method. */
     void stopAnimation() {
         animator.stop(); // Tell the timer to stop firing events
-        mainFrame.updateStatusLabel(" "); // Clear the message line
+        mainFrame.updateStatusLabel(" ", true); // Clear the message line
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 }

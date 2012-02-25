@@ -881,7 +881,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             log.debug("SendBitcoinPanel - ping 12");
             labelTextArea.setText(decodedLabel);
             log.debug("SendBitcoinPanel - ping 13");
-            mainFrame.updateStatusLabel("");
+            controller.updateStatusLabel("");
 
             if (icon != null) {
                 qrCodeLabel.setIcon(icon);

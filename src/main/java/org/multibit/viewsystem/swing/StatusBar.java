@@ -81,8 +81,8 @@ import org.slf4j.LoggerFactory;
  * 
  * In MultiBit the StatusBar is responsible for :
  * 
- * 1) Online/ Connecting status label 
- * 2) Status messages - these are cleared after a period of time
+ * 1) Online/ Connecting status label 2) Status messages - these are cleared
+ * after a period of time
  */
 public class StatusBar extends JComponent {
 
@@ -102,6 +102,7 @@ public class StatusBar extends JComponent {
     public static final int NUMBER_OF_REPEATS = 15;
 
     private Timer statusClearTimer;
+    static boolean clearAutomatically = true;
 
     /**
      * The key used to identified the default zone
@@ -214,6 +215,11 @@ public class StatusBar extends JComponent {
     }
 
     public void updateStatusLabel(String newStatusLabel) {
+        updateStatusLabel(newStatusLabel, true);
+    }
+
+    public void updateStatusLabel(String newStatusLabel, Boolean clearAutomatically) {
+        this.clearAutomatically = clearAutomatically;
         final String finalNewStatusLabel = newStatusLabel;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -663,7 +669,6 @@ class PercentLayout implements LayoutManager2 {
 }
 
 class StatusClearTask extends TimerTask {
-
     JLabel statusLabel;
     private String previousStatusLabelText = null;
     private int previousLabelRepeats = 0;
@@ -681,11 +686,13 @@ class StatusClearTask extends TimerTask {
         if (previousLabelRepeats > StatusBar.NUMBER_OF_REPEATS) {
             if (currentStatusLabelText != null && !"".equals(currentStatusLabelText)
                     && currentStatusLabelText.equals(previousStatusLabelText)) {
-                // clear label
-                statusLabel.setText("");
-                previousStatusLabelText = "";
-                previousLabelRepeats = 0;
-                hasReset = true;
+                if (StatusBar.clearAutomatically) {
+                    // clear label
+                    statusLabel.setText("");
+                    previousStatusLabelText = "";
+                    previousLabelRepeats = 0;
+                    hasReset = true;
+                }
             }
         }
         if (currentStatusLabelText != null && !currentStatusLabelText.equals(previousStatusLabelText)) {

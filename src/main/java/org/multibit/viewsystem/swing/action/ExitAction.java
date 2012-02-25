@@ -15,7 +15,6 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;

@@ -571,9 +571,16 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     public void updateStatusLabel(String newStatusText) {
        //log.debug("Update status label with '" + newStatusText + "'");
        for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.updateStatusLabel(newStatusText);
+            viewSystem.updateStatusLabel(newStatusText, true);
         }
     }
+    
+    public void updateStatusLabel(String newStatusText, boolean clearAutomatically) {
+        //log.debug("Update status label with '" + newStatusText + "'");
+        for (ViewSystem viewSystem : viewSystems) {
+             viewSystem.updateStatusLabel(newStatusText, clearAutomatically);
+         }
+     }
 
     /**
      * method called by downloadListener whenever a block is downloaded
