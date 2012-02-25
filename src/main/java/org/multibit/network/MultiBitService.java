@@ -446,6 +446,7 @@ public class MultiBitService {
      *            fee to pay in nanocoin
      * @param amount
      *            the amount to send to, in BTC, as a String
+     * @return The sent transaction (may be null if there were insufficient funds for send)
      */
 
     public Transaction sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee)
@@ -468,10 +469,9 @@ public class MultiBitService {
             // clone the sent transaction
             try {
                 Transaction clonedSentTransaction = new Transaction(networkParameters, sendTransaction.bitcoinSerialize());
-                // modify the transaction so that its TransactionOutputs are
-                // unspent
+                // modify the transaction so that its TransactionOutputs are unspent
                 // what is spent from the perspective of the sender is available
-                // to the receipient
+                // to the recipient
                 clonedSentTransaction.markOutputsAsSpendable();
 
                 // notify other wallets of the send (it might be a send to them)
@@ -489,7 +489,7 @@ public class MultiBitService {
             }
 
         } else {
-            // transaction was null
+            // transaction was null - not enough funds - dealt with at the UI level
         }
         return sendTransaction;
     }

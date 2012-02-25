@@ -85,22 +85,11 @@ public class ViewFactory {
             break;
         }
         
-        case View.SEND_BITCOIN_CONFIRM_VIEW: {
-            viewToReturn = new SendBitcoinConfirmView(controller, mainFrame);
-            //viewToReturn = new ShowOpenUriView(controller, mainFrame);
-            break;
-        }
-        
         case View.PREFERENCES_VIEW: {
             viewToReturn = new ShowPreferencesPanel(controller, mainFrame);
             break;
         }
-        
-        case View.VALIDATION_ERROR_VIEW: {
-            viewToReturn = new ValidationErrorView(controller, mainFrame);
-            break;
-        }
-        
+              
         case View.YOUR_WALLETS_VIEW: {
             viewToReturn = new YourWalletsPanel(controller, mainFrame);
             break;

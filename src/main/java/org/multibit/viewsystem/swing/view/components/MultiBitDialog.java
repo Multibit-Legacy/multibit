@@ -40,7 +40,9 @@ abstract public class MultiBitDialog extends JDialog {
 
     protected JFrame mainFrame;
     
-    public MultiBitDialog(JFrame mainFrame) {
+    public MultiBitDialog(JFrame mainFrame, String title) {
+        // create modal dialog with title
+        super(mainFrame, title, true);
         this.mainFrame = mainFrame;
     }
     

@@ -65,7 +65,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
     private MultiBitButton pasteAddressButton;
     private MultiBitButton sendButton;
-
+    
     public SendBitcoinPanel(MultiBitFrame mainFrame, MultiBitController controller) {
         super(mainFrame, controller);
     }
@@ -335,7 +335,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(amountUnitLabel, constraints);
 
-        SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, this);
+        SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, mainFrame, this);
         sendButton = new MultiBitButton(sendBitcoinConfirmAction, controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 6;

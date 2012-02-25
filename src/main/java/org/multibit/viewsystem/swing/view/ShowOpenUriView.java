@@ -62,7 +62,7 @@ public class ShowOpenUriView extends MultiBitDialog implements View, DataProvide
      * Creates a new {@link ShowOpenUriView}.
      */
     public ShowOpenUriView(MultiBitController controller, MultiBitFrame mainFrame) {
-        super(mainFrame);
+        super(mainFrame, controller.getLocaliser().getString("showOpenUriView.title"));
         this.controller = controller;
         this.mainFrame = mainFrame;
 
@@ -85,7 +85,6 @@ public class ShowOpenUriView extends MultiBitDialog implements View, DataProvide
     public void initUI() {
         setMinimumSize(new Dimension(480, 160));
         positionDialogRelativeToParent(this, 0.5D, 0.47D);
-        setTitle(controller.getLocaliser().getString("showOpenUriView.title"));
 
         setLayout(new GridBagLayout());
         // get the data out of the wallet preferences
@@ -243,7 +242,7 @@ public class ShowOpenUriView extends MultiBitDialog implements View, DataProvide
         setVisible(true);
         
         // bring this dialog to the front
-        bringToFront();
+        //bringToFront();
     }
 
     @Override
@@ -252,13 +251,13 @@ public class ShowOpenUriView extends MultiBitDialog implements View, DataProvide
         
     }
     
-    private void bringToFront() {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                toFront();
-                repaint();
-            }
-        });
-    }
+//    private void bringToFront() {
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            @Override
+//            public void run() {
+//                toFront();
+//                repaint();
+//            }
+//        });
+//    }
 }

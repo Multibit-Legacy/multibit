@@ -27,11 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.Data;
-import org.multibit.model.DataProvider;
-import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -44,9 +40,9 @@ import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 
 /**
- * The send bitcoin confirm view
+ * The send bitcoin confirm dialog
  */
-public class SendBitcoinConfirmView extends MultiBitDialog implements View, DataProvider {
+public class SendBitcoinConfirmDialog extends MultiBitDialog {
 
     private static final long serialVersionUID = 191435612345057705L;
 
@@ -73,10 +69,10 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
     private MultiBitButton cancelButton;
 
     /**
-     * Creates a new {@link SendBitcoinConfirmView}.
+     * Creates a new {@link SendBitcoinConfirmDialog}.
      */
-    public SendBitcoinConfirmView(MultiBitController controller, MultiBitFrame mainFrame) {
-        super(mainFrame);
+    public SendBitcoinConfirmDialog(MultiBitController controller, MultiBitFrame mainFrame) {
+        super(mainFrame, controller.getLocaliser().getString("sendBitcoinConfirmView.title"));
         this.controller = controller;
         this.mainFrame = mainFrame;
 
@@ -92,7 +88,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
     }
 
     /**
-     * show send bitcoin confirm view
+     * initialise bitcoin confirm dialog
      */
     public void initUI() {
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -101,7 +97,6 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         int minimumWidth = Math.max(fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT), fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinConfirmView.message"))) + WIDTH_DELTA;
         setMinimumSize(new Dimension(minimumWidth, minimumHeight));
         positionDialogRelativeToParent(this, 0.5D, 0.47D);
-        setTitle(controller.getLocaliser().getString("sendBitcoinConfirmView.title"));
 
         JPanel mainPanel = new JPanel();
         mainPanel.setOpaque(false);
@@ -110,6 +105,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         add(mainPanel, BorderLayout.CENTER);
         
         mainPanel.setLayout(new GridBagLayout());
+        
         // get the data out of the wallet preferences
         sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
         sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
@@ -302,7 +298,7 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         constraints.anchor = GridBagConstraints.LINE_END;
         mainPanel.add(buttonPanel, constraints);
 
-        CancelBackToParentAction cancelAction = new CancelBackToParentAction(controller, ImageLoader.createImageIcon(ImageLoader.RED_CROSS_ICON_FILE));
+        CancelBackToParentAction cancelAction = new CancelBackToParentAction(controller, ImageLoader.createImageIcon(ImageLoader.RED_CROSS_ICON_FILE), this);
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
@@ -356,66 +352,9 @@ public class SendBitcoinConfirmView extends MultiBitDialog implements View, Data
         confirmText1.setText(confirm1);
         confirmText2.setText(" " + confirm2);
         
-        OkBackToParentAction okAction = new OkBackToParentAction(controller);
+        OkBackToParentAction okAction = new OkBackToParentAction(controller, this);
         sendButton.setAction(okAction);
         
         cancelButton.setVisible(false);
-    }
-
-    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
-        // not implemented on this view
-    }
-
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
-        setVisible(false);
-    }
-
-    public Data getData() {
-        Data data = new Data();
-        Item addressItem = new Item(MultiBitModel.SEND_ADDRESS);
-        addressItem.setNewValue(sendAddress);
-        data.addItem(MultiBitModel.SEND_ADDRESS, addressItem);
-
-        Item labelItem = new Item(MultiBitModel.SEND_LABEL);
-        labelItem.setNewValue(sendLabel);
-        data.addItem(MultiBitModel.SEND_LABEL, labelItem);
-
-        Item amountItem = new Item(MultiBitModel.SEND_AMOUNT);
-        amountItem.setNewValue(sendAmount);
-        data.addItem(MultiBitModel.SEND_AMOUNT, amountItem);
-
-        return data;
-    }
-
-    public void displayView() {
-        // get the data out of the wallet preferences
-        sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
-        sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
-        sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
-
-        sendAddressText.setText(sendAddress);
-        sendLabelText.setText(sendLabel);
-        sendAmountText.setText(sendAmount);
-
-        SendBitcoinNowAction sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this, ImageLoader.createImageIcon(ImageLoader.TICK_ICON_FILE));
-        sendButton.setAction(sendBitcoinNowAction);
-        confirmText1.setText(" ");
-        confirmText2.setText(" ");
-        cancelButton.setVisible(true);
-        
-        String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
-        if (fee == null || fee == "") {
-            fee = controller.getLocaliser().bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
-        }
-        sendFee = fee + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
-        sendFeeText.setText(sendFee);
-        
-        setVisible(true);
-    }
-
-    @Override
-    public void updateView() {
-        // TODO Auto-generated method stub
-        
     }
 }

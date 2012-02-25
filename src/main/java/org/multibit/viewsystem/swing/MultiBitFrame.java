@@ -665,11 +665,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * recreate all views
      */
     public void recreateAllViews(boolean clearCache, boolean initUI) {
-        // do nothing on send
-        if (View.SEND_BITCOIN_CONFIRM_VIEW == currentView) {
-            return;
-        }
-
         // close down current view
         if (currentView != 0) {
             navigateAwayFromView(currentView, View.TRANSACTIONS_VIEW, ViewSystem.NEW_VIEW_IS_PARENT_OF_PREVIOUS);
@@ -755,7 +750,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void displayView(int viewToDisplay) {
         // open wallet view obselete - show Your wallets
         if (View.OPEN_WALLET_VIEW == viewToDisplay) {
-            viewToDisplay = View.OPEN_WALLET_VIEW;
+            viewToDisplay = View.YOUR_WALLETS_VIEW;
         }
         currentView = viewToDisplay;
 

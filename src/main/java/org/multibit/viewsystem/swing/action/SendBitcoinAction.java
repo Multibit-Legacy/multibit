@@ -22,6 +22,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
+import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 
 /**
@@ -47,10 +48,9 @@ public class SendBitcoinAction extends AbstractAction {
     }
 
     /**
-     * delegate to generic sendBitcoinAction
+     * forward to send bitcoin view
      */
     public void actionPerformed(ActionEvent e) { 
-        org.multibit.action.SendBitcoinAction sendBitcoinAction = new org.multibit.action.SendBitcoinAction(controller);
-        sendBitcoinAction.execute(null);     
+        controller.setActionForwardToChild(ActionForward.FORWARD_TO_SEND_BITCOIN);           
     }
 }

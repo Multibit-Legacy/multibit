@@ -143,7 +143,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         viewSystems = new ArrayList<ViewSystem>();
 
         // initialise everything to look at the stored opened view and previous view
-        // if no properties passed in just initialise to the my wallets view
+        // if no properties passed in just initialise to the your wallets view
         int previousView = View.YOUR_WALLETS_VIEW;
         int initialView = View.YOUR_WALLETS_VIEW;
         if (userPreferences != null) {
@@ -152,8 +152,9 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
                 try {
                     int initialViewInProperties = Integer.parseInt(viewString);
 
-                    // do not open on open wallet view or create wallet view - these are obselete
-                    if (View.OPEN_WALLET_VIEW != initialViewInProperties && View.SAVE_WALLET_AS_VIEW != initialViewInProperties) {
+                    // do not open obselete views
+                    if (View.OPEN_WALLET_VIEW != initialViewInProperties && View.SAVE_WALLET_AS_VIEW != initialViewInProperties
+                            && View.SEND_BITCOIN_CONFIRM_VIEW != initialViewInProperties) {
                         initialView = initialViewInProperties;
                     }
                 } catch (NumberFormatException nfe) {
@@ -266,11 +267,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             nextView = View.SEND_BITCOIN_VIEW;
             break;
         }
-        case FORWARD_TO_SEND_BITCOIN_CONFIRM: {
-            // show the send bitcoin confirm view
-            nextView = View.SEND_BITCOIN_CONFIRM_VIEW;
-            break;
-        }
         case FORWARD_TO_HELP_ABOUT: {
             // show the help about view
             nextView = View.HELP_ABOUT_VIEW;
@@ -291,12 +287,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         case FORWARD_TO_TRANSACTIONS: {
             // show the transactions page
             nextView = View.TRANSACTIONS_VIEW;
-            break;
-        }
-
-        case FORWARD_TO_VALIDATION_ERROR: {
-            // show the validation error view
-            nextView = View.VALIDATION_ERROR_VIEW;
             break;
         }
 
@@ -610,15 +600,13 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         }
     }
 
-    public void sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee) throws IOException, AddressFormatException {
+    public Transaction sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee) throws IOException, AddressFormatException {
         // send the coins
         Transaction sendTransaction = multiBitService.sendCoins(perWalletModelData, sendAddressString, amount, fee);
         
         fireRecreateAllViews(false);
-        // TODO Require better confirmation here
-        if (sendTransaction == null) {
-            throw new IllegalStateException("No transaction was created after send.   The send may have failed.");
-        }
+
+        return sendTransaction;
     }
 
     public void clearViewStack() {

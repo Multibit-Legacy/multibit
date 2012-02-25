@@ -22,29 +22,24 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 
 /**
- * This {@link Action} represents a cancel action to go back to the parent view
+ * This {@link Action} represents a cancel action and closes the dialog it is
+ * called on
  */
 public class CancelBackToParentAction extends AbstractAction {
 
     private static final long serialVersionUID = 191354565461234705L;
 
-    private MultiBitController controller;
+    private MultiBitDialog dialog;
 
     /**
      * Creates a new {@link CancelBackToParentAction}.
      */
-    public CancelBackToParentAction(MultiBitController controller) {
-        this(controller, null);
-    }
-
-    /**
-     * Creates a new {@link CancelBackToParentAction}.
-     */
-    public CancelBackToParentAction(MultiBitController controller, ImageIcon icon) {
+    public CancelBackToParentAction(MultiBitController controller, ImageIcon icon, MultiBitDialog dialog) {
         super(controller.getLocaliser().getString("cancelBackToParentAction.text"), icon);
-        this.controller = controller;
+        this.dialog = dialog;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("cancelBackToParentAction.tooltip"));
@@ -52,11 +47,9 @@ public class CancelBackToParentAction extends AbstractAction {
     }
 
     /**
-     * delegate to the generic CancelBackToParentAction
+     * close the root dialog
      */
     public void actionPerformed(ActionEvent e) {
-        org.multibit.action.CancelBackToParentAction cancelBackToParentAction = 
-            new org.multibit.action.CancelBackToParentAction(controller);
-        cancelBackToParentAction.execute(null);
+        dialog.setVisible(false);
     }
 }

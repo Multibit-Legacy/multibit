@@ -21,22 +21,23 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 
 /**
- * This {@link Action} represents an ok action to go back to the parent view
+ * This {@link Action} represents an ok action and closes the dialog it is on
  */
 public class OkBackToParentAction extends AbstractAction {
 
     private static final long serialVersionUID = 191352235461234705L;
 
-    private MultiBitController controller;
+    private MultiBitDialog dialog;
 
     /**
      * Creates a new {@link OkBackToParentAction}.
      */
-    public OkBackToParentAction(MultiBitController controller) {
+    public OkBackToParentAction(MultiBitController controller, MultiBitDialog dialog) {
         super(controller.getLocaliser().getString("okBackToParentAction.text"));
-        this.controller = controller;
+        this.dialog = dialog;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
 
@@ -45,12 +46,9 @@ public class OkBackToParentAction extends AbstractAction {
     }
 
     /**
-     * delegate to the generic OkBackToParentAction
+     * close the root dialog
      */
     public void actionPerformed(ActionEvent e) {
-        org.multibit.action.OkBackToParentAction okBackToParentAction = 
-            new org.multibit.action.OkBackToParentAction(controller);
-        // TODO OK will get split into separate working actions
-        okBackToParentAction.execute(null);
+        dialog.setVisible(false);
     }
 }

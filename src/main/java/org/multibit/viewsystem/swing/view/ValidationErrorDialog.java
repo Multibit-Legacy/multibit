@@ -15,53 +15,55 @@
  */
 package org.multibit.viewsystem.swing.view;
 
-import javax.swing.Action;
-import javax.swing.JDialog;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+
 import javax.swing.JOptionPane;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
 import org.multibit.viewsystem.swing.action.OkBackToParentAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The validation error view - used to tell the user their input is invalid
+ * The validation error dialog - used to tell the user their input is invalid
  */
-public class ValidationErrorView implements View {
+public class ValidationErrorDialog extends MultiBitDialog {
 
-    private static final Logger log = LoggerFactory.getLogger(ValidationErrorView.class);
+    private static final Logger log = LoggerFactory.getLogger(ValidationErrorDialog.class);
 
     private static final long serialVersionUID = 191499812345057705L;
 
-    private MultiBitFrame mainFrame;
+    private static final int HEIGHT_DELTA = 150;
+    private static final int WIDTH_DELTA = 150;
 
     private MultiBitController controller;
 
-    private JDialog messageDialog;
-
     /**
-     * Creates a new {@link ValidationErrorView}.
-     * @param controller The controller
-     * @param mainFrame The frame
+     * Creates a new {@link ValidationErrorDialog}.
+     * 
+     * @param controller
+     *            The controller
      */
-    public ValidationErrorView(MultiBitController controller, MultiBitFrame mainFrame) {
+    public ValidationErrorDialog(MultiBitController controller, MultiBitFrame mainFrame) {
+        super(mainFrame, controller.getLocaliser().getString("validationErrorView.title"));
         this.controller = controller;
-        this.mainFrame = mainFrame;
+
+        initUI();
     }
 
     /**
-     * show validation error view
+     * initialise the validation error dialog
      */
-    public void displayView() {
+    private void initUI() {
         // get the data out of the user preferences
         String addressValue = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE);
         String amountValue = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_VALUE);
@@ -88,7 +90,8 @@ public class ValidationErrorView implements View {
         }
 
         // amount is negative or zero
-        String amountIsNegativeOrZero = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO);
+        String amountIsNegativeOrZero = controller.getModel().getActiveWalletPreference(
+                MultiBitModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO);
         boolean amountIsNegativeOrZeroBoolean = false;
         if (Boolean.TRUE.toString().equals(amountIsNegativeOrZero)) {
             amountIsNegativeOrZeroBoolean = true;
@@ -105,34 +108,49 @@ public class ValidationErrorView implements View {
         String completeMessage = "";
 
         int rows = 0;
+        String longestRow = "";
+
         if (addressIsInvalidBoolean) {
             completeMessage = controller.getLocaliser().getString("validationErrorView.addressInvalidMessage",
                     new String[] { addressValue });
+            longestRow = completeMessage;
             rows++;
         }
         if (amountIsMissingBoolean) {
             if (!"".equals(completeMessage)) {
                 completeMessage = completeMessage + "\n";
             }
-            completeMessage = completeMessage
-                    + controller.getLocaliser().getString("validationErrorView.amountIsMissingMessage");
+            String textToAdd = controller.getLocaliser().getString("validationErrorView.amountIsMissingMessage");
+            if (textToAdd.length() > longestRow.length()) {
+                longestRow = textToAdd;
+            }
+            completeMessage = completeMessage + textToAdd;
             rows++;
         }
         if (amountIsInvalidBoolean) {
             if (!"".equals(completeMessage)) {
                 completeMessage = completeMessage + "\n";
             }
-            completeMessage = completeMessage
-                    + controller.getLocaliser().getString("validationErrorView.amountInvalidMessage",
-                            new String[] { amountValue });
+            String textToAdd = controller.getLocaliser().getString("validationErrorView.amountInvalidMessage",
+                    new String[] { amountValue });
+            if (textToAdd.length() > longestRow.length()) {
+                longestRow = textToAdd;
+            }
+            completeMessage = completeMessage + textToAdd;
+
             rows++;
         }
         if (amountIsNegativeOrZeroBoolean) {
             if (!"".equals(completeMessage)) {
                 completeMessage = completeMessage + "\n";
             }
-            completeMessage = completeMessage
-                    + controller.getLocaliser().getString("validationErrorView.amountIsNegativeOrZeroMessage");
+
+            String textToAdd = controller.getLocaliser().getString("validationErrorView.amountIsNegativeOrZeroMessage");
+            if (textToAdd.length() > longestRow.length()) {
+                longestRow = textToAdd;
+            }
+            completeMessage = completeMessage + textToAdd;
+
             rows++;
         }
         if (notEnoughFundsBoolean) {
@@ -143,45 +161,40 @@ public class ValidationErrorView implements View {
             if (fee == null || fee.equals("")) {
                 fee = controller.getLocaliser().bitcoinValueToString4(MultiBitModel.SEND_MINIMUM_FEE, false, false);
             }
-            completeMessage = completeMessage
-                    + controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage",
-                            new String[] { amountValue, fee });
+            String textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage",
+                    new String[] { amountValue, fee });
+            String[] lines = textToAdd.split("\n");
+            for (int i = 0; i < lines.length; i++) {
+                if (lines[i] != null && lines[i].length() > longestRow.length()) {
+                    longestRow = lines[i];
+                }
+            }
+            completeMessage = completeMessage + textToAdd;
             rows++;
         }
-        
-        // tell user validation messages
-        OkBackToParentAction okAction = new OkBackToParentAction(controller);
-        MultiBitButton okButton = new MultiBitButton(okAction, controller);
 
+        // tell user validation messages
+        OkBackToParentAction okAction = new OkBackToParentAction(controller, this);
+        MultiBitButton okButton = new MultiBitButton(okAction, controller);
 
         Object[] options = { okButton };
 
         MultiBitTextArea completeMessageTextArea = new MultiBitTextArea(completeMessage, rows, 20, controller);
         completeMessageTextArea.setOpaque(false);
         completeMessageTextArea.setEditable(false);
-        
-        JOptionPane optionPane = new JOptionPane(completeMessageTextArea, JOptionPane.ERROR_MESSAGE, JOptionPane.DEFAULT_OPTION, ImageLoader.createImageIcon(ImageLoader.EXCLAMATION_MARK_ICON_FILE),
-                options, options[0]);
+        completeMessageTextArea.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
-        messageDialog = optionPane.createDialog(mainFrame, controller.getLocaliser().getString("validationErrorView.title"));
-        messageDialog.setVisible(true);
-    }
+        JOptionPane optionPane = new JOptionPane(completeMessageTextArea, JOptionPane.ERROR_MESSAGE, JOptionPane.DEFAULT_OPTION,
+                ImageLoader.createImageIcon(ImageLoader.EXCLAMATION_MARK_ICON_FILE), options, options[0]);
 
-    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
-        // not implemented on this view
-    }
+        add(optionPane);
 
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
-        if (messageDialog != null) {
-            messageDialog.setVisible(false);
-            messageDialog.dispose();
-            messageDialog = null;
-        }
-    }
+        FontMetrics fontMetrics = optionPane.getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
-    @Override
-    public void updateView() {
-        // TODO Auto-generated method stub
-        
+        int minimumHeight = fontMetrics.getHeight() * rows + HEIGHT_DELTA;
+        log.debug("longest row = '" + longestRow + "'");
+        int minimumWidth = fontMetrics.stringWidth(longestRow) + WIDTH_DELTA;
+        setMinimumSize(new Dimension(minimumWidth, minimumHeight));
+        positionDialogRelativeToParent(this, 0.5D, 0.47D);
     }
 }
