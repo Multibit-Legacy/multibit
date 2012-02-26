@@ -67,6 +67,8 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
     private JLabel transactionsTitleLabel;
     private ShowTransactionsPanel transactionsPanel;
 
+    private JScrollPane scrollPane;
+    
     private boolean initialised = false;
 
     /**
@@ -192,7 +194,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         add(headerPanel, constraints);
 
         createWalletListPanel();
-        JScrollPane scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setViewportView(walletListPanel);
         scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
         scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker()));
