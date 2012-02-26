@@ -600,15 +600,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         }
     }
 
-    public Transaction sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee) throws IOException, AddressFormatException {
-        // send the coins
-        Transaction sendTransaction = multiBitService.sendCoins(perWalletModelData, sendAddressString, amount, fee);
-        
-        fireRecreateAllViews(false);
-
-        return sendTransaction;
-    }
-
     public void clearViewStack() {
         viewStack.clear();
         viewStack.push(View.YOUR_WALLETS_VIEW);

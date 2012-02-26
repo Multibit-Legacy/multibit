@@ -101,10 +101,6 @@ public class MultiBitService {
 
     private ReplayableBlockStore blockStore;
 
-    public ReplayableBlockStore getBlockStore() {
-        return blockStore;
-    }
-
     private boolean useTestNet;
 
     private MultiBitController controller;
@@ -143,6 +139,7 @@ public class MultiBitService {
         try {
             genesisBlockCreationDate = format.parse("2009-01-03 18:15:05");
         } catch (ParseException e) {
+            // will never happen
             e.printStackTrace();
         }
 
@@ -215,7 +212,7 @@ public class MultiBitService {
     }
 
     /**
-     * initialise wallet from the wallet filename
+     * initialize wallet from the wallet filename
      * 
      * @param walletFilename
      * @return perWalletModelData
@@ -305,14 +302,19 @@ public class MultiBitService {
 
             // add wallet to blockchain
             blockChain.addWallet(wallet);
-
-            // add wallet to PeerGroup
             peerGroup.addWallet(wallet);
 
-            // if (newWalletCreated) {
-            // controller.fireNewWalletCreated();
-            // }
-        }
+            // add wallet to PeerGroup - this is done in a background thread as it is slow
+//            @SuppressWarnings("rawtypes")
+//            SwingWorker worker = new SwingWorker() {
+//                @Override
+//                protected Object doInBackground() throws Exception {
+//                    peerGroup.addWallet(wallet);
+//                    return null; // not used
+//                }
+//            };
+//            worker.execute();
+         }
 
         return perWalletModelDataToReturn;
     }
@@ -335,12 +337,8 @@ public class MultiBitService {
 
             log.debug("Creating new blockStore - need to redownload from Genesis block");
             blockChain = new BlockChain(networkParameters, (BlockStore) blockStore);
-
-            // TODO PeerGroup and Peers need to be updated with the new block
-            // chain
         } else {
             StoredBlock storedBlock = blockStore.getChainHead();
-            log.debug("bing 1");
 
             assert storedBlock != null;
 
@@ -379,11 +377,9 @@ public class MultiBitService {
                     }
                 }
             }
-            log.debug("bing 2");
 
             // in case the chain head was on an alternate fork go back more
-            // blocks to ensure
-            // back on the main chain
+            // blocks to ensure back on the main chain
             while (numberOfBlocksGoneBackward < MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN) {
                 try {
                     StoredBlock previousBlock = storedBlock.getPrev(blockStore);
@@ -400,40 +396,33 @@ public class MultiBitService {
                     break;
                 }
             }
-            log.debug("bing 3");
 
             assert storedBlock != null;
 
             // set the block chain head to the block just before the
             // earliest transaction in the wallet
             blockChain.setChainHeadAndClearCaches(storedBlock);
-            log.debug("bing 4");
 
             // clear any cached data in the BlockStore
             blockStore.clearCaches();
-            log.debug("bing 5");
         }
 
         // restart peerGroup and download
-        log.debug("bing 6");
         String message = controller.getLocaliser().getString("multiBitService.stoppingBitcoinNetworkConnection");
         controller.updateStatusLabel(message);
         peerGroup.stop();
-        log.debug("bing 7");
 
-        // reset to zero peers
+        // reset UI to zero peers
         controller.onPeerDisconnected(null, 0);
-        log.debug("bing 8");
+        
         message = controller.getLocaliser().getString("resetTransactionSubmitAction.replayingBlockchain", new Object[]{DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale())
                 .format(dateToReplayFrom)});
         controller.updateStatusLabel(message);
-        log.debug("bing 9");
+
         peerGroup = createNewPeerGroup();
-        log.debug("bing 10");
         peerGroup.start();
-        log.debug("bing 11");
+
         downloadBlockChain();
-        log.debug("bing 12");
     }
 
     /**
@@ -520,7 +509,14 @@ public class MultiBitService {
     public NetworkParameters getNetworkParameters() {
         return networkParameters;
     }
+    
+    public ReplayableBlockStore getBlockStore() {
+        return blockStore;
+    }
 
+    /**
+     * utility class just to show the number of peers connected in the log
+     */
     class CountPeerEventListener extends AbstractPeerEventListener {
         public void onPeerDisconnected(Peer peer, int peerCount) {
             logger.debug("Number of peers is now " + peerCount);

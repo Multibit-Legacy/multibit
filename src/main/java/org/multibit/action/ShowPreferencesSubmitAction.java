@@ -191,6 +191,9 @@ public class ShowPreferencesSubmitAction implements Action {
 
         if (feeValidationError) {
             controller.updateStatusLabel(updateStatusText);
+        } else {
+            // clear any previous validation error 
+            controller.updateStatusLabel(" ");
         }
     }
 }

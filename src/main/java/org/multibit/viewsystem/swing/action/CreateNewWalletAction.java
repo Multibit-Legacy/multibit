@@ -143,7 +143,9 @@ public class CreateNewWalletAction extends AbstractAction {
                 controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
 
                 // start using the new file as the wallet
+                log.debug("ping 1.1");
                 controller.addWalletFromFilename(newWalletFile.getAbsolutePath());
+                log.debug("ping 1.2");
                 controller.getModel().setActiveWalletByFilename(newWalletFilename);
 
                 controller.getModel().setUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "true");
