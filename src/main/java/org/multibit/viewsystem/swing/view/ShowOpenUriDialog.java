@@ -88,7 +88,7 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, DataProvi
      * show open uri view
      */
     public void initUI() {
-        setMinimumSize(new Dimension(480, 160));
+        setMinimumSize(new Dimension(480, 200));
         positionDialogRelativeToParent(this, 0.5D, 0.47D);
 
         setLayout(new GridBagLayout());
