@@ -32,6 +32,7 @@ import javax.swing.SwingWorker;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
+import org.multibit.file.PrivateKeysHandlerException;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.view.ImportPrivateKeysPanel;
 import org.slf4j.Logger;
@@ -94,9 +95,10 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                 File importFile = new File(importFilename);
 
                 setEnabled(false);
-                importPrivateKeysPanel.setMessage(controller.getLocaliser().getString("importPrivateKeysSubmitAction.importingPrivateKeys"));
+                importPrivateKeysPanel.setMessage(controller.getLocaliser().getString(
+                        "importPrivateKeysSubmitAction.importingPrivateKeys"));
                 importPrivateKeysInBackground(importFile);
-                
+
                 Timer timer = new Timer();
                 timer.schedule(new TimerTask() {
                     @Override
@@ -115,14 +117,14 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
         final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
         final File finalImportFile = importFile;
         final ImportPrivateKeysPanel finalThisPanel = importPrivateKeysPanel;
- 
+
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
             private String statusBarMessage = null;
             private String uiMessage = null;
 
             @Override
             protected Boolean doInBackground() throws Exception {
-                Boolean success = Boolean.FALSE;
+                Boolean successMeasure = Boolean.FALSE;
 
                 try {
                     PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService()
@@ -130,7 +132,8 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
 
                     ArrayList<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.importPrivateKeys(finalImportFile);
 
-                    // add to wallet and keep track of earliest transaction date go backwards from now
+                    // add to wallet and keep track of earliest transaction date
+                    // go backwards from now
                     Wallet walletToAddKeysTo = finalPerWalletModelData.getWallet();
                     Date earliestTransactionDate = new Date();
                     if (privateKeyAndDateArray != null) {
@@ -160,22 +163,24 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                     controller.getModel().createAddressBookReceivingAddresses(finalPerWalletModelData.getWalletFilename());
 
                     // begin blockchain replay
-                    try {
-                        controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
-                        success = Boolean.TRUE;
-                        statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
-                    } catch (BlockStoreException e) {
-                        statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.replayUnsuccessful",
-                                new Object[] { e.getMessage() });
-                    }
-                    uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportSuccess");
-                } catch (IOException e) {
-                    log.error(e.getClass().getName() + " " + e.getMessage());
-                    uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
-                            new Object[] { e.getClass().getName() + " " + e.getMessage() });
+                    controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
+                    successMeasure = Boolean.TRUE;
+                    statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
 
+                    uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportSuccess");
+                } catch (PrivateKeysHandlerException pkhe) {
+                    log.error(pkhe.getClass().getName() + " " + pkhe.getMessage());
+                    uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
+                            new Object[] { pkhe.getClass().getName() + " " + pkhe.getMessage() });
+
+                } catch (BlockStoreException bse) {
+                    log.error(bse.getClass().getName() + " " + bse.getMessage());
+                    statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.replayUnsuccessful",
+                            new Object[] { bse.getMessage() });
+                    uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
+                            new Object[] { bse.getClass().getName() + " " + bse.getMessage() });
                 }
-                return success;
+                return successMeasure;
             }
 
             protected void done() {
@@ -184,7 +189,7 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                     if (finalThisPanel != null) {
                         finalThisPanel.setMessage(uiMessage);
                     }
-                    
+
                     if (wasSuccessful) {
                         log.debug(statusBarMessage);
                         controller.updateStatusLabel(statusBarMessage);

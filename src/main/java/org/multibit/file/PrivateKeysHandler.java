@@ -16,6 +16,7 @@
 package org.multibit.file;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -101,27 +102,38 @@ public class PrivateKeysHandler {
         }
     }
 
-    public ArrayList<PrivateKeyAndDate> importPrivateKeys(File importFile) throws IOException {
+    public ArrayList<PrivateKeyAndDate> importPrivateKeys(File importFile) throws PrivateKeysHandlerException {
+        if (importFile == null) {
+            throw new PrivateKeysHandlerException("Import file cannot be null");
+        }
+
         ArrayList<PrivateKeyAndDate> parseResults = new ArrayList<PrivateKeyAndDate>();
 
-        Scanner scanner = new Scanner(new FileReader(importFile));
+        Scanner scanner = null;
         try {
+            scanner = new Scanner(new FileReader(importFile));
+
             // first use a Scanner to get each line
             while (scanner.hasNextLine()) {
                 processLine(scanner.nextLine(), parseResults);
             }
+        } catch (IOException ioe) {
+            throw new PrivateKeysHandlerException("Could not read import file '" + importFile.getAbsolutePath() + "'", ioe);
         } finally {
+
             // ensure the underlying stream is always closed
             // this only has any effect if the item passed
             // to the Scanner
             // constructor implements Closeable (which it
             // does in this case).
-            scanner.close();
+            if (scanner != null) {
+                scanner.close();
+            }
         }
         return parseResults;
     }
 
-    private void outputHeaderComment(PrintWriter out) throws IOException {
+    private void outputHeaderComment(PrintWriter out) {
         out.println("# KEEP YOUR PRIVATE KEYS SAFE !");
         out.println("# Anyone who can read this file can spend your bitcoin.");
         out.println("#");
@@ -136,7 +148,7 @@ public class PrivateKeysHandler {
         out.println("#");
     }
 
-    private void outputKeys(PrintWriter out, Wallet wallet, BlockChain blockChain) throws IOException {
+    private void outputKeys(PrintWriter out, Wallet wallet, BlockChain blockChain) {
         if (wallet != null) {
             ArrayList<ECKey> keychain = wallet.keychain;
             Set<Transaction> allTransactions = wallet.getTransactions(true, true);
@@ -277,7 +289,7 @@ public class PrivateKeysHandler {
             }
             return false;
         } catch (ScriptException e) {
-            throw new RuntimeException(e);
+            throw new PrivateKeysHandlerException("Transaction script was not understandable", e);
         }
     }
 
@@ -304,18 +316,16 @@ public class PrivateKeysHandler {
 
                 privateKeyAndDate.setKey(dumpedPrivateKey.getKey());
 
-                try {
-                    if (createdAtAsString != null && !"".equals(createdAtAsString)) {
-                        Date date = formatter.parse(createdAtAsString);
-                        privateKeyAndDate.setDate(date);
-                    }
-                } catch (ParseException pe) {
-                    pe.printStackTrace();
+                if (createdAtAsString != null && !"".equals(createdAtAsString)) {
+                    Date date = formatter.parse(createdAtAsString);
+                    privateKeyAndDate.setDate(date);
                 }
+
                 parseResults.add(privateKeyAndDate);
             } catch (AddressFormatException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new PrivateKeysHandlerException("Could not understand address in import file", e);
+            } catch (ParseException pe) {
+                throw new PrivateKeysHandlerException("Could not parse date in import file", pe);
             } finally {
                 if (scanner != null) {
                     scanner.close();

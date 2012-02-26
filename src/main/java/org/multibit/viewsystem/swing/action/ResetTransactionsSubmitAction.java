@@ -99,7 +99,7 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
             
             @Override
             protected Boolean doInBackground() throws Exception {
-                Boolean success = Boolean.FALSE;
+                Boolean successMeasure = Boolean.FALSE;
                 
                 // work out the earliest transaction date and save it to the wallet
                 PerWalletModelData activePerWalletModelData = controller.getModel().getActivePerWalletModelData();
@@ -137,12 +137,12 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
 
                 try {
                     controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
-                    success = Boolean.TRUE;
+                    successMeasure = Boolean.TRUE;
                     message = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
                 } catch (BlockStoreException e) {
                     message = controller.getLocaliser().getString("resetTransactionsSubmitAction.replayUnsuccessful", new Object[]{e.getMessage()});;
                 }
-                return success;
+                return successMeasure;
             }
             
             protected void done() {
