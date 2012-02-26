@@ -70,6 +70,8 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
     private MultiBitLabel messageLabel;
 
     private String outputFilename;
+    
+    private ImportPrivateKeysPanel thisPanel;
 
     /**
      * Creates a new {@link ImportPrivateKeysPanel}.
@@ -77,6 +79,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
     public ImportPrivateKeysPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
+        thisPanel = this;
 
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
                 BorderFactory.createMatteBorder(1, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
@@ -87,7 +90,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         data = new Data();
 
         outputFilename = "";
-        
+
         // clear any old message info
         controller.getModel().setUserPreference(MultiBitModel.DISPLAY_IMPORT_PRIVATE_KEYS_MESSAGE, "false");
         controller.getModel().setUserPreference(MultiBitModel.IMPORT_PRIVATE_KEYS_MESSAGE, " ");
@@ -102,8 +105,9 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         if (outputFilename == null || "".equals(outputFilename)) {
             outputFilenameLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.noFileSelected"));
         }
-        
-        if (Boolean.TRUE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.DISPLAY_IMPORT_PRIVATE_KEYS_MESSAGE))) {
+
+        if (Boolean.TRUE.toString().equals(
+                controller.getModel().getUserPreference(MultiBitModel.DISPLAY_IMPORT_PRIVATE_KEYS_MESSAGE))) {
             messageLabel.setText("  " + controller.getModel().getUserPreference(MultiBitModel.IMPORT_PRIVATE_KEYS_MESSAGE));
             controller.getModel().setUserPreference(MultiBitModel.DISPLAY_IMPORT_PRIVATE_KEYS_MESSAGE, "false");
         } else {
@@ -185,7 +189,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.weighty = 0.06;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(messageLabel, constraints);
-        
+
         JLabel filler1 = new JLabel();
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
@@ -327,10 +331,10 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
                 "showImportPrivateKeysPanel.filename.text"));
 
         chooseFilenameButton.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 chooseFile();
+                thisPanel.setMessage(" ");
             }
         });
 
@@ -385,7 +389,8 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        ImportPrivateKeysSubmitAction submitAction = new ImportPrivateKeysSubmitAction(controller, this, ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE));
+        ImportPrivateKeysSubmitAction submitAction = new ImportPrivateKeysSubmitAction(controller, this,
+                ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE));
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
@@ -398,14 +403,6 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         data.addItem(MultiBitModel.PRIVATE_KEY_FILENAME, privateKeyFilenameItem);
 
         return data;
-    }
-
-    public JPanel getFormPanel() {
-        return null;
-    }
-
-    public JTextField getLabelTextField() {
-        return null;
     }
 
     @Override
@@ -440,9 +437,19 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
             File file = fileChooser.getSelectedFile();
             if (file != null) {
                 outputFilename = file.getAbsolutePath();
-                
+
                 outputFilenameLabel.setText(outputFilename);
             }
+        }
+    }
+
+    public String getOutputFilename() {
+        return outputFilename;
+    }
+
+    public void setMessage(String message) {
+        if (messageLabel != null) {
+            messageLabel.setText(message);
         }
     }
 }

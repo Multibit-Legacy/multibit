@@ -40,7 +40,7 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.store.BlockStoreException;
 
 /**
- * an action to process the submit of the Export Private Keys submit action
+ * an action to process the submit of the Import Private Keys submit action
  * 
  * @author jim
  * 

@@ -44,7 +44,7 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
 
     private static final int NUMBER_OF_MILLISECOND_IN_A_SECOND = 1000;
 
-    private static final long RESET_BUTTON_DOWNCLICK_TIME = 400;
+    private static final long BUTTON_DOWNCLICK_TIME = 400;
     
     private MultiBitController controller;
 
@@ -80,11 +80,10 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
             resetTransactionsInBackground();
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
-
                 @Override
                 public void run() {
                     thisAction.setEnabled(true);
-                }}, RESET_BUTTON_DOWNCLICK_TIME);
+                }}, BUTTON_DOWNCLICK_TIME);
             
         }
     }

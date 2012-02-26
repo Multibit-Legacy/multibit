@@ -16,42 +16,206 @@
 package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.DataProvider;
+import org.multibit.file.PrivateKeyAndDate;
+import org.multibit.file.PrivateKeysHandler;
+import org.multibit.model.PerWalletModelData;
+import org.multibit.viewsystem.swing.view.ImportPrivateKeysPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.store.BlockStoreException;
 
 /**
  * This {@link Action} imports the private keys to the active wallet
  */
 public class ImportPrivateKeysSubmitAction extends AbstractAction {
 
+    private static final Logger log = LoggerFactory.getLogger(ImportPrivateKeysSubmitAction.class);
+
     private static final long serialVersionUID = 1923492087598757765L;
 
     private MultiBitController controller;
-    private DataProvider dataProvider;
+    private ImportPrivateKeysPanel importPrivateKeysPanel;
+
+    private static final long BUTTON_DOWNCLICK_TIME = 400;
 
     /**
      * Creates a new {@link ImportPrivateKeysSubmitAction}.
      */
-    public ImportPrivateKeysSubmitAction(MultiBitController controller, DataProvider dataProvider, ImageIcon icon) {
-        super(controller.getLocaliser().getString("showImportPrivateKeysAction.text"), icon);
+    public ImportPrivateKeysSubmitAction(MultiBitController controller, ImportPrivateKeysPanel importPrivateKeysPanel,
+            ImageIcon icon) {
+        super(controller.getLocaliser().getString("importPrivateKeysSubmitAction.text"), icon);
         this.controller = controller;
-        this.dataProvider = dataProvider;
+        this.importPrivateKeysPanel = importPrivateKeysPanel;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("showImportPrivateKeysAction.tooltip"));
-        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("showImportPrivateKeysAction.mnemonicKey"));
+        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("importPrivateKeysSubmitAction.tooltip"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("importPrivateKeysSubmitAction.mnemonicKey"));
     }
 
     /**
-     * delegate to generic submit action
+     * import the private keys and replay the blockchain
      */
-    public void actionPerformed(ActionEvent e) {
-        org.multibit.action.ImportPrivateKeysSubmitAction submitAction = new org.multibit.action.ImportPrivateKeysSubmitAction(controller);
-        submitAction.execute(dataProvider);
+    public void actionPerformed(ActionEvent event) {
+        // check to see if another process has changed the active wallet
+        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
+
+        if (haveFilesChanged) {
+            // set on the perWalletModelData that files have changed and fire
+            // data changed
+            perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
+            controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
+        } else {
+            final ImportPrivateKeysSubmitAction thisAction = this;
+
+            String importFilename = importPrivateKeysPanel.getOutputFilename();
+            if (importFilename == null || importFilename.equals("")) {
+                // no import file - nothing to do
+                importPrivateKeysPanel.setMessage(controller.getLocaliser().getString(
+                        "importPrivateKeysSubmitAction.privateKeysNothingToDo"));
+            } else {
+                File importFile = new File(importFilename);
+
+                setEnabled(false);
+                importPrivateKeysPanel.setMessage(controller.getLocaliser().getString("importPrivateKeysSubmitAction.importingPrivateKeys"));
+                importPrivateKeysInBackground(importFile);
+                
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        thisAction.setEnabled(true);
+                    }
+                }, BUTTON_DOWNCLICK_TIME);
+            }
+        }
+    }
+
+    /**
+     * import the private keys in a background Swing worker thread
+     */
+    private void importPrivateKeysInBackground(File importFile) {
+        final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
+        final File finalImportFile = importFile;
+        final ImportPrivateKeysPanel finalThisPanel = importPrivateKeysPanel;
+ 
+        SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
+            private String statusBarMessage = null;
+            private String uiMessage = null;
+
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                Boolean success = Boolean.FALSE;
+
+                try {
+                    PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService()
+                            .getNetworkParameters());
+
+                    ArrayList<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.importPrivateKeys(finalImportFile);
+
+                    // add to wallet and keep track of earliest transaction date go backwards from now
+                    Wallet walletToAddKeysTo = finalPerWalletModelData.getWallet();
+                    Date earliestTransactionDate = new Date();
+                    if (privateKeyAndDateArray != null) {
+                        for (PrivateKeyAndDate privateKeyAndDate : privateKeyAndDateArray) {
+                            ECKey keyToAdd = privateKeyAndDate.getKey();
+                            if (keyToAdd != null) {
+                                if (walletToAddKeysTo != null
+                                        && !keyChainContainsPrivateKey(walletToAddKeysTo.getKeychain(), keyToAdd)) {
+                                    walletToAddKeysTo.addKey(keyToAdd);
+
+                                    // update earliest transaction date
+                                    if (privateKeyAndDate.getDate() == null) {
+                                        // need to go back to the genesis block
+                                        earliestTransactionDate = null;
+                                    } else {
+                                        if (earliestTransactionDate != null) {
+                                            earliestTransactionDate = earliestTransactionDate.before(privateKeyAndDate.getDate()) ? earliestTransactionDate
+                                                    : privateKeyAndDate.getDate();
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                    controller.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
+                    controller.getModel().createAddressBookReceivingAddresses(finalPerWalletModelData.getWalletFilename());
+
+                    // begin blockchain replay
+                    try {
+                        controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
+                        success = Boolean.TRUE;
+                        statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
+                    } catch (BlockStoreException e) {
+                        statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.replayUnsuccessful",
+                                new Object[] { e.getMessage() });
+                    }
+                    uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportSuccess");
+                } catch (IOException e) {
+                    log.error(e.getClass().getName() + " " + e.getMessage());
+                    uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
+                            new Object[] { e.getClass().getName() + " " + e.getMessage() });
+
+                }
+                return success;
+            }
+
+            protected void done() {
+                try {
+                    Boolean wasSuccessful = get();
+                    if (finalThisPanel != null) {
+                        finalThisPanel.setMessage(uiMessage);
+                    }
+                    
+                    if (wasSuccessful) {
+                        log.debug(statusBarMessage);
+                        controller.updateStatusLabel(statusBarMessage);
+                    } else {
+                        log.error(statusBarMessage);
+                        controller.updateStatusLabel(statusBarMessage);
+                    }
+                } catch (Exception e) {
+                    // not really used but caught so that SwingWorker shuts down
+                    // cleanly
+                    log.error(e.getClass() + " " + e.getMessage());
+                }
+            }
+        };
+        log.debug("Importing private keys in background SwingWorker thread");
+        worker.execute();
+    }
+
+    /**
+     * this method is here because there is no equals on ECKey
+     */
+    private boolean keyChainContainsPrivateKey(ArrayList<ECKey> keyChain, ECKey keyToAdd) {
+        if (keyChain == null || keyToAdd == null) {
+            return false;
+        } else {
+            for (ECKey loopKey : keyChain) {
+                if (Arrays.equals(keyToAdd.getPrivKeyBytes(), loopKey.getPrivKeyBytes())) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }
