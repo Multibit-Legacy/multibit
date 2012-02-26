@@ -497,11 +497,13 @@ public class Wallet implements Serializable, IsMultiBitClass {
                     bitcoinValueToFriendlyString(valueDifference), tx.getHashAsString() });
         }
 
-        // If the transaction is already in our spent or unspent it is probably
+        // If the transaction is already in our spent or unspent or there is no money in it it is probably
         // due to a block replay so we do not want to do anything with it
         // if it is on a sidechain then let the ELSE below deal with it
-        if (bestChain &&(spent.containsKey(tx.getHash()) || unspent.containsKey(tx.getHash()))) {
-            log.info("Already have tx " + tx.getHash() + " in spent/ unspent so ignoring");
+        boolean alreadyHaveIt = spent.containsKey(tx.getHash()) || unspent.containsKey(tx.getHash());
+        boolean noMoneyInIt = BigInteger.ZERO.equals(valueSentFromMe) && BigInteger.ZERO.equals(valueSentToMe);
+        if (bestChain &&(alreadyHaveIt || noMoneyInIt)) {
+            log.info("Already have tx " + tx.getHash() + " in spent/ unspent or there is no money in it so ignoring");
             return;
         }
         // If this transaction is already in the wallet we may need to move it

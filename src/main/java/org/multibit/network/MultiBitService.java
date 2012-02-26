@@ -340,6 +340,7 @@ public class MultiBitService {
             // chain
         } else {
             StoredBlock storedBlock = blockStore.getChainHead();
+            log.debug("bing 1");
 
             assert storedBlock != null;
 
@@ -378,6 +379,7 @@ public class MultiBitService {
                     }
                 }
             }
+            log.debug("bing 2");
 
             // in case the chain head was on an alternate fork go back more
             // blocks to ensure
@@ -398,27 +400,40 @@ public class MultiBitService {
                     break;
                 }
             }
+            log.debug("bing 3");
 
             assert storedBlock != null;
 
             // set the block chain head to the block just before the
             // earliest transaction in the wallet
             blockChain.setChainHeadAndClearCaches(storedBlock);
+            log.debug("bing 4");
 
             // clear any cached data in the BlockStore
             blockStore.clearCaches();
+            log.debug("bing 5");
         }
 
         // restart peerGroup and download
+        log.debug("bing 6");
+        String message = controller.getLocaliser().getString("multiBitService.stoppingBitcoinNetworkConnection");
+        controller.updateStatusLabel(message);
         peerGroup.stop();
+        log.debug("bing 7");
+
         // reset to zero peers
         controller.onPeerDisconnected(null, 0);
-        String message = controller.getLocaliser().getString("resetTransactionSubmitAction.replayingBlockchain", new Object[]{DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale())
+        log.debug("bing 8");
+        message = controller.getLocaliser().getString("resetTransactionSubmitAction.replayingBlockchain", new Object[]{DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale())
                 .format(dateToReplayFrom)});
         controller.updateStatusLabel(message);
+        log.debug("bing 9");
         peerGroup = createNewPeerGroup();
+        log.debug("bing 10");
         peerGroup.start();
+        log.debug("bing 11");
         downloadBlockChain();
+        log.debug("bing 12");
     }
 
     /**

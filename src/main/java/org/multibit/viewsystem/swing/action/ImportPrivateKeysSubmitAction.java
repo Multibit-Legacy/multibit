@@ -17,7 +17,6 @@ package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -27,6 +26,7 @@ import java.util.TimerTask;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
@@ -92,11 +92,12 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                 importPrivateKeysPanel.setMessage(controller.getLocaliser().getString(
                         "importPrivateKeysSubmitAction.privateKeysNothingToDo"));
             } else {
-                File importFile = new File(importFilename);
-
                 setEnabled(false);
                 importPrivateKeysPanel.setMessage(controller.getLocaliser().getString(
                         "importPrivateKeysSubmitAction.importingPrivateKeys"));
+
+                File importFile = new File(importFilename);
+
                 importPrivateKeysInBackground(importFile);
 
                 Timer timer = new Timer();
@@ -117,6 +118,7 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
         final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
         final File finalImportFile = importFile;
         final ImportPrivateKeysPanel finalThisPanel = importPrivateKeysPanel;
+        final MultiBitController finalController = controller;
 
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
             private String statusBarMessage = null;
@@ -161,13 +163,19 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                     }
                     controller.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
                     controller.getModel().createAddressBookReceivingAddresses(finalPerWalletModelData.getWalletFilename());
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            if (finalThisPanel != null) {
+                                finalThisPanel.setMessage(finalController.getLocaliser().getString(
+                                        "importPrivateKeysSubmitAction.privateKeysImportSuccess"));
+                            }
+                        }
+                    });
 
-                    // begin blockchain replay
+                    // begin blockchain replay - returns quickly - just kicks it off
                     controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
                     successMeasure = Boolean.TRUE;
                     statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
-
-                    uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportSuccess");
                 } catch (PrivateKeysHandlerException pkhe) {
                     log.error(pkhe.getClass().getName() + " " + pkhe.getMessage());
                     uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
@@ -186,20 +194,20 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
             protected void done() {
                 try {
                     Boolean wasSuccessful = get();
-                    if (finalThisPanel != null) {
+
+                    if (finalThisPanel != null && uiMessage != null) {
                         finalThisPanel.setMessage(uiMessage);
                     }
 
+                    controller.updateStatusLabel(statusBarMessage);
+
                     if (wasSuccessful) {
                         log.debug(statusBarMessage);
-                        controller.updateStatusLabel(statusBarMessage);
                     } else {
                         log.error(statusBarMessage);
-                        controller.updateStatusLabel(statusBarMessage);
                     }
                 } catch (Exception e) {
-                    // not really used but caught so that SwingWorker shuts down
-                    // cleanly
+                    // not really used but caught so that SwingWorker shuts down cleanly
                     log.error(e.getClass() + " " + e.getMessage());
                 }
             }
