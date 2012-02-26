@@ -499,7 +499,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
         // If the transaction is already in our spent or unspent it is probably
         // due to a block replay so we do not want to do anything with it
-        if (!reorg &&(spent.containsKey(tx.getHash()) || unspent.containsKey(tx.getHash()))) {
+        // if it is on a sidechain then let the ELSE below deal with it
+        if (bestChain &&(spent.containsKey(tx.getHash()) || unspent.containsKey(tx.getHash()))) {
             log.info("Already have tx " + tx.getHash() + " in spent/ unspent so ignoring");
             return;
         }
