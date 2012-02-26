@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -63,15 +64,20 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
     private MultiBitLabel walletDescriptionLabel;
 
+    private  MultiBitButton chooseFilenameButton;
+    
     private JFileChooser fileChooser;
 
     private MultiBitLabel outputFilenameLabel;
 
     private MultiBitLabel messageLabel;
+    
+    private static final String INDENT_SPACES = "  "; // 2 spaces
 
     private String outputFilename;
     
     private ImportPrivateKeysPanel thisPanel;
+    
 
     /**
      * Creates a new {@link ImportPrivateKeysPanel}.
@@ -327,13 +333,14 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         outputFilenamePanel.add(filler1, constraints);
 
-        MultiBitButton chooseFilenameButton = new MultiBitButton(controller.getLocaliser().getString(
+        chooseFilenameButton = new MultiBitButton(controller.getLocaliser().getString(
                 "showImportPrivateKeysPanel.filename.text"));
 
+        final MultiBitButton finalChooseFilenameButton = chooseFilenameButton;
         chooseFilenameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                chooseFile();
+                chooseFile(finalChooseFilenameButton);
                 thisPanel.setMessage(" ");
             }
         });
@@ -411,7 +418,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
     }
 
-    private void chooseFile() {
+    private void chooseFile(MultiBitButton callingButton) {
         JFileChooser.setDefaultLocale(controller.getLocaliser().getLocale());
         fileChooser = new JFileChooser();
         fileChooser.setLocale(controller.getLocaliser().getLocale());
@@ -431,8 +438,13 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
             fileChooser.setSelectedFile(new File(defaultFileName));
         }
 
+        callingButton.setEnabled(false);
+        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        fileChooser.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         int returnVal = fileChooser.showOpenDialog(mainFrame);
-
+        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        callingButton.setEnabled(true);
+        
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             if (file != null) {
@@ -449,7 +461,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
     public void setMessage(String message) {
         if (messageLabel != null) {
-            messageLabel.setText(message);
+            messageLabel.setText(INDENT_SPACES + message);
         }
     }
 }

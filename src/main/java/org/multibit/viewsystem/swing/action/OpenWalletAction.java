@@ -82,6 +82,7 @@ public class OpenWalletAction extends AbstractAction {
                 fileChooser.setFileFilter(new WalletFileFilter(controller));
             }
 
+            fileChooser.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             int returnVal = fileChooser.showOpenDialog(mainFrame);
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {

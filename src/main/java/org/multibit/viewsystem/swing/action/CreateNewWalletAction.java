@@ -85,6 +85,7 @@ public class CreateNewWalletAction extends AbstractAction {
                     + controller.getLocaliser().getString("saveWalletAsView.untitled") + "." + MultiBitModel.WALLET_FILE_EXTENSION;
             fileChooser.setSelectedFile(new File(defaultFileName));
 
+            fileChooser.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             int returnVal = fileChooser.showSaveDialog(mainFrame);
 
             String newWalletFilename = null;
