@@ -106,7 +106,7 @@ public class ViewFactory {
         }
 
         case View.SHOW_OPEN_URI_DIALOG_VIEW: {
-            viewToReturn = new ShowOpenUriView(controller, mainFrame);
+            viewToReturn = new ShowOpenUriDialog(controller, mainFrame);
             break;
         }
 

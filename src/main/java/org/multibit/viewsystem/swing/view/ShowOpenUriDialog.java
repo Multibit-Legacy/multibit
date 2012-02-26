@@ -37,11 +37,15 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ShowOpenUriCancelAction;
 import org.multibit.viewsystem.swing.action.ShowOpenUriSubmitAction;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The show open uri view
  */
-public class ShowOpenUriView extends MultiBitDialog implements View, DataProvider {
+public class ShowOpenUriDialog extends MultiBitDialog implements View, DataProvider {
+
+    private Logger log = LoggerFactory.getLogger(ShowOpenUriDialog.class);
 
     private static final long serialVersionUID = 191411112345057705L;
 
@@ -59,12 +63,14 @@ public class ShowOpenUriView extends MultiBitDialog implements View, DataProvide
     private JCheckBox rememberCheckBox;
 
     /**
-     * Creates a new {@link ShowOpenUriView}.
+     * Creates a new {@link ShowOpenUriDialog}.
      */
-    public ShowOpenUriView(MultiBitController controller, MultiBitFrame mainFrame) {
+    public ShowOpenUriDialog(MultiBitController controller, MultiBitFrame mainFrame) {
         super(mainFrame, controller.getLocaliser().getString("showOpenUriView.title"));
         this.controller = controller;
         this.mainFrame = mainFrame;
+        
+        setAlwaysOnTop(true);
 
         ImageIcon imageIcon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_ICON_FILE);
         if (imageIcon != null) {
@@ -75,8 +81,7 @@ public class ShowOpenUriView extends MultiBitDialog implements View, DataProvide
         
         cancelButton.requestFocusInWindow();
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
- 
-        setVisible(true);
+        log.debug("Constructor called for ShowOpenUriDialog " + this.toString());
     }
 
     /**
@@ -175,12 +180,12 @@ public class ShowOpenUriView extends MultiBitDialog implements View, DataProvide
         constraints.anchor = GridBagConstraints.LINE_END;
         add(buttonPanel, constraints);
 
-        ShowOpenUriCancelAction cancelAction = new ShowOpenUriCancelAction(controller, this);
+        ShowOpenUriCancelAction cancelAction = new ShowOpenUriCancelAction(controller, this, this);
         cancelButton = new JButton(cancelAction);
         cancelButton.setText(controller.getLocaliser().getString("showOpenUriView.noText"));
         buttonPanel.add(cancelButton);
 
-        ShowOpenUriSubmitAction showOpenUriSubmitAction = new ShowOpenUriSubmitAction(mainFrame, controller, this);
+        ShowOpenUriSubmitAction showOpenUriSubmitAction = new ShowOpenUriSubmitAction(mainFrame, controller, this, this);
         submitButton = new JButton(showOpenUriSubmitAction);
         submitButton.setText(controller.getLocaliser().getString("showOpenUriView.yesText"));
         buttonPanel.add(submitButton);
@@ -202,6 +207,7 @@ public class ShowOpenUriView extends MultiBitDialog implements View, DataProvide
 
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
         setVisible(false);
+        log.debug("Navigate away from view called for ShowOpenUriDialog " + this.toString());
     }
 
     public Data getData() {
@@ -226,6 +232,8 @@ public class ShowOpenUriView extends MultiBitDialog implements View, DataProvide
     }
 
     public void displayView() { 
+        log.debug("display called for ShowOpenUriDialog " + this.toString());
+
         // get the data out of the wallet preferences
         sendAddress = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_ADDRESS);
         sendLabel = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_LABEL);
@@ -242,22 +250,21 @@ public class ShowOpenUriView extends MultiBitDialog implements View, DataProvide
         setVisible(true);
         
         // bring this dialog to the front
-        //bringToFront();
+        bringToFront();
     }
 
     @Override
     public void updateView() {
-        // TODO Auto-generated method stub
-        
+        log.debug("updateView called for ShowOpenUriDialog " + this.toString());
     }
     
-//    private void bringToFront() {
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                toFront();
-//                repaint();
-//            }
-//        });
-//    }
+    private void bringToFront() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                toFront();
+                repaint();
+            }
+        });
+    }
 }

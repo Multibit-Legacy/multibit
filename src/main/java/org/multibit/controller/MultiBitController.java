@@ -727,7 +727,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             getModel().setUserPreference(MultiBitModel.OPEN_URI_AMOUNT, amount);
             log.debug("Routing to show open uri view for address = " + address);
 
-            setActionForwardToChild(ActionForward.FORWARD_TO_SHOW_OPEN_URI_VIEW);
+            clearViewStack();
+            setActionForwardToSibling(ActionForward.FORWARD_TO_SHOW_OPEN_URI_VIEW);
             return;
         }
     }

@@ -24,6 +24,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.ShowOpenUriDialog;
 
 /**
  * This {@link Action} processes the open uri command
@@ -34,14 +35,16 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
 
     private MultiBitController controller;
     private DataProvider dataProvider;
+    private ShowOpenUriDialog showOpenUriDialog;
 
     /**
      * Creates a new {@link ShowOpenUriSubmitAction}.
      */
-    public ShowOpenUriSubmitAction(MultiBitFrame mainFrame, MultiBitController controller, DataProvider dataProvider) {
+    public ShowOpenUriSubmitAction(MultiBitFrame mainFrame, MultiBitController controller, DataProvider dataProvider, ShowOpenUriDialog showOpenUriDialog) {
         super(controller.getLocaliser().getString("showOpenUriView.yesText"));
         this.controller = controller;
         this.dataProvider = dataProvider;
+        this.showOpenUriDialog = showOpenUriDialog;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
 
@@ -64,7 +67,7 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
             controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
             org.multibit.action.ShowOpenUriSubmitAction submitAction = new org.multibit.action.ShowOpenUriSubmitAction(
-                    controller);
+                    controller, showOpenUriDialog);
             submitAction.execute(dataProvider);
         }
     }

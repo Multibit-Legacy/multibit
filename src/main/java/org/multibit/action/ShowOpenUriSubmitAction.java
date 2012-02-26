@@ -21,6 +21,7 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.viewsystem.swing.view.ShowOpenUriDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,13 +32,14 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class ShowOpenUriSubmitAction implements Action {
-
     private static final Logger log = LoggerFactory.getLogger(ShowOpenUriSubmitAction.class);
 
     private MultiBitController controller;
+    private ShowOpenUriDialog showOpenUriDialog;
 
-    public ShowOpenUriSubmitAction(MultiBitController controller) {
+    public ShowOpenUriSubmitAction(MultiBitController controller, ShowOpenUriDialog showOpenUriDialog) {
         this.controller = controller;
+        this.showOpenUriDialog = showOpenUriDialog;
     }
 
     public void execute(DataProvider dataProvider) {
@@ -76,9 +78,10 @@ public class ShowOpenUriSubmitAction implements Action {
             if (showDialogItem != null) {
                 controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG, (String)showDialogItem.getNewValue());                
             }
-             
-            controller.setActionForwardToSiblingOfParent(ActionForward.FORWARD_TO_SEND_BITCOIN);
-
+            
+            showOpenUriDialog.setVisible(false);
+            controller.clearViewStack();
+            controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SEND_BITCOIN);
         }
     }
 }

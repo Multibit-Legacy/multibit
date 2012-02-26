@@ -268,6 +268,7 @@ public class MultiBit {
             };
             // make sure the view stack has a next view populated (for use
             // in the OpenURIEvent)
+            controller.clearViewStack();
             controller.determineNextView(ActionForward.FORWARD_TO_SAME);
             // Call the event which will attempt validation against the
             // Bitcoin URI specification
