@@ -693,10 +693,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         }
     }
 
-    @Override
-    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
-    }
-
     protected class QRCodeKeyListener implements KeyListener {
         /** Handle the key typed event from the text field. */
         public void keyTyped(KeyEvent e) {

@@ -50,7 +50,6 @@ import org.multibit.viewsystem.ViewSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.GetDataMessage;
 import com.google.bitcoin.core.Message;
@@ -60,8 +59,7 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 
 /**
- * the MVC controller for Multibit - this is loosely based on the Apache Struts
- * controller
+ * the MVC controller for Multibit
  * 
  * @author jim
  */
@@ -142,8 +140,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
         viewSystems = new ArrayList<ViewSystem>();
 
-        // initialise everything to look at the stored opened view and previous view
-        // if no properties passed in just initialise to the your wallets view
+        // initialize everything to look at the stored opened view and previous view
+        // if no properties passed in just initialize to the your wallets view
         int previousView = View.YOUR_WALLETS_VIEW;
         int initialView = View.YOUR_WALLETS_VIEW;
         if (userPreferences != null) {
@@ -152,7 +150,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
                 try {
                     int initialViewInProperties = Integer.parseInt(viewString);
 
-                    // do not open obselete views
+                    // do not open obsolete views
                     if (View.OPEN_WALLET_VIEW != initialViewInProperties && View.SAVE_WALLET_AS_VIEW != initialViewInProperties
                             && View.SEND_BITCOIN_CONFIRM_VIEW != initialViewInProperties) {
                         initialView = initialViewInProperties;
@@ -386,45 +384,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      */
     public void registerViewSystem(ViewSystem viewSystem) {
         viewSystems.add(viewSystem);
-    }
-
-    /**
-     * De-register a MultiBitViewSystem from the list of views being managed
-     * TODO Consider Refactor rename to "remove" not "deregister"
-     * 
-     * @param viewSystem
-     *            The view system
-     */
-    public void deregisterViewSystem(ViewSystem viewSystem) {
-        viewSystems.remove(viewSystem);
-    }
-
-    /*
-     * display a message to the user - localisation is done by the viewSystems
-     * 
-     * @param messageKey the key to localise for the message
-     * 
-     * @param titleKey the key to localise for the title
-     */
-    public void displayMessage(String messageKey, String titleKey) {
-        displayMessage(messageKey, null, titleKey);
-    }
-
-    /*
-     * display a message to the user - localisation is done by the viewSystems
-     * 
-     * @param messageKey the key to localise for the message
-     * 
-     * @param messageData the data used in the message
-     * 
-     * @param titleKey the key to localise for the title
-     * 
-     * @param any localisation data
-     */
-    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
-        for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.displayMessage(messageKey, messageData, titleKey);
-        }
     }
 
     public MultiBitModel getModel() {

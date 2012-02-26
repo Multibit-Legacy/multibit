@@ -169,10 +169,10 @@ public class MultiBitService {
             peerGroup = createNewPeerGroup();
             peerGroup.start();
         } catch (BlockStoreException e) {
-            controller.displayMessage("multiBitService.errorText", new Object[] { e.getClass().getName() + " " + e.getMessage() },
+            log.error("multiBitService.errorText", new Object[] { e.getClass().getName() + " " + e.getMessage() },
                     "multiBitService.errorTitleText");
         } catch (Exception e) {
-            controller.displayMessage("multiBitService.errorText", new Object[] { e.getClass().getName() + " " + e.getMessage() },
+            log.error("multiBitService.errorText", new Object[] { e.getClass().getName() + " " + e.getMessage() },
                     "multiBitService.errorTitleText");
         }
     }

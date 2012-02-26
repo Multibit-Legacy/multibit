@@ -732,20 +732,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
     }
 
-    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
-        if (currentView != 0) {
-            View view = viewFactory.getView(currentView);
-            if (view != null) {
-                view.displayMessage(messageKey, messageData, titleKey);
-            } else {
-                log.debug("MultiBitFrame#displayMessage - no view with id {} to display message with key {}", currentView,
-                        messageKey);
-            }
-        } else {
-            log.debug("MultiBitFrame#displayMessage - no view on which to display message with key {}", messageKey);
-        }
-    }
-
     /**
      * display next view on Swing event dispatch thread
      */

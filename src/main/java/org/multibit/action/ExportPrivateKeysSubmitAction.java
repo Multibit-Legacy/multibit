@@ -16,15 +16,7 @@
 package org.multibit.action;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Set;
 
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
@@ -35,14 +27,6 @@ import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.bitcoin.core.DumpedPrivateKey;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.ScriptException;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionInput;
-import com.google.bitcoin.core.TransactionOutput;
-import com.google.bitcoin.core.Wallet;
 
 /**
  * an action to process the submit of the Export Private Keys submit action

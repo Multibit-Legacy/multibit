@@ -16,13 +16,11 @@
 package org.multibit.viewsystem;
 
 import java.math.BigInteger;
-import java.net.URI;
 
 import org.multibit.model.PerWalletModelData;
 
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
-
 
 /**
  * an interface describing a collection of views that are used to render the MultiBit application
@@ -47,15 +45,7 @@ public interface ViewSystem {
      * @param relationshipOfNewViewToPrevious - one of ViewSystem.isChild, isParent, isSibling
      */   
     public void navigateAwayFromView(int viewToNavigateAwayFrom, int nextView, int relationshipOfNewViewToPrevious);
-    
-    /**
-     * display a message to the user - using the current localiser
-     * @param messageKey the key to localise for the message
-     * @param messageData the data used in the messag
-     * @param titleKey the key to localise for the title
-     */   
-    public void displayMessage(String messageKey, Object[] messageData, String titleKey);
-    
+        
     /**
      * tells the views a new wallet has been created
      */
