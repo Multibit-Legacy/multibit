@@ -1,6 +1,14 @@
 MultiBit release notes.
 
-Version 0.3.0Beta3
+27 Feb 2012 Version 0.3.0Beta4
+Enhancements
++  Better progress feedback on 'import private keys' and 'reset blockchain and transactions'.
++  Fix for BTC being counted twice when repeatedly imported.
++  Dialogs are now modal on always on top.
++  Various UI tidy ups.
+
+
+20 Feb 2012 Version 0.3.0Beta3
 Enhancements
 +  Moved to bitcoinj V4-SNAPSHOT
 +  I18N refresh - including Russian update.

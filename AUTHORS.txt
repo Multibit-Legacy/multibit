@@ -13,14 +13,16 @@ Azrael_PT           - Portuguese
 bitcoin.hu          - Hungarian
 damnek              - Dutch
 Emin Gun Sirer      - Turkish
-finway              - Simplified Chinese
 ffe                 - Arabic
+finway              - Simplified Chinese
 freemoney           - Spanish, German
 GSBank              - French
 guillo.92199        - French
+haritosh            - Hindi
 HostFat             - Italian
 lzsaver             - Russian
 Jan-steenbergen     - Dutch
+JeppeJ              - Swedish
 Jonny Heggheim      - Norwegian
 Katya Rowe          - Russian
 Kishor Kumar        - Hindi
