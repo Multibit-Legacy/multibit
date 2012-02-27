@@ -241,7 +241,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             switch (confidenceType) {
             case UNKNOWN: {
                 label.setText("?");
-                // label.setIcon(progress0Icon);
+                label.setIcon(null);
                 // label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.notConfirmed"));
                 break;
             }
@@ -249,6 +249,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 int numberOfBlocksEmbedded = confidence.getDepthInBlocks(controller.getMultiBitService().getChain());
                 ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded);
                 label.setIcon(buildingIcon);
+                label.setText("");
                 if (numberOfBlocksEmbedded >= 6) {
                     label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.isConfirmed"));
                 } else {
@@ -258,6 +259,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             }
             case NOT_SEEN_IN_CHAIN: {
                 label.setIcon(progress0Icon);
+                label.setText("");
                 label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.notConfirmed"));
 
                 // label.setText("NSIC");
@@ -265,15 +267,18 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             }
             case NOT_IN_BEST_CHAIN: {
                 label.setIcon(progress0Icon);
+                label.setText("");
                 label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.notConfirmed"));
                 // label.setText("NSIBC");
                 break;
             }
             case OVERRIDDEN_BY_DOUBLE_SPEND: {
+                label.setIcon(null);
                 label.setText("DS");
                 break;
             }
             default: {
+                label.setIcon(null);
                 label.setText("?");
                 break;
             }

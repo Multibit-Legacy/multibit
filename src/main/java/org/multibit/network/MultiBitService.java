@@ -302,18 +302,17 @@ public class MultiBitService {
 
             // add wallet to blockchain
             blockChain.addWallet(wallet);
-            peerGroup.addWallet(wallet);
 
             // add wallet to PeerGroup - this is done in a background thread as it is slow
-//            @SuppressWarnings("rawtypes")
-//            SwingWorker worker = new SwingWorker() {
-//                @Override
-//                protected Object doInBackground() throws Exception {
-//                    peerGroup.addWallet(wallet);
-//                    return null; // not used
-//                }
-//            };
-//            worker.execute();
+            @SuppressWarnings("rawtypes")
+            SwingWorker worker = new SwingWorker() {
+                @Override
+                protected Object doInBackground() throws Exception {
+                    peerGroup.addWallet(wallet);
+                    return null; // not used
+                }
+            };
+            worker.execute();
          }
 
         return perWalletModelDataToReturn;
@@ -409,7 +408,7 @@ public class MultiBitService {
 
         // restart peerGroup and download
         String message = controller.getLocaliser().getString("multiBitService.stoppingBitcoinNetworkConnection");
-        controller.updateStatusLabel(message);
+        controller.updateStatusLabel(message, false);
         peerGroup.stop();
 
         // reset UI to zero peers
@@ -417,7 +416,7 @@ public class MultiBitService {
         
         message = controller.getLocaliser().getString("resetTransactionSubmitAction.replayingBlockchain", new Object[]{DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale())
                 .format(dateToReplayFrom)});
-        controller.updateStatusLabel(message);
+        controller.updateStatusLabel(message, false);
 
         peerGroup = createNewPeerGroup();
         peerGroup.start();
@@ -458,9 +457,10 @@ public class MultiBitService {
         // send the coins
         Address sendAddress = new Address(networkParameters, sendAddressString);
 
-        Transaction sendTransaction = perWalletModelData.getWallet().sendCoins(peerGroup, sendAddress, Utils.toNanoCoins(amount),
+        log.debug("MultiBitService#sendCoins - Just about to send coins");
+        Transaction sendTransaction = perWalletModelData.getWallet().sendCoinsAsync(peerGroup, sendAddress, Utils.toNanoCoins(amount),
                 fee);
-        controller.getMultiBitService().getPeerGroup().broadcastTransaction(sendTransaction);
+        log.debug("MultiBitService#sendCoins - Sent coins has completed");
 
         assert sendTransaction != null; // We should never try to send more
         // coins than we have!

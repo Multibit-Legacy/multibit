@@ -100,8 +100,72 @@ public class SendBitcoinNowAction extends AbstractAction {
 
             sendBitcoinConfirmView.setSendConfirmText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
 
-            performSendInBackground(perWalletModelData, sendAddress, sendAmount, fee);
+            performSend(perWalletModelData, sendAddress, sendAmount, fee);
         }
+    }
+
+    /**
+     * send the transaction directly
+     */
+    private void performSend(PerWalletModelData perWalletModelData, String sendAddress, String sendAmount, BigInteger fee) {
+        String message = null;
+
+        boolean sendWasSuccessful = Boolean.FALSE;
+        try {
+            log.debug("Sending from wallet " + perWalletModelData.getWalletFilename() + ", amount = " + sendAmount + ", fee = "
+                    + fee + " to address = " + sendAddress);
+            Transaction transaction = controller.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee);
+            if (transaction == null) {
+                // a null transaction returned indicates there was not
+                // enough money (in spite of our validation)
+                message = controller.getLocaliser().getString("sendBitcoinNowAction.thereWereInsufficientFundsForTheSend");
+                log.error(message);
+            } else {
+                sendWasSuccessful = Boolean.TRUE;
+                log.debug("Sent transaction was:\n" + transaction.toString());
+            }
+
+            // save the wallet
+            controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            message = e.getMessage();
+        } catch (AddressFormatException e) {
+            log.error(e.getMessage(), e);
+            message = e.getMessage();
+        } catch (Throwable t) {
+            // really trying to catch anything that goes wrong with the
+            // send bitcoin
+            log.error(t.getMessage(), t);
+            message = t.getMessage();
+        }
+
+        if (sendWasSuccessful) {
+            String successMessage = controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk");
+            if (sendBitcoinConfirmView != null && sendBitcoinConfirmView.isVisible()) {
+                sendBitcoinConfirmView.setSendConfirmText(
+                        controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk"), "");
+            } else {
+                controller.updateStatusLabel(successMessage);
+            }
+        } else {
+            log.error(message);
+
+            if (message != null && message.length() > MAX_LENGTH_OF_ERROR_MESSAGE) {
+                message = message.substring(0, MAX_LENGTH_OF_ERROR_MESSAGE) + "...";
+            }
+
+            String errorMessage = controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSendFailed");
+            if (sendBitcoinConfirmView != null && sendBitcoinConfirmView.isVisible()) {
+                sendBitcoinConfirmView.setSendConfirmText(errorMessage, message);
+            } else {
+                controller.updateStatusLabel(errorMessage + " " + message);
+            }
+        }
+
+        log.debug("firing fireRecreateAllViews...");
+        controller.fireRecreateAllViews(false);
+        log.debug("firing fireRecreateAllViews...done");
     }
 
     /**
@@ -118,7 +182,8 @@ public class SendBitcoinNowAction extends AbstractAction {
                 try {
                     log.debug("Sending from wallet " + perWalletModelData.getWalletFilename() + ", amount = " + sendAmount
                             + ", fee = " + fee + " to address = " + sendAddress);
-                    Transaction transaction = controller.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee);
+                    Transaction transaction = controller.getMultiBitService().sendCoins(perWalletModelData, sendAddress,
+                            sendAmount, fee);
                     if (transaction == null) {
                         // a null transaction returned indicates there was not
                         // enough money (in spite of our validation)
@@ -173,7 +238,8 @@ public class SendBitcoinNowAction extends AbstractAction {
                         }
                     }
                 } catch (Exception e) {
-                    // not really used but caught so that SwingWorker shuts down cleanly
+                    // not really used but caught so that SwingWorker shuts down
+                    // cleanly
                     log.error(e.getClass() + " " + e.getMessage());
                 }
                 log.debug("firing fireRecreateAllViews...");
