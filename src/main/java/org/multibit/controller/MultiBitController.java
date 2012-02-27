@@ -55,7 +55,9 @@ import com.google.bitcoin.core.GetDataMessage;
 import com.google.bitcoin.core.Message;
 import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
+import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 
 /**
@@ -127,7 +129,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     private volatile URI rawBitcoinURI = null;
 
     private volatile boolean applicationStarting = true;
-   
+
     /**
      * used for testing only
      */
@@ -140,7 +142,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
         viewSystems = new ArrayList<ViewSystem>();
 
-        // initialize everything to look at the stored opened view and previous view
+        // initialize everything to look at the stored opened view and previous
+        // view
         // if no properties passed in just initialize to the your wallets view
         int previousView = View.YOUR_WALLETS_VIEW;
         int initialView = View.YOUR_WALLETS_VIEW;
@@ -275,7 +278,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             nextView = View.HELP_CONTENTS_VIEW;
             break;
         }
-        
+
         case FORWARD_TO_PREFERENCES: {
             // show the preferences view
             nextView = View.PREFERENCES_VIEW;
@@ -484,17 +487,18 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      */
 
     public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
-        //log.debug("onBlocksDownloaded called");
+        // log.debug("onBlocksDownloaded called");
         fireBlockDownloaded();
     }
 
     public void onChainDownloadStarted(Peer peer, int blocksLeft) {
-        //log.debug("onChainDownloadStarted called");
+        // log.debug("onChainDownloadStarted called");
         fireBlockDownloaded();
     }
 
     public void onPeerConnected(Peer peer, int peerCount) {
-        //log.debug("Peer = " + peer + " connected.  PeerCount =  " + peerCount);
+        // log.debug("Peer = " + peer + " connected.  PeerCount =  " +
+        // peerCount);
         if (peerCount >= 1) {
             for (ViewSystem viewSystem : viewSystems) {
                 viewSystem.nowOnline();
@@ -503,7 +507,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     public void onPeerDisconnected(Peer peer, int peerCount) {
-        //log.debug("Peer = " + peer + " disconnected.  PeerCount =  " + peerCount);
+        // log.debug("Peer = " + peer + " disconnected.  PeerCount =  " +
+        // peerCount);
         if (peerCount == 0) {
             for (ViewSystem viewSystem : viewSystems) {
                 viewSystem.nowOffline();
@@ -518,24 +523,24 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      *            The download status string
      */
     public void updateStatusLabel(String newStatusText) {
-       //log.debug("Update status label with '" + newStatusText + "'");
-       for (ViewSystem viewSystem : viewSystems) {
+        // log.debug("Update status label with '" + newStatusText + "'");
+        for (ViewSystem viewSystem : viewSystems) {
             viewSystem.updateStatusLabel(newStatusText, true);
         }
     }
-    
+
     public void updateStatusLabel(String newStatusText, boolean clearAutomatically) {
-        //log.debug("Update status label with '" + newStatusText + "'");
+        // log.debug("Update status label with '" + newStatusText + "'");
         for (ViewSystem viewSystem : viewSystems) {
-             viewSystem.updateStatusLabel(newStatusText, clearAutomatically);
-         }
-     }
+            viewSystem.updateStatusLabel(newStatusText, clearAutomatically);
+        }
+    }
 
     /**
      * method called by downloadListener whenever a block is downloaded
      */
     public void fireBlockDownloaded() {
-        //log.debug("Fire blockdownloaded");
+        // log.debug("Fire blockdownloaded");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.blockDownloaded();
         }
@@ -637,9 +642,10 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         // Process the URI
         // TODO Consider handling the possible runtime exception at a suitable
         // level for recovery
-        
+
         // Early MultiBit versions did not URL encode the label hence may
-        // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER i.e be lenient
+        // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER i.e
+        // be lenient
         String uriString = rawBitcoinURI.toString().replace(" ", ENCODED_SPACE_CHARACTER);
         BitcoinURI bitcoinURI = new BitcoinURI(this.getMultiBitService().getNetworkParameters(), uriString);
 
@@ -717,9 +723,25 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     @Override
-    public void onTransaction(Peer peer, Transaction t) {
-        // individual transaction notifications are currently not used for anything
-        //log.debug("MultiBitController heard a transaction '" + t.toString() + "' from peer " + peer);
+    public void onTransaction(Peer peer, Transaction transaction) {
+        // diagnostic code - loop through all the wallets, seeing if there are any relevant transactions
+        // we do not actually do anything with the transaction here - it is all done with wallet listeners
+        try {
+            java.util.List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
+
+            if (perWalletModelDataList != null) {
+                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                    Wallet loopWallet = perWalletModelData.getWallet();
+                    if (loopWallet.getTransaction(transaction.getHash()) == null) {
+                        if (loopWallet.isTransactionRelevant(transaction, true)) {
+                            log.debug("MultiBit saw a new transaction relevant to the wallet '" + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());
+                        }
+                    }
+                }
+            }
+        } catch (ScriptException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 
     @Override

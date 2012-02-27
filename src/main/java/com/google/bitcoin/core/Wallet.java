@@ -373,6 +373,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         // We only care about transactions that:
         // - Send us coins
         // - Spend our coins
+        // - has transaction inputs or outputs that uses one of our wallets keys
         if (!isTransactionRelevant(tx, true)) {
             log.info("Received tx that isn't relevant to this wallet, discarding.");
             return;
@@ -446,7 +447,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * relevant.
      */
     public synchronized boolean isTransactionRelevant(Transaction tx, boolean includeDoubleSpending) throws ScriptException {
-        return tx.getValueSentFromMe(this).compareTo(BigInteger.ZERO) > 0
+        return tx.isMine(this) || tx.getValueSentFromMe(this).compareTo(BigInteger.ZERO) > 0
                 || tx.getValueSentToMe(this).compareTo(BigInteger.ZERO) > 0
                 || (includeDoubleSpending && (findDoubleSpendAgainstPending(tx) != null));
     }
@@ -501,9 +502,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
         // due to a block replay so we do not want to do anything with it
         // if it is on a sidechain then let the ELSE below deal with it
         boolean alreadyHaveIt = spent.containsKey(tx.getHash()) || unspent.containsKey(tx.getHash());
-        boolean noMoneyInIt = BigInteger.ZERO.equals(valueSentFromMe) && BigInteger.ZERO.equals(valueSentToMe);
-        if (bestChain &&(alreadyHaveIt || noMoneyInIt)) {
-            log.info("Already have tx " + tx.getHash() + " in spent/ unspent or there is no money in it so ignoring");
+        boolean noMoneyInItAndNotMine = BigInteger.ZERO.equals(valueSentFromMe) && BigInteger.ZERO.equals(valueSentToMe) && !tx.isMine(this);
+        if (bestChain &&(alreadyHaveIt || noMoneyInItAndNotMine)) {
+            log.info("Already have tx " + tx.getHash() + " in spent/ unspent or there is no money in it and it is not mine so ignoring");
             return;
         }
         // If this transaction is already in the wallet we may need to move it
@@ -636,6 +637,13 @@ public class Wallet implements Serializable, IsMultiBitClass {
             log.info("  new tx ->spent");
             boolean alreadyPresent = spent.put(tx.getHash(), tx) != null;
             assert !alreadyPresent : "TX was received twice";
+        } else if (tx.isMine(this)) {
+            // a transaction that does not spend or send us coins but is ours none the less
+            // this can occur when a transaction is sent from outputs in our wallet to
+            // an address in the wallet - it burns a fee but is valid
+            log.info(" new tx -> spent (transfer within wallet - simply burns fee)");
+            boolean alreadyPresent = spent.put(tx.getHash(), tx) != null;
+            assert !alreadyPresent : "TX was received twice (transfer within wallet - simply burns fee";
         } else {
             // It didn't send us coins nor spend any of our coins. If we're
             // processing it, that must be because it
