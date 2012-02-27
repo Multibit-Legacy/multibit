@@ -29,6 +29,8 @@ public class ImageLoader {
     public static final String EXCLAMATION_MARK_ICON_FILE = "/images/exclamationMark.png";
     public static final String IMPORT_PRIVATE_KEYS_ICON_FILE = "/images/importKey.png";
     public static final String EXPORT_PRIVATE_KEYS_ICON_FILE = "/images/exportKey.png";
+    public static final String RESET_TRANSACTIONS_ICON_FILE = "/images/resetTransactions.png";
+       
 
     public ImageLoader() {
         
