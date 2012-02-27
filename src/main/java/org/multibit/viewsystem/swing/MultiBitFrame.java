@@ -889,10 +889,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         try {
                             Wallet loopWallet = perWalletModelData.getWallet();
                             if (loopWallet.getTransaction(transaction.getHash()) == null) {
-                                if (transaction.getConfidence().getConfidenceType() == TransactionConfidence.ConfidenceType.UNKNOWN
-                                        || transaction.getConfidence().getConfidenceType() == TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN) {
-                                    loopWallet.receivePending(transaction);
-                                }
+                                logger.debug("Transaction " + transaction.getHashAsString()
+                                        + " is being added as pending for wallet '"
+                                        + perWalletModelData.getWalletDescription() + "'");
+                                loopWallet.receivePending(transaction);
                             }
                         } catch (VerificationException e) {
                             e.printStackTrace();
