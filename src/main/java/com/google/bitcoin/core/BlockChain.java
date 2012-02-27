@@ -54,7 +54,7 @@ public class BlockChain implements IsMultiBitClass {
     private static final Logger log = LoggerFactory.getLogger(BlockChain.class);
 
     /** Keeps a map of block hashes to StoredBlocks. */
-    protected BlockStore blockStore;
+    protected final BlockStore blockStore;
 
     /**
      * Tracks the top of the best known chain.<p>
@@ -498,6 +498,14 @@ public class BlockChain implements IsMultiBitClass {
                 log.warn("Failed to parse a script: " + e.toString());
             }
         }
+    }
+
+    /**
+     * get the blockstore backing the blockchain
+     * @return The blockstore
+     */
+    public BlockStore getBlockStore() {
+        return blockStore;
     }
 
     /**
