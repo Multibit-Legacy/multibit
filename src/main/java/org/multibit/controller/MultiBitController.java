@@ -724,9 +724,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     @Override
     public void onTransaction(Peer peer, Transaction transaction) {
-        // loop through all the wallets, seeing if there are any relevant transactions
-        // ideally this should all be done with wallet listeners - this is to
-        // make super-sure the wallets get pending transactions
+        // loop through all the wallets, seeing if the transaction is relevant and adding them as pending if so
         if (transaction != null) {
             try {
                 java.util.List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
@@ -736,7 +734,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
                         Wallet loopWallet = perWalletModelData.getWallet();
                         if (loopWallet.getTransaction(transaction.getHash()) == null) {
                             if (loopWallet.isTransactionRelevant(transaction, true)) {
-                                log.debug("MultiBit saw a new transaction relevant to the wallet '"
+                                log.debug("MultiBit adding a new pending transaction for the wallet '"
                                         + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());
                                     loopWallet.receivePending(transaction);
                             }
