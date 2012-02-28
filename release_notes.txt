@@ -1,6 +1,6 @@
 MultiBit release notes.
 
-27 Feb 2012 Version 0.3.0Beta4
+28 Feb 2012 Version 0.3.0Beta4
 Enhancements
 +  Better progress feedback on 'import private keys' and 'reset blockchain and transactions'.
 +  Fix for BTC being counted twice when repeatedly imported.
