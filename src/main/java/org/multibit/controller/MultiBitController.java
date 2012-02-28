@@ -724,23 +724,30 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     @Override
     public void onTransaction(Peer peer, Transaction transaction) {
-        // diagnostic code - loop through all the wallets, seeing if there are any relevant transactions
-        // we do not actually do anything with the transaction here - it is all done with wallet listeners
-        try {
-            java.util.List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
+        // loop through all the wallets, seeing if there are any relevant transactions
+        // ideally this should all be done with wallet listeners - this is to
+        // make super-sure the wallets get pending transactions
+        if (transaction != null) {
+            try {
+                java.util.List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
 
-            if (perWalletModelDataList != null) {
-                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
-                    Wallet loopWallet = perWalletModelData.getWallet();
-                    if (loopWallet.getTransaction(transaction.getHash()) == null) {
-                        if (loopWallet.isTransactionRelevant(transaction, true)) {
-                            log.debug("MultiBit saw a new transaction relevant to the wallet '" + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());
+                if (perWalletModelDataList != null) {
+                    for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                        Wallet loopWallet = perWalletModelData.getWallet();
+                        if (loopWallet.getTransaction(transaction.getHash()) == null) {
+                            if (loopWallet.isTransactionRelevant(transaction, true)) {
+                                log.debug("MultiBit saw a new transaction relevant to the wallet '"
+                                        + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());
+                                    loopWallet.receivePending(transaction);
+                            }
                         }
                     }
                 }
+            } catch (ScriptException e) {
+                log.error(e.getMessage(), e);
+            } catch (VerificationException e) {
+                log.error(e.getMessage(), e);
             }
-        } catch (ScriptException e) {
-            log.error(e.getMessage(), e);
         }
     }
 
