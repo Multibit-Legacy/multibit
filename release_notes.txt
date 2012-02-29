@@ -4,7 +4,7 @@ MultiBit release notes.
 Enhancements
 +  Better progress feedback on 'import private keys' and 'reset blockchain and transactions'.
 +  Fix for BTC being counted twice when repeatedly imported.
-+  Dialogs are now modal on always on top.
++  Dialogs are now modal and always on top.
 +  Various UI tidy ups.
 
 
