@@ -1,5 +1,10 @@
 MultiBit release notes.
 
+Version 0.3.0Beta5
+Enhancements
++  Block chain replay does not drop peer so often
+
+
 28 Feb 2012 Version 0.3.0Beta4
 Enhancements
 +  Better progress feedback on 'import private keys' and 'reset blockchain and transactions'.
