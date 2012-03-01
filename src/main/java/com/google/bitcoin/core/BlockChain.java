@@ -20,6 +20,7 @@ import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 
 import org.multibit.IsMultiBitClass;
+import org.multibit.store.ReplayableBlockStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -349,13 +350,18 @@ public class BlockChain implements IsMultiBitClass {
     }
     
     /**
-     * set the chainhead and clear any cached blocks
+     * set the chainhead, clear any cached blocks and truncate the blockchain 
      * (used for blockchain replay)
      * @param chainHead
      * @throws BlockStoreException
      */
-    public void setChainHeadAndClearCaches(StoredBlock chainHead) throws BlockStoreException {
-        blockStore.setChainHead(chainHead);
+    public void setChainHeadClearCachesAndTruncateBlockStore(StoredBlock chainHead) throws BlockStoreException {
+        if (blockStore instanceof ReplayableBlockStore) {
+            ((ReplayableBlockStore) blockStore).setChainHeadAndTruncate(chainHead);
+        } else {
+            blockStore.setChainHead(chainHead);
+
+        }
         synchronized (chainHeadLock) {
             this.chainHead = chainHead;
             unconnectedBlocks.clear();

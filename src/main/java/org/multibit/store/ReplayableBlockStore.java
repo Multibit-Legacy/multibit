@@ -49,6 +49,8 @@ import java.util.Map;
  * difficulty transitions without using too much memory and without hitting the disk at all, for the case of initial
  * block chain download. Storing the hashes on disk would allow us to avoid deserialization and hashing which is
  * expensive on Android.
+ * 
+ * This variant of BoundedOverheadBlockStore has the ability to replay blocks
  */
 public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
     private static final Logger log = LoggerFactory.getLogger(ReplayableBlockStore.class);
@@ -58,11 +60,14 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
     // We keep some recently found blocks in the blockCache. It can help to optimize some cases where we are
     // looking up blocks we recently stored or requested. When the cache gets too big older entries are deleted.
     private LinkedHashMap<Sha256Hash, StoredBlock> blockCache = new LinkedHashMap<Sha256Hash, StoredBlock>() {
+        private static final long serialVersionUID = -6744550980315506146L;
+
         @Override
         protected boolean removeEldestEntry(Map.Entry<Sha256Hash, StoredBlock> entry) {
             return size() > 2050;  // Slightly more than the difficulty transition period.
         }
     };
+    
     // Use a separate cache to track get() misses. This is to efficiently handle the case of an unconnected block
     // during chain download. Each new block will do a get() on the unconnected block so if we haven't seen it yet we
     // must efficiently respond.
@@ -70,7 +75,11 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
     // We don't care about the value in this cache. It is always notFoundMarker. Unfortunately LinkedHashSet does not
     // provide the removeEldestEntry control.
     private static final StoredBlock notFoundMarker = new StoredBlock(null, null, -1);
+    
     private LinkedHashMap<Sha256Hash, StoredBlock> notFoundCache = new LinkedHashMap<Sha256Hash, StoredBlock>() {
+
+        private static final long serialVersionUID = -2985188391503596244L;
+
         @Override
         protected boolean removeEldestEntry(Map.Entry<Sha256Hash, StoredBlock> entry) {
             return size() > 100;  // This was chosen arbitrarily.
@@ -81,74 +90,9 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
     private final NetworkParameters params;
     private FileChannel channel;
 
-    private static class Record {
-        // A BigInteger representing the total amount of work done so far on this chain. As of May 2011 it takes 8
-        // bytes to represent this field, so 16 bytes should be plenty for a long time.
-        private static final int CHAIN_WORK_BYTES = 16;
-        private static final byte[] EMPTY_BYTES = new byte[CHAIN_WORK_BYTES];
-
-        private int height;           // 4 bytes
-        private byte[] chainWork;     // 16 bytes
-        private byte[] blockHeader;   // 80 bytes
-
-        public static final int SIZE = 4 + Record.CHAIN_WORK_BYTES + Block.HEADER_SIZE;
-
-        public Record() {
-            height = 0;
-            chainWork = new byte[CHAIN_WORK_BYTES];
-            blockHeader = new byte[Block.HEADER_SIZE];
-        }
-
-        public static void write(FileChannel channel, StoredBlock block) throws IOException {
-            ByteBuffer buf = ByteBuffer.allocate(Record.SIZE);
-            buf.putInt(block.getHeight());
-            byte[] chainWorkBytes = block.getChainWork().toByteArray();
-            assert chainWorkBytes.length <= CHAIN_WORK_BYTES : "Ran out of space to store chain work!";
-            if (chainWorkBytes.length < CHAIN_WORK_BYTES) {
-                // Pad to the right size.
-                buf.put(EMPTY_BYTES, 0, CHAIN_WORK_BYTES - chainWorkBytes.length);
-            }
-            buf.put(chainWorkBytes);
-            buf.put(block.getHeader().bitcoinSerialize());
-            buf.position(0);
-            channel.position(channel.size());
-            if (channel.write(buf) < Record.SIZE)
-                throw new IOException("Failed to write record!");
-            channel.position(channel.size() - Record.SIZE);
-        }
-
-        public boolean read(FileChannel channel, long position, ByteBuffer buffer) throws IOException {
-            buffer.position(0);
-            long bytesRead = channel.read(buffer, position);
-            if (bytesRead < Record.SIZE)
-                return false;
-            buffer.position(0);
-            height = buffer.getInt();
-            buffer.get(chainWork);
-            buffer.get(blockHeader);
-            return true;
-        }
-
-        public BigInteger getChainWork() {
-            return new BigInteger(1, chainWork);
-        }
-
-        public Block getHeader(NetworkParameters params) throws ProtocolException {
-            return new Block(params, blockHeader);
-        }
-
-        public int getHeight() {
-            return height;
-        }
-
-        public StoredBlock toStoredBlock(NetworkParameters params) throws ProtocolException {
-            return new StoredBlock(getHeader(params), getChainWork(), getHeight());
-        }
-    }
-
-    public ReplayableBlockStore(NetworkParameters params, File file, boolean createNewStore) throws BlockStoreException {
+    public ReplayableBlockStore(NetworkParameters params, File file, boolean alwaysCreateNewStore) throws BlockStoreException {
         this.params = params;
-        if (createNewStore) {
+        if (alwaysCreateNewStore) {
             createNewStore(params, file);
         } else {
             try {
@@ -307,8 +251,107 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
         }
     }
 
-    public synchronized void clearCaches() {
+    /**
+     * Set the chainhead for the blockstore to the specified block and delete all blocks that
+     * were received later than this.   
+     * This functionality is for blockchain replay
+     * @param chainHead
+     * @throws BlockStoreException
+     * @throws ProtocolException 
+     * @throws IOException 
+     */
+    public synchronized void setChainHeadAndTruncate(StoredBlock chainHead) throws BlockStoreException {
+        try {
+            setChainHead(chainHead);
+
+            // find block as a record and delete past it
+            Record chainHeadRecord = getRecord(chainHead.getHeader().getHash());
+            if (chainHeadRecord != null) {
+                // the record was found
+                
+                // set the length of the file to be the end of the current record
+                log.debug("File length before truncate was " + file.length());
+                file.setLength(channel.position() + Record.SIZE); 
+                log.debug("File length is now " + file.length());
+            }
+
+            // also clear the caches so that there are no references to later blocks
+            clearCaches();
+        } catch (IOException e) {
+            throw new BlockStoreException(e);
+        } catch (ProtocolException e) {
+            throw new BlockStoreException(e);
+        }
+    }
+
+    private synchronized void clearCaches() {
         blockCache.clear();
         notFoundCache.clear();
+    }
+    
+
+    private static class Record {
+        // A BigInteger representing the total amount of work done so far on this chain. As of May 2011 it takes 8
+        // bytes to represent this field, so 16 bytes should be plenty for a long time.
+        private static final int CHAIN_WORK_BYTES = 16;
+        private static final byte[] EMPTY_BYTES = new byte[CHAIN_WORK_BYTES];
+
+        private int height;           // 4 bytes
+        private byte[] chainWork;     // 16 bytes
+        private byte[] blockHeader;   // 80 bytes
+
+        public static final int SIZE = 4 + Record.CHAIN_WORK_BYTES + Block.HEADER_SIZE;
+
+        public Record() {
+            height = 0;
+            chainWork = new byte[CHAIN_WORK_BYTES];
+            blockHeader = new byte[Block.HEADER_SIZE];
+        }
+
+        public static void write(FileChannel channel, StoredBlock block) throws IOException {
+            ByteBuffer buf = ByteBuffer.allocate(Record.SIZE);
+            buf.putInt(block.getHeight());
+            byte[] chainWorkBytes = block.getChainWork().toByteArray();
+            assert chainWorkBytes.length <= CHAIN_WORK_BYTES : "Ran out of space to store chain work!";
+            if (chainWorkBytes.length < CHAIN_WORK_BYTES) {
+                // Pad to the right size.
+                buf.put(EMPTY_BYTES, 0, CHAIN_WORK_BYTES - chainWorkBytes.length);
+            }
+            buf.put(chainWorkBytes);
+            buf.put(block.getHeader().bitcoinSerialize());
+            buf.position(0);
+            channel.position(channel.size());
+            if (channel.write(buf) < Record.SIZE)
+                throw new IOException("Failed to write record!");
+            channel.position(channel.size() - Record.SIZE);
+        }
+
+        public boolean read(FileChannel channel, long position, ByteBuffer buffer) throws IOException {
+            buffer.position(0);
+            long bytesRead = channel.read(buffer, position);
+            if (bytesRead < Record.SIZE)
+                return false;
+            buffer.position(0);
+            height = buffer.getInt();
+            buffer.get(chainWork);
+            buffer.get(blockHeader);
+            return true;
+        }
+
+        public BigInteger getChainWork() {
+            return new BigInteger(1, chainWork);
+        }
+
+        public Block getHeader(NetworkParameters params) throws ProtocolException {
+            return new Block(params, blockHeader);
+        }
+
+        public int getHeight() {
+            return height;
+        }
+
+        public StoredBlock toStoredBlock(NetworkParameters params) throws ProtocolException {
+            return new StoredBlock(getHeader(params), getChainWork(), getHeight());
+        }
     }
 }

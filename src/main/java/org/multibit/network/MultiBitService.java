@@ -400,10 +400,7 @@ public class MultiBitService {
 
             // set the block chain head to the block just before the
             // earliest transaction in the wallet
-            blockChain.setChainHeadAndClearCaches(storedBlock);
-
-            // clear any cached data in the BlockStore
-            blockStore.clearCaches();
+            blockChain.setChainHeadClearCachesAndTruncateBlockStore(storedBlock);
         }
 
         // restart peerGroup and download
