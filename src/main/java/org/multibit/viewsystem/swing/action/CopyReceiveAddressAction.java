@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2012 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.DataProvider;
+import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
 
 /**
  * This {@link Action} represents the swing copy receive address action
@@ -31,26 +31,28 @@ public class CopyReceiveAddressAction extends AbstractAction {
 
     private static final long serialVersionUID = 191352235465057705L;
 
-    private DataProvider dataProvider;
+    private ReceiveBitcoinPanel receiveBitcoinPanel;
 
     /**
      * Creates a new {@link CopyReceiveAddressAction}.
-     * @param copyIcon 
+     * 
+     * @param copyIcon
      */
-    public CopyReceiveAddressAction(MultiBitController controller, DataProvider dataProvider, ImageIcon copyIcon) {
+    public CopyReceiveAddressAction(MultiBitController controller, ReceiveBitcoinPanel receiveBitcoinPanel, ImageIcon copyIcon) {
         super("", copyIcon);
-        this.dataProvider = dataProvider;
-        
+        this.receiveBitcoinPanel = receiveBitcoinPanel;
+
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("copyAddressAction.tooltip"));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("copyAddressAction.mnemonicKey"));
     }
 
     /**
-     * delegate to generic copy receive address text action
+     * Copy receive address to clipboard
      */
     public void actionPerformed(ActionEvent e) {
-        org.multibit.action.CopyReceiveAddressAction genericCopyReceiveAddressAction = new org.multibit.action.CopyReceiveAddressAction();
-        genericCopyReceiveAddressAction.execute(dataProvider);
+        // copy receive address to clipboard
+        TextTransfer textTransfer = new TextTransfer();
+        textTransfer.setClipboardContents(receiveBitcoinPanel.getReceiveAddress());
     }
 }
