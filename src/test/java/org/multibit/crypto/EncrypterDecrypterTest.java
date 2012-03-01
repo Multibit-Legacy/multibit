@@ -22,61 +22,35 @@ import org.junit.Test;
 public class EncrypterDecrypterTest  extends TestCase  {
     
     private static final String TEST_STRING1 = "The quick brown fox jumps over the lazy dog. 01234567890 !@#$%^&*()-=[]{};':|`~,./<>?";
-    private static final char[] PASSWORD1 = "aTestPassword".toCharArray();
-    private static final char[] PASSWORD2 = "0123456789".toCharArray();
+    private static final String PASSWORD1 = "aTestPassword";
+    private static final String PASSWORD2 = "0123456789";
     
     @Test
-    public void testEncryptDecrypt1() throws EncrypterDecrypterException {
-        
-        // currently commented out as the CI machine does not have unlimited strength crypto
-        
-//        // create encrypter decrypter
-//       EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter(PASSWORD1);
-//       assertNotNull(encrypterDecrypter);
-//       
-//       // encrypt
-//       EncrypterDecrypterValueObject valueObject = encrypterDecrypter.encrypt(TEST_STRING1);
-//       assertNotNull(valueObject);
-//       
-//       String cipherText = valueObject.toString();
-//       assertNotNull(cipherText);
-//       System.out.println("EncrypterDecrypterTest: cipherText = '" + cipherText + "'");
-//       
-//       // decrypt
-//       EncrypterDecrypterValueObject reconstructedValueObject = new EncrypterDecrypterValueObject(cipherText);
-//       assertNotNull(reconstructedValueObject);
-//       
-//       String reconstructedPlainText = encrypterDecrypter.decrypt(reconstructedValueObject);
-//       assertEquals(TEST_STRING1, reconstructedPlainText);
+    public void testEncryptDecrypt1() throws EncrypterDecrypterException {   
+       // encrypt
+       String cipherText = EncrypterDecrypter.encrypt(PASSWORD1, TEST_STRING1);
+       assertNotNull(cipherText);
+       System.out.println("EncrypterDecrypterTest: cipherText = \n'" + cipherText + "'");
+       
+       // decrypt
+       String reconstructedPlainText = EncrypterDecrypter.decrypt(PASSWORD1, cipherText);
+       assertEquals(TEST_STRING1, reconstructedPlainText);
     }
     
     public void testEncryptDecrypt2() throws EncrypterDecrypterException {
-        
-        // currently commented out as the CI machine does not have unlimited strength crypto
+       // create a longer encryption string
+       StringBuffer stringBuffer = new StringBuffer();
+       for (int i = 0; i< 1000; i++) {
+           stringBuffer.append(" " + i + " ").append(TEST_STRING1);
+       }
+       
+       System.out.println("EncrypterDecrypterTest: String to encrypt has length " + stringBuffer.toString().length());
+       String  cipherText = EncrypterDecrypter.encrypt(PASSWORD2, stringBuffer.toString());
 
-//        // create encrypter decrypter
-//       EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter(PASSWORD2);
-//       assertNotNull(encrypterDecrypter);
-//       
-//       // create a longer encryption string
-//       StringBuffer stringBuffer = new StringBuffer();
-//       for (int i = 0; i< 1000; i++) {
-//           stringBuffer.append(" " + i + " ").append(TEST_STRING1);
-//       }
-//       
-//       System.out.println("EncrypterDecrypterTest: String to encrypt has length " + stringBuffer.toString().length());
-//       EncrypterDecrypterValueObject valueObject = encrypterDecrypter.encrypt(stringBuffer.toString());
-//       assertNotNull(valueObject);
-//       
-//       String cipherText = valueObject.toString();
-//       assertNotNull(cipherText);
-//       System.out.println("EncrypterDecrypterTest: CipherText has length " + cipherText.length());
-//       
-//       // decrypt
-//       EncrypterDecrypterValueObject reconstructedValueObject = new EncrypterDecrypterValueObject(cipherText);
-//       assertNotNull(reconstructedValueObject);
-//       
-//       String reconstructedPlainText = encrypterDecrypter.decrypt(reconstructedValueObject);
-//       assertEquals(stringBuffer.toString(), reconstructedPlainText);
+       assertNotNull(cipherText);
+       System.out.println("EncrypterDecrypterTest: CipherText has length " + cipherText.length());
+       
+       String reconstructedPlainText = EncrypterDecrypter.decrypt(PASSWORD2, cipherText);
+       assertEquals(stringBuffer.toString(), reconstructedPlainText);
     }
 }

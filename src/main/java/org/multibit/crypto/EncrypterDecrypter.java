@@ -1,114 +1,94 @@
+/**
+ * Copyright 2012 multibit.org
+ *
+ * Licensed under the MIT license (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://opensource.org/licenses/mit-license.php
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.multibit.crypto;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.GeneralSecurityException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.spec.KeySpec;
+import java.security.Security;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
 
-/**
- * Password-based encryption (PKCS #5). 
- * 
- * @see http://www.ietf.org/rfc/rfc2898.txt
- * @see http://stackoverflow.com/questions/992019/java-256bit-aes-encryption/992413#992413
- * @author Steve Clay http://www.mrclay.org/
- */
+import org.apache.commons.codec.binary.Base64;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 public class EncrypterDecrypter {
 
     /**
-     * bytes used to salt the key (set before making an instance)
+     * bytes used to salt the key
      */
-    private static final byte[] SALT = { (byte) 0xc8, (byte) 0x73, (byte) 0x41, (byte) 0x8c, (byte) 0x7e, (byte) 0xd8, (byte) 0xee,
-            (byte) 0x89 };
+    private static final byte[] SALT = { (byte) 0xa2, (byte) 0x73, (byte) 0x27, (byte) 0x8c, (byte) 0xb1, (byte) 0xd8, (byte) 0x1f,
+            (byte) 0xc3 };
 
     /**
-     * number of times the password & salt are hashed during key creation (set before making an instance)
+     * number of times the password & salt are hashed during key creation (set
+     * before making an instance)
      */
     private static final int NUMBER_OF_ITERATIONS = 1024;
-
-    /**
-     * The key length in bits
-     */
-    private static final int KEY_LENGTH = 256;
 
     /**
      * The string encoding to use when converting strings to bytes
      */
     private static final String STRING_ENCODING = "utf-8";
 
-    private static final String GENERAL_CONSTRUCTOR_EXCEPTION_TEXT = "Could not construct EncrypterDecrypter";
-    private static final String GENERAL_ENCRYPT_EXCEPTION_TEXT = "Could not encrypt string '";
-    private static final String GENERAL_DECRYPT_EXCEPTION_TEXT = "Could not decrypt value object '";
 
-    private SecretKey secretKey = null;
-    private Cipher cipher = null;
+    static {
+        Security.addProvider(new BouncyCastleProvider());        
+    }
 
-    /**
-     * @param password
-     *            The password to use for encryption and decryption
-     * @throws EncrypterDecrypterException
-     */
-    public EncrypterDecrypter(char[] password) throws EncrypterDecrypterException {
+    public static final String ALGORITHM = "PBEWithSHA1And256BitAES-CBC-BC";
+
+    public static String encrypt(final String password, final String plainText) throws EncrypterDecrypterException {
         try {
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-            KeySpec keySpec = new PBEKeySpec(password, SALT, NUMBER_OF_ITERATIONS, KEY_LENGTH);
-            secretKey = new SecretKeySpec(factory.generateSecret(keySpec).getEncoded(), "AES");
-            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        } catch (GeneralSecurityException e) {
-            throw new EncrypterDecrypterException(GENERAL_CONSTRUCTOR_EXCEPTION_TEXT, e);
+            // Create the encryption key
+            final SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(ALGORITHM, "BC");
+            final PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray());
+            final SecretKey secretKey = keyFactory.generateSecret(keySpec);
+
+            // Encrypt the plain text
+            byte[] plainTextAsBytes = plainText.getBytes(STRING_ENCODING);
+            final PBEParameterSpec cipherSpec = new PBEParameterSpec(SALT, NUMBER_OF_ITERATIONS);
+            final Cipher cipher = Cipher.getInstance(ALGORITHM, "BC");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, cipherSpec);
+            final byte[] encryptedBytes = cipher.doFinal(plainTextAsBytes);
+
+            return Base64.encodeBase64String(encryptedBytes);
+        } catch (final Throwable t) {
+            throw new EncrypterDecrypterException(t.toString());
         }
     }
 
-    /**
-     * Encrypt a string
-     * 
-     * @param clearText The text to encrypt
-     * @returns encrypterDecrypterValueObject A value object containing the encryption bytes and iv
-     * @throws EncrypterDecrypterException
-     */
-    public EncrypterDecrypterValueObject encrypt(String clearText) throws EncrypterDecrypterException {
+    public static String decrypt(final String password, final String cipherText) throws EncrypterDecrypterException {
         try {
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            // Create the encryption key
+            final SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(ALGORITHM, "BC");
+            final PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray());
+            final SecretKey secretKey = keyFactory.generateSecret(keySpec);
 
-            byte[] clearTextByteArray = clearText.getBytes(STRING_ENCODING);
-            return new EncrypterDecrypterValueObject(cipher.getParameters().getParameterSpec(IvParameterSpec.class).getIV(),
-                    cipher.doFinal(clearTextByteArray));
-        } catch (InvalidKeyException e) {
-            throw new EncrypterDecrypterException(GENERAL_ENCRYPT_EXCEPTION_TEXT + clearText + "'", e);
-        } catch (IOException e) {
-            throw new EncrypterDecrypterException(GENERAL_ENCRYPT_EXCEPTION_TEXT + clearText + "'", e);
-        } catch (GeneralSecurityException e) {
-            throw new EncrypterDecrypterException(GENERAL_ENCRYPT_EXCEPTION_TEXT + clearText + "'", e);
-        }
-    }
+            // Decrypt the cipher text
+            byte[] cipherTextAsBytes = Base64.decodeBase64(cipherText.getBytes(STRING_ENCODING));
+            final PBEParameterSpec cipherSpec = new PBEParameterSpec(SALT, NUMBER_OF_ITERATIONS);
+            final Cipher cipher = Cipher.getInstance(ALGORITHM, "BC");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, cipherSpec);
+            final byte[] decryptedBytes = cipher.doFinal(cipherTextAsBytes);
 
-    /**
-     * decrypt an encrypter decrypter value object (IV and cipherText)
-     * 
-     * @param valueObject The encrypter decrypter value object to decrypt
-     * @throws EncrypterDecrypterException
-     */
-    public String decrypt(EncrypterDecrypterValueObject valueObject) throws EncrypterDecrypterException {
-        try {
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(valueObject.getIv()));
-            byte[] plainTextByteArray = cipher.doFinal(valueObject.getCiphertext());
-            return new String(plainTextByteArray, STRING_ENCODING);
-        } catch (InvalidKeyException e) {
-            throw new EncrypterDecrypterException(GENERAL_DECRYPT_EXCEPTION_TEXT + valueObject.toString() + "'", e);
-        } catch (InvalidAlgorithmParameterException e) {
-            throw new EncrypterDecrypterException(GENERAL_DECRYPT_EXCEPTION_TEXT + valueObject.toString() + "'", e);
-        } catch (GeneralSecurityException e) {
-            throw new EncrypterDecrypterException(GENERAL_DECRYPT_EXCEPTION_TEXT + valueObject.toString() + "'", e);
-        } catch (UnsupportedEncodingException e) {
-            throw new EncrypterDecrypterException(GENERAL_DECRYPT_EXCEPTION_TEXT + valueObject.toString() + "'", e);
+            return new String(decryptedBytes, STRING_ENCODING);
+        } catch (final Throwable t) {
+            throw new EncrypterDecrypterException(t.toString());
         }
     }
 }
