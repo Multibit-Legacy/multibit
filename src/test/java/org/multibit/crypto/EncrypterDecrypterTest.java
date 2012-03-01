@@ -19,38 +19,52 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-public class EncrypterDecrypterTest  extends TestCase  {
-    
+import com.google.bitcoin.core.Utils;
+
+public class EncrypterDecrypterTest extends TestCase {
+
     private static final String TEST_STRING1 = "The quick brown fox jumps over the lazy dog. 01234567890 !@#$%^&*()-=[]{};':|`~,./<>?";
-    private static final String PASSWORD1 = "aTestPassword";
-    private static final String PASSWORD2 = "0123456789";
-    
+    private static final char[] PASSWORD1 = "aTestPassword".toCharArray();
+    private static final char[] PASSWORD2 = "0123456789".toCharArray();
+
     @Test
-    public void testEncryptDecrypt1() throws EncrypterDecrypterException {   
-//       // encrypt
-//       String cipherText = EncrypterDecrypter.encrypt(PASSWORD1, TEST_STRING1);
-//       assertNotNull(cipherText);
-//       System.out.println("EncrypterDecrypterTest: cipherText = \n---------------\n" + cipherText + "\n---------------\n");
-//       
-//       // decrypt
-//       String reconstructedPlainText = EncrypterDecrypter.decrypt(PASSWORD1, cipherText);
-//       assertEquals(TEST_STRING1, reconstructedPlainText);
+    public void testEncryptDecrypt1() throws EncrypterDecrypterException {
+        EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter();
+
+        // encrypt
+        String cipherText = encrypterDecrypter.encrypt(TEST_STRING1, PASSWORD1);
+        assertNotNull(cipherText);
+        System.out.println("EncrypterDecrypterTest: cipherText = \n---------------\n" + cipherText + "\n---------------\n");
+
+        // decrypt
+        String reconstructedPlainText = encrypterDecrypter.decrypt(cipherText, PASSWORD1);
+        // System.out.println("Original: " +
+        // Utils.bytesToHexString(TEST_STRING1.getBytes()));
+        // System.out.println("Reborn  : " +
+        // Utils.bytesToHexString(reconstructedPlainText.getBytes()));
+        assertEquals(TEST_STRING1, reconstructedPlainText);
     }
-    
+
     public void testEncryptDecrypt2() throws EncrypterDecrypterException {
-       // create a longer encryption string
-//       StringBuffer stringBuffer = new StringBuffer();
-//       for (int i = 0; i< 1000; i++) {
-//           stringBuffer.append(" " + i + " ").append(TEST_STRING1);
-//       }
-//       
-//       System.out.println("EncrypterDecrypterTest: String to encrypt has length " + stringBuffer.toString().length());
-//       String  cipherText = EncrypterDecrypter.encrypt(PASSWORD2, stringBuffer.toString());
-//
-//       assertNotNull(cipherText);
-//       System.out.println("EncrypterDecrypterTest: CipherText has length " + cipherText.length());
-//       
-//       String reconstructedPlainText = EncrypterDecrypter.decrypt(PASSWORD2, cipherText);
-//       assertEquals(stringBuffer.toString(), reconstructedPlainText);
+        EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter();
+
+        // create a longer encryption string
+        StringBuffer stringBuffer = new StringBuffer();
+        for (int i = 0; i < 1000; i++) {
+            stringBuffer.append(i + " ").append(TEST_STRING1);
+        }
+
+        System.out.println("EncrypterDecrypterTest: String to encrypt has length " + stringBuffer.toString().length());
+        String cipherText = encrypterDecrypter.encrypt(stringBuffer.toString(), PASSWORD2);
+
+        assertNotNull(cipherText);
+        System.out.println("EncrypterDecrypterTest: CipherText has length " + cipherText.length());
+
+        String reconstructedPlainText = encrypterDecrypter.decrypt(cipherText, PASSWORD2);
+        // System.out.println("Original: " +
+        // Utils.bytesToHexString(stringBuffer.toString().getBytes()));
+        // System.out.println("Reborn  : " +
+        // Utils.bytesToHexString(reconstructedPlainText.getBytes()));
+        assertEquals(stringBuffer.toString(), reconstructedPlainText);
     }
 }
