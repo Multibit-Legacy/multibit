@@ -25,12 +25,25 @@ import java.io.InputStreamReader;
 import junit.framework.TestCase;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.bitcoin.core.Utils;
 
 public class EncrypterDecrypterTest extends TestCase {
 
+    private static final Logger log = LoggerFactory.getLogger(EncrypterDecrypterTest.class);
+
     private static final String TEST_STRING1 = "The quick brown fox jumps over the lazy dog. 01234567890 !@#$%^&*()-=[]{};':|`~,./<>?";
+   
+    // Chinese translation for 'The fee cannot be smaller than the minimum fee
+    private static final String TEST_STRING2 = "\u4ea4\u6613\u8d39\u7528\u5fc5\u987b\u81f3\u5c11 0.0001 BTC\u3002\u4fdd\u6301\u539f\u6709\u8d39\u7528\u8bbe\u7f6e\u3002";
+    
     private static final char[] PASSWORD1 = "aTestPassword".toCharArray();
     private static final char[] PASSWORD2 = "0123456789".toCharArray();
+    
+    // Moscow in Russian in Cyrillic
+    private static final char[] PASSWORD3 = "\u041c\u043e\u0441\u043a\u0432\u0430".toCharArray();
 
     @Test
     public void testEncryptDecrypt1() throws EncrypterDecrypterException {
@@ -39,15 +52,13 @@ public class EncrypterDecrypterTest extends TestCase {
         // encrypt
         String cipherText = encrypterDecrypter.encrypt(TEST_STRING1, PASSWORD1);
         assertNotNull(cipherText);
-        System.out.println("\nEncrypterDecrypterTest: cipherText = \n---------------\n" + cipherText + "\n---------------\n");
+        log.debug("\nEncrypterDecrypterTest: cipherText = \n---------------\n" + cipherText + "\n---------------\n");
 
         // decrypt
-        String reconstructedPlainText = encrypterDecrypter.decrypt(cipherText, PASSWORD1);
-        // System.out.println("Original: " +
-        // Utils.bytesToHexString(TEST_STRING1.getBytes()));
-        // System.out.println("Reborn  : " +
-        // Utils.bytesToHexString(reconstructedPlainText.getBytes()));
-        assertEquals(TEST_STRING1, reconstructedPlainText);
+        String rebornPlainText = encrypterDecrypter.decrypt(cipherText, PASSWORD1);
+        log.debug("Original: " + Utils.bytesToHexString(TEST_STRING1.getBytes()));
+        log.debug("Reborn  : " + Utils.bytesToHexString(rebornPlainText.getBytes()));
+        assertEquals(TEST_STRING1, rebornPlainText);
     }
 
     public void testEncryptDecrypt2() throws EncrypterDecrypterException {
@@ -124,7 +135,44 @@ public class EncrypterDecrypterTest extends TestCase {
             fail("Could not run OpenSSL command to decrypt file");
         }
     }
+    
+    @Test
+    public void testEncryptDecryptNullAndBlank() throws EncrypterDecrypterException {
+        EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter();
 
+        // encrypt null string
+        String cipherText = encrypterDecrypter.encrypt(null, PASSWORD1);
+        assertNotNull(cipherText);
+
+        // decrypt
+        String rebornPlainText = encrypterDecrypter.decrypt(cipherText, PASSWORD1);
+        assertEquals("", rebornPlainText);
+        
+        // encrypt empty string
+        cipherText = encrypterDecrypter.encrypt("", PASSWORD1);
+        assertNotNull(cipherText);
+
+        // decrypt
+        rebornPlainText = encrypterDecrypter.decrypt(cipherText, PASSWORD1);
+        assertEquals("", rebornPlainText);
+    }
+
+    @Test
+    public void testEncryptDecryptInternational() throws EncrypterDecrypterException {
+        EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter();
+
+        // encrypt
+        String cipherText = encrypterDecrypter.encrypt(TEST_STRING2, PASSWORD3);
+        assertNotNull(cipherText);
+        log.debug("\nEncrypterDecrypterTest: cipherText = \n---------------\n" + cipherText + "\n---------------\n");
+
+        // decrypt
+        String rebornPlainText = encrypterDecrypter.decrypt(cipherText, PASSWORD3);
+        log.debug("Original: " + Utils.bytesToHexString(TEST_STRING2.getBytes()));
+        log.debug("Reborn  : " + Utils.bytesToHexString(rebornPlainText.getBytes()));
+        assertEquals(TEST_STRING2, rebornPlainText);
+    }
+ 
     private void writeToFile(String textToWrite, File destinationFile) throws IOException {
         if (!destinationFile.exists()) {
             destinationFile.createNewFile();

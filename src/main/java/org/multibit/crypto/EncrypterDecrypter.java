@@ -15,6 +15,7 @@
  */
 package org.multibit.crypto;
 
+import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 
 import org.apache.commons.codec.binary.Base64;
@@ -26,6 +27,8 @@ import org.bouncycastle.crypto.generators.OpenSSLPBEParametersGenerator;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.bouncycastle.crypto.params.ParametersWithIV;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Utils;
 
@@ -33,7 +36,7 @@ import com.google.bitcoin.core.Utils;
  * This class encrypts and decrypts a string in a manner that is compatible with OpenSSL
  * 
  * If you encrypt a string with this class you can decrypt it with the OpenSSL command:
- * openssl enc -d -aes-256-cbc -a -p -in cipher.txt -out plain.txt -pass pass:aTestPassword
+ * openssl enc -d -aes-256-cbc -a -in cipher.txt -out plain.txt -pass pass:aTestPassword
  * 
  * where:
  *    cipher.txt = file containing the cipher text
@@ -45,6 +48,8 @@ import com.google.bitcoin.core.Utils;
  *
  */
 public class EncrypterDecrypter {
+    private static final Logger log = LoggerFactory.getLogger(EncrypterDecrypter.class);
+
     /**
      * The string encoding to use when converting strings to bytes
      */
@@ -74,36 +79,65 @@ public class EncrypterDecrypter {
      * OpenSSL salted prefix text
      */
     private static final String OPENSSL_SALTED_TEXT = "Salted__";
-    
+
+    /**
+     * OpenSSL salted prefix bytes - also used as magic number for encrypted file
+     */
+    public byte[] openSSLSaltedBytes;
+
     private static SecureRandom secureRandom = new SecureRandom();
 
-    // Get password to generate symmetric key with (or without IV)
-    // To be used in an AES underlying cipher
-    private CipherParameters getAESPasswordKey(char[] password, byte[] salt) throws Exception {
-        //PBEParametersGenerator generator = new PKCS12ParametersGenerator(new SHA1Digest());
-        //byte[] keyBytes = PBEParametersGenerator.PKCS12PasswordToBytes(password);
-        
-        PBEParametersGenerator generator = new OpenSSLPBEParametersGenerator();
-        generator.init(PBEParametersGenerator.PKCS5PasswordToBytes(password), salt, NUMBER_OF_ITERATIONS);
+    public EncrypterDecrypter() {
+        try {
+            openSSLSaltedBytes = OPENSSL_SALTED_TEXT.getBytes(STRING_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            throw new EncrypterDecrypterException("Could not construct EncrypterDecrypter", e);
+        }
+    }
+    
+    /**
+     * Get password and generate key and iv
+     * @param password The password to use in key generation
+     * @param salt The salt to use in key generation
+     * @return The CipherParameters containing the created key
+     * @throws Exception
+     */
+    private CipherParameters getAESPasswordKey(char[] password, byte[] salt) throws EncrypterDecrypterException {
+        try {
+            PBEParametersGenerator generator = new OpenSSLPBEParametersGenerator();
+            generator.init(PBEParametersGenerator.PKCS5PasswordToBytes(password), salt, NUMBER_OF_ITERATIONS);
 
-        ParametersWithIV key = (ParametersWithIV) generator.generateDerivedParameters(KEY_LENGTH, IV_LENGTH);
-        System.out.println("\nEncrypterDecrypter#getAESPasswordKey: salt was " + Utils.bytesToHexString(generator.getSalt()) );
-        System.out.println("EncrypterDecrypter#getAESPasswordKey: iv was " + Utils.bytesToHexString(key.getIV()) );
-               
-        return key;
+            ParametersWithIV key = (ParametersWithIV) generator.generateDerivedParameters(KEY_LENGTH, IV_LENGTH);
+
+            return key;
+        } catch (Exception e) {
+            throw new EncrypterDecrypterException("Could not generate key from password of length " + password.length
+                    + " and salt '" + Utils.bytesToHexString(salt), e);
+        }
     }
 
-    // Password based encryption using AES
+    /**
+     * Password based encryption using AES - CBC 256 bits
+     * @param plainText The text to encrypt
+     * @param password The password to use for encryption
+     * @return The encrypted string
+     * @throws EncrypterDecrypterException
+     */
     public String encrypt(String plainText, char[] password) throws EncrypterDecrypterException {
         try {
             // generate salt - each encryption call has a different salt
             byte[] salt = new byte[SALT_LENGTH];
             secureRandom.nextBytes(salt);
 
-            final byte[] plainTextAsBytes = plainText.getBytes(STRING_ENCODING);
+            byte[] plainTextAsBytes;
+            if (plainText == null) {
+                plainTextAsBytes = new byte[0];
+            } else {
+                plainTextAsBytes = plainText.getBytes(STRING_ENCODING);
+            }
 
             ParametersWithIV key = (ParametersWithIV) getAESPasswordKey(password, salt);
-                       
+
             // The following code uses an AES cipher to encrypt the message
             BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESFastEngine()));
             cipher.init(true, key);
@@ -114,9 +148,8 @@ public class EncrypterDecrypter {
 
             // OpenSSL adds the salt to the encrypted result as "Salted___" + salt in hex.
             // Do the same
-            
-            byte result[] = concat(salt, encryptedBytes);
-            result = concat(OPENSSL_SALTED_TEXT.getBytes(STRING_ENCODING), result);
+
+            byte result[] = concat(concat(openSSLSaltedBytes, salt), encryptedBytes);
 
             return Base64.encodeBase64String(result);
         } catch (Exception e) {
@@ -124,14 +157,20 @@ public class EncrypterDecrypter {
         }
     }
 
-    // Password based decryption using AES
+    /**
+     * Decrypt text previously encrypted with this class
+     * 
+     * @param textToDecode The code to decrypt
+     * @param passwordbThe password to use for decryption
+     * @return The decrypted text
+     * @throws EncrypterDecrypterException
+     */
     public String decrypt(String textToDecode, char[] password) throws EncrypterDecrypterException {
         try {
             final byte[] decodeTextAsBytes = Base64.decodeBase64(textToDecode.getBytes(STRING_ENCODING));
 
             // extract the salt and bytes to decrypt
-            byte[] saltPrefixBytes = OPENSSL_SALTED_TEXT.getBytes(STRING_ENCODING);
-            int saltPrefixTextLength = saltPrefixBytes.length + SALT_LENGTH;
+            int saltPrefixTextLength = openSSLSaltedBytes.length + SALT_LENGTH;
             
             byte[] prefixedSalt = new byte[saltPrefixTextLength];
 
@@ -139,8 +178,7 @@ public class EncrypterDecrypter {
              
             byte[] salt = new byte[SALT_LENGTH];
 
-            System.arraycopy(prefixedSalt, saltPrefixBytes.length, salt, 0, SALT_LENGTH);
-            System.out.println("EncrypterDecrypter#decrypt:salt = " + Utils.bytesToHexString(salt));
+            System.arraycopy(prefixedSalt, openSSLSaltedBytes.length, salt, 0, SALT_LENGTH);
             
             byte[] cipherBytes = new byte[decodeTextAsBytes.length - saltPrefixTextLength];
             System.arraycopy(decodeTextAsBytes, saltPrefixTextLength, cipherBytes, 0, decodeTextAsBytes.length - saltPrefixTextLength);
@@ -174,4 +212,13 @@ public class EncrypterDecrypter {
 
         return result;
     }
+    
+    /**
+     * get the OpenSSL "Salted__" prefix text as bytes 
+     * @return The openSSL salted prefix bytes
+     */
+    public byte[] getOpenSSLSaltedBytes() {
+        return openSSLSaltedBytes;
+    }
+
 }
