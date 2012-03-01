@@ -27,13 +27,9 @@ import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.Data;
-import org.multibit.model.DataProvider;
-import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -47,15 +43,13 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 /**
  * The export private keys view
  */
-public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider {
+public class ExportPrivateKeysPanel extends JPanel implements View {
 
     private static final long serialVersionUID = 444992298119957705L;
 
     private MultiBitController controller;
 
     private MultiBitFrame mainFrame;
-
-    private Data data;
 
     private MultiBitLabel walletFilenameLabel;
 
@@ -82,14 +76,8 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
 
         this.controller = controller;
 
-        data = new Data();
-
         outputFilename = "";
         
-        // clear any old message info
-        controller.getModel().setUserPreference(MultiBitModel.DISPLAY_EXPORT_PRIVATE_KEYS_MESSAGE, "false");
-        controller.getModel().setUserPreference(MultiBitModel.EXPORT_PRIVATE_KEYS_MESSAGE, " ");
-
         initUI();
     }
 
@@ -102,18 +90,10 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
             outputFilenameLabel.setText(outputFilename);
         }
         
-        if (Boolean.TRUE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.DISPLAY_EXPORT_PRIVATE_KEYS_MESSAGE))) {
-            messageLabel.setText("  " + controller.getModel().getUserPreference(MultiBitModel.EXPORT_PRIVATE_KEYS_MESSAGE));
-            controller.getModel().setUserPreference(MultiBitModel.DISPLAY_EXPORT_PRIVATE_KEYS_MESSAGE, "false");
-        } else {
-            messageLabel.setText(" ");
-        }
+        messageLabel.setText(" ");
     }
 
-    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
-        // not implemented on this view
-    }
-
+    @Override
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
     }
 
@@ -391,26 +371,8 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
         return buttonPanel;
     }
 
-    public Data getData() {
-        Item privateKeyFilenameItem = new Item(MultiBitModel.PRIVATE_KEY_FILENAME);
-        privateKeyFilenameItem.setNewValue(outputFilename);
-        data.addItem(MultiBitModel.PRIVATE_KEY_FILENAME, privateKeyFilenameItem);
-
-        return data;
-    }
-
-    public JPanel getFormPanel() {
-        return null;
-    }
-
-    public JTextField getLabelTextField() {
-        return null;
-    }
-
     @Override
     public void updateView() {
-        // TODO Auto-generated method stub
-
     }
 
     private void chooseFile() {
@@ -446,6 +408,16 @@ public class ExportPrivateKeysPanel extends JPanel implements View, DataProvider
                 }
                 outputFilenameLabel.setText(outputFilename);
             }
+        }
+    }
+    
+    public String getOutputFilename() {
+        return outputFilename;
+    }
+    
+    public void setMessage(String message) {
+        if (messageLabel != null) {
+            messageLabel.setText(message);
         }
     }
 

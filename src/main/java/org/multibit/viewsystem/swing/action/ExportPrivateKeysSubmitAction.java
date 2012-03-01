@@ -16,31 +16,41 @@
 package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.DataProvider;
+import org.multibit.file.PrivateKeysHandler;
+import org.multibit.viewsystem.swing.view.ExportPrivateKeysPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This {@link Action} exports the active wallets private keys
  */
 public class ExportPrivateKeysSubmitAction extends AbstractAction {
+    private static final Logger log = LoggerFactory.getLogger(ExportPrivateKeysSubmitAction.class);
 
     private static final long serialVersionUID = 1923492460598757765L;
 
     private MultiBitController controller;
-    private DataProvider dataProvider;
+
+    private ExportPrivateKeysPanel exportPrivateKeysPanel;
+
+    private PrivateKeysHandler privateKeysHandler;
 
     /**
      * Creates a new {@link ExportPrivateKeysSubmitAction}.
      */
-    public ExportPrivateKeysSubmitAction(MultiBitController controller, DataProvider dataProvider, ImageIcon icon) {
+    public ExportPrivateKeysSubmitAction(MultiBitController controller, ExportPrivateKeysPanel exportPrivateKeysPanel,
+            ImageIcon icon) {
         super(controller.getLocaliser().getString("showExportPrivateKeysAction.text"), icon);
         this.controller = controller;
-        this.dataProvider = dataProvider;
+        this.exportPrivateKeysPanel = exportPrivateKeysPanel;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("showExportPrivateKeysAction.tooltip"));
@@ -48,10 +58,32 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
     }
 
     /**
-     * delegate to generic submit action
+     * Export the private keys to a file
      */
     public void actionPerformed(ActionEvent e) {
-        org.multibit.action.ExportPrivateKeysSubmitAction submitAction = new org.multibit.action.ExportPrivateKeysSubmitAction(controller);
-        submitAction.execute(dataProvider);
+        privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService().getNetworkParameters());
+
+        String message = controller.getLocaliser().getString("showExportPrivateKeysAction.noDataWasWritten");
+
+        // get the required output file
+        String exportPrivateKeysFilename = exportPrivateKeysPanel.getOutputFilename();
+
+        try {
+            privateKeysHandler.exportPrivateKeys(new File(exportPrivateKeysFilename), controller.getModel()
+                    .getActivePerWalletModelData().getWallet(), controller.getMultiBitService().getChain());
+
+            // success
+            message = controller.getLocaliser().getString("showExportPrivateKeysAction.privateKeysExportSuccess");
+        } catch (IOException ioe) {
+            log.error(ioe.getClass().getName() + " " + ioe.getMessage());
+
+            // failure
+            message = controller.getLocaliser().getString("showExportPrivateKeysAction.privateKeysExportFailure",
+                    new Object[] { ioe.getClass().getName() + " " + ioe.getMessage() });
+        }
+
+        exportPrivateKeysPanel.setMessage(message);
+
+        // controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
     }
 }

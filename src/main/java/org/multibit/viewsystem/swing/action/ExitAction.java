@@ -15,24 +15,33 @@
  */
 package org.multibit.viewsystem.swing.action;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
+import java.util.List;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.SwingWorker;
 
+import org.multibit.ApplicationInstanceManager;
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This {@link Action} exits the application.
+ * exit the application
+ * 
+ * @author jim
+ * 
  */
 public class ExitAction extends AbstractAction {
-
-    private static final long serialVersionUID = 1913592460565057705L;
-
+    private static final long serialVersionUID = 8784284740245520863L;
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
-    
+
+    private static final Logger log = LoggerFactory.getLogger(ExitAction.class);
+
     /**
      * Creates a new {@link ExitAction}.
      */
@@ -46,11 +55,56 @@ public class ExitAction extends AbstractAction {
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("exitAction.mnemonicKey"));
     }
 
-    /**
-     * delegate to the generic ExitAction
-     */
-    public void actionPerformed(ActionEvent e) {
-        org.multibit.action.ExitAction exitAction = new org.multibit.action.ExitAction(controller, mainFrame);
-        exitAction.execute(null);
+    @Override
+    public void actionPerformed(ActionEvent arg0) {
+        if (mainFrame != null) {
+            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        }
+        // save all the wallets and put their filenames in the user preferences
+        if (controller.getModel().getPerWalletModelDataList() != null) {
+            List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+
+            int numberOfWallets = perWalletModelDataList.size();
+            if (numberOfWallets > 0) {
+                for (int i = 1; i <= numberOfWallets; i++) {
+                    PerWalletModelData perWalletModelData = perWalletModelDataList.get(i - 1);
+                    if (perWalletModelData.getWalletFilename() != null) {
+                        controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+                    }
+                }
+            }
+        }
+        // write the user properties
+        log.debug("Saving user preferences ...");
+        //controller.updateStatusLabel("Saving user preferences ...");
+        controller.getFileHandler().writeUserPreferences();
+
+        log.debug("Shutting down Bitcoin URI checker ...");
+        ApplicationInstanceManager.shutdownSocket();
+
+        // get rid of main display
+        if (mainFrame != null) {
+            mainFrame.setVisible(false);
+        }
+        
+        if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
+            log.debug("Closing Bitcoin network connection...");
+            //controller.updateStatusLabel("Closing Bitcoin network connection...");
+            @SuppressWarnings("rawtypes")
+            SwingWorker worker = new SwingWorker() {
+                @Override
+                protected Object doInBackground() throws Exception {
+                    controller.getMultiBitService().getPeerGroup().stop();
+                    return null; // return not used
+                }
+            };
+            worker.execute();
+        }
+
+        if (mainFrame != null) {
+            mainFrame.dispose();
+        }
+        
+        System.exit(0);
     }
 }

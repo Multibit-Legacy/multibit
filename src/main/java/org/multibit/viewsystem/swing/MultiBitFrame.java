@@ -198,8 +198,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // TODO Examine how this fits in with the controller onQuit() event
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent arg0) {
-                org.multibit.action.ExitAction exitAction = new org.multibit.action.ExitAction(finalController, thisFrame);
-                exitAction.execute(null);
+                org.multibit.viewsystem.swing.action.ExitAction exitAction = new org.multibit.viewsystem.swing.action.ExitAction(finalController, thisFrame);
+                exitAction.actionPerformed(null);
             }
         });
 

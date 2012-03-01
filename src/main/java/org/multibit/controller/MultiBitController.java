@@ -30,7 +30,6 @@ import java.util.Stack;
 
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Localiser;
-import org.multibit.action.ExitAction;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
@@ -47,6 +46,7 @@ import org.multibit.platform.listener.GenericQuitResponse;
 import org.multibit.qrcode.BitcoinURI;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
+import org.multibit.viewsystem.swing.action.ExitAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -703,7 +703,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     public void onQuitEvent(GenericQuitEvent event, GenericQuitResponse response) {
         if (isOKToQuit()) {
             ExitAction exitAction = new ExitAction(this, null);
-            exitAction.execute(null);
+            exitAction.actionPerformed(null);
             response.performQuit();
         } else {
             response.cancelQuit();

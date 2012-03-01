@@ -107,8 +107,8 @@ public class MultiBitModel {
     // private key import and export
     public static final String PRIVATE_KEY_FILE_EXTENSION = "key";
     public static final String PRIVATE_KEY_FILENAME = "privateKeyFilename";
-    public static final String DISPLAY_EXPORT_PRIVATE_KEYS_MESSAGE = "displayExportPrivateKeyMessage";
-    public static final String EXPORT_PRIVATE_KEYS_MESSAGE = "exportPrivateKeyMessage";
+//    public static final String DISPLAY_EXPORT_PRIVATE_KEYS_MESSAGE = "displayExportPrivateKeyMessage";
+//    public static final String EXPORT_PRIVATE_KEYS_MESSAGE = "exportPrivateKeyMessage";
     public static final String DISPLAY_IMPORT_PRIVATE_KEYS_MESSAGE = "displayImportPrivateKeyMessage";
     public static final String IMPORT_PRIVATE_KEYS_MESSAGE = "importPrivateKeyMessage";
 
