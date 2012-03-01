@@ -341,6 +341,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
             return "";
         }
     }
+    
     public void loadForm() {
         // get the current address, label and amount from the model
         String address = controller.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS);

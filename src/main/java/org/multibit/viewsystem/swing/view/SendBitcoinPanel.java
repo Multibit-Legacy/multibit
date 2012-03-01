@@ -349,6 +349,14 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         return formPanel;
     }
 
+    public String getSendAddress() {
+        if (addressTextField != null) {
+            return addressTextField.getText();
+        } else {
+            return "";
+        }
+    }
+    
     public void loadForm() {
         // get the current address, label and amount from the model
         String address = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);

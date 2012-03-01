@@ -22,7 +22,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.DataProvider;
+import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
 
 /**
  * This {@link Action} represents the swing copy address action
@@ -31,15 +31,15 @@ public class CopySendAddressAction extends AbstractAction {
 
     private static final long serialVersionUID = 191352235465057705L;
 
-    private DataProvider dataProvider;
+    private SendBitcoinPanel sendBitcoinPanel;
 
     /**
      * Creates a new {@link CopySendAddressAction}.
      */
-    public CopySendAddressAction(MultiBitController controller, DataProvider dataProvider, ImageIcon icon) {
+    public CopySendAddressAction(MultiBitController controller, SendBitcoinPanel sendBitcoinPanel, ImageIcon icon) {
         super("", icon);
-        this.dataProvider = dataProvider;
-        
+        this.sendBitcoinPanel = sendBitcoinPanel;
+
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("copyAddressAction.tooltip"));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("copyAddressAction.mnemonicKey"));
@@ -49,7 +49,8 @@ public class CopySendAddressAction extends AbstractAction {
      * delegate to generic copy send address text action
      */
     public void actionPerformed(ActionEvent e) {
-        org.multibit.action.CopySendAddressAction genericCopySendAddressAction = new org.multibit.action.CopySendAddressAction();
-        genericCopySendAddressAction.execute(dataProvider);
+        // copy to clipboard
+        TextTransfer textTransfer = new TextTransfer();
+        textTransfer.setClipboardContents(sendBitcoinPanel.getSendAddress());
     }
 }
