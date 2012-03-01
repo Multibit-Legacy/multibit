@@ -20,7 +20,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import org.multibit.action.Validator;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
