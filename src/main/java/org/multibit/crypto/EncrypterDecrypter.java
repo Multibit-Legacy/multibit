@@ -35,8 +35,7 @@ public class EncrypterDecrypter {
             (byte) 0xc3 };
 
     /**
-     * number of times the password & salt are hashed during key creation (set
-     * before making an instance)
+     * number of times the password & salt are hashed during key creation
      */
     private static final int NUMBER_OF_ITERATIONS = 1024;
 
@@ -60,7 +59,7 @@ public class EncrypterDecrypter {
             final SecretKey secretKey = keyFactory.generateSecret(keySpec);
 
             // Encrypt the plain text
-            byte[] plainTextAsBytes = plainText.getBytes(STRING_ENCODING);
+            final byte[] plainTextAsBytes = plainText.getBytes(STRING_ENCODING);
             final PBEParameterSpec cipherSpec = new PBEParameterSpec(SALT, NUMBER_OF_ITERATIONS);
             final Cipher cipher = Cipher.getInstance(ALGORITHM, "BC");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, cipherSpec);
@@ -80,7 +79,7 @@ public class EncrypterDecrypter {
             final SecretKey secretKey = keyFactory.generateSecret(keySpec);
 
             // Decrypt the cipher text
-            byte[] cipherTextAsBytes = Base64.decodeBase64(cipherText.getBytes(STRING_ENCODING));
+            final byte[] cipherTextAsBytes = Base64.decodeBase64(cipherText.getBytes(STRING_ENCODING));
             final PBEParameterSpec cipherSpec = new PBEParameterSpec(SALT, NUMBER_OF_ITERATIONS);
             final Cipher cipher = Cipher.getInstance(ALGORITHM, "BC");
             cipher.init(Cipher.DECRYPT_MODE, secretKey, cipherSpec);
