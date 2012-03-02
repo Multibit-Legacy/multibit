@@ -134,7 +134,7 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                             .getNetworkParameters());
 
                     // TODO add password
-                    Collection<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.importPrivateKeys(finalImportFile, null);
+                    Collection<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.importPrivateKeys(finalImportFile, "jim".toCharArray());
 
                     // add to wallet and keep track of earliest transaction date
                     // go backwards from now

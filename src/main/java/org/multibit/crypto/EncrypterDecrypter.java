@@ -85,7 +85,7 @@ public class EncrypterDecrypter {
      */
     public byte[] openSSLSaltedBytes;
 
-    public static final int NUMBER_OF_CHARACTERS_TO_MATCH_IN_OPENSSL_MAGIC_TEXT = 11;
+    public static final int NUMBER_OF_CHARACTERS_TO_MATCH_IN_OPENSSL_MAGIC_TEXT = 10;
     
     private static SecureRandom secureRandom = new SecureRandom();
 
