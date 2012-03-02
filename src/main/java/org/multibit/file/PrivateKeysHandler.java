@@ -15,16 +15,19 @@
  */
 package org.multibit.file;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -32,6 +35,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TimeZone;
 
+import org.apache.commons.codec.binary.Base64;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +70,8 @@ public class PrivateKeysHandler {
     private NetworkParameters networkParameters;
     private static final String SEPARATOR = " ";
 
+    private String openSSLMagicText;
+
     public PrivateKeysHandler(NetworkParameters networkParameters) {
         // date format is UTC with century, T time separator and Z for UTC
         // timezone
@@ -76,25 +82,42 @@ public class PrivateKeysHandler {
             throw new IllegalArgumentException("NetworkParameters must be supplied");
         }
         this.networkParameters = networkParameters;
+
+        try {
+            openSSLMagicText = Base64.encodeBase64String(
+                    EncrypterDecrypter.OPENSSL_SALTED_TEXT.getBytes(EncrypterDecrypter.STRING_ENCODING)).substring(0,
+                    EncrypterDecrypter.NUMBER_OF_CHARACTERS_TO_MATCH_IN_OPENSSL_MAGIC_TEXT);
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
-    public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryption, char[] password) throws IOException {
-        
-        //  construct a StringBuffer with the private key export text
+    public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryption, char[] password)
+            throws IOException {
+
+        // construct a StringBuffer with the private key export text
         StringBuffer outputStringBuffer = new StringBuffer();
-    
-        outputHeaderComment(outputStringBuffer);
+
+        if (!performEncryption) {
+            outputHeaderComment(outputStringBuffer);
+        }
 
         // get the wallet's private keys and output them
-        outputKeys(outputStringBuffer, wallet, blockChain);
+        Collection<PrivateKeyAndDate> keyAndDates = createKeyAndDates(wallet, blockChain);
+        outputKeys(outputStringBuffer, keyAndDates);
+
+        if (!performEncryption) {
+            outputFooterComment(outputStringBuffer);
+        }
 
         String keyOutputText = outputStringBuffer.toString();
-        
+
         if (performEncryption) {
             EncrypterDecrypter encrypter = new EncrypterDecrypter();
             keyOutputText = encrypter.encrypt(keyOutputText, password);
         }
-        
+
         FileWriter fileWriter = null;
         PrintWriter printWriter = null;
         try {
@@ -102,7 +125,7 @@ public class PrivateKeysHandler {
             printWriter = new PrintWriter(fileWriter);
 
             printWriter.write(keyOutputText);
-            
+
             // close the output stream
             printWriter.close();
 
@@ -118,17 +141,40 @@ public class PrivateKeysHandler {
 
     /**
      * Verify the export file was correctly written to disk
-     * @param exportFile The export file to verify
-     * @param wallet The wallet to verify the keys against
-     * @param performEncryption Is Encryption required
-     * @param password the password to use is encryption is required
-     * @return A localised string suitable for user consumption
+     * 
+     * @param exportFile
+     *            The export file to verify
+     * @param wallet
+     *            The wallet to verify the keys against
+     * @param performEncryption
+     *            Is Encryption required
+     * @param password
+     *            the password to use is encryption is required
+     * @return The result of verification
      */
-    public String verifyExportFile(File exportFile, Wallet wallet, boolean performEncryption, char[] password) {
-        return "File verification not implemented.";
+    public String verifyExportFile(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryption, char[] password) {
+        String verificationMessage = "Verification failure. Unknown error.";
+
+        try {
+            // create the expected export file contents
+            Collection<PrivateKeyAndDate> expectedKeysAndDates = createKeyAndDates(wallet, blockChain);
+
+            // read in the specified export file
+            Collection<PrivateKeyAndDate> importedKeysAndDates = importPrivateKeys(exportFile, password);
+
+            if (expectedKeysAndDates.equals(importedKeysAndDates)) {
+                verificationMessage = "Verification success. The export file could be read in correctly and the private keys match the wallet's";
+            } else {
+                verificationMessage = "Verification failure. The reimported keys did not match original keys";
+            }
+        } catch (PrivateKeysHandlerException pkhe) {
+            verificationMessage = "Verification failure. " + pkhe.getMessage();
+        }
+
+        return verificationMessage;
     }
 
-    public ArrayList<PrivateKeyAndDate> importPrivateKeys(File importFile) throws PrivateKeysHandlerException {
+    public Collection<PrivateKeyAndDate> importPrivateKeys(File importFile, char[] password) throws PrivateKeysHandlerException {
         if (importFile == null) {
             throw new PrivateKeysHandlerException("Import file cannot be null");
         }
@@ -136,8 +182,18 @@ public class PrivateKeysHandler {
         ArrayList<PrivateKeyAndDate> parseResults = new ArrayList<PrivateKeyAndDate>();
 
         Scanner scanner = null;
+
         try {
-            scanner = new Scanner(new FileReader(importFile));
+            // read in the file
+            String importFileContents = readFile(importFile);
+
+            if (importFileContents != null && importFileContents.startsWith(openSSLMagicText)) {
+                // decryption required
+                EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter();
+                importFileContents = encrypterDecrypter.decrypt(importFileContents, password);
+            }
+
+            scanner = new Scanner(new StringReader(importFileContents));
 
             // first use a Scanner to get each line
             while (scanner.hasNextLine()) {
@@ -146,7 +202,6 @@ public class PrivateKeysHandler {
         } catch (IOException ioe) {
             throw new PrivateKeysHandlerException("Could not read import file '" + importFile.getAbsolutePath() + "'", ioe);
         } finally {
-
             // ensure the underlying stream is always closed
             // this only has any effect if the item passed
             // to the Scanner
@@ -174,7 +229,9 @@ public class PrivateKeysHandler {
         out.append("#").append("\n");
     }
 
-    private void outputKeys(StringBuffer out, Wallet wallet, BlockChain blockChain) {
+    private Collection<PrivateKeyAndDate> createKeyAndDates(Wallet wallet, BlockChain blockChain) {
+        Collection<PrivateKeyAndDate> keyAndDates = new ArrayList<PrivateKeyAndDate>();
+
         if (wallet != null) {
             ArrayList<ECKey> keychain = wallet.keychain;
             Set<Transaction> allTransactions = wallet.getTransactions(true, true);
@@ -256,8 +313,6 @@ public class PrivateKeysHandler {
                 }
 
                 for (ECKey ecKey : keychain) {
-                    DumpedPrivateKey dumpedPrivateKey = ecKey.getPrivateKeyEncoded(networkParameters);
-                    String keyOutputString = dumpedPrivateKey.toString();
                     Date earliestUsageDate = keyToEarliestUsageDateMap.get(ecKey);
                     if (earliestUsageDate == null) {
                         if (overallLastUsageDate != null) {
@@ -267,14 +322,28 @@ public class PrivateKeysHandler {
                             earliestUsageDate = overallLastUsageDate;
                         }
                     }
-                    if (earliestUsageDate != null) {
-                        keyOutputString = keyOutputString + SEPARATOR + formatter.format(earliestUsageDate);
-                    }
-                    out.append(keyOutputString).append("\n");
+                    keyAndDates.add(new PrivateKeyAndDate(ecKey, earliestUsageDate));
                 }
             }
         }
-        out.append("# End of private keys").append("\n");;
+
+        return keyAndDates;
+    }
+
+    private void outputKeys(StringBuffer out, Collection<PrivateKeyAndDate> keyAndDates) {
+        for (PrivateKeyAndDate privateKeyAndDate : keyAndDates) {
+            DumpedPrivateKey dumpedPrivateKey = privateKeyAndDate.getKey().getPrivateKeyEncoded(networkParameters);
+            String keyOutputString = dumpedPrivateKey.toString();
+
+            if (privateKeyAndDate.getDate() != null) {
+                keyOutputString = keyOutputString + SEPARATOR + formatter.format(privateKeyAndDate.getDate());
+            }
+            out.append(keyOutputString).append("\n");
+        }
+    }
+
+    private void outputFooterComment(StringBuffer out) {
+        out.append("# End of private keys").append("\n");
     }
 
     private boolean transactionUsesKey(Transaction transaction, ECKey ecKey) {
@@ -358,5 +427,17 @@ public class PrivateKeysHandler {
                 }
             }
         }
+    }
+
+    private String readFile(File file) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        String line = null;
+        StringBuilder stringBuilder = new StringBuilder();
+        String ls = System.getProperty("line.separator");
+        while ((line = reader.readLine()) != null) {
+            stringBuilder.append(line);
+            stringBuilder.append(ls);
+        }
+        return stringBuilder.toString();
     }
 }

@@ -78,13 +78,15 @@ public class EncrypterDecrypter {
     /**
      * OpenSSL salted prefix text
      */
-    private static final String OPENSSL_SALTED_TEXT = "Salted__";
+    public static final String OPENSSL_SALTED_TEXT = "Salted__";
 
     /**
      * OpenSSL salted prefix bytes - also used as magic number for encrypted file
      */
     public byte[] openSSLSaltedBytes;
 
+    public static final int NUMBER_OF_CHARACTERS_TO_MATCH_IN_OPENSSL_MAGIC_TEXT = 11;
+    
     private static SecureRandom secureRandom = new SecureRandom();
 
     public EncrypterDecrypter() {

@@ -86,9 +86,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
     private JPasswordField repeatPasswordField;
 
     private JLabel tickLabel;
-
-    private static final String INDENT = "       "; // 7 spaces
-
+    
     /**
      * Creates a new {@link ExportPrivateKeysPanel}.
      */
@@ -116,7 +114,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
             outputFilenameLabel.setText(outputFilename);
         }
 
-        messageLabel1.setText(" ");
+        clearMessages();
     }
 
     @Override
@@ -195,6 +193,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
 
         messageLabel1 = new MultiBitLabel("", controller);
         messageLabel1.setOpaque(false);
+        messageLabel1.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 6;
@@ -206,6 +205,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
 
         messageLabel2 = new MultiBitLabel("", controller);
         messageLabel2.setOpaque(false);
+        messageLabel2.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 7;
@@ -655,6 +655,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
                     outputFilename = outputFilename + "." + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION;
                 }
                 outputFilenameLabel.setText(outputFilename);
+                clearMessages();
             }
         }
     }
@@ -663,6 +664,11 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         return outputFilename;
     }
 
+    public void clearMessages() {
+        setMessage1(" ");
+        setMessage2(" ");
+    }
+    
     public void setMessage1(String message1) {
         if (messageLabel1 != null) {
             messageLabel1.setText(message1);
@@ -696,12 +702,14 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
                     repeatPasswordField.setEnabled(true);
                     tickLabel.setEnabled(true);
                     passwordField.requestFocusInWindow();
+                    clearMessages();
                 } else {
                     doNotPasswordProtectWarningLabel.setText(controller.getLocaliser().getString(
                             "showExportPrivateKeysPanel.doNotPasswordProtectWarningLabel"));
                     passwordField.setEnabled(false);
                     repeatPasswordField.setEnabled(false);
                     tickLabel.setEnabled(false);
+                    clearMessages();
                 }
             }
         }
@@ -736,6 +744,8 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
                 }
             }
             tickLabel.setVisible(tickLabelVisible);
+
+            clearMessages();
 
             // clear the password arrays
             for (int i = 0; i < password1.length; i++) {

@@ -12,48 +12,85 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */package org.multibit.file;
+ */
+package org.multibit.file;
 
 import java.util.Date;
 
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Utils;
 
 /**
- * POFO containing an ECKey and Date
+ * POJO containing an ECKey and Date
+ * 
  * @author jim
- *
+ * 
  */
 public class PrivateKeyAndDate {
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((date == null) ? 0 : date.hashCode());
+        result = prime * result + ((key == null) ? 0 : Utils.bytesToHexString(key.getPrivKeyBytes()).hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        PrivateKeyAndDate other = (PrivateKeyAndDate) obj;
+        if (date == null) {
+            if (other.date != null)
+                return false;
+        } else if (!date.equals(other.date))
+            return false;
+        if (key == null) {
+            if (other.key != null)
+                return false;
+        } else if (!Utils.bytesToHexString(key.getPrivKeyBytes()).equals(Utils.bytesToHexString(other.key.getPrivKeyBytes()))) {
+            return false;
+        }
+        return true;
+    }
+
     private ECKey key;
     private Date date;
- 
+
     public PrivateKeyAndDate() {
-        
+
     }
-    
+
     public PrivateKeyAndDate(ECKey key, Date date) {
         super();
         this.key = key;
         this.date = date;
     }
- 
+
     @Override
     public String toString() {
         return "PrivateKeyAndDate [key=" + key + ", date=" + date + "]";
     }
-    
+
     public ECKey getKey() {
         return key;
     }
+
     public void setKey(ECKey key) {
         this.key = key;
     }
+
     public Date getDate() {
         return date;
     }
+
     public void setDate(Date date) {
         this.date = date;
     }
-    
 
 }

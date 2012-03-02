@@ -19,7 +19,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collection;
 
 import junit.framework.TestCase;
 
@@ -95,7 +95,7 @@ public class PrivateKeysHandlerTest extends TestCase {
                 + PRIVATE_KEYS_TESTDATA_DIRECTORY;
         String expectedPrivateKeysFile = testDirectory + File.separator + EXPECTED_TEST1_PRIVATE_KEYS_FILE;
 
-        ArrayList<PrivateKeyAndDate> parsedPrivateKeysAndDates = privateKeysHandler.importPrivateKeys(new File(expectedPrivateKeysFile));
+        Collection<PrivateKeyAndDate> parsedPrivateKeysAndDates = privateKeysHandler.importPrivateKeys(new File(expectedPrivateKeysFile), null);
         
         //System.out.println("PrivateKeysHandlerTest#testImport parsedPrivateKeysAndDates = '" + parsedPrivateKeysAndDates + "'");
         assertNotNull(parsedPrivateKeysAndDates);

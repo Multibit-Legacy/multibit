@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -132,7 +133,8 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                     PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService()
                             .getNetworkParameters());
 
-                    ArrayList<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.importPrivateKeys(finalImportFile);
+                    // TODO add password
+                    Collection<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.importPrivateKeys(finalImportFile, null);
 
                     // add to wallet and keep track of earliest transaction date
                     // go backwards from now
