@@ -89,7 +89,7 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
         if (exportPrivateKeysFile.exists()) {
             String yesText = controller.getLocaliser().getString("showOpenUriView.yesText");
             String noText = controller.getLocaliser().getString("showOpenUriView.noText");
-            String questionText = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwrite");
+            String questionText = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwrite", new Object[] {exportPrivateKeysFile.getName()});
             String questionTitle = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwriteTitle");
             int selection = JOptionPane.showOptionDialog(exportPrivateKeysPanel, questionText, questionTitle,
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,

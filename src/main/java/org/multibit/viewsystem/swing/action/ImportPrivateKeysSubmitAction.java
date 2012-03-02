@@ -27,10 +27,12 @@ import java.util.TimerTask;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.PrivateKeysHandlerException;
@@ -54,6 +56,7 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
 
     private MultiBitController controller;
     private ImportPrivateKeysPanel importPrivateKeysPanel;
+    private JPasswordField passwordField;
 
     private static final long BUTTON_DOWNCLICK_TIME = 400;
 
@@ -61,10 +64,11 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
      * Creates a new {@link ImportPrivateKeysSubmitAction}.
      */
     public ImportPrivateKeysSubmitAction(MultiBitController controller, ImportPrivateKeysPanel importPrivateKeysPanel,
-            ImageIcon icon) {
+            ImageIcon icon, JPasswordField passwordField) {
         super(controller.getLocaliser().getString("importPrivateKeysSubmitAction.text"), icon);
         this.controller = controller;
         this.importPrivateKeysPanel = importPrivateKeysPanel;
+        this.passwordField = passwordField;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("importPrivateKeysSubmitAction.tooltip"));
@@ -120,6 +124,7 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
         final File finalImportFile = importFile;
         final ImportPrivateKeysPanel finalThisPanel = importPrivateKeysPanel;
         final MultiBitController finalController = controller;
+        final char[] finalPassword = passwordField.getPassword();
 
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
             private String statusBarMessage = null;
@@ -133,8 +138,7 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                     PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService()
                             .getNetworkParameters());
 
-                    // TODO add password
-                    Collection<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.importPrivateKeys(finalImportFile, "jim".toCharArray());
+                    Collection<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.importPrivateKeys(finalImportFile, finalPassword);
 
                     // add to wallet and keep track of earliest transaction date
                     // go backwards from now
@@ -178,6 +182,11 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                     controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
                     successMeasure = Boolean.TRUE;
                     statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
+                } catch (EncrypterDecrypterException ede) {
+                    log.error(ede.getClass().getName() + " " + ede.getMessage());
+                    uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
+                            new Object[] { ede.getClass().getName() + " " + ede.getMessage() });
+
                 } catch (PrivateKeysHandlerException pkhe) {
                     log.error(pkhe.getClass().getName() + " " + pkhe.getMessage());
                     uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",

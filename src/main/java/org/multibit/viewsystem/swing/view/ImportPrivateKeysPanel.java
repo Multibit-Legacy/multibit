@@ -18,21 +18,28 @@ package org.multibit.viewsystem.swing.view;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.JPasswordField;
+import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
+import org.apache.commons.codec.binary.Base64;
 import org.multibit.controller.MultiBitController;
+import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
@@ -41,7 +48,6 @@ import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.action.ExportPrivateKeysSubmitAction;
 import org.multibit.viewsystem.swing.action.ImportPrivateKeysSubmitAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
@@ -64,20 +70,27 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
     private MultiBitLabel walletDescriptionLabel;
 
-    private  MultiBitButton chooseFilenameButton;
-    
+    private MultiBitButton chooseFilenameButton;
+
     private JFileChooser fileChooser;
 
     private MultiBitLabel outputFilenameLabel;
 
     private MultiBitLabel messageLabel;
-    
+
     private static final String INDENT_SPACES = "  "; // 2 spaces
 
     private String outputFilename;
-    
+
     private ImportPrivateKeysPanel thisPanel;
-    
+
+    private MultiBitLabel passwordInfoLabel;
+    private JPasswordField passwordField;
+    private MultiBitLabel passwordPromptLabel;
+
+    private String openSSLMagicText;
+
+    private boolean importFileIsEncrypted = false;
 
     /**
      * Creates a new {@link ImportPrivateKeysPanel}.
@@ -101,6 +114,14 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         controller.getModel().setUserPreference(MultiBitModel.DISPLAY_IMPORT_PRIVATE_KEYS_MESSAGE, "false");
         controller.getModel().setUserPreference(MultiBitModel.IMPORT_PRIVATE_KEYS_MESSAGE, " ");
 
+        try {
+            openSSLMagicText = Base64.encodeBase64String(
+                    EncrypterDecrypter.OPENSSL_SALTED_TEXT.getBytes(EncrypterDecrypter.STRING_ENCODING)).substring(0,
+                    EncrypterDecrypter.NUMBER_OF_CHARACTERS_TO_MATCH_IN_OPENSSL_MAGIC_TEXT);
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         initUI();
     }
 
@@ -110,6 +131,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
         if (outputFilename == null || "".equals(outputFilename)) {
             outputFilenameLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.noFileSelected"));
+            passwordInfoLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.noFileSelected"));
         }
 
         if (Boolean.TRUE.toString().equals(
@@ -179,6 +201,15 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 4;
+        constraints.gridwidth = 2;
+        constraints.weightx = 1;
+        constraints.weighty = 0.2;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(createPasswordPanel(), constraints);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 5;
         constraints.gridwidth = 1;
         constraints.weightx = 0.4;
         constraints.weighty = 0.06;
@@ -189,7 +220,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         messageLabel.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 6;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 0.06;
@@ -200,7 +231,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 6;
+        constraints.gridy = 7;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 20;
@@ -333,8 +364,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         outputFilenamePanel.add(filler1, constraints);
 
-        chooseFilenameButton = new MultiBitButton(controller.getLocaliser().getString(
-                "showImportPrivateKeysPanel.filename.text"));
+        chooseFilenameButton = new MultiBitButton(controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.text"));
 
         final MultiBitButton finalChooseFilenameButton = chooseFilenameButton;
         chooseFilenameButton.addActionListener(new ActionListener() {
@@ -389,6 +419,90 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         return outputFilenamePanel;
     }
 
+    private JPanel createPasswordPanel() {
+        // do/do not password protect radios
+        JPanel passwordProtectPanel = new JPanel(new GridBagLayout());
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString(
+                "showExportPrivateKeysPanel.password.title"));
+        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
+
+        FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        int minimumHeight = fontMetrics.getHeight() * 5 + 80;
+        int minimumWidth = Math.max(
+                fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT),
+                fontMetrics.stringWidth(controller.getLocaliser().getString(
+                        "showExportPrivateKeysPanel.doNotPasswordProtectWarningLabel"))) + 60;
+        passwordProtectPanel.setMinimumSize(new Dimension(minimumWidth, minimumHeight));
+        passwordProtectPanel.setBorder(border);
+        passwordProtectPanel.setOpaque(false);
+
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        JLabel filler1 = new JLabel();
+        filler1.setPreferredSize(new Dimension(120, 1));
+        filler1.setOpaque(false);
+
+        constraints.fill = GridBagConstraints.BOTH;        
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.05;
+        constraints.gridwidth = 2;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        passwordProtectPanel.add(filler1, constraints);
+
+        passwordInfoLabel = new MultiBitLabel("", controller);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 2;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        passwordProtectPanel.add(passwordInfoLabel, constraints);
+
+        passwordPromptLabel = new MultiBitLabel(controller.getLocaliser().getString("showExportPrivateKeysPanel.passwordPrompt"), controller);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 2;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        passwordProtectPanel.add(passwordPromptLabel, constraints);
+
+        passwordField = new JPasswordField(30);
+        passwordField.setPreferredSize(new Dimension(250, 20));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 2;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.25;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        passwordProtectPanel.add(passwordField, constraints);
+
+        JLabel filler2 = new JLabel();
+        filler2.setMinimumSize(new Dimension(3, 3));
+        filler2.setMaximumSize(new Dimension(3, 3));
+        filler2.setPreferredSize(new Dimension(3, 3));
+        filler2.setOpaque(false);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        passwordProtectPanel.add(filler2, constraints);
+
+        return passwordProtectPanel;
+    }
+
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
@@ -397,7 +511,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         buttonPanel.setLayout(flowLayout);
 
         ImportPrivateKeysSubmitAction submitAction = new ImportPrivateKeysSubmitAction(controller, this,
-                ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE));
+                ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE), passwordField);
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
@@ -451,6 +565,26 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
                 outputFilename = file.getAbsolutePath();
 
                 outputFilenameLabel.setText(outputFilename);
+                
+                try {
+                    String firstLine = readFirstLineInFile(file);
+                    if (firstLine != null && firstLine.startsWith(openSSLMagicText)) {
+                        // file is encrypted
+                        importFileIsEncrypted = true;
+                        passwordPromptLabel.setEnabled(true);
+                        passwordField.setEnabled(true);
+                        passwordInfoLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.enterPassword"));                    
+                    } else {
+                        // file is not encrypted
+                        importFileIsEncrypted = false;
+                        passwordPromptLabel.setEnabled(false);
+                        passwordField.setEnabled(false);
+                        passwordInfoLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.importFileIsNotPasswordProtected"));                    
+                    }
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -463,5 +597,10 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         if (messageLabel != null) {
             messageLabel.setText(INDENT_SPACES + message);
         }
+    }
+
+    private String readFirstLineInFile(File file) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        return reader.readLine();
     }
 }

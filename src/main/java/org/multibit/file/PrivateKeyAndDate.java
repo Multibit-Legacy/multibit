@@ -48,8 +48,11 @@ public class PrivateKeyAndDate {
         if (date == null) {
             if (other.date != null)
                 return false;
-        } else if (!date.equals(other.date))
+        } else if (other.date == null) {
             return false;
+        } else if (date.getTime() != other.date.getTime()) {
+            return false;
+        }
         if (key == null) {
             if (other.key != null)
                 return false;

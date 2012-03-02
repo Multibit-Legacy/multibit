@@ -200,7 +200,8 @@ public class EncrypterDecrypter {
             String decryptedText = new String(decryptedBytes, STRING_ENCODING).trim();
             return decryptedText;
         } catch (Exception e) {
-            throw new EncrypterDecrypterException("Could not decrypt string '" + textToDecode + "'", e);
+            log.error("Could not decrypt string '" + textToDecode + "', error was: " + e.getClass().getName() + " " + e.getMessage());
+            throw new EncrypterDecrypterException("Could not decrypt input string", e);
         }
     }
 

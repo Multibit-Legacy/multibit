@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.Set;
@@ -51,6 +52,7 @@ import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionInput;
 import com.google.bitcoin.core.TransactionOutput;
+import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 
 /**
@@ -153,7 +155,8 @@ public class PrivateKeysHandler {
      * @return The result of verification
      */
     public String verifyExportFile(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryption, char[] password) {
-        String verificationMessage = "Verification failure. Unknown error.";
+        boolean thereWereFailures = false;
+        String verificationMessage = "Verification failed for unknown reason";
 
         try {
             // create the expected export file contents
@@ -162,10 +165,35 @@ public class PrivateKeysHandler {
             // read in the specified export file
             Collection<PrivateKeyAndDate> importedKeysAndDates = importPrivateKeys(exportFile, password);
 
-            if (expectedKeysAndDates.equals(importedKeysAndDates)) {
-                verificationMessage = "Verification success. The export file could be read in correctly and the private keys match the wallet's";
+            if (expectedKeysAndDates.size() != importedKeysAndDates.size()) {
+                verificationMessage = "Verification failure. The number of reimported keys did not match the number of original keys";
+                thereWereFailures = true;
             } else {
-                verificationMessage = "Verification failure. The reimported keys did not match original keys";
+                for (int i = 0; i < expectedKeysAndDates.size(); i++) {
+                    Iterator<PrivateKeyAndDate> iteratorExpected = expectedKeysAndDates.iterator();
+                    Iterator<PrivateKeyAndDate> iteratorImported = importedKeysAndDates.iterator();
+
+                    PrivateKeyAndDate expected = iteratorExpected.next();
+                    PrivateKeyAndDate imported = iteratorImported.next();
+
+                    if (!Utils.bytesToHexString(expected.getKey().getPrivKeyBytes()).equals(
+                            Utils.bytesToHexString(imported.getKey().getPrivKeyBytes()))) {
+                        verificationMessage = "Verification failure. The reimported private keys did not match original private keys";
+                        thereWereFailures = true;
+                        break;
+                    }
+
+                    // imported keydate must be at or before expected (further
+                    // back in time is safe
+                    if (imported.getDate().after(expected.getDate())) {
+                        verificationMessage = "Verification failure. The reimported key creation dates did not match original keys";
+                        thereWereFailures = true;
+                        break;
+                    }
+                }
+                if (!thereWereFailures) {
+                    verificationMessage = "Verification success. The export file could be read in correctly and the private keys match the wallet's";
+                }
             }
         } catch (PrivateKeysHandlerException pkhe) {
             verificationMessage = "Verification failure. " + pkhe.getMessage();
