@@ -389,9 +389,10 @@ public class MultiBitModel {
                 }
 
                 @Override
-                public void onDeadTransaction(Wallet wallet, Transaction deadTx, Transaction replacementTx) {
+                public void onTransactionConfidenceChanged(Wallet wallet, Transaction tx) {
+                    // TODO Auto-generated method stub
+                    
                 }
-
             });
         }
 

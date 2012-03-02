@@ -334,7 +334,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         useSpecific.setOpaque(false);
         useSpecific.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
-        ItemListener itemListener = new ChangeLanguageUsageItemListener();
+        ItemListener itemListener = new ChangeLanguageUsageListener();
         useDefaultLocale.addItemListener(itemListener);
         useSpecific.addItemListener(itemListener);
         languageUsageGroup.add(useDefaultLocale);
@@ -690,8 +690,8 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         return buttonPanel;
     }
 
-    class ChangeLanguageUsageItemListener implements ItemListener {
-        public ChangeLanguageUsageItemListener() {
+    class ChangeLanguageUsageListener implements ItemListener {
+        public ChangeLanguageUsageListener() {
 
         }
 

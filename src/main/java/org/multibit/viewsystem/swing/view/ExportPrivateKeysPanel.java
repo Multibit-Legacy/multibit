@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2012 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,32 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
+import java.util.Arrays;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 import org.multibit.controller.MultiBitController;
@@ -59,9 +73,21 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
 
     private MultiBitLabel outputFilenameLabel;
 
-    private MultiBitLabel messageLabel;
+    private MultiBitLabel messageLabel1;
+    private MultiBitLabel messageLabel2;
 
     private String outputFilename;
+
+    private JRadioButton passwordProtect;
+    private JRadioButton doNotPasswordProtect;
+    private MultiBitLabel doNotPasswordProtectWarningLabel;
+
+    private JPasswordField passwordField;
+    private JPasswordField repeatPasswordField;
+
+    private JLabel tickLabel;
+
+    private static final String INDENT = "       "; // 7 spaces
 
     /**
      * Creates a new {@link ExportPrivateKeysPanel}.
@@ -77,7 +103,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         this.controller = controller;
 
         outputFilename = "";
-        
+
         initUI();
     }
 
@@ -89,8 +115,8 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
             outputFilename = createDefaultKeyFilename(controller.getModel().getActiveWalletFilename());
             outputFilenameLabel.setText(outputFilename);
         }
-        
-        messageLabel.setText(" ");
+
+        messageLabel1.setText(" ");
     }
 
     @Override
@@ -98,10 +124,14 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
     }
 
     private void initUI() {
-        setMinimumSize(new Dimension(550, 160));
-
+        setLayout(new BorderLayout());
+        
+        JPanel mainPanel = new JPanel();
+        mainPanel.setMinimumSize(new Dimension(550, 160));
+        mainPanel.setLayout(new GridBagLayout());
+        mainPanel.setOpaque(false);
+        
         GridBagConstraints constraints = new GridBagConstraints();
-        setLayout(new GridBagLayout());
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -112,7 +142,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         constraints.anchor = GridBagConstraints.CENTER;
         JPanel fillerPanel1 = new JPanel();
         fillerPanel1.setOpaque(false);
-        add(fillerPanel1, constraints);
+        mainPanel.add(fillerPanel1, constraints);
 
         MultiBitLabel titleLabel = new MultiBitLabel("", controller);
         titleLabel.setHorizontalTextPosition(JLabel.LEFT);
@@ -125,7 +155,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         constraints.weightx = 1.8;
         constraints.weighty = 0.06;
         constraints.anchor = GridBagConstraints.CENTER;
-        add(titleLabel, constraints);
+        mainPanel.add(titleLabel, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -134,7 +164,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(createWalletPanel(), constraints);
+        mainPanel.add(createWalletPanel(), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -143,39 +173,66 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(createFilenamePanel(), constraints);
+        mainPanel.add(createFilenamePanel(), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 4;
-        constraints.gridwidth = 1;
-        constraints.weightx = 0.4;
-        constraints.weighty = 0.06;
+        constraints.gridwidth = 2;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(createButtonPanel(), constraints);
+        mainPanel.add(createPasswordPanel(), constraints);
 
-        messageLabel = new MultiBitLabel("", controller);
-        messageLabel.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 5;
         constraints.gridwidth = 1;
+        constraints.weightx = 0.4;
+        constraints.weighty = 0.06;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(createButtonPanel(), constraints);
+
+        messageLabel1 = new MultiBitLabel("", controller);
+        messageLabel1.setOpaque(false);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 6;
+        constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 0.06;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(messageLabel, constraints);
-        
+        mainPanel.add(messageLabel1, constraints);
+
+        messageLabel2 = new MultiBitLabel("", controller);
+        messageLabel2.setOpaque(false);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 7;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.06;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(messageLabel2, constraints);
+
         JLabel filler1 = new JLabel();
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 6;
+        constraints.gridy = 8;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 20;
         constraints.anchor = GridBagConstraints.CENTER;
-        add(filler1, constraints);
+        mainPanel.add(filler1, constraints);
+        
+        JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        mainScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.DARK_BACKGROUND_COLOR));
+        mainScrollPane.setOpaque(true);
+        mainScrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
+        add(mainScrollPane, BorderLayout.CENTER);
     }
 
     private JPanel createWalletPanel() {
@@ -357,6 +414,184 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         return outputFilenamePanel;
     }
 
+    private JPanel createPasswordPanel() {
+        // do/do not password protect radios
+        JPanel passwordProtectPanel = new JPanel(new GridBagLayout());
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString(
+                "showExportPrivateKeysPanel.password.title"));
+        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
+
+        FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        int minimumHeight = fontMetrics.getHeight() * 5 + 80;
+        int minimumWidth = Math.max(fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT), fontMetrics.stringWidth(controller.getLocaliser().getString(
+                            "showExportPrivateKeysPanel.doNotPasswordProtectWarningLabel"))) + 60;
+        passwordProtectPanel.setMinimumSize(new Dimension(minimumWidth, minimumHeight));
+ 
+        passwordProtectPanel.setBorder(border);
+        passwordProtectPanel.setOpaque(false);
+
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        JLabel filler1 = new JLabel();
+        filler1.setMinimumSize(new Dimension(25, 1));
+        filler1.setMaximumSize(new Dimension(25, 1));
+        filler1.setPreferredSize(new Dimension(25, 1));
+        filler1.setOpaque(false);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.05;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        passwordProtectPanel.add(filler1, constraints);
+
+        ButtonGroup usePasswordGroup = new ButtonGroup();
+        passwordProtect = new JRadioButton(controller.getLocaliser().getString("showExportPrivateKeysPanel.passwordProtect"));
+        passwordProtect.setOpaque(false);
+        passwordProtect.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+
+        doNotPasswordProtect = new JRadioButton(controller.getLocaliser().getString(
+                "showExportPrivateKeysPanel.doNotPasswordProtect"));
+        doNotPasswordProtect.setOpaque(false);
+        doNotPasswordProtect.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+
+        ItemListener itemListener = new ChangePasswordProtectListener();
+        passwordProtect.addItemListener(itemListener);
+        doNotPasswordProtect.addItemListener(itemListener);
+        usePasswordGroup.add(passwordProtect);
+        usePasswordGroup.add(doNotPasswordProtect);
+        passwordProtect.setSelected(true);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 3;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        passwordProtectPanel.add(passwordProtect, constraints);
+
+        MultiBitLabel passwordPromptLabel = new MultiBitLabel("", controller);
+        passwordPromptLabel.setText(controller.getLocaliser().getString("showExportPrivateKeysPanel.passwordPrompt"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 2;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        passwordProtectPanel.add(passwordPromptLabel, constraints);
+
+        passwordField = new JPasswordField(30);
+        passwordField.setMinimumSize(new Dimension(250, 20));
+        passwordField.addKeyListener(new PasswordListener());
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 2;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.25;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        passwordProtectPanel.add(passwordField, constraints);
+
+        JLabel filler2 = new JLabel();
+        filler2.setMinimumSize(new Dimension(3, 3));
+        filler2.setMaximumSize(new Dimension(3, 3));
+        filler2.setPreferredSize(new Dimension(3, 3));
+        filler2.setOpaque(false);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        passwordProtectPanel.add(filler2, constraints);
+
+        MultiBitLabel repeatPasswordPromptLabel = new MultiBitLabel("", controller);
+        repeatPasswordPromptLabel.setText(controller.getLocaliser().getString("showExportPrivateKeysPanel.repeatPasswordPrompt"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 4;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        passwordProtectPanel.add(repeatPasswordPromptLabel, constraints);
+
+        repeatPasswordField = new JPasswordField(30);
+        repeatPasswordField.setMinimumSize(new Dimension(250, 20));
+        repeatPasswordField.addKeyListener(new PasswordListener());
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 4;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.25;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        passwordProtectPanel.add(repeatPasswordField, constraints);
+
+        JLabel filler3 = new JLabel();
+        filler3.setMinimumSize(new Dimension(20, 1));
+        filler3.setMaximumSize(new Dimension(20, 1));
+        filler3.setPreferredSize(new Dimension(20, 1));
+        filler3.setOpaque(false);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 3;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        passwordProtectPanel.add(filler3, constraints);
+
+        ImageIcon tickIcon = ImageLoader.createImageIcon(ImageLoader.TICK_ICON_FILE);
+        tickLabel = new JLabel(tickIcon);
+        tickLabel.setToolTipText(controller.getLocaliser().getString("showExportPrivateKeysPanel.theTwoPasswordsMatch"));
+        tickLabel.setVisible(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 3;
+        constraints.gridy = 2;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 3;
+        constraints.anchor = GridBagConstraints.CENTER;
+        passwordProtectPanel.add(tickLabel, constraints);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 5;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 3;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        passwordProtectPanel.add(doNotPasswordProtect, constraints);
+
+        doNotPasswordProtectWarningLabel = new MultiBitLabel(" ", controller);
+        doNotPasswordProtectWarningLabel.setForeground(Color.RED);
+        doNotPasswordProtectWarningLabel.setBorder(BorderFactory.createEmptyBorder(0, 40, 0, 0));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 6;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 3;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        passwordProtectPanel.add(doNotPasswordProtectWarningLabel, constraints);
+
+        return passwordProtectPanel;
+    }
+
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
@@ -364,7 +599,12 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        ExportPrivateKeysSubmitAction submitAction = new ExportPrivateKeysSubmitAction(controller, this, ImageLoader.createImageIcon(ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE));
+        /**
+         * Create submit action with references to the password fields
+         * - this avoids having any public accessors on the panel
+         */
+        ExportPrivateKeysSubmitAction submitAction = new ExportPrivateKeysSubmitAction(controller, this,
+                ImageLoader.createImageIcon(ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE), passwordField, repeatPasswordField);
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
@@ -375,6 +615,14 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
     public void updateView() {
     }
 
+    public boolean requiresEncryption() {
+        boolean requiresEncryption = false;
+        if (passwordProtect != null && passwordProtect.isSelected()) {
+            requiresEncryption = true;
+        }
+        return requiresEncryption;
+    }
+    
     private void chooseFile() {
         JFileChooser.setDefaultLocale(controller.getLocaliser().getLocale());
         fileChooser = new JFileChooser();
@@ -401,7 +649,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
             File file = fileChooser.getSelectedFile();
             if (file != null) {
                 outputFilename = file.getAbsolutePath();
-                
+
                 // add a key suffix if not present
                 if (!outputFilename.endsWith("." + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION)) {
                     outputFilename = outputFilename + "." + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION;
@@ -410,14 +658,20 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
             }
         }
     }
-    
+
     public String getOutputFilename() {
         return outputFilename;
     }
-    
-    public void setMessage(String message) {
-        if (messageLabel != null) {
-            messageLabel.setText(message);
+
+    public void setMessage1(String message1) {
+        if (messageLabel1 != null) {
+            messageLabel1.setText(message1);
+        }
+    }
+
+    public void setMessage2(String message2) {
+        if (messageLabel2 != null) {
+            messageLabel2.setText(message2);
         }
     }
 
@@ -428,4 +682,70 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         String defaultKeyFilename = stem + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION;
         return defaultKeyFilename;
     }
+
+    class ChangePasswordProtectListener implements ItemListener {
+        public ChangePasswordProtectListener() {
+
+        }
+
+        public void itemStateChanged(ItemEvent e) {
+            if (doNotPasswordProtectWarningLabel != null) {
+                if (e.getSource().equals(passwordProtect)) {
+                    doNotPasswordProtectWarningLabel.setText(" ");
+                    passwordField.setEnabled(true);
+                    repeatPasswordField.setEnabled(true);
+                    tickLabel.setEnabled(true);
+                    passwordField.requestFocusInWindow();
+                } else {
+                    doNotPasswordProtectWarningLabel.setText(controller.getLocaliser().getString(
+                            "showExportPrivateKeysPanel.doNotPasswordProtectWarningLabel"));
+                    passwordField.setEnabled(false);
+                    repeatPasswordField.setEnabled(false);
+                    tickLabel.setEnabled(false);
+                }
+            }
+        }
+    }
+
+    class PasswordListener implements KeyListener {
+        /** Handle the key typed event from the text field. */
+        public void keyTyped(KeyEvent e) {
+        }
+
+        /** Handle the key-pressed event from the text field. */
+        public void keyPressed(KeyEvent e) {
+            // do nothing
+        }
+
+        /** Handle the key-released event from the text field. */
+        public void keyReleased(KeyEvent e) {
+            char[] password1 = null;
+            char[] password2 = null;
+
+            if (passwordField != null) {
+                password1 = passwordField.getPassword();
+            }
+            if (repeatPasswordField != null) {
+                password2 = repeatPasswordField.getPassword();
+            }
+
+            boolean tickLabelVisible = false;
+            if (password1 != null && password2 != null) {
+                if (Arrays.equals(password1, password2)) {
+                    tickLabelVisible = true;
+                }
+            }
+            tickLabel.setVisible(tickLabelVisible);
+
+            // clear the password arrays
+            for (int i = 0; i < password1.length; i++) {
+                password1[i] = 0;
+            }
+
+            for (int i = 0; i < password2.length; i++) {
+                password2[i] = 0;
+            }
+        }
+    }
+
 }

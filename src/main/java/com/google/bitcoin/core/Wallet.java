@@ -739,12 +739,6 @@ public class Wallet implements Serializable, IsMultiBitClass {
                                     // dead
                                     // tx.
                                     connected.getConfidence().setOverridingTransaction(tx);
-                                    for (WalletEventListener listener : eventListeners) {
-                                        synchronized (listener) {
-                                            listener.onDeadTransaction(this, connected, tx);
-                                        }
-                                    }
-
                                 }
                             }
                         }
@@ -1787,7 +1781,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
         for (int i = 0; i < eventListeners.size(); i++) {
             WalletEventListener listener = eventListeners.get(i);
             synchronized (listener) {
-                listener.onDeadTransaction(this, tx, replacement);
+ // TODO
+        //        listener.onDeadTransaction(this, tx, replacement);
             }
             if (eventListeners.get(i) != listener) {
                 // Listener removed itself.

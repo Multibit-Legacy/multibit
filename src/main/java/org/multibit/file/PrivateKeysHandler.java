@@ -32,6 +32,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TimeZone;
 
+import org.multibit.crypto.EncrypterDecrypter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,18 +78,31 @@ public class PrivateKeysHandler {
         this.networkParameters = networkParameters;
     }
 
-    public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain) throws IOException {
+    public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryption, char[] password) throws IOException {
+        
+        //  construct a StringBuffer with the private key export text
+        StringBuffer outputStringBuffer = new StringBuffer();
+    
+        outputHeaderComment(outputStringBuffer);
+
+        // get the wallet's private keys and output them
+        outputKeys(outputStringBuffer, wallet, blockChain);
+
+        String keyOutputText = outputStringBuffer.toString();
+        
+        if (performEncryption) {
+            EncrypterDecrypter encrypter = new EncrypterDecrypter();
+            keyOutputText = encrypter.encrypt(keyOutputText, password);
+        }
+        
         FileWriter fileWriter = null;
         PrintWriter printWriter = null;
         try {
             fileWriter = new FileWriter(exportFile);
             printWriter = new PrintWriter(fileWriter);
 
-            outputHeaderComment(printWriter);
-
-            // get the wallet's private keys and output them
-            outputKeys(printWriter, wallet, blockChain);
-
+            printWriter.write(keyOutputText);
+            
             // close the output stream
             printWriter.close();
 
@@ -100,6 +114,18 @@ public class PrivateKeysHandler {
                 fileWriter.close();
             }
         }
+    }
+
+    /**
+     * Verify the export file was correctly written to disk
+     * @param exportFile The export file to verify
+     * @param wallet The wallet to verify the keys against
+     * @param performEncryption Is Encryption required
+     * @param password the password to use is encryption is required
+     * @return A localised string suitable for user consumption
+     */
+    public String verifyExportFile(File exportFile, Wallet wallet, boolean performEncryption, char[] password) {
+        return "File verification not implemented.";
     }
 
     public ArrayList<PrivateKeyAndDate> importPrivateKeys(File importFile) throws PrivateKeysHandlerException {
@@ -133,22 +159,22 @@ public class PrivateKeysHandler {
         return parseResults;
     }
 
-    private void outputHeaderComment(PrintWriter out) {
-        out.println("# KEEP YOUR PRIVATE KEYS SAFE !");
-        out.println("# Anyone who can read this file can spend your bitcoin.");
-        out.println("#");
-        out.println("# Format:");
-        out.println("#   <Base58 encoded private key>[<whitespace>[<key createdAt>]]");
-        out.println("#");
-        out.println("#   The Base58 encoded private keys are the same format as");
-        out.println("#   produced by the Satoshi client/ sipa dumpprivkey utility.");
-        out.println("#");
-        out.println("#   Key createdAt is in UTC format as specified by ISO 8601");
-        out.println("#   e.g: 2011-12-31T16:42:00Z . The century, 'T' and 'Z' are mandatory");
-        out.println("#");
+    private void outputHeaderComment(StringBuffer out) {
+        out.append("# KEEP YOUR PRIVATE KEYS SAFE !").append("\n");
+        out.append("# Anyone who can read this file can spend your bitcoin.").append("\n");
+        out.append("#").append("\n");
+        out.append("# Format:").append("\n");
+        out.append("#   <Base58 encoded private key>[<whitespace>[<key createdAt>]]").append("\n");
+        out.append("#").append("\n");
+        out.append("#   The Base58 encoded private keys are the same format as").append("\n");
+        out.append("#   produced by the Satoshi client/ sipa dumpprivkey utility.").append("\n");
+        out.append("#").append("\n");
+        out.append("#   Key createdAt is in UTC format as specified by ISO 8601").append("\n");
+        out.append("#   e.g: 2011-12-31T16:42:00Z . The century, 'T' and 'Z' are mandatory").append("\n");
+        out.append("#").append("\n");
     }
 
-    private void outputKeys(PrintWriter out, Wallet wallet, BlockChain blockChain) {
+    private void outputKeys(StringBuffer out, Wallet wallet, BlockChain blockChain) {
         if (wallet != null) {
             ArrayList<ECKey> keychain = wallet.keychain;
             Set<Transaction> allTransactions = wallet.getTransactions(true, true);
@@ -244,11 +270,11 @@ public class PrivateKeysHandler {
                     if (earliestUsageDate != null) {
                         keyOutputString = keyOutputString + SEPARATOR + formatter.format(earliestUsageDate);
                     }
-                    out.println(keyOutputString);
+                    out.append(keyOutputString).append("\n");
                 }
             }
         }
-        out.println("# End of private keys");
+        out.append("# End of private keys").append("\n");;
     }
 
     private boolean transactionUsesKey(Transaction transaction, ECKey ecKey) {
