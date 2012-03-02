@@ -84,15 +84,19 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
         }
 
         // check on file overwrite
-        String yesText = controller.getLocaliser().getString("showOpenUriView.yesText");
-        String noText = controller.getLocaliser().getString("showOpenUriView.noText");
-        String questionText = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwrite");
-        String questionTitle = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwriteTitle");
-        int selection = JOptionPane.showOptionDialog(exportPrivateKeysPanel, questionText, questionTitle,
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                ImageLoader.createImageIcon(ImageLoader.QUESTION_MARK_ICON_FILE), new String[] { yesText, noText }, noText);
-        if (selection != JOptionPane.YES_OPTION) {
-            return;
+        File exportPrivateKeysFile = new File(exportPrivateKeysFilename);
+
+        if (exportPrivateKeysFile.exists()) {
+            String yesText = controller.getLocaliser().getString("showOpenUriView.yesText");
+            String noText = controller.getLocaliser().getString("showOpenUriView.noText");
+            String questionText = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwrite");
+            String questionTitle = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwriteTitle");
+            int selection = JOptionPane.showOptionDialog(exportPrivateKeysPanel, questionText, questionTitle,
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    ImageLoader.createImageIcon(ImageLoader.QUESTION_MARK_ICON_FILE), new String[] { yesText, noText }, noText);
+            if (selection != JOptionPane.YES_OPTION) {
+                return;
+            }
         }
 
         privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService().getNetworkParameters());
@@ -124,9 +128,8 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
         }
 
         try {
-            privateKeysHandler.exportPrivateKeys(new File(exportPrivateKeysFilename), controller.getModel()
-                    .getActivePerWalletModelData().getWallet(), controller.getMultiBitService().getChain(), performEncryption,
-                    passwordToUse);
+            privateKeysHandler.exportPrivateKeys(exportPrivateKeysFile, controller.getModel().getActivePerWalletModelData()
+                    .getWallet(), controller.getMultiBitService().getChain(), performEncryption, passwordToUse);
 
             // success
             exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
@@ -144,9 +147,9 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
         if (performVerification) {
             // perform a verification on the exported file to see if it is
             // correct
-            exportPrivateKeysPanel.setMessage2(privateKeysHandler.verifyExportFile(new File(exportPrivateKeysFilename), controller
-                    .getModel().getActivePerWalletModelData().getWallet(), controller.getMultiBitService().getChain(),
-                    performEncryption, passwordToUse));
+            exportPrivateKeysPanel.setMessage2(privateKeysHandler.verifyExportFile(exportPrivateKeysFile, controller.getModel()
+                    .getActivePerWalletModelData().getWallet(), controller.getMultiBitService().getChain(), performEncryption,
+                    passwordToUse));
         }
     }
 }
