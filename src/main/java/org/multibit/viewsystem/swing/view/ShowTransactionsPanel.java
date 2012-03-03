@@ -447,7 +447,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     }
 
     @Override
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+    public void navigateAwayFromView() {
     }
 
     public WalletTableModel getWalletTableModel() {

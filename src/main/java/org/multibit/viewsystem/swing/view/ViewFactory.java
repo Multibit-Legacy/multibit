@@ -60,6 +60,13 @@ public class ViewFactory {
 
         switch (viewNumber) {
 
+        case View.SAME_VIEW: {
+            assert false;
+            // give back a your wallets view just so that things do not break
+            viewToReturn = new YourWalletsPanel(controller, mainFrame);
+            break;
+        }
+
         case View.TRANSACTIONS_VIEW: {
             viewToReturn = new ShowTransactionsPanel(mainFrame, controller);
             break;

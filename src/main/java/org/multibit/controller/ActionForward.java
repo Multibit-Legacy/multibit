@@ -23,7 +23,6 @@ package org.multibit.controller;
  */
 public enum ActionForward {
     FORWARD_TO_SAME,
-    FORWARD_TO_PREVIOUS,
     FORWARD_TO_TRANSACTIONS,
     FORWARD_TO_SEND_BITCOIN,
     FORWARD_TO_RECEIVE_BITCOIN,

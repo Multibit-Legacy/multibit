@@ -85,7 +85,7 @@ public class HelpContentsPanel extends JPanel implements View {
     }
 
     @Override
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+    public void navigateAwayFromView() {
         controller.updateStatusLabel("");
     }
 

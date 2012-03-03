@@ -25,9 +25,6 @@ import com.google.bitcoin.core.WalletEventListener;
  *
  */
 public interface ViewSystem extends WalletEventListener { 
-    public static final int NEW_VIEW_IS_CHILD_OF_PREVIOUS = 10000;
-    public static final int NEW_VIEW_IS_SIBLING_OF_PREVIOUS = 10002;
-       
     /**
      * display the view specified
      * @param view to display - one of the View constants
@@ -37,10 +34,8 @@ public interface ViewSystem extends WalletEventListener {
     /**
      * navigate away from a view - gives the view the opportunity to tidy up/ disappear etc
      * @param viewToNavigateAwayFrom - current view to navigate away from -one of the View constants
-     * @param nextView - next view - one of the View constants
-     * @param relationshipOfNewViewToPrevious - one of ViewSystem.isChild, isParent, isSibling
      */   
-    public void navigateAwayFromView(int viewToNavigateAwayFrom, int nextView, int relationshipOfNewViewToPrevious);
+    public void navigateAwayFromView(int viewToNavigateAwayFrom);
         
     /**
      * tells the views a new wallet has been created

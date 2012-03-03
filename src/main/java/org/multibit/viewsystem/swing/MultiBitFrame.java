@@ -667,7 +667,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void recreateAllViews(boolean clearCache, boolean initUI) {
         // close down current view
         if (currentView != 0) {
-            navigateAwayFromView(currentView, View.YOUR_WALLETS_VIEW, ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
+            navigateAwayFromView(currentView);
         }
 
         if (initUI) {
@@ -795,15 +795,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * navigate away from view - this may be on another thread hence the
      * SwingUtilities.invokeLater
      */
-    public void navigateAwayFromView(int viewToNavigateAwayFrom, int nextView, int relationshipOfNewViewToPrevious) {
-        final int nextViewFinal = nextView;
-        final int relationshipOfNewViewToPreviousFinal = relationshipOfNewViewToPrevious;
-
+    public void navigateAwayFromView(int viewToNavigateAwayFrom) {
         final View viewToNavigateAwayFromFinal = viewFactory.getView(viewToNavigateAwayFrom);
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                viewToNavigateAwayFromFinal.navigateAwayFromView(nextViewFinal, relationshipOfNewViewToPreviousFinal);
+                viewToNavigateAwayFromFinal.navigateAwayFromView();
             }
         });
     }

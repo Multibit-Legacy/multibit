@@ -155,7 +155,7 @@ public class HelpAboutPanel extends JPanel implements View {
     }
 
     @Override
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+    public void navigateAwayFromView() {
     }
 
     @Override

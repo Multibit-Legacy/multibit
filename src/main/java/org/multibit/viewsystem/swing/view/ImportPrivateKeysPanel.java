@@ -623,7 +623,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
     }
     
     @Override
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+    public void navigateAwayFromView() {
     }
 
     private void chooseFile(MultiBitButton callingButton) {

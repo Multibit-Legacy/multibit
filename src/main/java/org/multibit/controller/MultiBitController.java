@@ -189,7 +189,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         // push current view onto the stack
         viewStack.push(currentView);
         determineNextView(actionForward);
-        displayNextView(ViewSystem.NEW_VIEW_IS_CHILD_OF_PREVIOUS);
+        displayNextView();
     }
 
     /**
@@ -203,7 +203,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         determineNextView(actionForward);
 
         // do not change the call stack
-        displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
+        displayNextView();
     }
 
     /**
@@ -216,7 +216,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             log.error("setActionForwardToSiblingOfParent stack failure", ese);
         }
         determineNextView(actionForward);
-        displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
+        displayNextView();
     }
 
     /**
@@ -238,11 +238,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             nextView = currentView;
             break;
         }
-        case FORWARD_TO_PREVIOUS: {
-            // go back to the previously displayed view
-            nextView = previousView;
-            break;
-        }
+
         case FORWARD_TO_RECEIVE_BITCOIN: {
             // show the receive bitcoin view
             nextView = View.RECEIVE_BITCOIN_VIEW;
@@ -320,10 +316,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * @param relationshipOfNewViewToPrevious
-     *            - one of ViewSystem relationship constants
      */
-    public void displayNextView(int relationshipOfNewViewToPrevious) {
+    public void displayNextView() {
         if (nextView != 0) {
             // cycle the previous / current / next views
             previousView = currentView;
@@ -343,7 +337,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
         // tell all views to close the previous view
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.navigateAwayFromView(previousView, currentView, relationshipOfNewViewToPrevious);
+            viewSystem.navigateAwayFromView(previousView);
         }
 
         // for the top level views, clear the view stack
@@ -508,14 +502,10 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      *            The download status string
      */
     public void updateStatusLabel(String newStatusText) {
-        // log.debug("Update status label with '" + newStatusText + "'");
-        for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.updateStatusLabel(newStatusText, true);
-        }
+        updateStatusLabel(newStatusText, true);
     }
 
     public void updateStatusLabel(String newStatusText, boolean clearAutomatically) {
-        // log.debug("Update status label with '" + newStatusText + "'");
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.updateStatusLabel(newStatusText, clearAutomatically);
         }
@@ -738,5 +728,4 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     public List<Message> getData(Peer peer, GetDataMessage m) {
         return null;
     }
-
 }

@@ -202,7 +202,7 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, DataProvi
     }
 
     @Override
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+    public void navigateAwayFromView() {
         setVisible(false);
         log.debug("Navigate away from view called for ShowOpenUriDialog " + this.toString());
     }

@@ -119,7 +119,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
     }
 
     @Override
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+    public void navigateAwayFromView() {
     }
 
     private void initUI() {

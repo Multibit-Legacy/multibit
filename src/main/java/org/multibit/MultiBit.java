@@ -222,7 +222,7 @@ public class MultiBit {
         } else {
             log.debug("No Bitcoin URI provided as an argument");
             // display the next view
-            controller.displayNextView(ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
+            controller.displayNextView();
         }
 
         // Indicate to the application that startup has completed

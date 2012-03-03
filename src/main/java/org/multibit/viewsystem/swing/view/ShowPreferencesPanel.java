@@ -214,7 +214,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     }
 
     @Override
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+    public void navigateAwayFromView() {
     }
 
     private void initUI() {

@@ -268,7 +268,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
     }
 
     @Override
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+    public void navigateAwayFromView() {
     }
     
     @Override

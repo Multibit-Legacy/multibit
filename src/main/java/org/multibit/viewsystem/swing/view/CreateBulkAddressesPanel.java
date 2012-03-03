@@ -87,7 +87,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
     }
 
     @Override
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+    public void navigateAwayFromView() {
     }
 
     private void initUI() {

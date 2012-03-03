@@ -159,7 +159,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         // not implemented on this view
     }
 
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
+    public void navigateAwayFromView() {
         // save any changes to any of the wallets (except those that other
         // processes are dealing with)
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();

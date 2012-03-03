@@ -24,6 +24,7 @@ package org.multibit.viewsystem;
  *
  */
 public interface View {
+    public static final int SAME_VIEW = -1;                 // Not a real view - used to forward to the same view as calling
     public static final int UNKNOWN_VIEW = 0;
     public static final int TRANSACTIONS_VIEW = 1;
     public static final int SEND_BITCOIN_VIEW = 2;
@@ -48,14 +49,12 @@ public interface View {
     public void displayView();
     
     /**
-     * update the view (primarily due to the model data changing
+     * update the view (primarily due to the model data changing)
      */
     public void updateView();
     
     /**
-     * 
-     * @param nextViewId One of the View constants.
-     * @param relationshipOfNewViewToPrevious One of the ViewSystem relationship constants.
+     * Navigate away from the view (including releasing any resources used)
      */
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious);  
+    public void navigateAwayFromView();  
 }
