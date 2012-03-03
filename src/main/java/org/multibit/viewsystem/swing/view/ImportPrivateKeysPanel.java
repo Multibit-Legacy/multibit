@@ -15,10 +15,11 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -37,6 +38,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
@@ -89,14 +91,13 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
     private ImportPrivateKeysPanel thisPanel;
 
+    private TitledBorder passwordTitledBorder;
     private MultiBitLabel passwordInfoLabel;
     private JPasswordField passwordField;
     private MultiBitLabel passwordPromptLabel;
     private MultiBitButton unlockButton;
 
     private String openSSLMagicText;
-
-    private boolean importFileIsEncrypted = false;
 
     private JLabel numberOfKeysLabel;
     private JLabel dateOfEarliestKeyLabel;
@@ -131,6 +132,9 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
             // ignore the unsupported encoding error
         }
         initUI();
+
+        enablePasswordPanel(false);
+        passwordField.setText("");
     }
 
     public void displayView() {
@@ -139,7 +143,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
         if (outputFilename == null || "".equals(outputFilename)) {
             outputFilenameLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.noFileSelected"));
-            passwordInfoLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.noFileSelected"));
+            //passwordInfoLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.noFileSelected"));
         }
 
         if (Boolean.TRUE.toString().equals(
@@ -159,10 +163,14 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
     }
 
     private void initUI() {
-        setMinimumSize(new Dimension(550, 160));
-
+        setLayout(new BorderLayout());
+        
+        JPanel mainPanel = new JPanel();
+        mainPanel.setMinimumSize(new Dimension(550, 160));
+        mainPanel.setLayout(new GridBagLayout());
+        mainPanel.setOpaque(false);
+        
         GridBagConstraints constraints = new GridBagConstraints();
-        setLayout(new GridBagLayout());
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -173,7 +181,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.CENTER;
         JPanel fillerPanel1 = new JPanel();
         fillerPanel1.setOpaque(false);
-        add(fillerPanel1, constraints);
+        mainPanel.add(fillerPanel1, constraints);
 
         MultiBitTitleLabel titleLabel = new MultiBitTitleLabel(controller.getLocaliser().getString(
                 "showImportPrivateKeysAction.text"), controller);
@@ -184,7 +192,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.weightx = 1.8;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        add(titleLabel, constraints);
+        mainPanel.add(titleLabel, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -193,7 +201,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(createWalletPanel(), constraints);
+        mainPanel.add(createWalletPanel(), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -202,7 +210,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(createFilenamePanel(), constraints);
+        mainPanel.add(createFilenamePanel(), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -211,7 +219,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.weightx = 1;
         constraints.weighty = 0.2;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(createPasswordPanel(), constraints);
+        mainPanel.add(createPasswordPanel(), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -220,7 +228,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.weightx = 0.4;
         constraints.weighty = 0.06;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(createButtonPanel(), constraints);
+        mainPanel.add(createButtonPanel(), constraints);
 
         messageLabel = new MultiBitLabel("", controller);
         messageLabel.setOpaque(false);
@@ -233,7 +241,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.weightx = 1;
         constraints.weighty = 0.06;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(messageLabel, constraints);
+        mainPanel.add(messageLabel, constraints);
 
         JLabel filler1 = new JLabel();
         filler1.setOpaque(false);
@@ -244,8 +252,16 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.weightx = 1;
         constraints.weighty = 20;
         constraints.anchor = GridBagConstraints.CENTER;
-        add(filler1, constraints);
+        mainPanel.add(filler1, constraints);
+        
+        
+        JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        mainScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.DARK_BACKGROUND_COLOR));
+        mainScrollPane.setOpaque(true);
+        mainScrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
+        add(mainScrollPane, BorderLayout.CENTER);
     }
 
     private JPanel createWalletPanel() {
@@ -382,13 +398,24 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
             }
         });
 
-        outputFilenameLabel = new MultiBitLabel(outputFilename, controller);
+        MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
+                "resetTransactionsPanel.walletFilenameLabel"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
-        constraints.gridwidth = 3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        outputFilenamePanel.add(walletFilenameLabelLabel, constraints);
+
+        outputFilenameLabel = new MultiBitLabel(outputFilename, controller);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 1;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.LINE_START;
         outputFilenamePanel.add(outputFilenameLabel, constraints);
 
@@ -403,32 +430,11 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         outputFilenamePanel.add(filler2, constraints);
 
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 3;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        outputFilenamePanel.add(chooseFilenameButton, constraints);
-
-        JLabel descriptionLabel = new MultiBitLabel(controller.getLocaliser().getString("showImportPrivateKeysPanel.details"),
-                controller);
-        descriptionLabel.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 4;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 3;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        outputFilenamePanel.add(descriptionLabel, constraints);
-
         MultiBitLabel numberOfKeysLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "showImportPrivateKeysPanel.numberOfKeys"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 3;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -439,7 +445,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         filler3.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
-        constraints.gridy = 5;
+        constraints.gridy = 3;
         constraints.weightx = 0.1;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -449,7 +455,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         numberOfKeysLabel = new MultiBitLabel(" ", controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
-        constraints.gridy = 5;
+        constraints.gridy = 3;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -460,7 +466,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
                 "showImportPrivateKeysPanel.dateOfEarliestKey"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 6;
+        constraints.gridy = 4;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -470,7 +476,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         dateOfEarliestKeyLabel = new MultiBitLabel(" ", controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
-        constraints.gridy = 6;
+        constraints.gridy = 4;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -481,12 +487,22 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         filler4.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 7;
+        constraints.gridy = 5;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         outputFilenamePanel.add(filler4, constraints);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 6;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 2;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        outputFilenamePanel.add(chooseFilenameButton, constraints);
+
 
         return outputFilenamePanel;
     }
@@ -494,10 +510,10 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
     private JPanel createPasswordPanel() {
         // do/do not password protect radios
         JPanel passwordProtectPanel = new JPanel(new GridBagLayout());
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString(
+        passwordTitledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString(
                 "showExportPrivateKeysPanel.password.title"));
-        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
+        passwordTitledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), passwordTitledBorder);
 
         // FontMetrics fontMetrics =
         // getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -526,7 +542,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.CENTER;
         passwordProtectPanel.add(filler1, constraints);
 
-        passwordInfoLabel = new MultiBitLabel("", controller);
+        passwordInfoLabel = new MultiBitLabel(controller.getLocaliser().getString("showImportPrivateKeysPanel.enterPassword"), controller);
         passwordInfoLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
@@ -670,11 +686,11 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             numberOfKeysLabel.setText(" ");
             dateOfEarliestKeyLabel.setText(" ");
-            
+            passwordField.setText("");
+
             File file = fileChooser.getSelectedFile();
             if (file != null) {
                 outputFilename = file.getAbsolutePath();
-
                 outputFilenameLabel.setText(outputFilename);
 
                 try {
@@ -683,24 +699,16 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
                     if (firstLine != null && firstLine.startsWith(openSSLMagicText)) {
                         // file is encrypted
-                        importFileIsEncrypted = true;
-                        passwordPromptLabel.setEnabled(true);
-                        passwordField.setEnabled(true);
-                        passwordInfoLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.enterPassword"));
-                        unlockButton.setEnabled(true);
+                        enablePasswordPanel(true);
                         password = passwordField.getPassword();
+                        passwordField.requestFocusInWindow();
                     } else {
                         // file is not encrypted
-                        importFileIsEncrypted = false;
-                        passwordPromptLabel.setEnabled(false);
-                        passwordField.setEnabled(false);
-                        passwordInfoLabel.setText(controller.getLocaliser().getString(
-                                "showImportPrivateKeysPanel.importFileIsNotPasswordProtected"));
-                        unlockButton.setEnabled(false);
+                        enablePasswordPanel(false);
                     }
-                    
+
                     // update number of keys and earliest date
-                    
+
                     // read in contents of file
                     PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService()
                             .getNetworkParameters());
@@ -717,11 +725,12 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
                         dateOfEarliestKeyLabel.setText(DateFormat.getDateInstance(DateFormat.MEDIUM,
                                 controller.getLocaliser().getLocale()).format(earliestKeyDate));
                     }
-
                 } catch (IOException e) {
                     setMessage(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
                             new Object[] { e.getClass().getName() + " " + e.getMessage() }));
                 } catch (EncrypterDecrypterException e) {
+                    // TODO user may not have entered a password yet so password incorrect is ok at this stage
+                    // other errors indicate a more general problem with the import
                     setMessage(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
                             new Object[] { e.getClass().getName() + " " + e.getMessage() }));
                 }
@@ -729,6 +738,25 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         }
     }
 
+    private void enablePasswordPanel(boolean enablePanel) {
+        if (enablePanel) {
+            // enable the password panel
+            passwordPromptLabel.setEnabled(true);
+            passwordField.setEnabled(true);
+            unlockButton.setEnabled(true);
+            passwordTitledBorder.setTitleColor(Color.BLACK);
+            passwordInfoLabel.setForeground(Color.BLACK);
+        } else {
+            // disable the password panel
+            passwordPromptLabel.setEnabled(false);
+            passwordField.setEnabled(false);
+            unlockButton.setEnabled(false);   
+            passwordTitledBorder.setTitleColor(Color.GRAY);
+            passwordTitledBorder.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            passwordInfoLabel.setForeground(Color.GRAY);
+        }
+    }
+    
     private Date calculateEarliestKeyDate(Collection<PrivateKeyAndDate> privateKeyAndDates) {
         boolean thereWereMissingDates = false;
         Date earliestKeyDate = null;
@@ -755,7 +783,24 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
      * unlock the encrypted file and show the file details
      */
     private void unlock() {
+        // update number of keys and earliest date
 
+        // read in contents of file
+        PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService()
+                .getNetworkParameters());
+        Collection<PrivateKeyAndDate> privateKeyAndDates = privateKeysHandler.readInPrivateKeys(
+                new File(outputFilename), passwordField.getPassword());
+        numberOfKeysLabel.setText("" + privateKeyAndDates.size());
+
+        Date earliestKeyDate = calculateEarliestKeyDate(privateKeyAndDates);
+
+        if (earliestKeyDate == null) {
+            dateOfEarliestKeyLabel.setText(controller.getLocaliser().getString(
+                    "showImportPrivateKeysPanel.thereWereMissingKeyDates"));
+        } else {
+            dateOfEarliestKeyLabel.setText(DateFormat.getDateInstance(DateFormat.MEDIUM,
+                    controller.getLocaliser().getLocale()).format(earliestKeyDate));
+        }
     }
 
     public String getOutputFilename() {

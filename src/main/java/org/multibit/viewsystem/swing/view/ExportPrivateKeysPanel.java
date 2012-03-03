@@ -368,9 +368,31 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
             }
         });
 
-        outputFilenameLabel = new MultiBitLabel(outputFilename, controller);
+        MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
+                "resetTransactionsPanel.walletFilenameLabel"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        outputFilenamePanel.add(walletFilenameLabelLabel, constraints);
+
+        JPanel filler2 = new JPanel();
+        filler2.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        outputFilenamePanel.add(filler2, constraints);
+
+        outputFilenameLabel = new MultiBitLabel(outputFilename, controller);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
         constraints.gridy = 1;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
@@ -378,8 +400,8 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         constraints.anchor = GridBagConstraints.LINE_START;
         outputFilenamePanel.add(outputFilenameLabel, constraints);
 
-        JPanel filler2 = new JPanel();
-        filler2.setOpaque(false);
+        JPanel filler3 = new JPanel();
+        filler3.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 2;
@@ -387,19 +409,19 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        outputFilenamePanel.add(filler2, constraints);
+        outputFilenamePanel.add(filler3, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 3;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         outputFilenamePanel.add(chooseOutputFilenameButton, constraints);
 
-        JPanel filler3 = new JPanel();
-        filler3.setOpaque(false);
+        JPanel filler4 = new JPanel();
+        filler4.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 4;
@@ -407,7 +429,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        outputFilenamePanel.add(filler3, constraints);
+        outputFilenamePanel.add(filler4, constraints);
 
         return outputFilenamePanel;
     }
