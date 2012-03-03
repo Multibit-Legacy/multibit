@@ -157,7 +157,7 @@ public class PrivateKeysHandler {
             Collection<PrivateKeyAndDate> expectedKeysAndDates = createKeyAndDates(wallet, blockChain);
 
             // read in the specified export file
-            Collection<PrivateKeyAndDate> importedKeysAndDates = importPrivateKeys(exportFile, password);
+            Collection<PrivateKeyAndDate> importedKeysAndDates = readInPrivateKeys(exportFile, password);
 
             if (expectedKeysAndDates.size() != importedKeysAndDates.size()) {
                 messageKey = "privateKeysHandler.wrongNumberOfKeys";
@@ -199,7 +199,7 @@ public class PrivateKeysHandler {
         return new Verification(!thereWereFailures, messageKey, messageData);
     }
 
-    public Collection<PrivateKeyAndDate> importPrivateKeys(File importFile, char[] password) throws PrivateKeysHandlerException {
+    public Collection<PrivateKeyAndDate> readInPrivateKeys(File importFile, char[] password) throws PrivateKeysHandlerException {
         if (importFile == null) {
             throw new PrivateKeysHandlerException("Import file cannot be null");
         }

@@ -138,7 +138,7 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                     PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService()
                             .getNetworkParameters());
 
-                    Collection<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.importPrivateKeys(finalImportFile, finalPassword);
+                    Collection<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.readInPrivateKeys(finalImportFile, finalPassword);
 
                     // add to wallet and keep track of earliest transaction date
                     // go backwards from now

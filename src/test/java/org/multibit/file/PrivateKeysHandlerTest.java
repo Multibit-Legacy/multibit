@@ -95,7 +95,7 @@ public class PrivateKeysHandlerTest extends TestCase {
                 + PRIVATE_KEYS_TESTDATA_DIRECTORY;
         String expectedPrivateKeysFile = testDirectory + File.separator + EXPECTED_TEST1_PRIVATE_KEYS_FILE;
 
-        Collection<PrivateKeyAndDate> parsedPrivateKeysAndDates = privateKeysHandler.importPrivateKeys(new File(expectedPrivateKeysFile), null);
+        Collection<PrivateKeyAndDate> parsedPrivateKeysAndDates = privateKeysHandler.readInPrivateKeys(new File(expectedPrivateKeysFile), null);
         
         //System.out.println("PrivateKeysHandlerTest#testImport parsedPrivateKeysAndDates = '" + parsedPrivateKeysAndDates + "'");
         assertNotNull(parsedPrivateKeysAndDates);
