@@ -128,13 +128,6 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         messageLabel.setText(" ");
     }
 
-    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
-        // not implemented on this view
-    }
-
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
-    }
-
     private void initUI() {
         setLayout(new BorderLayout());
 
@@ -627,6 +620,10 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
     @Override
     public void updateView() {
+    }
+    
+    @Override
+    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
     }
 
     private void chooseFile(MultiBitButton callingButton) {

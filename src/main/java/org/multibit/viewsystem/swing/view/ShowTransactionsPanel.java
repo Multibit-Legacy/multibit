@@ -446,21 +446,11 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         table.repaint();
     }
 
+    @Override
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
-    }
-
-    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
     }
 
     public WalletTableModel getWalletTableModel() {
         return walletTableModel;
-    }
-
-    public JPanel getFormPanel() {
-        return null;
-    }
-
-    public JTextField getLabelTextField() {
-        return null;
     }
 }

@@ -131,17 +131,6 @@ public class HelpAboutPanel extends JPanel implements View {
     }
 
     /**
-     * show help about message box
-     */
-    public void displayView() {
- 
-    }
-
-    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
-        // not implemented on this view
-    }
-
-    /**
      * TODO Consider refactoring this method into a static utility
      * @param path The image path
      * @return an ImageIcon, or null if the path was invalid.
@@ -157,12 +146,19 @@ public class HelpAboutPanel extends JPanel implements View {
         }
     }
 
+    /**
+     * show help about message box
+     */
+    @Override
+    public void displayView() {
+ 
+    }
+
+    @Override
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
     }
 
     @Override
-    public void updateView() {
-        // TODO Auto-generated method stub
-        
+    public void updateView() {        
     }
 }

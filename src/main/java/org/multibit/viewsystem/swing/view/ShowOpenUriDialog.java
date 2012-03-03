@@ -87,7 +87,7 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, DataProvi
     /**
      * show open uri view
      */
-    public void initUI() {
+    private void initUI() {
         setMinimumSize(new Dimension(480, 200));
         positionDialogRelativeToParent(this, 0.5D, 0.47D);
 
@@ -201,15 +201,13 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, DataProvi
         add(filler3, constraints);
     }
 
-    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
-        // not implemented on this view
-    }
-
+    @Override
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
         setVisible(false);
         log.debug("Navigate away from view called for ShowOpenUriDialog " + this.toString());
     }
 
+    @Override
     public Data getData() {
         Data data = new Data();
         Item addressItem = new Item(MultiBitModel.OPEN_URI_ADDRESS);
@@ -231,6 +229,7 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, DataProvi
         return data;
     }
 
+    @Override
     public void displayView() { 
         log.debug("display called for ShowOpenUriDialog " + this.toString());
 

@@ -82,13 +82,11 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         initUI();
     }
 
+    @Override
     public void displayView() {
     }
 
-    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
-        // not implemented on this view
-    }
-
+    @Override
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
     }
 
@@ -307,8 +305,6 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
     }
 
     @Override
-    public void updateView() {
-        // TODO Auto-generated method stub
-        
+    public void updateView() {    
     }
 }

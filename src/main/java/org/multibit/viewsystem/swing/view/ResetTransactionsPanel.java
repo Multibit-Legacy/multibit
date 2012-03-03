@@ -71,22 +71,6 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         initUI();
     }
 
-    /**
-     * show explanatory text for resetting blockchain and transactions and a
-     * button to do it
-     */
-    public void displayView() {
-        walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
-        walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
-    }
-
-    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
-        // not implemented on this view
-    }
-
-    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
-    }
-
     private void initUI() {
         setMinimumSize(new Dimension(550, 160));
 
@@ -268,18 +252,25 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         return buttonPanel;
     }
      
+    @Override
     public Data getData() {
         return data;
     }
 
-    public JPanel getFormPanel() {
-        return null;
+    /**
+     * show explanatory text for resetting blockchain and transactions and a
+     * button to do it
+     */
+    @Override
+    public void displayView() {
+        walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
+        walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
     }
 
-    public JTextField getLabelTextField() {
-        return null;
+    @Override
+    public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
     }
-
+    
     @Override
     public void updateView() {
         // TODO Auto-generated method stub

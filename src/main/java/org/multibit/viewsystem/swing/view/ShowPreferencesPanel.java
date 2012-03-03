@@ -213,10 +213,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         repaint();
     }
 
-    public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
-        // not implemented on this view
-    }
-
+    @Override
     public void navigateAwayFromView(int nextViewId, int relationshipOfNewViewToPrevious) {
     }
 
