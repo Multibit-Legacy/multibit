@@ -53,6 +53,7 @@ import org.multibit.viewsystem.swing.action.ExportPrivateKeysSubmitAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.view.components.MultiBitTitleLabel;
 
 /**
  * The export private keys view
@@ -142,10 +143,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         fillerPanel1.setOpaque(false);
         mainPanel.add(fillerPanel1, constraints);
 
-        MultiBitLabel titleLabel = new MultiBitLabel("", controller);
-        titleLabel.setHorizontalTextPosition(JLabel.LEFT);
-        titleLabel.setText(controller.getLocaliser().getString("showExportPrivateKeysAction.text"));
-
+        MultiBitTitleLabel titleLabel = new MultiBitTitleLabel(controller.getLocaliser().getString("showExportPrivateKeysAction.text"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 1;

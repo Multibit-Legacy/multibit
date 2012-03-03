@@ -17,7 +17,6 @@ package org.multibit.viewsystem.swing.view;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -25,13 +24,11 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
-import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -40,6 +37,7 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
+import org.multibit.viewsystem.swing.view.components.MultiBitTitleLabel;
 
 /**
  * The reset blockchain and transactions view
@@ -106,10 +104,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         fillerPanel1.setOpaque(false);
         add(fillerPanel1, constraints);
 
-        MultiBitLabel titleLabel = new MultiBitLabel("", controller);
-        titleLabel.setHorizontalTextPosition(JLabel.LEFT);
-        titleLabel.setText(controller.getLocaliser().getString("resetTransactionsPanel.title"));
-
+        MultiBitTitleLabel titleLabel = new MultiBitTitleLabel(controller.getLocaliser().getString("resetTransactionsPanel.title"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 1;

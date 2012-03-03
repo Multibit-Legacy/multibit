@@ -22,7 +22,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,7 +35,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TimeZone;
 
-import org.apache.commons.codec.binary.Base64;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,8 +69,9 @@ public class PrivateKeysHandler {
 
     private NetworkParameters networkParameters;
     private static final String SEPARATOR = " ";
-
-    private String openSSLMagicText;
+    
+    private EncrypterDecrypter encrypterDecrypter;
+    
 
     public PrivateKeysHandler(NetworkParameters networkParameters) {
         // date format is UTC with century, T time separator and Z for UTC
@@ -84,15 +83,8 @@ public class PrivateKeysHandler {
             throw new IllegalArgumentException("NetworkParameters must be supplied");
         }
         this.networkParameters = networkParameters;
-
-        try {
-            openSSLMagicText = Base64.encodeBase64String(
-                    EncrypterDecrypter.OPENSSL_SALTED_TEXT.getBytes(EncrypterDecrypter.STRING_ENCODING)).substring(0,
-                    EncrypterDecrypter.NUMBER_OF_CHARACTERS_TO_MATCH_IN_OPENSSL_MAGIC_TEXT);
-        } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        
+        encrypterDecrypter = new EncrypterDecrypter();
     }
 
     public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryption, char[] password)
@@ -152,11 +144,13 @@ public class PrivateKeysHandler {
      *            Is Encryption required
      * @param password
      *            the password to use is encryption is required
-     * @return The result of verification
+     * @return Verification The result of verification
      */
-    public String verifyExportFile(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryption, char[] password) {
+    public Verification verifyExportFile(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryption, char[] password) {
         boolean thereWereFailures = false;
-        String verificationMessage = "Verification failed for unknown reason";
+        
+        String messageKey = "privateKeysHandler.failedForUnknownReason"; 
+        Object[] messageData = new Object[0];
 
         try {
             // create the expected export file contents
@@ -166,7 +160,7 @@ public class PrivateKeysHandler {
             Collection<PrivateKeyAndDate> importedKeysAndDates = importPrivateKeys(exportFile, password);
 
             if (expectedKeysAndDates.size() != importedKeysAndDates.size()) {
-                verificationMessage = "Verification failure. The number of reimported keys did not match the number of original keys";
+                messageKey = "privateKeysHandler.wrongNumberOfKeys";
                 thereWereFailures = true;
             } else {
                 for (int i = 0; i < expectedKeysAndDates.size(); i++) {
@@ -178,7 +172,7 @@ public class PrivateKeysHandler {
 
                     if (!Utils.bytesToHexString(expected.getKey().getPrivKeyBytes()).equals(
                             Utils.bytesToHexString(imported.getKey().getPrivKeyBytes()))) {
-                        verificationMessage = "Verification failure. The reimported private keys did not match original private keys";
+                        messageKey = "privateKeysHandler.keysDidNotMatch"; 
                         thereWereFailures = true;
                         break;
                     }
@@ -186,20 +180,23 @@ public class PrivateKeysHandler {
                     // imported keydate must be at or before expected (further
                     // back in time is safe
                     if (imported.getDate().after(expected.getDate())) {
-                        verificationMessage = "Verification failure. The reimported key creation dates did not match original keys";
+                        messageKey = "privateKeysHandler.keysDidNotMatch";
                         thereWereFailures = true;
                         break;
                     }
                 }
-                if (!thereWereFailures) {
-                    verificationMessage = "Verification success. The export file could be read in correctly and the private keys match the wallet's";
-                }
+
             }
         } catch (PrivateKeysHandlerException pkhe) {
-            verificationMessage = "Verification failure. " + pkhe.getMessage();
+            messageKey = "privateKeysHandler.thereWasAnException";
+            messageData = new Object[] { pkhe.getMessage() };
+            thereWereFailures = true;
         }
 
-        return verificationMessage;
+        if (!thereWereFailures) {
+            messageKey = "privateKeysHandler.verificationSuccess";
+        }
+        return new Verification(!thereWereFailures, messageKey, messageData);
     }
 
     public Collection<PrivateKeyAndDate> importPrivateKeys(File importFile, char[] password) throws PrivateKeysHandlerException {
@@ -215,7 +212,7 @@ public class PrivateKeysHandler {
             // read in the file
             String importFileContents = readFile(importFile);
 
-            if (importFileContents != null && importFileContents.startsWith(openSSLMagicText)) {
+            if (importFileContents != null && importFileContents.startsWith(encrypterDecrypter.getOpenSSLMagicText())) {
                 // decryption required
                 EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter();
                 importFileContents = encrypterDecrypter.decrypt(importFileContents, password);

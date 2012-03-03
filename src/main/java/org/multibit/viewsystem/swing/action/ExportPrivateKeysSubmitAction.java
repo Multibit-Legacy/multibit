@@ -28,6 +28,7 @@ import javax.swing.JPasswordField;
 import org.bouncycastle.util.Arrays;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.PrivateKeysHandler;
+import org.multibit.file.Verification;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.view.ExportPrivateKeysPanel;
 import org.slf4j.Logger;
@@ -83,21 +84,7 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
             return;
         }
 
-        // check on file overwrite
         File exportPrivateKeysFile = new File(exportPrivateKeysFilename);
-
-        if (exportPrivateKeysFile.exists()) {
-            String yesText = controller.getLocaliser().getString("showOpenUriView.yesText");
-            String noText = controller.getLocaliser().getString("showOpenUriView.noText");
-            String questionText = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwrite", new Object[] {exportPrivateKeysFile.getName()});
-            String questionTitle = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwriteTitle");
-            int selection = JOptionPane.showOptionDialog(exportPrivateKeysPanel, questionText, questionTitle,
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                    ImageLoader.createImageIcon(ImageLoader.QUESTION_MARK_ICON_FILE), new String[] { yesText, noText }, noText);
-            if (selection != JOptionPane.YES_OPTION) {
-                return;
-            }
-        }
 
         privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService().getNetworkParameters());
 
@@ -128,6 +115,21 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
         }
 
         try {
+            // check on file overwrite
+
+            if (exportPrivateKeysFile.exists()) {
+                String yesText = controller.getLocaliser().getString("showOpenUriView.yesText");
+                String noText = controller.getLocaliser().getString("showOpenUriView.noText");
+                String questionText = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwrite", new Object[] {exportPrivateKeysFile.getName()});
+                String questionTitle = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwriteTitle");
+                int selection = JOptionPane.showOptionDialog(exportPrivateKeysPanel, questionText, questionTitle,
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+                        ImageLoader.createImageIcon(ImageLoader.QUESTION_MARK_ICON_FILE), new String[] { yesText, noText }, noText);
+                if (selection != JOptionPane.YES_OPTION) {
+                    return;
+                }
+            }
+
             privateKeysHandler.exportPrivateKeys(exportPrivateKeysFile, controller.getModel().getActivePerWalletModelData()
                     .getWallet(), controller.getMultiBitService().getChain(), performEncryption, passwordToUse);
 
@@ -145,11 +147,12 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
         }
 
         if (performVerification) {
-            // perform a verification on the exported file to see if it is
-            // correct
-            exportPrivateKeysPanel.setMessage2(privateKeysHandler.verifyExportFile(exportPrivateKeysFile, controller.getModel()
+            // perform a verification on the exported file to see if it is correct
+            Verification verification = privateKeysHandler.verifyExportFile(exportPrivateKeysFile, controller.getModel()
                     .getActivePerWalletModelData().getWallet(), controller.getMultiBitService().getChain(), performEncryption,
-                    passwordToUse));
+                    passwordToUse);
+            String verifyMessage = controller.getLocaliser().getString(verification.getMessageKey(), verification.getMessageData());
+            exportPrivateKeysPanel.setMessage2(verifyMessage);
         }
     }
 }

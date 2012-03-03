@@ -33,19 +33,21 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.Utils;
 
 /**
- * This class encrypts and decrypts a string in a manner that is compatible with OpenSSL
+ * This class encrypts and decrypts a string in a manner that is compatible with
+ * OpenSSL
  * 
- * If you encrypt a string with this class you can decrypt it with the OpenSSL command:
- * openssl enc -d -aes-256-cbc -a -in cipher.txt -out plain.txt -pass pass:aTestPassword
+ * If you encrypt a string with this class you can decrypt it with the OpenSSL
+ * command: openssl enc -d -aes-256-cbc -a -in cipher.txt -out plain.txt -pass
+ * pass:aTestPassword
  * 
- * where:
- *    cipher.txt = file containing the cipher text
- *    plain.txt - where you want the plaintext to be saved
- *    
- *  substitute your password for "aTestPassword" or remove the "-pass" parameter to be prompted
- *  
+ * where: cipher.txt = file containing the cipher text plain.txt - where you
+ * want the plaintext to be saved
+ * 
+ * substitute your password for "aTestPassword" or remove the "-pass" parameter
+ * to be prompted
+ * 
  * @author jim
- *
+ * 
  */
 public class EncrypterDecrypter {
     private static final Logger log = LoggerFactory.getLogger(EncrypterDecrypter.class);
@@ -81,26 +83,41 @@ public class EncrypterDecrypter {
     public static final String OPENSSL_SALTED_TEXT = "Salted__";
 
     /**
-     * OpenSSL salted prefix bytes - also used as magic number for encrypted file
+     * OpenSSL salted prefix bytes - also used as magic number for encrypted
+     * key file
      */
     public byte[] openSSLSaltedBytes;
 
+    /**
+     * Magic text that appears at the beginning of every OpenSSL encrypted file.
+     * Used in identifying encrypted key files.
+     */
+    private String openSSLMagicText = null;
+
     public static final int NUMBER_OF_CHARACTERS_TO_MATCH_IN_OPENSSL_MAGIC_TEXT = 10;
-    
+
     private static SecureRandom secureRandom = new SecureRandom();
 
     public EncrypterDecrypter() {
         try {
             openSSLSaltedBytes = OPENSSL_SALTED_TEXT.getBytes(STRING_ENCODING);
+
+            openSSLMagicText = Base64.encodeBase64String(
+                    EncrypterDecrypter.OPENSSL_SALTED_TEXT.getBytes(EncrypterDecrypter.STRING_ENCODING)).substring(0,
+                    EncrypterDecrypter.NUMBER_OF_CHARACTERS_TO_MATCH_IN_OPENSSL_MAGIC_TEXT);
+
         } catch (UnsupportedEncodingException e) {
             throw new EncrypterDecrypterException("Could not construct EncrypterDecrypter", e);
         }
     }
-    
+
     /**
      * Get password and generate key and iv
-     * @param password The password to use in key generation
-     * @param salt The salt to use in key generation
+     * 
+     * @param password
+     *            The password to use in key generation
+     * @param salt
+     *            The salt to use in key generation
      * @return The CipherParameters containing the created key
      * @throws Exception
      */
@@ -120,8 +137,11 @@ public class EncrypterDecrypter {
 
     /**
      * Password based encryption using AES - CBC 256 bits
-     * @param plainText The text to encrypt
-     * @param password The password to use for encryption
+     * 
+     * @param plainText
+     *            The text to encrypt
+     * @param password
+     *            The password to use for encryption
      * @return The encrypted string
      * @throws EncrypterDecrypterException
      */
@@ -148,7 +168,8 @@ public class EncrypterDecrypter {
 
             cipher.doFinal(encryptedBytes, length);
 
-            // OpenSSL adds the salt to the encrypted result as "Salted___" + salt in hex.
+            // OpenSSL adds the salt to the encrypted result as "Salted___" +
+            // salt in hex.
             // Do the same
 
             byte result[] = concat(concat(openSSLSaltedBytes, salt), encryptedBytes);
@@ -162,8 +183,10 @@ public class EncrypterDecrypter {
     /**
      * Decrypt text previously encrypted with this class
      * 
-     * @param textToDecode The code to decrypt
-     * @param passwordbThe password to use for decryption
+     * @param textToDecode
+     *            The code to decrypt
+     * @param passwordbThe
+     *            password to use for decryption
      * @return The decrypted text
      * @throws EncrypterDecrypterException
      */
@@ -173,17 +196,18 @@ public class EncrypterDecrypter {
 
             // extract the salt and bytes to decrypt
             int saltPrefixTextLength = openSSLSaltedBytes.length + SALT_LENGTH;
-            
+
             byte[] prefixedSalt = new byte[saltPrefixTextLength];
 
             System.arraycopy(decodeTextAsBytes, 0, prefixedSalt, 0, saltPrefixTextLength);
-             
+
             byte[] salt = new byte[SALT_LENGTH];
 
             System.arraycopy(prefixedSalt, openSSLSaltedBytes.length, salt, 0, SALT_LENGTH);
-            
+
             byte[] cipherBytes = new byte[decodeTextAsBytes.length - saltPrefixTextLength];
-            System.arraycopy(decodeTextAsBytes, saltPrefixTextLength, cipherBytes, 0, decodeTextAsBytes.length - saltPrefixTextLength);
+            System.arraycopy(decodeTextAsBytes, saltPrefixTextLength, cipherBytes, 0, decodeTextAsBytes.length
+                    - saltPrefixTextLength);
 
             ParametersWithIV key = (ParametersWithIV) getAESPasswordKey(password, salt);
 
@@ -195,12 +219,14 @@ public class EncrypterDecrypter {
             int length = cipher.processBytes(cipherBytes, 0, cipherBytes.length, decryptedBytes, 0);
 
             cipher.doFinal(decryptedBytes, length);
-            
-            // reconstruct the original string, trimming off any whitespace added by block padding
+
+            // reconstruct the original string, trimming off any whitespace
+            // added by block padding
             String decryptedText = new String(decryptedBytes, STRING_ENCODING).trim();
             return decryptedText;
         } catch (Exception e) {
-            log.error("Could not decrypt string '" + textToDecode + "', error was: " + e.getClass().getName() + " " + e.getMessage());
+            log.error("Could not decrypt string '" + textToDecode + "', error was: " + e.getClass().getName() + " "
+                    + e.getMessage());
             throw new EncrypterDecrypterException("Could not decrypt input string", e);
         }
     }
@@ -215,13 +241,23 @@ public class EncrypterDecrypter {
 
         return result;
     }
-    
+
     /**
-     * get the OpenSSL "Salted__" prefix text as bytes 
+     * get the OpenSSL "Salted__" prefix text as bytes
+     * 
      * @return The openSSL salted prefix bytes
      */
     public byte[] getOpenSSLSaltedBytes() {
         return openSSLSaltedBytes;
+    }
+
+    /**
+     * Get the magic text that starts every OpenSSL encrypted key file
+     * 
+     * @return
+     */
+    public String getOpenSSLMagicText() {
+        return openSSLMagicText;
     }
 
 }

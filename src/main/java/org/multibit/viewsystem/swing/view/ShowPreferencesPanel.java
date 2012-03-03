@@ -61,6 +61,7 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
+import org.multibit.viewsystem.swing.view.components.MultiBitTitleLabel;
 
 /**
  * The show preferences view
@@ -239,10 +240,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         fillerPanel1.setOpaque(false);
         mainPanel.add(fillerPanel1, constraints);
 
-        MultiBitLabel titleLabel = new MultiBitLabel("", controller);
-        titleLabel.setHorizontalTextPosition(JLabel.LEADING);
-        titleLabel.setText(controller.getLocaliser().getString("showPreferencesPanel.title"));
-
+        MultiBitTitleLabel titleLabel = new MultiBitTitleLabel(controller.getLocaliser().getString("showPreferencesPanel.title"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 1;

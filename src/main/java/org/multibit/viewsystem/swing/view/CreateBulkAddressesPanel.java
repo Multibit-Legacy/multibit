@@ -41,6 +41,7 @@ import org.multibit.viewsystem.swing.action.CreateBulkAddressesSubmitAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.view.components.MultiBitTitleLabel;
 
 /**
  * The create bulk addresses view (MultiBitMerchant support)
@@ -108,10 +109,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         fillerPanel1.setOpaque(false);
         add(fillerPanel1, constraints);
 
-        MultiBitLabel titleLabel = new MultiBitLabel("", controller);
-        titleLabel.setHorizontalTextPosition(JLabel.LEFT);
-        titleLabel.setText(controller.getLocaliser().getString("createBulkAddressesPanel.title"));
-
+        MultiBitTitleLabel titleLabel = new MultiBitTitleLabel(controller.getLocaliser().getString("createBulkAddressesPanel.title"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 1;
