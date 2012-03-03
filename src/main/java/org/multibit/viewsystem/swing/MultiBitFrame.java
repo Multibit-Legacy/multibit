@@ -667,7 +667,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void recreateAllViews(boolean clearCache, boolean initUI) {
         // close down current view
         if (currentView != 0) {
-            navigateAwayFromView(currentView, View.TRANSACTIONS_VIEW, ViewSystem.NEW_VIEW_IS_PARENT_OF_PREVIOUS);
+            navigateAwayFromView(currentView, View.YOUR_WALLETS_VIEW, ViewSystem.NEW_VIEW_IS_SIBLING_OF_PREVIOUS);
         }
 
         if (initUI) {
@@ -885,9 +885,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     /**
      * one of the wallets has been reorganised due to a block chain reorganise
      */
-    public void onReorganise(Wallet wallet) {
+    public void onReorganize(Wallet wallet) {
         log.info("Wallet has been reorganised.");
         recreateAllViews(true);
+    }
+    
+    @Override
+    public void onTransactionConfidenceChanged(Wallet wallet, Transaction tx) {
+        // TODO Auto-generated method stub   
     }
 
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {

@@ -15,21 +15,17 @@
  */
 package org.multibit.viewsystem;
 
-import java.math.BigInteger;
-
 import org.multibit.model.PerWalletModelData;
 
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.WalletEventListener;
 
 /**
  * an interface describing a collection of views that are used to render the MultiBit application
  * @author jim
  *
  */
-public interface ViewSystem { 
+public interface ViewSystem extends WalletEventListener { 
     public static final int NEW_VIEW_IS_CHILD_OF_PREVIOUS = 10000;
-    public static final int NEW_VIEW_IS_PARENT_OF_PREVIOUS = 10001;
     public static final int NEW_VIEW_IS_SIBLING_OF_PREVIOUS = 10002;
        
     /**
@@ -75,42 +71,17 @@ public interface ViewSystem {
      * a method called when MultiBit is now offline i.e. the last peer has disconnecte
      */
     public void nowOffline();
-    
+   
+    /**
+     * notification that a block has been downloaded
+     */
+    public void blockDownloaded();
+ 
     /**
      * update download status
      * @param updateDownloadStatus
      * @param clearAutomatically
      */
     public void updateStatusLabel(String updateDownloadStatus, boolean clearAutomatically);
-  
-    /**
-     * notification that a block has been downloaded
-     */
-    public void blockDownloaded();
-  
-    /**
-     * WalletEventListener callback method
-     * @param wallet
-     * @param transaction
-     * @param prevBalance
-     * @param newBalance
-     */
-    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance,
-            BigInteger newBalance);
-    
-    /**
-     * WalletEventListener callback method
-     * @param wallet
-     * @param transaction
-     * @param prevBalance
-     * @param newBalance
-     */
-    public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance,
-            BigInteger newBalance);
-    
-    /**
-     * WalletEventListener callback method
-     * @param wallet
-     */
-    public void onReorganise(Wallet wallet);
+
 }

@@ -207,21 +207,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * set the next view to be the parent of the current
-     */
-    public void setActionForwardToParent() {
-        try {
-            nextView = viewStack.pop();
-        } catch (EmptyStackException ese) {
-            log.error("setActionForwardToParent failed", ese);
-            // go to the transactions page anyhow
-            nextView = View.TRANSACTIONS_VIEW;
-            viewStack.push(nextView);
-        }
-        displayNextView(ViewSystem.NEW_VIEW_IS_PARENT_OF_PREVIOUS);
-    }
-
-    /**
      * pop the view stack and then move to a sibling
      */
     public void setActionForwardToSiblingOfParent(ActionForward actionForward) {
@@ -560,7 +545,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     public void onReorganise(Wallet wallet) {
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.onReorganise(wallet);
+            viewSystem.onReorganize(wallet);
         }
     }
 
