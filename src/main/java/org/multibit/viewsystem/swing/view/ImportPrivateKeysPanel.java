@@ -100,7 +100,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
     private String openSSLMagicText;
 
     private JLabel numberOfKeysLabel;
-    private JLabel dateOfEarliestKeyLabel;
+    private JLabel replayDateLabel;
 
     /**
      * Creates a new {@link ImportPrivateKeysPanel}.
@@ -143,8 +143,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
         if (outputFilename == null || "".equals(outputFilename)) {
             outputFilenameLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.noFileSelected"));
-            //passwordInfoLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.noFileSelected"));
-        }
+         }
 
         if (Boolean.TRUE.toString().equals(
                 controller.getModel().getUserPreference(MultiBitModel.DISPLAY_IMPORT_PRIVATE_KEYS_MESSAGE))) {
@@ -389,7 +388,8 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         outputFilenamePanel.add(filler1, constraints);
 
         chooseFilenameButton = new MultiBitButton(controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.text"));
-
+        chooseFilenameButton.setToolTipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.tooltip"));
+        
         final MultiBitButton finalChooseFilenameButton = chooseFilenameButton;
         chooseFilenameButton.addActionListener(new ActionListener() {
             @Override
@@ -431,7 +431,10 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         outputFilenamePanel.add(filler2, constraints);
 
         MultiBitLabel numberOfKeysLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
-                "showImportPrivateKeysPanel.numberOfKeys"), controller);
+                "showImportPrivateKeysPanel.numberOfKeys.text"), controller);
+        numberOfKeysLabelLabel.setToolTipText(controller.getLocaliser().getString(
+        "showImportPrivateKeysPanel.numberOfKeys.tooltip"));
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 3;
@@ -462,8 +465,10 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         outputFilenamePanel.add(numberOfKeysLabel, constraints);
 
-        MultiBitLabel dateOfEarliestKeyLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
-                "showImportPrivateKeysPanel.dateOfEarliestKey"), controller);
+        MultiBitLabel replayDateLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
+                "showImportPrivateKeysPanel.replayDate.text"), controller);
+        replayDateLabelLabel.setToolTipText(controller.getLocaliser().getString(
+                "showImportPrivateKeysPanel.replayDate.tooltip"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 4;
@@ -471,9 +476,9 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
-        outputFilenamePanel.add(dateOfEarliestKeyLabelLabel, constraints);
+        outputFilenamePanel.add(replayDateLabelLabel, constraints);
 
-        dateOfEarliestKeyLabel = new MultiBitLabel(" ", controller);
+        replayDateLabel = new MultiBitLabel(" ", controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 4;
@@ -481,7 +486,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        outputFilenamePanel.add(dateOfEarliestKeyLabel, constraints);
+        outputFilenamePanel.add(replayDateLabel, constraints);
 
         JPanel filler4 = new JPanel();
         filler4.setOpaque(false);
@@ -514,15 +519,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
                 "showExportPrivateKeysPanel.password.title"));
         passwordTitledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), passwordTitledBorder);
-
-        // FontMetrics fontMetrics =
-        // getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        // int minimumHeight = fontMetrics.getHeight() * 5 + 80;
-        // int minimumWidth =
-        // fontMetrics.stringWidth(controller.getLocaliser().getString(
-        // "showExportPrivateKeysPanel.doNotPasswordProtectWarningLabel")) + 60;
-        // passwordProtectPanel.setMinimumSize(new Dimension(minimumWidth,
-        // minimumHeight));
+        
         passwordProtectPanel.setBorder(border);
         passwordProtectPanel.setOpaque(false);
 
@@ -595,10 +592,11 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         unlockButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                unlock();
-                thisPanel.setMessage(" ");
+                setMessage(" ");
+                readInImportFileAndUpdateDetails();
             }
         });
+        unlockButton.setToolTipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.unlock.tooltip"));
         unlockButton.setEnabled(false);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -685,7 +683,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             numberOfKeysLabel.setText(" ");
-            dateOfEarliestKeyLabel.setText(" ");
+            replayDateLabel.setText(" ");
             passwordField.setText("");
 
             File file = fileChooser.getSelectedFile();
@@ -695,35 +693,15 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
                 try {
                     String firstLine = readFirstLineInFile(file);
-                    char[] password = null;
 
                     if (firstLine != null && firstLine.startsWith(openSSLMagicText)) {
                         // file is encrypted
                         enablePasswordPanel(true);
-                        password = passwordField.getPassword();
                         passwordField.requestFocusInWindow();
                     } else {
                         // file is not encrypted
                         enablePasswordPanel(false);
-                    }
-
-                    // update number of keys and earliest date
-
-                    // read in contents of file
-                    PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService()
-                            .getNetworkParameters());
-                    Collection<PrivateKeyAndDate> privateKeyAndDates = privateKeysHandler.readInPrivateKeys(
-                            new File(outputFilename), password);
-                    numberOfKeysLabel.setText("" + privateKeyAndDates.size());
-
-                    Date earliestKeyDate = calculateEarliestKeyDate(privateKeyAndDates);
-
-                    if (earliestKeyDate == null) {
-                        dateOfEarliestKeyLabel.setText(controller.getLocaliser().getString(
-                                "showImportPrivateKeysPanel.thereWereMissingKeyDates"));
-                    } else {
-                        dateOfEarliestKeyLabel.setText(DateFormat.getDateInstance(DateFormat.MEDIUM,
-                                controller.getLocaliser().getLocale()).format(earliestKeyDate));
+                        readInImportFileAndUpdateDetails();
                     }
                 } catch (IOException e) {
                     setMessage(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
@@ -757,32 +735,10 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         }
     }
     
-    private Date calculateEarliestKeyDate(Collection<PrivateKeyAndDate> privateKeyAndDates) {
-        boolean thereWereMissingDates = false;
-        Date earliestKeyDate = null;
-        for (PrivateKeyAndDate loop : privateKeyAndDates) {
-            if (loop.getDate() == null) {
-                thereWereMissingDates = true;
-            } else {
-                if (earliestKeyDate == null) {
-                    earliestKeyDate = loop.getDate();
-                } else {
-                    earliestKeyDate = earliestKeyDate.before(loop.getDate()) ? earliestKeyDate : loop.getDate();
-                }
-            }
-        }
-
-        if (thereWereMissingDates) {
-            return null;
-        } else {
-            return earliestKeyDate;
-        }
-    }
-
     /**
-     * unlock the encrypted file and show the file details
+     *read in the import file and show the file details
      */
-    private void unlock() {
+    private void readInImportFileAndUpdateDetails() {
         // update number of keys and earliest date
 
         // read in contents of file
@@ -792,13 +748,13 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
                 new File(outputFilename), passwordField.getPassword());
         numberOfKeysLabel.setText("" + privateKeyAndDates.size());
 
-        Date earliestKeyDate = calculateEarliestKeyDate(privateKeyAndDates);
+        Date earliestKeyDate = privateKeysHandler.calculateReplayDate(privateKeyAndDates, controller.getModel().getActiveWallet());
 
         if (earliestKeyDate == null) {
-            dateOfEarliestKeyLabel.setText(controller.getLocaliser().getString(
+            replayDateLabel.setText(controller.getLocaliser().getString(
                     "showImportPrivateKeysPanel.thereWereMissingKeyDates"));
         } else {
-            dateOfEarliestKeyLabel.setText(DateFormat.getDateInstance(DateFormat.MEDIUM,
+            replayDateLabel.setText(DateFormat.getDateInstance(DateFormat.MEDIUM,
                     controller.getLocaliser().getLocale()).format(earliestKeyDate));
         }
     }

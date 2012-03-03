@@ -361,12 +361,12 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
                 "showExportPrivateKeysPanel.filename.text"));
 
         chooseOutputFilenameButton.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 chooseFile();
             }
         });
+        chooseOutputFilenameButton.setToolTipText(controller.getLocaliser().getString("showExportPrivateKeysPanel.filename.tooltip"));
 
         MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "resetTransactionsPanel.walletFilenameLabel"), controller);

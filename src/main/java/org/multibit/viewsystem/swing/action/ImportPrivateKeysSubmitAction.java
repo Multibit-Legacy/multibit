@@ -140,8 +140,7 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
 
                     Collection<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.readInPrivateKeys(finalImportFile, finalPassword);
 
-                    // add to wallet and keep track of earliest transaction date
-                    // go backwards from now
+                    // keep track of earliest transaction date go backwards from now
                     Wallet walletToAddKeysTo = finalPerWalletModelData.getWallet();
                     Date earliestTransactionDate = new Date();
                     if (privateKeyAndDateArray != null) {
@@ -164,7 +163,6 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                                     }
                                 }
                             }
-
                         }
                     }
                     controller.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
@@ -185,7 +183,7 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                 } catch (EncrypterDecrypterException ede) {
                     log.error(ede.getClass().getName() + " " + ede.getMessage());
                     uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
-                            new Object[] { ede.getClass().getName() + " " + ede.getMessage() });
+                            new Object[] { ede.getMessage() });
 
                 } catch (PrivateKeysHandlerException pkhe) {
                     log.error(pkhe.getClass().getName() + " " + pkhe.getMessage());

@@ -69,9 +69,8 @@ public class PrivateKeysHandler {
 
     private NetworkParameters networkParameters;
     private static final String SEPARATOR = " ";
-    
+
     private EncrypterDecrypter encrypterDecrypter;
-    
 
     public PrivateKeysHandler(NetworkParameters networkParameters) {
         // date format is UTC with century, T time separator and Z for UTC
@@ -83,7 +82,7 @@ public class PrivateKeysHandler {
             throw new IllegalArgumentException("NetworkParameters must be supplied");
         }
         this.networkParameters = networkParameters;
-        
+
         encrypterDecrypter = new EncrypterDecrypter();
     }
 
@@ -146,10 +145,11 @@ public class PrivateKeysHandler {
      *            the password to use is encryption is required
      * @return Verification The result of verification
      */
-    public Verification verifyExportFile(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryption, char[] password) {
+    public Verification verifyExportFile(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryption,
+            char[] password) {
         boolean thereWereFailures = false;
-        
-        String messageKey = "privateKeysHandler.failedForUnknownReason"; 
+
+        String messageKey = "privateKeysHandler.failedForUnknownReason";
         Object[] messageData = new Object[0];
 
         try {
@@ -172,7 +172,7 @@ public class PrivateKeysHandler {
 
                     if (!Utils.bytesToHexString(expected.getKey().getPrivKeyBytes()).equals(
                             Utils.bytesToHexString(imported.getKey().getPrivKeyBytes()))) {
-                        messageKey = "privateKeysHandler.keysDidNotMatch"; 
+                        messageKey = "privateKeysHandler.keysDidNotMatch";
                         thereWereFailures = true;
                         break;
                     }
@@ -369,6 +369,44 @@ public class PrivateKeysHandler {
 
     private void outputFooterComment(StringBuffer out) {
         out.append("# End of private keys").append("\n");
+    }
+
+    public Date calculateReplayDate(Collection<PrivateKeyAndDate> privateKeyAndDates, Wallet wallet) {
+        boolean thereWereMissingDates = false;
+        Date replayDate = new Date();
+        for (PrivateKeyAndDate loop : privateKeyAndDates) {
+            if (loop.getDate() == null) {
+                thereWereMissingDates = true;
+            } else {
+                if (loop.getKey() != null) {
+                    if (wallet != null && !keyChainContainsPrivateKey(wallet.getKeychain(), loop.getKey())) {
+                        replayDate = replayDate.before(loop.getDate()) ? replayDate : loop.getDate();
+                    }
+                }
+            }
+        }
+
+        if (thereWereMissingDates) {
+            return null;
+        } else {
+            return replayDate;
+        }
+    }
+
+    /**
+     * this method is here because there is no equals on ECKey
+     */
+    private boolean keyChainContainsPrivateKey(ArrayList<ECKey> keyChain, ECKey keyToAdd) {
+        if (keyChain == null || keyToAdd == null) {
+            return false;
+        } else {
+            for (ECKey loopKey : keyChain) {
+                if (Arrays.equals(keyToAdd.getPrivKeyBytes(), loopKey.getPrivKeyBytes())) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     private boolean transactionUsesKey(Transaction transaction, ECKey ecKey) {
