@@ -777,5 +777,4 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
             }
         }
     }
-
 }

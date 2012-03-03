@@ -28,7 +28,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -42,7 +41,6 @@ import javax.swing.JScrollPane;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
-import org.apache.commons.codec.binary.Base64;
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterException;
@@ -50,7 +48,6 @@ import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
-import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
@@ -73,8 +70,6 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
     private MultiBitFrame mainFrame;
 
-    private Data data;
-
     private MultiBitLabel walletFilenameLabel;
 
     private MultiBitLabel walletDescriptionLabel;
@@ -89,18 +84,16 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
     private String outputFilename;
 
-    private ImportPrivateKeysPanel thisPanel;
-
     private TitledBorder passwordTitledBorder;
     private MultiBitLabel passwordInfoLabel;
     private JPasswordField passwordField;
     private MultiBitLabel passwordPromptLabel;
     private MultiBitButton unlockButton;
 
-    private String openSSLMagicText;
-
     private JLabel numberOfKeysLabel;
     private JLabel replayDateLabel;
+
+    private EncrypterDecrypter encrypterDecrypter;;
 
     /**
      * Creates a new {@link ImportPrivateKeysPanel}.
@@ -108,34 +101,20 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
     public ImportPrivateKeysPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
-        thisPanel = this;
+        this.controller = controller;
 
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
                 BorderFactory.createMatteBorder(1, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
-        this.controller = controller;
-
-        data = new Data();
-
         outputFilename = "";
 
-        // clear any old message info
-        controller.getModel().setUserPreference(MultiBitModel.DISPLAY_IMPORT_PRIVATE_KEYS_MESSAGE, "false");
-        controller.getModel().setUserPreference(MultiBitModel.IMPORT_PRIVATE_KEYS_MESSAGE, " ");
-
-        try {
-            openSSLMagicText = Base64.encodeBase64String(
-                    EncrypterDecrypter.OPENSSL_SALTED_TEXT.getBytes(EncrypterDecrypter.STRING_ENCODING)).substring(0,
-                    EncrypterDecrypter.NUMBER_OF_CHARACTERS_TO_MATCH_IN_OPENSSL_MAGIC_TEXT);
-        } catch (UnsupportedEncodingException e) {
-            // ignore the unsupported encoding error
-            assert false : e;
-        }
         initUI();
 
         enablePasswordPanel(false);
         passwordField.setText("");
+
+        encrypterDecrypter = new EncrypterDecrypter();
     }
 
     public void displayView() {
@@ -146,13 +125,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
             outputFilenameLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.noFileSelected"));
         }
 
-        if (Boolean.TRUE.toString().equals(
-                controller.getModel().getUserPreference(MultiBitModel.DISPLAY_IMPORT_PRIVATE_KEYS_MESSAGE))) {
-            messageLabel.setText("  " + controller.getModel().getUserPreference(MultiBitModel.IMPORT_PRIVATE_KEYS_MESSAGE));
-            controller.getModel().setUserPreference(MultiBitModel.DISPLAY_IMPORT_PRIVATE_KEYS_MESSAGE, "false");
-        } else {
-            messageLabel.setText(" ");
-        }
+        messageLabel.setText(" ");
     }
 
     public void displayMessage(String messageKey, Object[] messageData, String titleKey) {
@@ -646,12 +619,10 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         return buttonPanel;
     }
 
+    @Override
     public Data getData() {
-        Item privateKeyFilenameItem = new Item(MultiBitModel.PRIVATE_KEY_FILENAME);
-        privateKeyFilenameItem.setNewValue(outputFilename);
-        data.addItem(MultiBitModel.PRIVATE_KEY_FILENAME, privateKeyFilenameItem);
-
-        return data;
+        assert false;
+        return null;
     }
 
     @Override
@@ -698,7 +669,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
                 try {
                     String firstLine = readFirstLineInFile(file);
 
-                    if (firstLine != null && firstLine.startsWith(openSSLMagicText)) {
+                    if (firstLine != null && firstLine.startsWith(encrypterDecrypter.getOpenSSLMagicText())) {
                         // file is encrypted
                         enablePasswordPanel(true);
                         passwordField.requestFocusInWindow();
@@ -753,13 +724,13 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
                 passwordField.getPassword());
         numberOfKeysLabel.setText("" + privateKeyAndDates.size());
 
-        Date earliestKeyDate = privateKeysHandler.calculateReplayDate(privateKeyAndDates, controller.getModel().getActiveWallet());
+        Date replayDate = privateKeysHandler.calculateReplayDate(privateKeyAndDates, controller.getModel().getActiveWallet());
 
-        if (earliestKeyDate == null) {
+        if (replayDate == null) {
             replayDateLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.thereWereMissingKeyDates"));
         } else {
             replayDateLabel.setText(DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
-                    earliestKeyDate));
+                    replayDate));
         }
     }
 

@@ -21,7 +21,15 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
+import org.multibit.model.Item;
+import org.multibit.model.MultiBitModel;
+import org.multibit.qrcode.BitcoinURI;
+
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.AddressFormatException;
+import com.google.bitcoin.core.Utils;
 
 /**
  * This {@link Action} represents the swing copy address action
@@ -47,10 +55,58 @@ public class CopyQRCodeTextAction extends AbstractAction {
     }
 
     /**
-     * delegate to generic copy QRCode text action
+     * process QR code
      */
-    public void actionPerformed(ActionEvent e) {
-        org.multibit.action.CopyQRCodeTextAction genericQRCodeTextAction = new org.multibit.action.CopyQRCodeTextAction(controller);
-        genericQRCodeTextAction.execute(dataProvider);
+    public void actionPerformed(ActionEvent event) {
+        if (dataProvider != null) {
+            Data data = dataProvider.getData();
+
+            if (data != null) {
+                boolean isReceive = false;
+
+                Item isReceiveItem = data.getItem(MultiBitModel.IS_RECEIVE_BITCOIN);
+                if (isReceiveItem != null && Boolean.TRUE.toString().equals(isReceiveItem.getNewValue())) {
+                    isReceive = true;
+                }
+                Item amountItem = null;
+                Item addressItem = null;
+                Item labelItem = null;
+                if (isReceive) {
+                    amountItem = data.getItem(MultiBitModel.RECEIVE_AMOUNT);
+                    addressItem = data.getItem(MultiBitModel.RECEIVE_ADDRESS);
+                    labelItem = data.getItem(MultiBitModel.RECEIVE_LABEL);
+                } else {
+                    amountItem = data.getItem(MultiBitModel.SEND_AMOUNT);
+                    addressItem = data.getItem(MultiBitModel.SEND_ADDRESS);
+                    labelItem = data.getItem(MultiBitModel.SEND_LABEL);
+                }
+                String amount = "";
+                String address = "";
+                String label = "";
+
+                if (amountItem != null && amountItem.getNewValue() != null) {
+                    amount = (String) amountItem.getNewValue();
+                }
+
+                if (addressItem != null && addressItem.getNewValue() != null) {
+                    address = (String) addressItem.getNewValue();
+                }
+
+                if (labelItem != null && labelItem.getNewValue() != null) {
+                    label = (String) labelItem.getNewValue();
+                }
+
+                String bitcoinURI;
+                try {
+                    bitcoinURI = BitcoinURI.convertToBitcoinURI(new Address(controller.getMultiBitService().getNetworkParameters(), address), Utils.toNanoCoins(amount), label, null);
+                } catch (AddressFormatException e) {
+                    throw new RuntimeException(e);
+                }
+
+                // copy to clipboard
+                TextTransfer textTransfer = new TextTransfer();
+                textTransfer.setClipboardContents(bitcoinURI);
+            }
+        }
     }
 }
