@@ -130,6 +130,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
                     EncrypterDecrypter.NUMBER_OF_CHARACTERS_TO_MATCH_IN_OPENSSL_MAGIC_TEXT);
         } catch (UnsupportedEncodingException e) {
             // ignore the unsupported encoding error
+            assert false : e;
         }
         initUI();
 
@@ -143,7 +144,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
         if (outputFilename == null || "".equals(outputFilename)) {
             outputFilenameLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.noFileSelected"));
-         }
+        }
 
         if (Boolean.TRUE.toString().equals(
                 controller.getModel().getUserPreference(MultiBitModel.DISPLAY_IMPORT_PRIVATE_KEYS_MESSAGE))) {
@@ -163,12 +164,12 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
     private void initUI() {
         setLayout(new BorderLayout());
-        
+
         JPanel mainPanel = new JPanel();
         mainPanel.setMinimumSize(new Dimension(550, 160));
         mainPanel.setLayout(new GridBagLayout());
         mainPanel.setOpaque(false);
-        
+
         GridBagConstraints constraints = new GridBagConstraints();
 
         constraints.fill = GridBagConstraints.NONE;
@@ -252,8 +253,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.weighty = 20;
         constraints.anchor = GridBagConstraints.CENTER;
         mainPanel.add(filler1, constraints);
-        
-        
+
         JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         mainScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.DARK_BACKGROUND_COLOR));
@@ -389,7 +389,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
         chooseFilenameButton = new MultiBitButton(controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.text"));
         chooseFilenameButton.setToolTipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.tooltip"));
-        
+
         final MultiBitButton finalChooseFilenameButton = chooseFilenameButton;
         chooseFilenameButton.addActionListener(new ActionListener() {
             @Override
@@ -432,8 +432,8 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
         MultiBitLabel numberOfKeysLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "showImportPrivateKeysPanel.numberOfKeys.text"), controller);
-        numberOfKeysLabelLabel.setToolTipText(controller.getLocaliser().getString(
-        "showImportPrivateKeysPanel.numberOfKeys.tooltip"));
+        numberOfKeysLabelLabel.setToolTipText(controller.getLocaliser()
+                .getString("showImportPrivateKeysPanel.numberOfKeys.tooltip"));
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -467,8 +467,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
         MultiBitLabel replayDateLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "showImportPrivateKeysPanel.replayDate.text"), controller);
-        replayDateLabelLabel.setToolTipText(controller.getLocaliser().getString(
-                "showImportPrivateKeysPanel.replayDate.tooltip"));
+        replayDateLabelLabel.setToolTipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.replayDate.tooltip"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 4;
@@ -508,7 +507,6 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         outputFilenamePanel.add(chooseFilenameButton, constraints);
 
-
         return outputFilenamePanel;
     }
 
@@ -519,7 +517,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
                 "showExportPrivateKeysPanel.password.title"));
         passwordTitledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), passwordTitledBorder);
-        
+
         passwordProtectPanel.setBorder(border);
         passwordProtectPanel.setOpaque(false);
 
@@ -539,7 +537,8 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.CENTER;
         passwordProtectPanel.add(filler1, constraints);
 
-        passwordInfoLabel = new MultiBitLabel(controller.getLocaliser().getString("showImportPrivateKeysPanel.enterPassword"), controller);
+        passwordInfoLabel = new MultiBitLabel(controller.getLocaliser().getString("showImportPrivateKeysPanel.enterPassword"),
+                controller);
         passwordInfoLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
@@ -593,7 +592,12 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 setMessage(" ");
-                readInImportFileAndUpdateDetails();
+                try {
+                    readInImportFileAndUpdateDetails();
+                } catch (EncrypterDecrypterException ede) {
+                    setMessage(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysUnlockFailure",
+                            new Object[] { ede.getMessage() }));
+                }
             }
         });
         unlockButton.setToolTipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.unlock.tooltip"));
@@ -707,8 +711,10 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
                     setMessage(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
                             new Object[] { e.getClass().getName() + " " + e.getMessage() }));
                 } catch (EncrypterDecrypterException e) {
-                    // TODO user may not have entered a password yet so password incorrect is ok at this stage
-                    // other errors indicate a more general problem with the import
+                    // TODO user may not have entered a password yet so password
+                    // incorrect is ok at this stage
+                    // other errors indicate a more general problem with the
+                    // import
                     setMessage(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
                             new Object[] { e.getClass().getName() + " " + e.getMessage() }));
                 }
@@ -728,34 +734,32 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
             // disable the password panel
             passwordPromptLabel.setEnabled(false);
             passwordField.setEnabled(false);
-            unlockButton.setEnabled(false);   
+            unlockButton.setEnabled(false);
             passwordTitledBorder.setTitleColor(Color.GRAY);
             passwordTitledBorder.setBorder(BorderFactory.createLineBorder(Color.GRAY));
             passwordInfoLabel.setForeground(Color.GRAY);
         }
     }
-    
+
     /**
-     *read in the import file and show the file details
+     * read in the import file and show the file details
      */
     private void readInImportFileAndUpdateDetails() {
         // update number of keys and earliest date
 
         // read in contents of file
-        PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService()
-                .getNetworkParameters());
-        Collection<PrivateKeyAndDate> privateKeyAndDates = privateKeysHandler.readInPrivateKeys(
-                new File(outputFilename), passwordField.getPassword());
+        PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService().getNetworkParameters());
+        Collection<PrivateKeyAndDate> privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename),
+                passwordField.getPassword());
         numberOfKeysLabel.setText("" + privateKeyAndDates.size());
 
         Date earliestKeyDate = privateKeysHandler.calculateReplayDate(privateKeyAndDates, controller.getModel().getActiveWallet());
 
         if (earliestKeyDate == null) {
-            replayDateLabel.setText(controller.getLocaliser().getString(
-                    "showImportPrivateKeysPanel.thereWereMissingKeyDates"));
+            replayDateLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.thereWereMissingKeyDates"));
         } else {
-            replayDateLabel.setText(DateFormat.getDateInstance(DateFormat.MEDIUM,
-                    controller.getLocaliser().getLocale()).format(earliestKeyDate));
+            replayDateLabel.setText(DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
+                    earliestKeyDate));
         }
     }
 
