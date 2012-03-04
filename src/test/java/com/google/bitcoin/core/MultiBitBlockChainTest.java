@@ -24,8 +24,8 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 
-import static com.google.bitcoin.core.TestUtils.createFakeBlock;
-import static com.google.bitcoin.core.TestUtils.createFakeTx;
+import static com.google.bitcoin.core.CoreTestUtils.createFakeBlock;
+import static com.google.bitcoin.core.CoreTestUtils.createFakeTx;
 import static org.junit.Assert.*;
 
 // Handling of chain splits/reorgs are in ChainSplitTests.

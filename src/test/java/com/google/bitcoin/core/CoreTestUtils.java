@@ -21,7 +21,12 @@ import com.google.bitcoin.store.BlockStoreException;
 
 import java.math.BigInteger;
 
-public class TestUtils {
+/**
+ * This is the bitcoinj TestUtils but renamed as jenkins was complaining there are no tests in it
+ * @author jim
+ *
+ */
+public class CoreTestUtils {
     public static Transaction createFakeTx(NetworkParameters params, BigInteger nanocoins, Address to) {
         // Create a fake TX of sufficient realism to exercise the unit tests. Two outputs, one to us, one to somewhere
         // else to simulate change.

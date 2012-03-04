@@ -31,8 +31,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.google.bitcoin.core.TestUtils.createFakeBlock;
-import static com.google.bitcoin.core.TestUtils.createFakeTx;
+import static com.google.bitcoin.core.CoreTestUtils.createFakeBlock;
+import static com.google.bitcoin.core.CoreTestUtils.createFakeTx;
 import static com.google.bitcoin.core.Utils.bitcoinValueToFriendlyString;
 import static com.google.bitcoin.core.Utils.toNanoCoins;
 import static org.junit.Assert.*;
