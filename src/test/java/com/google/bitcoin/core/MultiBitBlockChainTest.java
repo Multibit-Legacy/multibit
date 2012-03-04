@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
 
 // Handling of chain splits/reorgs are in ChainSplitTests.
 
-public class BlockChainTest {
+public class MultiBitBlockChainTest {
     private static final NetworkParameters testNet = NetworkParameters.testNet();
     private BlockChain testNetChain;
 
@@ -54,7 +54,7 @@ public class BlockChainTest {
             @Override
             public void receiveFromBlock(Transaction tx, StoredBlock block, BlockChain.NewBlockType blockType) throws VerificationException, ScriptException {
                 super.receiveFromBlock(tx, block, blockType);
-                BlockChainTest.this.block[0] = block;
+                MultiBitBlockChainTest.this.block[0] = block;
             }
         };
         wallet.addKey(new ECKey());

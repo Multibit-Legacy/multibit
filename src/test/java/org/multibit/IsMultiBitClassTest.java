@@ -31,7 +31,6 @@ public class IsMultiBitClassTest extends TestCase {
 
     @Test
     public void testIsMultiBitClass() throws ClassNotFoundException {
-        checkClass("core.BlockChain");
         checkClass("core.Sha256Hash");
         checkClass("core.Transaction");
         checkClass("core.TransactionInput");

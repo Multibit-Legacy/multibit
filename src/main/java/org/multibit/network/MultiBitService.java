@@ -45,6 +45,7 @@ import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.MultiBitBlockChain;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerAddress;
@@ -97,7 +98,7 @@ public class MultiBitService {
 
     private String blockchainFilename;
 
-    private BlockChain blockChain;
+    private MultiBitBlockChain blockChain;
 
     private ReplayableBlockStore blockStore;
 
@@ -164,7 +165,7 @@ public class MultiBitService {
             blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), false);
 
             log.debug("Connecting ...");
-            blockChain = new BlockChain(networkParameters, blockStore);
+            blockChain = new MultiBitBlockChain(networkParameters, blockStore);
 
             peerGroup = createNewPeerGroup();
             peerGroup.start();
@@ -335,7 +336,7 @@ public class MultiBitService {
             blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), true);
 
             log.debug("Creating new blockStore - need to redownload from Genesis block");
-            blockChain = new BlockChain(networkParameters, (BlockStore) blockStore);
+            blockChain = new MultiBitBlockChain(networkParameters, (BlockStore) blockStore);
         } else {
             StoredBlock storedBlock = blockStore.getChainHead();
 
