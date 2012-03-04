@@ -22,12 +22,12 @@ public class WhitespaceTrimmer {
 
     private static String whiteRange = "\\p{javaWhitespace}\\p{Zs}";
     private static Pattern whiteStart = Pattern.compile("^[" + whiteRange + "]+");
-    private static Pattern whiteEnd = Pattern.compile("[" + whiteRange + "]+&");
+    private static Pattern whiteEnd = Pattern.compile("[" + whiteRange + "]+$");
 
     private WhitespaceTrimmer() {
     }
 
-    public static String ltrim(String text) {
+    static String ltrim(String text) {
         if (text == null) {
             return "";
         }
@@ -35,12 +35,18 @@ public class WhitespaceTrimmer {
         return mStart.find() ? text.substring(mStart.end()) : text;
     }
 
-    public static String rtrim(String text) {
+    static String rtrim(String text) {
         if (text == null) {
             return "";
         }
         Matcher mEnd = whiteEnd.matcher(text);
-        return mEnd.find() ? text.substring(0, mEnd.start()) : text;
+        if (mEnd.find()) {
+            int matchStart = mEnd.start();
+            String trimText = text.substring(0, matchStart);
+            return trimText;
+        } else {
+            return text;
+        }
     }
 
     public static String trim(String text) {
