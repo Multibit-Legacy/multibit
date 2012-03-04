@@ -1,8 +1,10 @@
 MultiBit release notes.
 
-Version 0.3.0Beta5
+05 Mar 2012 Version 0.3.0Beta5
 Enhancements
-+  Block chain replay does not drop peer so often
++  Encryption of private key export file.
++  Import encrypted private key export file.
++  Improvements to block chain replay.
 
 
 28 Feb 2012 Version 0.3.0Beta4
