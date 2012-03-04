@@ -41,12 +41,14 @@ public class EncrypterDecrypterTest extends TestCase {
     
     private static final char[] PASSWORD1 = "aTestPassword".toCharArray();
     private static final char[] PASSWORD2 = "0123456789".toCharArray();
-    
+
+    private static final char[] WRONG_PASSWORD = "thisIsTheWrongPassword".toCharArray();
+
     // Moscow in Russian in Cyrillic
     private static final char[] PASSWORD3 = "\u041c\u043e\u0441\u043a\u0432\u0430".toCharArray();
 
     @Test
-    public void testEncryptDecrypt1() throws EncrypterDecrypterException {
+    public void testEncryptDecryptGood1() throws EncrypterDecrypterException {
         EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter();
 
         // encrypt
@@ -61,7 +63,7 @@ public class EncrypterDecrypterTest extends TestCase {
         assertEquals(TEST_STRING1, rebornPlainText);
     }
 
-    public void testEncryptDecrypt2() throws EncrypterDecrypterException {
+    public void testEncryptDecryptGood2() throws EncrypterDecrypterException {
         EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter();
 
         // create a longer encryption string
@@ -78,6 +80,26 @@ public class EncrypterDecrypterTest extends TestCase {
 
         String reconstructedPlainText = encrypterDecrypter.decrypt(cipherText, PASSWORD2);
         assertEquals(stringBuffer.toString(), reconstructedPlainText);
+    }
+
+    public void testEncryptDecryptWrongPassword() throws EncrypterDecrypterException {
+        EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter();
+
+        // create a longer encryption string
+        StringBuffer stringBuffer = new StringBuffer();
+        for (int i = 0; i < 100; i++) {
+            stringBuffer.append(i + " ").append(TEST_STRING1);
+        }
+
+        String cipherText = encrypterDecrypter.encrypt(stringBuffer.toString(), PASSWORD2);
+        assertNotNull(cipherText);
+
+        try {
+            encrypterDecrypter.decrypt(cipherText, WRONG_PASSWORD);
+            fail("Decrypt with wrong password did not throw exception");
+        } catch (EncrypterDecrypterException ede) {
+            assertTrue(ede.getMessage().indexOf("Could not decrypt") > -1);
+        }
     }
 
     public void testEncryptJavaDecryptOpenSSL() throws EncrypterDecrypterException, IOException {
@@ -102,7 +124,6 @@ public class EncrypterDecrypterTest extends TestCase {
         writeToFile(cipherText, temporaryCipherTextFile);
 
         // create a file to write the decoded text to
-        // Create temporary ciphertext file.
         File temporaryPlainTextFile = File.createTempFile("EncrypterDecrypterTest", ".plain");
 
         // Delete temp file when program exits.
@@ -133,6 +154,54 @@ public class EncrypterDecrypterTest extends TestCase {
             fail("Could not run OpenSSL command to decrypt file");
         } catch (InterruptedException e2) {
             fail("Could not run OpenSSL command to decrypt file");
+        }
+    }
+    
+    public void testEncryptOpenSSLDecryptJava() throws EncrypterDecrypterException, IOException {
+        EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter();
+
+        // Create temporary plaintext file.
+        File temporaryPlainTextFile = File.createTempFile("EncrypterDecrypterTest", ".plain");
+
+        // Delete temp file when program exits.
+        temporaryPlainTextFile.deleteOnExit();
+
+        // write the plain text to a file
+        writeToFile(TEST_STRING1, temporaryPlainTextFile);
+
+        // create a file to write the encrypted text to
+        File temporaryCipherTextFile = File.createTempFile("EncrypterDecrypterTest", ".cipher");
+
+        // Delete temp file when program exits.
+        temporaryCipherTextFile.deleteOnExit();
+
+        // run the openssl equivalent command to encrypt the plaintext
+        try {
+            String commandToRun = "openssl enc -p -aes-256-cbc -a -in " + temporaryPlainTextFile.getAbsolutePath() 
+            + " -out " + temporaryCipherTextFile.getAbsolutePath() + " -pass pass:" + new String(PASSWORD2);
+
+            System.out.println("EncrypterDecrypterTest: Encrypting command = '" + commandToRun + "'");
+            
+            Process p = Runtime.getRuntime().exec(commandToRun);
+            p.waitFor();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line = reader.readLine();
+            while (line != null) {
+                System.out.println("EncrypterDecrypterTest: " + line);
+                line = reader.readLine();
+            }
+            
+            // read in the decrypted text
+            String cipherText = readFile(temporaryCipherTextFile).trim();
+           
+            String rebornPlainText = encrypterDecrypter.decrypt(cipherText, PASSWORD2);
+            
+            assertEquals(TEST_STRING1, rebornPlainText);
+
+        } catch (IOException e1) {
+            fail("Could not run OpenSSL command to encrypt file");
+        } catch (InterruptedException e2) {
+            fail("Could not run OpenSSL command to encrypt file");
         }
     }
     
