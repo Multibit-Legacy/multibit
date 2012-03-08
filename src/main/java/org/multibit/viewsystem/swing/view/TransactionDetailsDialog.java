@@ -154,8 +154,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailPanel.add(filler1, constraints);
 
         confidenceText = new MultiBitLabel("", controller);
-        // TODO localise
-        confidenceText.setText(rowTableData.getTransaction().getConfidence().toString());
+        confidenceText.setText(createStatusText(rowTableData.getTransaction()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 0;
@@ -210,7 +209,6 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailPanel.add(descriptionText, constraints);
 
         MultiBitLabel amountLabel = new MultiBitLabel("", controller);
-        amountLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 3;
@@ -222,13 +220,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
 
         amountText = new MultiBitLabel("", controller);
         String btcSuffix =  controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel");
-        try {
-            amountText.setText(Utils.bitcoinValueToPlainString(rowTableData.getTransaction().getValue(controller.getModel().getActiveWallet())) + " " + btcSuffix);
-        } catch (ScriptException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        constraints.fill = GridBagConstraints.NONE;
+         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 3;
         constraints.weightx = 0.3;
@@ -249,17 +241,6 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailPanel.add(feeLabel, constraints);
 
         feeText = new MultiBitLabel("", controller);
-        feeText.setText(Utils.bitcoinValueToPlainString(rowTableData.getTransaction().calculateFee(controller.getModel().getActiveWallet())) + " " + btcSuffix);
-        if (BigInteger.ZERO.compareTo(value) > 0) {
-            // debit
-            feeLabel.setVisible(true);
-            feeText.setVisible(true);
-         } else {
-            // credit - cannot calculate fee so do not show
-            feeLabel.setVisible(false);
-            feeText.setVisible(false);
-        }
-
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 4;
@@ -268,12 +249,67 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(feeText, constraints);
+
+        MultiBitLabel totalDebitLabel = new MultiBitLabel("", controller);
+        totalDebitLabel.setText(controller.getLocaliser().getString("transactionDetailsDialog.totalDebit"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 5;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        detailPanel.add(totalDebitLabel, constraints);
+
+        MultiBitLabel totalDebitText = new MultiBitLabel("", controller);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 5;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        detailPanel.add(totalDebitText, constraints);
+
+        BigInteger fee = rowTableData.getTransaction().calculateFee(controller.getModel().getActiveWallet());
+        feeText.setText(Utils.bitcoinValueToPlainString(fee) + " " + btcSuffix);
+        if (BigInteger.ZERO.compareTo(value) > 0) {
+            // debit
+            amountLabel.setText(controller.getLocaliser().getString("transactionDetailsDialog.amountSent"));
+            try {
+                BigInteger totalDebit = rowTableData.getTransaction().getValue(controller.getModel().getActiveWallet()).negate();
+                BigInteger amountSent = totalDebit.subtract(fee);
+                totalDebitText.setText(Utils.bitcoinValueToPlainString(totalDebit) + " " + btcSuffix);
+                amountText.setText(Utils.bitcoinValueToPlainString(amountSent) + " " + btcSuffix);
+            } catch (ScriptException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            totalDebitLabel.setVisible(true);
+            totalDebitText.setVisible(true);
+            feeLabel.setVisible(true);
+            feeText.setVisible(true);
+         } else {
+            // credit - cannot calculate fee so do not show
+             try {
+                 amountText.setText(Utils.bitcoinValueToPlainString(rowTableData.getTransaction().getValue(controller.getModel().getActiveWallet())) + " " + btcSuffix);
+             } catch (ScriptException e) {
+                 // TODO Auto-generated catch block
+                 e.printStackTrace();
+             }
+            amountLabel.setText(controller.getLocaliser().getString("transactionDetailsDialog.amountReceived"));
+            totalDebitLabel.setVisible(false);
+            totalDebitText.setVisible(false);
+            feeLabel.setVisible(false);
+            feeText.setVisible(false);
+        }
      
         MultiBitLabel transactionDetailLabel = new MultiBitLabel("", controller);
         transactionDetailLabel.setText(controller.getLocaliser().getString("transactionDetailsDialog.transactionDetailText"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 6;
         constraints.weightx = 0.3;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -285,7 +321,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         transactionDetailText.setText(rowTableData.getTransaction().toString());
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
-        constraints.gridy = 5;
+        constraints.gridy = 6;
         constraints.weightx = 0.3;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -303,7 +339,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         JLabel filler2 = new JLabel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 3;
-        constraints.gridy = 5;
+        constraints.gridy = 6;
         constraints.weightx = 0.1;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -314,7 +350,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         buttonPanel.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
-        constraints.gridy = 6;
+        constraints.gridy = 7;
         constraints.weightx = 0.8;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -325,6 +361,11 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         OkBackToParentAction okAction = new OkBackToParentAction(controller, this);
         okButton = new MultiBitButton(okAction, controller);
         buttonPanel.add(okButton);
+    }
+    
+    // TODO localise
+    private String createStatusText(Transaction transaction) {
+        return transaction.getConfidence().toString();
     }
     
     /**
