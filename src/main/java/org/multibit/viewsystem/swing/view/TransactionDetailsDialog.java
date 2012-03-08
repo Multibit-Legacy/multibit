@@ -63,7 +63,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
 
 
     private static final int HEIGHT_DELTA = 125;
-    private static final int WIDTH_DELTA = 300;
+    private static final int WIDTH_DELTA = 330;
     
     private MultiBitController controller;
     private WalletTableData rowTableData;
@@ -317,6 +317,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailPanel.add(transactionDetailLabel, constraints);
 
         MultiBitTextArea transactionDetailText = new MultiBitTextArea("", 5, 40, controller);
+        transactionDetailText.setEditable(false);
+        
         // TODO localise
         transactionDetailText.setText(rowTableData.getTransaction().toString());
         constraints.fill = GridBagConstraints.BOTH;

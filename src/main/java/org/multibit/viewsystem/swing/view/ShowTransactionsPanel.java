@@ -87,17 +87,19 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
     private static final int TABLE_BORDER = 3;
 
-    private static final String PROGRESS_0_ICON_FILE = "/images/progress0.png";
-    private static final String PROGRESS_1_ICON_FILE = "/images/progress1.png";
-    private static final String PROGRESS_2_ICON_FILE = "/images/progress2.png";
-    private static final String PROGRESS_3_ICON_FILE = "/images/progress3.png";
-    private static final String PROGRESS_4_ICON_FILE = "/images/progress4.png";
-    private static final String PROGRESS_5_ICON_FILE = "/images/progress5.png";
-    private static final String RTL_PROGRESS_1_ICON_FILE = "/images/rtl_progress1.png";
-    private static final String RTL_PROGRESS_2_ICON_FILE = "/images/rtl_progress2.png";
-    private static final String RTL_PROGRESS_3_ICON_FILE = "/images/rtl_progress3.png";
-    private static final String RTL_PROGRESS_4_ICON_FILE = "/images/rtl_progress4.png";
-    private static final String RTL_PROGRESS_5_ICON_FILE = "/images/rtl_progress5.png";
+    private static final int MINIMUM_ICON_HEIGHT = 18;
+    
+    private static final String PROGRESS_0_ICON_FILE = "/images/circleProgress0.png";
+    private static final String PROGRESS_1_ICON_FILE = "/images/circleProgress1.png";
+    private static final String PROGRESS_2_ICON_FILE = "/images/circleProgress2.png";
+    private static final String PROGRESS_3_ICON_FILE = "/images/circleProgress3.png";
+    private static final String PROGRESS_4_ICON_FILE = "/images/circleProgress4.png";
+    private static final String PROGRESS_5_ICON_FILE = "/images/circleProgress5.png";
+    private static final String RTL_PROGRESS_1_ICON_FILE = "/images/circleProgress1.png";
+    private static final String RTL_PROGRESS_2_ICON_FILE = "/images/circleProgress2.png";
+    private static final String RTL_PROGRESS_3_ICON_FILE = "/images/circleProgress3.png";
+    private static final String RTL_PROGRESS_4_ICON_FILE = "/images/circleProgress4.png";
+    private static final String RTL_PROGRESS_5_ICON_FILE = "/images/circleProgress5.png";
     private static final String TICK_ICON_FILE = "/images/tick.png";
 
     public ShowTransactionsPanel(MultiBitFrame mainFrame, MultiBitController controller) {
@@ -126,7 +128,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         table.setOpaque(true);
         table.setBorder(BorderFactory.createEmptyBorder());
         table.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        table.setRowHeight(getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight());
+        table.setRowHeight(Math.max(MINIMUM_ICON_HEIGHT, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));
 
         // use status icons
         table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
