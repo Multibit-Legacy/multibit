@@ -353,6 +353,36 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     }
 
     /**
+     * Calculates the sum of the inputs that are spending coins with keys in the
+     * wallet. This requires the transactions sending coins to those keys to be
+     * in the wallet. This method will not attempt to download the blocks
+     * containing the input transactions if the key is in the wallet but the
+     * transactions are not.
+     * 
+     * This variant includes the change
+     * 
+     * @return sum in nanocoins.
+     */
+    public BigInteger getValueSentFromMeIncludingChange(Wallet wallet) throws ScriptException {
+        maybeParse();
+        // This is tested in WalletTest.
+        BigInteger v = BigInteger.ZERO;
+        for (TransactionInput input : inputs) {
+            // This input is taking value from an transaction in our wallet. To
+            // discover the value,
+            // we must find the connected transaction.
+            TransactionOutput connected = input.getConnectedOutput(wallet.unspent);
+            if (connected == null)
+                connected = input.getConnectedOutput(wallet.spent);
+            if (connected == null)
+                connected = input.getConnectedOutput(wallet.pending);
+            if (connected == null)
+                continue;
+            v = v.add(connected.getValue());
+        }
+        return v;
+    }
+    /**
      * Returns the difference of {@link Transaction#getValueSentFromMe(Wallet)} and {@link Transaction#getValueSentToMe(Wallet)}.
      */
     public BigInteger getValue(Wallet wallet) throws ScriptException {
@@ -605,7 +635,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
                 Address toAddr = new Address(params, out.getScriptPubKey().getPubKeyHash());
                 s.append(toAddr.toString());
                 s.append(" ");
-                s.append(bitcoinValueToFriendlyString(out.getValue()));
+                s.append(bitcoinValueToPlainString(out.getValue()));
                 s.append(" BTC");
                 if (!out.isAvailableForSpending()) {
                     s.append(" Spent");
@@ -946,5 +976,34 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
                 }
             }
         }
+    }
+    
+    /**
+     * Calculate the fee for a spend
+     * @param transaction Must be a spend as for a receive we do not have the connected output
+     * @return BigInteger containing fee
+     */
+    public BigInteger calculateFee(Wallet wallet) {
+        BigInteger totalOut = BigInteger.ZERO;    
+        BigInteger totalIn = BigInteger.ZERO;
+        for (TransactionInput input : getInputs()) {
+            // This input is taking value from an transaction in our wallet. To
+            // discover the value,
+            // we must find the connected transaction.
+            TransactionOutput connected = input.getConnectedOutput(wallet.unspent);
+            if (connected == null)
+                connected = input.getConnectedOutput(wallet.spent);
+            if (connected == null)
+                connected = input.getConnectedOutput(wallet.pending);
+            if (connected == null)
+                continue;
+            totalIn = totalIn.add(connected.getValue());
+        }
+        List<TransactionOutput> outputs = getOutputs();
+        for (TransactionOutput output : outputs) {
+            totalOut = totalOut.add(output.getValue());
+        }
+        
+        return totalIn.subtract(totalOut);
     }
 }

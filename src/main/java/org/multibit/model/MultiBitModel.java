@@ -524,7 +524,7 @@ public class MultiBitModel {
      * @param transactionOutputs
      * @param credit
      * @param debit
-     * @return
+     * @return A description of the transaction
      */
     public String createDescription(Wallet wallet, List<TransactionInput> transactionInputs,
             List<TransactionOutput> transactionOutputs, BigInteger credit, BigInteger debit) {
@@ -604,10 +604,8 @@ public class MultiBitModel {
                 }
             } catch (ScriptException e) {
                 log.error(e.getMessage(), e);
-
             }
         }
-
         return toReturn;
     }
 

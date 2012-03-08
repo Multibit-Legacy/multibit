@@ -18,8 +18,6 @@ package org.multibit.viewsystem.swing.view.components;
 import javax.swing.JTextArea;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.swing.MultiBitFrame;
 
 public class MultiBitTextArea extends JTextArea {
 

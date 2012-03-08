@@ -59,6 +59,10 @@ public class WalletTableModel extends AbstractTableModel {
         return walletData.size();
     }
 
+    public WalletTableData getRow(int row) {
+        return walletData.get(row);
+    }
+
     public String getColumnName(int column) {
         return headers.get(column);
     }
