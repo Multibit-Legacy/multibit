@@ -25,6 +25,7 @@ import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -285,7 +286,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
 
         MultiBitTextArea transactionDetailText = new MultiBitTextArea("", 5, 40, controller);
         transactionDetailText.setText(rowTableData.getTransaction().toString());
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 5;
         constraints.weightx = 0.3;
@@ -298,9 +299,20 @@ public class TransactionDetailsDialog extends MultiBitDialog {
 
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
+ 
         detailPanel.add(scrollPane, constraints);
 
+        
+        JLabel filler2 = new JLabel();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 3;
+        constraints.gridy = 5;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        detailPanel.add(filler2, constraints);
+        
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
@@ -308,7 +320,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.gridy = 6;
         constraints.weightx = 0.8;
         constraints.weighty = 0.1;
-        constraints.gridwidth = 4;
+        constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         detailPanel.add(buttonPanel, constraints);
