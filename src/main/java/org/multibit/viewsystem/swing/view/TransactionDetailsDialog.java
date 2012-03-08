@@ -25,7 +25,6 @@ import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -66,8 +65,6 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     private static final int HEIGHT_DELTA = 125;
     private static final int WIDTH_DELTA = 300;
     
-    private MultiBitFrame mainFrame;
-
     private MultiBitController controller;
     private WalletTableData rowTableData;
 
@@ -86,7 +83,6 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     public TransactionDetailsDialog(MultiBitController controller, MultiBitFrame mainFrame, WalletTableData rowTableData) {
         super(mainFrame, controller.getLocaliser().getString("transactionDetailsDialog.title"));
         this.controller = controller;
-        this.mainFrame = mainFrame;
         this.rowTableData = rowTableData;
         
         dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
@@ -103,7 +99,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     }
 
     /**
-     * initialise bitcoin confirm dialog
+     * initialise transaction details dialog
      */
     public void initUI() {
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -121,7 +117,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         
         mainPanel.setLayout(new BorderLayout());
         
-        // get the data out of the wallet data
+        // get the transaction value out of the wallet data
         BigInteger value = null;
         try {
             value = rowTableData.getTransaction().getValue(controller.getModel().getActiveWallet());
@@ -158,6 +154,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailPanel.add(filler1, constraints);
 
         confidenceText = new MultiBitLabel("", controller);
+        // TODO localise
         confidenceText.setText(rowTableData.getTransaction().getConfidence().toString());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
@@ -202,7 +199,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailPanel.add(descriptionLabel, constraints);
 
         MultiBitLabel descriptionText = new MultiBitLabel("", controller);
-        descriptionText.setText(createDescription(rowTableData.getTransaction()));
+        descriptionText.setText(createTransactionDescription(rowTableData.getTransaction()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 2;
@@ -272,7 +269,6 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(feeText, constraints);
      
-
         MultiBitLabel transactionDetailLabel = new MultiBitLabel("", controller);
         transactionDetailLabel.setText(controller.getLocaliser().getString("transactionDetailsDialog.transactionDetailText"));
         constraints.fill = GridBagConstraints.NONE;
@@ -285,6 +281,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailPanel.add(transactionDetailLabel, constraints);
 
         MultiBitTextArea transactionDetailText = new MultiBitTextArea("", 5, 40, controller);
+        // TODO localise
         transactionDetailText.setText(rowTableData.getTransaction().toString());
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
@@ -339,7 +336,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
      * @param debit
      * @return A description of the transaction
      */
-    public String createDescription(Transaction transaction) {
+    private String createTransactionDescription(Transaction transaction) {
         String toReturn = "";
 
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
@@ -360,7 +357,6 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             e1.printStackTrace();
         }
                
-
         TransactionOutput myOutput = null;
         TransactionOutput theirOutput = null;
         if (transactionOutputs != null) {
