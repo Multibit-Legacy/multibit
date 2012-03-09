@@ -101,6 +101,9 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     private static final String RTL_PROGRESS_4_ICON_FILE = "/images/circleProgress4.png";
     private static final String RTL_PROGRESS_5_ICON_FILE = "/images/circleProgress5.png";
     private static final String TICK_ICON_FILE = "/images/tick.png";
+    
+    private int selectedRow = -1;
+    
 
     public ShowTransactionsPanel(MultiBitFrame mainFrame, MultiBitController controller) {
         this.controller = controller;
@@ -139,6 +142,9 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
+        
+        // no row is currently selected
+        selectedRow = -1;
 
         // date right justified
         table.getColumnModel().getColumn(1).setCellRenderer(new TrailingJustifiedDateRenderer());
@@ -229,16 +235,17 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
     @Override
     public void displayView() {
-        walletTableModel.recreateWalletData();
-        table.invalidate();
-        table.validate();
-        table.repaint();
+        updateView();
     }
 
     @Override
     public void updateView() {
         walletTableModel.recreateWalletData();
 
+        if (selectedRow > -1 && selectedRow < table.getRowCount()) {
+            table.setRowSelectionInterval(selectedRow, selectedRow);
+        }
+        
         table.invalidate();
         table.validate();
         table.repaint();
@@ -331,6 +338,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             }
 
             if (isSelected) {
+                selectedRow = row;
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
@@ -414,6 +422,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             label.setText(value + SPACER);
 
             if (isSelected) {
+                selectedRow = row;
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
@@ -458,6 +467,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             label.setText(formattedDate + SPACER);
 
             if (isSelected) {
+                selectedRow = row;
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
@@ -484,6 +494,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             label.setText((String) value);
 
             if (isSelected) {
+                selectedRow = row;
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
@@ -529,6 +540,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             if ((col == -1) || (row == -1)) {
                 // do nothing
             } else {
+                selectedRow = row;
                 table.setRowSelectionInterval(row, row);
             }
             
