@@ -80,7 +80,7 @@ public class MultiBitDownloadListener extends DownloadListener {
 
                 // when busy occasionally the localiser fails to localise
                 if (!(downloadStatusText.indexOf("multiBitDownloadListener") > -1)) {
-                    controller.updateStatusLabel(downloadStatusText, false);
+                    controller.updateStatusLabel(downloadStatusText, pct);
                 }
             }
             controller.fireBlockDownloaded();
@@ -106,9 +106,13 @@ public class MultiBitDownloadListener extends DownloadListener {
                     startDownloadText = controller.getLocaliser().getString("multiBitDownloadListener.startDownloadTextLong",
                             new Object[] { new Integer(blocks) });
                 }
+
+                String startDownloadTextForLabel = controller.getLocaliser().getString("multiBitDownloadListener.downloadingText");
+
                 // when busy occasionally the localiser fails to localise
                 if (!(startDownloadText.indexOf("multiBitDownloadListener") > -1)) {
-                    controller.updateStatusLabel(startDownloadText, false);
+                    controller.updateStatusLabel(startDownloadTextForLabel, false);
+                    controller.updateStatusLabel(startDownloadText, 0);
                 }
             }
             controller.fireBlockDownloaded();
@@ -121,6 +125,7 @@ public class MultiBitDownloadListener extends DownloadListener {
     protected void doneDownload() {
         String downloadStatusText = controller.getLocaliser().getString("multiBitDownloadListener.doneDownloadText");
         controller.updateStatusLabel(downloadStatusText);
+        controller.updateStatusLabel(downloadStatusText, 100);
         controller.fireBlockDownloaded();
     }
 }

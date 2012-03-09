@@ -825,6 +825,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
     }
 
+    public void updateStatusLabel(String newStatusLabel, double percentComplete) {
+        if (statusBar != null) {
+            if (percentComplete == 0) {
+                statusBar.startSync();
+            }
+            statusBar.updateSync((int)percentComplete, newStatusLabel);
+            
+            if (percentComplete == 100) {
+                statusBar.finishSync();
+            }
+        }
+    }
+
     public void blockDownloaded() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

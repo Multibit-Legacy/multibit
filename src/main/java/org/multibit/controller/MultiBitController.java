@@ -496,18 +496,34 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * method called by downloadListener to update download status
+     * Update download status with a message
      * 
      * @param newStatusText
-     *            The download status string
+     *            The new status string
      */
     public void updateStatusLabel(String newStatusText) {
         updateStatusLabel(newStatusText, true);
     }
 
+    /**
+     * Update download status with a message that can clear automatically
+     * @param newStatusText The new status string
+     * @param clearAutomatically Clear automatically if true
+     */
     public void updateStatusLabel(String newStatusText, boolean clearAutomatically) {
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.updateStatusLabel(newStatusText, clearAutomatically);
+        }
+    }
+
+    /**
+     * Update download status with percentage task complete (for sync messages)
+     * @param newStatusText The new status string
+     * @param percent Percent sync is complete
+     */
+    public void updateStatusLabel(String newStatusText, double percentComplete) {
+        for (ViewSystem viewSystem : viewSystems) {
+            viewSystem.updateStatusLabel(newStatusText, percentComplete);
         }
     }
 

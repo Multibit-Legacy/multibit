@@ -56,6 +56,7 @@ import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -81,8 +82,9 @@ import org.slf4j.LoggerFactory;
  * 
  * In MultiBit the StatusBar is responsible for :
  * 
- * 1) Online/ Connecting status label 2) Status messages - these are cleared
- * after a period of time
+ * 1) Online/ Connecting status label 
+ * 2) Status messages - these are cleared after a period of time
+ * 3) Synchronisatin progress bar
  */
 public class StatusBar extends JComponent {
 
@@ -114,6 +116,8 @@ public class StatusBar extends JComponent {
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
+    
+    private JProgressBar syncProgressBar;   
 
     /**
      * Construct a new StatusBar
@@ -162,7 +166,13 @@ public class StatusBar extends JComponent {
                         controller.getLocaliser().getString("multiBitFrame.offlineText")))
                 + ONLINE_LABEL_DELTA;
 
+        syncProgressBar = new JProgressBar(0, 100);
+        syncProgressBar.setValue(0);
+        syncProgressBar.setStringPainted(false);
+        syncProgressBar.setVisible(false);
+        
         addZone("online", onlineLabel, "" + onlineWidth, "left");
+        addZone("progressBar", syncProgressBar, "" + 200, "left");
         addZone("network", statusLabel, "*", "");
         addZone("filler2", new JPanel(), "0", "right");
 
@@ -214,6 +224,21 @@ public class StatusBar extends JComponent {
         });
     }
 
+    synchronized public void startSync() {
+        syncProgressBar.setValue(0);
+        syncProgressBar.setVisible(true);
+    }
+    
+    synchronized public void finishSync() {
+        syncProgressBar.setValue(100);
+        syncProgressBar.setVisible(false);
+    }
+    
+    synchronized public void updateSync(int percent, String syncMessage) {
+        syncProgressBar.setValue(percent);
+        syncProgressBar.setToolTipText(syncMessage);
+    }
+    
     public void updateStatusLabel(String newStatusLabel) {
         updateStatusLabel(newStatusLabel, true);
     }

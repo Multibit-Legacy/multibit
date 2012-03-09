@@ -78,5 +78,11 @@ public interface ViewSystem extends WalletEventListener {
      * @param clearAutomatically
      */
     public void updateStatusLabel(String updateDownloadStatus, boolean clearAutomatically);
+    /**
+     * update download status
+     * @param updateDownloadStatus
+     * @param percentComplete
+     */
+    public void updateStatusLabel(String updateDownloadStatus, double percentComplete);
 
 }
