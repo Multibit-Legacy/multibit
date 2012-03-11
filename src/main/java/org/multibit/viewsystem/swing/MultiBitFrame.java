@@ -90,11 +90,8 @@ import org.simplericity.macify.eawt.ApplicationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionConfidence;
-import com.google.bitcoin.core.TransactionInput;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 
@@ -199,7 +196,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // TODO Examine how this fits in with the controller onQuit() event
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent arg0) {
-                org.multibit.viewsystem.swing.action.ExitAction exitAction = new org.multibit.viewsystem.swing.action.ExitAction(finalController, thisFrame);
+                org.multibit.viewsystem.swing.action.ExitAction exitAction = new org.multibit.viewsystem.swing.action.ExitAction(
+                        finalController, thisFrame);
                 exitAction.actionPerformed(null);
             }
         });
@@ -615,7 +613,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         toolsMenu.addSeparator();
 
-        ResetTransactionsAction resetTransactionsAction = new ResetTransactionsAction(controller, ImageLoader.createImageIcon(ImageLoader.RESET_TRANSACTIONS_ICON_FILE));
+        ResetTransactionsAction resetTransactionsAction = new ResetTransactionsAction(controller,
+                ImageLoader.createImageIcon(ImageLoader.RESET_TRANSACTIONS_ICON_FILE));
         menuItem = new JMenuItem(resetTransactionsAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -830,8 +829,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             if (percentComplete == 0) {
                 statusBar.startSync();
             }
-            statusBar.updateSync((int)percentComplete, newStatusLabel);
-            
+            statusBar.updateSync((int) percentComplete, newStatusLabel);
+
             if (percentComplete == 100) {
                 statusBar.finishSync();
             }
@@ -853,7 +852,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     private void processNewCoin(Wallet wallet, Transaction transaction) {
-        // loop through all the wallets, updating them as required with the new transaction
+        // loop through all the wallets, updating them as required with the new
+        // transaction
         log.debug("processNewCoin is processing transaction " + transaction.toString());
         try {
             java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
@@ -863,18 +863,17 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     try {
                         Wallet loopWallet = perWalletModelData.getWallet();
                         if (loopWallet.isTransactionRelevant(transaction, true)) {
-                            // the perWalletModelData is marked as transactionDirty
-                            // but is not written out immediately
-                            // this is to avoid unnecessary 'Updates have stopped'
-                            // when two MultiBit have a single wallet open.
-                            // they will both get the incoming transaction
-                            fireDataChanged();
-                            perWalletModelData.setTransactionDirty(true);
+                            // the perWalletModelData is marked as dirty
+                            perWalletModelData.setDirty(true);
 
-                            // check to see if the transaction is already in the wallet
+                            // check to see if the transaction is already in the
+                            // wallet
                             if (loopWallet.getTransaction(transaction.getHash()) == null) {
+                                log.debug("processNewCoin is receivingPending");
                                 loopWallet.receivePending(transaction);
                             }
+                            controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+                            fireDataChanged();
                         }
                     } catch (VerificationException e) {
                         e.printStackTrace();
@@ -899,10 +898,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         log.info("Wallet has been reorganised.");
         recreateAllViews(true);
     }
-    
+
     @Override
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction tx) {
-        // TODO Auto-generated method stub   
+        log.debug("Transaction confidence changed for tx " + tx.toString());
     }
 
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {

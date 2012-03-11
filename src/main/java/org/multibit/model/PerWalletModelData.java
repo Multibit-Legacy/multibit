@@ -50,14 +50,14 @@ public class PerWalletModelData {
     private boolean filesHaveBeenChangedByAnotherProcess;
 
     /**
-     * the PerWalletModelData (except for incoming receipts) has changed since last been written to disk
+     * the PerWalletModelData has changed since last been written to disk
      */
     private boolean isDirty;
     
-    /**
-     * the PerWalletModelData has received incoming receipts since last been written to disk
-     */
-    private boolean isTransactionDirty;
+//    /**
+//     * the PerWalletModelData has received incoming receipts since last been written to disk
+//     */
+//    private boolean isTransactionDirty;
 
     public PerWalletModelData() {
         isDirty = false;
@@ -130,14 +130,6 @@ public class PerWalletModelData {
 
     public void setDirty(boolean isDirty) {
         this.isDirty = isDirty;
-    }
-
-    public boolean isTransactionDirty() {
-        return isTransactionDirty;
-    }
-
-    public void setTransactionDirty(boolean isTransactionDirty) {
-        this.isTransactionDirty = isTransactionDirty;
     }
 
     public String getWalletBackupFilename() {

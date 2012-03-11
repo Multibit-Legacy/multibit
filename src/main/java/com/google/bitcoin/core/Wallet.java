@@ -393,9 +393,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
         // other sources of transactions) it may
         // have been missed out.
         TransactionConfidence.ConfidenceType currentConfidence = tx.getConfidence().getConfidenceType();
-        assert currentConfidence == TransactionConfidence.ConfidenceType.UNKNOWN
-                || currentConfidence == TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN : currentConfidence;
-        tx.getConfidence().setConfidenceType(TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN);
+        if (currentConfidence == TransactionConfidence.ConfidenceType.UNKNOWN) {
+            tx.getConfidence().setConfidenceType(TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN);
+            invokeOnTransactionConfidenceChanged(tx);
+        }
 
         BigInteger balance = getBalance();
 
@@ -601,18 +602,23 @@ public class Wallet implements Serializable, IsMultiBitClass {
         // confirmed, they need to use tx confidence
         // listeners.
         //
-        // TODO: Decide whether to run the event listeners, if a tx confidence
-        // listener already modified the wallet.
-        if (!reorg && bestChain && wtx == null) {
+        // TODO: Decide whether to run the event listeners, if a tx confidence listener already modified the wallet.
+        boolean wasPending = wtx != null;
+        if (!reorg && bestChain && !wasPending) {
             BigInteger newBalance = getBalance();
-            if (valueSentToMe.compareTo(BigInteger.ZERO) > 0) {
+            int diff = valueDifference.compareTo(BigInteger.ZERO);
+            // We pick one callback based on the value difference, though a tx can of course both send and receive
+            // coins from the wallet.
+            if (diff > 0) {
                 invokeOnCoinsReceived(tx, prevBalance, newBalance);
-            }
-            if (valueSentFromMe.compareTo(BigInteger.ZERO) > 0) {
+            } else if (diff == 0) {
+                // Hack. Invoke onCoinsSent in order to let the client save the wallet. This needs to go away.
+                invokeOnCoinsSent(tx, prevBalance, newBalance);
+            } else {
                 invokeOnCoinsSent(tx, prevBalance, newBalance);
             }
         }
-
+        
         assert isConsistent();
     }
 
@@ -767,8 +773,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
     }
 
     /**
-     * If the transactions outputs are all marked as spent, and it's in the
-     * unspent map, move it.
+     * If the transactions outputs are all marked as spent, and it's in the unspent map, move it.
      */
     private void maybeMoveTxToSpent(Transaction tx, String context) {
         if (tx.isEveryOwnedOutputSpent(this)) {
@@ -784,67 +789,55 @@ public class Wallet implements Serializable, IsMultiBitClass {
     }
 
     /**
-     * Adds an event listener object. Methods on this object are called when
-     * something interesting happens, like receiving money.
-     * <p>
+     * Adds an event listener object. Methods on this object are called when something interesting happens,
+     * like receiving money.<p>
      * <p/>
-     * Threading: Event listener methods are dispatched on library provided
-     * threads and the both the wallet and the listener objects are locked
-     * during dispatch, so your listeners do not have to be thread safe. However
-     * they should not block as the Peer will be unresponsive to network traffic
-     * whilst your listener is running.
+     * Threading: Event listener methods are dispatched on library provided threads and the both the wallet and the
+     * listener objects are locked during dispatch, so your listeners do not have to be thread safe. However they
+     * should not block as the Peer will be unresponsive to network traffic whilst your listener is running.
      */
     public synchronized void addEventListener(WalletEventListener listener) {
         eventListeners.add(listener);
     }
 
     /**
-     * Removes the given event listener object. Returns true if the listener was
-     * removed, false if that listener was never added.
+     * Removes the given event listener object. Returns true if the listener was removed,
+     * false if that listener was never added.
      */
     public synchronized boolean removeEventListener(WalletEventListener listener) {
         return eventListeners.remove(listener);
     }
 
     /**
-     * Updates the wallet with the given transaction: puts it into the pending
-     * pool and sets the spent flags. Used in two situations:
-     * <p>
-     * 
+     * Updates the wallet with the given transaction: puts it into the pending pool and sets the spent flags. Used in
+     * two situations:<p>
+     *
      * <ol>
-     * <li>When we have just successfully transmitted the tx we created to the
-     * network.</li>
-     * <li>When we receive a pending transaction that didn't appear in the chain
-     * yet, and we did not create it, and it spends some of our outputs.</li>
+     *     <li>When we have just successfully transmitted the tx we created to the network.</li>
+     *     <li>When we receive a pending transaction that didn't appear in the chain yet,
+     *         and we did not create it, and it spends some of our outputs.</li>
      * </ol>
      */
     public synchronized void commitTx(Transaction tx) throws VerificationException {
         assert !pending.containsKey(tx.getHash()) : "commitTx called on the same transaction twice";
         log.info("commitTx of {}", tx.getHashAsString());
         tx.updatedAt = Utils.now();
-        // Mark the outputs we're spending as spent so we won't try and use them
-        // in future creations. This will also
-        // move any transactions that are now fully spent to the spent map so we
-        // can skip them when creating future
+        // Mark the outputs we're spending as spent so we won't try and use them in future creations. This will also
+        // move any transactions that are now fully spent to the spent map so we can skip them when creating future
         // spends.
         updateForSpends(tx, false);
-        // Add to the pending pool. It'll be moved out once we receive this
-        // transaction on the best chain.
+        // Add to the pending pool. It'll be moved out once we receive this transaction on the best chain.
         log.info("->pending: {}", tx.getHashAsString());
         pending.put(tx.getHash(), tx);
-
+        
         assert isConsistent();
     }
 
     /**
      * Returns a set of all transactions in the wallet.
-     * 
-     * @param includeDead
-     *            If true, transactions that were overridden by a double spend
-     *            are included.
-     * @param includeInactive
-     *            If true, transactions that are on side chains (are
-     *            unspendable) are included.
+     *
+     * @param includeDead     If true, transactions that were overridden by a double spend are included.
+     * @param includeInactive If true, transactions that are on side chains (are unspendable) are included.
      */
     public synchronized Set<Transaction> getTransactions(boolean includeDead, boolean includeInactive) {
         Set<Transaction> all = new HashSet<Transaction>();
@@ -871,7 +864,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         onlyPending.removeAll(pendingInactive);
         onlyInactive.addAll(inactive.values());
         onlyInactive.removeAll(pendingInactive);
-
+        
         Set<WalletTransaction> all = new HashSet<WalletTransaction>();
 
         addWalletTransactionsToSet(all, Pool.UNSPENT, unspent.values());
@@ -883,13 +876,13 @@ public class Wallet implements Serializable, IsMultiBitClass {
         return all;
     }
 
-    private static synchronized void addWalletTransactionsToSet(Set<WalletTransaction> txs, Pool poolType,
-            Collection<Transaction> pool) {
+    private static synchronized void addWalletTransactionsToSet(Set<WalletTransaction> txs,
+            Pool poolType, Collection<Transaction> pool) {
         for (Transaction tx : pool) {
             txs.add(new WalletTransaction(poolType, tx));
         }
     }
-
+    
     public synchronized void addWalletTransaction(WalletTransaction wtx) {
         switch (wtx.getPool()) {
         case UNSPENT:
@@ -924,21 +917,19 @@ public class Wallet implements Serializable, IsMultiBitClass {
     }
 
     /**
-     * Returns an list of N transactions, ordered by increasing age.
-     * Transactions on side chains are not included. Dead transactions
-     * (overridden by double spends) are optionally included.
-     * <p>
+     * Returns an list of N transactions, ordered by increasing age. Transactions on side chains are not included.
+     * Dead transactions (overridden by double spends) are optionally included. <p>
      * <p/>
-     * Note: the current implementation is O(num transactions in wallet).
-     * Regardless of how many transactions are requested, the cost is always the
-     * same. In future, requesting smaller numbers of transactions may be faster
+     * Note: the current implementation is O(num transactions in wallet). Regardless of how many transactions are
+     * requested, the cost is always the same. In future, requesting smaller numbers of transactions may be faster
      * depending on how the wallet is implemented (eg if backed by a database).
      */
     public synchronized List<Transaction> getRecentTransactions(int numTransactions, boolean includeDead) {
         assert numTransactions >= 0;
         // Firstly, put all transactions into an array.
-        int size = getPoolSize(WalletTransaction.Pool.UNSPENT) + getPoolSize(WalletTransaction.Pool.SPENT)
-                + getPoolSize(WalletTransaction.Pool.PENDING);
+        int size = getPoolSize(WalletTransaction.Pool.UNSPENT) +
+                getPoolSize(WalletTransaction.Pool.SPENT) +
+                getPoolSize(WalletTransaction.Pool.PENDING);
         if (numTransactions > size || numTransactions == 0) {
             numTransactions = size;
         }
@@ -958,8 +949,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
     }
 
     /**
-     * Returns a transaction object given its hash, if it exists in this wallet,
-     * or null otherwise.
+     * Returns a transaction object given its hash, if it exists in this wallet, or null otherwise.
      */
     public synchronized Transaction getTransaction(Sha256Hash hash) {
         Transaction tx;
@@ -977,10 +967,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
     }
 
     /**
-     * Deletes transactions which appeared above the given block height from the
-     * wallet, but does not touch the keys. This is useful if you have some keys
-     * and wish to replay the block chain into the wallet in order to pick them
-     * up.
+     * Deletes transactions which appeared above the given block height from the wallet, but does not touch the keys.
+     * This is useful if you have some keys and wish to replay the block chain into the wallet in order to pick them up.
      */
     public synchronized void clearTransactions(int fromHeight) {
         if (fromHeight == 0) {
@@ -1017,42 +1005,37 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
     synchronized int getPoolSize(WalletTransaction.Pool pool) {
         switch (pool) {
-        case UNSPENT:
-            return unspent.size();
-        case SPENT:
-            return spent.size();
-        case PENDING:
-            return pending.size();
-        case INACTIVE:
-            return inactive.size();
-        case DEAD:
-            return dead.size();
-        case ALL:
-            return unspent.size() + spent.size() + pending.size() + inactive.size() + dead.size();
+            case UNSPENT:
+                return unspent.size();
+            case SPENT:
+                return spent.size();
+            case PENDING:
+                return pending.size();
+            case INACTIVE:
+                return inactive.size();
+            case DEAD:
+                return dead.size();
+            case ALL:
+                return unspent.size() + spent.size() + pending.size() + inactive.size() + dead.size();
         }
         throw new RuntimeException("Unreachable");
     }
 
     /**
-     * Statelessly creates a transaction that sends the given number of
-     * nanocoins to address. The change is sent to
-     * {@link Wallet#getChangeAddress()}, so you must have added at least one
-     * key.
-     * <p>
+     * Statelessly creates a transaction that sends the given number of nanocoins to address. The change is sent to
+     * {@link Wallet#getChangeAddress()}, so you must have added at least one key.<p>
      * <p/>
-     * This method is stateless in the sense that calling it twice with the same
-     * inputs will result in two Transaction objects which are equal. The wallet
-     * is not updated to track its pending status or to mark the coins as spent
-     * until commitTx is called on the result.
+     * This method is stateless in the sense that calling it twice with the same inputs will result in two
+     * Transaction objects which are equal. The wallet is not updated to track its pending status or to mark the
+     * coins as spent until commitTx is called on the result.
      */
     public synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee) {
         return createSend(address, nanocoins, fee, getChangeAddress());
     }
 
     /**
-     * Sends coins to the given address but does not broadcast the resulting
-     * pending transaction. It is still stored in the wallet, so when the wallet
-     * is added to a {@link PeerGroup} or {@link Peer} the transaction will be
+     * Sends coins to the given address but does not broadcast the resulting pending transaction. It is still stored
+     * in the wallet, so when the wallet is added to a {@link PeerGroup} or {@link Peer} the transaction will be
      * announced to the network.
      * 
      * @param to
@@ -1069,9 +1052,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         try {
             commitTx(tx);
         } catch (VerificationException e) {
-            throw new RuntimeException(e); // Cannot happen unless there's a
-                                           // bug, as we just created this
-                                           // ourselves.
+            throw new RuntimeException(e);  // Cannot happen unless there's a bug, as we just created this ourselves.
         }
         return tx;
     }
@@ -1789,6 +1770,15 @@ public class Wallet implements Serializable, IsMultiBitClass {
                 i--;
             }
         }
+    }
+
+    private void invokeOnTransactionConfidenceChanged(final Transaction tx) {
+        EventListenerInvoker.invoke(eventListeners, new EventListenerInvoker<WalletEventListener>() {
+            @Override
+            public void invoke(WalletEventListener listener) {
+                listener.onTransactionConfidenceChanged(Wallet.this, tx);
+            }
+        });
     }
 
     /**

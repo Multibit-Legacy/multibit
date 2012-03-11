@@ -77,7 +77,6 @@ public class FileHandler {
         rememberFileSizesAndLastModified(walletFile, walletInfo);
 
         perWalletModelData.setDirty(false);
-        perWalletModelData.setTransactionDirty(false);
 
         return perWalletModelData;
     }
@@ -106,7 +105,7 @@ public class FileHandler {
 
             // save the perWalletModelData if it is dirty or if forceWrite is
             // true
-            if (perWalletModelData.isDirty() || perWalletModelData.isTransactionDirty() || forceWrite) {
+            if (perWalletModelData.isDirty() || forceWrite) {
                 // check dates and sizes of files
                 boolean filesHaveChanged = haveFilesChanged(perWalletModelData);
 
@@ -134,7 +133,6 @@ public class FileHandler {
 
                         // the perWalletModelData is no longer dirty
                         perWalletModelData.setDirty(false);
-                        perWalletModelData.setTransactionDirty(false);
                     }
                 } else {
                     // write to backup files
@@ -172,7 +170,6 @@ public class FileHandler {
 
                     // the perWalletModelData is no longer dirty
                     perWalletModelData.setDirty(false);
-                    perWalletModelData.setTransactionDirty(false);
                 }
             }
         } catch (IOException e) {
