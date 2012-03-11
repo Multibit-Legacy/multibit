@@ -1,5 +1,13 @@
 MultiBit release notes.
 
+12 Mar 2012 Version 0.3.0Beta6
+Enhancements
++  Updated transaction status icons with "circle filling" theme.
++  Added transaction detail dialog from right click on transaction
++  Added progress bar for block downloads
++  Fix for issue 15 - use of commas in wallet description
+
+
 05 Mar 2012 Version 0.3.0Beta5
 Enhancements
 +  Encryption of private key export file.
