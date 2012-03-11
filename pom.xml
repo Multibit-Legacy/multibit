@@ -5,7 +5,7 @@
   <artifactId>multibit</artifactId>
   <version>0.3.0-beta6</version>
   <name>MultiBit</name>
-  <description>A Java swing client for bitcoin</description>
+  <description>A Java Swing client for bitcoin</description>
   <url>http://www.multibit.org</url>
   <!--
 

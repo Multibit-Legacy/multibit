@@ -51,10 +51,10 @@ public class ShowTransactionDetailsAction extends AbstractAction {
     }
 
     /**
-     * show the send bitcoin confirm dialog
+     * show the show transaction details dialog
      */
     public void actionPerformed(ActionEvent e) {
-            TransactionDetailsDialog transactionDetailsDialog = new TransactionDetailsDialog(controller, mainFrame, rowTableData);
-            transactionDetailsDialog.setVisible(true);
+        final TransactionDetailsDialog transactionDetailsDialog = new TransactionDetailsDialog(controller, mainFrame, rowTableData);
+        transactionDetailsDialog.setVisible(true);
     }
 }
