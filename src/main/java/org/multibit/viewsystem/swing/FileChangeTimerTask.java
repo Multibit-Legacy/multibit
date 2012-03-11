@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.TimerTask;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.file.FileHandler;
 import org.multibit.model.PerWalletModelData;
 
 /**
@@ -32,10 +31,9 @@ import org.multibit.model.PerWalletModelData;
 public class FileChangeTimerTask extends TimerTask {
 
     public static final int DEFAULT_REPEAT_RATE = 120000; // milliseconds
-    
+
     private final MultiBitController controller;
     private final MultiBitFrame mainFrame;
-    private final FileHandler fileHandler;
 
     /**
      * Constructs the object, sets the string to be output in function run()
@@ -45,25 +43,31 @@ public class FileChangeTimerTask extends TimerTask {
     public FileChangeTimerTask(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
-        fileHandler = new FileHandler(controller);
     }
 
     /**
      * When the timer executes, this code is run.
      */
     public void run() {
-        // see if the wallet files have changed
+        // see if the wallet files have changed- save them if they have
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopModelData : perWalletModelDataList) {
-                boolean haveFilesChanged = fileHandler.haveFilesChanged(loopModelData);
-                if (haveFilesChanged) {
-                    boolean previousFilesHaveBeenChanged = loopModelData.isFilesHaveBeenChangedByAnotherProcess();
-                    loopModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-                    if (!previousFilesHaveBeenChanged) {
-                        // only fire once, when change happens
-                        controller.fireFilesHaveBeenChangedByAnotherProcess(loopModelData);
+                if (controller.getFileHandler() != null) {
+                    boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(loopModelData);
+                    if (haveFilesChanged) {
+                        boolean previousFilesHaveBeenChanged = loopModelData.isFilesHaveBeenChangedByAnotherProcess();
+                        loopModelData.setFilesHaveBeenChangedByAnotherProcess(true);
+                        if (!previousFilesHaveBeenChanged) {
+                            // only fire once, when change happens
+                            controller.fireFilesHaveBeenChangedByAnotherProcess(loopModelData);
+                        }
+                    } else {
+                        // see if they are dirty - write if so
+                        if (loopModelData.isDirty()) {
+                            controller.getFileHandler().savePerWalletModelData(loopModelData, false);
+                        }
                     }
                 }
             }

@@ -507,8 +507,11 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     /**
      * Update download status with a message that can clear automatically
-     * @param newStatusText The new status string
-     * @param clearAutomatically Clear automatically if true
+     * 
+     * @param newStatusText
+     *            The new status string
+     * @param clearAutomatically
+     *            Clear automatically if true
      */
     public void updateStatusLabel(String newStatusText, boolean clearAutomatically) {
         for (ViewSystem viewSystem : viewSystems) {
@@ -518,8 +521,11 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     /**
      * Update download status with percentage task complete (for sync messages)
-     * @param newStatusText The new status string
-     * @param percent Percent sync is complete
+     * 
+     * @param newStatusText
+     *            The new status string
+     * @param percent
+     *            Percent sync is complete
      */
     public void updateStatusLabel(String newStatusText, double percentComplete) {
         for (ViewSystem viewSystem : viewSystems) {
@@ -538,18 +544,67 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+        List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
+        for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+            try {
+                if (loopPerWalletModelData.getWallet().isTransactionRelevant(transaction, true)) {
+                    loopPerWalletModelData.setDirty(true);
+                    log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
+                }
+            } catch (ScriptException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
         }
     }
 
     public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+        List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
+        for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+            try {
+                if (loopPerWalletModelData.getWallet().isTransactionRelevant(transaction, true)) {
+                    loopPerWalletModelData.setDirty(true);
+                    log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
+                }
+            } catch (ScriptException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsSent(wallet, transaction, prevBalance, newBalance);
         }
     }
 
+    public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
+        List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
+        for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+            try {
+                if (loopPerWalletModelData.getWallet().isTransactionRelevant(transaction, true)) {
+                    loopPerWalletModelData.setDirty(true);
+                    log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
+                }
+            } catch (ScriptException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        for (ViewSystem viewSystem : viewSystems) {
+            viewSystem.onTransactionConfidenceChanged(wallet, transaction);
+        }
+    }
+
     public void onReorganise(Wallet wallet) {
+        List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
+        for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+            if (loopPerWalletModelData.getWallet().equals(wallet)) {
+                loopPerWalletModelData.setDirty(true);
+                log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
+            }
+        }
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onReorganize(wallet);
         }
@@ -715,7 +770,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     @Override
     public void onTransaction(Peer peer, Transaction transaction) {
-        // loop through all the wallets, seeing if the transaction is relevant and adding them as pending if so
+        // loop through all the wallets, seeing if the transaction is relevant
+        // and adding them as pending if so
         if (transaction != null) {
             try {
                 java.util.List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
@@ -723,11 +779,13 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
                 if (perWalletModelDataList != null) {
                     for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
                         Wallet loopWallet = perWalletModelData.getWallet();
-                        if (loopWallet.getTransaction(transaction.getHash()) == null) {
-                            if (loopWallet.isTransactionRelevant(transaction, true)) {
+                        if (loopWallet.isTransactionRelevant(transaction, true)) {
+                            // the perWalletModelData is marked as dirty
+                            perWalletModelData.setDirty(true);
+                            if (loopWallet.getTransaction(transaction.getHash()) == null) {
                                 log.debug("MultiBit adding a new pending transaction for the wallet '"
                                         + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());
-                                    loopWallet.receivePending(transaction);
+                                loopWallet.receivePending(transaction);
                             }
                         }
                     }

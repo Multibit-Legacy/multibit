@@ -386,8 +386,7 @@ public class MultiBitModel {
 
                 @Override
                 public void onTransactionConfidenceChanged(Wallet wallet, Transaction tx) {
-                    // TODO Auto-generated method stub
-                    
+                   controller.onTransactionConfidenceChanged(wallet, tx); 
                 }
             });
         }

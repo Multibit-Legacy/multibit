@@ -61,22 +61,15 @@ public class ExitAction extends AbstractAction {
             mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         }
         // save all the wallets and put their filenames in the user preferences
-        if (controller.getModel().getPerWalletModelDataList() != null) {
-            List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
-
-            int numberOfWallets = perWalletModelDataList.size();
-            if (numberOfWallets > 0) {
-                for (int i = 1; i <= numberOfWallets; i++) {
-                    PerWalletModelData perWalletModelData = perWalletModelDataList.get(i - 1);
-                    if (perWalletModelData.getWalletFilename() != null) {
-                        controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
-                    }
-                }
+        List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+        if (perWalletModelDataList != null) {
+            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+                controller.getFileHandler().savePerWalletModelData(loopPerWalletModelData, true);
             }
         }
         // write the user properties
         log.debug("Saving user preferences ...");
-        //controller.updateStatusLabel("Saving user preferences ...");
+        // controller.updateStatusLabel("Saving user preferences ...");
         controller.getFileHandler().writeUserPreferences();
 
         log.debug("Shutting down Bitcoin URI checker ...");
@@ -86,10 +79,10 @@ public class ExitAction extends AbstractAction {
         if (mainFrame != null) {
             mainFrame.setVisible(false);
         }
-        
+
         if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
             log.debug("Closing Bitcoin network connection...");
-            //controller.updateStatusLabel("Closing Bitcoin network connection...");
+            // controller.updateStatusLabel("Closing Bitcoin network connection...");
             @SuppressWarnings("rawtypes")
             SwingWorker worker = new SwingWorker() {
                 @Override
@@ -104,7 +97,7 @@ public class ExitAction extends AbstractAction {
         if (mainFrame != null) {
             mainFrame.dispose();
         }
-        
+
         System.exit(0);
     }
 }
