@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.file;
+package org.multibit.model;
 
 /**
  * <p>Exception to provide the following to {@link WalletInfo}:</p>
  * <ul>
- * <li>Provision of wallet info loading and saving messages</li>
+ * <li>Provision of wallet info loading and saving error messages</li>
  * </ul>
  * <p>This base exception acts as a general failure mode not attributable to a specific cause (other than
  * that reported in the exception message). Since this is in English, it may not be worth reporting directly
@@ -26,15 +26,15 @@ package org.multibit.file;
  *
  * @since 0.3.0
  */
-public class PrivateKeysHandlerException extends RuntimeException {
+public class WalletInfoException extends RuntimeException {
 
-    private static final long serialVersionUID = 2372470341301293437L;
+    private static final long serialVersionUID = 2372470349831293437L;
 
-    public PrivateKeysHandlerException(String s) {
+    public WalletInfoException(String s) {
         super(s);
     }
 
-    public PrivateKeysHandlerException(String s, Throwable throwable) {
+    public WalletInfoException(String s, Throwable throwable) {
         super(s, throwable);
     }
 }

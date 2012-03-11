@@ -15,19 +15,19 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import java.util.ArrayList;
+
+import javax.swing.table.DefaultTableModel;
+
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.WalletInfo;
-
-import javax.swing.table.DefaultTableModel;
-import java.util.Vector;
 
 public class AddressBookTableModel extends DefaultTableModel {
 
     private static final long serialVersionUID = -937886012851116208L;
 
-    // TODO Consider an ArrayList if possible
-    private Vector<String> headers = new Vector<String>();
+    private ArrayList<String> headers = new ArrayList<String>();
 
     private final String[] tableHeaderKeys = new String[] { "addressBookTableModel.labelColumnHeader",
             "addressBookTableModel.addressColumnHeader" };
@@ -80,7 +80,7 @@ public class AddressBookTableModel extends DefaultTableModel {
             return null;
         }
 
-        Vector<AddressBookData> addresses;
+        ArrayList<AddressBookData> addresses;
         if (isReceiving) {
             addresses = walletInfo.getReceivingAddresses();
         } else {
@@ -129,7 +129,7 @@ public class AddressBookTableModel extends DefaultTableModel {
             return -1;
         }
 
-        Vector<AddressBookData> addresses;
+        ArrayList<AddressBookData> addresses;
         if (isReceiving) {
             addresses = walletInfo.getReceivingAddresses();
         } else {
@@ -160,7 +160,7 @@ public class AddressBookTableModel extends DefaultTableModel {
             return null;
         }
 
-        Vector<AddressBookData> addresses;
+        ArrayList<AddressBookData> addresses;
         if (isReceiving) {
             addresses = walletInfo.getReceivingAddresses();
         } else {
@@ -182,7 +182,7 @@ public class AddressBookTableModel extends DefaultTableModel {
             return;
         }
 
-        Vector<AddressBookData> addresses;
+        ArrayList<AddressBookData> addresses;
         if (isReceiving) {
             addresses = walletInfo.getReceivingAddresses();
         } else {

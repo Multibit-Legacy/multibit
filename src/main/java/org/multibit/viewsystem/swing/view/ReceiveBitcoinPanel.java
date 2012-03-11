@@ -21,7 +21,7 @@ import java.awt.FlowLayout;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -366,7 +366,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         if (pickFirstReceivingAddress) {
             WalletInfo addressBook = controller.getModel().getActiveWalletWalletInfo();
             if (addressBook != null) {
-                Vector<AddressBookData> receivingAddresses = addressBook.getReceivingAddresses();
+                ArrayList<AddressBookData> receivingAddresses = addressBook.getReceivingAddresses();
                 if (receivingAddresses != null) {
                     if (receivingAddresses.iterator().hasNext()) {
                         AddressBookData addressBookData = receivingAddresses.iterator().next();
