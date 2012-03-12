@@ -619,34 +619,52 @@ public class Wallet implements Serializable, IsMultiBitClass {
                 //     \-> spent by C [chain]
                 Transaction doubleSpent = input.getOutpoint().fromTx;   // == A
                 assert doubleSpent != null;
-                int index = (int) input.getOutpoint().getIndex();
-                TransactionOutput output = doubleSpent.getOutputs().get(index);
-                TransactionInput spentBy = output.getSpentBy();
-                assert spentBy != null;
-                Transaction connected = spentBy.getParentTransaction();
-                assert connected != null;
-                if (fromChain) {
-                    // This must have overridden a pending tx, or the block is bad (contains transactions
-                    // that illegally double spend: should never occur if we are connected to an honest node).
-                    if (pending.containsKey(connected.getHash())) {
-                        log.warn("Saw double spend from chain override pending tx {}", connected.getHashAsString());
-                        log.warn("  <-pending ->dead");
-                        pending.remove(connected.getHash());
-                        dead.put(connected.getHash(), connected);
-                        // Now forcibly change the connection.
-                        input.connect(unspent, true);
-                        // Inform the [tx] event listeners of the newly dead tx. This sets confidence type also.
-                        connected.getConfidence().setOverridingTransaction(tx);
-                        invokeOnTransactionConfidenceChanged(connected);
+                if (doubleSpent != null) {
+                    int index = (int) input.getOutpoint().getIndex();
+                    TransactionOutput output = doubleSpent.getOutputs().get(index);
+                    TransactionInput spentBy = output.getSpentBy();
+                    assert spentBy != null;
+                    if (spentBy != null) {
+                        Transaction connected = spentBy.getParentTransaction();
+                        assert connected != null;
+                        if (connected != null) {
+                            if (fromChain) {
+                                // This must have overridden a pending tx, or
+                                // the block
+                                // is bad (contains transactions
+                                // that illegally double spend: should never
+                                // occur if we
+                                // are connected to an honest node).
+                                if (pending.containsKey(connected.getHash())) {
+                                    log.warn("Saw double spend from chain override pending tx {}", connected.getHashAsString());
+                                    log.warn("  <-pending ->dead");
+                                    pending.remove(connected.getHash());
+                                    dead.put(connected.getHash(), connected);
+                                    // Now forcibly change the connection.
+                                    input.connect(unspent, true);
+                                    // Inform the [tx] event listeners of the
+                                    // newly dead
+                                    // tx. This sets confidence type also.
+                                    connected.getConfidence().setOverridingTransaction(tx);
+                                    invokeOnTransactionConfidenceChanged(connected);
+                                }
+                            } else {
+                                // A pending transaction that tried to double
+                                // spend our
+                                // coins - we log and ignore it, because either
+                                // 1) The double-spent tx is confirmed and thus
+                                // this tx
+                                // has no effect .... or
+                                // 2) Both txns are pending, neither has
+                                // priority.
+                                // Miners will decide in a few minutes which
+                                // won.
+                                log.warn("Saw double spend from another pending transaction, ignoring tx {}", tx.getHashAsString());
+                                log.warn("  offending input is input {}", i);
+                                return;
+                            }
+                        }
                     }
-                } else {
-                    // A pending transaction that tried to double spend our coins - we log and ignore it, because either
-                    // 1) The double-spent tx is confirmed and thus this tx has no effect .... or
-                    // 2) Both txns are pending, neither has priority. Miners will decide in a few minutes which won.
-                    log.warn("Saw double spend from another pending transaction, ignoring tx {}",
-                             tx.getHashAsString());
-                    log.warn("  offending input is input {}", i);
-                    return;
                 }
             } else if (result == TransactionInput.ConnectionResult.SUCCESS) {
                 // Otherwise we saw a transaction spend our coins, but we didn't try and spend them ourselves yet.
