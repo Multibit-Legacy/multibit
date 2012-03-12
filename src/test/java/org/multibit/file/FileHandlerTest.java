@@ -57,17 +57,12 @@ public class FileHandlerTest extends TestCase {
         File directory = new File(".");
         String currentPath = directory.getAbsolutePath();
 
-        String walletName = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator + WALLET_TESTDATA_DIRECTORY + File.separator
-                + WALLET_TEST1;
+        String walletName = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator
+                + WALLET_TESTDATA_DIRECTORY + File.separator + WALLET_TEST1;
 
         File walletFile = new File(walletName);
-        try {
-            walletFile.createNewFile();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            log.error(e.getMessage(), e);
+        walletFile.createNewFile();
 
-        }
         assertTrue(walletFile.exists());
         PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
 
@@ -90,17 +85,13 @@ public class FileHandlerTest extends TestCase {
         File directory = new File(".");
         String currentPath = directory.getAbsolutePath();
 
-        String walletName = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator + WALLET_TESTDATA_DIRECTORY + File.separator
-                + WALLET_TEST2;
+        String walletName = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator
+                + WALLET_TESTDATA_DIRECTORY + File.separator + WALLET_TEST2;
 
         File walletFile = new File(walletName);
-        try {
-            walletFile.createNewFile();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            log.error(e.getMessage(), e);
 
-        }
+        walletFile.createNewFile();
+
         assertTrue(walletFile.exists());
         PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
 

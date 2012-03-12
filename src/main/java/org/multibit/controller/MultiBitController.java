@@ -543,7 +543,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         }
     }
 
-    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+    private void checkForDirtyWallets(Transaction transaction) {
         List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
         for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
             try {
@@ -552,46 +552,30 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
                     log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
                 }
             } catch (ScriptException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.debug(e.getMessage());
             }
         }
+    }
+    
+    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+        checkForDirtyWallets(transaction);
+            
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
         }
     }
 
     public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
-        for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
-            try {
-                if (loopPerWalletModelData.getWallet().isTransactionRelevant(transaction, true)) {
-                    loopPerWalletModelData.setDirty(true);
-                    log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
-                }
-            } catch (ScriptException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
+        checkForDirtyWallets(transaction);
+        
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsSent(wallet, transaction, prevBalance, newBalance);
         }
     }
 
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
-        List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
-        for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
-            try {
-                if (loopPerWalletModelData.getWallet().isTransactionRelevant(transaction, true)) {
-                    loopPerWalletModelData.setDirty(true);
-                    log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
-                }
-            } catch (ScriptException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
+        checkForDirtyWallets(transaction);
+        
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onTransactionConfidenceChanged(wallet, transaction);
         }

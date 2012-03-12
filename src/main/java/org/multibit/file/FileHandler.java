@@ -93,8 +93,8 @@ public class FileHandler {
     public void savePerWalletModelData(PerWalletModelData perWalletModelData, boolean forceWrite) {
         // WARNING: This wallet.toString() puts private keys in the log !
 
-        //log.info("Wallet details for wallet file = " +
-        //perWalletModelData.getWalletFilename() + "\n"
+        // log.info("Wallet details for wallet file = " +
+        // perWalletModelData.getWalletFilename() + "\n"
         // + perWalletModelData.getWallet().toString());
 
         try {
@@ -214,9 +214,11 @@ public class FileHandler {
                         haveFilesChanged = true;
                     }
                 }
-                log.debug("Result of check of whether files have changed for wallet filename "
-                        + perWalletModelData.getWalletFilename() + " was " + haveFilesChanged + ".");
-
+                if (haveFilesChanged) {
+                    log.debug("Result of check of whether files have changed for wallet filename "
+                            + perWalletModelData.getWalletFilename() + " was " + haveFilesChanged + ".");
+                }
+                
                 // create backup filenames early if the files have changed
                 // (it is then available in the tooltip)
                 if (haveFilesChanged && perWalletModelData.getWalletBackupFilename() == null) {
@@ -291,7 +293,7 @@ public class FileHandler {
                 }
             }
         }
-        
+
         // write the user preference properties
         Properties userPreferences = controller.getModel().getAllUserPreferences();
         OutputStream outputStream;
@@ -314,7 +316,7 @@ public class FileHandler {
             log.error(e.getMessage(), e);
         }
     }
-    
+
     public void writeUserPreferences() {
         writeUserPreferences(controller);
     }

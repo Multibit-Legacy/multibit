@@ -64,7 +64,7 @@ public class ExitAction extends AbstractAction {
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
-                controller.getFileHandler().savePerWalletModelData(loopPerWalletModelData, true);
+                controller.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
             }
         }
         // write the user properties
