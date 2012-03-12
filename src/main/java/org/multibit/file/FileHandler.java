@@ -74,9 +74,10 @@ public class FileHandler {
         WalletInfo walletInfo = new WalletInfo(walletFilename);
         perWalletModelData.setWalletInfo(walletInfo);
 
-        rememberFileSizesAndLastModified(walletFile, walletInfo);
-
-        perWalletModelData.setDirty(false);
+        synchronized (walletInfo) {
+            rememberFileSizesAndLastModified(walletFile, walletInfo);
+            perWalletModelData.setDirty(false);
+        }
 
         return perWalletModelData;
     }
@@ -96,26 +97,25 @@ public class FileHandler {
         // log.info("Wallet details for wallet file = " +
         // perWalletModelData.getWalletFilename() + "\n"
         // + perWalletModelData.getWallet().toString());
+ 
+        if (perWalletModelData == null) {
+            // nothing to do
+            return;
+        }
+        
+        File walletFile = new File(perWalletModelData.getWalletFilename());
+        WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+        
+        synchronized (walletInfo) {
+            try {
+                // save the perWalletModelData if it is dirty or if forceWrite is true
+                if (perWalletModelData.isDirty() || forceWrite) {
+                    // check dates and sizes of files
+                    boolean filesHaveChanged = haveFilesChanged(perWalletModelData);
 
-        try {
-            if (perWalletModelData == null) {
-                // nothing to do
-                return;
-            }
+                    if (!filesHaveChanged || forceWrite) {
+                        // normal write of data
 
-            // save the perWalletModelData if it is dirty or if forceWrite is
-            // true
-            if (perWalletModelData.isDirty() || forceWrite) {
-                // check dates and sizes of files
-                boolean filesHaveChanged = haveFilesChanged(perWalletModelData);
-
-                if (!filesHaveChanged || forceWrite) {
-                    // normal write of data
-
-                    File walletFile = new File(perWalletModelData.getWalletFilename());
-                    WalletInfo walletInfo = perWalletModelData.getWalletInfo();
-
-                    synchronized (walletInfo) {
                         // save the companion wallet info
                         if (walletInfo != null) {
                             walletInfo.writeToFile();
@@ -133,47 +133,45 @@ public class FileHandler {
 
                         // the perWalletModelData is no longer dirty
                         perWalletModelData.setDirty(false);
-                    }
-                } else {
-                    // write to backup files
-                    File walletFile = new File(perWalletModelData.getWalletFilename());
-                    WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+                    } else {
+                        // write to backup files
+                        // work out / reuse the backup file names
+                        String walletInfoBackupFilename = null;
+                        String walletBackupFilename = null;
 
-                    // work out / reuse the backup file names
-                    String walletInfoBackupFilename = null;
-                    String walletBackupFilename = null;
+                        if (perWalletModelData.getWalletBackupFilename() != null) {
+                            walletBackupFilename = perWalletModelData.getWalletBackupFilename();
+                        }
+                        if (perWalletModelData.getWalletInfoBackupFilename() != null) {
+                            walletInfoBackupFilename = perWalletModelData.getWalletInfoBackupFilename();
+                        }
 
-                    if (perWalletModelData.getWalletBackupFilename() != null) {
-                        walletBackupFilename = perWalletModelData.getWalletBackupFilename();
-                    }
-                    if (perWalletModelData.getWalletInfoBackupFilename() != null) {
-                        walletInfoBackupFilename = perWalletModelData.getWalletInfoBackupFilename();
+                        if (walletBackupFilename == null) {
+                            walletBackupFilename = createBackupFilename(walletFile, false);
+                            perWalletModelData.setWalletBackupFilename(walletBackupFilename);
+
+                            walletInfoBackupFilename = createBackupFilename(
+                                    new File(WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename())), true);
+                            perWalletModelData.setWalletInfoBackupFilename(walletInfoBackupFilename);
+                        }
+
+                        // save the companion wallet info
+                        if (walletInfo != null) {
+                            walletInfo.writeToFile(walletInfoBackupFilename);
+                        }
+                        // save the wallet file
+                        if (perWalletModelData.getWallet() != null) {
+                            perWalletModelData.getWallet().saveToFile(new File(walletBackupFilename));
+                        }
+
+                        // the perWalletModelData is no longer dirty
+                        perWalletModelData.setDirty(false);
                     }
 
-                    if (walletBackupFilename == null) {
-                        walletBackupFilename = createBackupFilename(walletFile, false);
-                        perWalletModelData.setWalletBackupFilename(walletBackupFilename);
-
-                        walletInfoBackupFilename = createBackupFilename(
-                                new File(WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename())), true);
-                        perWalletModelData.setWalletInfoBackupFilename(walletInfoBackupFilename);
-                    }
-
-                    // save the companion wallet info
-                    if (walletInfo != null) {
-                        walletInfo.writeToFile(walletInfoBackupFilename);
-                    }
-                    // save the wallet file
-                    if (perWalletModelData.getWallet() != null) {
-                        perWalletModelData.getWallet().saveToFile(new File(walletBackupFilename));
-                    }
-
-                    // the perWalletModelData is no longer dirty
-                    perWalletModelData.setDirty(false);
                 }
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
             }
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
         }
         return;
     }
@@ -218,7 +216,7 @@ public class FileHandler {
                     log.debug("Result of check of whether files have changed for wallet filename "
                             + perWalletModelData.getWalletFilename() + " was " + haveFilesChanged + ".");
                 }
-                
+
                 // create backup filenames early if the files have changed
                 // (it is then available in the tooltip)
                 if (haveFilesChanged && perWalletModelData.getWalletBackupFilename() == null) {
@@ -268,7 +266,7 @@ public class FileHandler {
         walletInfo.put(MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED, "" + walletInfoFileLastModified);
 
         // TODO Fix this - create a toString()
-        log.debug("Wallet filename " + walletFilename + " , " + MultiBitModel.WALLET_FILE_SIZE + " " + walletFileSize + " ,"
+        log.debug("rememberFileSizesAndLastModified: Wallet filename " + walletFilename + " , " + MultiBitModel.WALLET_FILE_SIZE + " " + walletFileSize + " ,"
                 + MultiBitModel.WALLET_FILE_LAST_MODIFIED + " " + walletFileLastModified + " ,"
                 + MultiBitModel.WALLET_INFO_FILE_SIZE + " " + walletInfoFileSize + " ,"
                 + MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED + " " + walletInfoFileLastModified);

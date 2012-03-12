@@ -5,6 +5,7 @@ Enhancements
 +  Updated transaction status icons with "circle filling" theme.
 +  Added transaction detail dialog from right click on transaction
 +  Added progress bar for block downloads
++  Autosaves dirty wallets every 120 seconds
 +  Fix for issue 15 - use of commas in wallet description
 
 

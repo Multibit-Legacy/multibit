@@ -160,18 +160,6 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
     }
 
     public void navigateAwayFromView() {
-        // save any changes to any of the wallets (except those that other
-        // processes are dealing with)
-        List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
-        if (perWalletModelDataList != null) {
-            for (PerWalletModelData loopModelData : perWalletModelDataList) {
-                if (loopModelData != null) {
-                    if (loopModelData.isDirty() && !loopModelData.isFilesHaveBeenChangedByAnotherProcess()) {
-                        controller.getFileHandler().savePerWalletModelData(loopModelData, false);
-                    }
-                }
-            }
-        }
     }
 
     private void initUI() {

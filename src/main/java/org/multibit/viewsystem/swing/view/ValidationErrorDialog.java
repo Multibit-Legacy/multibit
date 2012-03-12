@@ -192,7 +192,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
         FontMetrics fontMetrics = optionPane.getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         int minimumHeight = fontMetrics.getHeight() * rows + HEIGHT_DELTA;
-        log.debug("longest row = '" + longestRow + "'");
+        //log.debug("longest row = '" + longestRow + "'");
         int minimumWidth = fontMetrics.stringWidth(longestRow) + WIDTH_DELTA;
         setMinimumSize(new Dimension(minimumWidth, minimumHeight));
         positionDialogRelativeToParent(this, 0.5D, 0.47D);

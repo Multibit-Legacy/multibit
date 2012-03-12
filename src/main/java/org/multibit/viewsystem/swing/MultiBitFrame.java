@@ -865,16 +865,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         Wallet loopWallet = perWalletModelData.getWallet();
                         if (loopWallet.isTransactionRelevant(transaction, true)) {
                             // the perWalletModelData is marked as dirty
-                            perWalletModelData.setDirty(true);
-                            log.debug("Marking wallet '" + perWalletModelData.getWalletFilename() + "' as dirty.");
-
+ 
                             // check to see if the transaction is already in the
                             // wallet
                             if (loopWallet.getTransaction(transaction.getHash()) == null) {
                                 log.debug("processNewCoin is receivingPending");
                                 loopWallet.receivePending(transaction);
                             }
-                            fireDataChanged();
+                            perWalletModelData.setDirty(true);
+                            log.debug("Marking wallet '" + perWalletModelData.getWalletFilename() + "' as dirty.");
+                           fireDataChanged();
                         }
                     } catch (VerificationException e) {
                         e.printStackTrace();
@@ -903,18 +903,17 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
         log.debug("Transaction confidence changed for tx " + transaction.toString());
-        List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
-        for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
-            try {
-                if (loopPerWalletModelData.getWallet().isTransactionRelevant(transaction, true)) {
-                    loopPerWalletModelData.setDirty(true);
-                    log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
-                }
-            } catch (ScriptException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
+//        List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+//        for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+//            try {
+//                if (loopPerWalletModelData.getWallet().isTransactionRelevant(transaction, true)) {
+//                    loopPerWalletModelData.setDirty(true);
+//                    log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
+//                }
+//            } catch (ScriptException e) {
+//                 e.printStackTrace();
+//            }
+//        }
     }
 
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {

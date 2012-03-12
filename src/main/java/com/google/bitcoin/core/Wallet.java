@@ -176,6 +176,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * Uses Java serialization to save the wallet to the given file.
      */
     public synchronized void saveToFile(File f) throws IOException {
+        log.debug("Saving wallet to file " + f.getAbsolutePath());
         FileOutputStream stream = null;
         try {
             stream = new FileOutputStream(f);

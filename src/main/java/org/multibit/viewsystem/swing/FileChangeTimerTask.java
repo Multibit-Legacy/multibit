@@ -20,6 +20,8 @@ import java.util.TimerTask;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TimerTask to detect whether wallet files have been changed by some external
@@ -31,6 +33,8 @@ import org.multibit.model.PerWalletModelData;
 public class FileChangeTimerTask extends TimerTask {
 
     public static final int DEFAULT_REPEAT_RATE = 120000; // milliseconds
+
+    private static Logger log = LoggerFactory.getLogger(FileChangeTimerTask.class);
 
     private final MultiBitController controller;
     private final MultiBitFrame mainFrame;
@@ -49,12 +53,12 @@ public class FileChangeTimerTask extends TimerTask {
      * When the timer executes, this code is run.
      */
     public void run() {
-        // see if the wallet files have changed- save them if they have
-        List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopModelData : perWalletModelDataList) {
                 if (controller.getFileHandler() != null) {
+                    // see if the files have been changed by another process (non MultiBit)
                     boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(loopModelData);
                     if (haveFilesChanged) {
                         boolean previousFilesHaveBeenChanged = loopModelData.isFilesHaveBeenChangedByAnotherProcess();
@@ -63,11 +67,12 @@ public class FileChangeTimerTask extends TimerTask {
                             // only fire once, when change happens
                             controller.fireFilesHaveBeenChangedByAnotherProcess(loopModelData);
                         }
-                    } else {
-                        // see if they are dirty - write if so
-                        if (loopModelData.isDirty()) {
-                            controller.getFileHandler().savePerWalletModelData(loopModelData, false);
-                        }
+                    }
+                    
+                    // see if they are dirty - write out if so
+                    if (loopModelData.isDirty()) {
+                        log.debug("Saving dirty wallet '" + loopModelData.getWalletFilename() + "'");
+                        controller.getFileHandler().savePerWalletModelData(loopModelData, false);
                     }
                 }
             }

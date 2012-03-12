@@ -686,11 +686,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
     @Override
     public void navigateAwayFromView() {
-        // save any changes
-        if (controller.getModel().getActivePerWalletModelData() != null
-                && controller.getModel().getActivePerWalletModelData().isDirty()) {
-            controller.getFileHandler().savePerWalletModelData(controller.getModel().getActivePerWalletModelData(), false);
-        }
     }
 
     protected class QRCodeKeyListener implements KeyListener {

@@ -152,18 +152,21 @@ public class SwatchGenerator {
         // long time0 = (new Date()).getTime();
         String bitcoinURI = "";
         try {
-            Address decodeAddress = new Address(controller.getMultiBitService().getNetworkParameters(), address);
+            Address decodeAddress = null;
+            if (address != null && controller.getMultiBitService() != null && controller.getMultiBitService().getNetworkParameters() != null) {
+                decodeAddress = new Address(controller.getMultiBitService().getNetworkParameters(), address);
+            }
             if (amount != null && !"".equals(amount)) {
                bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amount), label, null);
             } else {
                 bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, null, label, null);                
             }
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
+        } catch (IllegalArgumentException e) {
+            log.warn("The address '" + address + "' could not be converted to a bitcoin address.");
         } catch (AddressFormatException e) {
             log.warn("The address '" + address + "' could not be converted to a bitcoin address.");
-        }  catch (NumberFormatException e) {
-            log.warn("The amount '" + amount + "' could not be converted to Satoshi");
-       }
+        } 
 
         // get a byte matrix for the data
         ByteMatrix matrix;
@@ -389,7 +392,10 @@ public class SwatchGenerator {
         String label = "A longish label xyz";
 
         BufferedImage swatch = swatchGenerator.generateSwatch(address, amount, label);
-        ImageIcon icon = new ImageIcon(swatch);
+        ImageIcon icon = null;
+        if (swatch != null) {
+            icon = new ImageIcon(swatch);
+        }
         JOptionPane.showMessageDialog(null, "", "Swatch Generator 1", JOptionPane.INFORMATION_MESSAGE, icon);
 
         address = "1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v";

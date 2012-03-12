@@ -557,28 +557,25 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         }
     }
     
-    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        checkForDirtyWallets(transaction);
-            
+    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {            
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
         }
+        //checkForDirtyWallets(transaction);
     }
 
-    public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        checkForDirtyWallets(transaction);
-        
+    public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {        
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsSent(wallet, transaction, prevBalance, newBalance);
         }
+        //checkForDirtyWallets(transaction);
     }
 
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
-        checkForDirtyWallets(transaction);
-        
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onTransactionConfidenceChanged(wallet, transaction);
         }
+        checkForDirtyWallets(transaction);        
     }
 
     public void onReorganise(Wallet wallet) {
