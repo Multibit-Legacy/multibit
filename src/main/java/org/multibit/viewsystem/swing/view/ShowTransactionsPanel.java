@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.view;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -507,14 +508,16 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         }
     }
 
-    class PopUpDemo extends JPopupMenu {
+    class TransactionPopUp extends JPopupMenu {
         private static final long serialVersionUID = 1022706046979674798L;
         JMenuItem showTransactionsDetailsMenuItem;
 
         
-        public PopUpDemo(WalletTableData rowTableData) {
+        public TransactionPopUp(WalletTableData rowTableData) {
             Action showTransactionDetailsAction = new ShowTransactionDetailsAction(controller, mainFrame, rowTableData);
             showTransactionsDetailsMenuItem = new JMenuItem(showTransactionDetailsAction);
+            showTransactionsDetailsMenuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+            
             add(showTransactionsDetailsMenuItem);
         }
     }
@@ -546,7 +549,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             
             // get the transaction on the row
             WalletTableData rowTableData = walletTableModel.getRow(rowSorter.convertRowIndexToModel(row));
-            PopUpDemo menu = new PopUpDemo(rowTableData);
+            TransactionPopUp menu = new TransactionPopUp(rowTableData);
             menu.show(e.getComponent(), e.getX(), e.getY());
         }
     }
