@@ -34,7 +34,7 @@ public class GradientPanel extends JPanel {
         Dimension d = this.getSize();
 
         g2d.setPaint(new GradientPaint(0, 0, ColorAndFontConstants.BACKGROUND_COLOR,
-            0, d.height, ColorAndFontConstants.DARK_BACKGROUND_COLOR, true));
+            0, d.height, ColorAndFontConstants.DARK_BACKGROUND_COLOR.brighter(), true));
         g2d.fillRect(0, 0, d.width , d.height);
     }
 }

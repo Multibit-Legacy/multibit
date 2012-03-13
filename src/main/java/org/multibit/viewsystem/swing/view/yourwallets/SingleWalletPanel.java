@@ -241,7 +241,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
             String text = walletDescriptionTextField.getText();
             walletDescriptionTextField.setCaretPosition(text == null ? 0 : text.length());
             perWalletModelData.setWalletDescription(text);
-            mainFrame.setActiveWalletTooltip(new File(perWalletModelData.getWalletFilename()), text);
+ //           mainFrame.setActiveWalletTooltip(new File(perWalletModelData.getWalletFilename()), text);
         }
     }
 
@@ -257,7 +257,6 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
             walletDescriptionTextField.select(0, 0);
             String text = walletDescriptionTextField.getText();
             perWalletModelData.setWalletDescription(text);
-            mainFrame.setActiveWalletTooltip(new File(perWalletModelData.getWalletFilename()), text);
         }
     }
 

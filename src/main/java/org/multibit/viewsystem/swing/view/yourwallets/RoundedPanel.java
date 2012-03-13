@@ -49,11 +49,11 @@ public class RoundedPanel extends JPanel {
     /** Sets if it has an High Quality view */
     protected boolean highQuality = true;
     /** Double values for Horizontal and Vertical radius of corner arcs */
-    protected Dimension arcs = new Dimension(12, 12);
+    protected Dimension arcs = new Dimension(6, 6);
     /** Distance between shadow border and opaque panel border */
-    protected int shadowGap = 4;
+    protected int shadowGap = 3;
     /** The offset of shadow. */
-    protected int shadowOffset = 3;
+    protected int shadowOffset = 2;
     /** The transparency value of shadow. ( 0 - 255) */
     protected int shadowAlpha = 80;
 

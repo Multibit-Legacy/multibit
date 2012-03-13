@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -273,7 +272,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
                 if (loopPerWalletModelData.getWallet() != null) {
                     JPanel outerPanel = new JPanel();
                     outerPanel.setOpaque(false);
-                    outerPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+                    outerPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 0, 3));
                     outerPanel.setLayout(new BorderLayout());
                     SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, controller, mainFrame);
                     outerPanel.add(loopPanel, BorderLayout.CENTER);
