@@ -27,7 +27,6 @@ import java.util.Locale;
 import javax.swing.JPanel;
 
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
-import org.multibit.viewsystem.swing.MultiBitFrame;
 
 /**
  * RoundedPanel code from:

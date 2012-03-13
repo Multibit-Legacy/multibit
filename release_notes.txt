@@ -1,6 +1,6 @@
 MultiBit release notes.
 
-12 Mar 2012 Version 0.3.0Beta6
+13 Mar 2012 Version 0.3.0Beta6
 Enhancements
 +  Updated transaction status icons with "circle filling" theme.
 +  Added transaction detail dialog from right click on transaction

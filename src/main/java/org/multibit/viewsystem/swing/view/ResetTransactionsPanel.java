@@ -62,6 +62,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
                 BorderFactory.createMatteBorder(1, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        setOpaque(false);
 
         this.controller = controller;
 

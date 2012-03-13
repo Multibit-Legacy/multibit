@@ -47,8 +47,8 @@ public enum FontSizer {
             }
         }
 
-        int screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
-        int fontSize = (int) Math.round(unadjustedFontSize * screenResolution / NORMAL_SCREEN_RESOLUTION);
+ //       int screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
+ //       int fontSize = (int) Math.round(unadjustedFontSize * screenResolution / NORMAL_SCREEN_RESOLUTION);
 
         String fontStyleString = controller.getModel().getUserPreference(MultiBitModel.FONT_STYLE);
         int fontStyle = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_STYLE;
@@ -64,7 +64,7 @@ public enum FontSizer {
             fontName = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_NAME;
         }
 
-        Font font = new Font(fontName, fontStyle, fontSize);
+        Font font = new Font(fontName, fontStyle, unadjustedFontSize);
         return font;
     }
     

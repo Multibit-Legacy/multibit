@@ -31,6 +31,7 @@ import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 
 import org.multibit.controller.MultiBitController;
@@ -48,18 +49,16 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
 
     private static final long serialVersionUID = -7110340338285836548L;
 
-    private static final String TYPICAL_DESCRIPTION = "One Quick Brown Fox Description";
+    private static final String TYPICAL_DESCRIPTION = "One Quick Brown Fox";
     private static final int WALLET_WIDTH_DELTA = 20;
-    private static final int WALLET_HEIGHT_DELTA = 40;
+    private static final int WALLET_HEIGHT_DELTA = 30;
 
-    private static final Dimension ABOVE_BASELINE_LEADING_CORNER_PADDING = new Dimension(5, 12);
-    private static final Dimension BELOW_BASELINE_TRAILING_CORNER_PADDING = new Dimension(9, 12);
+    private static final Dimension ABOVE_BASELINE_LEADING_CORNER_PADDING = new Dimension(5, 6);
+    private static final Dimension BELOW_BASELINE_TRAILING_CORNER_PADDING = new Dimension(7, 8);
 
     private PerWalletModelData perWalletModelData;
 
-    // kitten's ear + 8 for better readibility
-    private static final Color BACKGROUND_COLOR_NORMAL = new Color(0xfB, 0xeD, 0xb3);
-
+    private static final Color BACKGROUND_COLOR_NORMAL = (Color)UIManager.get("Button.background");    
     private static final Color BACKGROUND_COLOR_DATA_HAS_CHANGED = new Color(0xff, 0xff, 0xff);
 
     private MultiBitLabel walletFilenameLabel;
@@ -71,6 +70,9 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
 
+    private Dimension largePreferredSize;
+    private Dimension smallPreferredSize;
+    
     public SingleWalletPanel(PerWalletModelData perWalletModelData, MultiBitController controller, MultiBitFrame mainFrame) {
         super(controller.getLocaliser().getLocale());
         this.perWalletModelData = perWalletModelData;
@@ -79,10 +81,12 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         setLayout(new GridBagLayout());
 
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        Dimension preferredSize = new Dimension(fontMetrics.stringWidth(TYPICAL_DESCRIPTION) + WALLET_WIDTH_DELTA,
+        largePreferredSize = new Dimension(fontMetrics.stringWidth(TYPICAL_DESCRIPTION) + WALLET_WIDTH_DELTA,
                 fontMetrics.getHeight() * 3 + WALLET_HEIGHT_DELTA);
-        setMinimumSize(preferredSize);
-        setPreferredSize(preferredSize);
+        smallPreferredSize = new Dimension(fontMetrics.stringWidth(TYPICAL_DESCRIPTION) + WALLET_WIDTH_DELTA,
+                fontMetrics.getHeight() * 2 + WALLET_HEIGHT_DELTA);
+        //setMinimumSize(largePreferredSize);
+        //setPreferredSize(largePreferredSize);
 
         setOpaque(false);
         setFocusable(true);
@@ -106,6 +110,37 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         add(filler1, constraints);
 
+        walletDescriptionTextField = new MultiBitTextField(perWalletModelData.getWalletDescription(), 20, controller);
+        walletDescriptionTextField.setFocusable(true);
+        walletDescriptionTextField.addActionListener(this);
+        walletDescriptionTextField.addFocusListener(this);
+        walletDescriptionTextFieldBorder = walletDescriptionTextField.getBorder();
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        constraints.weightx = 0.92;
+        constraints.weighty = 4;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(walletDescriptionTextField, constraints);
+
+        amountLabel = new BlinkLabel(controller, false);
+        amountLabel.setBackground(BACKGROUND_COLOR_NORMAL);
+        amountLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
+        amountLabel.setText(controller.getLocaliser().bitcoinValueToString4(
+                perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED), true, false));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 2;
+        constraints.weightx = 0.92;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
+        add(amountLabel, constraints);
+
+
         walletFilenameLabel = new MultiBitLabel("", controller);
         walletFilenameLabel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 0));
 
@@ -120,43 +155,13 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         }
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
-        constraints.gridy = 1;
+        constraints.gridy = 3;
         constraints.weightx = 0.92;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         add(walletFilenameLabel, constraints);
-
-        walletDescriptionTextField = new MultiBitTextField(perWalletModelData.getWalletDescription(), 20, controller);
-        walletDescriptionTextField.setFocusable(true);
-        walletDescriptionTextField.addActionListener(this);
-        walletDescriptionTextField.addFocusListener(this);
-        walletDescriptionTextFieldBorder = walletDescriptionTextField.getBorder();
-
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 1;
-        constraints.gridy = 2;
-        constraints.weightx = 0.92;
-        constraints.weighty = 4;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        add(walletDescriptionTextField, constraints);
-
-        amountLabel = new BlinkLabel(controller, false);
-        amountLabel.setBackground(BACKGROUND_COLOR_NORMAL);
-        amountLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
-        amountLabel.setText(controller.getLocaliser().bitcoinValueToString4(
-                perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED), true, false));
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 3;
-        constraints.weightx = 0.92;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
-        add(amountLabel, constraints);
 
         JPanel filler4 = new JPanel();
         filler4.setMinimumSize(BELOW_BASELINE_TRAILING_CORNER_PADDING);
@@ -192,14 +197,21 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         if (!perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
 
             if (selected) {
+                walletFilenameLabel.setVisible(true);
                 walletDescriptionTextField.setEditable(true);
                 walletDescriptionTextField.setBorder(walletDescriptionTextFieldBorder);
                 walletDescriptionTextField.setSelectedTextColor(ColorAndFontConstants.SELECTION_FOREGROUND_COLOR);
                 walletDescriptionTextField.setSelectionColor(ColorAndFontConstants.SELECTION_BACKGROUND_COLOR);
+                //setMinimumSize(largePreferredSize);
+                //setPreferredSize(largePreferredSize);
+
             } else {
+                walletFilenameLabel.setVisible(false);
                 walletDescriptionTextField.setEditable(false);
                 walletDescriptionTextField.setBorder(BorderFactory.createEmptyBorder(5, 7, 5, 5));
                 walletDescriptionTextField.setBackground(BACKGROUND_COLOR_NORMAL);
+                //setMinimumSize(smallPreferredSize);
+                //setPreferredSize(smallPreferredSize);
             }
         }
     }
