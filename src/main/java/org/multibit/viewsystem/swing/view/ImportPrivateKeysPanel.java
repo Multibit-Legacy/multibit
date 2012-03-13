@@ -223,7 +223,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         mainScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.DARK_BACKGROUND_COLOR));
-        mainScrollPane.setOpaque(true);
+        mainScrollPane.setOpaque(false);
         mainScrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         add(mainScrollPane, BorderLayout.CENTER);
