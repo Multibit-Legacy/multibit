@@ -20,6 +20,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -265,5 +266,15 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, DataProvi
                 repaint();
             }
         });
+    }
+    
+    @Override
+    public Icon getViewIcon() {
+        return ImageLoader.createImageIcon(ImageLoader.MULTIBIT_SMALL_ICON_FILE);
+    }
+
+    @Override
+    public String getViewTitle() {
+        return controller.getLocaliser().getString("showOpenUriView.title");
     }
 }

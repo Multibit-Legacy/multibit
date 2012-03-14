@@ -15,6 +15,8 @@
  */
 package org.multibit.viewsystem;
 
+import javax.swing.Icon;
+
 
 /**
  * an interface describing the views that are being presented in this MVC
@@ -57,4 +59,14 @@ public interface View {
      * Navigate away from the view (including releasing any resources used)
      */
     public void navigateAwayFromView();  
+    
+    /**
+     * @returns the icon for the view
+     */
+    public Icon getViewIcon();
+    
+    /**
+     * @returns the title for the view
+     */
+    public String getViewTitle();
 }

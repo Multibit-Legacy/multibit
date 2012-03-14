@@ -324,14 +324,16 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
 
         buttonPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 
-        OpenWalletAction openWalletAction = new OpenWalletAction(controller, null, mainFrame);
-        MultiBitButton openWalletButton = new MultiBitButton(openWalletAction, controller);
-        buttonPanel.add(openWalletButton);
-
         CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller, null, mainFrame);
         MultiBitButton createNewWalletButton = new MultiBitButton(createNewWalletAction, controller);
+        createNewWalletButton.setText(controller.getLocaliser().getString("crudButton.new"));
         buttonPanel.add(createNewWalletButton);
 
+        OpenWalletAction openWalletAction = new OpenWalletAction(controller, null, mainFrame);
+        MultiBitButton openWalletButton = new MultiBitButton(openWalletAction, controller);
+        openWalletButton.setText(controller.getLocaliser().getString("crudButton.open"));
+        buttonPanel.add(openWalletButton);
+ 
         return buttonPanel;
     }
 
@@ -407,5 +409,16 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
             }
         }
         displayView();
+    }
+
+    
+    @Override
+    public Icon getViewIcon() {
+        return ImageLoader.createImageIcon(ImageLoader.YOUR_WALLETS_ICON_FILE);
+    }
+
+    @Override
+    public String getViewTitle() {
+        return controller.getLocaliser().getString("showYourWalletsAction.text");
     }
 }

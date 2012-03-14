@@ -23,6 +23,7 @@ import java.awt.GridBagLayout;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -445,5 +446,16 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
             titleLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.sendingAddressesTitle"));
             titleLabel.setToolTipText(null);
         }
+    }
+    
+    
+    @Override
+    public Icon getViewIcon() {
+        return ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE);
+    }
+
+    @Override
+    public String getViewTitle() {
+        return controller.getLocaliser().getString("sendBitcoinAction.text");
     }
 }

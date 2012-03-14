@@ -23,6 +23,7 @@ import java.awt.GridBagLayout;
 import java.io.File;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
@@ -107,19 +108,9 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         fillerPanel1.setOpaque(false);
         add(fillerPanel1, constraints);
 
-        MultiBitTitleLabel titleLabel = new MultiBitTitleLabel(controller.getLocaliser().getString("createBulkAddressesPanel.title"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 1;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0.06;
-        constraints.anchor = GridBagConstraints.CENTER;
-        add(titleLabel, constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1.6;
@@ -128,7 +119,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 2;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1;
@@ -137,7 +128,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 3;
         constraints.gridwidth = 1;
         constraints.weightx = 0.4;
         constraints.weighty = 0.06;
@@ -148,7 +139,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 4;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 20;
@@ -306,5 +297,15 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
 
     @Override
     public void updateView() {    
+    }
+
+    @Override
+    public Icon getViewIcon() {
+        return null;
+    }
+
+    @Override
+    public String getViewTitle() {
+        return controller.getLocaliser().getString("showCreateBulkAddressesAction.text");
     }
 }

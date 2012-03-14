@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -149,20 +150,9 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         fillerPanel1.setOpaque(false);
         mainPanel.add(fillerPanel1, constraints);
 
-        MultiBitTitleLabel titleLabel = new MultiBitTitleLabel(controller.getLocaliser().getString(
-                "showImportPrivateKeysAction.text"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 1;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1.8;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        mainPanel.add(titleLabel, constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1;
@@ -171,7 +161,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 2;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1;
@@ -180,7 +170,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 3;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 0.2;
@@ -189,7 +179,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 4;
         constraints.gridwidth = 1;
         constraints.weightx = 0.4;
         constraints.weighty = 0.06;
@@ -202,7 +192,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 6;
+        constraints.gridy = 5;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 0.06;
@@ -213,7 +203,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 7;
+        constraints.gridy = 6;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 20;
@@ -744,5 +734,15 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
     private String readFirstLineInFile(File file) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(file));
         return reader.readLine();
+    }
+    
+    @Override
+    public Icon getViewIcon() {
+        return ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE);
+    }
+
+    @Override
+    public String getViewTitle() {
+        return controller.getLocaliser().getString("importPrivateKeysSubmitAction.text");
     }
 }

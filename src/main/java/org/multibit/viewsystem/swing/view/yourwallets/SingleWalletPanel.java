@@ -18,7 +18,6 @@ package org.multibit.viewsystem.swing.view.yourwallets;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -39,7 +38,6 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 
@@ -69,24 +67,13 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
-
-    private Dimension largePreferredSize;
-    private Dimension smallPreferredSize;
-    
+  
     public SingleWalletPanel(PerWalletModelData perWalletModelData, MultiBitController controller, MultiBitFrame mainFrame) {
         super(controller.getLocaliser().getLocale());
         this.perWalletModelData = perWalletModelData;
         this.controller = controller;
         this.mainFrame = mainFrame;
         setLayout(new GridBagLayout());
-
-        FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        largePreferredSize = new Dimension(fontMetrics.stringWidth(TYPICAL_DESCRIPTION) + WALLET_WIDTH_DELTA,
-                fontMetrics.getHeight() * 3 + WALLET_HEIGHT_DELTA);
-        smallPreferredSize = new Dimension(fontMetrics.stringWidth(TYPICAL_DESCRIPTION) + WALLET_WIDTH_DELTA,
-                fontMetrics.getHeight() * 2 + WALLET_HEIGHT_DELTA);
-        //setMinimumSize(largePreferredSize);
-        //setPreferredSize(largePreferredSize);
 
         setOpaque(false);
         setFocusable(true);
@@ -110,7 +97,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         add(filler1, constraints);
 
-        walletDescriptionTextField = new MultiBitTextField(perWalletModelData.getWalletDescription(), 20, controller);
+        walletDescriptionTextField = new MultiBitTextField(perWalletModelData.getWalletDescription(), 16, controller);
         walletDescriptionTextField.setFocusable(true);
         walletDescriptionTextField.addActionListener(this);
         walletDescriptionTextField.addFocusListener(this);
@@ -139,7 +126,6 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
         add(amountLabel, constraints);
-
 
         walletFilenameLabel = new MultiBitLabel("", controller);
         walletFilenameLabel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 0));
@@ -181,7 +167,6 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         amountLabel.setBlinkEnabled(true);
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
     }
 
     @Override
@@ -202,16 +187,11 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
                 walletDescriptionTextField.setBorder(walletDescriptionTextFieldBorder);
                 walletDescriptionTextField.setSelectedTextColor(ColorAndFontConstants.SELECTION_FOREGROUND_COLOR);
                 walletDescriptionTextField.setSelectionColor(ColorAndFontConstants.SELECTION_BACKGROUND_COLOR);
-                //setMinimumSize(largePreferredSize);
-                //setPreferredSize(largePreferredSize);
-
             } else {
                 walletFilenameLabel.setVisible(false);
                 walletDescriptionTextField.setEditable(false);
                 walletDescriptionTextField.setBorder(BorderFactory.createEmptyBorder(5, 7, 5, 5));
                 walletDescriptionTextField.setBackground(BACKGROUND_COLOR_NORMAL);
-                //setMinimumSize(smallPreferredSize);
-                //setPreferredSize(smallPreferredSize);
             }
         }
     }
@@ -241,7 +221,6 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
             String text = walletDescriptionTextField.getText();
             walletDescriptionTextField.setCaretPosition(text == null ? 0 : text.length());
             perWalletModelData.setWalletDescription(text);
- //           mainFrame.setActiveWalletTooltip(new File(perWalletModelData.getWalletFilename()), text);
         }
     }
 

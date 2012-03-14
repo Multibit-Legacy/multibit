@@ -20,11 +20,13 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -91,7 +93,15 @@ public class HelpContentsPanel extends JPanel implements View {
 
     @Override
     public void updateView() {
-        // TODO Auto-generated method stub
-        
+    }
+    
+    @Override
+    public Icon getViewIcon() {
+        return ImageLoader.createImageIcon(ImageLoader.HELP_CONTENTS_ICON_FILE);
+    }
+
+    @Override
+    public String getViewTitle() {
+        return controller.getLocaliser().getString("showHelpContentsAction.text");
     }
 }

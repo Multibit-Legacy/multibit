@@ -33,6 +33,7 @@ import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -143,19 +144,9 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         fillerPanel1.setOpaque(false);
         mainPanel.add(fillerPanel1, constraints);
 
-        MultiBitTitleLabel titleLabel = new MultiBitTitleLabel(controller.getLocaliser().getString("showExportPrivateKeysAction.text"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 1;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1.8;
-        constraints.weighty = 0.06;
-        constraints.anchor = GridBagConstraints.CENTER;
-        mainPanel.add(titleLabel, constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1;
@@ -164,7 +155,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 2;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1;
@@ -173,7 +164,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 3;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1;
@@ -182,7 +173,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 4;
         constraints.gridwidth = 1;
         constraints.weightx = 0.4;
         constraints.weighty = 0.06;
@@ -194,7 +185,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         messageLabel1.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 6;
+        constraints.gridy = 5;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 0.06;
@@ -206,7 +197,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         messageLabel2.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 7;
+        constraints.gridy = 6;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 0.06;
@@ -217,7 +208,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 8;
+        constraints.gridy = 7;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 20;
@@ -776,5 +767,15 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
                 password2[i] = 0;
             }
         }
+    }
+    
+    @Override
+    public Icon getViewIcon() {
+        return ImageLoader.createImageIcon(ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE);
+    }
+
+    @Override
+    public String getViewTitle() {
+        return controller.getLocaliser().getString("showExportPrivateKeysAction.text");
     }
 }

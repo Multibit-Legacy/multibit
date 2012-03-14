@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -412,5 +413,15 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
             titleLabel.setText(controller.getLocaliser().getString("receiveBitcoinPanel.receivingAddressesTitle"));
             titleLabel.setToolTipText(null);
         }
+    }
+    
+    @Override
+    public Icon getViewIcon() {
+        return ImageLoader.createImageIcon(ImageLoader.RECEIVE_BITCOIN_ICON_FILE);
+    }
+
+    @Override
+    public String getViewTitle() {
+        return controller.getLocaliser().getString("receiveBitcoinAction.text");
     }
 }

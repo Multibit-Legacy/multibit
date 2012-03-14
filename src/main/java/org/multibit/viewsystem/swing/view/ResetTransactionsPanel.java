@@ -21,6 +21,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
@@ -28,6 +29,7 @@ import javax.swing.border.TitledBorder;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
+import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -88,19 +90,9 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         fillerPanel1.setOpaque(false);
         add(fillerPanel1, constraints);
 
-        MultiBitTitleLabel titleLabel = new MultiBitTitleLabel(controller.getLocaliser().getString("resetTransactionsPanel.title"), controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 1;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1.8;
-        constraints.weighty = 0.06;
-        constraints.anchor = GridBagConstraints.CENTER;
-        add(titleLabel, constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1;
@@ -109,7 +101,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 2;
         constraints.gridwidth = 1;
         constraints.weightx = 0.4;
         constraints.weighty = 0.06;
@@ -120,7 +112,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 3;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 20;
@@ -273,7 +265,15 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
     
     @Override
     public void updateView() {
-        // TODO Auto-generated method stub
+    }
+    
+    @Override
+    public Icon getViewIcon() {
+        return ImageLoader.createImageIcon(ImageLoader.RESET_TRANSACTIONS_ICON_FILE);
+    }
 
+    @Override
+    public String getViewTitle() {
+        return controller.getLocaliser().getString("resetTransactionsSubmitAction.text");
     }
 }

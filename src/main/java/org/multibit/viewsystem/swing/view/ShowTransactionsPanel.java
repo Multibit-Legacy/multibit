@@ -33,6 +33,7 @@ import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -552,5 +553,15 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             TransactionPopUp menu = new TransactionPopUp(rowTableData);
             menu.show(e.getComponent(), e.getX(), e.getY());
         }
+    }
+    
+    @Override
+    public Icon getViewIcon() {
+        return ImageLoader.createImageIcon(ImageLoader.SINGLE_WALLET_ICON_FILE);
+    }
+
+    @Override
+    public String getViewTitle() {
+        return controller.getLocaliser().getString("showTransactionsAction.text");
     }
 }

@@ -294,7 +294,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
                 BorderFactory.createMatteBorder(1, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
 
-        viewTabbedPane.add("Blank", viewPanel);
+        // viewTabbedPane.add("Blank", viewPanel);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
@@ -480,22 +480,22 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         helpMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.helpMenuMnemonic"));
         menuBar.add(helpMenu);
 
-        // open wallet action
-        OpenWalletAction openWalletAction = new OpenWalletAction(controller,
-                ImageLoader.createImageIcon(ImageLoader.OPEN_WALLET_ICON_FILE), this);
-        JMenuItem menuItem = new JMenuItem(openWalletAction);
-        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        menuItem.setComponentOrientation(componentOrientation);
-        fileMenu.add(menuItem);
-
         // create new wallet action
         CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller,
                 ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE), this);
-        menuItem = new JMenuItem(createNewWalletAction);
+        JMenuItem menuItem = new JMenuItem(createNewWalletAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
         fileMenu.add(menuItem);
 
+        // open wallet action
+        OpenWalletAction openWalletAction = new OpenWalletAction(controller,
+                ImageLoader.createImageIcon(ImageLoader.OPEN_WALLET_ICON_FILE), this);
+        menuItem = new JMenuItem(openWalletAction);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        fileMenu.add(menuItem);
+ 
         // exit action
         if (!application.isMac()) {
             // non Macs have an Exit Menu item
@@ -533,13 +533,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setComponentOrientation(componentOrientation);
         viewMenu.add(menuItem);
 
-        ReceiveBitcoinAction receiveBitcoinAction = new ReceiveBitcoinAction(controller, localiser,
-                ImageLoader.createImageIcon(ImageLoader.RECEIVE_BITCOIN_ICON_FILE), this);
-        menuItem = new JMenuItem(receiveBitcoinAction);
-        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        menuItem.setComponentOrientation(componentOrientation);
-        tradeMenu.add(menuItem);
-
         // send bitcoin action
         SendBitcoinAction sendBitcoinAction = new SendBitcoinAction(controller,
                 ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE), this);
@@ -548,7 +541,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setComponentOrientation(componentOrientation);
         tradeMenu.add(menuItem);
 
-        // show preferences
+        ReceiveBitcoinAction receiveBitcoinAction = new ReceiveBitcoinAction(controller, localiser,
+                ImageLoader.createImageIcon(ImageLoader.RECEIVE_BITCOIN_ICON_FILE), this);
+        menuItem = new JMenuItem(receiveBitcoinAction);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        tradeMenu.add(menuItem);
+
+         // show preferences
         if (!application.isMac()) {
             // non Macs have a Preferences menu item
             // help about action
@@ -656,7 +656,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         currentView = viewToDisplay;
 
         final View nextViewFinal = viewFactory.getView(viewToDisplay);
-        final int viewToDisplayAsIntFinal = viewToDisplay;
 
         if (nextViewFinal == null) {
             log.debug("Cannot display view " + viewToDisplay);
@@ -667,9 +666,24 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         SwingUtilities.invokeLater(new Runnable() {
             @SuppressWarnings("deprecation")
             public void run() {
+                String viewTitle = nextViewFinal.getViewTitle();
+                boolean foundTab = false;
+                if (viewTabbedPane.getTabCount() > 0) {
+                    for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
+                        if (viewTitle != null && viewTitle.equals(viewTabbedPane.getTitleAt(i))) {
+                            foundTab = true;
+                            if (viewTabbedPane.getTabComponentAt(i) != null && !viewTabbedPane.getTabComponentAt(i).equals(nextViewFinal)) {
+                                viewTabbedPane.setTabComponentAt(i, (JPanel) nextViewFinal);
+                                viewTabbedPane.setSelectedIndex(i);
+                            }
+                        }
+                    }
+                }
 
-                viewTabbedPane.add(viewToDisplayAsIntFinal + "", (JPanel) nextViewFinal);
-                viewTabbedPane.setSelectedComponent((JPanel) nextViewFinal);
+                if (!foundTab) {
+                    viewTabbedPane.addTab(nextViewFinal.getViewTitle(), nextViewFinal.getViewIcon(), (JPanel) nextViewFinal);
+                    viewTabbedPane.setSelectedComponent((JPanel) nextViewFinal);
+                }
 
                 nextViewFinal.displayView();
 
