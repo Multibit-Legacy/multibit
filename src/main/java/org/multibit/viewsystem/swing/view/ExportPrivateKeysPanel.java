@@ -107,18 +107,6 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         initUI();
     }
 
-    public void displayView() {
-        walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
-        walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
-
-        if (outputFilename == null || "".equals(outputFilename)) {
-            outputFilename = createDefaultKeyFilename(controller.getModel().getActiveWalletFilename());
-            outputFilenameLabel.setText(outputFilename);
-        }
-
-        clearMessages();
-    }
-
     @Override
     public void navigateAwayFromView() {
     }
@@ -623,7 +611,21 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
     }
 
     @Override
+    public void displayView() {
+        updateView();
+    }
+
+    @Override
     public void updateView() {
+        walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
+        walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+
+        if (outputFilename == null || "".equals(outputFilename)) {
+            outputFilename = createDefaultKeyFilename(controller.getModel().getActiveWalletFilename());
+            outputFilenameLabel.setText(outputFilename);
+        }
+
+        clearMessages();
     }
 
     public boolean requiresEncryption() {

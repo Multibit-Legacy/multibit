@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Cursor;
@@ -28,7 +29,6 @@ import java.awt.event.WindowEvent;
 import java.math.BigInteger;
 import java.util.Timer;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -41,11 +41,9 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
-import javax.swing.border.Border;
 
 import org.multibit.Localiser;
 import org.multibit.controller.ActionForward;
@@ -75,9 +73,7 @@ import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.GradientPanel;
-import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.multibit.viewsystem.swing.view.components.MultiBitLargeButton;
 import org.multibit.viewsystem.swing.view.yourwallets.YourWalletsPanel;
 import org.simplericity.macify.eawt.ApplicationEvent;
 import org.simplericity.macify.eawt.ApplicationListener;
@@ -139,11 +135,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * 
      */
     private JTabbedPane viewTabbedPane;
-
-    /**
-     * the panel containing the main view
-     */
-    private JPanel viewPanel;
 
     public Logger logger = LoggerFactory.getLogger(MultiBitFrame.class.getName());
 
@@ -237,8 +228,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         setPreferredSize(new Dimension(width, height));
         double startPositionRatio = (1 - PROPORTION_OF_SCREEN_TO_FILL) / 2;
         setLocation((int) (width * startPositionRatio), (int) (height * startPositionRatio));
-
-        // TODO remember screen size and position in config file
     }
 
     private void initUI() {
@@ -280,32 +269,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // create the Your Wallets panel
         yourWalletsView = new YourWalletsPanel(controller, this);
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.gridwidth = 1;
-        constraints.weightx = 0.3;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
 
+        // Create the tabbedpane that holds the views
         viewTabbedPane = new JTabbedPane();
-
-        viewPanel = new JPanel(new BorderLayout()); // initally blank
-        viewPanel.setOpaque(true);
-        viewPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        viewPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
-                BorderFactory.createMatteBorder(1, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
-
-        // viewTabbedPane.add("Blank", viewPanel);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 1;
-        constraints.gridwidth = 1;
-        constraints.weightx = 0.7;
-        constraints.weighty = 1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
 
         // Create a split pane with the two scroll panes in it.
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (JPanel) yourWalletsView, viewTabbedPane);
@@ -640,6 +606,17 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         setTitle(localiser.getString("multiBitFrame.title"));
 
         viewFactory = new ViewFactory(controller, this);
+        
+        // tell all the tabs in the tabbedPane to update
+        if (viewTabbedPane != null) {
+            for (int i =0; i < viewTabbedPane.getTabCount(); i++) {
+                JPanel tabComponent = (JPanel)viewTabbedPane.getComponentAt(i);
+                Component[] components = tabComponent.getComponents();
+                if (components != null && components.length > 0 && components[0] instanceof View) {
+                    ((View)components[0]).updateView();
+                }
+            }
+        }
 
         invalidate();
         validate();
@@ -824,22 +801,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
         log.debug("Transaction confidence changed for tx " + transaction.toString());
-        // List<PerWalletModelData> perWalletModelDataList =
-        // controller.getModel().getPerWalletModelDataList();
-        // for (PerWalletModelData loopPerWalletModelData :
-        // perWalletModelDataList) {
-        // try {
-        // if
-        // (loopPerWalletModelData.getWallet().isTransactionRelevant(transaction,
-        // true)) {
-        // loopPerWalletModelData.setDirty(true);
-        // log.debug("Marking wallet '" +
-        // loopPerWalletModelData.getWalletFilename() + "' as dirty.");
-        // }
-        // } catch (ScriptException e) {
-        // e.printStackTrace();
-        // }
-        // }
     }
 
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
@@ -866,9 +827,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     currentViewView.updateView();
                 }
 
-                viewPanel.invalidate();
+                viewTabbedPane.invalidate();
                 thisFrame.invalidate();
-                viewPanel.validate();
+                viewTabbedPane.validate();
                 thisFrame.validate();
                 thisFrame.repaint();
             }
@@ -969,9 +930,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 recreateAllViews(true);
                 displayView(currentView);
 
-                viewPanel.invalidate();
+                viewTabbedPane.invalidate();
                 thisFrame.invalidate();
-                viewPanel.validate();
+                viewTabbedPane.validate();
                 thisFrame.validate();
                 thisFrame.repaint();
             }

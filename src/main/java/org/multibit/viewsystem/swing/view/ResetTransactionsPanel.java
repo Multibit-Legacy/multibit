@@ -255,8 +255,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
      */
     @Override
     public void displayView() {
-        walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
-        walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        updateView();
     }
 
     @Override
@@ -265,6 +264,8 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
     
     @Override
     public void updateView() {
+        walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
+        walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
     }
     
     @Override

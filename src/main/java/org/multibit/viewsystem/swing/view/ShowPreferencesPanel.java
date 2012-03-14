@@ -137,9 +137,9 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     }
 
     /**
-     * show preferences panel
+     * update preferences panel
      */
-    public void displayView() {
+    public void updateView() {
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
 
         if (sendFeeString == null || sendFeeString == "") {
@@ -831,9 +831,8 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     }
 
     @Override
-    public void updateView() {
-        // TODO Auto-generated method stub
-
+    public void displayView() {
+        updateView();
     }
 
     public void setSelectedFont(Font selectedFont) {

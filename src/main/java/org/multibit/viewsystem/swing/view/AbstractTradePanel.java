@@ -639,13 +639,14 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
     @Override
     public void displayView() {
-        loadForm();
-        selectRows();
-        updateView();
+         updateView();
     }
 
     @Override
     public void updateView() {
+        loadForm();
+        selectRows();
+
         // disable any new changes if another process has changed the wallet
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
@@ -906,6 +907,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
         // scroll to visible
         addressesTable.scrollRectToVisible(addressesTable.getCellRect(rowToSelect, 0, false));
+        addressesTable.invalidate();
+        addressesTable.validate();
+        addressesTable.repaint();
+        
         // put the listeners back
         addressesTable.getSelectionModel().addListSelectionListener(addressesListener);
     }

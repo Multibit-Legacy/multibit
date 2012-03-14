@@ -118,17 +118,6 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         encrypterDecrypter = new EncrypterDecrypter();
     }
 
-    public void displayView() {
-        walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
-        walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
-
-        if (outputFilename == null || "".equals(outputFilename)) {
-            outputFilenameLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.noFileSelected"));
-        }
-
-        messageLabel.setText(" ");
-    }
-
     private void initUI() {
         setLayout(new BorderLayout());
 
@@ -609,9 +598,22 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
     }
 
     @Override
-    public void updateView() {
+    public void displayView() {
+        updateView();
     }
-    
+
+    @Override
+    public void updateView() {
+        walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
+        walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+
+        if (outputFilename == null || "".equals(outputFilename)) {
+            outputFilenameLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.noFileSelected"));
+        }
+
+        messageLabel.setText(" ");
+    }
+
     @Override
     public void navigateAwayFromView() {
     }
@@ -735,7 +737,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         BufferedReader reader = new BufferedReader(new FileReader(file));
         return reader.readLine();
     }
-    
+
     @Override
     public Icon getViewIcon() {
         return ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE);

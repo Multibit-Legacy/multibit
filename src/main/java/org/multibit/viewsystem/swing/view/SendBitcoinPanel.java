@@ -366,12 +366,18 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
         if (address != null) {
             addressTextField.setText(address);
+        } else {
+            addressTextField.setText("");
         }
         if (label != null) {
             labelTextArea.setText(label);
+        } else {
+            labelTextArea.setText("");
         }
         if (amount != null) {
             amountTextField.setText(amount);
+        } else {
+            amountTextField.setText("");
         }
 
         // if there is a pending 'handleopenURI' that needs pasting into the
