@@ -43,6 +43,11 @@ public interface ViewSystem extends WalletEventListener {
     public void newWalletCreated();
     
     /**
+     * update the current view on display
+     */
+    public void updateCurrentView();
+    
+    /**
      * tells the view system to recreate all views e.g. after a language change
      */   
     public void recreateAllViews(boolean clearCache, boolean initUI);

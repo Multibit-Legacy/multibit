@@ -15,17 +15,35 @@
  */
 package org.multibit.model;
 
-import com.google.bitcoin.core.*;
-import com.google.bitcoin.core.Wallet.BalanceType;
-import com.google.bitcoin.store.BlockStoreException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.network.MultiBitService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
-import java.util.*;
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.Block;
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.ScriptException;
+import com.google.bitcoin.core.Sha256Hash;
+import com.google.bitcoin.core.StoredBlock;
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.TransactionInput;
+import com.google.bitcoin.core.TransactionOutput;
+import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.Wallet.BalanceType;
+import com.google.bitcoin.core.WalletEventListener;
+import com.google.bitcoin.store.BlockStoreException;
 
 /**
  * model containing the MultiBit data
@@ -411,9 +429,8 @@ public class MultiBitModel {
      * convert the active wallet info into walletdata records as they are easier
      * to show to the user in tabular form
      */
-    public Vector<WalletTableData> createWalletData(String walletFilename) {
-        // TODO Consider an ArrayList if possible
-        Vector<WalletTableData> walletData = new Vector<WalletTableData>();
+    public ArrayList<WalletTableData> createWalletData(String walletFilename) {
+        ArrayList<WalletTableData> walletData = new ArrayList<WalletTableData>();
 
         if (walletFilename == null) {
             return walletData;

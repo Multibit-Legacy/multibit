@@ -32,6 +32,7 @@ public class ImageLoader {
     public static final String SINGLE_WALLET_ICON_FILE = "/images/singleWallet.png";
     public static final String CREATE_NEW_ICON_FILE = "/images/createNew.png";
     public static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
+    public static final String DELETE_WALLET_ICON_FILE = "/images/deleteWallet.png";
     public static final String SEND_BITCOIN_ICON_FILE = "/images/send.jpg";
     public static final String RECEIVE_BITCOIN_ICON_FILE = "/images/receive.jpg";
     public static final String PREFERENCES_ICON_FILE = "/images/preferences.png";

@@ -315,6 +315,13 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         }
     }
 
+    public void updateCurrentView() {
+        // tell the viewSystems to refresh their views
+        for (ViewSystem viewSystem : viewSystems) {
+            viewSystem.updateCurrentView();
+        } 
+    }
+    
     /**
      */
     public void displayNextView() {

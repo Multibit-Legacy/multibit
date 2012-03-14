@@ -57,6 +57,7 @@ import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
+import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.action.HelpAboutAction;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
@@ -74,6 +75,7 @@ import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.GradientPanel;
+import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitLargeButton;
 import org.multibit.viewsystem.swing.view.yourwallets.YourWalletsPanel;
@@ -496,6 +498,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setComponentOrientation(componentOrientation);
         fileMenu.add(menuItem);
  
+        DeleteWalletAction deleteWalletAction = new DeleteWalletAction(controller,  ImageLoader.createImageIcon(ImageLoader.DELETE_WALLET_ICON_FILE), this);
+        menuItem = new JMenuItem(deleteWalletAction);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        fileMenu.add(menuItem);
+ 
         // exit action
         if (!application.isMac()) {
             // non Macs have an Exit Menu item
@@ -672,23 +680,25 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
                         if (viewTitle != null && viewTitle.equals(viewTabbedPane.getTitleAt(i))) {
                             foundTab = true;
-                            if (viewTabbedPane.getTabComponentAt(i) != null && !viewTabbedPane.getTabComponentAt(i).equals(nextViewFinal)) {
-                                viewTabbedPane.setTabComponentAt(i, (JPanel) nextViewFinal);
-                                viewTabbedPane.setSelectedIndex(i);
-                            }
+                            log.debug("Tab panel = " + System.identityHashCode(viewTabbedPane.getTabComponentAt(i))  + ", nextPanel = " + System.identityHashCode(nextViewFinal));
+                            ((JPanel)viewTabbedPane.getComponentAt(i)).removeAll();
+                            ((JPanel)viewTabbedPane.getComponentAt(i)).add((JPanel) nextViewFinal);
                         }
                     }
                 }
 
                 if (!foundTab) {
-                    viewTabbedPane.addTab(nextViewFinal.getViewTitle(), nextViewFinal.getViewIcon(), (JPanel) nextViewFinal);
-                    viewTabbedPane.setSelectedComponent((JPanel) nextViewFinal);
+                    JPanel tabOutlinePanel = new JPanel(new BorderLayout());
+                    tabOutlinePanel.add( (JPanel) nextViewFinal, BorderLayout.CENTER);
+                    viewTabbedPane.addTab(nextViewFinal.getViewTitle(), nextViewFinal.getViewIcon(),tabOutlinePanel);
+                    viewTabbedPane.setSelectedComponent(tabOutlinePanel);
                 }
 
                 nextViewFinal.displayView();
 
                 if (nextViewFinal instanceof JPanel) {
                     ((JPanel) nextViewFinal).invalidate();
+                    ((JPanel) nextViewFinal).validate();
                     ((JPanel) nextViewFinal).repaint();
                 }
 
@@ -977,4 +987,30 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
         });
     }
+
+    @Override
+    public void updateCurrentView() {
+        final View currentViewFinal = viewFactory.getView(currentView);
+
+        if (currentViewFinal == null) {
+            log.debug("Cannot update view " + currentView);
+            return;
+        }
+        final MultiBitFrame thisFrame = this;
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @SuppressWarnings("deprecation")
+            public void run() {
+                log.debug("Updating view '" + currentViewFinal.getViewTitle() + "'");
+                currentViewFinal.updateView();
+
+                if (currentViewFinal instanceof JPanel) {
+                    ((JPanel) currentViewFinal).invalidate();
+                    ((JPanel) currentViewFinal).repaint();
+                }
+
+                thisFrame.setCursor(Cursor.DEFAULT_CURSOR);
+            }
+        });
+     }
 }

@@ -242,6 +242,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
     @Override
     public void updateView() {
+        //log.debug("ShowTransactionsPanel#updateView called on panel " + System.identityHashCode(this));
         walletTableModel.recreateWalletData();
 
         if (selectedRow > -1 && selectedRow < table.getRowCount()) {
@@ -251,6 +252,10 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         table.invalidate();
         table.validate();
         table.repaint();
+        
+        invalidate();
+        validate();
+        repaint();
     }
 
     @Override

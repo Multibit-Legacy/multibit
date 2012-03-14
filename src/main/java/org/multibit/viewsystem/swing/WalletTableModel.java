@@ -16,14 +16,16 @@
 package org.multibit.viewsystem.swing;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletTableData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 
@@ -31,9 +33,11 @@ public class WalletTableModel extends AbstractTableModel {
 
     private static final long serialVersionUID = -937886012854496208L;
 
-    private Vector<String> headers;
+    private static final Logger log = LoggerFactory.getLogger(WalletTableModel.class);
 
-    private Vector<WalletTableData> walletData;
+    private ArrayList<String> headers;
+
+    private ArrayList<WalletTableData> walletData;
 
     /**
      * the MultiBit model
@@ -121,13 +125,14 @@ public class WalletTableModel extends AbstractTableModel {
 
     public void recreateWalletData() {
         // recreate the wallet data as the underlying wallet has changed
+        //log.debug("Updating walletTableModel for file '" + controller.getModel().getActiveWalletFilename() + "'");
         walletData = multiBitModel.createWalletData(controller.getModel().getActiveWalletFilename());
-        this.fireTableDataChanged();
+        //log.debug("walletTableModel now has " + walletData.size() + " rows");
+        fireTableDataChanged();
     }
 
     public void createHeaders() {
-        // TODO Consider an ArrayList if possible
-        headers = new Vector<String>();
+        headers = new ArrayList<String>();
         for (int j = 0; j < WalletTableData.COLUMN_HEADER_KEYS.length; j++) {
             headers.add(controller.getLocaliser().getString(WalletTableData.COLUMN_HEADER_KEYS[j]));
         }
