@@ -28,11 +28,14 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
@@ -40,16 +43,20 @@ import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.WalletTableModel;
 import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
+import org.multibit.viewsystem.swing.action.YourWalletsAction;
 import org.multibit.viewsystem.swing.view.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.GradientPanel;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The your wallets view
@@ -57,6 +64,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 public class YourWalletsPanel extends JPanel implements View, DataProvider {
 
     private static final long serialVersionUID = 191352298245057705L;
+
+    private static final Logger log = LoggerFactory.getLogger(YourWalletsPanel.class);
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
@@ -87,6 +96,9 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
 
         initUI();
 
+        setMaximumSize(new Dimension(100, 1000));
+        setPreferredSize(new Dimension(100, 1000));
+
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
     }
 
@@ -94,9 +106,10 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
      * show your wallets view
      */
     public void displayView() {
-        if (!initialised) {
+        log.debug("Display view called - initialised = " + initialised);
+        //if (!initialised) {
             initUI();
-        }
+        //}
         initialised = true;
 
         // get the wallets from the model
@@ -110,7 +123,7 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
                     if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename()
                             .equals(activePerModelData.getWalletFilename())) {
                         loopSingleWalletPanel.setSelected(true);
-                        transactionsPanel.displayView();
+ //                       transactionsPanel.displayView();
                     } else {
                         loopSingleWalletPanel.setSelected(false);
                     }
@@ -118,28 +131,30 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
             }
         }
 
-        if (controller.getModel().getActivePerWalletModelData() != null) {
-            if (controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                transactionsTitleLabel.setText(controller.getLocaliser().getString("showTransactionsAction.mayBeOutOfDate.text"));
-                mainFrame.setUpdatesStoppedTooltip(transactionsTitleLabel);
-            } else {
-                transactionsTitleLabel.setText(controller.getLocaliser().getString("showTransactionsAction.text"));
-                transactionsTitleLabel.setToolTipText(null);
-            }
-            transactionsTitleLabel.invalidate();
-            transactionsTitleLabel.revalidate();
-            transactionsTitleLabel.repaint();
-        }
+//        if (controller.getModel().getActivePerWalletModelData() != null) {
+//            if (controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+//                transactionsTitleLabel.setText(controller.getLocaliser().getString("showTransactionsAction.mayBeOutOfDate.text"));
+//                mainFrame.setUpdatesStoppedTooltip(transactionsTitleLabel);
+//            } else {
+//                transactionsTitleLabel.setText(controller.getLocaliser().getString("showTransactionsAction.text"));
+//                transactionsTitleLabel.setToolTipText(null);
+//            }
+//            transactionsTitleLabel.invalidate();
+//            transactionsTitleLabel.revalidate();
+//            transactionsTitleLabel.repaint();
+//        }
         
         String grabFocus = controller.getModel().getUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET);
         if (Boolean.TRUE.toString().equals(grabFocus)) {
             grabFocusByWalletFilename(activeWalletFilename);
         }
         controller.getModel().setUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "false");
+
         invalidate();
         revalidate();
         repaint();
-
+        
+        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_TRANSACTIONS);
     }
     
     public void grabFocusByWalletFilename(String walletFilename) {
@@ -163,7 +178,9 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
     }
 
     private void initUI() {
-        setMinimumSize(new Dimension(550, 160));
+        log.debug(" initUI called");
+
+        //setMinimumSize(new Dimension(550, 160));
 
         this.removeAll();
 
@@ -171,6 +188,11 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         GridBagConstraints constraints = new GridBagConstraints();
 
         JPanel leftColumnPanel = new JPanel(new BorderLayout());
+        JTabbedPane leftColumnTabbedPane = new JTabbedPane();
+        YourWalletsAction yourWalletsAction = new YourWalletsAction(controller,
+                ImageLoader.createImageIcon(ImageLoader.YOUR_WALLETS_ICON_FILE));
+
+        leftColumnTabbedPane.addTab((String)yourWalletsAction.getValue(Action.NAME), (Icon)yourWalletsAction.getValue(Action.SMALL_ICON), leftColumnPanel);
         
         createWalletListPanel();
         scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -198,27 +220,27 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
         constraints.gridwidth = 1;
         constraints.gridheight = 2;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(leftColumnPanel, constraints);
+        add(leftColumnTabbedPane, constraints);
         
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.weightx = 0.9;
-        constraints.weighty = 0.05;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        add(createAddressesHeaderPanel(), constraints);
+//        constraints.fill = GridBagConstraints.BOTH;
+//        constraints.gridx = 1;
+//        constraints.gridy = 0;
+//        constraints.weightx = 0.9;
+//        constraints.weighty = 0.05;
+//        constraints.gridwidth = 1;
+//        constraints.gridheight = 1;
+//        constraints.anchor = GridBagConstraints.LINE_START;
+//        add(createAddressesHeaderPanel(), constraints);
 
-        transactionsPanel = new ShowTransactionsPanel(mainFrame, controller);
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 1;
-        constraints.weightx = 0.9;
-        constraints.weighty = 0.95;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        add(transactionsPanel, constraints);
+//        transactionsPanel = new ShowTransactionsPanel(mainFrame, controller);
+//        constraints.fill = GridBagConstraints.BOTH;
+//        constraints.gridx = 1;
+//        constraints.gridy = 1;
+//        constraints.weightx = 0.9;
+//        constraints.weighty = 0.95;
+//        constraints.gridwidth = 1;
+//        constraints.anchor = GridBagConstraints.LINE_START;
+//        add(transactionsPanel, constraints);
     }
 
     private JPanel createAddressesHeaderPanel() {
@@ -281,6 +303,8 @@ public class YourWalletsPanel extends JPanel implements View, DataProvider {
                     walletListPanel.add(outerPanel, constraints);
                     walletPanels.add(loopPanel);
                     constraints.gridy = constraints.gridy + 1;
+                    log.debug(" adding wallet " + constraints.gridy);
+
                 }
             }
         }

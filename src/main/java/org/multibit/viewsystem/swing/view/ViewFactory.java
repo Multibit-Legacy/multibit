@@ -63,7 +63,7 @@ public class ViewFactory {
         case View.SAME_VIEW: {
             assert false;
             // give back a your wallets view just so that things do not break
-            viewToReturn = new YourWalletsPanel(controller, mainFrame);
+            //viewToReturn = new YourWalletsPanel(controller, mainFrame);
             break;
         }
 
@@ -94,11 +94,6 @@ public class ViewFactory {
         
         case View.PREFERENCES_VIEW: {
             viewToReturn = new ShowPreferencesPanel(controller, mainFrame);
-            break;
-        }
-              
-        case View.YOUR_WALLETS_VIEW: {
-            viewToReturn = new YourWalletsPanel(controller, mainFrame);
             break;
         }
        
