@@ -93,11 +93,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     private int currentView;
 
     /**
-     * the previous view that was displayed to the user
-     */
-    private int previousView;
-
-    /**
      * the next view that will be displayed to the user
      */
     private int nextView;
@@ -142,10 +137,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
         viewSystems = new ArrayList<ViewSystem>();
 
-        // initialize everything to look at the stored opened view and previous
-        // view
+        // initialize everything to look at the stored opened view
         // if no properties passed in just initialize to the your wallets view
-        int previousView = View.YOUR_WALLETS_VIEW;
         int initialView = View.YOUR_WALLETS_VIEW;
         if (userPreferences != null) {
             String viewString = (String) userPreferences.get(MultiBitModel.SELECTED_VIEW);
@@ -166,7 +159,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         viewStack = new Stack<Integer>();
         viewStack.push(initialView);
 
-        this.previousView = previousView;
         currentView = initialView;
         nextView = initialView;
 
@@ -319,12 +311,14 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.updateCurrentView();
-        } 
+        }
     }
-    
+
     /**
      */
     public void displayNextView() {
+        int previousView = -1;
+
         if (nextView != 0) {
             // cycle the previous / current / next views
             previousView = currentView;
@@ -332,19 +326,16 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             nextView = View.UNKNOWN_VIEW;
         } else {
             log.warn("Could not determine next view to display, previousView = {}, currentView = {}", previousView, currentView);
-            log.info("Displaying the my wallets view anyhow");
+            log.info("Displaying the your wallets view anyhow");
             previousView = currentView;
             currentView = View.YOUR_WALLETS_VIEW;
         }
 
-        if (previousView == View.YOUR_WALLETS_VIEW && nextView == View.YOUR_WALLETS_VIEW) {
-            // no need to redisplay - already there and ok to keep
-            return;
-        }
-
         // tell all views to close the previous view
-        for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.navigateAwayFromView(previousView);
+        if (previousView != -1) {
+            for (ViewSystem viewSystem : viewSystems) {
+                viewSystem.navigateAwayFromView(previousView);
+            }
         }
 
         // for the top level views, clear the view stack
@@ -563,26 +554,26 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             }
         }
     }
-    
-    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {            
+
+    public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
         }
-        //checkForDirtyWallets(transaction);
+        // checkForDirtyWallets(transaction);
     }
 
-    public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {        
+    public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsSent(wallet, transaction, prevBalance, newBalance);
         }
-        //checkForDirtyWallets(transaction);
+        // checkForDirtyWallets(transaction);
     }
 
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onTransactionConfidenceChanged(wallet, transaction);
         }
-        checkForDirtyWallets(transaction);        
+        checkForDirtyWallets(transaction);
     }
 
     public void onReorganise(Wallet wallet) {
@@ -600,8 +591,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     public void clearViewStack() {
         viewStack.clear();
-        viewStack.push(View.YOUR_WALLETS_VIEW);
-        previousView = View.YOUR_WALLETS_VIEW;
+        viewStack.push(View.TRANSACTIONS_VIEW);
     }
 
     public MultiBitService getMultiBitService() {

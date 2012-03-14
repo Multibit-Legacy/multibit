@@ -562,7 +562,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     
     @Override
     public Icon getViewIcon() {
-        return ImageLoader.createImageIcon(ImageLoader.SINGLE_WALLET_ICON_FILE);
+        return ImageLoader.createImageIcon(ImageLoader.TRANSACTIONS_ICON_FILE);
     }
 
     @Override

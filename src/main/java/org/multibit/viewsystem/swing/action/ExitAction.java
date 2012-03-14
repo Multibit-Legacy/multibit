@@ -17,9 +17,14 @@ package org.multibit.viewsystem.swing.action;
 
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.multibit.ApplicationInstanceManager;
@@ -58,8 +63,14 @@ public class ExitAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent arg0) {
         if (mainFrame != null) {
-            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                }});
+           
         }
+        
         // save all the wallets and put their filenames in the user preferences
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
         if (perWalletModelDataList != null) {

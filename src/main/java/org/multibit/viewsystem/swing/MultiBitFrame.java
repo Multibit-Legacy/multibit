@@ -68,7 +68,7 @@ import org.multibit.viewsystem.swing.action.ShowExportPrivateKeysAction;
 import org.multibit.viewsystem.swing.action.ShowHelpContentsAction;
 import org.multibit.viewsystem.swing.action.ShowImportPrivateKeysAction;
 import org.multibit.viewsystem.swing.action.ShowPreferencesAction;
-import org.multibit.viewsystem.swing.action.YourWalletsAction;
+import org.multibit.viewsystem.swing.action.ShowTransactionsAction;
 import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -272,6 +272,24 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Create the tabbedpane that holds the views
         viewTabbedPane = new JTabbedPane();
+       
+        // add the send bitcoin tab
+        JPanel sendBitcoinOutlinePanel = new JPanel(new BorderLayout());
+        View sendBitcoinView = viewFactory.getView(View.SEND_BITCOIN_VIEW);
+        sendBitcoinOutlinePanel.add( (JPanel) sendBitcoinView, BorderLayout.CENTER);
+        viewTabbedPane.addTab(sendBitcoinView.getViewTitle(), sendBitcoinView.getViewIcon(), sendBitcoinOutlinePanel);
+
+        // add the receive bitcoin tab
+        JPanel receiveBitcoinOutlinePanel = new JPanel(new BorderLayout());
+        View receiveBitcoinView = viewFactory.getView(View.RECEIVE_BITCOIN_VIEW);
+        receiveBitcoinOutlinePanel.add( (JPanel) receiveBitcoinView, BorderLayout.CENTER);
+        viewTabbedPane.addTab(receiveBitcoinView.getViewTitle(), receiveBitcoinView.getViewIcon(), receiveBitcoinOutlinePanel);
+
+        // add the transactions tab
+        JPanel transactionsOutlinePanel = new JPanel(new BorderLayout());
+        View transactionsView = viewFactory.getView(View.TRANSACTIONS_VIEW);
+        transactionsOutlinePanel.add( (JPanel) transactionsView, BorderLayout.CENTER);
+        viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsOutlinePanel);
 
         // Create a split pane with the two scroll panes in it.
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (JPanel) yourWalletsView, viewTabbedPane);
@@ -463,13 +481,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
         fileMenu.add(menuItem);
- 
-        DeleteWalletAction deleteWalletAction = new DeleteWalletAction(controller,  ImageLoader.createImageIcon(ImageLoader.DELETE_WALLET_ICON_FILE), this);
+
+        DeleteWalletAction deleteWalletAction = new DeleteWalletAction(controller,
+                ImageLoader.createImageIcon(ImageLoader.DELETE_WALLET_ICON_FILE), this);
         menuItem = new JMenuItem(deleteWalletAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
         fileMenu.add(menuItem);
- 
+
         // exit action
         if (!application.isMac()) {
             // non Macs have an Exit Menu item
@@ -500,9 +519,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             helpMenu.add(menuItem);
         }
 
-        YourWalletsAction myWalletsAction = new YourWalletsAction(controller,
-                ImageLoader.createImageIcon(ImageLoader.YOUR_WALLETS_ICON_FILE));
-        menuItem = new JMenuItem(myWalletsAction);
+        // viewTransactions action
+        ShowTransactionsAction showTransactionsAction = new ShowTransactionsAction(controller,
+                ImageLoader.createImageIcon(ImageLoader.TRANSACTIONS_ICON_FILE));
+        menuItem = new JMenuItem(showTransactionsAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
         viewMenu.add(menuItem);
@@ -522,7 +542,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setComponentOrientation(componentOrientation);
         tradeMenu.add(menuItem);
 
-         // show preferences
+        // show preferences
         if (!application.isMac()) {
             // non Macs have a Preferences menu item
             // help about action
@@ -606,14 +626,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         setTitle(localiser.getString("multiBitFrame.title"));
 
         viewFactory = new ViewFactory(controller, this);
-        
+
         // tell all the tabs in the tabbedPane to update
         if (viewTabbedPane != null) {
-            for (int i =0; i < viewTabbedPane.getTabCount(); i++) {
-                JPanel tabComponent = (JPanel)viewTabbedPane.getComponentAt(i);
+            for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
+                JPanel tabComponent = (JPanel) viewTabbedPane.getComponentAt(i);
                 Component[] components = tabComponent.getComponents();
                 if (components != null && components.length > 0 && components[0] instanceof View) {
-                    ((View)components[0]).updateView();
+                    ((View) components[0]).updateView();
                 }
             }
         }
@@ -657,17 +677,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
                         if (viewTitle != null && viewTitle.equals(viewTabbedPane.getTitleAt(i))) {
                             foundTab = true;
-                            log.debug("Tab panel = " + System.identityHashCode(viewTabbedPane.getTabComponentAt(i))  + ", nextPanel = " + System.identityHashCode(nextViewFinal));
-                            ((JPanel)viewTabbedPane.getComponentAt(i)).removeAll();
-                            ((JPanel)viewTabbedPane.getComponentAt(i)).add((JPanel) nextViewFinal);
+                            log.debug("Tab panel = " + System.identityHashCode(viewTabbedPane.getTabComponentAt(i))
+                                    + ", nextPanel = " + System.identityHashCode(nextViewFinal));
+                            ((JPanel) viewTabbedPane.getComponentAt(i)).removeAll();
+                            ((JPanel) viewTabbedPane.getComponentAt(i)).add((JPanel) nextViewFinal);
+                            viewTabbedPane.setSelectedIndex(i);
                         }
                     }
                 }
 
                 if (!foundTab) {
                     JPanel tabOutlinePanel = new JPanel(new BorderLayout());
-                    tabOutlinePanel.add( (JPanel) nextViewFinal, BorderLayout.CENTER);
-                    viewTabbedPane.addTab(nextViewFinal.getViewTitle(), nextViewFinal.getViewIcon(),tabOutlinePanel);
+                    tabOutlinePanel.add((JPanel) nextViewFinal, BorderLayout.CENTER);
+                    viewTabbedPane.addTab(nextViewFinal.getViewTitle(), nextViewFinal.getViewIcon(), tabOutlinePanel);
                     viewTabbedPane.setSelectedComponent(tabOutlinePanel);
                 }
 
@@ -927,6 +949,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void newWalletCreated() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                if (yourWalletsView != null) {
+                    yourWalletsView.updateView();
+                }
+                
                 recreateAllViews(true);
                 displayView(currentView);
 
@@ -973,5 +999,5 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 thisFrame.setCursor(Cursor.DEFAULT_CURSOR);
             }
         });
-     }
+    }
 }

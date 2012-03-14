@@ -29,7 +29,7 @@ public class ImageLoader {
     public static final String TICK_ICON_FILE = "/images/tick.png";
     public static final String RED_CROSS_ICON_FILE = "/images/redCross.png";
     public static final String YOUR_WALLETS_ICON_FILE = "/images/yourWallets.png";
-    public static final String SINGLE_WALLET_ICON_FILE = "/images/singleWallet.png";
+    public static final String TRANSACTIONS_ICON_FILE = "/images/transactions.png";
     public static final String CREATE_NEW_ICON_FILE = "/images/createNew.png";
     public static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
     public static final String DELETE_WALLET_ICON_FILE = "/images/deleteWallet.png";
