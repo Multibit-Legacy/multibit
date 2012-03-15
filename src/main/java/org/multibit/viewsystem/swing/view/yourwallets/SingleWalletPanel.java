@@ -18,6 +18,8 @@ package org.multibit.viewsystem.swing.view.yourwallets;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -28,6 +30,7 @@ import java.awt.event.MouseListener;
 import java.io.File;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
@@ -38,12 +41,15 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 
 import com.google.bitcoin.core.Wallet.BalanceType;
 
 public class SingleWalletPanel extends RoundedPanel implements ActionListener, FocusListener {
+
+    private static final int WIDTH_OF_TEXT_FIELD = 16;
 
     private static final long serialVersionUID = -7110340338285836548L;
 
@@ -56,6 +62,9 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
     private static final Color BACKGROUND_COLOR_DATA_HAS_CHANGED = new Color(0xff, 0xff, 0xff);
     private static final int COLOR_DELTA = 12;
 
+    private static final int HEIGHT_DELTA = 20;
+    private static final int WIDTH_DELTA = 4;
+
     private static Color inactiveBackGroundColor;
     private MultiBitLabel walletFilenameLabel;
     private MultiBitTextField walletDescriptionTextField;
@@ -65,6 +74,12 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
+    
+    private int normalHeight;
+    private int normalWidth;
+
+    private int selectedHeight;
+    private int selectedWidth;
 
     public SingleWalletPanel(PerWalletModelData perWalletModelData, MultiBitController controller, MultiBitFrame mainFrame) {
         super(controller.getLocaliser().getLocale());
@@ -98,7 +113,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         add(filler1, constraints);
 
-        walletDescriptionTextField = new MultiBitTextField(perWalletModelData.getWalletDescription(), 16, controller);
+        walletDescriptionTextField = new MultiBitTextField(perWalletModelData.getWalletDescription(), WIDTH_OF_TEXT_FIELD, controller);
         walletDescriptionTextField.setFocusable(true);
         walletDescriptionTextField.setOpaque(false);
         walletDescriptionTextField.addActionListener(this);
@@ -141,7 +156,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
             walletFilenameLabel.setText(walletFilenameShort);
             walletFilenameLabel.setToolTipText(walletFilename);
         }
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 3;
         constraints.weightx = 0.92;
@@ -169,6 +184,25 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         amountLabel.setBlinkEnabled(true);
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+      
+        Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
+        
+        FontMetrics fontMetrics = getFontMetrics(font);
+        
+        normalHeight = 2 * fontMetrics.getHeight() + HEIGHT_DELTA;
+        normalWidth = calculateNormalWidth(this);
+        selectedHeight = 3 * fontMetrics.getHeight() + HEIGHT_DELTA;
+        selectedWidth = normalWidth;
+
+        setPreferredSize(new Dimension(normalWidth, normalHeight));
+        setMinimumSize(new Dimension(normalWidth, normalHeight));
+        setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
+    }
+    
+    public static int calculateNormalWidth(JComponent component) {
+        Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();  
+        FontMetrics fontMetrics = component.getFontMetrics(font);
+        return(int) (fontMetrics.getMaxAdvance() * WIDTH_OF_TEXT_FIELD * 0.6 + WIDTH_DELTA);    
     }
 
     @Override
@@ -191,12 +225,18 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
                 walletDescriptionTextField.setSelectionColor(ColorAndFontConstants.SELECTION_BACKGROUND_COLOR);
                 walletDescriptionTextField.setBackground(BACKGROUND_COLOR_NORMAL);
                 setBackground(BACKGROUND_COLOR_NORMAL);
+                setPreferredSize(new Dimension(selectedWidth, selectedHeight));
+                setMinimumSize(new Dimension(selectedWidth, selectedHeight));
+                setMaximumSize(new Dimension(selectedWidth, selectedHeight));
             } else {
                 walletFilenameLabel.setVisible(false);
                 walletDescriptionTextField.setEditable(false);
                 walletDescriptionTextField.setBorder(BorderFactory.createEmptyBorder(5, 7, 5, 5));
                 walletDescriptionTextField.setBackground(inactiveBackGroundColor);
                 setBackground(inactiveBackGroundColor);
+                setPreferredSize(new Dimension(normalWidth, normalHeight));
+                setMinimumSize(new Dimension(normalWidth, normalHeight));
+                setMaximumSize(new Dimension(normalWidth, normalHeight)); 
             }
         }
     }

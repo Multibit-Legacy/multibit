@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.view.yourwallets;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -76,8 +77,7 @@ public class YourWalletsPanel extends JPanel implements View {
         this.controller = controller;
         this.mainFrame = mainFrame;
 
-        //setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
-        setBackground(Color.WHITE);
+        setBackground(SystemColor.window);
 
         this.controller = controller;
 
@@ -105,12 +105,6 @@ public class YourWalletsPanel extends JPanel implements View {
         if (activePerModelData != null) {
             selectWalletPanelByFilename(activePerModelData.getWalletFilename());
         }
-        
-//        String grabFocus = controller.getModel().getUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET);
-//        if (Boolean.TRUE.toString().equals(grabFocus)) {
-//            grabFocusByWalletFilename(activeWalletFilename);
-//        }
-//        controller.getModel().setUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "false");
 
         invalidate();
         revalidate();
@@ -155,45 +149,32 @@ public class YourWalletsPanel extends JPanel implements View {
 
         this.removeAll();
 
-        setLayout(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
+        setLayout(new BorderLayout());
 
-        JPanel leftColumnPanel = new JPanel(new BorderLayout());
-        JTabbedPane leftColumnTabbedPane = new JTabbedPane();
+        JTabbedPane tabbedPane = new JTabbedPane();
+        JPanel tabPanel = new JPanel(new BorderLayout());
+
         YourWalletsAction yourWalletsAction = new YourWalletsAction(controller,
                 ImageLoader.createImageIcon(ImageLoader.YOUR_WALLETS_ICON_FILE));
 
-        leftColumnTabbedPane.addTab((String) yourWalletsAction.getValue(Action.NAME),
-                (Icon) yourWalletsAction.getValue(Action.SMALL_ICON), leftColumnPanel);
-
         createWalletListPanel();
-        scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setViewportView(walletListPanel);
         scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.getViewport().setBackground(Color.WHITE);
+        scrollPane.getViewport().setBackground(SystemColor.window);
         scrollPane.getViewport().setOpaque(true);
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        leftColumnPanel.add(scrollPane, BorderLayout.NORTH);
-
-        JPanel fillPanel = new JPanel();
-        fillPanel.setOpaque(true);
-        fillPanel.setBackground(Color.WHITE);
-        leftColumnPanel.add(fillPanel, BorderLayout.CENTER);
+        scrollPane.setMaximumSize(new Dimension(200, 600));
+        tabPanel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel buttonPanel = createButtonPanel();
-        leftColumnPanel.add(buttonPanel, BorderLayout.SOUTH);
+        tabPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 0.1;
-        constraints.weighty = 1.0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 2;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        add(leftColumnTabbedPane, constraints);
+        tabbedPane.addTab((String) yourWalletsAction.getValue(Action.NAME), (Icon) yourWalletsAction.getValue(Action.SMALL_ICON),
+                tabPanel);
 
+        add(tabbedPane, BorderLayout.CENTER);
     }
 
     private JPanel createWalletListPanel() {
@@ -208,14 +189,14 @@ public class YourWalletsPanel extends JPanel implements View {
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
         GridBagConstraints constraints = new GridBagConstraints();
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 1.0;
         constraints.weighty = 1.0;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.anchor = GridBagConstraints.CENTER;
 
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
@@ -231,39 +212,77 @@ public class YourWalletsPanel extends JPanel implements View {
                     walletListPanel.add(outerPanel, constraints);
                     walletPanels.add(loopPanel);
                     constraints.gridy = constraints.gridy + 1;
-                    log.debug(" adding wallet " + constraints.gridy);
                 }
             }
         }
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.weightx = 1.0;
+        constraints.weighty = 100.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        JPanel fill1 = new JPanel();
+        fill1.setOpaque(false);
+        walletListPanel.add(fill1, constraints);
 
         return walletListPanel;
     }
 
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridBagLayout());
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        
         buttonPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
                 BorderFactory.createMatteBorder(1, 0, 1, 0, SystemColor.windowBorder)));
         buttonPanel.setOpaque(true);
-        buttonPanel.setBackground(Color.WHITE);
-
-        buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+        buttonPanel.setBackground(SystemColor.window);
+        buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));       
 
         CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller, null, mainFrame);
         MultiBitButton createNewWalletButton = new MultiBitButton(createNewWalletAction, controller);
         createNewWalletButton.setText(controller.getLocaliser().getString("crudButton.new"));
-        buttonPanel.add(createNewWalletButton);
 
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.33;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        buttonPanel.add(createNewWalletButton, constraints);
+        
         OpenWalletAction openWalletAction = new OpenWalletAction(controller, null, mainFrame);
         MultiBitButton openWalletButton = new MultiBitButton(openWalletAction, controller);
         openWalletButton.setText(controller.getLocaliser().getString("crudButton.open"));
-        buttonPanel.add(openWalletButton);
-
+        
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.weightx = 0.33;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        buttonPanel.add(openWalletButton, constraints);
+        
         DeleteWalletAction deleteWalletAction = new DeleteWalletAction(controller, null, mainFrame);
         MultiBitButton deleteWalletButton = new MultiBitButton(deleteWalletAction, controller);
         deleteWalletButton.setText(controller.getLocaliser().getString("crudButton.delete"));
-        buttonPanel.add(deleteWalletButton);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 0;
+        constraints.weightx = 0.33;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        buttonPanel.add(deleteWalletButton, constraints);
 
         return buttonPanel;
     }

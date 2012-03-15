@@ -74,6 +74,7 @@ import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.GradientPanel;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.view.yourwallets.SingleWalletPanel;
 import org.multibit.viewsystem.swing.view.yourwallets.YourWalletsPanel;
 import org.simplericity.macify.eawt.ApplicationEvent;
 import org.simplericity.macify.eawt.ApplicationListener;
@@ -98,6 +99,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final String EXAMPLE_LONG_FIELD_TEXT = "TheQuickBrownFoxJumpsOverTheLazyDog";
     public static final int WIDTH_OF_LONG_FIELDS = 320;
     public static final int WIDTH_OF_AMOUNT_FIELD = 160;
+    public static final int WALLET_WIDTH_DELTA = 30;
 
     private StatusBar statusBar;
     private boolean online = false;
@@ -308,6 +310,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         contentPane.add(splitPane, constraints);
+        
+        int dividerPosition = SingleWalletPanel.calculateNormalWidth((JComponent) (yourWalletsView)) + WALLET_WIDTH_DELTA;
+        splitPane.setDividerLocation(dividerPosition);
 
         statusBar = new StatusBar(controller, this);
         statusBar.updateOnlineStatusText(online);
