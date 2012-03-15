@@ -47,6 +47,7 @@ public class ImageLoader {
     public static final String IMPORT_PRIVATE_KEYS_ICON_FILE = "/images/importKey.png";
     public static final String EXPORT_PRIVATE_KEYS_ICON_FILE = "/images/exportKey.png";
     public static final String RESET_TRANSACTIONS_ICON_FILE = "/images/resetTransactions.png";
+    public static final String CLOSE_TAB_ICON_FILE = "/images/closeTab.png";
        
 
     public ImageLoader() {

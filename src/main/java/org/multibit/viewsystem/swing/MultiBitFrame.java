@@ -137,7 +137,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * the tabbed pane containing the views
      * 
      */
-    private JTabbedPane viewTabbedPane;
+    private MultiBitTabbedPane viewTabbedPane;
 
     public Logger logger = LoggerFactory.getLogger(MultiBitFrame.class.getName());
 
@@ -278,25 +278,25 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         yourWalletsView = new YourWalletsPanel(controller, this);
 
         // Create the tabbedpane that holds the views
-        viewTabbedPane = new JTabbedPane();
+        viewTabbedPane = new MultiBitTabbedPane();
        
         // add the send bitcoin tab
         JPanel sendBitcoinOutlinePanel = new JPanel(new BorderLayout());
         View sendBitcoinView = viewFactory.getView(View.SEND_BITCOIN_VIEW);
         sendBitcoinOutlinePanel.add( (JPanel) sendBitcoinView, BorderLayout.CENTER);
-        viewTabbedPane.addTab(sendBitcoinView.getViewTitle(), sendBitcoinView.getViewIcon(), sendBitcoinOutlinePanel);
+        viewTabbedPane.addUncloseableTab(sendBitcoinView.getViewTitle(), sendBitcoinView.getViewIcon(), sendBitcoinOutlinePanel);
 
         // add the receive bitcoin tab
         JPanel receiveBitcoinOutlinePanel = new JPanel(new BorderLayout());
         View receiveBitcoinView = viewFactory.getView(View.RECEIVE_BITCOIN_VIEW);
         receiveBitcoinOutlinePanel.add( (JPanel) receiveBitcoinView, BorderLayout.CENTER);
-        viewTabbedPane.addTab(receiveBitcoinView.getViewTitle(), receiveBitcoinView.getViewIcon(), receiveBitcoinOutlinePanel);
+        viewTabbedPane.addUncloseableTab(receiveBitcoinView.getViewTitle(), receiveBitcoinView.getViewIcon(), receiveBitcoinOutlinePanel);
 
         // add the transactions tab
         JPanel transactionsOutlinePanel = new JPanel(new BorderLayout());
         View transactionsView = viewFactory.getView(View.TRANSACTIONS_VIEW);
         transactionsOutlinePanel.add( (JPanel) transactionsView, BorderLayout.CENTER);
-        viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsOutlinePanel);
+        viewTabbedPane.addUncloseableTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsOutlinePanel);
 
         // Create a split pane with the two scroll panes in it.
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (JPanel) yourWalletsView, viewTabbedPane);
