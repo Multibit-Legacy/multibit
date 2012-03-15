@@ -69,4 +69,9 @@ public interface View {
      * @returns the title for the view
      */
     public String getViewTitle();
+    
+    /**
+     * @returns the view identifier for the view
+     */
+    public int getViewId();
 }

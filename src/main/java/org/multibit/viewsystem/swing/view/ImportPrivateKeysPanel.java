@@ -747,4 +747,9 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
     public String getViewTitle() {
         return controller.getLocaliser().getString("importPrivateKeysSubmitAction.text");
     }
+    
+    @Override
+    public int getViewId() {
+        return View.SHOW_IMPORT_PRIVATE_KEYS_VIEW;
+    }
 }

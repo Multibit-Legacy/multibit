@@ -278,7 +278,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         yourWalletsView = new YourWalletsPanel(controller, this);
 
         // Create the tabbedpane that holds the views
-        viewTabbedPane = new MultiBitTabbedPane();
+        viewTabbedPane = new MultiBitTabbedPane(controller);
        
         // add the send bitcoin tab
         JPanel sendBitcoinOutlinePanel = new JPanel(new BorderLayout());

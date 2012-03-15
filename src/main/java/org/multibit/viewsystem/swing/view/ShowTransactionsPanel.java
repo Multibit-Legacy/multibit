@@ -18,7 +18,6 @@ package org.multibit.viewsystem.swing.view;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
-import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -568,5 +567,10 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     @Override
     public String getViewTitle() {
         return controller.getLocaliser().getString("showTransactionsAction.text");
+    }
+    
+    @Override
+    public int getViewId() {
+        return View.TRANSACTIONS_VIEW;
     }
 }

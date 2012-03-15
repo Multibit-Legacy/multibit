@@ -176,4 +176,9 @@ public class HelpAboutPanel extends JPanel implements View {
     public String getViewTitle() {
         return controller.getLocaliser().getString("helpAboutAction.tooltip");
     }
+    
+    @Override
+    public int getViewId() {
+        return View.HELP_ABOUT_VIEW;
+    }
 }

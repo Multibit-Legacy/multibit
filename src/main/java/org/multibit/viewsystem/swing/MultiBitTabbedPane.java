@@ -5,7 +5,9 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.View;
 
 public class MultiBitTabbedPane extends JTabbedPane {
 
@@ -15,13 +17,14 @@ public class MultiBitTabbedPane extends JTabbedPane {
     private Dimension closeButtonSize;
 
     private int tabCounter = 0;
+    
+    private MultiBitController controller;
 
     private final MultiBitTabbedPane thisTabbedPane;
 
-    public MultiBitTabbedPane() {
+    public MultiBitTabbedPane(MultiBitController controller) {
         thisTabbedPane = this;
-
-
+        this.controller = controller;
 
         // Create an image icon of the small 'X' for use with a close
         // button on each tab. The png loaded is a 10x10 graphic
@@ -60,7 +63,15 @@ public class MultiBitTabbedPane extends JTabbedPane {
         tabCloseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int closeTabNumber = thisTabbedPane.indexOfComponent(finalComponent);
+                
                 thisTabbedPane.removeTabAt(closeTabNumber);
+                
+                // notify controller of new view being shown
+                JPanel selectedTab = (JPanel)thisTabbedPane.getSelectedComponent();
+                Component[] components = selectedTab.getComponents();
+                if (components != null && components.length > 0 && components[0] instanceof View) {
+                    controller.setCurrentView(((View)components[0]).getViewId());
+                }
             }
         });
 

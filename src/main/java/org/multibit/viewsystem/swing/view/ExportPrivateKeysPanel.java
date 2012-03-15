@@ -780,4 +780,9 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
     public String getViewTitle() {
         return controller.getLocaliser().getString("showExportPrivateKeysAction.text");
     }
+
+    @Override
+    public int getViewId() {
+        return View.SHOW_EXPORT_PRIVATE_KEYS_VIEW;
+    }
 }

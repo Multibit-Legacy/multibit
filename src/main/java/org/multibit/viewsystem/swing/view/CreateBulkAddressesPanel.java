@@ -311,4 +311,9 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
     public String getViewTitle() {
         return controller.getLocaliser().getString("showCreateBulkAddressesAction.text");
     }
+
+    @Override
+    public int getViewId() {
+        return View.CREATE_BULK_ADDRESSES_VIEW;
+    }
 }

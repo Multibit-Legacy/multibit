@@ -277,4 +277,9 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
     public String getViewTitle() {
         return controller.getLocaliser().getString("resetTransactionsSubmitAction.text");
     }
+    
+    @Override
+    public int getViewId() {
+        return View.RESET_TRANSACTIONS_VIEW;
+    }
 }

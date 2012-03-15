@@ -464,4 +464,9 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
     public String getViewTitle() {
         return controller.getLocaliser().getString("sendBitcoinConfirmAction.text");
     }
+    
+    @Override
+    public int getViewId() {
+        return View.SEND_BITCOIN_VIEW;
+    }
 }

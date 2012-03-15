@@ -36,6 +36,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 
 import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
@@ -122,18 +123,6 @@ public class YourWalletsPanel extends JPanel implements View {
                         loopSingleWalletPanel.setSelected(true);
                     } else {
                         loopSingleWalletPanel.setSelected(false);
-                    }
-                }
-            }
-        }
-    }
-
-    public void grabFocusByWalletFilename(String walletFilename) {
-        if (walletPanels != null) {
-            for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
-                if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename() != null) {
-                    if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename().equals(walletFilename)) {
-                        loopSingleWalletPanel.requestWalletDescriptionFocus();
                     }
                 }
             }
@@ -299,6 +288,8 @@ public class YourWalletsPanel extends JPanel implements View {
                 selectedWalletPanel = (SingleWalletPanel) e.getSource();
             } else if (((JComponent) e.getSource()).getParent() instanceof SingleWalletPanel) {
                 selectedWalletPanel = (SingleWalletPanel) (((JComponent) e.getSource()).getParent());
+            } else if (((JComponent) e.getSource()).getParent() instanceof RoundedPanel) {
+                selectedWalletPanel = (SingleWalletPanel) (((JComponent) e.getSource()).getParent().getParent());
             }
             if (selectedWalletPanel != null) {
                 if (!selectedWalletPanel.getPerWalletModelData().getWalletFilename()
@@ -309,6 +300,7 @@ public class YourWalletsPanel extends JPanel implements View {
 
                     controller.fireWalletChanged();
                     controller.fireDataChanged();
+                    controller.determineNextView(ActionForward.FORWARD_TO_SAME);
                     controller.displayNextView();
                 }
             }
@@ -364,5 +356,10 @@ public class YourWalletsPanel extends JPanel implements View {
     @Override
     public String getViewTitle() {
         return controller.getLocaliser().getString("showYourWalletsAction.text");
+    }
+    
+    @Override
+    public int getViewId() {
+        return View.YOUR_WALLETS_VIEW;
     }
 }

@@ -104,4 +104,9 @@ public class HelpContentsPanel extends JPanel implements View {
     public String getViewTitle() {
         return controller.getLocaliser().getString("showHelpContentsAction.text");
     }
+    
+    @Override
+    public int getViewId() {
+        return View.HELP_CONTENTS_VIEW;
+    }
 }
