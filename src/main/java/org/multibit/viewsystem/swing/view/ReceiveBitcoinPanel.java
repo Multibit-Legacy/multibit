@@ -422,6 +422,6 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
 
     @Override
     public String getViewTitle() {
-        return controller.getLocaliser().getString("receiveBitcoinAction.text");
+        return controller.getLocaliser().getString("receiveBitcoinAction.textShort");
     }
 }

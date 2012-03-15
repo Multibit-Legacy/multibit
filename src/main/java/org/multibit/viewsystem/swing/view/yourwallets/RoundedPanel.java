@@ -22,6 +22,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.SystemColor;
 import java.util.Locale;
 
 import javax.swing.JPanel;
@@ -43,7 +44,7 @@ public class RoundedPanel extends JPanel {
     /** Stroke size. it is recommended to set it to 1 for better view */
     protected int strokeSize = 1;
     /** Color of shadow */
-    protected Color shadowColor = Color.BLACK;
+    protected Color shadowColor = Color.DARK_GRAY;
     /** Sets if it drops shadow */
     protected boolean shady = true;
     /** Sets if it has an High Quality view */
@@ -101,7 +102,7 @@ public class RoundedPanel extends JPanel {
             graphics.setColor(ColorAndFontConstants.SELECTION_BACKGROUND_COLOR);
             graphics.setStroke(new BasicStroke(strokeSize + 1));
         } else {
-            graphics.setColor(getForeground());
+            graphics.setColor(SystemColor.windowBorder);
             graphics.setStroke(new BasicStroke(strokeSize));
         }
         graphics.drawRoundRect(0, 0, width - shadowGap, height - shadowGap, arcs.width, arcs.height);

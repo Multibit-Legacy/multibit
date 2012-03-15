@@ -101,6 +101,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private StatusBar statusBar;
     private boolean online = false;
+    public static final String SEPARATOR = " - ";
 
     private static final long serialVersionUID = 7621813615342923041L;
 
@@ -164,8 +165,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         setCursor(Cursor.WAIT_CURSOR);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        setTitle(localiser.getString("multiBitFrame.title"));
-
+        String titleText = localiser.getString("multiBitFrame.title");
+        if (controller.getModel().getActiveWallet() != null) {
+            titleText = titleText + SEPARATOR + controller.getModel().getActivePerWalletModelData().getWalletDescription() + SEPARATOR + controller.getModel().getActivePerWalletModelData().getWalletFilename();
+        }
+        setTitle(titleText);
+        
         ToolTipManager.sharedInstance().setDismissDelay(TOOLTIP_DISMISSAL_DELAY);
 
         final MultiBitController finalController = controller;
@@ -623,8 +628,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         updateHeader();
 
-        setTitle(localiser.getString("multiBitFrame.title"));
-
+        String titleText = localiser.getString("multiBitFrame.title");
+        if (controller.getModel().getActiveWallet() != null) {
+            titleText = titleText + SEPARATOR + controller.getModel().getActivePerWalletModelData().getWalletDescription() + SEPARATOR + controller.getModel().getActivePerWalletModelData().getWalletFilename();
+        }
+        setTitle(titleText);
+        
         viewFactory = new ViewFactory(controller, this);
 
         // tell all the tabs in the tabbedPane to update
@@ -880,6 +889,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         new Object[] { controller.getLocaliser().bitcoinValueToString4(model.getActiveWalletAvailableBalance(),
                                 true, false) }));
             }
+            
+            String titleText = localiser.getString("multiBitFrame.title");
+            if (controller.getModel().getActiveWallet() != null) {
+                titleText = titleText + SEPARATOR + controller.getModel().getActivePerWalletModelData().getWalletDescription() + SEPARATOR + controller.getModel().getActivePerWalletModelData().getWalletFilename();
+            }
+            setTitle(titleText);
         }
     }
 

@@ -15,6 +15,10 @@
  */
 package org.multibit.viewsystem.swing.view.components;
 
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+
 import javax.swing.JTextField;
 
 import org.multibit.controller.MultiBitController;
@@ -23,8 +27,20 @@ public class MultiBitTextField extends JTextField {
 
     private static final long serialVersionUID = 8706099337840832271L;
    
+    private static final int HEIGHT_DELTA = 4;
+    private static final int WIDTH_DELTA = 4;
+    
     public MultiBitTextField(String text, int width, MultiBitController controller) {
         super(text, width);
-        setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
+        setFont(font);
+        
+        FontMetrics fontMetrics = getFontMetrics(font);
+        
+        int preferredHeight = fontMetrics.getHeight() + HEIGHT_DELTA;
+        int preferredWidth = fontMetrics.getMaxAdvance() * width + WIDTH_DELTA;
+        
+        setPreferredSize(new Dimension(preferredWidth, preferredHeight));
+        setMinimumSize(new Dimension(preferredWidth, preferredHeight));
     }
 }

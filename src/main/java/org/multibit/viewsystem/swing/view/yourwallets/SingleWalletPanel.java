@@ -47,18 +47,16 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
 
     private static final long serialVersionUID = -7110340338285836548L;
 
-    private static final String TYPICAL_DESCRIPTION = "One Quick Brown Fox";
-    private static final int WALLET_WIDTH_DELTA = 20;
-    private static final int WALLET_HEIGHT_DELTA = 30;
-
     private static final Dimension ABOVE_BASELINE_LEADING_CORNER_PADDING = new Dimension(5, 6);
     private static final Dimension BELOW_BASELINE_TRAILING_CORNER_PADDING = new Dimension(7, 8);
 
     private PerWalletModelData perWalletModelData;
 
-    private static final Color BACKGROUND_COLOR_NORMAL = (Color)UIManager.get("Button.background");    
+    private static final Color BACKGROUND_COLOR_NORMAL = (Color) UIManager.get("Button.background");
     private static final Color BACKGROUND_COLOR_DATA_HAS_CHANGED = new Color(0xff, 0xff, 0xff);
+    private static final int COLOR_DELTA = 12;
 
+    private static Color inactiveBackGroundColor;
     private MultiBitLabel walletFilenameLabel;
     private MultiBitTextField walletDescriptionTextField;
     private Border walletDescriptionTextFieldBorder;
@@ -67,7 +65,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
-  
+
     public SingleWalletPanel(PerWalletModelData perWalletModelData, MultiBitController controller, MultiBitFrame mainFrame) {
         super(controller.getLocaliser().getLocale());
         this.perWalletModelData = perWalletModelData;
@@ -78,6 +76,9 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
         setOpaque(false);
         setFocusable(true);
         setBackground(BACKGROUND_COLOR_NORMAL);
+
+        inactiveBackGroundColor = new Color(Math.max(0, BACKGROUND_COLOR_NORMAL.getRed() - COLOR_DELTA), Math.max(0,
+                BACKGROUND_COLOR_NORMAL.getBlue() - COLOR_DELTA), Math.max(0, BACKGROUND_COLOR_NORMAL.getGreen() - COLOR_DELTA));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -99,6 +100,7 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
 
         walletDescriptionTextField = new MultiBitTextField(perWalletModelData.getWalletDescription(), 16, controller);
         walletDescriptionTextField.setFocusable(true);
+        walletDescriptionTextField.setOpaque(false);
         walletDescriptionTextField.addActionListener(this);
         walletDescriptionTextField.addFocusListener(this);
         walletDescriptionTextFieldBorder = walletDescriptionTextField.getBorder();
@@ -187,11 +189,14 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
                 walletDescriptionTextField.setBorder(walletDescriptionTextFieldBorder);
                 walletDescriptionTextField.setSelectedTextColor(ColorAndFontConstants.SELECTION_FOREGROUND_COLOR);
                 walletDescriptionTextField.setSelectionColor(ColorAndFontConstants.SELECTION_BACKGROUND_COLOR);
+                walletDescriptionTextField.setBackground(BACKGROUND_COLOR_NORMAL);
+                setBackground(BACKGROUND_COLOR_NORMAL);
             } else {
                 walletFilenameLabel.setVisible(false);
                 walletDescriptionTextField.setEditable(false);
                 walletDescriptionTextField.setBorder(BorderFactory.createEmptyBorder(5, 7, 5, 5));
-                walletDescriptionTextField.setBackground(BACKGROUND_COLOR_NORMAL);
+                walletDescriptionTextField.setBackground(inactiveBackGroundColor);
+                setBackground(inactiveBackGroundColor);
             }
         }
     }
@@ -236,6 +241,13 @@ public class SingleWalletPanel extends RoundedPanel implements ActionListener, F
             walletDescriptionTextField.select(0, 0);
             String text = walletDescriptionTextField.getText();
             perWalletModelData.setWalletDescription(text);
+            
+            String titleText = controller.getLocaliser().getString("multiBitFrame.title");
+            if (controller.getModel().getActiveWallet() != null) {
+                titleText = titleText + MultiBitFrame.SEPARATOR + controller.getModel().getActivePerWalletModelData().getWalletDescription() + MultiBitFrame.SEPARATOR + controller.getModel().getActivePerWalletModelData().getWalletFilename();
+            }
+            mainFrame.setTitle(titleText);
+
         }
     }
 
