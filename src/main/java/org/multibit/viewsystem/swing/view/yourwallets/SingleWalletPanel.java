@@ -66,6 +66,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private static final int HEIGHT_DELTA = 20;
     private static final int DETAIL_HEIGHT_DELTA = 0;
     private static final int WIDTH_DELTA = 4;
+    private static final int MIN_WIDTH_SCROLLBAR_DELTA = 20;
 
     private static Color inactiveBackGroundColor;
     private MultiBitTextField walletDescriptionTextField;
@@ -109,7 +110,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         myRoundedPanel = new RoundedPanel(controller.getLocaliser().getLocale());
         myRoundedPanel.setLayout(new GridBagLayout());
         myRoundedPanel.setPreferredSize(new Dimension(normalWidth, normalHeight));
-        myRoundedPanel.setMinimumSize(new Dimension(normalWidth, normalHeight));
+        myRoundedPanel.setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, normalHeight));
         myRoundedPanel.setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
 
         setOpaque(false);
@@ -249,7 +250,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 walletDescriptionTextField.setBackground(BACKGROUND_COLOR_NORMAL);
                 myRoundedPanel.setBackground(BACKGROUND_COLOR_NORMAL);
                 setPreferredSize(new Dimension(selectedWidth, selectedHeight));
-                setMinimumSize(new Dimension(selectedWidth, selectedHeight));
+                setMinimumSize(new Dimension(selectedWidth - MIN_WIDTH_SCROLLBAR_DELTA, selectedHeight));
                 setMaximumSize(new Dimension(selectedWidth * 2, selectedHeight));
             } else {
                 detailPanel.setVisible(false);
@@ -258,7 +259,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 walletDescriptionTextField.setBackground(inactiveBackGroundColor);
                 myRoundedPanel.setBackground(inactiveBackGroundColor);
                 setPreferredSize(new Dimension(normalWidth, normalHeight));
-                setMinimumSize(new Dimension(normalWidth, normalHeight));
+                setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, normalHeight));
                 setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
             }
         }

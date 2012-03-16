@@ -65,6 +65,10 @@ public class YourWalletsPanel extends JPanel implements View {
 
     private JScrollPane scrollPane;
 
+    public JScrollPane getScrollPane() {
+        return scrollPane;
+    }
+
     /**
      * Creates a new {@link YourWalletsPanel}.
      */
@@ -139,7 +143,6 @@ public class YourWalletsPanel extends JPanel implements View {
         scrollPane.getViewport().setBackground(SystemColor.window);
         scrollPane.getViewport().setOpaque(true);
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        scrollPane.setMaximumSize(new Dimension(200, 600));
         tabPanel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel buttonPanel = createButtonPanel();

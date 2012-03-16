@@ -89,6 +89,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final int WIDTH_OF_LONG_FIELDS = 320;
     public static final int WIDTH_OF_AMOUNT_FIELD = 160;
     public static final int WALLET_WIDTH_DELTA = 30;
+    
+    private static final int SCROLL_BAR_DELTA = 20;
 
     private StatusBar statusBar;
     private boolean online = false;
@@ -114,6 +116,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private View yourWalletsView;
 
     private MultiBitFrame thisFrame;
+    
+    private JSplitPane splitPane;
 
     private static final int TOOLTIP_DISMISSAL_DELAY = 10000; // millisecs
 
@@ -207,6 +211,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         fileChangeTimer = new Timer();
         fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), 0, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
+        
+        int dividerPosition = SingleWalletPanel.calculateNormalWidth((JComponent) (yourWalletsView)) + WALLET_WIDTH_DELTA;
+        if (((YourWalletsPanel)yourWalletsView).getScrollPane().isVisible()) {
+            dividerPosition += SCROLL_BAR_DELTA;
+        }
+        splitPane.setDividerLocation(dividerPosition);
+
     }
 
     public GenericApplication getApplication() {
@@ -288,7 +299,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewTabbedPane.addUncloseableTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsOutlinePanel);
 
         // Create a split pane with the two scroll panes in it.
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (JPanel) yourWalletsView, viewTabbedPane);
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (JPanel) yourWalletsView, viewTabbedPane);
         splitPane.setOneTouchExpandable(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -301,6 +312,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         contentPane.add(splitPane, constraints);
         
         int dividerPosition = SingleWalletPanel.calculateNormalWidth((JComponent) (yourWalletsView)) + WALLET_WIDTH_DELTA;
+        if (((YourWalletsPanel)yourWalletsView).getScrollPane().isVisible()) {
+            dividerPosition += ((YourWalletsPanel)yourWalletsView).getScrollPane().getWidth();
+        }
         splitPane.setDividerLocation(dividerPosition);
 
         statusBar = new StatusBar(controller, this);
