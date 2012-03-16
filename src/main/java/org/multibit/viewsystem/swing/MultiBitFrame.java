@@ -77,7 +77,6 @@ import com.google.bitcoin.core.Wallet;
 
 /*
  * JFrame displaying Swing version of MultiBit
- *
  */
 public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationListener {
 
@@ -133,12 +132,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private MultiBitTabbedPane viewTabbedPane;
 
     public Logger logger = LoggerFactory.getLogger(MultiBitFrame.class.getName());
-
-    /**
-     * the view that the controller is telling us to display an int - one of the
-     * View constants
-     */
-//    private int currentView;
 
     private ViewFactory viewFactory;
 
@@ -206,14 +199,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         yourWalletsView.displayView();
 
-        pack();
- 
         int dividerPosition = SingleWalletPanel.calculateNormalWidth((JComponent) (yourWalletsView)) + WALLET_WIDTH_DELTA;
         if (((YourWalletsPanel)yourWalletsView).getScrollPane().isVisible()) {
             dividerPosition += SCROLL_BAR_DELTA;
         }
         splitPane.setDividerLocation(dividerPosition);
 
+        pack();
+        
         setVisible(true);
 
         fileChangeTimer = new Timer();
@@ -415,8 +408,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     /**
      * @param constraints
      * @param contentPane
-     * 
-     * @return
      */
     private void addMenuBar(GridBagConstraints constraints, Container contentPane) {
         // Create the menu bar
