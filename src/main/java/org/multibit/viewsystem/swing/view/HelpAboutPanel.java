@@ -151,20 +151,12 @@ public class HelpAboutPanel extends JPanel implements View {
         }
     }
 
-    /**
-     * show help about message box
-     */
-    @Override
-    public void displayView() {
- 
-    }
-
     @Override
     public void navigateAwayFromView() {
     }
 
     @Override
-    public void updateView() {        
+    public void displayView() {        
     }
        
     @Override

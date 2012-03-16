@@ -44,16 +44,13 @@ public interface View {
     public static final int SHOW_OPEN_URI_DIALOG_VIEW = 14;
     public static final int SHOW_IMPORT_PRIVATE_KEYS_VIEW = 15;
     public static final int SHOW_EXPORT_PRIVATE_KEYS_VIEW = 16;
- 
+    
+    public static final int DEFAULT_VIEW = TRANSACTIONS_VIEW;
+   
     /**
-     * display the view (including any screen drawing/ construction
+     * display the view
      */
     public void displayView();
-    
-    /**
-     * update the view (primarily due to the model data changing)
-     */
-    public void updateView();
     
     /**
      * Navigate away from the view (including releasing any resources used)

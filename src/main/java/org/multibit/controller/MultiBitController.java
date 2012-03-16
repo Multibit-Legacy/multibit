@@ -86,11 +86,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     private Localiser localiser;
 
     /**
-     * the view currently being displayed to the user
-     */
-    private int currentView;
-
-    /**
      * the bitcoinj network interface
      */
     private MultiBitService multiBitService;
@@ -125,29 +120,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
         viewSystems = new ArrayList<ViewSystem>();
 
-        // initialize everything to look at the stored opened view
-        // if no properties passed in just initialize to the your wallets view
-        int initialView = View.YOUR_WALLETS_VIEW;
-        if (userPreferences != null) {
-            String viewString = (String) userPreferences.get(MultiBitModel.SELECTED_VIEW);
-            if (viewString != null) {
-                try {
-                    int initialViewInProperties = Integer.parseInt(viewString);
-
-                    // do not open obsolete views
-                    if (View.OPEN_WALLET_VIEW != initialViewInProperties && View.SAVE_WALLET_AS_VIEW != initialViewInProperties
-                            && View.SEND_BITCOIN_CONFIRM_VIEW != initialViewInProperties) {
-                        initialView = initialViewInProperties;
-                    }
-                } catch (NumberFormatException nfe) {
-                    // carry on
-                }
-            }
-        }
-
-        log.debug("Initial view from properties file is '" + currentView + "'");
-        currentView = initialView;
-
         fileHandler = new FileHandler(this);
     }
 
@@ -161,17 +133,17 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         log.debug("Displaying view '" + viewToDisplay + "'");
         // tell all views to close the current view
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.navigateAwayFromView(currentView);
+            viewSystem.navigateAwayFromView(getCurrentView());
         }
 
-        currentView = viewToDisplay;
+        setCurrentView(viewToDisplay);
 
         // remember the view in the preferences
-        model.setUserPreference(MultiBitModel.SELECTED_VIEW, "" + currentView);
+        model.setUserPreference(MultiBitModel.SELECTED_VIEW, "" + getCurrentView());
 
         // tell all views which view to display
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.displayView(currentView);
+            viewSystem.displayView(getCurrentView());
         }
     }
 
@@ -423,12 +395,17 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     public int getCurrentView() {
-        return currentView;
+        if (getModel() != null) {
+            return getModel().getCurrentView();
+        } else {
+            return View.DEFAULT_VIEW;
+        }
     }
-    
+
     public void setCurrentView(int view) {
-        currentView = view;
-        getModel().setUserPreference(MultiBitModel.SELECTED_VIEW, "" + view);
+        if (getModel() != null) {
+            getModel().setCurrentView(view);
+        }
     }
 
     public void setApplicationStarting(boolean applicationStarting) {

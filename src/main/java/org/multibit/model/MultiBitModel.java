@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.network.MultiBitService;
+import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,9 +142,6 @@ public class MultiBitModel {
     public static final String MERCHANT_BULK_ADDRESSES_NUMBER_OF_ADDRESSES = "merchantBulkAddressesNumberOfAddresses";
     public static final String MERCHANT_BULK_ADDRESSES_OUTPUT_FILENAME = "merchantBulkAddressesOutputFilename";
 
-    // reset transactions
-//    public static final String EARLIEST_TRANSACTION_DATE = "earliestTransactionDate";
-
     // user preference font
     public static final String FONT = "font";
     public static final String FONT_NAME = "fontName";
@@ -169,15 +167,20 @@ public class MultiBitModel {
     private Properties userPreferences;
 
     /**
-     * list of each wallet's total model data
+     * List of each wallet's total model data
      */
     private List<PerWalletModelData> perWalletModelDataList;
 
     /**
-     * the current active wallet
+     * The current active wallet
      */
     private PerWalletModelData activeWalletModelData;
-
+    
+    /**
+     * The currently displayed view. One of the View constants.
+     */
+    private int currentView;
+  
     public MultiBitModel(MultiBitController controller) {
         this(controller, new Properties());
     }
@@ -190,6 +193,30 @@ public class MultiBitModel {
 
         activeWalletModelData = new PerWalletModelData();
         perWalletModelDataList.add(activeWalletModelData);
+        
+
+        // initialize everything to look at the stored opened view
+        // if no properties passed in just initialize to the transactions view
+        int initialView = View.TRANSACTIONS_VIEW;
+        if (userPreferences != null) {
+            String viewString = (String) userPreferences.get(MultiBitModel.SELECTED_VIEW);
+            if (viewString != null) {
+                try {
+                    int initialViewInProperties = Integer.parseInt(viewString);
+
+                    // do not open obsolete views
+                    if (View.OPEN_WALLET_VIEW != initialViewInProperties && View.SAVE_WALLET_AS_VIEW != initialViewInProperties
+                            && View.SEND_BITCOIN_CONFIRM_VIEW != initialViewInProperties) {
+                        initialView = initialViewInProperties;
+                    }
+                } catch (NumberFormatException nfe) {
+                    // carry on
+                }
+            }
+        }
+
+        setCurrentView(initialView);
+        log.debug("Initial view from properties file is '" + getCurrentView() + "'");
     }
 
     /**
@@ -672,28 +699,6 @@ public class MultiBitModel {
      * @return
      */
     private int workOutHeight(Transaction transaction) {
-//        Collection<Sha256Hash> appearsIn = transaction.getAppearsInHashes();
-//        if (appearsIn != null) {
-//            if (!appearsIn.isEmpty()) {
-//                Iterator<Sha256Hash> iterator = appearsIn.iterator();
-//                // just take the first i.e. ignore impact of side chains
-//                if (iterator.hasNext()) {
-//                    Sha256Hash appearsInHash = iterator.next();
-//                    try {
-//                        if (controller != null && controller.getMultiBitService() != null && controller.getMultiBitService().getBlockStore() != null) {
-//                            StoredBlock appearsInStoredBlock = controller.getMultiBitService().getBlockStore().get(appearsInHash);
-//                            if (appearsInStoredBlock != null) {
-//                                return appearsInStoredBlock.getHeight();
-//                            }
-//                        }
-//                    } catch (BlockStoreException e) {
-//                        // TODO Auto-generated catch block
-//                        e.printStackTrace();
-//                    }
-//
-//                }
-//            }
-//        }
         return -1; // -1 = we do not know
     }
 
@@ -719,4 +724,15 @@ public class MultiBitModel {
         }
         return null;
     }
+
+    public int getCurrentView() {
+        return currentView;
+    }
+
+    public void setCurrentView(int view) {
+        this.currentView = view;
+        setUserPreference(MultiBitModel.SELECTED_VIEW, "" + view);
+
+    }
+
 }

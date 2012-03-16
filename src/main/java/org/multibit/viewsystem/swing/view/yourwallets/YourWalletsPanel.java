@@ -87,12 +87,20 @@ public class YourWalletsPanel extends JPanel implements View {
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
     }
 
-    /**
-     * show your wallets view
-     */
+    @Override
     public void displayView() {
-         initUI();
-       
+        if (walletPanels != null) {
+            for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
+                // make sure the totals displayed are correct
+                loopSingleWalletPanel.updateFromModel();
+                loopSingleWalletPanel.invalidate();
+                loopSingleWalletPanel.revalidate();
+                loopSingleWalletPanel.repaint();
+            }
+        }
+
+        initUI();
+        
         // get the wallets from the model
         String activeWalletFilename = controller.getModel().getActiveWalletFilename();
         PerWalletModelData activePerModelData = controller.getModel().getPerWalletModelDataByWalletFilename(activeWalletFilename);
@@ -312,26 +320,7 @@ public class YourWalletsPanel extends JPanel implements View {
         public void mouseReleased(MouseEvent e) {
         }
     }
-
-    public void updateViewForNewWallet() {
-        displayView();
-    }
-
-    @Override
-    public void updateView() {
-        if (walletPanels != null) {
-            for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
-                // make sure the totals displayed are correct
-                loopSingleWalletPanel.updateFromModel();
-                loopSingleWalletPanel.invalidate();
-                loopSingleWalletPanel.revalidate();
-                loopSingleWalletPanel.repaint();
-            }
-        }
-
-        displayView();
-    }
-
+    
     @Override
     public Icon getViewIcon() {
         return ImageLoader.createImageIcon(ImageLoader.YOUR_WALLETS_ICON_FILE);

@@ -396,12 +396,6 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
     @Override
     public void displayView() {
         super.displayView();
-        updateView();
-    }
-
-    @Override
-    public void updateView() {
-        super.updateView();
         // disable any new changes if another process has changed the wallet
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {

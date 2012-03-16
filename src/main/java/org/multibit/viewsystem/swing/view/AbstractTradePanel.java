@@ -639,11 +639,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
     @Override
     public void displayView() {
-         updateView();
-    }
-
-    @Override
-    public void updateView() {
         loadForm();
         selectRows();
 

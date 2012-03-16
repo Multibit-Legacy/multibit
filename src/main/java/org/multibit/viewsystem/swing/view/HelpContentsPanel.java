@@ -77,6 +77,11 @@ public class HelpContentsPanel extends JPanel implements View {
     }
 
     @Override
+    public void navigateAwayFromView() {
+        controller.updateStatusLabel("");
+    }
+
+    @Override
     public void displayView() {
         if (!firstTimeLoaded) {
             if (browser != null) {
@@ -84,15 +89,6 @@ public class HelpContentsPanel extends JPanel implements View {
             }
         }
         firstTimeLoaded = false;
-    }
-
-    @Override
-    public void navigateAwayFromView() {
-        controller.updateStatusLabel("");
-    }
-
-    @Override
-    public void updateView() {
     }
     
     @Override

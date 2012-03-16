@@ -58,7 +58,6 @@ import org.multibit.viewsystem.swing.action.ImportPrivateKeysSubmitAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.multibit.viewsystem.swing.view.components.MultiBitTitleLabel;
 
 /**
  * The import private keys view
@@ -599,11 +598,6 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
     @Override
     public void displayView() {
-        updateView();
-    }
-
-    @Override
-    public void updateView() {
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
 

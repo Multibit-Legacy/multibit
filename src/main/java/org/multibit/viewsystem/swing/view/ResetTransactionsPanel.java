@@ -249,21 +249,17 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         return data;
     }
 
+
+    @Override
+    public void navigateAwayFromView() {
+    }
+    
     /**
      * show explanatory text for resetting blockchain and transactions and a
      * button to do it
      */
     @Override
     public void displayView() {
-        updateView();
-    }
-
-    @Override
-    public void navigateAwayFromView() {
-    }
-    
-    @Override
-    public void updateView() {
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
     }

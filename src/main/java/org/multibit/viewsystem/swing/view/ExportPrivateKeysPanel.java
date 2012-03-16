@@ -612,11 +612,6 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
 
     @Override
     public void displayView() {
-        updateView();
-    }
-
-    @Override
-    public void updateView() {
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
 

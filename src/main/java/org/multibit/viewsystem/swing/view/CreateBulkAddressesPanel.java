@@ -84,11 +84,6 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
     }
 
     @Override
-    public void displayView() {
-        updateView();
-    }
-
-    @Override
     public void navigateAwayFromView() {
     }
 
@@ -297,7 +292,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
     }
 
     @Override
-    public void updateView() {
+    public void displayView() {
         this.removeAll();
         initUI();
     }

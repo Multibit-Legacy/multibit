@@ -405,19 +405,13 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
     @Override
     public void displayView() {
         super.displayView();
-        updateView();
-
+ 
         String bringToFront = controller.getModel().getUserPreference(MultiBitModel.BRING_TO_FRONT);
         if (Boolean.TRUE.toString().equals(bringToFront)) {
             controller.getModel().setUserPreference(MultiBitModel.BRING_TO_FRONT, "false");
             mainFrame.bringToFront();
         }
 
-    }
-
-    @Override
-    public void updateView() {
-        super.updateView();
         // disable any new changes if another process has changed the wallet
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {

@@ -139,7 +139,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     /**
      * update preferences panel
      */
-    public void updateView() {
+    public void displayView() {
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
 
         if (sendFeeString == null || sendFeeString == "") {
@@ -828,11 +828,6 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         public int compareTo(LanguageData other) {
             return languageCode.compareTo(other.languageCode);
         }
-    }
-
-    @Override
-    public void displayView() {
-        updateView();
     }
 
     public void setSelectedFont(Font selectedFont) {

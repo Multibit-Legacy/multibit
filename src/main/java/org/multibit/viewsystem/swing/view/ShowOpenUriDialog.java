@@ -252,11 +252,6 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, DataProvi
         // bring this dialog to the front
         bringToFront();
     }
-
-    @Override
-    public void updateView() {
-        log.debug("updateView called for ShowOpenUriDialog " + this.toString());
-    }
     
     private void bringToFront() {
         java.awt.EventQueue.invokeLater(new Runnable() {

@@ -641,7 +641,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 JPanel tabComponent = (JPanel) viewTabbedPane.getComponentAt(i);
                 Component[] components = tabComponent.getComponents();
                 if (components != null && components.length > 0 && components[0] instanceof View) {
-                    ((View) components[0]).updateView();
+                    ((View) components[0]).displayView();
                 }
             }
         }
@@ -859,7 +859,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 // tell the current view to update itself
                 View currentViewView = viewFactory.getView(controller.getCurrentView());
                 if (currentViewView != null) {
-                    currentViewView.updateView();
+                    currentViewView.displayView();
                 }
 
                 viewTabbedPane.invalidate();
@@ -969,7 +969,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 if (yourWalletsView != null) {
-                    yourWalletsView.updateView();
+                    yourWalletsView.displayView();
                 }
                 
                 recreateAllViews(true);

@@ -236,11 +236,6 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
     @Override
     public void displayView() {
-        updateView();
-    }
-
-    @Override
-    public void updateView() {
         //log.debug("ShowTransactionsPanel#updateView called on panel " + System.identityHashCode(this));
         walletTableModel.recreateWalletData();
 
