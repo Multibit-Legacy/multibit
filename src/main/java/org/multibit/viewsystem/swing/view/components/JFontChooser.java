@@ -69,8 +69,8 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 public class JFontChooser extends JComponent {
     private static final long serialVersionUID = 7081944796802758452L;
     
-    private static final int WIDTH_DELTA = 140;
-    private static final int HEIGHT_DELTA = 100;
+    private static final int WIDTH_DELTA = 240;
+    private static final int HEIGHT_DELTA = 120;
     
     // class variables
     /**
@@ -610,7 +610,7 @@ public class JFontChooser extends JComponent {
             p.add(getFontFamilyTextField(), BorderLayout.NORTH);
             p.add(scrollPane, BorderLayout.CENTER);
 
-            MultiBitLabel label = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontName"), controller);
+            MultiBitLabel label = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontName"));
             label.setHorizontalAlignment(JLabel.LEFT);
             label.setHorizontalTextPosition(JLabel.LEFT);
             label.setLabelFor(getFontFamilyTextField());
@@ -639,7 +639,7 @@ public class JFontChooser extends JComponent {
             p.add(getFontStyleTextField(), BorderLayout.NORTH);
             p.add(scrollPane, BorderLayout.CENTER);
 
-            MultiBitLabel label = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontStyle"), controller);
+            MultiBitLabel label = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontStyle"));
             label.setHorizontalAlignment(JLabel.LEFT);
             label.setHorizontalTextPosition(JLabel.LEFT);
             label.setLabelFor(getFontStyleTextField());
@@ -667,7 +667,7 @@ public class JFontChooser extends JComponent {
             p.add(getFontSizeTextField(), BorderLayout.NORTH);
             p.add(scrollPane, BorderLayout.CENTER);
 
-            MultiBitLabel label = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontSize"), controller);
+            MultiBitLabel label = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontSize"));
             Dimension requiredSize = new Dimension(fontMetrics.stringWidth(controller.getLocaliser().getString("fontChooser.fontSize")), fontMetrics.getHeight());
             label.setMinimumSize(requiredSize);
             label.setMaximumSize(requiredSize);
