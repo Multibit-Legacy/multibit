@@ -22,10 +22,10 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.UIManager;
 
-import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
+import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
@@ -91,6 +91,6 @@ public class UndoPreferencesChangesSubmitAction extends AbstractAction {
         UIManager.put("ToolTip.font", new Font(previousFontName, previousFontStyleAsInt, previousFontSizeAsInt));
 
         controller.fireLanguageChanged();
-        controller.setActionForwardToSiblingOfParent(ActionForward.FORWARD_TO_SAME);
+        controller.displayView(View.PREFERENCES_VIEW);
     }
 }

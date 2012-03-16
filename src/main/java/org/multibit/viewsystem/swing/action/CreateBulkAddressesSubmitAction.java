@@ -26,7 +26,6 @@ import java.io.OutputStreamWriter;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.Data;
@@ -160,6 +159,6 @@ public class CreateBulkAddressesSubmitAction extends AbstractAction {
         }
 
         // return to same view
-        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
+        controller.displayView(controller.getCurrentView());
     }
 }

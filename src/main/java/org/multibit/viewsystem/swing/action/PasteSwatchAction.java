@@ -26,7 +26,6 @@ import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
 import org.multibit.model.PerWalletModelData;
@@ -93,7 +92,7 @@ public class PasteSwatchAction extends AbstractAction {
             }
 
             // forward back to the view currently being displayed
-            controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
+            controller.displayView(controller.getCurrentView());
         }
     }
 

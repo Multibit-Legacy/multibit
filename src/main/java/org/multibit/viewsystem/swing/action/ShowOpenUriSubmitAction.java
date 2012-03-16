@@ -20,12 +20,12 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.ShowOpenUriDialog;
 
@@ -96,8 +96,7 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
             }
             
             showOpenUriDialog.setVisible(false);
-            controller.clearViewStack();
-            controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SEND_BITCOIN);
+            controller.displayView(View.SEND_BITCOIN_VIEW);
         }
     }
 }

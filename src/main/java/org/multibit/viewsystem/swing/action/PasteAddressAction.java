@@ -21,7 +21,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
-import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
@@ -82,7 +81,7 @@ public class PasteAddressAction extends AbstractAction {
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, stringToPaste);
 
             // forward back to the view currently being displayed
-            controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
-        }
+            controller.displayView(controller.getCurrentView());
+         }
     }
 }

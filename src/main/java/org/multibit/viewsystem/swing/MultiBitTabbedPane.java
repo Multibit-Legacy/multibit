@@ -1,9 +1,18 @@
 package org.multibit.viewsystem.swing;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
@@ -70,7 +79,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
                 JPanel selectedTab = (JPanel)thisTabbedPane.getSelectedComponent();
                 Component[] components = selectedTab.getComponents();
                 if (components != null && components.length > 0 && components[0] instanceof View) {
-                    controller.setCurrentView(((View)components[0]).getViewId());
+                    controller.displayView(((View)components[0]).getViewId());
                 }
             }
         });

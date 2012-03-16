@@ -23,7 +23,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.UIManager;
 
-import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
@@ -203,7 +202,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         }
 
         // return to the same view
-        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
+        controller.displayView(controller.getCurrentView());
 
         if (feeValidationError) {
             controller.updateStatusLabel(updateStatusText);

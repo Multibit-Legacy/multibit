@@ -58,6 +58,10 @@ public class ImageLoader {
      * Returns an ImageIcon, or null if the path was invalid.
      */
     public static ImageIcon createImageIcon(String path) {
+        if (path == null) {
+            return null;
+        }
+        
         java.net.URL imgURL = MultiBitFrame.class.getResource(path);
         if (imgURL != null) {
             return new ImageIcon(imgURL);

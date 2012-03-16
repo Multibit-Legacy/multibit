@@ -22,11 +22,9 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.Stack;
 
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Localiser;
@@ -93,16 +91,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     private int currentView;
 
     /**
-     * the next view that will be displayed to the user
-     */
-    private int nextView;
-
-    /**
-     * the stack of views
-     */
-    private Stack<Integer> viewStack;
-
-    /**
      * the bitcoinj network interface
      */
     private MultiBitService multiBitService;
@@ -156,196 +144,26 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
                 }
             }
         }
-        viewStack = new Stack<Integer>();
-        viewStack.push(initialView);
 
         currentView = initialView;
-        nextView = initialView;
+ //       nextView = initialView;
 
         fileHandler = new FileHandler(this);
     }
 
     /**
-     * set the action forward that will be used to determined the next view to
-     * display
+     * Display the view specified
      * 
-     * normally called by the action once it has decided what the next view is
-     * 
-     * this setActionForward should be used when the next view is a child of the
-     * current view
-     * 
-     * @param actionForward
-     *            The action forward
+     * @param viewToDisplay
+     *            View to display. Must be one of the View constants
      */
-    public void setActionForwardToChild(ActionForward actionForward) {
-        // push current view onto the stack
-        viewStack.push(currentView);
-        determineNextView(actionForward);
-        displayNextView();
-    }
-
-    /**
-     * set the action forward that will be used to determined the next view to
-     * display where the next view is a sibling of the current view
-     * 
-     * @param actionForward
-     *            The action forward
-     */
-    public void setActionForwardToSibling(ActionForward actionForward) {
-        determineNextView(actionForward);
-
-        // do not change the call stack
-        displayNextView();
-    }
-
-    /**
-     * pop the view stack and then move to a sibling
-     */
-    public void setActionForwardToSiblingOfParent(ActionForward actionForward) {
-        try {
-            viewStack.pop();
-        } catch (EmptyStackException ese) {
-            log.error("setActionForwardToSiblingOfParent stack failure", ese);
-        }
-        determineNextView(actionForward);
-        displayNextView();
-    }
-
-    /**
-     * set the action forward that will be used to determined the next view to
-     * display
-     * 
-     * normally called by the action once it has decided what the next view is
-     * 
-     * this setActionForward should be used when the next view is a child of the
-     * current view
-     * 
-     * @param actionForward
-     *            The action forward
-     */
-    public void determineNextView(ActionForward actionForward) {
-        switch (actionForward) {
-        case FORWARD_TO_SAME: {
-            // redisplay the sameView
-            nextView = currentView;
-            break;
-        }
-
-        case FORWARD_TO_RECEIVE_BITCOIN: {
-            // show the receive bitcoin view
-            nextView = View.RECEIVE_BITCOIN_VIEW;
-            break;
-        }
-        case FORWARD_TO_SEND_BITCOIN: {
-            // show the send bitcoin view
-            nextView = View.SEND_BITCOIN_VIEW;
-            break;
-        }
-        case FORWARD_TO_HELP_ABOUT: {
-            // show the help about view
-            nextView = View.HELP_ABOUT_VIEW;
-            break;
-        }
-        case FORWARD_TO_HELP_CONTENTS: {
-            // show the help contents view
-            nextView = View.HELP_CONTENTS_VIEW;
-            break;
-        }
-
-        case FORWARD_TO_PREFERENCES: {
-            // show the preferences view
-            nextView = View.PREFERENCES_VIEW;
-            break;
-        }
-
-        case FORWARD_TO_TRANSACTIONS: {
-            // show the transactions page
-            nextView = View.TRANSACTIONS_VIEW;
-            break;
-        }
-
-        case FORWARD_TO_YOUR_WALLETS: {
-            // show the your wallets view
-            nextView = View.YOUR_WALLETS_VIEW;
-            break;
-        }
-
-        case FORWARD_TO_CREATE_BULK_ADDRESSES_VIEW: {
-            // show the create bulk addresses view
-            nextView = View.CREATE_BULK_ADDRESSES_VIEW;
-            break;
-        }
-
-        case FORWARD_TO_RESET_TRANSACTIONS_VIEW: {
-            // show the reset transactions view
-            nextView = View.RESET_TRANSACTIONS_VIEW;
-            break;
-        }
-
-        case FORWARD_TO_SHOW_OPEN_URI_VIEW: {
-            // show the open uri dialog
-            nextView = View.SHOW_OPEN_URI_DIALOG_VIEW;
-            break;
-        }
-
-        case FORWARD_TO_SHOW_IMPORT_PRIVATE_KEYS_VIEW: {
-            // show the private key import view
-            nextView = View.SHOW_IMPORT_PRIVATE_KEYS_VIEW;
-            break;
-        }
-
-        case FORWARD_TO_SHOW_EXPORT_PRIVATE_KEYS_VIEW: {
-            // show the private key export view
-            nextView = View.SHOW_EXPORT_PRIVATE_KEYS_VIEW;
-            break;
-        }
-
-        default: {
-            nextView = View.YOUR_WALLETS_VIEW;
-            break;
-        }
-        }
-    }
-
-    public void updateCurrentView() {
-        // tell the viewSystems to refresh their views
+    public void displayView(int viewToDisplay) {
+        // tell all views to close the current view
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.updateCurrentView();
-        }
-    }
-
-    /**
-     */
-    public void displayNextView() {
-        int previousView = -1;
-
-        if (nextView != 0) {
-            // cycle the previous / current / next views
-            previousView = currentView;
-            currentView = nextView;
-            nextView = View.UNKNOWN_VIEW;
-        } else {
-            log.warn("Could not determine next view to display, previousView = {}, currentView = {}", previousView, currentView);
-            log.info("Displaying the your wallets view anyhow");
-            previousView = currentView;
-            currentView = View.YOUR_WALLETS_VIEW;
+            viewSystem.navigateAwayFromView(currentView);
         }
 
-        // tell all views to close the previous view
-        if (previousView != -1) {
-            for (ViewSystem viewSystem : viewSystems) {
-                viewSystem.navigateAwayFromView(previousView);
-            }
-        }
-
-        // for the top level views, clear the view stack
-        // this makes the UI behaviour a bit more 'normal'
-        if (currentView == View.YOUR_WALLETS_VIEW || currentView == View.TRANSACTIONS_VIEW
-                || currentView == View.RECEIVE_BITCOIN_VIEW || currentView == View.SEND_BITCOIN_VIEW
-                || currentView == View.HELP_ABOUT_VIEW || currentView == View.HELP_CONTENTS_VIEW
-                || currentView == View.PREFERENCES_VIEW) {
-            clearViewStack();
-        }
+        currentView = viewToDisplay;
 
         // remember the view in the preferences
         model.setUserPreference(MultiBitModel.SELECTED_VIEW, "" + currentView);
@@ -559,14 +377,12 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
         }
-        // checkForDirtyWallets(transaction);
     }
 
     public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsSent(wallet, transaction, prevBalance, newBalance);
         }
-        // checkForDirtyWallets(transaction);
     }
 
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
@@ -589,11 +405,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         }
     }
 
-    public void clearViewStack() {
-        viewStack.clear();
-        viewStack.push(View.TRANSACTIONS_VIEW);
-    }
-
     public MultiBitService getMultiBitService() {
         return multiBitService;
     }
@@ -610,20 +421,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         return applicationDataDirectoryLocator;
     }
 
-    public int getNextView() {
-        return nextView;
-    }
-
-    public void setNextView(int nextView) {
-        this.nextView = nextView;
-    }
-
     public int getCurrentView() {
         return currentView;
-    }
-
-    public void setCurrentView(int currentView) {
-        this.currentView = currentView;
     }
 
     public void setApplicationStarting(boolean applicationStarting) {
@@ -654,13 +453,13 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             // ignore open URI request
             log.debug("Bitcoin URI ignored because useUriText = '" + useUriText + "', showOpenUriDialogText = '"
                     + showOpenUriDialogText + "'");
-            setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
+            displayView(getCurrentView());
             updateStatusLabel(localiser.getString("showOpenUriView.paymentRequestIgnored"));
             return;
         }
         if (rawBitcoinURI == null) {
             log.debug("No Bitcoin URI found to handle");
-            setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
+            displayView(getCurrentView());
             return;
         }
         // Process the URI
@@ -697,7 +496,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             log.debug("Routing straight to send view for address = " + address);
 
             getModel().setUserPreference(MultiBitModel.BRING_TO_FRONT, "true");
-            setActionForwardToSibling(ActionForward.FORWARD_TO_SEND_BITCOIN);
+            displayView(View.SEND_BITCOIN_VIEW);
             return;
         } else {
             // show the confirm dialog to see if the user wants to use URI
@@ -707,20 +506,19 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             getModel().setUserPreference(MultiBitModel.OPEN_URI_AMOUNT, amount);
             log.debug("Routing to show open uri view for address = " + address);
 
-            clearViewStack();
-            setActionForwardToSibling(ActionForward.FORWARD_TO_SHOW_OPEN_URI_VIEW);
+            displayView(View.SHOW_OPEN_URI_DIALOG_VIEW);
             return;
         }
     }
 
     @Override
     public void onPreferencesEvent(GenericPreferencesEvent event) {
-        setActionForwardToSibling(ActionForward.FORWARD_TO_PREFERENCES);
+        displayView(View.PREFERENCES_VIEW);
     }
 
     @Override
     public void onAboutEvent(GenericAboutEvent event) {
-        setActionForwardToSibling(ActionForward.FORWARD_TO_HELP_ABOUT);
+        displayView(View.HELP_ABOUT_VIEW);
     }
 
     @Override
@@ -742,8 +540,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     @Override
-    public Message onPreMessageReceived(Peer peer, Message m) {
-        return m;
+    public Message onPreMessageReceived(Peer peer, Message message) {
+        return message;
     }
 
     @Override

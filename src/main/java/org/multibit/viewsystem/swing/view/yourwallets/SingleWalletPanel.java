@@ -64,6 +64,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private static final int COLOR_DELTA = 12;
 
     private static final int HEIGHT_DELTA = 20;
+    private static final int DETAIL_HEIGHT_DELTA = 0;
     private static final int WIDTH_DELTA = 4;
 
     private static Color inactiveBackGroundColor;
@@ -85,7 +86,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private JPanel detailPanel;
 
     private static int NUMBER_OF_ROWS_IN_SUMMARY_PANEL = 2;
-    private static int NUMBER_OF_ROWS_IN_DETAIL_PANEL = 4;
+    private static int NUMBER_OF_ROWS_IN_DETAIL_PANEL = 3;
 
     private static int DETAIL_PANEL_INDENT = 3;
 
@@ -101,7 +102,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         normalHeight = NUMBER_OF_ROWS_IN_SUMMARY_PANEL * fontMetrics.getHeight() + HEIGHT_DELTA;
         normalWidth = calculateNormalWidth(this);
         selectedHeight = (NUMBER_OF_ROWS_IN_SUMMARY_PANEL + NUMBER_OF_ROWS_IN_DETAIL_PANEL) * fontMetrics.getHeight()
-                + HEIGHT_DELTA;
+                + HEIGHT_DELTA + DETAIL_HEIGHT_DELTA;
         selectedWidth = normalWidth;
         
         // add contents to myRoundedPanel
@@ -434,37 +435,38 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(sendLabelText2, constraints);
 
-        MultiBitLabel sendLabelLabel3 = new MultiBitLabel("", controller);
-        sendLabelLabel3.setText(controller.getLocaliser().getString("walletData.statusText"));
-        constraints.fill = GridBagConstraints.NONE;
+//        MultiBitLabel sendLabelLabel3 = new MultiBitLabel("", controller);
+//        sendLabelLabel3.setText(controller.getLocaliser().getString("walletData.statusText"));
+//        constraints.fill = GridBagConstraints.NONE;
+//        constraints.gridx = 0;
+//        constraints.gridy = 3;
+//        constraints.weightx = 0.3;
+//        constraints.weighty = 0.1;
+//        constraints.gridwidth = 1;
+//        constraints.anchor = GridBagConstraints.LINE_END;
+//        detailPanel.add(sendLabelLabel3, constraints);
+//
+//        MultiBitLabel sendLabelText3 = new MultiBitLabel("", controller);
+//        sendLabelText3.setText("ok");
+//        constraints.fill = GridBagConstraints.NONE;
+//        constraints.gridx = 2;
+//        constraints.gridy = 3;
+//        constraints.weightx = 0.3;
+//        constraints.weighty = 0.1;
+//        constraints.gridwidth = 1;
+//        constraints.anchor = GridBagConstraints.LINE_START;
+//        detailPanel.add(sendLabelText3, constraints);
+
+        JLabel filler2 = new JLabel();
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 3;
-        constraints.weightx = 0.3;
+        constraints.weightx = 0.1;
         constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        detailPanel.add(sendLabelLabel3, constraints);
-
-        MultiBitLabel sendLabelText3 = new MultiBitLabel("", controller);
-        sendLabelText3.setText("ok");
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 3;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        detailPanel.add(sendLabelText3, constraints);
+        detailPanel.add(filler2, constraints);
 
-        JLabel filler4 = new JLabel();
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 5;
-        constraints.gridy = 9;
-        constraints.weightx = 0.05;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        detailPanel.add(filler4, constraints);
 
         JPanel outerPanel = new JPanel(new GridBagLayout());
         outerPanel.setOpaque(false);

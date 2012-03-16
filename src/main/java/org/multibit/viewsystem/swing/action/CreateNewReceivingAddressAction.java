@@ -20,7 +20,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
@@ -82,7 +81,7 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
             
             controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
 
-            controller.setActionForwardToSibling(ActionForward.FORWARD_TO_SAME);
+            controller.displayView(controller.getCurrentView());
 
             receiveBitcoinPanel.getFormPanel().requestFocusInWindow();
             receiveBitcoinPanel.getLabelTextArea().requestFocusInWindow();

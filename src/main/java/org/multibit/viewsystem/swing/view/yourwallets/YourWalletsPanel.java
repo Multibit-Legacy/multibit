@@ -19,7 +19,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.SystemColor;
@@ -36,9 +35,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
 
-import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.utils.ImageLoader;
@@ -47,7 +44,6 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
-import org.multibit.viewsystem.swing.action.YourWalletsAction;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,8 +64,6 @@ public class YourWalletsPanel extends JPanel implements View {
     private ArrayList<SingleWalletPanel> walletPanels;
 
     private JScrollPane scrollPane;
-
-    private boolean initialised = false;
 
     /**
      * Creates a new {@link YourWalletsPanel}.
@@ -93,12 +87,8 @@ public class YourWalletsPanel extends JPanel implements View {
      * show your wallets view
      */
     public void displayView() {
-        log.debug("Display view called - initialised = " + initialised);
-        // if (!initialised) {
-        initUI();
-        // }
-        initialised = true;
-
+         initUI();
+       
         // get the wallets from the model
         String activeWalletFilename = controller.getModel().getActiveWalletFilename();
         PerWalletModelData activePerModelData = controller.getModel().getPerWalletModelDataByWalletFilename(activeWalletFilename);
@@ -110,8 +100,6 @@ public class YourWalletsPanel extends JPanel implements View {
         invalidate();
         revalidate();
         repaint();
-
-        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_TRANSACTIONS);
     }
 
     private void selectWalletPanelByFilename(String filename) {
@@ -143,9 +131,6 @@ public class YourWalletsPanel extends JPanel implements View {
         JTabbedPane tabbedPane = new JTabbedPane();
         JPanel tabPanel = new JPanel(new BorderLayout());
 
-        YourWalletsAction yourWalletsAction = new YourWalletsAction(controller,
-                ImageLoader.createImageIcon(ImageLoader.YOUR_WALLETS_ICON_FILE));
-
         createWalletListPanel();
         scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setViewportView(walletListPanel);
@@ -160,8 +145,11 @@ public class YourWalletsPanel extends JPanel implements View {
         JPanel buttonPanel = createButtonPanel();
         tabPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        tabbedPane.addTab((String) yourWalletsAction.getValue(Action.NAME), (Icon) yourWalletsAction.getValue(Action.SMALL_ICON),
+        tabbedPane.addTab(controller.getLocaliser().getString("showYourWalletsAction.text"), ImageLoader.createImageIcon(ImageLoader.YOUR_WALLETS_ICON_FILE),
                 tabPanel);
+
+//        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("showYourWalletsAction.tooltip"));
+//        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("showYourWalletsAction.mnemonicKey"));
 
         add(tabbedPane, BorderLayout.CENTER);
     }
@@ -300,8 +288,7 @@ public class YourWalletsPanel extends JPanel implements View {
 
                     controller.fireWalletChanged();
                     controller.fireDataChanged();
-                    controller.determineNextView(ActionForward.FORWARD_TO_SAME);
-                    controller.displayNextView();
+                    controller.displayView(controller.getCurrentView());
                 }
             }
         }
@@ -324,7 +311,6 @@ public class YourWalletsPanel extends JPanel implements View {
     }
 
     public void updateViewForNewWallet() {
-        initialised = false;
         displayView();
     }
 
@@ -341,11 +327,6 @@ public class YourWalletsPanel extends JPanel implements View {
         }
 
         displayView();
-
-        // recreate the wallet data backing the ShowTransactionsPanel
-        if (View.TRANSACTIONS_VIEW == controller.getCurrentView()) {
-            controller.updateCurrentView();
-        }
     }
 
     @Override

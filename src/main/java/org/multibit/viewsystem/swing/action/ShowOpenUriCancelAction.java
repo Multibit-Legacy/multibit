@@ -20,11 +20,11 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import org.multibit.controller.ActionForward;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
+import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.view.ShowOpenUriDialog;
 
 /**
@@ -55,7 +55,7 @@ public class ShowOpenUriCancelAction extends AbstractAction {
     }
 
     /**
-     * delegate to the generic CancelBackToParentAction
+     * return to the transactions view
      */
     public void actionPerformed(ActionEvent e) {
         Item showDialogItem = dataProvider.getData().getItem(MultiBitModel.OPEN_URI_SHOW_DIALOG);
@@ -68,8 +68,6 @@ public class ShowOpenUriCancelAction extends AbstractAction {
         controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI, "false");   
         
         showOpenUriDialog.setVisible(false);
-        controller.clearViewStack();
-        controller.setActionForwardToSibling(ActionForward.FORWARD_TO_YOUR_WALLETS);
-      
+        controller.displayView(View.TRANSACTIONS_VIEW);      
     }
 }
