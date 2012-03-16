@@ -13,6 +13,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
@@ -26,12 +28,12 @@ public class MultiBitTabbedPane extends JTabbedPane {
     private Dimension closeButtonSize;
 
     private int tabCounter = 0;
-    
+
     private MultiBitController controller;
 
     private final MultiBitTabbedPane thisTabbedPane;
 
-    public MultiBitTabbedPane(MultiBitController controller) {
+    public MultiBitTabbedPane(final MultiBitController controller) {
         thisTabbedPane = this;
         this.controller = controller;
 
@@ -41,6 +43,25 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
         // Create a Dimension that can be used to size the close buttons.
         closeButtonSize = new Dimension(closeTabIcon.getIconWidth() + 2, closeTabIcon.getIconHeight() + 2);
+
+        // Register a change listener
+        addChangeListener(new ChangeListener() {
+            // This method is called whenever the selected tab changes
+            public void stateChanged(ChangeEvent evt) {
+                JTabbedPane pane = (JTabbedPane) evt.getSource();
+
+                // Get current tab
+                JPanel tabComponent = (JPanel) pane.getSelectedComponent();
+                if (tabComponent != null) {
+                    Component[] childComponents = tabComponent.getComponents();
+                    View selectedView = null;
+                    if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
+                        selectedView = ((View) childComponents[0]);
+                        controller.setCurrentView(selectedView.getViewId());
+                    }
+                }
+            }
+        });
     }
 
     public void addUncloseableTab(String title, Icon icon, Component component) {
@@ -72,14 +93,14 @@ public class MultiBitTabbedPane extends JTabbedPane {
         tabCloseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int closeTabNumber = thisTabbedPane.indexOfComponent(finalComponent);
-                
+
                 thisTabbedPane.removeTabAt(closeTabNumber);
-                
+
                 // notify controller of new view being shown
-                JPanel selectedTab = (JPanel)thisTabbedPane.getSelectedComponent();
+                JPanel selectedTab = (JPanel) thisTabbedPane.getSelectedComponent();
                 Component[] components = selectedTab.getComponents();
                 if (components != null && components.length > 0 && components[0] instanceof View) {
-                    controller.displayView(((View)components[0]).getViewId());
+                    controller.displayView(((View) components[0]).getViewId());
                 }
             }
         });

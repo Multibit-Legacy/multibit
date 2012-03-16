@@ -138,7 +138,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * the view that the controller is telling us to display an int - one of the
      * View constants
      */
-    private int currentView;
+//    private int currentView;
 
     private ViewFactory viewFactory;
 
@@ -207,17 +207,17 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         yourWalletsView.displayView();
 
         pack();
-        setVisible(true);
-
-        fileChangeTimer = new Timer();
-        fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), 0, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
-        
+ 
         int dividerPosition = SingleWalletPanel.calculateNormalWidth((JComponent) (yourWalletsView)) + WALLET_WIDTH_DELTA;
         if (((YourWalletsPanel)yourWalletsView).getScrollPane().isVisible()) {
             dividerPosition += SCROLL_BAR_DELTA;
         }
         splitPane.setDividerLocation(dividerPosition);
 
+        setVisible(true);
+
+        fileChangeTimer = new Timer();
+        fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), 0, FileChangeTimerTask.DEFAULT_REPEAT_RATE); 
     }
 
     public GenericApplication getApplication() {
@@ -620,8 +620,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      */
     public void recreateAllViews(boolean clearCache, boolean initUI) {
         // close down current view
-        if (currentView != 0) {
-            navigateAwayFromView(currentView);
+        if (controller.getCurrentView() != 0) {
+            navigateAwayFromView(controller.getCurrentView());
         }
 
         if (initUI) {
@@ -675,7 +675,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             return;
         }
 
-        currentView = viewToDisplay;
+        controller.setCurrentView(viewToDisplay);
 
         final View nextViewFinal = viewFactory.getView(viewToDisplay);
 
@@ -692,10 +692,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 boolean foundTab = false;
                 if (viewTabbedPane.getTabCount() > 0) {
                     for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
-                        if (viewTitle != null && viewTitle.equals(viewTabbedPane.getTitleAt(i))) {
+                        JPanel tabComponent = (JPanel)viewTabbedPane.getComponentAt(i);
+                        Component[] childComponents = tabComponent.getComponents();
+                        String tabTitle = null;
+                        if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
+                            tabTitle = ((View) childComponents[0]).getViewTitle();
+                        }
+                        if (viewTitle != null && viewTitle.equals(tabTitle)) {
                             foundTab = true;
-                            log.debug("Tab panel = " + System.identityHashCode(viewTabbedPane.getTabComponentAt(i))
-                                    + ", nextPanel = " + System.identityHashCode(nextViewFinal));
                             ((JPanel) viewTabbedPane.getComponentAt(i)).removeAll();
                             ((JPanel) viewTabbedPane.getComponentAt(i)).add((JPanel) nextViewFinal);
                             viewTabbedPane.setSelectedIndex(i);
@@ -862,7 +866,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 updateHeader();
 
                 // tell the current view to update itself
-                View currentViewView = viewFactory.getView(currentView);
+                View currentViewView = viewFactory.getView(controller.getCurrentView());
                 if (currentViewView != null) {
                     currentViewView.updateView();
                 }
@@ -978,7 +982,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 }
                 
                 recreateAllViews(true);
-                displayView(currentView);
+                displayView(controller.getCurrentView());
 
                 viewTabbedPane.invalidate();
                 thisFrame.invalidate();

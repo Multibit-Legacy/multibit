@@ -145,8 +145,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             }
         }
 
+        log.debug("Initial view from properties file is '" + currentView + "'");
         currentView = initialView;
- //       nextView = initialView;
 
         fileHandler = new FileHandler(this);
     }
@@ -158,6 +158,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      *            View to display. Must be one of the View constants
      */
     public void displayView(int viewToDisplay) {
+        log.debug("Displaying view '" + viewToDisplay + "'");
         // tell all views to close the current view
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.navigateAwayFromView(currentView);
@@ -423,6 +424,11 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     public int getCurrentView() {
         return currentView;
+    }
+    
+    public void setCurrentView(int view) {
+        currentView = view;
+        getModel().setUserPreference(MultiBitModel.SELECTED_VIEW, "" + view);
     }
 
     public void setApplicationStarting(boolean applicationStarting) {
