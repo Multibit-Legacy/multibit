@@ -19,7 +19,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.SystemColor;
 
-import javax.swing.JTable;
 import javax.swing.UIManager;
 
 /***
@@ -33,13 +32,8 @@ public class ColorAndFontConstants {
     public static final int MULTIBIT_DEFAULT_FONT_SIZE = ((Font)UIManager.get("Label.font")).getSize();
     public static final int MULTIBIT_LARGE_FONT_INCREASE = 2;
 
-   
-//    public static final Color BACKGROUND_COLOR = new Color(244, 244, 246);
-//    public static final Color VERY_LIGHT_BACKGROUND_COLOR = new Color(254, 254, 255);
-//    public static final Color DARK_BACKGROUND_COLOR = new Color(188, 212, 230); // beau blue
-
     public static final Color BACKGROUND_COLOR = SystemColor.window;
-    public static final Color VERY_LIGHT_BACKGROUND_COLOR = SystemColor.window;
+    public static final Color VERY_LIGHT_BACKGROUND_COLOR = SystemColor.window.brighter();
     public static final Color DARK_BACKGROUND_COLOR = SystemColor.scrollbar;
 
     public static Color SELECTION_FOREGROUND_COLOR = SystemColor.textHighlightText;

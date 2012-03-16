@@ -63,7 +63,6 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
-import org.multibit.viewsystem.swing.view.components.MultiBitTitleLabel;
 
 /**
  * The show preferences view
@@ -444,10 +443,9 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        MultiBitLabel feeLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"),
-                controller);
+        MultiBitLabel feeLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"));
         feeLabel.setToolTipText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.tooltip"));
-        MultiBitLabel feeCurrencyLabel = new MultiBitLabel("BTC", controller);
+        MultiBitLabel feeCurrencyLabel = new MultiBitLabel("BTC");
 
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
 
@@ -503,7 +501,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        MultiBitLabel fontNameLabel = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontName"), controller);
+        MultiBitLabel fontNameLabel = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontName"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -525,7 +523,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.anchor = GridBagConstraints.LINE_START;
         fontChooserPanel.add(filler1, constraints);
 
-        fontNameTextLabel = new MultiBitLabel("", controller);
+        fontNameTextLabel = new MultiBitLabel("");
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 0;
@@ -535,7 +533,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.anchor = GridBagConstraints.LINE_START;
         fontChooserPanel.add(fontNameTextLabel, constraints);
 
-        MultiBitLabel fontStyleLabel = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontStyle"), controller);
+        MultiBitLabel fontStyleLabel = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontStyle"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 1;
@@ -545,7 +543,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.anchor = GridBagConstraints.LINE_START;
         fontChooserPanel.add(fontStyleLabel, constraints);
 
-        fontStyleTextLabel = new MultiBitLabel("", controller);
+        fontStyleTextLabel = new MultiBitLabel("");
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 1;
@@ -555,7 +553,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.anchor = GridBagConstraints.LINE_START;
         fontChooserPanel.add(fontStyleTextLabel, constraints);
 
-        MultiBitLabel fontSizeLabel = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontSize"), controller);
+        MultiBitLabel fontSizeLabel = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontSize"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 2;
@@ -565,7 +563,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         constraints.anchor = GridBagConstraints.LINE_START;
         fontChooserPanel.add(fontSizeLabel, constraints);
 
-        fontSizeTextLabel = new MultiBitLabel("", controller);
+        fontSizeTextLabel = new MultiBitLabel("");
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 2;
@@ -603,7 +601,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         GridBagConstraints constraints = new GridBagConstraints();
 
         MultiBitLabel messageLabel = new MultiBitLabel(controller.getLocaliser().getString(
-                "showPreferencesPanel.browserIntegration.messageText"), controller);
+                "showPreferencesPanel.browserIntegration.messageText"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -773,7 +771,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         private static final long serialVersionUID = -3301957214353702172L;
 
         public ComboBoxRenderer() {
-            super("", controller);
+            super("");
             setOpaque(true);
             setHorizontalAlignment(LEADING);
             setVerticalAlignment(CENTER);

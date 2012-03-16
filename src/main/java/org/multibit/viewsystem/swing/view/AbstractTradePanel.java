@@ -75,7 +75,7 @@ import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
 import org.multibit.viewsystem.swing.action.CopyQRCodeTextAction;
 import org.multibit.viewsystem.swing.action.PasteSwatchAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.GradientPanel;
+import org.multibit.viewsystem.swing.view.components.VerticalGradientPanel;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
@@ -210,7 +210,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         setMinimumSize(new Dimension(550, 220));
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
         setLayout(new GridBagLayout());
-        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
@@ -244,7 +244,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected abstract void loadForm();
 
     protected JPanel createAddressesHeaderPanel() {
-        JPanel addressesHeaderPanel = new GradientPanel();
+        JPanel addressesHeaderPanel = new VerticalGradientPanel();
 
         addressesHeaderPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
@@ -419,7 +419,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     class LeadingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
-        MultiBitLabel label = new MultiBitLabel("", controller);
+        MultiBitLabel label = new MultiBitLabel("");
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
@@ -444,7 +444,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     class LeftJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549115L;
 
-        MultiBitLabel label = new MultiBitLabel("", controller);
+        MultiBitLabel label = new MultiBitLabel("");
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
@@ -469,7 +469,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1999545L;
 
-        MultiBitLabel label = new MultiBitLabel("", controller);
+        MultiBitLabel label = new MultiBitLabel("");
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
@@ -494,7 +494,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     class RightJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 2299545L;
 
-        MultiBitLabel label = new MultiBitLabel("", controller);
+        MultiBitLabel label = new MultiBitLabel("");
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
@@ -522,7 +522,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         qrCodePanel.setOpaque(true);
         qrCodePanel.setMinimumSize(new Dimension(280, 200));
         qrCodePanel.setLayout(new GridBagLayout());
-        qrCodeLabel = new MultiBitLabel("", JLabel.CENTER, controller);
+        qrCodeLabel = new MultiBitLabel("", JLabel.CENTER);
         qrCodeLabel.setMinimumSize(new Dimension(QRCODE_WIDTH, QRCODE_HEIGHT));
 
         qrCodeLabel.setVerticalTextPosition(JLabel.BOTTOM);

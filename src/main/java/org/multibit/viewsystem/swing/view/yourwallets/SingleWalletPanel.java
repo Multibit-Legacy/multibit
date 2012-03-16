@@ -64,7 +64,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private static final int COLOR_DELTA = 12;
 
     private static final int HEIGHT_DELTA = 20;
-    private static final int DETAIL_HEIGHT_DELTA = 0;
+    private static final int DETAIL_HEIGHT_DELTA = 4;
     private static final int WIDTH_DELTA = 4;
     private static final int MIN_WIDTH_SCROLLBAR_DELTA = 20;
 
@@ -85,6 +85,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private RoundedPanel myRoundedPanel;
     private JPanel detailPanel;
+    private int detailHeight;
 
     private static int NUMBER_OF_ROWS_IN_SUMMARY_PANEL = 2;
     private static int NUMBER_OF_ROWS_IN_DETAIL_PANEL = 3;
@@ -102,8 +103,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
         normalHeight = NUMBER_OF_ROWS_IN_SUMMARY_PANEL * fontMetrics.getHeight() + HEIGHT_DELTA;
         normalWidth = calculateNormalWidth(this);
-        selectedHeight = (NUMBER_OF_ROWS_IN_SUMMARY_PANEL + NUMBER_OF_ROWS_IN_DETAIL_PANEL) * fontMetrics.getHeight()
-                + HEIGHT_DELTA + DETAIL_HEIGHT_DELTA;
+        selectedHeight = (int) ((NUMBER_OF_ROWS_IN_SUMMARY_PANEL + NUMBER_OF_ROWS_IN_DETAIL_PANEL) * fontMetrics.getHeight()
+                + HEIGHT_DELTA + DETAIL_HEIGHT_DELTA);
+        detailHeight = (int) ((NUMBER_OF_ROWS_IN_DETAIL_PANEL) * fontMetrics.getHeight()
+                + DETAIL_HEIGHT_DELTA);
         selectedWidth = normalWidth;
         
         // add contents to myRoundedPanel
@@ -200,7 +203,11 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
         // add detail panel
         detailPanel = createWalletDetailPanel();
-        constraints2.fill = GridBagConstraints.HORIZONTAL;
+        detailPanel.setPreferredSize(new Dimension(normalWidth, detailHeight));
+        detailPanel.setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, detailHeight));
+        detailPanel.setMaximumSize(new Dimension(normalWidth * 2, detailHeight));
+
+        constraints2.fill = GridBagConstraints.BOTH;
         constraints2.gridx = 0;
         constraints2.gridy = 1;
         constraints2.weightx = 0.92;
@@ -209,6 +216,20 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints2.gridheight = 1;
         constraints2.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         add(detailPanel, constraints2);
+
+        // add bottom filler
+        JPanel filler = new JPanel();
+        filler.setOpaque(false);
+        constraints2.fill = GridBagConstraints.BOTH;
+        constraints2.gridx = 0;
+        constraints2.gridy = 2;
+        constraints2.weightx = 1.0;
+        constraints2.weighty = 100;
+        constraints2.gridwidth = 1;
+        constraints2.gridheight = 1;
+        constraints2.anchor = GridBagConstraints.CENTER;
+        add(filler, constraints2);
+
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
@@ -342,15 +363,14 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
      * create the wallet details panel
      */
     private JPanel createWalletDetailPanel() {
-
-        JPanel detailPanel = new JPanel();
+        JPanel detailPanel = new RoundedBottomPanel(controller.getLocaliser().getLocale());
         detailPanel.setOpaque(true);
         detailPanel.setBackground(BACKGROUND_COLOR_NORMAL);
         detailPanel.setLayout(new GridBagLayout());
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        MultiBitLabel filenameLabel = new MultiBitLabel("", controller);
+        MultiBitLabel filenameLabel = new MultiBitLabel("");
         filenameLabel.setText(controller.getLocaliser().getString("resetTransactionsPanel.walletFilenameLabel"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -371,7 +391,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(filler1, constraints);
 
-        MultiBitLabel walletFilenameLabel = new MultiBitLabel("", controller);
+        MultiBitLabel walletFilenameLabel = new MultiBitLabel("");
 
         String walletFilename = perWalletModelData.getWalletFilename();
 
@@ -392,7 +412,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(walletFilenameLabel, constraints);
 
-        MultiBitLabel sendLabelLabel = new MultiBitLabel("", controller);
+        MultiBitLabel sendLabelLabel = new MultiBitLabel("");
         sendLabelLabel.setText("Type");
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -403,7 +423,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.LINE_END;
         detailPanel.add(sendLabelLabel, constraints);
 
-        MultiBitLabel sendLabelText = new MultiBitLabel("", controller);
+        MultiBitLabel sendLabelText = new MultiBitLabel("");
         sendLabelText.setText("unencrypted");
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
@@ -414,7 +434,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(sendLabelText, constraints);
 
-        MultiBitLabel sendLabelLabel2 = new MultiBitLabel("", controller);
+        MultiBitLabel sendLabelLabel2 = new MultiBitLabel("");
         sendLabelLabel2.setText("Version");
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -425,7 +445,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.LINE_END;
         detailPanel.add(sendLabelLabel2, constraints);
 
-        MultiBitLabel sendLabelText2 = new MultiBitLabel("", controller);
+        MultiBitLabel sendLabelText2 = new MultiBitLabel("");
         sendLabelText2.setText("1 (serialised)");
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
@@ -436,28 +456,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(sendLabelText2, constraints);
 
-//        MultiBitLabel sendLabelLabel3 = new MultiBitLabel("", controller);
-//        sendLabelLabel3.setText(controller.getLocaliser().getString("walletData.statusText"));
-//        constraints.fill = GridBagConstraints.NONE;
-//        constraints.gridx = 0;
-//        constraints.gridy = 3;
-//        constraints.weightx = 0.3;
-//        constraints.weighty = 0.1;
-//        constraints.gridwidth = 1;
-//        constraints.anchor = GridBagConstraints.LINE_END;
-//        detailPanel.add(sendLabelLabel3, constraints);
-//
-//        MultiBitLabel sendLabelText3 = new MultiBitLabel("", controller);
-//        sendLabelText3.setText("ok");
-//        constraints.fill = GridBagConstraints.NONE;
-//        constraints.gridx = 2;
-//        constraints.gridy = 3;
-//        constraints.weightx = 0.3;
-//        constraints.weighty = 0.1;
-//        constraints.gridwidth = 1;
-//        constraints.anchor = GridBagConstraints.LINE_START;
-//        detailPanel.add(sendLabelText3, constraints);
-
         JLabel filler2 = new JLabel();
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -467,7 +465,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(filler2, constraints);
-
 
         JPanel outerPanel = new JPanel(new GridBagLayout());
         outerPanel.setOpaque(false);

@@ -38,7 +38,6 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
-import org.multibit.viewsystem.swing.view.components.MultiBitTitleLabel;
 
 /**
  * The reset blockchain and transactions view
@@ -130,7 +129,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        MultiBitLabel explainLabel1 = new MultiBitLabel(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text1"), controller);
+        MultiBitLabel explainLabel1 = new MultiBitLabel(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text1"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -163,7 +162,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         explainPanel.add(filler2, constraints);
 
         MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
-                "resetTransactionsPanel.walletFilenameLabel"), controller);
+                "resetTransactionsPanel.walletFilenameLabel"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 2;
@@ -173,7 +172,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_END;
         explainPanel.add(walletFilenameLabelLabel, constraints);
 
-        walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename(), controller);
+        walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 2;
@@ -184,7 +183,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         explainPanel.add(walletFilenameLabel, constraints);
 
         MultiBitLabel walletDescriptionLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
-                "resetTransactionsPanel.walletDescriptionLabel"), controller);
+                "resetTransactionsPanel.walletDescriptionLabel"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 3;
@@ -194,7 +193,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_END;
         explainPanel.add(walletDescriptionLabelLabel, constraints);
 
-        walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription(), controller);
+        walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 3;

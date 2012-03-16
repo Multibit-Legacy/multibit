@@ -61,7 +61,8 @@ import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.GradientPanel;
+import org.multibit.viewsystem.swing.view.components.HorizontalGradientPanel;
+import org.multibit.viewsystem.swing.view.components.VerticalGradientPanel;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.yourwallets.SingleWalletPanel;
 import org.multibit.viewsystem.swing.view.yourwallets.YourWalletsPanel;
@@ -241,7 +242,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             setIconImage(imageIcon.getImage());
         }
 
-        headerPanel = new GradientPanel();
+        headerPanel = new VerticalGradientPanel();
         headerPanel.setLayout(new GridBagLayout());
         headerPanel.setOpaque(true);
 
@@ -384,7 +385,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(estimatedBalanceTextLabel, constraints);
 
-        availableBalanceTextLabel = new MultiBitLabel("", controller);
+        availableBalanceTextLabel = new MultiBitLabel("");
         availableBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.availableToSpend.tooltip"));
 
         constraints.gridx = 4;

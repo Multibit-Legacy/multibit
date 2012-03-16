@@ -88,7 +88,7 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.anchor = GridBagConstraints.CENTER;
         add(splashLabel, constraints);
 
-        MultiBitLabel titleLabel = new MultiBitLabel("", controller);
+        MultiBitLabel titleLabel = new MultiBitLabel("");
         titleLabel.setHorizontalTextPosition(JLabel.CENTER);
         titleLabel.setText(controller.getLocaliser().getString("helpAboutAction.messageBoxTitle"));
 
@@ -108,7 +108,7 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.weightx = 1;
         constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.CENTER;
-        MultiBitLabel urlLabel = new MultiBitLabel(MULTIBIT_URL, controller);
+        MultiBitLabel urlLabel = new MultiBitLabel(MULTIBIT_URL);
         add(urlLabel, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -118,7 +118,7 @@ public class HelpAboutPanel extends JPanel implements View {
         constraints.weightx = 1;
         constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.CENTER;
-        MultiBitLabel versionLabel = new MultiBitLabel(versionText, controller);
+        MultiBitLabel versionLabel = new MultiBitLabel(versionText);
         add(versionLabel, constraints);
 
         constraints.fill = GridBagConstraints.NONE;

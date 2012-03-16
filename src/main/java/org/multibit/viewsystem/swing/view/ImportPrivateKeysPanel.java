@@ -39,8 +39,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
-import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncrypterDecrypter;
@@ -55,9 +53,9 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ImportPrivateKeysSubmitAction;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
 /**
  * The import private keys view
@@ -84,7 +82,6 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
 
     private String outputFilename;
 
-    private TitledBorder passwordTitledBorder;
     private MultiBitLabel passwordInfoLabel;
     private JPasswordField passwordField;
     private MultiBitLabel passwordPromptLabel;
@@ -93,7 +90,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
     private JLabel numberOfKeysLabel;
     private JLabel replayDateLabel;
 
-    private EncrypterDecrypter encrypterDecrypter;;
+    private EncrypterDecrypter encrypterDecrypter;
 
     /**
      * Creates a new {@link ImportPrivateKeysPanel}.
@@ -124,79 +121,88 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         mainPanel.setMinimumSize(new Dimension(550, 160));
         mainPanel.setLayout(new GridBagLayout());
         mainPanel.setOpaque(false);
+        
+        String[] keys = new String[] {"resetTransactionsPanel.walletDescriptionLabel", "resetTransactionsPanel.walletFilenameLabel",
+                "showImportPrivateKeysPanel.numberOfKeys.text", "showImportPrivateKeysPanel.replayDate.text", "showExportPrivateKeysPanel.passwordPrompt"};
+        int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this);
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 2;
         constraints.weightx = 1;
-        constraints.weighty = 0.06;
-        constraints.anchor = GridBagConstraints.CENTER;
-        JPanel fillerPanel1 = new JPanel();
-        fillerPanel1.setOpaque(false);
-        mainPanel.add(fillerPanel1, constraints);
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        JPanel walletPanel = createWalletPanel(stentWidth);
+        mainPanel.add(walletPanel, constraints);
 
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        mainPanel.add(createWalletPanel(), constraints);
+        JPanel filenamePanel = createFilenamePanel(stentWidth);
+        mainPanel.add(filenamePanel, constraints);
 
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 2;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        mainPanel.add(createFilenamePanel(), constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 3;
-        constraints.gridwidth = 2;
-        constraints.weightx = 1;
         constraints.weighty = 0.2;
         constraints.anchor = GridBagConstraints.LINE_START;
-        mainPanel.add(createPasswordPanel(), constraints);
+        JPanel passwordPanel = createPasswordPanel(stentWidth);
+        mainPanel.add(passwordPanel, constraints);
 
-        constraints.fill = GridBagConstraints.NONE;
+        JLabel filler1 = new JLabel();
+        filler1.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        mainPanel.add(filler1, constraints);
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 4;
         constraints.gridwidth = 1;
         constraints.weightx = 0.4;
         constraints.weighty = 0.06;
         constraints.anchor = GridBagConstraints.LINE_START;
-        mainPanel.add(createButtonPanel(), constraints);
+        JPanel buttonPanel = createButtonPanel();
+        mainPanel.add(buttonPanel, constraints);
 
-        messageLabel = new MultiBitLabel("", controller);
+        messageLabel = new MultiBitLabel("");
         messageLabel.setOpaque(false);
         messageLabel.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 5;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 3;
         constraints.weightx = 1;
         constraints.weighty = 0.06;
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(messageLabel, constraints);
 
-        JLabel filler1 = new JLabel();
-        filler1.setOpaque(false);
+        JLabel filler2 = new JLabel();
+        filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 6;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
-        constraints.weighty = 20;
+        constraints.weighty = 100;
         constraints.anchor = GridBagConstraints.CENTER;
-        mainPanel.add(filler1, constraints);
+        mainPanel.add(filler2, constraints);
 
         JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -207,98 +213,80 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         add(mainScrollPane, BorderLayout.CENTER);
     }
 
-    private JPanel createWalletPanel() {
-        JPanel inputWalletPanel = new JPanel(new GridBagLayout());
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString(
+    private JPanel createWalletPanel(int stentWidth) {
+        MultiBitTitledPanel inputWalletPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
                 "showImportPrivateKeysPanel.wallet.title"));
-        inputWalletPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder));
-        inputWalletPanel.setOpaque(false);
-
-        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        MultiBitLabel explainLabel1 = new MultiBitLabel(controller.getLocaliser().getString(
-                "showImportPrivateKeysPanel.wallet.text"), controller);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 3;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        inputWalletPanel.add(explainLabel1, constraints);
+        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
+                controller.getLocaliser().getString("showImportPrivateKeysPanel.wallet.text"), 3, inputWalletPanel);
 
-        JPanel filler1 = new JPanel();
-        filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
+        constraints.gridx = 1;
+        constraints.gridy = 4;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        inputWalletPanel.add(filler1, constraints);
+        inputWalletPanel.add(MultiBitTitledPanel.createStent(stentWidth), constraints);
 
-        JPanel filler2 = new JPanel();
-        filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 2;
+        constraints.gridx = 2;
+        constraints.gridy = 5;
         constraints.weightx = 0.05;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        inputWalletPanel.add(filler2, constraints);
-
-        MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
-                "resetTransactionsPanel.walletFilenameLabel"), controller);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        inputWalletPanel.add(walletFilenameLabelLabel, constraints);
-
-        walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename(), controller);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 2;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        inputWalletPanel.add(walletFilenameLabel, constraints);
+        inputWalletPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
 
         MultiBitLabel walletDescriptionLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
-                "resetTransactionsPanel.walletDescriptionLabel"), controller);
+                "resetTransactionsPanel.walletDescriptionLabel"));
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridx = 1;
+        constraints.gridy = 5;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         inputWalletPanel.add(walletDescriptionLabelLabel, constraints);
 
-        walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription(),
-                controller);
+        walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 3;
+        constraints.gridx = 3;
+        constraints.gridy = 5;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         inputWalletPanel.add(walletDescriptionLabel, constraints);
 
+        MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
+                "resetTransactionsPanel.walletFilenameLabel"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 6;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        inputWalletPanel.add(walletFilenameLabelLabel, constraints);
+
+        walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename());
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 6;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        inputWalletPanel.add(walletFilenameLabel, constraints);
+
         JPanel filler3 = new JPanel();
         filler3.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridx = 1;
+        constraints.gridy = 7;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -308,28 +296,30 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         return inputWalletPanel;
     }
 
-    private JPanel createFilenamePanel() {
-        JPanel outputFilenamePanel = new JPanel(new GridBagLayout());
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString(
+    private JPanel createFilenamePanel(int stentWidth) {
+        MultiBitTitledPanel outputFilenamePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
                 "showImportPrivateKeysPanel.filename.title"));
-        outputFilenamePanel
-                .setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder));
-        outputFilenamePanel.setOpaque(false);
 
-        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(" ", 1, outputFilenamePanel);
 
         GridBagConstraints constraints = new GridBagConstraints();
-
-        JPanel filler1 = new JPanel();
-        filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 0;
+        constraints.gridy = 2;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        outputFilenamePanel.add(filler1, constraints);
+        outputFilenamePanel.add(MultiBitTitledPanel.getIndentPanel(1), constraints);
+        
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 3;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        outputFilenamePanel.add(MultiBitTitledPanel.createStent(stentWidth), constraints);
 
         chooseFilenameButton = new MultiBitButton(controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.text"));
         chooseFilenameButton.setToolTipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.filename.tooltip"));
@@ -343,31 +333,51 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         });
 
         MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
-                "resetTransactionsPanel.walletFilenameLabel"), controller);
+                "resetTransactionsPanel.walletFilenameLabel"));
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
+        constraints.gridx = 1;
+        constraints.gridy = 4;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         outputFilenamePanel.add(walletFilenameLabelLabel, constraints);
 
-        outputFilenameLabel = new MultiBitLabel(outputFilename, controller);
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
-        constraints.gridy = 1;
+        constraints.gridy = 5;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        outputFilenamePanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
+
+        outputFilenameLabel = new MultiBitLabel(outputFilename);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 4;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.LINE_START;
         outputFilenamePanel.add(outputFilenameLabel, constraints);
 
+        JPanel filler0 = new JPanel();
+        filler0.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 5;
+        constraints.gridy = 4;
+        constraints.weightx = 100;
+        constraints.weighty = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        outputFilenamePanel.add(filler0, constraints);
+
         JPanel filler2 = new JPanel();
         filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
+        constraints.gridx = 1;
+        constraints.gridy = 5;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -375,13 +385,13 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         outputFilenamePanel.add(filler2, constraints);
 
         MultiBitLabel numberOfKeysLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
-                "showImportPrivateKeysPanel.numberOfKeys.text"), controller);
+                "showImportPrivateKeysPanel.numberOfKeys.text"));
         numberOfKeysLabelLabel.setToolTipText(controller.getLocaliser()
                 .getString("showImportPrivateKeysPanel.numberOfKeys.tooltip"));
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridx = 1;
+        constraints.gridy = 6;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -391,18 +401,18 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         JPanel filler3 = new JPanel();
         filler3.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 3;
+        constraints.gridx = 2;
+        constraints.gridy = 6;
         constraints.weightx = 0.1;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         outputFilenamePanel.add(filler3, constraints);
 
-        numberOfKeysLabel = new MultiBitLabel(" ", controller);
+        numberOfKeysLabel = new MultiBitLabel(" ");
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 3;
+        constraints.gridx = 3;
+        constraints.gridy = 6;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -410,21 +420,21 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         outputFilenamePanel.add(numberOfKeysLabel, constraints);
 
         MultiBitLabel replayDateLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
-                "showImportPrivateKeysPanel.replayDate.text"), controller);
+                "showImportPrivateKeysPanel.replayDate.text"));
         replayDateLabelLabel.setToolTipText(controller.getLocaliser().getString("showImportPrivateKeysPanel.replayDate.tooltip"));
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridx = 1;
+        constraints.gridy = 7;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         outputFilenamePanel.add(replayDateLabelLabel, constraints);
 
-        replayDateLabel = new MultiBitLabel(" ", controller);
+        replayDateLabel = new MultiBitLabel(" ");
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 4;
+        constraints.gridx = 3;
+        constraints.gridy = 7;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -434,8 +444,8 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         JPanel filler4 = new JPanel();
         filler4.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridx = 1;
+        constraints.gridy = 8;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -443,72 +453,70 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         outputFilenamePanel.add(filler4, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 6;
+        constraints.gridx = 3;
+        constraints.gridy = 9;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
-        constraints.gridwidth = 2;
+        constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         outputFilenamePanel.add(chooseFilenameButton, constraints);
+
+        JPanel filler5 = new JPanel();
+        filler5.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 10;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        outputFilenamePanel.add(filler3, constraints);
 
         return outputFilenamePanel;
     }
 
-    private JPanel createPasswordPanel() {
+    private JPanel createPasswordPanel(int stentWidth) {
         // do/do not password protect radios
-        JPanel passwordProtectPanel = new JPanel(new GridBagLayout());
-        passwordTitledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString(
+        MultiBitTitledPanel passwordProtectPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
                 "showExportPrivateKeysPanel.password.title"));
-        passwordTitledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), passwordTitledBorder);
-
-        passwordProtectPanel.setBorder(border);
-        passwordProtectPanel.setOpaque(false);
-
         GridBagConstraints constraints = new GridBagConstraints();
 
-        JLabel filler1 = new JLabel();
-        filler1.setPreferredSize(new Dimension(120, 1));
-        filler1.setOpaque(false);
+        passwordInfoLabel = MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
+                controller.getLocaliser().getString("showImportPrivateKeysPanel.enterPassword"), 3, passwordProtectPanel);
 
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 0.1;
-        constraints.weighty = 0.05;
-        constraints.gridwidth = 2;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        passwordProtectPanel.add(filler1, constraints);
-
-        passwordInfoLabel = new MultiBitLabel(controller.getLocaliser().getString("showImportPrivateKeysPanel.enterPassword"),
-                controller);
-        passwordInfoLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
-        constraints.gridy = 1;
-        constraints.weightx = 0.2;
+        constraints.gridy = 4;
+        constraints.weightx = 0.3;
         constraints.weighty = 0.3;
-        constraints.gridwidth = 2;
+        constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        passwordProtectPanel.add(passwordInfoLabel, constraints);
+        passwordProtectPanel.add(MultiBitTitledPanel.createStent(stentWidth), constraints);
 
-        passwordPromptLabel = new MultiBitLabel(controller.getLocaliser().getString("showExportPrivateKeysPanel.passwordPrompt"),
-                controller);
+        passwordPromptLabel = new MultiBitLabel(controller.getLocaliser().getString("showExportPrivateKeysPanel.passwordPrompt"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
-        constraints.gridy = 2;
+        constraints.gridy = 5;
         constraints.weightx = 0.3;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         passwordProtectPanel.add(passwordPromptLabel, constraints);
 
-        passwordField = new JPasswordField(30);
-        passwordField.setMinimumSize(new Dimension(250, 20));
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
-        constraints.gridy = 2;
+        constraints.gridy = 5;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        passwordProtectPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
+
+        passwordField = new JPasswordField(24);
+        passwordField.setMinimumSize(new Dimension(200, 20));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 5;
         constraints.weightx = 0.3;
         constraints.weighty = 0.6;
         constraints.gridwidth = 1;
@@ -522,8 +530,8 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         filler3.setOpaque(false);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridx = 1;
+        constraints.gridy = 6;
         constraints.weightx = 0.1;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -548,29 +556,24 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         unlockButton.setEnabled(false);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridx = 3;
+        constraints.gridy = 7;
         constraints.weightx = 0.3;
         constraints.weighty = 0.6;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         passwordProtectPanel.add(unlockButton, constraints);
 
-        JLabel filler4 = new JLabel();
-        filler4.setMinimumSize(new Dimension(3, 3));
-        filler4.setMaximumSize(new Dimension(3, 3));
-        filler4.setPreferredSize(new Dimension(3, 3));
-        filler4.setOpaque(false);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 4;
-        constraints.weightx = 0.1;
-        constraints.weighty = 0.1;
+        JPanel filler5 = new JPanel();
+        filler5.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 8;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
         constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        passwordProtectPanel.add(filler4, constraints);
+        constraints.anchor = GridBagConstraints.LINE_START;
+        passwordProtectPanel.add(filler3, constraints);
 
         return passwordProtectPanel;
     }
@@ -579,7 +582,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
         FlowLayout flowLayout = new FlowLayout();
-        flowLayout.setAlignment(FlowLayout.RIGHT);
+        flowLayout.setAlignment(FlowLayout.LEFT);
         buttonPanel.setLayout(flowLayout);
 
         ImportPrivateKeysSubmitAction submitAction = new ImportPrivateKeysSubmitAction(controller, this,
@@ -682,15 +685,15 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
             passwordPromptLabel.setEnabled(true);
             passwordField.setEnabled(true);
             unlockButton.setEnabled(true);
-            passwordTitledBorder.setTitleColor(Color.BLACK);
+            // passwordTitledBorder.setTitleColor(Color.BLACK);
             passwordInfoLabel.setForeground(Color.BLACK);
         } else {
             // disable the password panel
             passwordPromptLabel.setEnabled(false);
             passwordField.setEnabled(false);
             unlockButton.setEnabled(false);
-            passwordTitledBorder.setTitleColor(Color.GRAY);
-            passwordTitledBorder.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            // passwordTitledBorder.setTitleColor(Color.GRAY);
+            // passwordTitledBorder.setBorder(BorderFactory.createLineBorder(Color.GRAY));
             passwordInfoLabel.setForeground(Color.GRAY);
         }
     }
@@ -741,7 +744,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
     public String getViewTitle() {
         return controller.getLocaliser().getString("importPrivateKeysSubmitAction.text");
     }
-    
+
     @Override
     public int getViewId() {
         return View.SHOW_IMPORT_PRIVATE_KEYS_VIEW;

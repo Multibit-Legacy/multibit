@@ -37,7 +37,7 @@ public class BlinkLabel extends MultiBitLabel {
     private String previousBlinkText;
 
     public BlinkLabel(MultiBitController controller, boolean isLarge) {
-        super("", controller);
+        super("");
         
         if (isLarge) {
             setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(3 * ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));

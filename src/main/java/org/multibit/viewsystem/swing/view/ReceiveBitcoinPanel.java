@@ -58,7 +58,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
 
     private static final long serialVersionUID = -2065108865497842662L;
 
-    private static final String RECEIVE_BITCOIN_BIG_ICON_FILE = "/images/receive-big.jpg";
+//    private static final String RECEIVE_BITCOIN_BIG_ICON_FILE = "/images/receive-big.jpg";
 
     public ReceiveBitcoinPanel(MultiBitFrame mainFrame, MultiBitController controller) {
         super(mainFrame, controller);
@@ -125,17 +125,17 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(filler1, constraints);
 
-        ImageIcon bigIcon = ImageLoader.createImageIcon(RECEIVE_BITCOIN_BIG_ICON_FILE);
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 1;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.08;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        formPanel.add(new JLabel(bigIcon), constraints);
+//        ImageIcon bigIcon = ImageLoader.createImageIcon(RECEIVE_BITCOIN_BIG_ICON_FILE);
+//        constraints.fill = GridBagConstraints.BOTH;
+//        constraints.gridx = 1;
+//        constraints.gridy = 1;
+//        constraints.weightx = 0.3;
+//        constraints.weighty = 0.08;
+//        constraints.gridwidth = 1;
+//        constraints.anchor = GridBagConstraints.CENTER;
+//        formPanel.add(new JLabel(bigIcon), constraints);
 
-        MultiBitLabel helpLabel1 = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel1.message"), controller);
+        MultiBitLabel helpLabel1 = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel1.message"));
         helpLabel1.setHorizontalAlignment(JLabel.LEADING);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -146,7 +146,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(helpLabel1, constraints);
 
-        MultiBitLabel helpLabel2 = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel2.message"), controller);
+        MultiBitLabel helpLabel2 = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel2.message"));
         helpLabel2.setHorizontalAlignment(JLabel.LEADING);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -157,7 +157,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(helpLabel2, constraints);
 
-        MultiBitLabel helpLabel3 = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel3.message"), controller);
+        MultiBitLabel helpLabel3 = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel3.message"));
         helpLabel3.setHorizontalAlignment(JLabel.LEADING);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -178,7 +178,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(filler2, constraints);
 
-        MultiBitLabel addressLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel"), controller);
+        MultiBitLabel addressLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel"));
         addressLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel.tooltip"));
         addressLabel.setBorder(BorderFactory.createMatteBorder((int)(TEXTFIELD_VERTICAL_DELTA * 0.5), 0, (int)(TEXTFIELD_VERTICAL_DELTA * 0.5), 0, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
         addressLabel.setHorizontalAlignment(JLabel.TRAILING);
@@ -230,7 +230,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(copyAddressButton, constraints);
 
-        MultiBitLabel labelLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel"), controller);
+        MultiBitLabel labelLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel"));
         labelLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel.tooltip"));
         labelLabel.setBorder(BorderFactory.createMatteBorder(6, 0, 0, 0, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
         labelLabel.setHorizontalAlignment(JLabel.TRAILING);
@@ -273,7 +273,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(filler5, constraints);
 
-        MultiBitLabel amountLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel"), controller);
+        MultiBitLabel amountLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel"));
         amountLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel.tooltip"));
         amountLabel.setHorizontalAlignment(JLabel.TRAILING);
 
@@ -301,7 +301,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(amountTextField, constraints);
 
-        MultiBitLabel amountUnitLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountUnitLabel"), controller);
+        MultiBitLabel amountUnitLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountUnitLabel"));
         amountUnitLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountUnitLabel.tooltip"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 4;

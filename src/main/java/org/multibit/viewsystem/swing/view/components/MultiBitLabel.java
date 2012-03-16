@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2012 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,17 @@ package org.multibit.viewsystem.swing.view.components;
 
 import javax.swing.JLabel;
 
-import org.multibit.controller.MultiBitController;
 
 public class MultiBitLabel extends JLabel {
 
     private static final long serialVersionUID = -3434455262992702604L;
 
-    public MultiBitLabel(String labelText, int alignment, MultiBitController controller) {
+    public MultiBitLabel(String labelText, int alignment) {
         super(labelText, alignment);
         setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
     }
 
-    public MultiBitLabel(String labelText, MultiBitController controller) {
+    public MultiBitLabel(String labelText) {
         super(labelText);
         setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
     }

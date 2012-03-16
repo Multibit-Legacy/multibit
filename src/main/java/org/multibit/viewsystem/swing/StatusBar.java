@@ -139,7 +139,7 @@ public class StatusBar extends JComponent {
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         final MultiBitController finalController = controller;
-        onlineLabel = new MultiBitLabel("", controller);
+        onlineLabel = new MultiBitLabel("");
         onlineLabel.setHorizontalAlignment(SwingConstants.CENTER);
         onlineLabel.addMouseListener(new MouseAdapter() {
             @Override
@@ -157,7 +157,7 @@ public class StatusBar extends JComponent {
             }
         });
 
-        statusLabel = new MultiBitLabel("", controller);
+        statusLabel = new MultiBitLabel("");
 
         int onlineWidth = Math.max(
                 getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(

@@ -38,29 +38,27 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
  * @author b4rc0ll0
  * 
  */
-public class RoundedPanel extends JPanel {
+public class RoundedBottomPanel extends JPanel {
 
-    private static final long serialVersionUID = 6690320592192612325L;
+    private static final long serialVersionUID = 6690999592192612325L;
     /** Stroke size. it is recommended to set it to 1 for better view */
     protected int strokeSize = 1;
     /** Color of shadow */
     protected Color shadowColor = Color.DARK_GRAY;
     /** Sets if it drops shadow */
-    protected boolean shady = true;
+    protected boolean shady = false;
     /** Sets if it has an High Quality view */
     protected boolean highQuality = true;
     /** Double values for Horizontal and Vertical radius of corner arcs */
     protected Dimension arcs = new Dimension(6, 6);
     /** Distance between shadow border and opaque panel border */
-    protected int shadowGap = 2;
+    protected int shadowGap = 1;
     /** The offset of shadow. */
-    protected int shadowOffset = 2;
+    protected int shadowOffset = 1;
     /** The transparency value of shadow. ( 0 - 255) */
     protected int shadowAlpha = 80;
 
-    boolean selected;
-
-    public RoundedPanel(Locale locale) {
+    public RoundedBottomPanel(Locale locale) {
         super();
         setOpaque(false);
         setBackground(ColorAndFontConstants.DARK_BACKGROUND_COLOR);
@@ -72,7 +70,7 @@ public class RoundedPanel extends JPanel {
         super.paintComponent(g);
         int width = getWidth();
         int height = getHeight();
-             
+
         int shadowGap = this.shadowGap;
         Color shadowColorA = new Color(shadowColor.getRed(), shadowColor.getGreen(), shadowColor.getBlue(), shadowAlpha);
         Graphics2D graphics = (Graphics2D) g;
@@ -98,24 +96,15 @@ public class RoundedPanel extends JPanel {
         graphics.setColor(getBackground());
         graphics.fillRoundRect(0, 0, width - shadowGap, height - shadowGap, arcs.width, arcs.height);
 
-        if (selected) {
-            graphics.setColor(ColorAndFontConstants.SELECTION_BACKGROUND_COLOR);
-            graphics.setStroke(new BasicStroke(strokeSize + 1));
-        } else {
-            graphics.setColor(SystemColor.windowBorder);
-            graphics.setStroke(new BasicStroke(strokeSize));
-        }
+        graphics.setColor(SystemColor.windowBorder);
+        graphics.setStroke(new BasicStroke(strokeSize));
+
         graphics.drawRoundRect(0, 0, width - shadowGap, height - shadowGap, arcs.width, arcs.height);
+ 
+        graphics.setColor(getBackground());
+        graphics.fillRect(1, 0, width - shadowGap - 2, height - shadowGap);
 
         // Sets strokes to default, is better.
         graphics.setStroke(new BasicStroke());
-    }
-
-    public boolean isSelected() {
-        return selected;
-    }
-
-    public void setSelected(boolean selected) {
-        this.selected = selected;
     }
 }

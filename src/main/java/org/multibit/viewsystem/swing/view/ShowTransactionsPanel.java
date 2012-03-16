@@ -412,7 +412,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
-        MultiBitLabel label = new MultiBitLabel("", controller);
+        MultiBitLabel label = new MultiBitLabel("");
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
@@ -439,7 +439,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
-        MultiBitLabel label = new MultiBitLabel("", controller);
+        MultiBitLabel label = new MultiBitLabel("");
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
@@ -484,7 +484,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     class LeadingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
-        MultiBitLabel label = new MultiBitLabel("", controller);
+        MultiBitLabel label = new MultiBitLabel("");
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {

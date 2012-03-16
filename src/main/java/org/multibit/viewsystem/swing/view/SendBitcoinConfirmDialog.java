@@ -152,7 +152,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         JLabel bigIconLabel = new JLabel(bigIcon);
         mainPanel.add(bigIconLabel, constraints);
 
-        MultiBitLabel explainLabel = new MultiBitLabel("", controller);
+        MultiBitLabel explainLabel = new MultiBitLabel("");
         explainLabel.setText(controller.getLocaliser().getString("sendBitcoinConfirmView.message"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
@@ -178,7 +178,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         
         GridBagConstraints constraints2 = new GridBagConstraints();
         
-        MultiBitLabel sendAddressLabel = new MultiBitLabel("", controller);
+        MultiBitLabel sendAddressLabel = new MultiBitLabel("");
         sendAddressLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel"));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 0;
@@ -199,7 +199,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints2.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(filler1, constraints2);
 
-        sendAddressText = new MultiBitLabel("", controller);
+        sendAddressText = new MultiBitLabel("");
         sendAddressText.setText(sendAddress);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
@@ -210,7 +210,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints2.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(sendAddressText, constraints2);
 
-        MultiBitLabel sendLabelLabel = new MultiBitLabel("", controller);
+        MultiBitLabel sendLabelLabel = new MultiBitLabel("");
         sendLabelLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel"));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 0;
@@ -221,7 +221,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints2.anchor = GridBagConstraints.LINE_END;
         detailPanel.add(sendLabelLabel, constraints2);
 
-        sendLabelText = new MultiBitLabel("", controller);
+        sendLabelText = new MultiBitLabel("");
         sendLabelText.setText(sendLabel);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
@@ -232,7 +232,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints2.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(sendLabelText, constraints2);
 
-        MultiBitLabel sendAmountLabel = new MultiBitLabel("", controller);
+        MultiBitLabel sendAmountLabel = new MultiBitLabel("");
         sendAmountLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel"));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 0;
@@ -243,7 +243,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints2.anchor = GridBagConstraints.LINE_END;
         detailPanel.add(sendAmountLabel, constraints2);
 
-        sendAmountText = new MultiBitLabel("", controller);
+        sendAmountText = new MultiBitLabel("");
         sendAmountText.setText(sendAmount);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
@@ -264,7 +264,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints2.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(filler2, constraints2);
   
-        MultiBitLabel sendFeeLabel = new MultiBitLabel("", controller);
+        MultiBitLabel sendFeeLabel = new MultiBitLabel("");
         sendFeeLabel.setText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 0;
@@ -275,7 +275,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints2.anchor = GridBagConstraints.LINE_END;
         detailPanel.add(sendFeeLabel, constraints2);
 
-        sendFeeText = new MultiBitLabel("", controller);
+        sendFeeText = new MultiBitLabel("");
         sendFeeText.setText(sendFee);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
@@ -306,7 +306,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         sendButton = new MultiBitButton(sendBitcoinNowAction, controller);
         buttonPanel.add(sendButton);
 
-        confirmText1 = new MultiBitLabel("", controller);
+        confirmText1 = new MultiBitLabel("");
         confirmText1.setText(" ");
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -327,7 +327,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(filler3, constraints);
 
-        confirmText2 = new MultiBitLabel(" ", controller);
+        confirmText2 = new MultiBitLabel(" ");
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 9;

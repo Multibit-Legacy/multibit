@@ -42,7 +42,6 @@ import org.multibit.viewsystem.swing.action.CreateBulkAddressesSubmitAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.multibit.viewsystem.swing.view.components.MultiBitTitleLabel;
 
 /**
  * The create bulk addresses view (MultiBitMerchant support)
@@ -159,7 +158,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        MultiBitLabel filenameLabel = new MultiBitLabel(controller.getLocaliser().getString("createBulkAddressesPanel.filenameLabel.text"), controller);
+        MultiBitLabel filenameLabel = new MultiBitLabel(controller.getLocaliser().getString("createBulkAddressesPanel.filenameLabel.text"));
         filenameLabel.setToolTipText(controller.getLocaliser().getString("createBulkAddressesPanel.filenameLabel.tooltip"));
         filenameLabel.setOpaque(false);
         
@@ -169,7 +168,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         
         String defaultOutputFilename = applicationDataDirectory + File.separator + DEFAULT_BULK_ADDRESSES_FILENAME;
 
-        actualFilenameLabel = new MultiBitLabel(defaultOutputFilename, controller);
+        actualFilenameLabel = new MultiBitLabel(defaultOutputFilename);
         actualFilenameLabel.setOpaque(false);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -220,7 +219,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
  
         GridBagConstraints constraints = new GridBagConstraints();
 
-        MultiBitLabel numberOfAddressesLabel = new MultiBitLabel(controller.getLocaliser().getString("createBulkAddressesPanel.numberOfAddresses.text"), controller);
+        MultiBitLabel numberOfAddressesLabel = new MultiBitLabel(controller.getLocaliser().getString("createBulkAddressesPanel.numberOfAddresses.text"));
         numberOfAddressesLabel.setToolTipText(controller.getLocaliser().getString("createBulkAddressesPanel.numberOfAddresses.tooltip"));
         numberOfAddressesLabel.setOpaque(false);
  
@@ -229,7 +228,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         numberOfAddressesPanel.setMinimumSize(preferredSize);
         numberOfAddressesPanel.setPreferredSize(preferredSize);
 
-        actualNumberOfAddressesLabel = new MultiBitLabel("" + DEFAULT_NUMBER_OF_ADDRESSES, controller);
+        actualNumberOfAddressesLabel = new MultiBitLabel("" + DEFAULT_NUMBER_OF_ADDRESSES);
         actualNumberOfAddressesLabel.setOpaque(false);
 
         constraints.fill = GridBagConstraints.NONE;
