@@ -192,7 +192,7 @@ public class YourWalletsPanel extends JPanel implements View {
                 if (loopPerWalletModelData.getWallet() != null) {
                     JPanel outerPanel = new JPanel();
                     outerPanel.setOpaque(false);
-                    outerPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 0, 3));
+                    outerPanel.setBorder(BorderFactory.createEmptyBorder(4, 3, 0, 3));
                     outerPanel.setLayout(new BorderLayout());
                     SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, controller, mainFrame);
                     outerPanel.add(loopPanel, BorderLayout.CENTER);
@@ -208,7 +208,7 @@ public class YourWalletsPanel extends JPanel implements View {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.weightx = 1.0;
-        constraints.weighty = 100.0;
+        constraints.weighty = 10000.0;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;

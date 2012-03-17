@@ -57,6 +57,8 @@ public class RoundedBottomPanel extends JPanel {
     protected int shadowOffset = 1;
     /** The transparency value of shadow. ( 0 - 255) */
     protected int shadowAlpha = 80;
+    
+    boolean selected;
 
     public RoundedBottomPanel(Locale locale) {
         super();
@@ -96,15 +98,29 @@ public class RoundedBottomPanel extends JPanel {
         graphics.setColor(getBackground());
         graphics.fillRoundRect(0, 0, width - shadowGap, height - shadowGap, arcs.width, arcs.height);
 
-        graphics.setColor(SystemColor.windowBorder);
-        graphics.setStroke(new BasicStroke(strokeSize));
-
+        if (selected) {
+            graphics.setColor(ColorAndFontConstants.SELECTION_BACKGROUND_COLOR);
+            graphics.setStroke(new BasicStroke(strokeSize + 1));
+        } else {
+            graphics.setColor(SystemColor.windowBorder);
+            graphics.setStroke(new BasicStroke(strokeSize));
+        }
         graphics.drawRoundRect(0, 0, width - shadowGap, height - shadowGap, arcs.width, arcs.height);
- 
-        graphics.setColor(getBackground());
-        graphics.fillRect(1, 0, width - shadowGap - 2, height - shadowGap);
+        graphics.fillRect(0, 0, 1, 1);
+        graphics.fillRect(width - 1, 0, 1, 1);
 
         // Sets strokes to default, is better.
         graphics.setStroke(new BasicStroke());
+
+        graphics.setColor(getBackground());
+        graphics.fillRect(1, 0, width - 2, 2);
+    }
+    
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

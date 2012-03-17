@@ -48,6 +48,8 @@ public class ImageLoader {
     public static final String EXPORT_PRIVATE_KEYS_ICON_FILE = "/images/exportKey.png";
     public static final String RESET_TRANSACTIONS_ICON_FILE = "/images/resetTransactions.png";
     public static final String CLOSE_TAB_ICON_FILE = "/images/closeTab.png";
+    public static final String TWISTY_RIGHT_ICON_FILE = "/images/twistyRight.png";
+    public static final String TWISTY_DOWN_ICON_FILE = "/images/twistyDown.png";
        
 
     public ImageLoader() {
