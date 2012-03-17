@@ -201,7 +201,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         mainPanel.add(messageLabel2, constraints);
 
         JLabel filler2 = new JLabel();
-        filler2.setOpaque(true);
+        filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 7;
@@ -503,7 +503,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         JPanel filler0 = new JPanel();
         filler0.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx =3;
+        constraints.gridx = 4;
         constraints.gridy = 3;
         constraints.weightx = 100;
         constraints.weighty = 1;
@@ -599,46 +599,19 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         constraints.anchor = GridBagConstraints.LINE_START;
         passwordProtectPanel.add(repeatPasswordField, constraints);
 
-        JPanel fill1 = new JPanel();
-        fill1.setOpaque(false);
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 4;
-        constraints.gridy = 7;
-        constraints.weightx = 20;
-        constraints.weighty = 1;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        passwordProtectPanel.add(fill1, constraints);
-
-        JLabel filler4 = new JLabel();
-        filler4.setMinimumSize(new Dimension(20, 1));
-        filler4.setMaximumSize(new Dimension(20, 1));
-        filler4.setPreferredSize(new Dimension(20, 1));
-        filler4.setOpaque(false);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 4;
-        constraints.gridy = 3;
-        constraints.weightx = 0.1;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        passwordProtectPanel.add(filler4, constraints);
-
         ImageIcon tickIcon = ImageLoader.createImageIcon(ImageLoader.TICK_ICON_FILE);
         tickLabel = new JLabel(tickIcon);
         tickLabel.setToolTipText(controller.getLocaliser().getString("showExportPrivateKeysPanel.theTwoPasswordsMatch"));
+
         tickLabel.setVisible(false);
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 4;
         constraints.gridy = 5;
         constraints.weightx = 0.1;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.gridheight = 3;
-        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.anchor = GridBagConstraints.LINE_START;
         passwordProtectPanel.add(tickLabel, constraints);
 
         constraints.fill = GridBagConstraints.NONE;

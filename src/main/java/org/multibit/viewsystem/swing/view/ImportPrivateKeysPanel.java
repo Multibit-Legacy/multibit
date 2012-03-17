@@ -196,7 +196,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         mainPanel.add(messageLabel, constraints);
 
         JLabel filler2 = new JLabel();
-        filler2.setOpaque(true);
+        filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 6;
