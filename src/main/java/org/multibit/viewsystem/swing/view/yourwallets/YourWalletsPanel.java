@@ -41,6 +41,7 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.MultiBitTabbedPane;
 import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
@@ -140,7 +141,7 @@ public class YourWalletsPanel extends JPanel implements View {
 
         setLayout(new BorderLayout());
 
-        JTabbedPane tabbedPane = new JTabbedPane();
+        MultiBitTabbedPane tabbedPane = new MultiBitTabbedPane(controller);
         JPanel tabPanel = new JPanel(new BorderLayout());
 
         createWalletListPanel();

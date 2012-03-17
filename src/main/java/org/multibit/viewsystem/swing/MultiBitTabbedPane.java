@@ -19,6 +19,8 @@ import javax.swing.event.ChangeListener;
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 
 public class MultiBitTabbedPane extends JTabbedPane {
 
@@ -65,12 +67,12 @@ public class MultiBitTabbedPane extends JTabbedPane {
         });
     }
 
-    public void addUncloseableTab(String title, Icon icon, Component component) {
-        super.addTab(title, icon, component);
-    }
-
     @Override
     public void addTab(String title, Icon icon, Component component) {
+        addTab(title, icon, component, false);
+    }
+
+    public void addTab(String title, Icon icon, Component component, boolean isCloseable) {
         final Component finalComponent = component;
 
         // Create a panel that represents the tab and ensure that it is
@@ -86,25 +88,9 @@ public class MultiBitTabbedPane extends JTabbedPane {
         // remote it from the tabbed pane.
 
         JLabel tabLabel = new JLabel(title);
+        tabLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         tabLabel.setIcon(icon);
         tabCounter++;
-
-        JButton tabCloseButton = new JButton(closeTabIcon);
-        tabCloseButton.setPreferredSize(closeButtonSize);
-        tabCloseButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                int closeTabNumber = thisTabbedPane.indexOfComponent(finalComponent);
-
-                thisTabbedPane.removeTabAt(closeTabNumber);
-
-                // notify controller of new view being shown
-                JPanel selectedTab = (JPanel) thisTabbedPane.getSelectedComponent();
-                Component[] components = selectedTab.getComponents();
-                if (components != null && components.length > 0 && components[0] instanceof View) {
-                    controller.displayView(((View) components[0]).getViewId());
-                }
-            }
-        });
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -116,31 +102,50 @@ public class MultiBitTabbedPane extends JTabbedPane {
         constraints.anchor = GridBagConstraints.CENTER;
         tab.add(tabLabel, constraints);
 
-        JPanel fill1 = new JPanel();
-        fill1.setOpaque(false);
-        fill1.setMinimumSize(new Dimension(4, 4));
-        fill1.setPreferredSize(new Dimension(4, 4));
-        fill1.setMaximumSize(new Dimension(4, 4));
+        if (isCloseable) {
+            JButton tabCloseButton = new JButton(closeTabIcon);
+            tabCloseButton.setPreferredSize(closeButtonSize);
+            tabCloseButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    int closeTabNumber = thisTabbedPane.indexOfComponent(finalComponent);
 
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.weightx = 0.05;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        tab.add(fill1, constraints);
+                    thisTabbedPane.removeTabAt(closeTabNumber);
 
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.weightx = 0.2;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
-        tab.add(tabCloseButton, constraints);
+                    // notify controller of new view being shown
+                    JPanel selectedTab = (JPanel) thisTabbedPane.getSelectedComponent();
+                    Component[] components = selectedTab.getComponents();
+                    if (components != null && components.length > 0 && components[0] instanceof View) {
+                        controller.displayView(((View) components[0]).getViewId());
+                    }
+                }
+            });
+            
+            JPanel fill1 = new JPanel();
+            fill1.setOpaque(false);
+            fill1.setMinimumSize(new Dimension(4, 4));
+            fill1.setPreferredSize(new Dimension(4, 4));
+            fill1.setMaximumSize(new Dimension(4, 4));
+
+            constraints.fill = GridBagConstraints.BOTH;
+            constraints.gridx = 1;
+            constraints.gridy = 0;
+            constraints.gridwidth = 1;
+            constraints.gridheight = 1;
+            constraints.weightx = 0.05;
+            constraints.weighty = 1;
+            constraints.anchor = GridBagConstraints.CENTER;
+            tab.add(fill1, constraints);
+
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.gridx = 2;
+            constraints.gridy = 0;
+            constraints.gridwidth = 1;
+            constraints.gridheight = 1;
+            constraints.weightx = 0.2;
+            constraints.weighty = 1;
+            constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
+            tab.add(tabCloseButton, constraints);
+        }
 
         // Add the tab to the tabbed pane. Note that the first
         // parameter, which would ordinarily be a String that
