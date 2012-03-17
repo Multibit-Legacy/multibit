@@ -50,10 +50,6 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
  */
 public class CreateBulkAddressesPanel extends JPanel implements View, DataProvider {
 
-    private static final int DIALOG_HEIGHT_DELTA = 20;
-
-    private static final int DIALOG_WIDTH_DELTA = 100;
-
     private static final String DEFAULT_BULK_ADDRESSES_FILENAME = "bulkAddresses.csv";
 
     private static final int DEFAULT_NUMBER_OF_ADDRESSES = 1000;
@@ -97,41 +93,31 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         String[] keys = new String[] {"createBulkAddressesPanel.numberOfAddresses.text", "createBulkAddressesPanel.filenameLabel.text"};
         int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this);
 
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0.06;
-        constraints.anchor = GridBagConstraints.CENTER;
-        JPanel fillerPanel1 = new JPanel();
-        fillerPanel1.setOpaque(false);
-        add(fillerPanel1, constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 1;
-        constraints.gridwidth = 2;
+        constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 1.6;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.anchor = GridBagConstraints.LINE_START;
         add(createNumberOfAddressesPanel(stentWidth), constraints);
 
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 2;
-        constraints.gridwidth = 2;
+        constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.anchor = GridBagConstraints.LINE_START;
         add(createFileNamePanel(stentWidth), constraints);
 
-        constraints.fill = GridBagConstraints.NONE;
+        constraints = new GridBagConstraints();        
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 3;
         constraints.gridwidth = 1;
-        constraints.weightx = 0.4;
-        constraints.weighty = 0.06;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createButtonPanel(), constraints);
 
@@ -140,10 +126,10 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 4;
-        constraints.gridwidth = 2;
+        constraints.gridwidth = 1;
         constraints.weightx = 1;
-        constraints.weighty = 20;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
+        constraints.weighty = 100;
+        constraints.anchor = GridBagConstraints.LINE_START;
         add(filler1, constraints);
     }
 
@@ -158,34 +144,35 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         filenamePanel.setOpaque(false);
         filenamePanel.setBackground(Color.WHITE);
 
-        GridBagConstraints constraints = new GridBagConstraints();
+        GridBagConstraints constraints2 = new GridBagConstraints();
 
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 3;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        filenamePanel.add(MultiBitTitledPanel.getIndentPanel(1), constraints);
+        constraints2.fill = GridBagConstraints.BOTH;
+        constraints2.gridx = 0;
+        constraints2.gridy = 3;
+        constraints2.weightx = 0.3;
+        constraints2.weighty = 0.3;
+        constraints2.gridwidth = 1;
+        constraints2.gridheight = 1;
+        constraints2.anchor = GridBagConstraints.LINE_START;
+        filenamePanel.add(MultiBitTitledPanel.getIndentPanel(1), constraints2);
         
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 3;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        filenamePanel.add(MultiBitTitledPanel.createStent(stentWidth), constraints);
+        constraints2.fill = GridBagConstraints.BOTH;
+        constraints2.gridx = 1;
+        constraints2.gridy = 3;
+        constraints2.weightx = 0.3;
+        constraints2.weighty = 0.3;
+        constraints2.gridwidth = 1;
+        constraints2.anchor = GridBagConstraints.LINE_START;
+        filenamePanel.add(MultiBitTitledPanel.createStent(stentWidth), constraints2);
 
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 2;
-        constraints.gridy = 3;
-        constraints.weightx = 0.05;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        filenamePanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
+        constraints2.fill = GridBagConstraints.BOTH;
+        constraints2.gridx = 2;
+        constraints2.gridy = 3;
+        constraints2.weightx = 0.05;
+        constraints2.weighty = 0.3;
+        constraints2.gridwidth = 1;
+        constraints2.anchor = GridBagConstraints.CENTER;
+        filenamePanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints2);
 
         MultiBitLabel filenameLabel = new MultiBitLabel(controller.getLocaliser().getString("createBulkAddressesPanel.filenameLabel.text"));
         filenameLabel.setToolTipText(controller.getLocaliser().getString("createBulkAddressesPanel.filenameLabel.tooltip"));
@@ -200,22 +187,33 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         actualFilenameLabel = new MultiBitLabel(defaultOutputFilename);
         actualFilenameLabel.setOpaque(false);
 
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 5;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        filenamePanel.add(filenameLabel, constraints);
+        constraints2.fill = GridBagConstraints.NONE;
+        constraints2.gridx = 1;
+        constraints2.gridy = 5;
+        constraints2.weightx = 0.3;
+        constraints2.weighty = 0.3;
+        constraints2.gridwidth = 1;
+        constraints2.anchor = GridBagConstraints.LINE_END;
+        filenamePanel.add(filenameLabel, constraints2);
 
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
-        constraints.gridy = 5;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        filenamePanel.add(actualFilenameLabel, constraints);
+        constraints2.fill = GridBagConstraints.NONE;
+        constraints2.gridx = 3;
+        constraints2.gridy = 5;
+        constraints2.weightx = 0.3;
+        constraints2.weighty = 0.3;
+        constraints2.anchor = GridBagConstraints.LINE_START;
+        filenamePanel.add(actualFilenameLabel, constraints2);
+
+        JLabel filler1 = new JLabel();
+        filler1.setOpaque(false);
+        constraints2.fill = GridBagConstraints.BOTH;
+        constraints2.gridx = 4;
+        constraints2.gridy = 5;
+        constraints2.gridwidth = 1;
+        constraints2.weightx = 20;
+        constraints2.weighty = 1;
+        constraints2.anchor = GridBagConstraints.LINE_END;
+        add(filler1, constraints2);
 
         return filenamePanel;
     }
@@ -303,7 +301,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
         FlowLayout flowLayout = new FlowLayout();
-        flowLayout.setAlignment(FlowLayout.RIGHT);
+        flowLayout.setAlignment(FlowLayout.LEFT);
         buttonPanel.setLayout(flowLayout);
 
         CreateBulkAddressesSubmitAction submitAction = new CreateBulkAddressesSubmitAction(controller, this);
