@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -38,6 +39,7 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
+import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
 /**
  * The reset blockchain and transactions view
@@ -62,8 +64,8 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
 
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
                 BorderFactory.createMatteBorder(1, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
-        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-        setOpaque(false);
+        setBackground(Color.WHITE);
+        setOpaque(true);
 
         this.controller = controller;
 
@@ -78,16 +80,8 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         GridBagConstraints constraints = new GridBagConstraints();
         setLayout(new GridBagLayout());
 
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0.06;
-        constraints.anchor = GridBagConstraints.CENTER;
-        JPanel fillerPanel1 = new JPanel();
-        fillerPanel1.setOpaque(false);
-        add(fillerPanel1, constraints);
+        String[] keys = new String[] {"resetTransactionsPanel.walletDescriptionLabel", "resetTransactionsPanel.walletFilenameLabel"};
+        int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -96,7 +90,19 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(createExplainPanel(), constraints);
+        add(createExplainPanel(stentWidth), constraints);
+
+        JLabel filler1 = new JLabel();
+        filler1.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 0.1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        add(filler1, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -107,65 +113,53 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createButtonPanel(), constraints);
 
-        JLabel filler1 = new JLabel();
-        filler1.setOpaque(false);
+        JLabel filler2 = new JLabel();
+        filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 6;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
-        constraints.weighty = 20;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        add(filler1, constraints);
+        constraints.weighty = 100;
+        constraints.anchor = GridBagConstraints.CENTER;
+        add(filler2, constraints);
     }
 
-    private JPanel createExplainPanel() {
-        JPanel explainPanel = new JPanel(new GridBagLayout());
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString("resetTransactionsPanel.explainTitle"));
-        explainPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder));
-        explainPanel.setOpaque(false);
+    private JPanel createExplainPanel(int stentWidth) {
+        MultiBitTitledPanel explainPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
+        "resetTransactionsPanel.explainTitle"));
         
-        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        explainPanel.setOpaque(false);
+        explainPanel.setBackground(Color.WHITE);
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        MultiBitLabel explainLabel1 = new MultiBitLabel(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text1"));
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 3;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        explainPanel.add(explainLabel1, constraints);
+        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
+                controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text1"), 3, explainPanel);
 
-        JPanel filler1 = new JPanel();
-        filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
+        constraints.gridx = 1;
+        constraints.gridy = 4;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        explainPanel.add(filler1, constraints);
+        explainPanel.add(MultiBitTitledPanel.createStent(stentWidth), constraints);
 
-        JPanel filler2 = new JPanel();
-        filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 2;
+        constraints.gridx = 2;
+        constraints.gridy = 5;
         constraints.weightx = 0.05;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        explainPanel.add(filler2, constraints);
+        explainPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
 
         MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "resetTransactionsPanel.walletFilenameLabel"));
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
+        constraints.gridx = 1;
+        constraints.gridy = 5;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -174,8 +168,8 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
 
         walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename());
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 2;
+        constraints.gridx = 3;
+        constraints.gridy = 5;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -185,8 +179,8 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         MultiBitLabel walletDescriptionLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "resetTransactionsPanel.walletDescriptionLabel"));
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridx = 1;
+        constraints.gridy = 4;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -195,8 +189,8 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
 
         walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 3;
+        constraints.gridx = 3;
+        constraints.gridy = 4;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -206,10 +200,10 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         JPanel filler3 = new JPanel();
         filler3.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridx = 1;
+        constraints.gridy = 6;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
+        constraints.weighty = 1.0;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         explainPanel.add(filler3, constraints);
@@ -218,8 +212,8 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         MultiBitTextArea explainTextArea = new MultiBitTextArea(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text2"), 40, 2, controller);
         explainTextArea.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridx = 1;
+        constraints.gridy = 7;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 3;
