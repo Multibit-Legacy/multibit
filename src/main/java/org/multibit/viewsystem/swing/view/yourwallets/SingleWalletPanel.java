@@ -113,7 +113,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         myRoundedPanel = new RoundedPanel(controller.getLocaliser().getLocale());
         myRoundedPanel.setLayout(new GridBagLayout());
         myRoundedPanel.setPreferredSize(new Dimension(normalWidth, normalHeight));
-        myRoundedPanel.setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, normalHeight));
+        myRoundedPanel.setMinimumSize(new Dimension(normalWidth - 2 * MIN_WIDTH_SCROLLBAR_DELTA, normalHeight));
         myRoundedPanel.setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
 
         setOpaque(false);
@@ -204,7 +204,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         // add detail panel
         detailPanel = createWalletDetailPanel();
         detailPanel.setPreferredSize(new Dimension(normalWidth, detailHeight));
-        detailPanel.setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, detailHeight));
+        detailPanel.setMinimumSize(new Dimension(normalWidth - 2 * MIN_WIDTH_SCROLLBAR_DELTA, detailHeight));
         detailPanel.setMaximumSize(new Dimension(normalWidth * 2, detailHeight));
 
         constraints2.fill = GridBagConstraints.BOTH;
@@ -271,7 +271,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 walletDescriptionTextField.setBackground(BACKGROUND_COLOR_NORMAL);
                 myRoundedPanel.setBackground(BACKGROUND_COLOR_NORMAL);
                 setPreferredSize(new Dimension(selectedWidth, selectedHeight));
-                setMinimumSize(new Dimension(selectedWidth - MIN_WIDTH_SCROLLBAR_DELTA, selectedHeight));
+                setMinimumSize(new Dimension(selectedWidth - 2 * MIN_WIDTH_SCROLLBAR_DELTA, selectedHeight));
                 setMaximumSize(new Dimension(selectedWidth * 2, selectedHeight));
             } else {
                 detailPanel.setVisible(false);
@@ -280,7 +280,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 walletDescriptionTextField.setBackground(inactiveBackGroundColor);
                 myRoundedPanel.setBackground(inactiveBackGroundColor);
                 setPreferredSize(new Dimension(normalWidth, normalHeight));
-                setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, normalHeight));
+                setMinimumSize(new Dimension(normalWidth - 2 * MIN_WIDTH_SCROLLBAR_DELTA, normalHeight));
                 setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
             }
         }
