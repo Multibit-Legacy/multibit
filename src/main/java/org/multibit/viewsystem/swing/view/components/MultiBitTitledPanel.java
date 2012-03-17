@@ -1,5 +1,6 @@
 package org.multibit.viewsystem.swing.view.components;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -155,7 +156,7 @@ public class MultiBitTitledPanel extends JPanel {
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         JPanel indent = MultiBitTitledPanel.getIndentPanel(1);
-        // indent.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+        //indent.setBorder(BorderFactory.createLineBorder(Color.CYAN));
         panel.add(indent, constraints);
 
         MultiBitLabel label = new MultiBitLabel(text);
@@ -201,13 +202,17 @@ public class MultiBitTitledPanel extends JPanel {
     }
 
     public static JPanel createStent(int stentWidth) {
+        return createStent(stentWidth, 1);
+    }
+    
+    public static JPanel createStent(int stentWidth, int stentHeight) {
         JPanel stentPanel = new JPanel();
         stentPanel.setOpaque(false);
-        //stentPanel.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
+        //stentPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
 
-        stentPanel.setMinimumSize(new Dimension(stentWidth, 1));
-        stentPanel.setPreferredSize(new Dimension(stentWidth, 1));
-        stentPanel.setMaximumSize(new Dimension(stentWidth, 1));
+        stentPanel.setMinimumSize(new Dimension(stentWidth, stentHeight));
+        stentPanel.setPreferredSize(new Dimension(stentWidth, stentHeight));
+        stentPanel.setMaximumSize(new Dimension(stentWidth, stentHeight));
         return stentPanel;
     }
 }
