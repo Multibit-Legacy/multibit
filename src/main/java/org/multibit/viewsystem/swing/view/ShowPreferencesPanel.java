@@ -20,12 +20,12 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.SystemColor;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
@@ -43,8 +43,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
-import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 
 import org.multibit.controller.MultiBitController;
@@ -63,6 +61,7 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
+import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
 /**
  * The show preferences view
@@ -115,6 +114,8 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     private Data data;
 
     private Font selectedFont;
+    
+    private static final int STENT_DELTA = 0;
 
     /**
      * Creates a new {@link ShowPreferencesPanel}.
@@ -224,64 +225,57 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         JPanel mainPanel = new JPanel();
         mainPanel.setOpaque(false);
 
+        String[] keys = new String[] {"showPreferencesPanel.feeLabel.text", "fontChooser.fontName",
+                "fontChooser.fontStyle", "fontChooser.fontSize"};
+        int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this) + STENT_DELTA;
+
         GridBagConstraints constraints = new GridBagConstraints();
         mainPanel.setLayout(new GridBagLayout());
-
-        constraints.fill = GridBagConstraints.NONE;
+        
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 2;
         constraints.weightx = 1;
-        constraints.weighty = 0.06;
-        constraints.anchor = GridBagConstraints.CENTER;
-        JPanel fillerPanel1 = new JPanel();
-        fillerPanel1.setOpaque(false);
-        mainPanel.add(fillerPanel1, constraints);
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
+        mainPanel.add(createFeePanel(stentWidth), constraints);
 
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1.6;
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
-        mainPanel.add(createLanguagePanel(), constraints);
+        mainPanel.add(createLanguagePanel(stentWidth), constraints);
 
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 2;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1.6;
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
-        mainPanel.add(createFontChooserPanel(), constraints);
+        mainPanel.add(createFontChooserPanel(stentWidth), constraints);
 
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 3;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1.6;
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
-        mainPanel.add(createBrowserIntegrationPanel(), constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 4;
-        constraints.gridwidth = 2;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
-        mainPanel.add(createFeePanel(), constraints);
+        mainPanel.add(createBrowserIntegrationPanel(stentWidth), constraints);
 
         JLabel filler1 = new JLabel();
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 4;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
-        constraints.weighty = 20;
+        constraints.weighty = 100;
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         mainPanel.add(filler1, constraints);
 
@@ -294,22 +288,46 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         add(mainScrollPane, BorderLayout.CENTER);
 
         JPanel buttonPanel = createButtonPanel();
-        buttonPanel.setMinimumSize(new Dimension(80, 80));
+        buttonPanel.setMinimumSize(new Dimension(60, 60));
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    private JPanel createLanguagePanel() {
+    private JPanel createLanguagePanel(int stentWidth) {
         // language radios
-        JPanel languagePanel = new JPanel(new GridBagLayout());
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString(
-                "showPreferencesPanel.languageTitle"));
-        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
-
-        languagePanel.setBorder(border);
-        languagePanel.setOpaque(false);
+        MultiBitTitledPanel languagePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
+        "showPreferencesPanel.languageTitle"));
 
         GridBagConstraints constraints = new GridBagConstraints();
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.05;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        JPanel indent = MultiBitTitledPanel.getIndentPanel(1);
+        languagePanel.add(indent, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 3;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        JPanel stent = MultiBitTitledPanel.createStent(stentWidth);
+        languagePanel.add(stent, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 3;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        languagePanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
 
         ButtonGroup languageUsageGroup = new ButtonGroup();
         useDefaultLocale = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.useDefault"));
@@ -327,19 +345,20 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         languageUsageGroup.add(useSpecific);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
+        constraints.gridx = 1;
+        constraints.gridy = 4;
         constraints.weightx = 0.2;
         constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         languagePanel.add(useDefaultLocale, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
+        constraints.gridx = 1;
+        constraints.gridy = 5;
         constraints.weightx = 0.2;
         constraints.weighty = 0.3;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         languagePanel.add(useSpecific, constraints);
 
@@ -412,36 +431,63 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         data.addItem(MultiBitModel.USER_LANGUAGE_CODE, languageItem);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 2;
+        constraints.gridx = 3;
+        constraints.gridy = 6;
         constraints.weightx = 0.8;
         constraints.weighty = 0.6;
+        constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         languagePanel.add(languageComboBox, constraints);
 
-        // main panel layout
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 1;
-        constraints.weighty = 0.15;
+        JPanel fill1 = new JPanel();
+        fill1.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 4;
+        constraints.gridy = 6;
+        constraints.weightx = 20;
+        constraints.weighty = 1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
+        languagePanel.add(fill1, constraints);
 
         return languagePanel;
     }
 
-    private JPanel createFeePanel() {
-        JPanel feePanel = new JPanel(new GridBagLayout());
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString(
-                "showPreferencesPanel.feeTitle"));
-        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
-        feePanel.setBorder(border);
-
-        feePanel.setOpaque(false);
+    private JPanel createFeePanel(int stentWidth) {
+        MultiBitTitledPanel feePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
+        "showPreferencesPanel.feeTitle"));
 
         GridBagConstraints constraints = new GridBagConstraints();
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.05;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        JPanel indent = MultiBitTitledPanel.getIndentPanel(1);
+        feePanel.add(indent, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 3;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        JPanel stent = MultiBitTitledPanel.createStent(stentWidth);
+        feePanel.add(stent, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 3;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        feePanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
 
         MultiBitLabel feeLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"));
         feeLabel.setToolTipText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.tooltip"));
@@ -462,113 +508,136 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         feeTextField.setText(sendFeeString);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
+        constraints.gridx = 1;
+        constraints.gridy = 4;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.anchor = GridBagConstraints.LINE_END;
         feePanel.add(feeLabel, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
+        constraints.gridx = 3;
+        constraints.gridy = 4;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.anchor = GridBagConstraints.LINE_START;
         feePanel.add(feeTextField, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 0;
+        constraints.gridx = 4;
+        constraints.gridy = 4;
         constraints.weightx = 0.2;
         constraints.weighty = 0.3;
         constraints.anchor = GridBagConstraints.LINE_START;
         feePanel.add(feeCurrencyLabel, constraints);
 
+        JPanel fill1 = new JPanel();
+        fill1.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 5;
+        constraints.gridy = 4;
+        constraints.weightx = 20;
+        constraints.weighty = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        feePanel.add(fill1, constraints);
+
         return feePanel;
     }
 
-    private JPanel createFontChooserPanel() {
-        JPanel fontChooserPanel = new JPanel(new GridBagLayout());
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString(
-                "showPreferencesPanel.fontChooserTitle"));
-        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
-        fontChooserPanel.setBorder(border);
-
-        fontChooserPanel.setOpaque(false);
+    private JPanel createFontChooserPanel(int stentWidth) {
+        MultiBitTitledPanel fontChooserPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
+        "showPreferencesPanel.fontChooserTitle"));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        JPanel indent = MultiBitTitledPanel.getIndentPanel(1);
+        fontChooserPanel.add(indent, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 3;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        JPanel stent = MultiBitTitledPanel.createStent(stentWidth);
+        fontChooserPanel.add(stent, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 3;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        fontChooserPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
+
         MultiBitLabel fontNameLabel = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontName"));
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.5;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        fontChooserPanel.add(fontNameLabel, constraints);
-
-        JLabel filler1 = new JLabel();
-        filler1.setMinimumSize(new Dimension(20, 10));
-        filler1.setPreferredSize(new Dimension(20, 10));
-        constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.weightx = 0.2;
-        constraints.weighty = 0.5;
+        constraints.gridy = 4;
+        constraints.weightx = 0.3;
+        constraints.weighty = 1;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        fontChooserPanel.add(filler1, constraints);
+        constraints.anchor = GridBagConstraints.LINE_END;
+        fontChooserPanel.add(fontNameLabel, constraints);
 
         fontNameTextLabel = new MultiBitLabel("");
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 0;
+        constraints.gridx = 3;
+        constraints.gridy = 4;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.5;
+        constraints.weighty = 1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         fontChooserPanel.add(fontNameTextLabel, constraints);
 
         MultiBitLabel fontStyleLabel = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontStyle"));
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
+        constraints.gridx = 1;
+        constraints.gridy = 5;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.5;
+        constraints.weighty = 1;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.anchor = GridBagConstraints.LINE_END;
         fontChooserPanel.add(fontStyleLabel, constraints);
 
         fontStyleTextLabel = new MultiBitLabel("");
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 1;
+        constraints.gridx = 3;
+        constraints.gridy = 5;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.5;
+        constraints.weighty = 1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         fontChooserPanel.add(fontStyleTextLabel, constraints);
 
         MultiBitLabel fontSizeLabel = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontSize"));
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
+        constraints.gridx = 1;
+        constraints.gridy = 6;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.5;
+        constraints.weighty = 1;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.anchor = GridBagConstraints.LINE_END;
         fontChooserPanel.add(fontSizeLabel, constraints);
 
         fontSizeTextLabel = new MultiBitLabel("");
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 2;
+        constraints.gridx = 3;
+        constraints.gridy = 6;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.5;
+        constraints.weighty = 1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         fontChooserPanel.add(fontSizeTextLabel, constraints);
@@ -576,40 +645,37 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         ChooseFontAction chooseFontAction = new ChooseFontAction(controller, this, null);
         MultiBitButton fontChooserButton = new MultiBitButton(chooseFontAction, controller);
 
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 7;
         constraints.weightx = 1;
-        constraints.weighty = 0.5;
-        constraints.gridwidth = 3;
+        constraints.weighty = 1;
+        constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         fontChooserPanel.add(fontChooserButton, constraints);
 
+        JPanel fill1 = new JPanel();
+        fill1.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 4;
+        constraints.gridy = 7;
+        constraints.weightx = 20;
+        constraints.weighty = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        fontChooserPanel.add(fill1, constraints);
+        
         return fontChooserPanel;
     }
 
-    private JPanel createBrowserIntegrationPanel() {
-        JPanel browserIntegrationPanel = new JPanel(new GridBagLayout());
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString(
-                "showPreferencesPanel.browserIntegrationTitle"));
-        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
-        browserIntegrationPanel.setBorder(border);
-
-        browserIntegrationPanel.setOpaque(false);
+    private JPanel createBrowserIntegrationPanel(int stentWidth) {
+        MultiBitTitledPanel browserIntegrationPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
+        "showPreferencesPanel.browserIntegrationTitle"));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        MultiBitLabel messageLabel = new MultiBitLabel(controller.getLocaliser().getString(
-                "showPreferencesPanel.browserIntegration.messageText"));
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 0.2;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        browserIntegrationPanel.add(messageLabel, constraints);
+        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
+                controller.getLocaliser().getString("showPreferencesPanel.browserIntegration.messageText"), 3, browserIntegrationPanel);
 
         ButtonGroup browserIntegrationGroup = new ButtonGroup();
         ignoreAll = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.ignoreAll"));
@@ -629,25 +695,25 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         browserIntegrationGroup.add(askEveryTime);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
+        constraints.gridx = 1;
+        constraints.gridy = 5;
         constraints.weightx = 0.2;
         constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         browserIntegrationPanel.add(ignoreAll, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
+        constraints.gridx = 1;
+        constraints.gridy = 6;
         constraints.weightx = 0.2;
         constraints.weighty = 0.3;
         constraints.anchor = GridBagConstraints.LINE_START;
         browserIntegrationPanel.add(fillAutomatically, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridx = 1;
+        constraints.gridy = 7;
         constraints.weightx = 0.2;
         constraints.weighty = 0.3;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -658,10 +724,13 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridBagLayout());
+
+        GridBagConstraints constraints = new GridBagConstraints();
+ 
         buttonPanel.setOpaque(false);
-        FlowLayout flowLayout = new FlowLayout();
-        flowLayout.setAlignment(FlowLayout.LEADING);
-        buttonPanel.setLayout(flowLayout);
+        buttonPanel.setBackground(SystemColor.window);
+        buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));       
 
         ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(controller, this);
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
@@ -671,7 +740,39 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         undoChangesButton = new MultiBitButton(undoChangesAction, controller);
 
         buttonPanel.add(undoChangesButton);
+  
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        buttonPanel.add(submitButton, constraints);
 
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        buttonPanel.add(undoChangesButton, constraints);
+
+        JPanel fill1 = new JPanel();
+        fill1.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 0;
+        constraints.weightx = 20;
+        constraints.weighty = 1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        buttonPanel.add(fill1, constraints);
+        
         return buttonPanel;
     }
 
