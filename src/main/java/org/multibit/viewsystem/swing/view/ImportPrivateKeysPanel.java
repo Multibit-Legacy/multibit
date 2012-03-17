@@ -470,7 +470,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        outputFilenamePanel.add(filler3, constraints);
+        outputFilenamePanel.add(filler5, constraints);
 
         return outputFilenamePanel;
     }

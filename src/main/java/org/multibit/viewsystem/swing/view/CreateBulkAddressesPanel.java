@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
@@ -42,6 +43,7 @@ import org.multibit.viewsystem.swing.action.CreateBulkAddressesSubmitAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
 /**
  * The create bulk addresses view (MultiBitMerchant support)
@@ -91,6 +93,9 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
 
         GridBagConstraints constraints = new GridBagConstraints();
         setLayout(new GridBagLayout());
+        
+        String[] keys = new String[] {"createBulkAddressesPanel.numberOfAddresses.text", "createBulkAddressesPanel.filenameLabel.text"};
+        int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -110,7 +115,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         constraints.weightx = 1;
         constraints.weighty = 1.6;
         constraints.anchor = GridBagConstraints.NORTHWEST;
-        add(createNumberOfAddressesPanel(), constraints);
+        add(createNumberOfAddressesPanel(stentWidth), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -119,7 +124,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.NORTHWEST;
-        add(createFileNamePanel(), constraints);
+        add(createFileNamePanel(stentWidth), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -146,17 +151,41 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
      * panel to ask user for outputfile name - currently hardwired
      * @return
      */
-    private JPanel createFileNamePanel() {
-        JPanel filenamePanel = new JPanel(new GridBagLayout());
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(controller.getLocaliser().getString("createBulkAddressesPanel.filename.title"));
-        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-
-        Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
-        filenamePanel.setBorder(border);
-
+    private JPanel createFileNamePanel(int stentWidth) {
+        MultiBitTitledPanel filenamePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
+        "createBulkAddressesPanel.filename.title"));
+        
         filenamePanel.setOpaque(false);
+        filenamePanel.setBackground(Color.WHITE);
 
         GridBagConstraints constraints = new GridBagConstraints();
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        filenamePanel.add(MultiBitTitledPanel.getIndentPanel(1), constraints);
+        
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 3;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        filenamePanel.add(MultiBitTitledPanel.createStent(stentWidth), constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 3;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        filenamePanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
 
         MultiBitLabel filenameLabel = new MultiBitLabel(controller.getLocaliser().getString("createBulkAddressesPanel.filenameLabel.text"));
         filenameLabel.setToolTipText(controller.getLocaliser().getString("createBulkAddressesPanel.filenameLabel.tooltip"));
@@ -172,28 +201,17 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         actualFilenameLabel.setOpaque(false);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
+        constraints.gridx = 1;
+        constraints.gridy = 5;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.anchor = GridBagConstraints.LINE_END;
         filenamePanel.add(filenameLabel, constraints);
 
-        JPanel filler1 = new JPanel();
-        filler1.setOpaque(false);
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        filenamePanel.add(filler1, constraints);
-
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 0;
+        constraints.gridx = 3;
+        constraints.gridy = 5;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -207,58 +225,76 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
      * panel to ask user for number of addresses - currently hardwired
      * @return
      */
-    private JPanel createNumberOfAddressesPanel() {
-        JPanel numberOfAddressesPanel = new JPanel(new GridBagLayout());
+    private JPanel createNumberOfAddressesPanel(int stentWidth) {
+        MultiBitTitledPanel numberOfAddressesPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
+        "createBulkAddressesPanel.numberOfAddresses.title"));
+        
         numberOfAddressesPanel.setOpaque(false);
-        String titleText = controller.getLocaliser().getString("createBulkAddressesPanel.numberOfAddresses.title");
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(titleText);
-        titledBorder.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        Border border = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), titledBorder);
-        numberOfAddressesPanel.setBorder(border);
-        numberOfAddressesPanel.setOpaque(false);
- 
+        numberOfAddressesPanel.setBackground(Color.WHITE);
+
         GridBagConstraints constraints = new GridBagConstraints();
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        numberOfAddressesPanel.add(MultiBitTitledPanel.getIndentPanel(1), constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 3;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        numberOfAddressesPanel.add(MultiBitTitledPanel.createStent(stentWidth), constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 3;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        numberOfAddressesPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
 
         MultiBitLabel numberOfAddressesLabel = new MultiBitLabel(controller.getLocaliser().getString("createBulkAddressesPanel.numberOfAddresses.text"));
         numberOfAddressesLabel.setToolTipText(controller.getLocaliser().getString("createBulkAddressesPanel.numberOfAddresses.tooltip"));
         numberOfAddressesLabel.setOpaque(false);
  
-        FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        Dimension preferredSize = new Dimension(fontMetrics.stringWidth(titleText) + DIALOG_WIDTH_DELTA, fontMetrics.getHeight() * 2 + DIALOG_HEIGHT_DELTA);
-        numberOfAddressesPanel.setMinimumSize(preferredSize);
-        numberOfAddressesPanel.setPreferredSize(preferredSize);
-
         actualNumberOfAddressesLabel = new MultiBitLabel("" + DEFAULT_NUMBER_OF_ADDRESSES);
         actualNumberOfAddressesLabel.setOpaque(false);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
+        constraints.gridx = 1;
+        constraints.gridy = 4;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.anchor = GridBagConstraints.LINE_END;
         numberOfAddressesPanel.add(numberOfAddressesLabel, constraints);
 
-        JPanel filler1 = new JPanel();
-        filler1.setOpaque(false);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        numberOfAddressesPanel.add(filler1, constraints);
-
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 0;
+        constraints.gridx = 3;
+        constraints.gridy = 4;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.anchor = GridBagConstraints.LINE_START;
         numberOfAddressesPanel.add(actualNumberOfAddressesLabel, constraints);
+
+        JPanel filler5 = new JPanel();
+        filler5.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 4;
+        constraints.gridy = 3;
+        constraints.weightx = 20;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        numberOfAddressesPanel.add(filler5, constraints);
 
         return numberOfAddressesPanel;
     }

@@ -25,7 +25,6 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.TitledBorder;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
@@ -35,7 +34,6 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ResetTransactionsSubmitAction;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;

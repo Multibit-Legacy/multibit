@@ -1,5 +1,6 @@
 package org.multibit.viewsystem.swing.view.components;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -139,6 +140,7 @@ public class MultiBitTitledPanel extends JPanel {
         filler1.setMinimumSize(new Dimension(LEFT_INDENT, height));
         filler1.setPreferredSize(new Dimension(LEFT_INDENT, height));
         filler1.setMaximumSize(new Dimension(LEFT_INDENT, height));
+        //filler1.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
 
         return filler1;
     }
@@ -170,7 +172,7 @@ public class MultiBitTitledPanel extends JPanel {
 
         JPanel filler0 = new JPanel();
         filler0.setOpaque(false);
-         constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = MAXIMUM_NUMBER_OF_COLUMNS - 1;
         constraints.gridy = row;
         constraints.weightx = 100;
