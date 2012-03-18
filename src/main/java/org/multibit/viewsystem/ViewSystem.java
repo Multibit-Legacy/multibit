@@ -36,23 +36,19 @@ public interface ViewSystem extends WalletEventListener {
      * @param viewToNavigateAwayFrom - current view to navigate away from -one of the View constants
      */   
     public void navigateAwayFromView(int viewToNavigateAwayFrom);
-        
+           
     /**
-     * tells the views a new wallet has been created
-     */
-    public void newWalletCreated();
-    
-    /**
-     * tells the view system to recreate all views e.g. after a language change
-     */   
-    public void recreateAllViews(boolean clearCache, boolean initUI);
-       
-    /**
-     * tells the view system that the model data has changed
+     * tells the view system that the model data has changed (but the wallet is still the same)
      */   
     public void fireDataChanged();
     
     /**
+     * tells the view system to recreate all views e.g. after a language change or wallet change
+     * @param initUI Completely redraw everything on all screens = true
+     */   
+    public void recreateAllViews(boolean initUI);
+       
+     /**
      * tells the view system that an external process has modified one of the wallets
      */
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData);
@@ -69,6 +65,7 @@ public interface ViewSystem extends WalletEventListener {
    
     /**
      * notification that a block has been downloaded
+     * (this is typically called from a peer thread)
      */
     public void blockDownloaded();
  

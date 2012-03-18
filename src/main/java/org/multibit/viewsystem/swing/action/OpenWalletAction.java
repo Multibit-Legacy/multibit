@@ -149,7 +149,8 @@ public class OpenWalletAction extends AbstractAction {
                     if (wasSuccessful) {
                         log.debug(message);
                         controller.updateStatusLabel(message);  
-                        controller.fireNewWalletCreated();
+                        controller.fireRecreateAllViews();
+                        controller.fireDataChanged();
                     } else {
                         log.error(message);
                         controller.updateStatusLabel(message);

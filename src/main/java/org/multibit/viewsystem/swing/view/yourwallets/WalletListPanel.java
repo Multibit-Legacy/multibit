@@ -52,11 +52,11 @@ import org.slf4j.LoggerFactory;
 /**
  * The your wallets view
  */
-public class YourWalletsPanel extends JPanel implements View {
+public class WalletListPanel extends JPanel implements View {
 
     private static final long serialVersionUID = 191352298245057705L;
 
-    private static final Logger log = LoggerFactory.getLogger(YourWalletsPanel.class);
+    private static final Logger log = LoggerFactory.getLogger(WalletListPanel.class);
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
@@ -71,9 +71,9 @@ public class YourWalletsPanel extends JPanel implements View {
     }
 
     /**
-     * Creates a new {@link YourWalletsPanel}.
+     * Creates a new {@link WalletListPanel}.
      */
-    public YourWalletsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
+    public WalletListPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
 
@@ -99,8 +99,6 @@ public class YourWalletsPanel extends JPanel implements View {
                 loopSingleWalletPanel.repaint();
             }
         }
-
-        initUI();
         
         // get the wallets from the model
         String activeWalletFilename = controller.getModel().getActiveWalletFilename();
@@ -134,7 +132,7 @@ public class YourWalletsPanel extends JPanel implements View {
     public void navigateAwayFromView() {
     }
 
-    private void initUI() {
+    public void initUI() {
         log.debug(" initUI called");
 
         this.removeAll();
@@ -298,7 +296,7 @@ public class YourWalletsPanel extends JPanel implements View {
                             .setActiveWalletByFilename(selectedWalletPanel.getPerWalletModelData().getWalletFilename());
                     selectWalletPanelByFilename(selectedWalletPanel.getPerWalletModelData().getWalletFilename());
 
-                    controller.fireWalletChanged();
+                    controller.fireRecreateAllViews();
                     controller.fireDataChanged();
                     controller.displayView(controller.getCurrentView());
                 }

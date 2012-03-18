@@ -732,7 +732,5 @@ public class MultiBitModel {
     public void setCurrentView(int view) {
         this.currentView = view;
         setUserPreference(MultiBitModel.SELECTED_VIEW, "" + view);
-
     }
-
 }

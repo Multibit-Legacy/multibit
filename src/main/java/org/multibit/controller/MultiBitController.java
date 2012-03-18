@@ -138,10 +138,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
         setCurrentView(viewToDisplay);
 
-        // remember the view in the preferences
-        model.setUserPreference(MultiBitModel.SELECTED_VIEW, "" + getCurrentView());
-
-        // tell all views which view to display
+         // tell all views which view to display
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.displayView(getCurrentView());
         }
@@ -190,37 +187,17 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.recreateAllViews(true, true);
+            viewSystem.recreateAllViews(true);
         }
-    }
-
-    /**
-     * a new wallet has been created
-     */
-    public void fireNewWalletCreated() {
-        // tell the viewSystems to refresh their views
-        for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.newWalletCreated();
-        }
-    }
-
-    /**
-     * the wallet file has been changed
-     */
-    public void fireWalletChanged() {
-        fireRecreateAllViews(false);
     }
 
     /**
      * fire that all the views need recreating
-     * 
-     * @param clearCache
-     *            True if the cache should be cleared
      */
-    public void fireRecreateAllViews(boolean clearCache) {
+    public void fireRecreateAllViews() {
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.recreateAllViews(clearCache, false);
+            viewSystem.recreateAllViews(false);
         }
     }
 

@@ -169,7 +169,7 @@ public class MultiBit {
             try {
                 controller.addWalletFromFilename(activeWalletFilename);
                 controller.getModel().setActiveWalletByFilename(activeWalletFilename);
-                controller.fireWalletChanged();
+                controller.fireRecreateAllViews();
                 controller.fireDataChanged();
             } catch (IOException e) {
                 String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{activeWalletFilename, e.getMessage()});
@@ -202,8 +202,7 @@ public class MultiBit {
                             log.error(message);
                        }
                     }
-                    controller.fireNewWalletCreated();
-                    controller.fireWalletChanged();
+                    controller.fireRecreateAllViews();
                     controller.fireDataChanged();
                 }
             } catch (NumberFormatException nfe) {
