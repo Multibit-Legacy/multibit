@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view.yourwallets;
+package org.multibit.viewsystem.swing.view.walletlist;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.SystemColor;
@@ -28,13 +27,11 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
@@ -296,7 +293,7 @@ public class WalletListPanel extends JPanel implements View {
                             .setActiveWalletByFilename(selectedWalletPanel.getPerWalletModelData().getWalletFilename());
                     selectWalletPanelByFilename(selectedWalletPanel.getPerWalletModelData().getWalletFilename());
 
-                    controller.fireRecreateAllViews();
+                    //controller.fireRecreateAllViews();
                     controller.fireDataChanged();
                     controller.displayView(controller.getCurrentView());
                 }

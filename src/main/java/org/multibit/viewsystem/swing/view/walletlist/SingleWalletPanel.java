@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view.yourwallets;
+package org.multibit.viewsystem.swing.view.walletlist;
 
 import java.awt.Color;
 import java.awt.ComponentOrientation;
