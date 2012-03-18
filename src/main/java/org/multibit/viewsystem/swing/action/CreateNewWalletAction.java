@@ -130,7 +130,7 @@ public class CreateNewWalletAction extends AbstractAction {
                     controller.addWalletFromFilename(newWalletFile.getAbsolutePath());
                     controller.getModel().setActiveWalletByFilename(newWalletFilename);
                     controller.getModel().setUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "true");
-                    controller.fireRecreateAllViews();
+                    controller.fireRecreateAllViews(true);
                     controller.fireDataChanged();
                 }
             } else {
@@ -155,7 +155,7 @@ public class CreateNewWalletAction extends AbstractAction {
                 FileHandler.writeUserPreferences(controller);
                 log.debug("User preferences with new wallet written successfully");
 
-                controller.fireRecreateAllViews();
+                controller.fireRecreateAllViews(true);
                 controller.fireDataChanged();
             }
         } catch (IOException e) {

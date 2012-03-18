@@ -164,7 +164,7 @@ public class SendBitcoinNowAction extends AbstractAction {
         }
 
         log.debug("firing fireRecreateAllViews...");
-        controller.fireRecreateAllViews();
+        controller.fireRecreateAllViews(false);
         log.debug("firing fireRecreateAllViews...done");
     }
 
@@ -243,7 +243,7 @@ public class SendBitcoinNowAction extends AbstractAction {
                     log.error(e.getClass() + " " + e.getMessage());
                 }
                 log.debug("firing fireRecreateAllViews...");
-                controller.fireRecreateAllViews();
+                controller.fireRecreateAllViews(false);
                 log.debug("firing fireRecreateAllViews...done");
             }
         };

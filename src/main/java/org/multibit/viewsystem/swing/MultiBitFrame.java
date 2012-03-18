@@ -630,10 +630,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // tell the wallets list to display
         if (walletsView != null) {
-            walletsView.initUI();
+            if (initUI) {
+                walletsView.initUI();
+            }
             walletsView.displayView();
         }
-        
+
         // tell all the tabs in the tabbedPane to update
         if (viewTabbedPane != null) {
             for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
@@ -859,7 +861,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             public void run() {
                 // update the header
                 updateHeader();
-                
+
                 // tell the wallets list to display
                 if (walletsView != null) {
                     walletsView.displayView();

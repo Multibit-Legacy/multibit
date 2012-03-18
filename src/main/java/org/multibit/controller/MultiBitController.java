@@ -194,10 +194,10 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     /**
      * fire that all the views need recreating
      */
-    public void fireRecreateAllViews() {
+    public void fireRecreateAllViews(boolean initUI) {
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.recreateAllViews(false);
+            viewSystem.recreateAllViews(initUI);
         }
     }
 
