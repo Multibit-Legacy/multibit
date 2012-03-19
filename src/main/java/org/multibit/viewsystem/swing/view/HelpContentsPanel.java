@@ -34,12 +34,17 @@ import org.multibit.viewsystem.swing.browser.Browser;
 
 public class HelpContentsPanel extends JPanel implements View {
 
+    public static final String HELP_BASE_URL = "http://www.multibit.org/";
+    
+    public static final String HELP_SENDING_URL = "help_sendingBitcoin.html";
+    
     private static final long serialVersionUID = 4921443778446348403L;
 
     private Browser browser;
-    private String initialUrl;
+    private String helpContext;
 
     private MultiBitController controller;
+    private MultiBitFrame mainFrame;
   
     public static final String SPACER = "   "; // 3 spaces
 
@@ -47,8 +52,9 @@ public class HelpContentsPanel extends JPanel implements View {
 
     public HelpContentsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
-        this.initialUrl = "http://www.multibit.org/help_contents.html";
-
+        this.mainFrame = mainFrame;
+        this.helpContext = "help_contents.html";
+        
         setLayout(new BorderLayout());
         firstTimeLoaded = true;
 
@@ -62,7 +68,7 @@ public class HelpContentsPanel extends JPanel implements View {
 
             @Override
             public void run() {
-                browser = new Browser(finalController, finalMainFrame, initialUrl);
+                browser = new Browser(finalController, finalMainFrame, HELP_BASE_URL + helpContext);
                 
                 JScrollPane scrollPane = new JScrollPane(browser);
                 scrollPane.setPreferredSize(new Dimension(800, 400));
@@ -75,6 +81,23 @@ public class HelpContentsPanel extends JPanel implements View {
         });
       
     }
+    
+
+    public static String createMultilineTooltipText(String[] toolTips) {
+        // multiline tool tip text
+        String toolTipText = "<html><font face=\"sansserif\">";
+
+        if (toolTips != null) {
+            for (int i = 0; i < toolTips.length - 1; i++) {
+                if (toolTips[i] != null && !"".equals(toolTips[i])) {
+                    toolTipText = toolTipText + toolTips[i] + "<br>";
+                }
+            }
+        }
+        toolTipText = toolTipText + toolTips[toolTips.length - 1] + "</font></html>";
+
+        return toolTipText;
+    }
 
     @Override
     public void navigateAwayFromView() {
@@ -83,9 +106,14 @@ public class HelpContentsPanel extends JPanel implements View {
 
     @Override
     public void displayView() {
+        String newHelpContext = mainFrame.getHelpContext();
+        
+        if (newHelpContext != null && !newHelpContext.equals("")) {
+            helpContext = newHelpContext;
+        }
         if (!firstTimeLoaded) {
             if (browser != null) {
-                browser.visit(initialUrl);
+                browser.visit(HELP_BASE_URL + helpContext);
             }
         }
         firstTimeLoaded = false;

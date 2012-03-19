@@ -45,6 +45,8 @@ import org.multibit.qrcode.BitcoinURI;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
+import org.multibit.viewsystem.swing.view.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,6 +143,28 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
          // tell all views which view to display
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.displayView(getCurrentView());
+        }
+    }
+
+    /**
+     * Display the help context specified
+     * 
+     * @param helpContextToDisplay
+     *            The help context to display. A path in the help
+     */
+    public void displayHelpContext(String helpContextToDisplay) {
+        log.debug("Displaying help context '" + helpContextToDisplay + "'");
+        // tell all views to close the current view
+        for (ViewSystem viewSystem : viewSystems) {
+            viewSystem.navigateAwayFromView(getCurrentView());
+        }
+
+        setCurrentView(View.HELP_CONTENTS_VIEW);
+        
+         // tell all views which view to display
+        for (ViewSystem viewSystem : viewSystems) {
+            viewSystem.setHelpContext(helpContextToDisplay);
+            viewSystem.displayView(View.HELP_CONTENTS_VIEW);
         }
     }
 

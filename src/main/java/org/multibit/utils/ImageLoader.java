@@ -54,7 +54,9 @@ public class ImageLoader {
     public static final String TWISTY_RIGHT_ICON_FILE = "/images/twistyRight.png";
     public static final String TWISTY_DOWN_ICON_FILE = "/images/twistyDown.png";
     public static final String UNDO_ICON_FILE = "/images/undo.png";
-       
+    public static final String ARROW_RIGHT_ICON_FILE = "/images/arrowRight.png";
+    public static final String ARROW_LEFT_ICON_FILE = "/images/arrowLeft.png";
+          
 
     public ImageLoader() {
         

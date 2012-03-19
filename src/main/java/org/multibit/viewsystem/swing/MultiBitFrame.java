@@ -100,6 +100,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private MultiBitController controller;
     private MultiBitModel model;
     private Localiser localiser;
+    
+    private String helpContext;
+
+    public String getHelpContext() {
+        return helpContext;
+    }
+
+    public void setHelpContext(String helpContext) {
+        this.helpContext = helpContext;
+    }
 
     private BlinkLabel estimatedBalanceTextLabel;
 
@@ -118,7 +128,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private JSplitPane splitPane;
 
-    private static final int TOOLTIP_DISMISSAL_DELAY = 10000; // millisecs
+    private static final int TOOLTIP_DISMISSAL_DELAY = 12000; // millisecs
 
     /**
      * Provide the Application reference during construction

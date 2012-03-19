@@ -141,6 +141,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected MultiBitButton copyQRCodeTextButton;
     protected MultiBitButton pasteSwatchButton;;
 
+    protected boolean showSidePanel = false;
+    
     private final AbstractTradePanel thisAbstractTradePanel;
 
     private SwatchGenerator swatchGenerator;

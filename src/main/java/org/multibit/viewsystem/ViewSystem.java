@@ -82,4 +82,10 @@ public interface ViewSystem extends WalletEventListener {
      */
     public void updateStatusLabel(String updateDownloadStatus, double percentComplete);
 
+    /**
+     * Set the help context to display
+     * @param helpContextToDisplay
+     */
+    public void setHelpContext(String helpContextToDisplay);
+
 }
