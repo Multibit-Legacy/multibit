@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 
 import org.multibit.controller.MultiBitController;
@@ -42,8 +43,8 @@ public class UndoPreferencesChangesSubmitAction extends AbstractAction {
     /**
      * Creates a new {@link UndoPreferencesChangesSubmitAction}.
      */
-    public UndoPreferencesChangesSubmitAction(MultiBitController controller, DataProvider dataProvider) {
-        super(controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.text"));
+    public UndoPreferencesChangesSubmitAction(MultiBitController controller, DataProvider dataProvider, ImageIcon icon) {
+        super(controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.text"), icon);
         this.controller = controller;
         this.dataProvider = dataProvider;
 

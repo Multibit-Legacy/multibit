@@ -650,7 +650,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
          * avoids having any public accessors on the panel
          */
         ExportPrivateKeysSubmitAction submitAction = new ExportPrivateKeysSubmitAction(controller, this,
-                ImageLoader.createImageIcon(ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE), passwordField, repeatPasswordField);
+                ImageLoader.createImageIcon(ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE), passwordField, repeatPasswordField, mainFrame);
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 

@@ -30,6 +30,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.Verification;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.ExportPrivateKeysPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,7 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
     private MultiBitController controller;
 
     private ExportPrivateKeysPanel exportPrivateKeysPanel;
+    private MultiBitFrame mainFrame;
 
     private PrivateKeysHandler privateKeysHandler;
 
@@ -56,12 +58,13 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
      * Creates a new {@link ExportPrivateKeysSubmitAction}.
      */
     public ExportPrivateKeysSubmitAction(MultiBitController controller, ExportPrivateKeysPanel exportPrivateKeysPanel,
-            ImageIcon icon, JPasswordField password1, JPasswordField password2) {
+            ImageIcon icon, JPasswordField password1, JPasswordField password2, MultiBitFrame mainFrame) {
         super(controller.getLocaliser().getString("showExportPrivateKeysAction.text"), icon);
         this.controller = controller;
         this.exportPrivateKeysPanel = exportPrivateKeysPanel;
         this.password1 = password1;
         this.password2 = password2;
+        this.mainFrame = mainFrame;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("showExportPrivateKeysAction.tooltip"));
@@ -122,7 +125,7 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
                 String noText = controller.getLocaliser().getString("showOpenUriView.noText");
                 String questionText = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwrite", new Object[] {exportPrivateKeysFile.getName()});
                 String questionTitle = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwriteTitle");
-                int selection = JOptionPane.showOptionDialog(exportPrivateKeysPanel, questionText, questionTitle,
+                int selection = JOptionPane.showOptionDialog(mainFrame, questionText, questionTitle,
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
                         ImageLoader.createImageIcon(ImageLoader.QUESTION_MARK_ICON_FILE), new String[] { yesText, noText }, noText);
                 if (selection != JOptionPane.YES_OPTION) {

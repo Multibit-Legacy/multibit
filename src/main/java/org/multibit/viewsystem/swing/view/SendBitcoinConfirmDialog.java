@@ -298,11 +298,11 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints.anchor = GridBagConstraints.LINE_END;
         mainPanel.add(buttonPanel, constraints);
 
-        CancelBackToParentAction cancelAction = new CancelBackToParentAction(controller, ImageLoader.createImageIcon(ImageLoader.RED_CROSS_ICON_FILE), this);
+        CancelBackToParentAction cancelAction = new CancelBackToParentAction(controller, ImageLoader.createImageIcon(ImageLoader.CROSS_ICON_FILE), this);
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        SendBitcoinNowAction sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this, ImageLoader.createImageIcon(ImageLoader.TICK_ICON_FILE));
+        SendBitcoinNowAction sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this, ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
         sendButton = new MultiBitButton(sendBitcoinNowAction, controller);
         buttonPanel.add(sendButton);
 

@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.view;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -89,7 +90,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     private static final int TABLE_BORDER = 3;
 
     private static final int MINIMUM_ICON_HEIGHT = 18;
-    
+   
     private static final String PROGRESS_0_ICON_FILE = "/images/circleProgress0.png";
     private static final String PROGRESS_1_ICON_FILE = "/images/circleProgress1.png";
     private static final String PROGRESS_2_ICON_FILE = "/images/circleProgress2.png";
@@ -168,20 +169,30 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         table.getColumnModel().getColumn(3).setCellRenderer(new TrailingJustifiedRenderer());
         table.getColumnModel().getColumn(4).setCellRenderer(new TrailingJustifiedRenderer());
 
+        FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         TableColumn tableColumn = table.getColumnModel().getColumn(0); // status
-        tableColumn.setPreferredWidth(35);
+        int statusWidth = fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.statusText"));
+        tableColumn.setPreferredWidth(statusWidth);
 
         tableColumn = table.getColumnModel().getColumn(1); // date
-        tableColumn.setPreferredWidth(85);
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
+
+        int dateWidth = Math.max(fontMetrics.stringWidth(
+                controller.getLocaliser().getString("walletData.debitText")), fontMetrics.stringWidth( dateFormatter.format(new Date())));
+        tableColumn.setPreferredWidth(dateWidth);
 
         tableColumn = table.getColumnModel().getColumn(2); // description
-        tableColumn.setPreferredWidth(320);
+        tableColumn.setPreferredWidth(300);
 
         tableColumn = table.getColumnModel().getColumn(3); // debit
-        tableColumn.setPreferredWidth(40);
+        int debitWidth = Math.max(fontMetrics.stringWidth(
+                controller.getLocaliser().getString("walletData.debitText")), fontMetrics.stringWidth("000.0000"));
+        tableColumn.setPreferredWidth(debitWidth);
 
         tableColumn = table.getColumnModel().getColumn(4); // credit
-        tableColumn.setPreferredWidth(40);
+        int creditWidth = Math.max(fontMetrics.stringWidth(
+                controller.getLocaliser().getString("walletData.creditText")), fontMetrics.stringWidth("000.0000"));
+        tableColumn.setPreferredWidth(creditWidth);
 
         // row sorter
         rowSorter = new TableRowSorter<TableModel>(table.getModel());

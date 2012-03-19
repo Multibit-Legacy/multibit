@@ -23,6 +23,7 @@ import java.util.TimerTask;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
@@ -51,8 +52,8 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
     /**
      * Creates a new {@link ResetTransactionsSubmitAction}.
      */
-    public ResetTransactionsSubmitAction(MultiBitController controller) {
-        super(controller.getLocaliser().getString("resetTransactionsSubmitAction.text"));
+    public ResetTransactionsSubmitAction(MultiBitController controller, Icon icon) {
+        super(controller.getLocaliser().getString("resetTransactionsSubmitAction.text"), icon);
         this.controller = controller;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());

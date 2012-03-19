@@ -23,6 +23,7 @@ import javax.swing.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
+import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.SendBitcoinConfirmDialog;
 import org.multibit.viewsystem.swing.view.ValidationErrorDialog;
@@ -42,7 +43,7 @@ public class SendBitcoinConfirmAction extends AbstractAction {
      * Creates a new {@link SendBitcoinConfirmAction}.
      */
     public SendBitcoinConfirmAction(MultiBitController controller, MultiBitFrame mainFrame, DataProvider dataProvider) {
-        super(controller.getLocaliser().getString("sendBitcoinConfirmAction.text"));
+        super(controller.getLocaliser().getString("sendBitcoinConfirmAction.text"), ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
         this.controller = controller;
         this.mainFrame = mainFrame;
         this.dataProvider = dataProvider;

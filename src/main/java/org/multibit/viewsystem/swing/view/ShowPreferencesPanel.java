@@ -732,11 +732,11 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         buttonPanel.setBackground(SystemColor.window);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));       
 
-        ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(controller, this);
+        ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(controller, this, ImageLoader.createImageIcon(ImageLoader.PREFERENCES_ICON_FILE));
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
-        UndoPreferencesChangesSubmitAction undoChangesAction = new UndoPreferencesChangesSubmitAction(controller, this);
+        UndoPreferencesChangesSubmitAction undoChangesAction = new UndoPreferencesChangesSubmitAction(controller, this, ImageLoader.createImageIcon(ImageLoader.UNDO_ICON_FILE));
         undoChangesButton = new MultiBitButton(undoChangesAction, controller);
 
         buttonPanel.add(undoChangesButton);

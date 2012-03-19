@@ -21,6 +21,7 @@ import java.math.BigInteger;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.UIManager;
 
 import org.multibit.controller.MultiBitController;
@@ -45,8 +46,8 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
     /**
      * Creates a new {@link ShowPreferencesSubmitAction}.
      */
-    public ShowPreferencesSubmitAction(MultiBitController controller, DataProvider dataProvider) {
-        super(controller.getLocaliser().getString("showPreferencesSubmitAction.text"));
+    public ShowPreferencesSubmitAction(MultiBitController controller, DataProvider dataProvider, Icon icon) {
+        super(controller.getLocaliser().getString("showPreferencesSubmitAction.text"), icon);
         this.controller = controller;
         this.dataProvider = dataProvider;
 

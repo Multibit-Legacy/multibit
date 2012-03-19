@@ -228,7 +228,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        ResetTransactionsSubmitAction submitAction = new ResetTransactionsSubmitAction(controller);
+        ResetTransactionsSubmitAction submitAction = new ResetTransactionsSubmitAction(controller, ImageLoader.createImageIcon(ImageLoader.RESET_TRANSACTIONS_ICON_FILE));
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 

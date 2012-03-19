@@ -24,17 +24,19 @@ import org.slf4j.LoggerFactory;
 public class ImageLoader {
     private static final Logger log = LoggerFactory.getLogger(ImageLoader.class);
 
+    public static final String ACCEPT_ICON_FILE = "/images/accept.png";
+    public static final String CANCEL_ICON_FILE = "/images/cancel.png";
     public static final String COPY_ICON_FILE = "/images/copy.png";
     public static final String PASTE_ICON_FILE = "/images/paste.png";
     public static final String TICK_ICON_FILE = "/images/tick.png";
-    public static final String RED_CROSS_ICON_FILE = "/images/redCross.png";
+    public static final String CROSS_ICON_FILE = "/images/cross.png";
     public static final String YOUR_WALLETS_ICON_FILE = "/images/yourWallets.png";
     public static final String TRANSACTIONS_ICON_FILE = "/images/transactions.png";
     public static final String CREATE_NEW_ICON_FILE = "/images/createNew.png";
     public static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
     public static final String DELETE_WALLET_ICON_FILE = "/images/deleteWallet.png";
-    public static final String SEND_BITCOIN_ICON_FILE = "/images/send.jpg";
-    public static final String RECEIVE_BITCOIN_ICON_FILE = "/images/receive.jpg";
+    public static final String SEND_BITCOIN_ICON_FILE = "/images/sendOut.png";
+    public static final String RECEIVE_BITCOIN_ICON_FILE = "/images/receiveIn.png";
     public static final String PREFERENCES_ICON_FILE = "/images/preferences.png";
     public static final String HELP_CONTENTS_ICON_FILE = "/images/helpContents.png";
     public static final String MULTIBIT_SMALL_ICON_FILE = "/images/multibit-small.png";
@@ -50,6 +52,7 @@ public class ImageLoader {
     public static final String CLOSE_TAB_ICON_FILE = "/images/closeTab.png";
     public static final String TWISTY_RIGHT_ICON_FILE = "/images/twistyRight.png";
     public static final String TWISTY_DOWN_ICON_FILE = "/images/twistyDown.png";
+    public static final String UNDO_ICON_FILE = "/images/undo.png";
        
 
     public ImageLoader() {
