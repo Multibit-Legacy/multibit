@@ -243,7 +243,7 @@ public class WalletListPanel extends JPanel implements View {
         OpenWalletAction openWalletAction = new OpenWalletAction(controller, null, mainFrame);
         MultiBitButton openWalletButton = new MultiBitButton(openWalletAction, controller);
         openWalletButton.setText(controller.getLocaliser().getString("crudButton.open"));
-        
+               
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 0;

@@ -75,6 +75,7 @@ import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
 import org.multibit.viewsystem.swing.action.CopyQRCodeTextAction;
 import org.multibit.viewsystem.swing.action.PasteSwatchAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.components.VerticalGradientPanel;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
@@ -134,6 +135,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected static final int QRCODE_HEIGHT = 140;
 
     protected static final int TEXTFIELD_VERTICAL_DELTA = 6;
+    
+    private final int STENT_DELTA = 4;
 
     protected MultiBitButton copyQRCodeTextButton;
     protected MultiBitButton pasteSwatchButton;;
@@ -194,6 +197,19 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected abstract void populateLocalisationMap();
 
     /**
+     * get the layout stent for all the keys on the left hand side of the panel
+     */
+    protected int calculateStentWidth() {
+        String[] keys = new String[] {"sendBitcoinPanel.addressLabel", "sendBitcoinPanel.labelLabel",
+                "sendBitcoinPanel.amountLabel", "receiveBitcoinPanel.addressLabel", "receiveBitcoinPanel.labelLabel",
+                "receiveBitcoinPanel.amountLabel"};
+
+       int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this) + STENT_DELTA;
+
+       return stentWidth;
+    }
+    
+    /**
      * get a localisation string - the key varies according to the concrete impl
      */
     protected String getLocalisationString(String keyConstant, Object[] data) {
@@ -221,13 +237,13 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createFormPanel(), constraints);
 
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.4;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        add(createQRCodePanel(), constraints);
+//        constraints.fill = GridBagConstraints.BOTH;
+//        constraints.gridx = 1;
+//        constraints.gridy = 0;
+//        constraints.weightx = 0.5;
+//        constraints.weighty = 0.4;
+//        constraints.anchor = GridBagConstraints.LINE_START;
+//        add(createQRCodePanel(), constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;

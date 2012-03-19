@@ -39,6 +39,7 @@ public class ImageLoader {
     public static final String RECEIVE_BITCOIN_ICON_FILE = "/images/receiveIn.png";
     public static final String PREFERENCES_ICON_FILE = "/images/preferences.png";
     public static final String HELP_CONTENTS_ICON_FILE = "/images/helpContents.png";
+    public static final String HELP_CONTENTS_BIG_ICON_FILE = "/images/helpContentsBig.png";
     public static final String MULTIBIT_SMALL_ICON_FILE = "/images/multibit-small.png";
     public static final String MULTIBIT_ICON_FILE = "/images/multibit.png";
     public static final String MULTIBIT_128_ICON_FILE = "/images/multibit128.png";

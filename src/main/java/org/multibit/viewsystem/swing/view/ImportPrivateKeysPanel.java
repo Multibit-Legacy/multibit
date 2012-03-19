@@ -126,7 +126,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
                 "showExportPrivateKeysPanel.passwordPrompt", "showExportPrivateKeysPanel.repeatPasswordPrompt",  
                 "showImportPrivateKeysPanel.numberOfKeys.text", "showImportPrivateKeysPanel.replayDate.text"};
 
-       int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this) + ExportPrivateKeysPanel.STENT_DELTA;
+        int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this) + ExportPrivateKeysPanel.STENT_DELTA;
 
         GridBagConstraints constraints = new GridBagConstraints();
 
