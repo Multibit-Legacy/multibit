@@ -135,14 +135,14 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected static final int QRCODE_HEIGHT = 140;
 
     protected static final int TEXTFIELD_VERTICAL_DELTA = 6;
-    
+
     private final int STENT_DELTA = 4;
 
     protected MultiBitButton copyQRCodeTextButton;
     protected MultiBitButton pasteSwatchButton;;
 
     protected boolean showSidePanel = false;
-    
+
     private final AbstractTradePanel thisAbstractTradePanel;
 
     private SwatchGenerator swatchGenerator;
@@ -202,15 +202,15 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
      * get the layout stent for all the keys on the left hand side of the panel
      */
     protected int calculateStentWidth() {
-        String[] keys = new String[] {"sendBitcoinPanel.addressLabel", "sendBitcoinPanel.labelLabel",
+        String[] keys = new String[] { "sendBitcoinPanel.addressLabel", "sendBitcoinPanel.labelLabel",
                 "sendBitcoinPanel.amountLabel", "receiveBitcoinPanel.addressLabel", "receiveBitcoinPanel.labelLabel",
-                "receiveBitcoinPanel.amountLabel"};
+                "receiveBitcoinPanel.amountLabel" };
 
-       int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this) + STENT_DELTA;
+        int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this) + STENT_DELTA;
 
-       return stentWidth;
+        return stentWidth;
     }
-    
+
     /**
      * get a localisation string - the key varies according to the concrete impl
      */
@@ -239,13 +239,15 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createFormPanel(), constraints);
 
-//        constraints.fill = GridBagConstraints.BOTH;
-//        constraints.gridx = 1;
-//        constraints.gridy = 0;
-//        constraints.weightx = 0.5;
-//        constraints.weighty = 0.4;
-//        constraints.anchor = GridBagConstraints.LINE_START;
-//        add(createQRCodePanel(), constraints);
+        if (showSidePanel) {
+            constraints.fill = GridBagConstraints.BOTH;
+            constraints.gridx = 1;
+            constraints.gridy = 0;
+            constraints.weightx = 0.5;
+            constraints.weighty = 0.4;
+            constraints.anchor = GridBagConstraints.LINE_START;
+            add(createQRCodePanel(), constraints);
+        }
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -813,9 +815,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             // decode the string to an AddressBookData
             // TODO Consider handling the possible runtime exception at a
             // suitable level for recovery
-            
+
             // Early MultiBit versions did not URL encode the label hence may
-            // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER i.e be lenient
+            // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER
+            // i.e be lenient
             String uriString = decodedString.toString().replace(" ", MultiBitController.ENCODED_SPACE_CHARACTER);
             BitcoinURI bitcoinURI = new BitcoinURI(controller.getMultiBitService().getNetworkParameters(), uriString);
 
@@ -923,7 +926,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         addressesTable.invalidate();
         addressesTable.validate();
         addressesTable.repaint();
-        
+
         // put the listeners back
         addressesTable.getSelectionModel().addListSelectionListener(addressesListener);
     }

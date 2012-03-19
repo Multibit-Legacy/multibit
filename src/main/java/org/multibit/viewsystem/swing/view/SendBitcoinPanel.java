@@ -30,6 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
@@ -186,6 +187,16 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.anchor = GridBagConstraints.CENTER;
         formPanel.add(MultiBitTitledPanel.createStent(separatorSize, smallSeparatorSize), constraints);
 
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 10;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        formPanel.add(MultiBitTitledPanel.createStent(smallSeparatorSize, separatorSize), constraints);
+
         MultiBitLabel addressLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel"));
         addressLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel.tooltip"));
         addressLabel.setHorizontalAlignment(JLabel.TRAILING);
@@ -203,9 +214,9 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         // forcer1.setBorder(BorderFactory.createLineBorder(Color.CYAN));
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 9;
-        constraints.gridy = 8;
+        constraints.gridy = 7;
         constraints.weightx = 10000;
-        constraints.weighty = 0.1;
+        constraints.weighty = 1.0;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
@@ -350,12 +361,13 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
                 controller.getLocaliser().getString("sendBitcoinPanel.helpLabel2.message"), controller.getLocaliser().getString("sendBitcoinPanel.helpLabel3.message"),
                 "\n", controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip") });
         helpButton.setToolTipText(tooltipText);
-        helpButton.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 0));
-        constraints.fill = GridBagConstraints.NONE;
+        helpButton.setHorizontalAlignment(SwingConstants.LEADING);
+        helpButton.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 0));
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
-        constraints.gridy = 6;
+        constraints.gridy = 8;
         constraints.weightx = 1;
-        constraints.weighty = 1;
+        constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.BELOW_BASELINE_LEADING;
@@ -365,7 +377,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         sendButton = new MultiBitButton(sendBitcoinConfirmAction, controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 6;
-        constraints.gridy = 6;
+        constraints.gridy = 5;
         constraints.weightx = 3;
         constraints.weighty = 0.2;
         constraints.gridwidth = 3;
@@ -380,31 +392,31 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
         if (showSidePanel) {
             // show less
-            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.ARROW_LEFT_ICON_FILE));
+            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.ARROW_RIGHT_ICON_FILE));
             sidePanelButton.setText(controller.getLocaliser().getString("sendBitcoinPanel.showLess.text"));
             sidePanelButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.showLess.tooltip"));
             sidePanelButton.setMnemonic( mnemonicUtil.getMnemonic(controller.getLocaliser().getString("sendBitcoinPanel.showLess.mnemonic")));
             sidePanelButton.setVerticalTextPosition(JLabel.BOTTOM);
-            sidePanelButton.setHorizontalTextPosition(JLabel.RIGHT);            
-        } else {
+            sidePanelButton.setHorizontalTextPosition(JLabel.LEFT);            
+       } else {
             //show more
-            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.ARROW_RIGHT_ICON_FILE));
+            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.ARROW_LEFT_ICON_FILE));
             sidePanelButton.setText(controller.getLocaliser().getString("sendBitcoinPanel.showMore.text"));
             sidePanelButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.showMore.tooltip"));
             sidePanelButton.setMnemonic( mnemonicUtil.getMnemonic(controller.getLocaliser().getString("sendBitcoinPanel.showMore.mnemonic")));
-            sidePanelButton.setVerticalTextPosition(JLabel.BOTTOM);
-            sidePanelButton.setHorizontalTextPosition(JLabel.LEFT);            
+             sidePanelButton.setVerticalTextPosition(JLabel.BOTTOM);
+            sidePanelButton.setHorizontalTextPosition(JLabel.RIGHT);            
         }
 
         // moreButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 9;
-        constraints.gridy = 6;
+        constraints.gridx = 6;
+        constraints.gridy = 8;
         constraints.weightx = 0.1;
-        constraints.weighty = 1;
-        constraints.gridwidth = 1;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 4;
         constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
+        constraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
         formPanel.add(sidePanelButton, constraints);
 
         return formPanel;
