@@ -95,7 +95,6 @@ public class MultiBitTabbedPane extends JTabbedPane {
         JLabel tabLabel = new JLabel(title);
         tabLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         tabLabel.setIcon(icon);
-        tabLabel.setToolTipText(tooltip);
         tabCounter++;
 
         constraints.fill = GridBagConstraints.NONE;
@@ -157,9 +156,11 @@ public class MultiBitTabbedPane extends JTabbedPane {
         // parameter, which would ordinarily be a String that
         // represents the tab title, is null.
         addTab(null, component);
+        
 
         // Instead of using a String/Icon combination for the tab,
         // use our panel instead.
         setTabComponentAt(getTabCount() - 1, tab);
+        //tab.setToolTipText(tooltip);
     }
 }

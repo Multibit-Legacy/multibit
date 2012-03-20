@@ -102,8 +102,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         localisationKeyConstantToKeyMap.put(CREATE_NEW_TOOLTIP, "createOrEditAddressAction.createReceiving.tooltip");       
     }
 
-    protected JPanel createFormPanel() {
-        formPanel = new JPanel();
+    protected JPanel createFormPanel(JPanel formPanel, GridBagConstraints constraints) {
         formPanel.setBorder(new DashedBorder(controller.getLocaliser().getLocale()));
         formPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
@@ -113,7 +112,6 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         buttonPanel.setLayout(flowLayout);
 
         formPanel.setLayout(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
         JPanel filler1 = new JPanel();
         filler1.setOpaque(false);
 

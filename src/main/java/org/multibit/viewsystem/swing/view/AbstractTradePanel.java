@@ -19,7 +19,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -77,12 +76,12 @@ import org.multibit.viewsystem.swing.action.CopyQRCodeTextAction;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.PasteSwatchAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
-import org.multibit.viewsystem.swing.view.components.VerticalGradientPanel;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
+import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+import org.multibit.viewsystem.swing.view.components.VerticalGradientPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,8 +137,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
     protected JLabel titleLabel;
 
-    protected JPanel qrCodePanel;
     protected MultiBitLabel qrCodeLabel;
+    protected JScrollPane qrCodeScrollPane;
+
+    public final static int QR_CODE_LEFT_COLUMN = 12;
 
     protected static final int QRCODE_WIDTH = 140;
     protected static final int QRCODE_HEIGHT = 140;
@@ -149,7 +150,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     private final int STENT_DELTA = 4;
 
     protected MultiBitButton copyQRCodeTextButton;
-    protected MultiBitButton pasteSwatchButton;;
+    protected MultiBitButton copyQRCodeImageButton;
+    protected MultiBitButton pasteSwatchButton;
 
     protected MultiBitButton sidePanelButton;
     protected boolean showSidePanel = false;
@@ -182,7 +184,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         initUI();
 
         labelTextArea.requestFocusInWindow();
-        
+
         displaySidePanel();
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -247,21 +249,20 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         }
 
         GridBagConstraints constraints = new GridBagConstraints();
+        GridBagConstraints constraints2 = new GridBagConstraints();
+
+        JPanel upperPanel = new JPanel(new GridBagLayout());
+        upperPanel.setOpaque(false);
+        createFormPanel(upperPanel, constraints2);
+        createQRCodePanel(upperPanel, constraints2);
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 0.5;
         constraints.weighty = 0.4;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(createFormPanel(), constraints);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.4;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        add(createQRCodePanel(), constraints);
+        add(upperPanel, constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -274,6 +275,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     }
 
     public void displaySidePanel() {
+        setQRCodePanelVisible(showSidePanel);
+
         if (sidePanelButton == null) {
             return;
         }
@@ -289,10 +292,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                     "sendBitcoinPanel.showLess.mnemonic")));
             sidePanelButton.setVerticalTextPosition(JLabel.BOTTOM);
             sidePanelButton.setHorizontalTextPosition(JLabel.LEFT);
-
-            if (qrCodePanel != null) {
-                qrCodePanel.setVisible(true);
-            }
         } else {
             // show more
             sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.ARROW_LEFT_ICON_FILE));
@@ -302,14 +301,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                     "sendBitcoinPanel.showMore.mnemonic")));
             sidePanelButton.setVerticalTextPosition(JLabel.BOTTOM);
             sidePanelButton.setHorizontalTextPosition(JLabel.RIGHT);
-
-            if (qrCodePanel != null) {
-                qrCodePanel.setVisible(false);
-            }
         }
     }
 
-    protected abstract JPanel createFormPanel();
+    protected abstract JPanel createFormPanel(JPanel panel, GridBagConstraints constraints);
 
     protected abstract void loadForm();
 
@@ -449,6 +444,23 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         return addressPanel;
     }
 
+    protected void setQRCodePanelVisible(boolean visible) {
+        if (qrCodeScrollPane != null) {
+            qrCodeScrollPane.setVisible(visible);
+        }
+        
+        if (copyQRCodeTextButton != null) {
+            copyQRCodeTextButton.setVisible(visible);
+        }
+        if (copyQRCodeImageButton != null) {
+            copyQRCodeImageButton.setVisible(visible);
+        }
+
+        if (pasteSwatchButton != null) {
+            pasteSwatchButton.setVisible(visible);
+        }
+    }
+
     class SelectionListener implements ListSelectionListener {
         SelectionListener() {
         }
@@ -586,12 +598,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         }
     }
 
-    protected JPanel createQRCodePanel() {
-        qrCodePanel = new JPanel();
-        qrCodePanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-        qrCodePanel.setOpaque(true);
-        qrCodePanel.setMinimumSize(new Dimension(280, 200));
-        qrCodePanel.setLayout(new GridBagLayout());
+    protected void createQRCodePanel(JPanel panel, GridBagConstraints constraints) {
         qrCodeLabel = new MultiBitLabel("", JLabel.CENTER);
         qrCodeLabel.setMinimumSize(new Dimension(QRCODE_WIDTH, QRCODE_HEIGHT));
 
@@ -622,89 +629,79 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         };
         qrCodeLabel.addMouseListener(listener);
 
-        GridBagConstraints constraints = new GridBagConstraints();
-
-        JPanel filler1 = new JPanel();
-        filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 0.02;
-        constraints.weighty = 0.02;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
-        qrCodePanel.add(filler1, constraints);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 1;
+        constraints.gridx = QR_CODE_LEFT_COLUMN;
+        constraints.gridy = 3;
         constraints.weightx = 1;
         constraints.weighty = 0.6;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
+        constraints.gridwidth = 4;
+        constraints.gridheight = 5;
         constraints.anchor = GridBagConstraints.CENTER;
 
-        JScrollPane scrollPane = new JScrollPane(qrCodeLabel);
-        scrollPane.setOpaque(true);
-        scrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
+        qrCodeScrollPane = new JScrollPane(qrCodeLabel);
+        qrCodeScrollPane.setOpaque(true);
+        qrCodeScrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        qrCodeScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        qrCodeScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        qrCodeScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        qrCodeScrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
 
-        scrollPane.setMinimumSize(new Dimension(200, 160));
+        qrCodeScrollPane.setMinimumSize(new Dimension(200, 160));
 
-        qrCodePanel.add(scrollPane, constraints);
+        panel.add(qrCodeScrollPane, constraints);
 
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 5;
-        constraints.weightx = 1;
-        constraints.weighty = 0.4;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        JPanel qrCodeButtonPanel = createQRCodeButtonPanel();
-        qrCodeButtonPanel.setOpaque(false);
-        qrCodePanel.add(qrCodeButtonPanel, constraints);
-
-        JPanel filler3 = new JPanel();
-        filler3.setOpaque(false);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 5;
-        constraints.weightx = 0.05;
-        constraints.weighty = 0.02;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        qrCodePanel.add(filler3, constraints);
-
-        return qrCodePanel;
+        createQRCodeButtonPanel(panel, constraints);
     }
 
-    protected JPanel createQRCodeButtonPanel() {
-        JPanel buttonPanel = new JPanel();
-        FlowLayout flowLayout = new FlowLayout();
-        flowLayout.setAlignment(FlowLayout.LEADING);
-        buttonPanel.setLayout(flowLayout);
-
+    protected void createQRCodeButtonPanel(JPanel panel, GridBagConstraints constraints) {
         CopyQRCodeTextAction copyQRCodeTextAction = new CopyQRCodeTextAction(controller, this);
         copyQRCodeTextButton = new MultiBitButton(copyQRCodeTextAction, controller);
-        buttonPanel.add(copyQRCodeTextButton);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = QR_CODE_LEFT_COLUMN;
+        constraints.gridy = 8;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.BELOW_BASELINE_LEADING;
+        panel.add(copyQRCodeTextButton, constraints);
 
         CopyQRCodeImageAction copyQRCodeImageAction = new CopyQRCodeImageAction(controller, this);
-        MultiBitButton copyQRCodeImageButton = new MultiBitButton(copyQRCodeImageAction, controller);
-        buttonPanel.add(copyQRCodeImageButton);
+        copyQRCodeImageButton = new MultiBitButton(copyQRCodeImageAction, controller);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = QR_CODE_LEFT_COLUMN + 1;
+        constraints.gridy = 8;
+        constraints.weightx = 0.1;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.BELOW_BASELINE_LEADING;
+        panel.add(copyQRCodeImageButton, constraints);
 
         if (!isReceiveBitcoin()) {
             PasteSwatchAction pasteSwatchAction = new PasteSwatchAction(controller, this);
             pasteSwatchButton = new MultiBitButton(pasteSwatchAction, controller);
-            buttonPanel.add(pasteSwatchButton);
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.gridx = QR_CODE_LEFT_COLUMN + 2;
+            constraints.gridy = 8;
+            constraints.weightx = 0.1;
+            constraints.weighty = 1.0;
+            constraints.gridwidth = 1;
+            constraints.gridheight = 1;
+            constraints.anchor = GridBagConstraints.BELOW_BASELINE_LEADING;
+            panel.add(pasteSwatchButton, constraints);
         }
-
-        return buttonPanel;
+        JPanel forcerQR = new JPanel();
+        forcerQR.setOpaque(false);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = QR_CODE_LEFT_COLUMN + 3;
+        constraints.gridy = 8;
+        constraints.weightx = 10;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        panel.add(forcerQR, constraints);
     }
 
     @Override
@@ -824,11 +821,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
         BufferedImage bufferedImage;
         log.debug("importData - 2.1");
-        if (image.getWidth(qrCodeLabel) + MINIMUM_QRCODE_PANEL_HORIZONTAL_SPACING > qrCodePanel.getWidth()
-                || image.getHeight(qrCodeLabel) + MINIMUM_QRCODE_PANEL_VERTICAL_SPACING > qrCodePanel.getHeight()) {
+        if (image.getWidth(qrCodeLabel) + MINIMUM_QRCODE_PANEL_HORIZONTAL_SPACING > qrCodeLabel.getWidth()
+                || image.getHeight(qrCodeLabel) + MINIMUM_QRCODE_PANEL_VERTICAL_SPACING > qrCodeLabel.getHeight()) {
             // scale image
-            double qrCodeWidth = (double) qrCodePanel.getWidth();
-            double qrCodeHeight = (double) qrCodePanel.getHeight();
+            double qrCodeWidth = (double) qrCodeLabel.getWidth();
+            double qrCodeHeight = (double) qrCodeLabel.getHeight();
             double xScale = qrCodeWidth / (double) (image.getWidth(qrCodeLabel) + MINIMUM_QRCODE_PANEL_HORIZONTAL_SPACING);
             double yScale = qrCodeHeight / (double) (image.getHeight(qrCodeLabel) + MINIMUM_QRCODE_PANEL_VERTICAL_SPACING);
             double scaleFactor = Math.min(xScale, yScale);
@@ -1020,10 +1017,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
     public JPanel getFormPanel() {
         return formPanel;
-    }
-
-    public JPanel getQRCodePanel() {
-        return qrCodePanel;
     }
 
     public JLabel getQRCodeLabel() {
