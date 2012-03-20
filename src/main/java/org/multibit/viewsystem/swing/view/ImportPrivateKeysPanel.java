@@ -748,6 +748,11 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
     }
 
     @Override
+    public String getViewTooltip() {
+        return controller.getLocaliser().getString("importPrivateKeysSubmitAction.tooltip");
+    }
+
+    @Override
     public int getViewId() {
         return View.SHOW_IMPORT_PRIVATE_KEYS_VIEW;
     }

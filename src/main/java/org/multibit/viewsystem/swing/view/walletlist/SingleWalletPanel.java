@@ -54,7 +54,7 @@ import com.google.bitcoin.core.Wallet.BalanceType;
 
 public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener {
 
-    private static final int WIDTH_OF_TEXT_FIELD = 16;
+    private static final int WIDTH_OF_TEXT_FIELD = 15;
 
     private static final long serialVersionUID = -7110340338285836548L;
 
@@ -136,7 +136,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         myRoundedPanel = new RoundedPanel(controller.getLocaliser().getLocale());
         myRoundedPanel.setLayout(new GridBagLayout());
         myRoundedPanel.setPreferredSize(new Dimension(normalWidth, normalHeight));
-        myRoundedPanel.setMinimumSize(new Dimension(normalWidth - 2 * MIN_WIDTH_SCROLLBAR_DELTA, normalHeight));
+        myRoundedPanel.setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, normalHeight));
         myRoundedPanel.setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
 
         setOpaque(false);
@@ -253,7 +253,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         // add detail panel
         detailPanel = createWalletDetailPanel();
         detailPanel.setPreferredSize(new Dimension(normalWidth, detailHeight));
-        detailPanel.setMinimumSize(new Dimension(normalWidth - 2 * MIN_WIDTH_SCROLLBAR_DELTA, detailHeight));
+        detailPanel.setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, detailHeight));
         detailPanel.setMaximumSize(new Dimension(normalWidth * 2, detailHeight));
 
         constraints2.fill = GridBagConstraints.BOTH;
@@ -287,7 +287,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     public static int calculateNormalWidth(JComponent component) {
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
         FontMetrics fontMetrics = component.getFontMetrics(font);
-        return (int) (fontMetrics.getMaxAdvance() * WIDTH_OF_TEXT_FIELD * 0.6 + WIDTH_DELTA);
+        return (int) (fontMetrics.getMaxAdvance() * WIDTH_OF_TEXT_FIELD * 0.66 + WIDTH_DELTA);
     }
 
     @Override
@@ -309,13 +309,13 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 twistyLabel.setIcon(twistyDownIcon);
                 detailPanel.setVisible(true);
                 setPreferredSize(new Dimension(normalWidth, expandedHeight));
-                setMinimumSize(new Dimension(normalWidth - 2 * MIN_WIDTH_SCROLLBAR_DELTA, expandedHeight));
+                setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, expandedHeight));
                 setMaximumSize(new Dimension(normalWidth * 2, expandedHeight));
             } else {
                 twistyLabel.setIcon(twistyRightIcon);
                 detailPanel.setVisible(false);
                 setPreferredSize(new Dimension(normalWidth, normalHeight));
-                setMinimumSize(new Dimension(normalWidth - 2 * MIN_WIDTH_SCROLLBAR_DELTA, normalHeight));
+                setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, normalHeight));
                 setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
             }
 

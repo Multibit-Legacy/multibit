@@ -288,19 +288,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         JPanel sendBitcoinOutlinePanel = new JPanel(new BorderLayout());
         View sendBitcoinView = viewFactory.getView(View.SEND_BITCOIN_VIEW);
         sendBitcoinOutlinePanel.add((JPanel) sendBitcoinView, BorderLayout.CENTER);
-        viewTabbedPane.addTab(sendBitcoinView.getViewTitle(), sendBitcoinView.getViewIcon(), sendBitcoinOutlinePanel);
+        viewTabbedPane.addTab(sendBitcoinView.getViewTitle(), sendBitcoinView.getViewIcon(),  sendBitcoinView.getViewTooltip(), sendBitcoinOutlinePanel);
 
         // add the receive bitcoin tab
         JPanel receiveBitcoinOutlinePanel = new JPanel(new BorderLayout());
         View receiveBitcoinView = viewFactory.getView(View.RECEIVE_BITCOIN_VIEW);
         receiveBitcoinOutlinePanel.add((JPanel) receiveBitcoinView, BorderLayout.CENTER);
-        viewTabbedPane.addTab(receiveBitcoinView.getViewTitle(), receiveBitcoinView.getViewIcon(), receiveBitcoinOutlinePanel);
+        viewTabbedPane.addTab(receiveBitcoinView.getViewTitle(), receiveBitcoinView.getViewIcon(), receiveBitcoinView.getViewTooltip(), receiveBitcoinOutlinePanel);
 
         // add the transactions tab
         JPanel transactionsOutlinePanel = new JPanel(new BorderLayout());
         View transactionsView = viewFactory.getView(View.TRANSACTIONS_VIEW);
         transactionsOutlinePanel.add((JPanel) transactionsView, BorderLayout.CENTER);
-        viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsOutlinePanel);
+        viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsView.getViewTooltip(), transactionsOutlinePanel);
 
         // Create a split pane with the two scroll panes in it.
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (JPanel) walletsView, viewTabbedPane);
@@ -712,7 +712,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 if (!foundTab) {
                     JPanel tabOutlinePanel = new JPanel(new BorderLayout());
                     tabOutlinePanel.add((JPanel) nextViewFinal, BorderLayout.CENTER);
-                    viewTabbedPane.addTab(nextViewFinal.getViewTitle(), nextViewFinal.getViewIcon(), tabOutlinePanel, true);
+                    viewTabbedPane.addTab(nextViewFinal.getViewTitle(), nextViewFinal.getViewIcon(), nextViewFinal.getViewTooltip(), tabOutlinePanel, true);
                     viewTabbedPane.setSelectedComponent(tabOutlinePanel);
                 }
 

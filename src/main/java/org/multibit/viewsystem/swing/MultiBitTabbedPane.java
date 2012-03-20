@@ -1,5 +1,6 @@
 package org.multibit.viewsystem.swing;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -69,10 +70,14 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
     @Override
     public void addTab(String title, Icon icon, Component component) {
-        addTab(title, icon, component, false);
+        addTab(title, icon, "", component, false);
     }
 
-    public void addTab(String title, Icon icon, Component component, boolean isCloseable) {
+    public void addTab(String title, Icon icon, String tooltip, Component component) {
+        addTab(title, icon, tooltip, component, false);
+    }
+
+    public void addTab(String title, Icon icon, String tooltip, Component component, boolean isCloseable) {
         final Component finalComponent = component;
 
         // Create a panel that represents the tab and ensure that it is
@@ -90,6 +95,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
         JLabel tabLabel = new JLabel(title);
         tabLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         tabLabel.setIcon(icon);
+        tabLabel.setToolTipText(tooltip);
         tabCounter++;
 
         constraints.fill = GridBagConstraints.NONE;

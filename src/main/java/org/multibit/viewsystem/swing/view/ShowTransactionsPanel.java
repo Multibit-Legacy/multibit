@@ -576,6 +576,11 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     }
     
     @Override
+    public String getViewTooltip() {
+        return controller.getLocaliser().getString("showTransactionsAction.tooltip");
+    }
+    
+    @Override
     public int getViewId() {
         return View.TRANSACTIONS_VIEW;
     }

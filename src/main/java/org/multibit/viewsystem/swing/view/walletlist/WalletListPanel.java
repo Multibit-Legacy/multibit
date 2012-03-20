@@ -154,7 +154,7 @@ public class WalletListPanel extends JPanel implements View {
 
         tabbedPane.addTab(controller.getLocaliser().getString("showYourWalletsAction.text"), ImageLoader.createImageIcon(ImageLoader.YOUR_WALLETS_ICON_FILE),
                 tabPanel);
-
+ 
 //        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("showYourWalletsAction.tooltip"));
 //        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("showYourWalletsAction.mnemonicKey"));
 
@@ -327,6 +327,11 @@ public class WalletListPanel extends JPanel implements View {
         return controller.getLocaliser().getString("showYourWalletsAction.text");
     }
     
+    @Override
+    public String getViewTooltip() {
+        return controller.getLocaliser().getString("showYourWalletsAction.tooltip");
+    }
+
     @Override
     public int getViewId() {
         return View.YOUR_WALLETS_VIEW;

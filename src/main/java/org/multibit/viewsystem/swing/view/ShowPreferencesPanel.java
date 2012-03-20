@@ -975,7 +975,12 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     public String getViewTitle() {
         return controller.getLocaliser().getString("showPreferencesAction.text");
     }
-    
+ 
+    @Override
+    public String getViewTooltip() {
+        return controller.getLocaliser().getString("showPreferencesAction.tooltip");
+    }
+
     @Override
     public int getViewId() {
         return View.PREFERENCES_VIEW;

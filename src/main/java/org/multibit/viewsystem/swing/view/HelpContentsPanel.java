@@ -130,6 +130,11 @@ public class HelpContentsPanel extends JPanel implements View {
     }
     
     @Override
+    public String getViewTooltip() {
+        return controller.getLocaliser().getString("showHelpContentsAction.tooltip");
+    }
+
+    @Override
     public int getViewId() {
         return View.HELP_CONTENTS_VIEW;
     }

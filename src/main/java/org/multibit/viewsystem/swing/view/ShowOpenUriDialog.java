@@ -272,7 +272,12 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, DataProvi
     public String getViewTitle() {
         return controller.getLocaliser().getString("showOpenUriView.title");
     }
-    
+  
+    @Override
+    public String getViewTooltip() {
+        return controller.getLocaliser().getString("showOpenUriView.title");
+    }
+
     @Override
     public int getViewId() {
         return View.SHOW_OPEN_URI_DIALOG_VIEW;

@@ -824,6 +824,11 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
     }
 
     @Override
+    public String getViewTooltip() {
+        return controller.getLocaliser().getString("showExportPrivateKeysAction.tooltip");
+    }
+
+    @Override
     public int getViewId() {
         return View.SHOW_EXPORT_PRIVATE_KEYS_VIEW;
     }

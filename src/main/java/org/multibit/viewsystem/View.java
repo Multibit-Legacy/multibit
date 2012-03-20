@@ -68,6 +68,11 @@ public interface View {
     public String getViewTitle();
     
     /**
+     * @returns the tooltip for the view
+     */
+    public String getViewTooltip();
+    
+    /**
      * @returns the view identifier for the view
      */
     public int getViewId();
