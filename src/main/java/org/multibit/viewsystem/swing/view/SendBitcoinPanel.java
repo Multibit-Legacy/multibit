@@ -44,8 +44,7 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopySendAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewSendingAddressAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
-import org.multibit.viewsystem.swing.action.MnemonicUtil;
-import org.multibit.viewsystem.swing.action.MultiBitAction;
+import org.multibit.viewsystem.swing.action.MoreOrLessAction;
 import org.multibit.viewsystem.swing.action.PasteAddressAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
 import org.multibit.viewsystem.swing.view.components.DashedBorder;
@@ -384,30 +383,10 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(sendButton, constraints);
 
-        Action sidePanelAction = new MultiBitAction(controller, null, "multiBitFrame.helpMenuText",
-                "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText", View.SEND_BITCOIN_VIEW);
-        MultiBitButton sidePanelButton = new MultiBitButton(sidePanelAction, controller);
+        Action sidePanelAction = new MoreOrLessAction(controller, this);
+        sidePanelButton = new MultiBitButton(sidePanelAction, controller);
+        displaySidePanel();
         
-        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-
-        if (showSidePanel) {
-            // show less
-            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.ARROW_RIGHT_ICON_FILE));
-            sidePanelButton.setText(controller.getLocaliser().getString("sendBitcoinPanel.showLess.text"));
-            sidePanelButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.showLess.tooltip"));
-            sidePanelButton.setMnemonic( mnemonicUtil.getMnemonic(controller.getLocaliser().getString("sendBitcoinPanel.showLess.mnemonic")));
-            sidePanelButton.setVerticalTextPosition(JLabel.BOTTOM);
-            sidePanelButton.setHorizontalTextPosition(JLabel.LEFT);            
-       } else {
-            //show more
-            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.ARROW_LEFT_ICON_FILE));
-            sidePanelButton.setText(controller.getLocaliser().getString("sendBitcoinPanel.showMore.text"));
-            sidePanelButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.showMore.tooltip"));
-            sidePanelButton.setMnemonic( mnemonicUtil.getMnemonic(controller.getLocaliser().getString("sendBitcoinPanel.showMore.mnemonic")));
-             sidePanelButton.setVerticalTextPosition(JLabel.BOTTOM);
-            sidePanelButton.setHorizontalTextPosition(JLabel.RIGHT);            
-        }
-
         // moreButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 6;
@@ -467,6 +446,12 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
                 throw new RuntimeException(e);
             }
         }
+        
+        String showSidePanelText = controller.getModel().getUserPreference(MultiBitModel.SHOW_SIDE_PANEL);
+        if (Boolean.TRUE.toString().equals(showSidePanelText)) {
+            showSidePanel = true;
+        }
+        displaySidePanel();
     }
 
     public void setAddressBookDataByRow(AddressBookData addressBookData) {

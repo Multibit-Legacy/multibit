@@ -67,12 +67,14 @@ import org.multibit.model.WalletInfo;
 import org.multibit.qrcode.BitcoinURI;
 import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.qrcode.SwatchGenerator;
+import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
 import org.multibit.viewsystem.swing.action.CopyQRCodeTextAction;
+import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.PasteSwatchAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
@@ -93,6 +95,14 @@ import com.google.bitcoin.core.Address;
  * 
  */
 public abstract class AbstractTradePanel extends JPanel implements View, DataProvider {
+
+    public boolean isShowSidePanel() {
+        return showSidePanel;
+    }
+
+    public void setShowSidePanel(boolean showSidePanel) {
+        this.showSidePanel = showSidePanel;
+    }
 
     private static final long serialVersionUID = 7227169670412230264L;
 
@@ -141,6 +151,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected MultiBitButton copyQRCodeTextButton;
     protected MultiBitButton pasteSwatchButton;;
 
+    protected MultiBitButton sidePanelButton;
     protected boolean showSidePanel = false;
 
     private final AbstractTradePanel thisAbstractTradePanel;
@@ -171,8 +182,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         initUI();
 
         labelTextArea.requestFocusInWindow();
-
-        loadForm();
+        
+        displaySidePanel();
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
     }
@@ -230,6 +241,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         setLayout(new GridBagLayout());
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
+        String showSidePanelText = controller.getModel().getUserPreference(MultiBitModel.SHOW_SIDE_PANEL);
+        if (Boolean.TRUE.toString().equals(showSidePanelText)) {
+            showSidePanel = true;
+        }
+
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -239,15 +255,13 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createFormPanel(), constraints);
 
-        if (showSidePanel) {
-            constraints.fill = GridBagConstraints.BOTH;
-            constraints.gridx = 1;
-            constraints.gridy = 0;
-            constraints.weightx = 0.5;
-            constraints.weighty = 0.4;
-            constraints.anchor = GridBagConstraints.LINE_START;
-            add(createQRCodePanel(), constraints);
-        }
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.4;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        add(createQRCodePanel(), constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -257,6 +271,42 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         constraints.weighty = 1.2;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createAddressesPanel(), constraints);
+    }
+
+    public void displaySidePanel() {
+        if (sidePanelButton == null) {
+            return;
+        }
+
+        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
+
+        if (showSidePanel) {
+            // show less
+            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.ARROW_RIGHT_ICON_FILE));
+            sidePanelButton.setText(controller.getLocaliser().getString("sendBitcoinPanel.showLess.text"));
+            sidePanelButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.showLess.tooltip"));
+            sidePanelButton.setMnemonic(mnemonicUtil.getMnemonic(controller.getLocaliser().getString(
+                    "sendBitcoinPanel.showLess.mnemonic")));
+            sidePanelButton.setVerticalTextPosition(JLabel.BOTTOM);
+            sidePanelButton.setHorizontalTextPosition(JLabel.LEFT);
+
+            if (qrCodePanel != null) {
+                qrCodePanel.setVisible(true);
+            }
+        } else {
+            // show more
+            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.ARROW_LEFT_ICON_FILE));
+            sidePanelButton.setText(controller.getLocaliser().getString("sendBitcoinPanel.showMore.text"));
+            sidePanelButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.showMore.tooltip"));
+            sidePanelButton.setMnemonic(mnemonicUtil.getMnemonic(controller.getLocaliser().getString(
+                    "sendBitcoinPanel.showMore.mnemonic")));
+            sidePanelButton.setVerticalTextPosition(JLabel.BOTTOM);
+            sidePanelButton.setHorizontalTextPosition(JLabel.RIGHT);
+
+            if (qrCodePanel != null) {
+                qrCodePanel.setVisible(false);
+            }
+        }
     }
 
     protected abstract JPanel createFormPanel();
@@ -758,7 +808,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             } else {
                 icon = new ImageIcon();
             }
-            qrCodeLabel.setIcon(icon);
+            if (qrCodeLabel != null) {
+                qrCodeLabel.setIcon(icon);
+            }
         } catch (RuntimeException re) {
             // swatch generation failed
             log.error(re.getMessage(), re);
