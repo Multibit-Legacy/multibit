@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -123,13 +124,13 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
         panel.setLayout(new GridBagLayout());
 
-        JPanel filler1 = new JPanel();
-        filler1.setOpaque(false);
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 1;
-        constraints.weighty = 0.1;
+        constraints.weighty = 0.01;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
 
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
@@ -139,7 +140,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         int separatorSize = (int) (fontMetrics.getHeight() * 0.5);
         int smallSeparatorSize = (int) (fontMetrics.getHeight() * 0.2);
 
-        panel.add(MultiBitTitledPanel.createStent(calculateStentWidth(), smallSeparatorSize), constraints);
+        panel.add(MultiBitTitledPanel.createStent(calculateStentWidth(), separatorSize), constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
@@ -163,52 +164,37 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         panel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS, separatorSize),
                 constraints);
 
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 5;
         constraints.gridy = 0;
         constraints.weightx = 0.1;
-        constraints.weighty = 0.1;
+        constraints.weighty = 0.01;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        panel.add(MultiBitTitledPanel.createStent(separatorSize, smallSeparatorSize), constraints);
+        panel.add(MultiBitTitledPanel.createStent(separatorSize), constraints);
 
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 7;
         constraints.gridy = 0;
         constraints.weightx = 0.1;
-        constraints.weighty = 0.1;
+        constraints.weighty = 0.01;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        panel.add(MultiBitTitledPanel.createStent(separatorSize, smallSeparatorSize), constraints);
+        panel.add(MultiBitTitledPanel.createStent(separatorSize), constraints);
 
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.VERTICAL;
         constraints.gridx = 10;
-        constraints.gridy = 0;
-        constraints.weightx = 0.05;
-        constraints.weighty = 0.1;
+        constraints.gridy = 1;
+        constraints.weightx = 0.02;
+        constraints.weighty = 10000;
         constraints.gridwidth = 1;
-        constraints.gridheight = 9;
+        constraints.gridheight = 8;
         constraints.anchor = GridBagConstraints.LINE_END;
-        JPanel dashedStent = MultiBitTitledPanel.createStent(smallSeparatorSize, separatorSize);
+        JPanel dashedStent = MultiBitTitledPanel.createStent(smallSeparatorSize);
         dashedStent.setBorder(new DashedBorder(controller.getLocaliser().getLocale()));
-
         panel.add(dashedStent, constraints);
-
-//
-//        constraints.fill = GridBagConstraints.BOTH;
-//        constraints.gridx = 11;
-//        constraints.gridy = 0;
-//        constraints.weightx = 0.05;
-//        constraints.weighty = 0.1;
-//        constraints.gridwidth = 1;
-//        constraints.gridheight = 9;
-//        constraints.anchor = GridBagConstraints.CENTER;
-//        JPanel dashedPanel = new JPanel();
-//        dashedPanel.setOpaque(false);
-//        dashedPanel.setBorder(new DashedBorder(controller.getLocaliser().getLocale()));
-//        panel.add(dashedPanel, constraints);
         
         MultiBitLabel addressLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel"));
         addressLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel.tooltip"));

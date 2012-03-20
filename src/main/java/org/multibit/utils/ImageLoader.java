@@ -56,6 +56,7 @@ public class ImageLoader {
     public static final String UNDO_ICON_FILE = "/images/undo.png";
     public static final String ARROW_RIGHT_ICON_FILE = "/images/arrowRight.png";
     public static final String ARROW_LEFT_ICON_FILE = "/images/arrowLeft.png";
+    public static final String ZOOM_ICON_FILE = "/images/zoom.png";
           
 
     public ImageLoader() {
