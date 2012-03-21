@@ -799,8 +799,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 }
                 displaySwatch(address, amount, label);
                 qrCodeLabel.invalidate();
+                thisAbstractTradePanel.invalidate();
                 qrCodeLabel.validate();
-                qrCodeLabel.repaint();
+                thisAbstractTradePanel.validate();
+                thisAbstractTradePanel.repaint();
             }
         });
 
