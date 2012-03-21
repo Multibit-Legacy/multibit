@@ -137,6 +137,10 @@ public class SwatchGenerator {
         JFrame frame = new JFrame();
     }
 
+    public BufferedImage generateQRcode(String address, String amount, String label) {
+        return generateQRcode(address, amount, label, 1);
+    }
+
     /**
      * generate a QR code
      * 
@@ -148,24 +152,25 @@ public class SwatchGenerator {
      *            label for swatch
      * @return
      */
-    public BufferedImage generateQRcode(String address, String amount, String label) {
+    public BufferedImage generateQRcode(String address, String amount, String label, int scaleFactor) {
         String bitcoinURI = "";
         try {
             Address decodeAddress = null;
-            if (address != null && controller.getMultiBitService() != null && controller.getMultiBitService().getNetworkParameters() != null) {
+            if (address != null && controller.getMultiBitService() != null
+                    && controller.getMultiBitService().getNetworkParameters() != null) {
                 decodeAddress = new Address(controller.getMultiBitService().getNetworkParameters(), address);
             }
             if (amount != null && !"".equals(amount)) {
-               bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amount), label, null);
+                bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amount), label, null);
             } else {
-                bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, null, label, null);                
+                bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, null, label, null);
             }
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
         } catch (IllegalArgumentException e) {
             log.warn("The address '" + address + "' could not be converted to a bitcoin address.");
         } catch (AddressFormatException e) {
             log.warn("The address '" + address + "' could not be converted to a bitcoin address.");
-        } 
+        }
 
         // get a byte matrix for the data
         ByteMatrix matrix;
@@ -182,48 +187,31 @@ public class SwatchGenerator {
         // generate an image from the byte matrix
         int matrixWidth = matrix.getWidth();
         int matrixHeight = matrix.getHeight();
-        int swatchWidth = matrixWidth + LEFT_TEXT_INSET + RIGHT_TEXT_INSET + WIDTH_OF_TEXT_BORDER * 2
-                + QUIET_ZONE_SIZE;
-
- 
-        int swatchHeight = matrixHeight;
+        int swatchWidth = matrixWidth * scaleFactor;
+        int swatchHeight = matrixHeight * scaleFactor;
 
         // create buffered image to draw to
         BufferedImage image = new BufferedImage(swatchWidth, swatchHeight, BufferedImage.TYPE_INT_RGB);
 
         // iterate through the matrix and draw the pixels to the image
-        int qrCodeVerticalOffset = 0;
-        if (swatchHeight > matrixHeight) {
-            qrCodeVerticalOffset = (int) ((swatchHeight - matrixHeight) * 0.5);
-        }
-        int matrixHorizontalOffset = 0;
-        if (!ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
-            matrixHorizontalOffset = swatchWidth - matrixWidth;
-        }
-
         for (int y = 0; y < matrixHeight; y++) {
             for (int x = 0; x < matrixWidth; x++) {
                 byte imageValue = matrix.get(x, y);
-                image.setRGB(x + matrixHorizontalOffset, y + qrCodeVerticalOffset, imageValue);
-            }
-        }
-
-        // fill in the rest of the image as white
-        for (int y = 0; y < swatchHeight; y++) {
-            if (matrixHorizontalOffset == 0) {
-                for (int x = matrixWidth; x < swatchWidth; x++) {
-                    image.setRGB(x, y, 0xFFFFFF);
-                }
-            } else {
-                for (int x = 0; x < swatchWidth - matrixWidth; x++) {
-                    image.setRGB(x, y, 0xFFFFFF);
+                for (int scaleX = 0; scaleX < scaleFactor; scaleX++) {
+                    for (int scaleY = 0; scaleY < scaleFactor; scaleY++)  {
+                        image.setRGB(x * scaleFactor + scaleX, y * scaleFactor + scaleY, imageValue);                       
+                    }
                 }
             }
         }
 
         return image;
     }
-    
+
+    public BufferedImage generateSwatch(String address, String amount, String label) {
+        return generateSwatch(address, amount, label, 1);
+    }
+
     /**
      * generate a Swatch
      * 
@@ -235,25 +223,35 @@ public class SwatchGenerator {
      *            label for swatch
      * @return
      */
-    public BufferedImage generateSwatch(String address, String amount, String label) {
-        // long time0 = (new Date()).getTime();
+    public BufferedImage generateSwatch(String address, String amount, String label, int scaleFactor) {
+        Font addressFont = new Font("Verdana", Font.PLAIN, (int)(10 * scaleFactor));
+        Font labelFont = new Font("Serif", Font.PLAIN, (int)(17 * scaleFactor));
+        Font amountFont = labelFont;
+        
+        fontToFontMetricsMap.clear();
+        fontToFontMetricsMap.put(addressFont, emptyGraphics.getFontMetrics(addressFont));
+        fontToFontMetricsMap.put(labelFont, emptyGraphics.getFontMetrics(labelFont));
+        fontToFontMetricsMap.put(amountFont, emptyGraphics.getFontMetrics(amountFont));
+
+
         String bitcoinURI = "";
         try {
             Address decodeAddress = null;
-            if (address != null && controller.getMultiBitService() != null && controller.getMultiBitService().getNetworkParameters() != null) {
+            if (address != null && controller.getMultiBitService() != null
+                    && controller.getMultiBitService().getNetworkParameters() != null) {
                 decodeAddress = new Address(controller.getMultiBitService().getNetworkParameters(), address);
             }
             if (amount != null && !"".equals(amount)) {
-               bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amount), label, null);
+                bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amount), label, null);
             } else {
-                bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, null, label, null);                
+                bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, null, label, null);
             }
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
         } catch (IllegalArgumentException e) {
             log.warn("The address '" + address + "' could not be converted to a bitcoin address.");
         } catch (AddressFormatException e) {
             log.warn("The address '" + address + "' could not be converted to a bitcoin address.");
-        } 
+        }
 
         // get a byte matrix for the data
         ByteMatrix matrix;
@@ -305,25 +303,25 @@ public class SwatchGenerator {
         }
 
         int widestTextAdvance = (int) Math.max(Math.max(addressAdvance, amountAdvance), maxLabelAdvance);
-        int swatchWidth = matrixWidth + widestTextAdvance + LEFT_TEXT_INSET + RIGHT_TEXT_INSET + WIDTH_OF_TEXT_BORDER * 2
-                + QUIET_ZONE_SIZE;
+        int swatchWidth = widestTextAdvance + scaleFactor * ( matrixWidth + LEFT_TEXT_INSET + RIGHT_TEXT_INSET + WIDTH_OF_TEXT_BORDER * 2
+                + QUIET_ZONE_SIZE);
 
         // work out the height of the swatch
-        int minimumBoxHeight = TOP_TEXT_INSET + BOTTOM_TEXT_INSET + 2 * (QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER)
-                + GAP_ABOVE_ADDRESS + addressFont.getSize();
+        int minimumBoxHeight = scaleFactor * (TOP_TEXT_INSET + BOTTOM_TEXT_INSET + 2 * (QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER)
+                + GAP_ABOVE_ADDRESS) + addressFont.getSize();
         if (addAmount) {
-            minimumBoxHeight = minimumBoxHeight + GAP_BETWEEN_TEXT_ROWS + amountFont.getSize();
+            minimumBoxHeight = minimumBoxHeight + scaleFactor* GAP_BETWEEN_TEXT_ROWS + amountFont.getSize();
         }
 
         if (labelLines != null) {
-            minimumBoxHeight = minimumBoxHeight + labelLines.length * (labelFont.getSize() + GAP_BETWEEN_TEXT_ROWS - 1);
+            minimumBoxHeight = minimumBoxHeight +  labelLines.length * labelFont.getSize() + GAP_BETWEEN_TEXT_ROWS * scaleFactor * (labelLines.length - 1);
         }
 
         int swatchHeight;
-        if (minimumBoxHeight > matrixHeight) {
+        if (minimumBoxHeight > matrixHeight * scaleFactor) {
             swatchHeight = minimumBoxHeight;
         } else {
-            swatchHeight = matrixHeight;
+            swatchHeight = matrixHeight * scaleFactor;
         }
 
         // create buffered image to draw to
@@ -331,46 +329,52 @@ public class SwatchGenerator {
 
         // iterate through the matrix and draw the pixels to the image
         int qrCodeVerticalOffset = 0;
-        if (swatchHeight > matrixHeight) {
-            qrCodeVerticalOffset = (int) ((swatchHeight - matrixHeight) * 0.5);
+        if (swatchHeight > matrixHeight * scaleFactor) {
+            qrCodeVerticalOffset = (int) ((swatchHeight - matrixHeight * scaleFactor) * 0.5);
         }
         int matrixHorizontalOffset = 0;
         if (!ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
-            matrixHorizontalOffset = swatchWidth - matrixWidth;
+            matrixHorizontalOffset = swatchWidth - matrixWidth * scaleFactor;
         }
 
-        int textBoxHorizontalOffset = matrixWidth;
+        int textBoxHorizontalOffset = scaleFactor * matrixWidth;
         if (!ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
-            textBoxHorizontalOffset = QUIET_ZONE_SIZE;
+            textBoxHorizontalOffset = scaleFactor * QUIET_ZONE_SIZE;
         }
 
         for (int y = 0; y < matrixHeight; y++) {
             for (int x = 0; x < matrixWidth; x++) {
                 byte imageValue = matrix.get(x, y);
-                image.setRGB(x + matrixHorizontalOffset, y + qrCodeVerticalOffset, imageValue);
+                //image.setRGB(x + matrixHorizontalOffset, y + qrCodeVerticalOffset, imageValue);
+                for (int scaleX = 0; scaleX < scaleFactor; scaleX++) {
+                    for (int scaleY = 0; scaleY < scaleFactor; scaleY++)  {
+                        image.setRGB(x * scaleFactor + scaleX  + matrixHorizontalOffset, y * scaleFactor + scaleY  + qrCodeVerticalOffset, imageValue);                       
+                        //image.setRGB(x * scaleFactor + scaleX, y * scaleFactor + scaleY, imageValue);                       
+                    }
+                }
             }
         }
 
         // fill in the rest of the image as white
         for (int y = 0; y < swatchHeight; y++) {
             if (matrixHorizontalOffset == 0) {
-                for (int x = matrixWidth; x < swatchWidth; x++) {
+                for (int x = matrixWidth * scaleFactor; x < swatchWidth; x++) {
                     image.setRGB(x, y, 0xFFFFFF);
                 }
             } else {
-                for (int x = 0; x < swatchWidth - matrixWidth; x++) {
+                for (int x = 0; x < swatchWidth - matrixWidth * scaleFactor; x++) {
                     image.setRGB(x, y, 0xFFFFFF);
                 }
             }
         }
-        if (swatchHeight > matrixHeight) {
+        if (swatchHeight > matrixHeight * scaleFactor) {
             for (int y = 0; y < qrCodeVerticalOffset; y++) {
                 for (int x = 0; x < swatchWidth; x++) {
                     image.setRGB(x, y, 0xFFFFFF);
                 }
             }
 
-            for (int y = matrixHeight + qrCodeVerticalOffset; y < swatchHeight; y++) {
+            for (int y = scaleFactor * matrixHeight + qrCodeVerticalOffset; y < swatchHeight; y++) {
                 for (int x = 0; x < swatchWidth; x++) {
                     image.setRGB(x, y, 0xFFFFFF);
                 }
@@ -378,27 +382,28 @@ public class SwatchGenerator {
         }
 
         // draw the text box
-        for (int y = QUIET_ZONE_SIZE; y < swatchHeight - QUIET_ZONE_SIZE; y++) {
-            for (int loopX = 0; loopX < WIDTH_OF_TEXT_BORDER; loopX++) {
+        for (int y = QUIET_ZONE_SIZE * scaleFactor; y < swatchHeight - QUIET_ZONE_SIZE * scaleFactor; y++) {
+            for (int loopX = 0; loopX < WIDTH_OF_TEXT_BORDER * scaleFactor; loopX++) {
                 // left hand side
                 image.setRGB(textBoxHorizontalOffset + loopX, y, 0x000000);
 
                 // right hand side
                 if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
-                    image.setRGB(swatchWidth - QUIET_ZONE_SIZE - loopX - 1, y, 0x000000);
+                    image.setRGB(swatchWidth - QUIET_ZONE_SIZE * scaleFactor - loopX - 1, y, 0x000000);
                 } else {
-                    image.setRGB(swatchWidth - matrixWidth - loopX - 1, y, 0x000000);
+                    image.setRGB(swatchWidth - matrixWidth * scaleFactor - loopX - 1, y, 0x000000);
                 }
             }
         }
 
-        for (int x = textBoxHorizontalOffset + QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER; x < swatchWidth - QUIET_ZONE_SIZE - matrixWidth + textBoxHorizontalOffset; x++) {
-            for (int loopY = 0; loopY < WIDTH_OF_TEXT_BORDER; loopY++) {
+        for (int x = textBoxHorizontalOffset + scaleFactor * (QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER); x < swatchWidth - scaleFactor * (QUIET_ZONE_SIZE
+                + matrixWidth) + textBoxHorizontalOffset; x++) {
+            for (int loopY = 0; loopY < scaleFactor * WIDTH_OF_TEXT_BORDER; loopY++) {
                 // top side
-                image.setRGB(x, QUIET_ZONE_SIZE + loopY, 0x000000);
+                image.setRGB(x, scaleFactor * QUIET_ZONE_SIZE + loopY, 0x000000);
 
                 // bottom side
-                image.setRGB(x, swatchHeight - QUIET_ZONE_SIZE - loopY - 1, 0x000000);
+                image.setRGB(x, swatchHeight - scaleFactor * QUIET_ZONE_SIZE - loopY - 1, 0x000000);
             }
         }
 
@@ -408,23 +413,23 @@ public class SwatchGenerator {
         g2.setFont(addressFont);
 
         // right justified
-        g2.drawString(address, swatchWidth - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - RIGHT_TEXT_INSET - addressAdvance
-                - matrixWidth + textBoxHorizontalOffset, swatchHeight - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - BOTTOM_TEXT_INSET);
+        g2.drawString(address, swatchWidth - scaleFactor * (QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER + RIGHT_TEXT_INSET
+                + matrixWidth) - addressAdvance + textBoxHorizontalOffset, swatchHeight - scaleFactor * (QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER + BOTTOM_TEXT_INSET));
 
         g2.setFont(labelFont);
         if (labelLines != null) {
             for (int i = 0; i < labelLines.length; i++) {
                 if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
                     // left justified
-                    g2.drawString(labelLines[i], textBoxHorizontalOffset + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER,
-                            QUIET_ZONE_SIZE + TOP_TEXT_INSET + labelFont.getSize() + i
-                                    * (labelFont.getSize() + GAP_BETWEEN_TEXT_ROWS));
+                    g2.drawString(labelLines[i], textBoxHorizontalOffset + scaleFactor * (QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER), scaleFactor * (QUIET_ZONE_SIZE
+                            + TOP_TEXT_INSET) + labelFont.getSize() + i * (labelFont.getSize() + scaleFactor * GAP_BETWEEN_TEXT_ROWS));
                 } else {
                     // right justified
-                    int leftEdge = swatchWidth - matrixWidth - WIDTH_OF_TEXT_BORDER - RIGHT_TEXT_INSET
+                    int leftEdge = swatchWidth - scaleFactor * (matrixWidth + WIDTH_OF_TEXT_BORDER + RIGHT_TEXT_INSET)
                             - getAdvance(emptyGraphics, labelLines[i], labelFont);
-                    g2.drawString(labelLines[i], leftEdge, QUIET_ZONE_SIZE + TOP_TEXT_INSET + labelFont.getSize() + i
-                            * (labelFont.getSize() + GAP_BETWEEN_TEXT_ROWS));
+                    g2.drawString(labelLines[i], leftEdge,
+                            scaleFactor * (QUIET_ZONE_SIZE + TOP_TEXT_INSET) + labelFont.getSize() + i
+                                    * (labelFont.getSize() + scaleFactor * GAP_BETWEEN_TEXT_ROWS));
                 }
             }
             if (addAmount) {
@@ -433,29 +438,26 @@ public class SwatchGenerator {
                 // bottom right justified
                 if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
                     g2.drawString(amount + " " + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"),
-                            swatchWidth - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - RIGHT_TEXT_INSET - amountAdvance,
-                            swatchHeight - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - BOTTOM_TEXT_INSET - addressFont.getSize()
-                                    - GAP_ABOVE_ADDRESS);
+                            swatchWidth - scaleFactor * (QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER + RIGHT_TEXT_INSET) - amountAdvance, swatchHeight
+                                    - scaleFactor * (QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER + BOTTOM_TEXT_INSET) - addressFont.getSize()
+                                    - scaleFactor * GAP_ABOVE_ADDRESS);
                 } else {
                     // bottom right justified, with swatch to right
                     g2.drawString(amount + " " + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"),
-                            swatchWidth - matrixWidth - WIDTH_OF_TEXT_BORDER - RIGHT_TEXT_INSET
-                                    - amountAdvance, swatchHeight - QUIET_ZONE_SIZE - WIDTH_OF_TEXT_BORDER - BOTTOM_TEXT_INSET
-                                    - addressFont.getSize() - GAP_ABOVE_ADDRESS);
+                            swatchWidth - scaleFactor * (matrixWidth + WIDTH_OF_TEXT_BORDER + RIGHT_TEXT_INSET) - amountAdvance, swatchHeight
+                                    - scaleFactor * (QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER + BOTTOM_TEXT_INSET) - addressFont.getSize()
+                                    - scaleFactor * GAP_ABOVE_ADDRESS);
                 }
             }
         } else {
             if (addAmount) {
                 g2.setFont(amountFont);
-                     // left justified, no swatch
-                    g2.drawString(amount + " " + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"),
-                            textBoxHorizontalOffset + QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER,
-                            QUIET_ZONE_SIZE + TOP_TEXT_INSET + amountFont.getSize());
+                // left justified, no swatch
+                g2.drawString(amount + " " + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"),
+                        textBoxHorizontalOffset + scaleFactor * (QUIET_ZONE_SIZE + WIDTH_OF_TEXT_BORDER), scaleFactor * (QUIET_ZONE_SIZE + TOP_TEXT_INSET)
+                                + amountFont.getSize());
             }
         }
-        // long time1 = (new Date()).getTime();
-        // System.out.println("SwatchGenerator#generateSwatch took " + (time1 -
-        // time0) + " millisec");
         return image;
     }
 

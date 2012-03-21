@@ -30,6 +30,7 @@ import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -37,6 +38,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
@@ -68,6 +70,9 @@ public class ZoomAction extends AbstractAction {
     private MultiBitFrame mainFrame;
 
     private AbstractTradePanel tradePanel;
+
+    private static final int HEIGHT_DELTA = 40;
+    private static final int WIDTH_DELTA = 20;
 
     /**
      * Creates a new {@link ZoomAction}.
@@ -101,41 +106,49 @@ public class ZoomAction extends AbstractAction {
             // get the bounds of the current frame
             Dimension mainFrameSize = mainFrame.getSize();
 
+            int scaleWidth = (int) (mainFrameSize.getWidth() - WIDTH_DELTA);
+            int scaleHeight = (int) (mainFrameSize.getHeight() - HEIGHT_DELTA);
+
             SwatchGenerator swatchGenerator = new SwatchGenerator(controller);
 
             Image image = null;
             if (tradePanel.isDisplayAsQRcode()) {
-                image = swatchGenerator.generateQRcode(address, amount, label);
+                image = swatchGenerator.generateQRcode(address, amount, label, 1);
+
+                if (image != null) {
+                    int scaleFactor = (int) (Math.floor(Math.min(scaleHeight / image.getHeight(null),
+                            scaleWidth / image.getWidth(null))));
+                    image = swatchGenerator.generateQRcode(address, amount, label, scaleFactor);
+                }
             } else if (tradePanel.isDisplayAsSwatch()) {
                 image = swatchGenerator.generateSwatch(address, amount, label);
+                if (image != null) {
+                    int widthFactor = (int)(Math.floor(scaleWidth / image.getWidth(null)));
+                    int heightFactor = (int)(Math.floor(scaleHeight / image.getHeight(null)));
+                    int scaleFactor = Math.min(widthFactor, heightFactor);
+                    image = swatchGenerator.generateSwatch(address, amount, label, scaleFactor);
+                }
             }
 
             // display the icon
             JPanel iconPanel = new JPanel(new BorderLayout());
             JLabel iconLabel = new JLabel();
             iconLabel.setIcon(new ImageIcon(image));
+            iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
             iconPanel.add(iconLabel, BorderLayout.CENTER);
-
-            // JOptionPane.showMessageDialog(mainFrame, iconPanel, "title",
-            // JOptionPane.INFORMATION_MESSAGE,
-            // ImageLoader.createImageIcon(ImageLoader.ZOOM_ICON_FILE));
 
             String dialogTitle = controller.getLocaliser().getString("multiBitFrame.title") + MultiBitFrame.SEPARATOR
                     + controller.getLocaliser().getString("zoomAction.text");
             final JDialog dialog = new JDialog(mainFrame, dialogTitle, true);
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            // dialog.setBackground(Color.WHITE);
 
             final JOptionPane optionPane = new JOptionPane(iconPanel, JOptionPane.PLAIN_MESSAGE);
-            optionPane.setIcon(ImageLoader.createImageIcon(ImageLoader.ZOOM_ICON_FILE));
+            //optionPane.setIcon(ImageLoader.createImageIcon(ImageLoader.ZOOM_ICON_FILE));
             optionPane.addPropertyChangeListener(new PropertyChangeListener() {
                 public void propertyChange(PropertyChangeEvent e) {
                     String prop = e.getPropertyName();
 
                     if (dialog.isVisible() && (e.getSource() == optionPane) && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
-                        // If you were going to check something
-                        // before closing the window, you'd do
-                        // it here.
                         dialog.setVisible(false);
                     }
                 }
