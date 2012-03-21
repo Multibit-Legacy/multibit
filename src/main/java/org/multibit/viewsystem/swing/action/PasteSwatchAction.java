@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Icon;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.DataProvider;
@@ -45,8 +46,9 @@ public class PasteSwatchAction extends AbstractAction {
     /**
      * Creates a new {@link PasteSwatchAction}.
      */
-    public PasteSwatchAction(MultiBitController controller, DataProvider dataProvider) {
-        super(controller.getLocaliser().getString("pasteSwatchAction.text"));
+    public PasteSwatchAction(MultiBitController controller, DataProvider dataProvider, Icon icon) {
+        //super(controller.getLocaliser().getString("pasteSwatchAction.text"));
+        super("", icon);
         this.controller = controller;
         this.dataProvider = dataProvider;
 

@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.TransferHandler;
 
@@ -41,8 +42,9 @@ public class CopyQRCodeImageAction extends AbstractAction {
     /**
      * Creates a new {@link CopyQRCodeImageAction}.
      */
-    public CopyQRCodeImageAction(MultiBitController controller, DataProvider dataProvider) {
-        super(controller.getLocaliser().getString("copyQRCodeImageAction.text"));
+    public CopyQRCodeImageAction(MultiBitController controller, DataProvider dataProvider, Icon icon) {
+        //super(controller.getLocaliser().getString("copyQRCodeImageAction.text"), icon);
+        super("", icon);
         this.dataProvider = dataProvider;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());

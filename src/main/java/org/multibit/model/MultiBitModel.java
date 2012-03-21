@@ -88,6 +88,8 @@ public class MultiBitModel {
     public static final String SEND_FEE = "sendFee";
     public static final String SEND_PERFORM_PASTE_NOW = "sendPerformPasteNow";
     public static final String SHOW_SIDE_PANEL = "showSidePanel";
+    public static final String DISPLAY_AS_SWATCH = "displayAsSwatch";
+    public static final String DISPLAY_AS_QR_CODE = "displayAsQRcode";
 
     // open uri
     public static final String OPEN_URI_SHOW_DIALOG = "openUriShowDialog";

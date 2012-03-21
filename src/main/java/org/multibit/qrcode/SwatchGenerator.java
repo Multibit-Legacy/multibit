@@ -138,6 +138,98 @@ public class SwatchGenerator {
     }
 
     /**
+     * generate a QR code
+     * 
+     * @param address
+     *            Bitcoin address to show
+     * @param amount
+     *            amount of BTC to show - text
+     * @param label
+     *            label for swatch
+     * @return
+     */
+    public BufferedImage generateQRcode(String address, String amount, String label) {
+        String bitcoinURI = "";
+        try {
+            Address decodeAddress = null;
+            if (address != null && controller.getMultiBitService() != null && controller.getMultiBitService().getNetworkParameters() != null) {
+                decodeAddress = new Address(controller.getMultiBitService().getNetworkParameters(), address);
+            }
+            if (amount != null && !"".equals(amount)) {
+               bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amount), label, null);
+            } else {
+                bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, null, label, null);                
+            }
+            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
+        } catch (IllegalArgumentException e) {
+            log.warn("The address '" + address + "' could not be converted to a bitcoin address.");
+        } catch (AddressFormatException e) {
+            log.warn("The address '" + address + "' could not be converted to a bitcoin address.");
+        } 
+
+        // get a byte matrix for the data
+        ByteMatrix matrix;
+        try {
+            matrix = encode(bitcoinURI);
+        } catch (com.google.zxing.WriterException e) {
+            // exit the method
+            return null;
+        } catch (IllegalArgumentException e) {
+            // exit the method
+            return null;
+        }
+
+        // generate an image from the byte matrix
+        int matrixWidth = matrix.getWidth();
+        int matrixHeight = matrix.getHeight();
+        int swatchWidth = matrixWidth + LEFT_TEXT_INSET + RIGHT_TEXT_INSET + WIDTH_OF_TEXT_BORDER * 2
+                + QUIET_ZONE_SIZE;
+
+ 
+        int swatchHeight = matrixHeight;
+
+        // create buffered image to draw to
+        BufferedImage image = new BufferedImage(swatchWidth, swatchHeight, BufferedImage.TYPE_INT_RGB);
+
+        // iterate through the matrix and draw the pixels to the image
+        int qrCodeVerticalOffset = 0;
+        if (swatchHeight > matrixHeight) {
+            qrCodeVerticalOffset = (int) ((swatchHeight - matrixHeight) * 0.5);
+        }
+        int matrixHorizontalOffset = 0;
+        if (!ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
+            matrixHorizontalOffset = swatchWidth - matrixWidth;
+        }
+
+        int textBoxHorizontalOffset = matrixWidth;
+        if (!ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
+            textBoxHorizontalOffset = QUIET_ZONE_SIZE;
+        }
+
+        for (int y = 0; y < matrixHeight; y++) {
+            for (int x = 0; x < matrixWidth; x++) {
+                byte imageValue = matrix.get(x, y);
+                image.setRGB(x + matrixHorizontalOffset, y + qrCodeVerticalOffset, imageValue);
+            }
+        }
+
+        // fill in the rest of the image as white
+        for (int y = 0; y < swatchHeight; y++) {
+            if (matrixHorizontalOffset == 0) {
+                for (int x = matrixWidth; x < swatchWidth; x++) {
+                    image.setRGB(x, y, 0xFFFFFF);
+                }
+            } else {
+                for (int x = 0; x < swatchWidth - matrixWidth; x++) {
+                    image.setRGB(x, y, 0xFFFFFF);
+                }
+            }
+        }
+
+        return image;
+    }
+    
+    /**
      * generate a Swatch
      * 
      * @param address

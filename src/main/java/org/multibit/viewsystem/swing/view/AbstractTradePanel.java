@@ -25,6 +25,8 @@ import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -52,7 +54,6 @@ import javax.swing.TransferHandler;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.plaf.metal.MetalComboBoxUI;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -152,6 +153,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     private final int STENT_DELTA = 4;
 
     protected JComboBox displayUsingComboBox;
+    protected boolean displayAsSwatch = true;
+    protected boolean displayAsQRcode = false;
+
     protected MultiBitLabel displayUsingLabel;
     protected MultiBitButton copyQRCodeImageButton;
     protected MultiBitButton pasteSwatchButton;
@@ -250,6 +254,18 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         String showSidePanelText = controller.getModel().getUserPreference(MultiBitModel.SHOW_SIDE_PANEL);
         if (Boolean.TRUE.toString().equals(showSidePanelText)) {
             showSidePanel = true;
+        }
+
+        String displayAsSwatchText = controller.getModel().getUserPreference(MultiBitModel.DISPLAY_AS_SWATCH);
+        if (Boolean.TRUE.toString().equals(displayAsSwatchText)) {
+            displayAsSwatch = true;
+            displayAsQRcode = false;
+        }
+
+        String displayAsQRcodeText = controller.getModel().getUserPreference(MultiBitModel.DISPLAY_AS_QR_CODE);
+        if (Boolean.TRUE.toString().equals(displayAsQRcodeText)) {
+            displayAsSwatch = false;
+            displayAsQRcode = true;
         }
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -452,15 +468,15 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         if (displayUsingLabel != null) {
             displayUsingLabel.setVisible(visible);
         }
-        
+
         if (displayUsingComboBox != null) {
             displayUsingComboBox.setVisible(visible);
         }
-        
+
         if (qrCodeScrollPane != null) {
             qrCodeScrollPane.setVisible(visible);
         }
-        
+
         if (copyQRCodeImageButton != null) {
             copyQRCodeImageButton.setVisible(visible);
         }
@@ -620,15 +636,14 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         constraints.weightx = 1;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
-        constraints.gridheight = 2;
-        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_TRAILING;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
         panel.add(displayUsingComboBox, constraints);
-        
 
         JPanel forcerQR = new JPanel();
         forcerQR.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx =  QR_CODE_LEFT_COLUMN;
+        constraints.gridx = QR_CODE_LEFT_COLUMN;
         constraints.gridy = 1;
         constraints.weightx = 10;
         constraints.weighty = 0.02;
@@ -636,7 +651,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         panel.add(forcerQR, constraints);
-        
+
         qrCodeLabel = new MultiBitLabel("", JLabel.CENTER);
         qrCodeLabel.setMinimumSize(new Dimension(QRCODE_WIDTH, QRCODE_HEIGHT));
 
@@ -645,10 +660,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         qrCodeLabel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         qrCodeLabel.setOpaque(true);
 
-        if (!isReceiveBitcoin()) {
-            qrCodeLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabel.text"));
-            qrCodeLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabel.tooltip"));
-        }
+        setDragLabelTextAndTooltip();
 
         // copy/ drag image support
         if (isReceiveBitcoin()) {
@@ -689,19 +701,67 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         createQRCodeButtonPanel(panel, constraints);
     }
 
-    private JComboBox createDisplayAsCombo() {
-        // display using combo box
+    private void setDragLabelTextAndTooltip() {
+        if (!isReceiveBitcoin()) {
+            if (displayAsSwatch) {
+                qrCodeLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabel.text"));
+                qrCodeLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabel.tooltip"));
+            } else if (displayAsQRcode) {
+                qrCodeLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabelQRcode.text"));
+                qrCodeLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabelQRcode.tooltip"));
+            }
+        }
+    }
 
-        String[] indexArray = new String[] {"Display as swatch", "Display as QR code"};
+    /**
+     * Create display as combo box
+     * 
+     * @return The "display as" combo box
+     */
+    private JComboBox createDisplayAsCombo() {
+        String[] indexArray = new String[] { controller.getLocaliser().getString("abstractTradePanel.displayAsSwatch"),
+                controller.getLocaliser().getString("abstractTradePanel.displayAsQRcode") };
 
         displayUsingComboBox = new JComboBox(indexArray);
         displayUsingComboBox.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         displayUsingComboBox.setOpaque(false);
-        //ComboBoxRenderer renderer = new ComboBoxRenderer();
+        if (displayAsSwatch) {
+            displayUsingComboBox.setSelectedIndex(0);
+        } else {
+            if (displayAsQRcode) {
+                displayUsingComboBox.setSelectedIndex(1);
+            }
+        }
+
+        displayUsingComboBox.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                int selectedIndex = displayUsingComboBox.getSelectedIndex();
+                if (selectedIndex == 0) {
+                    displayAsSwatch = true;
+                    displayAsQRcode = false;
+                    log.debug("displayAsSwatch");
+                    controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_SWATCH, "true");
+                    controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_QR_CODE, "false");
+
+                    controller.displayView(controller.getCurrentView());
+                } else if (selectedIndex == 1) {
+                    displayAsSwatch = false;
+                    displayAsQRcode = true;
+                    controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_SWATCH, "false");
+                    controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_QR_CODE, "true");
+                    log.debug("displayAsQRcode");
+                    controller.displayView(controller.getCurrentView());
+                }
+                setDragLabelTextAndTooltip();
+            }
+        });
 
         return displayUsingComboBox;
-        
+
     }
+
     protected void createQRCodeButtonPanel(JPanel panel, GridBagConstraints constraints) {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridBagLayout());
@@ -718,8 +778,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         panel.add(buttonPanel, constraints);
 
         GridBagConstraints constraints2 = new GridBagConstraints();
-        
-        CopyQRCodeImageAction copyQRCodeImageAction = new CopyQRCodeImageAction(controller, this);
+
+        CopyQRCodeImageAction copyQRCodeImageAction = new CopyQRCodeImageAction(controller, this,
+                ImageLoader.createImageIcon(ImageLoader.COPY_ICON_FILE));
         copyQRCodeImageButton = new MultiBitButton(copyQRCodeImageAction, controller);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 1;
@@ -733,7 +794,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
         int currentColumn = 2;
         if (!isReceiveBitcoin()) {
-            PasteSwatchAction pasteSwatchAction = new PasteSwatchAction(controller, this);
+            PasteSwatchAction pasteSwatchAction = new PasteSwatchAction(controller, this,
+                    ImageLoader.createImageIcon(ImageLoader.PASTE_ICON_FILE));
             pasteSwatchButton = new MultiBitButton(pasteSwatchAction, controller);
             constraints2.fill = GridBagConstraints.NONE;
             constraints2.gridx = currentColumn;
@@ -746,9 +808,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             constraints2.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
             buttonPanel.add(pasteSwatchButton, constraints2);
         }
-        
-        MultiBitAction zoomAction = new MultiBitAction(controller, ImageLoader.ZOOM_ICON_FILE, "zoomAction.text", "zoomAction.tooltip", "zoomAction.mnemonicKey", View.HELP_ABOUT_VIEW);
+
+        MultiBitAction zoomAction = new MultiBitAction(controller, ImageLoader.ZOOM_ICON_FILE, "zoomAction.text",
+                "zoomAction.tooltip", "zoomAction.mnemonicKey", View.HELP_ABOUT_VIEW);
         zoomButton = new MultiBitButton(zoomAction, controller);
+        zoomButton.setText("");
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = currentColumn;
         currentColumn++;
@@ -759,7 +823,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         constraints2.gridheight = 1;
         constraints2.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
         buttonPanel.add(zoomButton, constraints2);
-
 
         JPanel forcerQR = new JPanel();
         forcerQR.setOpaque(false);
@@ -868,7 +931,16 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             swatchGenerator = new SwatchGenerator(controller);
         }
         try {
-            BufferedImage image = swatchGenerator.generateSwatch(address, amount, label);
+            BufferedImage image;
+            if (displayAsSwatch) {
+                image = swatchGenerator.generateSwatch(address, amount, label);
+            } else {
+                if (displayAsQRcode) {
+                    image = swatchGenerator.generateQRcode(address, amount, label);
+                } else {
+                    image = null;
+                }
+            }
             ImageIcon icon;
             if (image != null) {
                 icon = new ImageIcon(image);
