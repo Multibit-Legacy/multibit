@@ -201,11 +201,6 @@ public class SwatchGenerator {
             matrixHorizontalOffset = swatchWidth - matrixWidth;
         }
 
-        int textBoxHorizontalOffset = matrixWidth;
-        if (!ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
-            textBoxHorizontalOffset = QUIET_ZONE_SIZE;
-        }
-
         for (int y = 0; y < matrixHeight; y++) {
             for (int x = 0; x < matrixWidth; x++) {
                 byte imageValue = matrix.get(x, y);

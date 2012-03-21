@@ -86,17 +86,17 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
     }
 
     @Override
-    protected String getAddressConstant() {
+    public String getAddressConstant() {
         return MultiBitModel.SEND_ADDRESS;
     }
 
     @Override
-    protected String getLabelConstant() {
+    public String getLabelConstant() {
         return MultiBitModel.SEND_LABEL;
     }
 
     @Override
-    protected String getAmountConstant() {
+    public String getAmountConstant() {
         return MultiBitModel.SEND_AMOUNT;
     }
 

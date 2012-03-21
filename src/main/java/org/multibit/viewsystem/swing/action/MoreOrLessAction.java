@@ -23,12 +23,17 @@ import javax.swing.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.view.AbstractTradePanel;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  * This {@link Action} represents the action to toggle the more or less button
  * on the send/ receive bitcoin panels
  */
 public class MoreOrLessAction extends AbstractAction {
+
+    private static final Logger log = LoggerFactory.getLogger(MoreOrLessAction.class);
+
 
     private static final long serialVersionUID = 114352235465057705L;
 
@@ -50,6 +55,8 @@ public class MoreOrLessAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         boolean showSidePanel = !abstractTradePanel.isShowSidePanel();
         abstractTradePanel.setShowSidePanel(showSidePanel);
+        
+        log.debug("showSidePanel = " + showSidePanel);
 
         // put it in the user preferences - will then get loaded when view
         // form loads

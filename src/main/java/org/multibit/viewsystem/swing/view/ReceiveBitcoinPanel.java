@@ -75,16 +75,16 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
     }
     
     @Override
-    protected String getAddressConstant() {
+    public String getAddressConstant() {
         return MultiBitModel.RECEIVE_ADDRESS;
     }
     
     @Override
-    protected String getLabelConstant() {
+    public String getLabelConstant() {
         return MultiBitModel.RECEIVE_LABEL;
     }
     @Override
-    protected String getAmountConstant() {
+    public String getAmountConstant() {
         return MultiBitModel.RECEIVE_AMOUNT;
     }
     

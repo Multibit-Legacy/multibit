@@ -76,8 +76,8 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
-import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.action.PasteSwatchAction;
+import org.multibit.viewsystem.swing.action.ZoomAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
@@ -153,8 +153,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     private final int STENT_DELTA = 4;
 
     protected JComboBox displayUsingComboBox;
-    protected boolean displayAsSwatch = true;
-    protected boolean displayAsQRcode = false;
+    protected boolean displayAsSwatch = false;
+    protected boolean displayAsQRcode = true;
 
     protected MultiBitLabel displayUsingLabel;
     protected MultiBitButton copyQRCodeImageButton;
@@ -204,11 +204,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
      */
     protected abstract boolean isReceiveBitcoin();
 
-    protected abstract String getAddressConstant();
+    public abstract String getAddressConstant();
 
-    protected abstract String getLabelConstant();
+    public abstract String getLabelConstant();
 
-    protected abstract String getAmountConstant();
+    public abstract String getAmountConstant();
 
     protected abstract String getUriImageConstant();
 
@@ -719,17 +719,16 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
      * @return The "display as" combo box
      */
     private JComboBox createDisplayAsCombo() {
-        String[] indexArray = new String[] { controller.getLocaliser().getString("abstractTradePanel.displayAsSwatch"),
-                controller.getLocaliser().getString("abstractTradePanel.displayAsQRcode") };
+        String[] indexArray = new String[] { controller.getLocaliser().getString("abstractTradePanel.displayAsQRcode"), controller.getLocaliser().getString("abstractTradePanel.displayAsSwatch") };
 
         displayUsingComboBox = new JComboBox(indexArray);
         displayUsingComboBox.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         displayUsingComboBox.setOpaque(false);
         if (displayAsSwatch) {
-            displayUsingComboBox.setSelectedIndex(0);
+            displayUsingComboBox.setSelectedIndex(1);
         } else {
             if (displayAsQRcode) {
-                displayUsingComboBox.setSelectedIndex(1);
+                displayUsingComboBox.setSelectedIndex(0);
             }
         }
 
@@ -738,15 +737,15 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 int selectedIndex = displayUsingComboBox.getSelectedIndex();
-                if (selectedIndex == 0) {
+                if (selectedIndex == 1) {
                     displayAsSwatch = true;
                     displayAsQRcode = false;
-                    log.debug("displayAsSwatch");
                     controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_SWATCH, "true");
                     controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_QR_CODE, "false");
 
+                    log.debug("displayAsSwatch");
                     controller.displayView(controller.getCurrentView());
-                } else if (selectedIndex == 1) {
+                } else if (selectedIndex == 0) {
                     displayAsSwatch = false;
                     displayAsQRcode = true;
                     controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_SWATCH, "false");
@@ -809,8 +808,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             buttonPanel.add(pasteSwatchButton, constraints2);
         }
 
-        MultiBitAction zoomAction = new MultiBitAction(controller, ImageLoader.ZOOM_ICON_FILE, "zoomAction.text",
-                "zoomAction.tooltip", "zoomAction.mnemonicKey", View.HELP_ABOUT_VIEW);
+        ZoomAction zoomAction = new ZoomAction(controller, ImageLoader.createImageIcon(ImageLoader.ZOOM_ICON_FILE), mainFrame, this);
         zoomButton = new MultiBitButton(zoomAction, controller);
         zoomButton.setText("");
         constraints2.fill = GridBagConstraints.NONE;
@@ -822,6 +820,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         constraints2.gridwidth = 1;
         constraints2.gridheight = 1;
         constraints2.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
+
         buttonPanel.add(zoomButton, constraints2);
 
         JPanel forcerQR = new JPanel();
@@ -1192,5 +1191,13 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         log.debug("toBufferedImage - 4");
         g2.dispose();
         return bufferedImage;
+    }
+
+    public boolean isDisplayAsSwatch() {
+        return displayAsSwatch;
+    }
+
+    public boolean isDisplayAsQRcode() {
+        return displayAsQRcode;
     }
 }

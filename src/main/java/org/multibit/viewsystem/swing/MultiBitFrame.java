@@ -82,7 +82,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitFrame.class);
 
-    private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.72D;
+    private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.75D;
 
     public static final String EXAMPLE_LONG_FIELD_TEXT = "TheQuickBrownFoxJumpsOverTheLazyDog";
     public static final int WIDTH_OF_LONG_FIELDS = 320;
