@@ -19,6 +19,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -156,10 +158,16 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected boolean displayAsSwatch = false;
     protected boolean displayAsQRcode = true;
 
+    protected FontMetrics fontMetrics;
+    protected int separatorSize;
+    protected int smallSeparatorSize;
+
     protected MultiBitLabel displayUsingLabel;
     protected MultiBitButton copyQRCodeImageButton;
     protected MultiBitButton pasteSwatchButton;
     protected MultiBitButton zoomButton;
+    protected JPanel qrCodeButtonPanelStent1;
+    protected JPanel qrCodeButtonPanelStent2;
 
     protected MultiBitButton sidePanelButton;
     protected boolean showSidePanel = false;
@@ -185,6 +193,13 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         this.thisAbstractTradePanel = this;
 
         setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(2 * ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));
+
+        Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
+
+        fontMetrics = this.getFontMetrics(font);
+
+        separatorSize = (int) (fontMetrics.getHeight() * 0.5);
+        smallSeparatorSize = (int) (fontMetrics.getHeight() * 0.2);
 
         localisationKeyConstantToKeyMap = new HashMap<String, String>();
         populateLocalisationMap();
@@ -488,6 +503,14 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         if (zoomButton != null) {
             zoomButton.setVisible(visible);
         }
+
+        if (qrCodeButtonPanelStent1 != null) {
+            qrCodeButtonPanelStent1.setVisible(visible);
+        }
+
+        if (qrCodeButtonPanelStent2 != null) {
+            qrCodeButtonPanelStent2.setVisible(visible);
+        }
     }
 
     class SelectionListener implements ListSelectionListener {
@@ -719,7 +742,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
      * @return The "display as" combo box
      */
     private JComboBox createDisplayAsCombo() {
-        String[] indexArray = new String[] { controller.getLocaliser().getString("abstractTradePanel.displayAsQRcode"), controller.getLocaliser().getString("abstractTradePanel.displayAsSwatch") };
+        String[] indexArray = new String[] { controller.getLocaliser().getString("abstractTradePanel.displayAsQRcode"),
+                controller.getLocaliser().getString("abstractTradePanel.displayAsSwatch") };
 
         displayUsingComboBox = new JComboBox(indexArray);
         displayUsingComboBox.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -744,16 +768,39 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                     controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_QR_CODE, "false");
 
                     log.debug("displayAsSwatch");
-                    controller.displayView(controller.getCurrentView());
+
+                    // controller.displayView(controller.getCurrentView());
                 } else if (selectedIndex == 0) {
                     displayAsSwatch = false;
                     displayAsQRcode = true;
                     controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_SWATCH, "false");
                     controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_QR_CODE, "true");
                     log.debug("displayAsQRcode");
-                    controller.displayView(controller.getCurrentView());
+                    // controller.displayView(controller.getCurrentView());
                 }
                 setDragLabelTextAndTooltip();
+                String address = null;
+                if (isReceiveBitcoin()) {
+                    if (addressTextArea != null) {
+                        address = addressTextArea.getText();
+                    }
+                } else {
+                    if (addressTextField != null) {
+                        address = addressTextField.getText();
+                    }
+                }
+                String amount = null;
+                if (amountTextField != null) {
+                    amount = amountTextField.getText();
+                }
+                String label = "";
+                if (labelTextArea != null) {
+                    label = labelTextArea.getText();
+                }
+                displaySwatch(address, amount, label);
+                qrCodeLabel.invalidate();
+                qrCodeLabel.validate();
+                qrCodeLabel.repaint();
             }
         });
 
@@ -791,7 +838,18 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         constraints2.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
         buttonPanel.add(copyQRCodeImageButton, constraints2);
 
-        int currentColumn = 2;
+        constraints2.fill = GridBagConstraints.BOTH;
+        constraints2.gridx = 2;
+        constraints2.gridy = 0;
+        constraints2.weightx = 0.1;
+        constraints2.weighty = 0.1;
+        constraints2.gridwidth = 1;
+        constraints2.gridheight = 1;
+        constraints2.anchor = GridBagConstraints.CENTER;
+        qrCodeButtonPanelStent1 = MultiBitTitledPanel.createStent(smallSeparatorSize);
+        buttonPanel.add(qrCodeButtonPanelStent1, constraints2);
+
+        int currentColumn = 3;
         if (!isReceiveBitcoin()) {
             PasteSwatchAction pasteSwatchAction = new PasteSwatchAction(controller, this,
                     ImageLoader.createImageIcon(ImageLoader.PASTE_ICON_FILE));
@@ -806,6 +864,18 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             constraints2.gridheight = 1;
             constraints2.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
             buttonPanel.add(pasteSwatchButton, constraints2);
+
+            constraints2.fill = GridBagConstraints.BOTH;
+            constraints2.gridx = currentColumn;
+            currentColumn++;
+            constraints2.gridy = 0;
+            constraints2.weightx = 0.1;
+            constraints2.weighty = 0.1;
+            constraints2.gridwidth = 1;
+            constraints2.gridheight = 1;
+            constraints2.anchor = GridBagConstraints.CENTER;
+            qrCodeButtonPanelStent2 = MultiBitTitledPanel.createStent(smallSeparatorSize);
+            buttonPanel.add(qrCodeButtonPanelStent2, constraints2);
         }
 
         ZoomAction zoomAction = new ZoomAction(controller, ImageLoader.createImageIcon(ImageLoader.ZOOM_ICON_FILE), mainFrame, this);
@@ -828,7 +898,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         constraints2.fill = GridBagConstraints.BOTH;
         constraints2.gridx = 0;
         constraints2.gridy = 0;
-        constraints2.weightx = 10;
+        constraints2.weightx = 20;
         constraints2.weighty = 1.0;
         constraints2.gridwidth = 1;
         constraints2.gridheight = 1;
@@ -1087,10 +1157,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 displaySwatch(addressString, amountString, decodedLabel);
             }
             return true;
-
-            // mainFrame.updateStatusLabel(controller.getLocaliser().getString("sendBitcoinPanel.couldNotUnderstandQRcode",
-            // new Object[] { decodedString }));
-            // return false;
         }
     }
 

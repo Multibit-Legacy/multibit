@@ -133,13 +133,6 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
 
-        Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
-
-        FontMetrics fontMetrics = this.getFontMetrics(font);
-
-        int separatorSize = (int) (fontMetrics.getHeight() * 0.5);
-        int smallSeparatorSize = (int) (fontMetrics.getHeight() * 0.2);
-
         panel.add(MultiBitTitledPanel.createStent(calculateStentWidth(), separatorSize), constraints);
 
         constraints.fill = GridBagConstraints.BOTH;

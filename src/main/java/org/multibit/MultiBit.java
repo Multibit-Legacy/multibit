@@ -219,8 +219,6 @@ public class MultiBit {
             processCommandLineURI(controller, args[0]);
         } else {
             log.debug("No Bitcoin URI provided as an argument");
-            // display the next view
-            //controller.displayNextView();
         }
 
         // Indicate to the application that startup has completed

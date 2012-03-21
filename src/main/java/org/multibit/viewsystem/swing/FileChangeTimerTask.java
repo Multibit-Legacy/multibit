@@ -20,6 +20,7 @@ import java.util.TimerTask;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,12 +54,13 @@ public class FileChangeTimerTask extends TimerTask {
      * When the timer executes, this code is run.
      */
     public void run() {
-         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+        List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopModelData : perWalletModelDataList) {
                 if (controller.getFileHandler() != null) {
-                    // see if the files have been changed by another process (non MultiBit)
+                    // see if the files have been changed by another process
+                    // (non MultiBit)
                     boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(loopModelData);
                     if (haveFilesChanged) {
                         boolean previousFilesHaveBeenChanged = loopModelData.isFilesHaveBeenChangedByAnotherProcess();
@@ -68,7 +70,7 @@ public class FileChangeTimerTask extends TimerTask {
                             controller.fireFilesHaveBeenChangedByAnotherProcess(loopModelData);
                         }
                     }
-                    
+
                     // see if they are dirty - write out if so
                     if (loopModelData.isDirty()) {
                         log.debug("Saving dirty wallet '" + loopModelData.getWalletFilename() + "'");
@@ -78,7 +80,9 @@ public class FileChangeTimerTask extends TimerTask {
             }
         }
 
-        // refresh the main screen
-        mainFrame.fireDataChanged();
+        // refresh the transactions screen
+        if (View.TRANSACTIONS_VIEW == controller.getCurrentView()) {
+            mainFrame.fireDataChanged();
+        }
     }
 }

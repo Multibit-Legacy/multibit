@@ -438,13 +438,13 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             // ignore open URI request
             log.debug("Bitcoin URI ignored because useUriText = '" + useUriText + "', showOpenUriDialogText = '"
                     + showOpenUriDialogText + "'");
-            displayView(getCurrentView());
+            //displayView(getCurrentView());
             updateStatusLabel(localiser.getString("showOpenUriView.paymentRequestIgnored"));
             return;
         }
         if (rawBitcoinURI == null) {
             log.debug("No Bitcoin URI found to handle");
-            displayView(getCurrentView());
+            //displayView(getCurrentView());
             return;
         }
         // Process the URI
