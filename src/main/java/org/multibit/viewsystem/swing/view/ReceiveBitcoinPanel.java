@@ -107,7 +107,6 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
     }
 
     protected JPanel createFormPanel(JPanel formPanel, GridBagConstraints constraints) {
-        //formPanel.setBorder(new DashedBorder(controller.getLocaliser().getLocale()));
         formPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         JPanel buttonPanel = new JPanel();
@@ -138,12 +137,9 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
 
         FontMetrics fontMetric = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         int longFieldWidth = fontMetric.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT);
-        addressTextArea = new MultiBitTextArea("", 20, 1, controller);
+        addressTextArea = new MultiBitTextArea("", 24, 1, controller);
         addressTextArea.setEditable(false);
-//        addressTextArea.setBorder(BorderFactory.createCompoundBorder(
-//                BorderFactory.createMatteBorder(0, 2, 0, 4, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR),
-//                BorderFactory.createMatteBorder(2, 0, 0, 0, Color.WHITE)));
-        addressTextArea.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + TEXTFIELD_VERTICAL_DELTA));
+        addressTextArea.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;

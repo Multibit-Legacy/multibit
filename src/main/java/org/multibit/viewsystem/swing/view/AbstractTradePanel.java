@@ -148,10 +148,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
     public final static int QR_CODE_LEFT_COLUMN = 11;
 
+    protected static final int SWATCH_WIDTH = 250;
     protected static final int QRCODE_WIDTH = 140;
     protected static final int QRCODE_HEIGHT = 140;
 
-    protected static final int TEXTFIELD_VERTICAL_DELTA = 0;
+    protected static final int TEXTFIELD_VERTICAL_DELTA = 6;
 
     private final int STENT_DELTA = 4;
 
@@ -170,6 +171,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected JPanel qrCodeButtonPanelStent1;
     protected JPanel qrCodeButtonPanelStent2;
     protected JPanel qrCodeButtonPanelStent3;
+    protected JPanel forcer2;
 
     protected MultiBitButton sidePanelButton;
     protected static boolean showSidePanel = false;
@@ -376,18 +378,48 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         JPanel dashedStent = MultiBitTitledPanel.createStent(smallSeparatorSize);
         dashedStent.setBorder(new DashedBorder(controller.getLocaliser().getLocale()));
         panel.add(dashedStent, constraints);
-
+       
         JPanel forcer1 = new JPanel();
         forcer1.setOpaque(false);
+        //forcer1.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+
+        forcer1.setMaximumSize(new Dimension(QRCODE_WIDTH, 1));
+        forcer1.setPreferredSize(new Dimension(QRCODE_WIDTH, 1));
+        forcer1.setMinimumSize(new Dimension((int) (QRCODE_WIDTH * 0.1), 1));
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 9;
         constraints.gridy = 7;
-        constraints.weightx = 10000;
+        constraints.weightx = 1000;
         constraints.weighty = 1.0;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         panel.add(forcer1, constraints);
+
+        forcer2 = new JPanel();
+        forcer2.setOpaque(false);
+        //forcer2.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+        if (displayAsQRcode) {
+            forcer2.setMaximumSize(new Dimension(QRCODE_WIDTH, 1));
+            forcer2.setPreferredSize(new Dimension(QRCODE_WIDTH, 1));
+            forcer2.setMinimumSize(new Dimension((int) (QRCODE_WIDTH * 0.5), 1));
+        } else {
+            if (displayAsSwatch) {
+                forcer2.setMaximumSize(new Dimension(SWATCH_WIDTH, 1));
+                forcer2.setPreferredSize(new Dimension(SWATCH_WIDTH, 1));
+                forcer2.setMinimumSize(new Dimension((int) (SWATCH_WIDTH * 0.5), 1));
+            }
+        }
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = QR_CODE_LEFT_COLUMN;
+        constraints.gridy = 7;
+        constraints.weightx = 10000;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 3;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        panel.add(forcer2, constraints);
     }
 
     public void displaySidePanel() {
@@ -592,9 +624,12 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         if (qrCodeButtonPanelStent2 != null) {
             qrCodeButtonPanelStent2.setVisible(visible);
         }
-        
+
         if (qrCodeButtonPanelStent3 != null) {
             qrCodeButtonPanelStent3.setVisible(visible);
+        }
+        if (forcer2 != null) {
+            forcer2.setVisible(visible);
         }
     }
 
@@ -901,11 +936,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         buttonPanel.setOpaque(false);
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = QR_CODE_LEFT_COLUMN;
+        constraints.gridx = QR_CODE_LEFT_COLUMN + 1;
         constraints.gridy = 8;
         constraints.weightx = 1.0;
         constraints.weighty = 1.0;
-        constraints.gridwidth = 5;
+        constraints.gridwidth = 4;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
         panel.add(buttonPanel, constraints);
