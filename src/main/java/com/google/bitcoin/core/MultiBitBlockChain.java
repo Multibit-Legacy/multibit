@@ -54,6 +54,8 @@ public class MultiBitBlockChain extends BlockChain {
             blockStore.setChainHead(chainHead);
 
         }
+        
+        // this synchronized probably needs to enclude the truncate
         synchronized (chainHeadLock) {
             this.chainHead = chainHead;
             //unconnectedBlocks.clear();

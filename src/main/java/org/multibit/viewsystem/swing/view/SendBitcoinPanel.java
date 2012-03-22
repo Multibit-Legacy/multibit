@@ -140,7 +140,10 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(addressLabel, constraints);
-
+        String receiveAddressText = controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel");
+        MultiBitLabel notUsedReceiveAddressLabel = new MultiBitLabel(receiveAddressText);
+        formPanel.add(MultiBitTitledPanel.createStent((int)notUsedReceiveAddressLabel.getPreferredSize().getWidth()), constraints);
+        
         int longFieldWidth = fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT);
         addressTextField = new MultiBitTextField("", 24, controller);
         addressTextField.setHorizontalAlignment(JTextField.LEADING);
@@ -203,6 +206,9 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         labelScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.DARK_BACKGROUND_COLOR));
         labelScrollPane.setOpaque(true);
         labelScrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+//        labelScrollPane.setPreferredSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
+//                .getHeight() * PREFERRED_NUMBER_OF_LABEL_ROWS));
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 3;
@@ -367,12 +373,6 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
                 throw new RuntimeException(e);
             }
         }
-
-        String showSidePanelText = controller.getModel().getUserPreference(MultiBitModel.SHOW_SIDE_PANEL);
-        if (Boolean.TRUE.toString().equals(showSidePanelText)) {
-            showSidePanel = true;
-        }
-        displaySidePanel();
     }
 
     public void setAddressBookDataByRow(AddressBookData addressBookData) {

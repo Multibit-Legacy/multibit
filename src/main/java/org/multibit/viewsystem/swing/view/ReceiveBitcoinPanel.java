@@ -197,6 +197,9 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         labelScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.DARK_BACKGROUND_COLOR));
         labelScrollPane.setOpaque(true);
         labelScrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+//        labelScrollPane.setPreferredSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
+//                .getHeight() * PREFERRED_NUMBER_OF_LABEL_ROWS));
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 3;
