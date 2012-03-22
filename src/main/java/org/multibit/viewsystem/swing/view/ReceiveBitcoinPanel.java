@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -31,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
@@ -43,12 +45,16 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyReceiveAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewReceivingAddressAction;
+import org.multibit.viewsystem.swing.action.HelpContextAction;
+import org.multibit.viewsystem.swing.action.MoreOrLessAction;
+import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
 import org.multibit.viewsystem.swing.view.components.DashedBorder;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
+import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,8 +63,6 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
     static final Logger log = LoggerFactory.getLogger(ReceiveBitcoinPanel.class);
 
     private static final long serialVersionUID = -2065108865497842662L;
-
-//    private static final String RECEIVE_BITCOIN_BIG_ICON_FILE = "/images/receive-big.jpg";
 
     public ReceiveBitcoinPanel(MultiBitFrame mainFrame, MultiBitController controller) {
         super(mainFrame, controller);
@@ -103,7 +107,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
     }
 
     protected JPanel createFormPanel(JPanel formPanel, GridBagConstraints constraints) {
-        formPanel.setBorder(new DashedBorder(controller.getLocaliser().getLocale()));
+        //formPanel.setBorder(new DashedBorder(controller.getLocaliser().getLocale()));
         formPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         JPanel buttonPanel = new JPanel();
@@ -115,105 +119,39 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         JPanel filler1 = new JPanel();
         filler1.setOpaque(false);
 
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 1;
-        constraints.weighty = 0.10;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        formPanel.add(filler1, constraints);
-
-//        ImageIcon bigIcon = ImageLoader.createImageIcon(RECEIVE_BITCOIN_BIG_ICON_FILE);
-//        constraints.fill = GridBagConstraints.BOTH;
-//        constraints.gridx = 1;
-//        constraints.gridy = 1;
-//        constraints.weightx = 0.3;
-//        constraints.weighty = 0.08;
-//        constraints.gridwidth = 1;
-//        constraints.anchor = GridBagConstraints.CENTER;
-//        formPanel.add(new JLabel(bigIcon), constraints);
-
-        MultiBitLabel helpLabel1 = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel1.message"));
-        helpLabel1.setHorizontalAlignment(JLabel.LEADING);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
-        constraints.gridy = 1;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.08;
-        constraints.gridwidth = 3;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        formPanel.add(helpLabel1, constraints);
-
-        MultiBitLabel helpLabel2 = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel2.message"));
-        helpLabel2.setHorizontalAlignment(JLabel.LEADING);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
-        constraints.gridy = 2;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.08;
-        constraints.gridwidth = 3;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        formPanel.add(helpLabel2, constraints);
-
-        MultiBitLabel helpLabel3 = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel3.message"));
-        helpLabel3.setHorizontalAlignment(JLabel.LEADING);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
-        constraints.gridy = 3;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.08;
-        constraints.gridwidth = 3;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        formPanel.add(helpLabel3, constraints);
-
-        JPanel filler2 = new JPanel();
-        filler2.setOpaque(false);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 3;
-        constraints.gridy = 0;
-        constraints.weightx = 0.05;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        formPanel.add(filler2, constraints);
+        // create stents and forcers
+        createFormPanelStentsAndForcers(formPanel,constraints);
 
         MultiBitLabel addressLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel"));
         addressLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel.tooltip"));
         addressLabel.setBorder(BorderFactory.createMatteBorder((int)(TEXTFIELD_VERTICAL_DELTA * 0.5), 0, (int)(TEXTFIELD_VERTICAL_DELTA * 0.5), 0, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
         addressLabel.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 1;
-        constraints.gridy = 4;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
         constraints.weightx = 1;
-        constraints.weighty = 0.15;
+        constraints.weighty = 0.2;
         constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(addressLabel, constraints);
-
-        JLabel filler4 = new JLabel("");
-        filler4.setOpaque(false);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 2;
-        constraints.gridy = 4;
-        constraints.weightx = 1;
-        constraints.weighty = 0.5;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        formPanel.add(filler4, constraints);
 
         FontMetrics fontMetric = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         int longFieldWidth = fontMetric.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT);
-        addressTextArea = new MultiBitTextArea("", 40, 1, controller);
+        addressTextArea = new MultiBitTextArea("", 20, 1, controller);
         addressTextArea.setEditable(false);
-        addressTextArea.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 2, 0, 4, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR),
-                BorderFactory.createMatteBorder(2, 0, 0, 0, Color.WHITE)));
+//        addressTextArea.setBorder(BorderFactory.createCompoundBorder(
+//                BorderFactory.createMatteBorder(0, 2, 0, 4, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR),
+//                BorderFactory.createMatteBorder(2, 0, 0, 0, Color.WHITE)));
         addressTextArea.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + TEXTFIELD_VERTICAL_DELTA));
-        addressTextArea.setPreferredSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + TEXTFIELD_VERTICAL_DELTA));
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 3;
-        constraints.gridy = 4;
+        constraints.gridx = 2;
+        constraints.gridy = 1;
         constraints.weightx = 0.1;
-        constraints.gridwidth = 2;
+        constraints.weightx = 0.2;
+        constraints.gridwidth = 3;
+        constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(addressTextArea, constraints);
 
@@ -222,22 +160,34 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         MultiBitButton copyAddressButton = new MultiBitButton(copyAddressAction, controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 6;
-        constraints.gridy = 4;
-        constraints.weightx = 3;
+        constraints.gridy = 1;
+        constraints.weightx = 1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(copyAddressButton, constraints);
+        
+        JPanel pasteButtonStent = MultiBitTitledPanel.createStent((int)copyAddressButton.getPreferredSize().getWidth(), (int)copyAddressButton.getPreferredSize().getHeight());
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 8;
+        constraints.gridy = 1;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.2;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        formPanel.add(pasteButtonStent, constraints);
 
         MultiBitLabel labelLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel"));
         labelLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel.tooltip"));
         labelLabel.setBorder(BorderFactory.createMatteBorder(6, 0, 0, 0, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
         labelLabel.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 1;
-        constraints.gridy = 5;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.15;
+        constraints.weighty = 1.0;
         constraints.gridwidth = 1;
+        constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_TRAILING;
         formPanel.add(labelLabel, constraints);
 
@@ -252,62 +202,120 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         labelScrollPane.setOpaque(true);
         labelScrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 3;
-        constraints.gridy = 5;
-        constraints.weightx = 0.15;
-        constraints.weighty = 0.40;
-        constraints.gridwidth = 2;
+        constraints.gridx = 2;
+        constraints.gridy = 3;
+        constraints.weightx = 0.6;
+        constraints.weighty = 2.0;
+        constraints.gridwidth = 4;
+        constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(labelScrollPane, constraints);
 
-        JPanel filler5 = new JPanel();
-        filler5.setOpaque(false);
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 5;
-        constraints.gridy = 5;
-        constraints.weightx = 1;
-        constraints.weighty = 0.4;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        formPanel.add(filler5, constraints);
+        JPanel amountPanel = new JPanel();
+        amountPanel.setOpaque(false);
+        //amountPanel.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
+        amountPanel.setLayout(new BorderLayout());
 
         MultiBitLabel amountLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel"));
         amountLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel.tooltip"));
         amountLabel.setHorizontalAlignment(JLabel.TRAILING);
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 1;
-        constraints.gridy = 6;
+        constraints.gridx = 0;
+        constraints.gridy = 5;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.2;
         constraints.gridwidth = 1;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.30;
+        constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(amountLabel, constraints);
 
-        amountTextField = new MultiBitTextField("", 20, controller);
+        amountTextField = new MultiBitTextField("", 10, controller);
         amountTextField.setHorizontalAlignment(JTextField.TRAILING);
-        amountTextField.setMinimumSize(new Dimension((int)(longFieldWidth * 0.5), getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + TEXTFIELD_VERTICAL_DELTA));
-        amountTextField.setPreferredSize(new Dimension((int)(longFieldWidth * 0.5), getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + TEXTFIELD_VERTICAL_DELTA));
-        
+        amountTextField.setMinimumSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
+                FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
+                + TEXTFIELD_VERTICAL_DELTA));
+        amountTextField.setPreferredSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
+                FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
+                + TEXTFIELD_VERTICAL_DELTA));
+        amountTextField.setMaximumSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
+                FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
+                + TEXTFIELD_VERTICAL_DELTA));
         amountTextField.addKeyListener(new QRCodeKeyListener());
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
-        constraints.gridy = 6;
-        constraints.weightx = 0.1;
-        constraints.weighty = 0.5;
+        constraints.gridx = 2;
+        constraints.gridy = 5;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        formPanel.add(amountTextField, constraints);
+        amountPanel.add(amountTextField, BorderLayout.CENTER);
+        formPanel.add(amountPanel, constraints);
 
         MultiBitLabel amountUnitLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountUnitLabel"));
-        amountUnitLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountUnitLabel.tooltip"));
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 4;
-        constraints.gridy = 6;
-        constraints.weightx = 2.0;
-        constraints.weighty = 0.30;
+        amountUnitLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        amountUnitLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel.tooltip"));
+        //amountUnitLabel.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 3;
+        constraints.gridy = 5;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        formPanel.add(amountUnitLabel, constraints);
+        amountPanel.add(amountUnitLabel, BorderLayout.EAST);
+
+        Action helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
+                "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
+                HelpContentsPanel.HELP_RECEIVING_URL);
+        MultiBitButton helpButton = new MultiBitButton(helpAction, controller);
+        helpButton.setText("");
+ 
+        String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[]{controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel1.message"),
+                controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel2.message"), controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel3.message"),
+                "\n", controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip") });
+        helpButton.setToolTipText(tooltipText);
+        helpButton.setHorizontalAlignment(SwingConstants.LEADING);
+        helpButton.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 0));
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 0;
+        constraints.gridy = 8;
+        constraints.weightx = 1;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.BELOW_BASELINE_LEADING;
+        formPanel.add(helpButton, constraints);
+        
+        SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, mainFrame, this);
+        MultiBitButton notUsedSendButton = new MultiBitButton(sendBitcoinConfirmAction, controller);
+        JPanel sendButtonStent = MultiBitTitledPanel.createStent(notUsedSendButton.getWidth(), notUsedSendButton.getWidth());
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 6;
+        constraints.gridy = 5;
+        constraints.weightx = 3;
+        constraints.weighty = 0.2;
+        constraints.gridwidth = 3;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        formPanel.add(sendButtonStent, constraints);
+
+        Action sidePanelAction = new MoreOrLessAction(controller, this);
+        sidePanelButton = new MultiBitButton(sidePanelAction, controller);
+        displaySidePanel();
+        
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 6;
+        constraints.gridy = 8;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 4;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
+        formPanel.add(sidePanelButton, constraints);
 
         // disable any new changes if another process has changed the wallet
         if (controller.getModel().getActivePerWalletModelData() != null

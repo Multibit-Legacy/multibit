@@ -80,6 +80,7 @@ import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.PasteSwatchAction;
 import org.multibit.viewsystem.swing.action.ZoomAction;
+import org.multibit.viewsystem.swing.view.components.DashedBorder;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
@@ -150,7 +151,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected static final int QRCODE_WIDTH = 140;
     protected static final int QRCODE_HEIGHT = 140;
 
-    protected static final int TEXTFIELD_VERTICAL_DELTA = 6;
+    protected static final int TEXTFIELD_VERTICAL_DELTA = 0;
 
     private final int STENT_DELTA = 4;
 
@@ -168,9 +169,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected MultiBitButton zoomButton;
     protected JPanel qrCodeButtonPanelStent1;
     protected JPanel qrCodeButtonPanelStent2;
+    protected JPanel qrCodeButtonPanelStent3;
 
     protected MultiBitButton sidePanelButton;
-    protected boolean showSidePanel = false;
+    protected static boolean showSidePanel = false;
 
     private final AbstractTradePanel thisAbstractTradePanel;
 
@@ -307,6 +309,85 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         constraints.weighty = 1.0;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createAddressesPanel(), constraints);
+    }
+
+    protected void createFormPanelStentsAndForcers(JPanel panel, GridBagConstraints constraints) {
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.weighty = 0.01;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+
+        panel.add(MultiBitTitledPanel.createStent(calculateStentWidth(), separatorSize), constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 2;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        panel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS, separatorSize),
+                constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 4;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        panel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS, separatorSize),
+                constraints);
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 5;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.01;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        panel.add(MultiBitTitledPanel.createStent(separatorSize), constraints);
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 7;
+        constraints.gridy = 0;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.01;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        panel.add(MultiBitTitledPanel.createStent(separatorSize), constraints);
+
+        constraints.fill = GridBagConstraints.VERTICAL;
+        constraints.gridx = 10;
+        constraints.gridy = 1;
+        constraints.weightx = 0.02;
+        constraints.weighty = 10000;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 8;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        JPanel dashedStent = MultiBitTitledPanel.createStent(smallSeparatorSize);
+        dashedStent.setBorder(new DashedBorder(controller.getLocaliser().getLocale()));
+        panel.add(dashedStent, constraints);
+
+        JPanel forcer1 = new JPanel();
+        forcer1.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 9;
+        constraints.gridy = 7;
+        constraints.weightx = 10000;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        panel.add(forcer1, constraints);
     }
 
     public void displaySidePanel() {
@@ -510,6 +591,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
         if (qrCodeButtonPanelStent2 != null) {
             qrCodeButtonPanelStent2.setVisible(visible);
+        }
+        
+        if (qrCodeButtonPanelStent3 != null) {
+            qrCodeButtonPanelStent3.setVisible(visible);
         }
     }
 
@@ -830,6 +915,14 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         CopyQRCodeImageAction copyQRCodeImageAction = new CopyQRCodeImageAction(controller, this,
                 ImageLoader.createImageIcon(ImageLoader.COPY_ICON_FILE));
         copyQRCodeImageButton = new MultiBitButton(copyQRCodeImageAction, controller);
+
+        PasteSwatchAction pasteSwatchAction = new PasteSwatchAction(controller, this,
+                ImageLoader.createImageIcon(ImageLoader.PASTE_ICON_FILE));
+        pasteSwatchButton = new MultiBitButton(pasteSwatchAction, controller);
+
+        qrCodeButtonPanelStent3 = MultiBitTitledPanel.createStent((int) pasteSwatchButton.getPreferredSize().getWidth(),
+                (int) pasteSwatchButton.getPreferredSize().getHeight());
+
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 1;
         constraints2.gridy = 0;
@@ -838,7 +931,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         constraints2.gridwidth = 1;
         constraints2.gridheight = 1;
         constraints2.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
-        buttonPanel.add(copyQRCodeImageButton, constraints2);
+        if (isReceiveBitcoin()) {
+            buttonPanel.add(qrCodeButtonPanelStent3, constraints2);
+        } else {
+            buttonPanel.add(copyQRCodeImageButton, constraints2);
+        }
 
         constraints2.fill = GridBagConstraints.BOTH;
         constraints2.gridx = 2;
@@ -851,41 +948,36 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         qrCodeButtonPanelStent1 = MultiBitTitledPanel.createStent(smallSeparatorSize);
         buttonPanel.add(qrCodeButtonPanelStent1, constraints2);
 
-        int currentColumn = 3;
-        if (!isReceiveBitcoin()) {
-            PasteSwatchAction pasteSwatchAction = new PasteSwatchAction(controller, this,
-                    ImageLoader.createImageIcon(ImageLoader.PASTE_ICON_FILE));
-            pasteSwatchButton = new MultiBitButton(pasteSwatchAction, controller);
-            constraints2.fill = GridBagConstraints.NONE;
-            constraints2.gridx = currentColumn;
-            currentColumn++;
-            constraints2.gridy = 0;
-            constraints2.weightx = 0.1;
-            constraints2.weighty = 1.0;
-            constraints2.gridwidth = 1;
-            constraints2.gridheight = 1;
-            constraints2.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
+        constraints2.fill = GridBagConstraints.NONE;
+        constraints2.gridx = 3;
+        constraints2.gridy = 0;
+        constraints2.weightx = 0.1;
+        constraints2.weighty = 1.0;
+        constraints2.gridwidth = 1;
+        constraints2.gridheight = 1;
+        constraints2.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
+        if (isReceiveBitcoin()) {
+            buttonPanel.add(copyQRCodeImageButton, constraints2);
+        } else {
             buttonPanel.add(pasteSwatchButton, constraints2);
-
-            constraints2.fill = GridBagConstraints.BOTH;
-            constraints2.gridx = currentColumn;
-            currentColumn++;
-            constraints2.gridy = 0;
-            constraints2.weightx = 0.1;
-            constraints2.weighty = 0.1;
-            constraints2.gridwidth = 1;
-            constraints2.gridheight = 1;
-            constraints2.anchor = GridBagConstraints.CENTER;
-            qrCodeButtonPanelStent2 = MultiBitTitledPanel.createStent(smallSeparatorSize);
-            buttonPanel.add(qrCodeButtonPanelStent2, constraints2);
         }
+
+        constraints2.fill = GridBagConstraints.BOTH;
+        constraints2.gridx = 4;
+        constraints2.gridy = 0;
+        constraints2.weightx = 0.1;
+        constraints2.weighty = 0.1;
+        constraints2.gridwidth = 1;
+        constraints2.gridheight = 1;
+        constraints2.anchor = GridBagConstraints.CENTER;
+        qrCodeButtonPanelStent2 = MultiBitTitledPanel.createStent(smallSeparatorSize);
+        buttonPanel.add(qrCodeButtonPanelStent2, constraints2);
 
         ZoomAction zoomAction = new ZoomAction(controller, ImageLoader.createImageIcon(ImageLoader.ZOOM_ICON_FILE), mainFrame, this);
         zoomButton = new MultiBitButton(zoomAction, controller);
         zoomButton.setText("");
         constraints2.fill = GridBagConstraints.NONE;
-        constraints2.gridx = currentColumn;
-        currentColumn++;
+        constraints2.gridx = 5;
         constraints2.gridy = 0;
         constraints2.weightx = 0.1;
         constraints2.weighty = 1.0;

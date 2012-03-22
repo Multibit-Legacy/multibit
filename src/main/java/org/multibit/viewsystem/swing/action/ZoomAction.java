@@ -71,7 +71,7 @@ public class ZoomAction extends AbstractAction {
 
     private AbstractTradePanel tradePanel;
 
-    private static final int HEIGHT_DELTA = 40;
+    private static final int HEIGHT_DELTA = 80;
     private static final int WIDTH_DELTA = 20;
 
     /**
