@@ -175,7 +175,6 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
 
         MultiBitLabel labelLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel"));
         labelLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel.tooltip"));
-        labelLabel.setBorder(BorderFactory.createMatteBorder(6, 0, 0, 0, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
         labelLabel.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -184,7 +183,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.weighty = 1.0;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_TRAILING;
+        constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(labelLabel, constraints);
 
         JTextField aTextField = new JTextField();
@@ -197,8 +196,6 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         labelScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.DARK_BACKGROUND_COLOR));
         labelScrollPane.setOpaque(true);
         labelScrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-//        labelScrollPane.setPreferredSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
-//                .getHeight() * PREFERRED_NUMBER_OF_LABEL_ROWS));
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
@@ -213,7 +210,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         JPanel amountPanel = new JPanel();
         amountPanel.setOpaque(false);
         amountPanel.setLayout(new BorderLayout());
-
+        //amountPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+        
         MultiBitLabel amountLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel"));
         amountLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel.tooltip"));
         amountLabel.setHorizontalAlignment(JLabel.TRAILING);
@@ -244,12 +242,12 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 5;
-        constraints.weightx = 0.05;
+        constraints.weightx = 1.0;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        amountPanel.add(amountTextField, BorderLayout.CENTER);
+        amountPanel.add(amountTextField, BorderLayout.WEST);
         formPanel.add(amountPanel, constraints);
 
         MultiBitLabel amountUnitLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountUnitLabel"));
@@ -264,7 +262,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        amountPanel.add(amountUnitLabel, BorderLayout.EAST);
+        amountPanel.add(amountUnitLabel, BorderLayout.CENTER);
 
         Action helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
                 "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
@@ -290,12 +288,12 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         
         SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, mainFrame, this);
         MultiBitButton notUsedSendButton = new MultiBitButton(sendBitcoinConfirmAction, controller);
-        JPanel sendButtonStent = MultiBitTitledPanel.createStent(notUsedSendButton.getWidth(), notUsedSendButton.getWidth());
+        JPanel sendButtonStent = MultiBitTitledPanel.createStent((int)notUsedSendButton.getPreferredSize().getWidth(), (int)notUsedSendButton.getPreferredSize().getHeight());
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 6;
         constraints.gridy = 5;
-        constraints.weightx = 3;
-        constraints.weighty = 0.2;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
         constraints.gridwidth = 3;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;

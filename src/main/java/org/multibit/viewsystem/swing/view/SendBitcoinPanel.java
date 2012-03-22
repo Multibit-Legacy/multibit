@@ -193,7 +193,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.weighty = 1.0;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_TRAILING;
+        constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(labelLabel, constraints);
 
         JTextField aTextField = new JTextField();
@@ -206,8 +206,6 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         labelScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.DARK_BACKGROUND_COLOR));
         labelScrollPane.setOpaque(true);
         labelScrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-//        labelScrollPane.setPreferredSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
-//                .getHeight() * PREFERRED_NUMBER_OF_LABEL_ROWS));
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
@@ -253,12 +251,12 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 5;
-        constraints.weightx = 0.05;
+        constraints.weightx = 1.0;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        amountPanel.add(amountTextField, BorderLayout.CENTER);
+        amountPanel.add(amountTextField, BorderLayout.WEST);
         formPanel.add(amountPanel, constraints);
 
         MultiBitLabel amountUnitLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"));
@@ -273,7 +271,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        amountPanel.add(amountUnitLabel, BorderLayout.EAST);
+        amountPanel.add(amountUnitLabel, BorderLayout.CENTER);
 
         Action helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
                 "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
@@ -304,8 +302,8 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 6;
         constraints.gridy = 5;
-        constraints.weightx = 3;
-        constraints.weighty = 0.2;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
         constraints.gridwidth = 3;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
