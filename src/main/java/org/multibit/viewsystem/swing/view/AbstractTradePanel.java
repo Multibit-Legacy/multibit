@@ -1024,10 +1024,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
         JPanel forcerQR = new JPanel();
         forcerQR.setOpaque(false);
-        constraints2.fill = GridBagConstraints.BOTH;
+        constraints2.fill = GridBagConstraints.HORIZONTAL;
         constraints2.gridx = 0;
         constraints2.gridy = 0;
-        constraints2.weightx = 20;
+        constraints2.weightx = 4.0;
         constraints2.weighty = 1.0;
         constraints2.gridwidth = 1;
         constraints2.gridheight = 1;

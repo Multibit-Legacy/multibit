@@ -186,7 +186,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 3;
-        constraints.weightx = 0.3;
+        constraints.weightx = 0.1;
         constraints.weighty = 1.0;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;

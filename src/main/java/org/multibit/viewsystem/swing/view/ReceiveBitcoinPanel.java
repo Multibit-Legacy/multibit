@@ -180,7 +180,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 3;
-        constraints.weightx = 0.3;
+        constraints.weightx = 0.1;
         constraints.weighty = 1.0;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
@@ -209,7 +209,6 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
 
         JPanel amountPanel = new JPanel();
         amountPanel.setOpaque(false);
-        //amountPanel.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
         amountPanel.setLayout(new BorderLayout());
 
         MultiBitLabel amountLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel"));
