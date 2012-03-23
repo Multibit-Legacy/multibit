@@ -45,8 +45,6 @@ import org.multibit.qrcode.BitcoinURI;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
-import org.multibit.viewsystem.swing.view.HelpContentsPanel;
-import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -208,11 +206,15 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     public void fireLanguageChanged() {
         Locale newLocale = new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE));
         localiser.setLocale(newLocale);
+        
+        int viewToDisplay = getCurrentView();
 
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.recreateAllViews(true);
         }
+        
+        setCurrentView(viewToDisplay);
         fireDataChanged();
     }
 
