@@ -51,6 +51,7 @@ import org.multibit.viewsystem.swing.action.PasteAddressAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
 import org.multibit.viewsystem.swing.view.components.DashedBorder;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
@@ -276,8 +277,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         Action helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
                 "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
                 HelpContentsPanel.HELP_SENDING_URL);
-        MultiBitButton helpButton = new MultiBitButton(helpAction, controller);
-        helpButton.setText("");
+        HelpButton helpButton = new HelpButton(helpAction, controller);
 
         String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] {
                 controller.getLocaliser().getString("sendBitcoinPanel.helpLabel1.message"),

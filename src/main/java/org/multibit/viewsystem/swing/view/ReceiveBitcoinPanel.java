@@ -50,6 +50,7 @@ import org.multibit.viewsystem.swing.action.MoreOrLessAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
 import org.multibit.viewsystem.swing.view.components.DashedBorder;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
@@ -267,8 +268,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         Action helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
                 "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
                 HelpContentsPanel.HELP_RECEIVING_URL);
-        MultiBitButton helpButton = new MultiBitButton(helpAction, controller);
-        helpButton.setText("");
+        HelpButton helpButton = new HelpButton(helpAction, controller);
  
         String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[]{controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel1.message"),
                 controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel2.message"), controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel3.message"),
