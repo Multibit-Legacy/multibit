@@ -278,6 +278,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
                 "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
                 HelpContentsPanel.HELP_SENDING_URL);
         HelpButton helpButton = new HelpButton(helpAction, controller);
+        helpButton.setText("");
 
         String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] {
                 controller.getLocaliser().getString("sendBitcoinPanel.helpLabel1.message"),

@@ -29,6 +29,8 @@ import java.awt.event.WindowEvent;
 import java.math.BigInteger;
 import java.util.Timer;
 
+import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -40,6 +42,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
@@ -55,12 +58,15 @@ import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.ExitAction;
+import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
+import org.multibit.viewsystem.swing.view.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.VerticalGradientPanel;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
@@ -117,7 +123,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         return estimatedBalanceTextLabel;
     }
 
-    private MultiBitLabel availableBalanceTextLabel;
+    private HelpButton availableBalanceTextButton;
 
     /**
      * list of wallets shown in left hand column
@@ -200,7 +206,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString4(model.getActiveWalletEstimatedBalance(),
                 true, false));
 
-        availableBalanceTextLabel.setText(controller.getLocaliser().getString(
+        availableBalanceTextButton.setText(controller.getLocaliser().getString(
                 "multiBitFrame.availableToSpend",
                 new Object[] { controller.getLocaliser()
                         .bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true, false) }));
@@ -395,14 +401,23 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(estimatedBalanceTextLabel, constraints);
 
-        availableBalanceTextLabel = new MultiBitLabel("");
-        availableBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.availableToSpend.tooltip"));
+        //availableBalanceTextButton = new MultiBitLabel("");
+        //availableBalanceTextButton.setToolTipText(controller.getLocaliser().getString("multiBitFrame.availableToSpend.tooltip"));
+        Action availableBalanceHelpAction = new HelpContextAction(controller, null,
+                "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
+                HelpContentsPanel.HELP_AVAILABLE_TO_SPEND_URL);
+        availableBalanceTextButton = new HelpButton(availableBalanceHelpAction, controller);
+
+        String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] {
+                controller.getLocaliser().getString("multiBitFrame.availableToSpend.tooltip"), "\n",
+                controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip") });
+        availableBalanceTextButton.setToolTipText(tooltipText);
 
         constraints.gridx = 4;
         constraints.gridy = 0;
         constraints.weightx = 3.0;
         constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(availableBalanceTextLabel, constraints);
+        headerPanel.add(availableBalanceTextButton, constraints);
 
         JPanel filler3 = new JPanel();
         filler3.setOpaque(false);
@@ -897,7 +912,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             // and put 'Updates stopped' message
             estimatedBalanceTextLabel.setText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.text"));
             setUpdatesStoppedTooltip(estimatedBalanceTextLabel);
-            availableBalanceTextLabel.setText("");
+            availableBalanceTextButton.setText("");
         } else {
             estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString4(
                     controller.getModel().getActiveWalletEstimatedBalance(), true, false));
@@ -905,12 +920,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
             if (model.getActiveWalletAvailableBalance() != null
                     && model.getActiveWalletAvailableBalance().equals(controller.getModel().getActiveWalletEstimatedBalance())) {
-                availableBalanceTextLabel.setText("");
+                availableBalanceTextButton.setText("");
             } else {
-                availableBalanceTextLabel.setText(controller.getLocaliser().getString(
+                availableBalanceTextButton.setText(controller.getLocaliser().getString(
                         "multiBitFrame.availableToSpend",
                         new Object[] { controller.getLocaliser().bitcoinValueToString4(model.getActiveWalletAvailableBalance(),
                                 true, false) }));
+                
+                
             }
 
             String titleText = localiser.getString("multiBitFrame.title");

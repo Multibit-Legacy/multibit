@@ -92,13 +92,14 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private RoundedPanel myRoundedPanel;
     private JPanel detailPanel;
-    private RoundedBottomPanel innerDetailPanel;
+    private RoundedBottomPanel roundedBottomPanel;
     private int detailHeight;
 
     private static int NUMBER_OF_ROWS_IN_SUMMARY_PANEL = 2;
     private static int NUMBER_OF_ROWS_IN_DETAIL_PANEL = 3;
 
-    private static int DETAIL_PANEL_INDENT = 3;
+    private static int DETAIL_PANEL_OUTER_INDENT = 3;
+    private static int DETAIL_PANEL_INNER_INDENT = 1;
 
     private boolean expanded = false;
 
@@ -114,7 +115,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private final SingleWalletPanel thisPanel;
 
     public SingleWalletPanel(PerWalletModelData perWalletModelData, MultiBitController controller, MultiBitFrame mainFrame) {
-
         this.perWalletModelData = perWalletModelData;
         this.controller = controller;
         this.mainFrame = mainFrame;
@@ -196,7 +196,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         twistyLabel.setVisible(false);
         twistyLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
-                // Toolkit.getDefaultToolkit().beep();
                 expanded = !expanded;
                 setSelected(selected);
                 thisPanel.invalidate();
@@ -310,7 +309,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         this.selected = selected;
 
         myRoundedPanel.setSelected(selected);
-        innerDetailPanel.setSelected(selected);
+        roundedBottomPanel.setSelected(selected);
         if (!perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
             if (expanded) {
                 twistyLabel.setIcon(twistyDownIcon);
@@ -339,20 +338,20 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 walletDescriptionTextField.setBorder(walletDescriptionTextFieldBorder);
                 walletDescriptionTextField.setBackground(BACKGROUND_COLOR_NORMAL);
                 myRoundedPanel.setBackground(BACKGROUND_COLOR_NORMAL);
-                innerDetailPanel.setBackground(BACKGROUND_COLOR_NORMAL);
+                roundedBottomPanel.setBackground(BACKGROUND_COLOR_NORMAL);
                 underlineBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.WHITE);
                 myRoundedPanel.repaint();
-                innerDetailPanel.repaint();
+                roundedBottomPanel.repaint();
                 twistyLabel.setVisible(true);
             } else {
                 walletDescriptionTextField.setEditable(false);
                 walletDescriptionTextField.setBorder(BorderFactory.createEmptyBorder(5, 7, 5, 5));
                 walletDescriptionTextField.setBackground(inactiveBackGroundColor);
                 myRoundedPanel.setBackground(inactiveBackGroundColor);
-                innerDetailPanel.setBackground(inactiveBackGroundColor);
+                roundedBottomPanel.setBackground(inactiveBackGroundColor);
                 underlineBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, inactiveSeparatorColor);
                 myRoundedPanel.repaint();
-                innerDetailPanel.repaint();
+                roundedBottomPanel.repaint();
                 twistyLabel.setVisible(false);
             }
         }
@@ -438,11 +437,16 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private JPanel createWalletDetailPanel() {
         underlineBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.WHITE);
 
-        innerDetailPanel = new RoundedBottomPanel(controller.getLocaliser().getLocale());
-        innerDetailPanel.setOpaque(true);
+        roundedBottomPanel = new RoundedBottomPanel(controller.getLocaliser().getLocale());
+        roundedBottomPanel.setOpaque(true);
+        roundedBottomPanel.setBackground(BACKGROUND_COLOR_NORMAL);
+        roundedBottomPanel.setLayout(new GridBagLayout());
+
+        JPanel innerDetailPanel = new JPanel();
+        innerDetailPanel.setOpaque(false);
         innerDetailPanel.setBackground(BACKGROUND_COLOR_NORMAL);
         innerDetailPanel.setLayout(new GridBagLayout());
-
+        
         GridBagConstraints constraints = new GridBagConstraints();
 
         MultiBitLabel filenameLabel = new MultiBitLabel("");
@@ -587,11 +591,11 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         outerPanel.setBackground(Color.WHITE);
         GridBagConstraints constraints2 = new GridBagConstraints();
 
-        JLabel padLeft = new JLabel();
-        padLeft.setOpaque(false);
-        padLeft.setMinimumSize(new Dimension(DETAIL_PANEL_INDENT, DETAIL_PANEL_INDENT));
-        padLeft.setPreferredSize(new Dimension(DETAIL_PANEL_INDENT, DETAIL_PANEL_INDENT));
-        padLeft.setMaximumSize(new Dimension(DETAIL_PANEL_INDENT, DETAIL_PANEL_INDENT));
+        JLabel outerPadLeft = new JLabel();
+        outerPadLeft.setOpaque(false);
+        outerPadLeft.setMinimumSize(new Dimension(DETAIL_PANEL_OUTER_INDENT, DETAIL_PANEL_OUTER_INDENT));
+        outerPadLeft.setPreferredSize(new Dimension(DETAIL_PANEL_OUTER_INDENT, DETAIL_PANEL_OUTER_INDENT));
+        outerPadLeft.setMaximumSize(new Dimension(DETAIL_PANEL_OUTER_INDENT, DETAIL_PANEL_OUTER_INDENT));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 0;
         constraints2.gridy = 0;
@@ -600,7 +604,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints2.gridwidth = 1;
         constraints2.gridheight = 1;
         constraints2.anchor = GridBagConstraints.LINE_START;
-        outerPanel.add(padLeft, constraints2);
+        outerPanel.add(outerPadLeft, constraints2);
 
         constraints2.fill = GridBagConstraints.BOTH;
         constraints2.gridx = 1;
@@ -610,13 +614,13 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints2.gridwidth = 1;
         constraints2.gridheight = 1;
         constraints2.anchor = GridBagConstraints.CENTER;
-        outerPanel.add(innerDetailPanel, constraints2);
+        outerPanel.add(roundedBottomPanel, constraints2);
 
-        JLabel padRight = new JLabel();
-        padRight.setOpaque(false);
-        padRight.setMinimumSize(new Dimension(DETAIL_PANEL_INDENT, DETAIL_PANEL_INDENT));
-        padRight.setPreferredSize(new Dimension(DETAIL_PANEL_INDENT, DETAIL_PANEL_INDENT));
-        padRight.setMaximumSize(new Dimension(DETAIL_PANEL_INDENT, DETAIL_PANEL_INDENT));
+        JLabel outerPadRight = new JLabel();
+        outerPadRight.setOpaque(false);
+        outerPadRight.setMinimumSize(new Dimension(DETAIL_PANEL_OUTER_INDENT, DETAIL_PANEL_OUTER_INDENT));
+        outerPadRight.setPreferredSize(new Dimension(DETAIL_PANEL_OUTER_INDENT, DETAIL_PANEL_OUTER_INDENT));
+        outerPadRight.setMaximumSize(new Dimension(DETAIL_PANEL_OUTER_INDENT, DETAIL_PANEL_OUTER_INDENT));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
         constraints2.gridy = 0;
@@ -625,7 +629,64 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints2.gridwidth = 1;
         constraints2.gridheight = 1;
         constraints2.anchor = GridBagConstraints.LINE_END;
-        outerPanel.add(padRight, constraints2);
+        outerPanel.add(outerPadRight, constraints2);
+
+        GridBagConstraints constraints3 = new GridBagConstraints();
+
+        JLabel innerPadLeft = new JLabel();
+        innerPadLeft.setOpaque(false);
+        innerPadLeft.setMinimumSize(new Dimension(DETAIL_PANEL_OUTER_INDENT, DETAIL_PANEL_OUTER_INDENT));
+        innerPadLeft.setPreferredSize(new Dimension(DETAIL_PANEL_OUTER_INDENT, DETAIL_PANEL_OUTER_INDENT));
+        innerPadLeft.setMaximumSize(new Dimension(DETAIL_PANEL_OUTER_INDENT, DETAIL_PANEL_OUTER_INDENT));
+        constraints3.fill = GridBagConstraints.NONE;
+        constraints3.gridx = 0;
+        constraints3.gridy = 0;
+        constraints3.weightx = 0.05;
+        constraints3.weighty = 1.0;
+        constraints3.gridwidth = 1;
+        constraints3.gridheight = 1;
+        constraints3.anchor = GridBagConstraints.LINE_START;
+        roundedBottomPanel.add(innerPadLeft, constraints3);
+
+        constraints3.fill = GridBagConstraints.BOTH;
+        constraints3.gridx = 1;
+        constraints3.gridy = 0;
+        constraints3.weightx = 0.9;
+        constraints3.weighty = 1.0;
+        constraints3.gridwidth = 1;
+        constraints3.gridheight = 1;
+        constraints3.anchor = GridBagConstraints.CENTER;
+        roundedBottomPanel.add(innerDetailPanel, constraints3);
+
+        JLabel innerPadRight = new JLabel();
+        innerPadRight.setOpaque(false);
+        innerPadRight.setMinimumSize(new Dimension(DETAIL_PANEL_INNER_INDENT, DETAIL_PANEL_INNER_INDENT));
+        innerPadRight.setPreferredSize(new Dimension(DETAIL_PANEL_INNER_INDENT, DETAIL_PANEL_INNER_INDENT));
+        innerPadRight.setMaximumSize(new Dimension(DETAIL_PANEL_INNER_INDENT, DETAIL_PANEL_INNER_INDENT));
+        constraints3.fill = GridBagConstraints.NONE;
+        constraints3.gridx = 2;
+        constraints3.gridy = 0;
+        constraints3.weightx = 0.05;
+        constraints3.weighty = 1.0;
+        constraints3.gridwidth = 1;
+        constraints3.gridheight = 1;
+        constraints3.anchor = GridBagConstraints.LINE_END;
+        roundedBottomPanel.add(innerPadRight, constraints3);
+
+        JLabel innerPadBottom = new JLabel();
+        innerPadBottom.setOpaque(false);
+        innerPadBottom.setMinimumSize(new Dimension(DETAIL_PANEL_INNER_INDENT, DETAIL_PANEL_INNER_INDENT));
+        innerPadBottom.setPreferredSize(new Dimension(DETAIL_PANEL_INNER_INDENT, DETAIL_PANEL_INNER_INDENT));
+        innerPadBottom.setMaximumSize(new Dimension(DETAIL_PANEL_INNER_INDENT, DETAIL_PANEL_INNER_INDENT));
+        constraints3.fill = GridBagConstraints.NONE;
+        constraints3.gridx = 1;
+        constraints3.gridy = 1;
+        constraints3.weightx = 0.05;
+        constraints3.weighty = 1.0;
+        constraints3.gridwidth = 1;
+        constraints3.gridheight = 1;
+        constraints3.anchor = GridBagConstraints.CENTER;
+        roundedBottomPanel.add(innerPadBottom, constraints3);
 
         return outerPanel;
     }

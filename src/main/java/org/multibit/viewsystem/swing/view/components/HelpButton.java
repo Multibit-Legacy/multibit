@@ -12,14 +12,15 @@ public class HelpButton extends MultiBitButton {
 
     public HelpButton(Action action, MultiBitController controller) {
         super(action, controller);
-        
+
         setBorderPainted(false);
         setContentAreaFilled(false);
-        setText("");
-        
-        int width = getIcon().getIconWidth();
-        int height = getIcon().getIconHeight();
-        
-        setPreferredSize(new Dimension(width, height));
+
+        if (getIcon() != null && (getText() == null || "".equals(getText()))) {
+            int width = getIcon().getIconWidth();
+            int height = getIcon().getIconHeight();
+            setPreferredSize(new Dimension(width, height));
+        }
+
     }
 }
