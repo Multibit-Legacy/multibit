@@ -35,7 +35,8 @@ public class MultiBitTitledPanel extends JPanel {
     public MultiBitTitledPanel(String title) {
         // always use GridBagLayout
         setLayout(new GridBagLayout());
-        setOpaque(false);
+        setOpaque(true);
+        setBackground(Color.WHITE);
 
         // setBorder(BorderFactory.createLineBorder(Color.CYAN));
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
@@ -43,8 +44,8 @@ public class MultiBitTitledPanel extends JPanel {
 
         FontMetrics fontMetrics = getFontMetrics(font);
 
-        int preferredHeight = fontMetrics.getHeight() * 2;
-        int spacerHeight = (int)(fontMetrics.getHeight() * 0.5);
+        int preferredHeight = (int)(fontMetrics.getHeight() * 1.618);
+        int spacerHeight = (int)(fontMetrics.getHeight() * 0.618);
 
         HorizontalGradientPanel titlePanel = new HorizontalGradientPanel();
         titlePanel.setLayout(new GridBagLayout());

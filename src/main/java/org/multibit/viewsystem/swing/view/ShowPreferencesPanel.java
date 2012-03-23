@@ -126,7 +126,6 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
                 BorderFactory.createMatteBorder(1, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
-        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
         this.controller = controller;
 
@@ -222,6 +221,9 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     private void initUI() {
         setMinimumSize(new Dimension(550, 160));
         setLayout(new BorderLayout());
+        setOpaque(true);
+        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+
         JPanel mainPanel = new JPanel();
         mainPanel.setOpaque(false);
 
@@ -282,8 +284,8 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         mainScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.DARK_BACKGROUND_COLOR));
-        mainScrollPane.setOpaque(true);
-        mainScrollPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        mainScrollPane.getViewport().setBackground(Color.WHITE);
+        mainScrollPane.getViewport().setOpaque(true);
 
         add(mainScrollPane, BorderLayout.CENTER);
 

@@ -28,8 +28,9 @@ public class VerticalGradientPanel extends JPanel {
 
     private static final long serialVersionUID = 1992327373249499976L;
 
-    protected void paintComponent(Graphics g)
-    {
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        
         Graphics2D g2d = (Graphics2D)g;
         Dimension d = this.getSize();
 

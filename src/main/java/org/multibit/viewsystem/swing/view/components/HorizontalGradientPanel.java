@@ -29,8 +29,13 @@ public class HorizontalGradientPanel extends JPanel {
 
     private static final long serialVersionUID = 1992327444249499976L;
 
-    protected void paintComponent(Graphics g)
-    {
+    public HorizontalGradientPanel() {
+        setOpaque(true);
+    }
+    
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        
         Graphics2D g2d = (Graphics2D)g;
         Dimension d = this.getSize();
 

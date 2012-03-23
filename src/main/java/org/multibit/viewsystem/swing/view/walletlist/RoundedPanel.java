@@ -62,8 +62,6 @@ public class RoundedPanel extends JPanel {
 
     public RoundedPanel(Locale locale) {
         super();
-        setOpaque(false);
-        setBackground(ColorAndFontConstants.DARK_BACKGROUND_COLOR);
         applyComponentOrientation(ComponentOrientation.getOrientation(locale));
     }
 

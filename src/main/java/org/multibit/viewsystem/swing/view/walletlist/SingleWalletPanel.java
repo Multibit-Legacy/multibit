@@ -22,7 +22,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -139,20 +138,23 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         // add contents to myRoundedPanel
         myRoundedPanel = new RoundedPanel(controller.getLocaliser().getLocale());
         myRoundedPanel.setLayout(new GridBagLayout());
+        myRoundedPanel.setOpaque(false);
         myRoundedPanel.setPreferredSize(new Dimension(normalWidth, normalHeight));
         myRoundedPanel.setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, normalHeight));
         myRoundedPanel.setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
 
-        setOpaque(false);
+        setOpaque(true);
         setFocusable(true);
-        setBackground(BACKGROUND_COLOR_NORMAL);
+        setBackground(Color.WHITE);
 
         inactiveBackGroundColor = new Color(Math.max(0, BACKGROUND_COLOR_NORMAL.getRed() - COLOR_DELTA), Math.max(0,
                 BACKGROUND_COLOR_NORMAL.getBlue() - COLOR_DELTA), Math.max(0, BACKGROUND_COLOR_NORMAL.getGreen() - COLOR_DELTA));
 
-        inactiveSeparatorColor = new Color(Math.max(0, Color.WHITE.getRed() - COLOR_DELTA), Math.max(0,
-                Color.WHITE.getBlue() - COLOR_DELTA), Math.max(0, Color.white.getGreen() - COLOR_DELTA));
+        inactiveSeparatorColor = new Color(Math.max(0, Color.WHITE.getRed() - COLOR_DELTA), Math.max(0, Color.WHITE.getBlue()
+                - COLOR_DELTA), Math.max(0, Color.white.getGreen() - COLOR_DELTA));
 
+        UIManager.put("TextField.inactiveBackground", inactiveBackGroundColor);
+        
         GridBagConstraints constraints = new GridBagConstraints();
 
         JLabel filler1 = new JLabel();
@@ -174,11 +176,12 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         walletDescriptionTextField = new MultiBitTextField(perWalletModelData.getWalletDescription(), WIDTH_OF_TEXT_FIELD,
                 controller);
         walletDescriptionTextField.setFocusable(true);
-        walletDescriptionTextField.setOpaque(false);
         walletDescriptionTextField.addActionListener(this);
         walletDescriptionTextField.addFocusListener(this);
         walletDescriptionTextFieldBorder = walletDescriptionTextField.getBorder();
-
+        walletDescriptionTextField.setOpaque(false);
+        walletDescriptionTextField.setDisabledTextColor(Color.BLACK);
+        
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 1;
@@ -326,6 +329,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             }
 
             if (selected) {
+                walletDescriptionTextField.setEnabled(true);
+                walletDescriptionTextField.setForeground(Color.BLACK);
                 if (walletDescriptionTextField.isEditable()) {
                     // already editble
                 } else {
@@ -344,8 +349,11 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 roundedBottomPanel.repaint();
                 twistyLabel.setVisible(true);
             } else {
+                walletDescriptionTextField.setEnabled(false);
+                walletDescriptionTextField.setForeground(Color.BLACK);
                 walletDescriptionTextField.setEditable(false);
-                walletDescriptionTextField.setBorder(BorderFactory.createEmptyBorder(5, 7, 5, 5));
+                Border border = BorderFactory.createEmptyBorder(5, 7, 5, 5);
+                walletDescriptionTextField.setBorder(border);
                 walletDescriptionTextField.setBackground(inactiveBackGroundColor);
                 myRoundedPanel.setBackground(inactiveBackGroundColor);
                 roundedBottomPanel.setBackground(inactiveBackGroundColor);
@@ -446,13 +454,13 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         innerDetailPanel.setOpaque(false);
         innerDetailPanel.setBackground(BACKGROUND_COLOR_NORMAL);
         innerDetailPanel.setLayout(new GridBagLayout());
-        
+
         GridBagConstraints constraints = new GridBagConstraints();
 
         MultiBitLabel filenameLabel = new MultiBitLabel("");
         filenameLabel.setOpaque(false);
         filenameLabel.setBorder(underlineBorder);
-        
+
         filenameLabel.setText(controller.getLocaliser().getString("resetTransactionsPanel.walletFilenameLabel"));
         filenameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -479,7 +487,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         MultiBitLabel walletFilenameLabel = new MultiBitLabel("");
         walletFilenameLabel.setBorder(underlineBorder);
 
-
         String walletFilename = perWalletModelData.getWalletFilename();
 
         File walletFile = new File(walletFilename);
@@ -503,7 +510,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         sendLabelLabel.setText("Type");
         sendLabelLabel.setBorder(underlineBorder);
         sendLabelLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-       
+
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 1;
@@ -529,7 +536,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         MultiBitLabel sendLabelText = new MultiBitLabel("");
         sendLabelText.setText("unencrypted");
         sendLabelText.setBorder(underlineBorder);
-        
+
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
         constraints.gridy = 1;
@@ -565,7 +572,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
         MultiBitLabel sendLabelText2 = new MultiBitLabel("");
         sendLabelText2.setText("1 (serialised)");
- 
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 2;

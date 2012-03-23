@@ -74,7 +74,8 @@ public class WalletListPanel extends JPanel implements View {
         this.controller = controller;
         this.mainFrame = mainFrame;
 
-        setBackground(SystemColor.window);
+        //setBackground(SystemColor.window);
+        //setOpaque(true);
 
         this.controller = controller;
 
@@ -144,7 +145,7 @@ public class WalletListPanel extends JPanel implements View {
         scrollPane.setViewportView(walletListPanel);
         scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.getViewport().setBackground(SystemColor.window);
+        scrollPane.getViewport().setBackground(Color.WHITE);
         scrollPane.getViewport().setOpaque(true);
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         tabPanel.add(scrollPane, BorderLayout.CENTER);
@@ -155,9 +156,6 @@ public class WalletListPanel extends JPanel implements View {
         tabbedPane.addTab(controller.getLocaliser().getString("showYourWalletsAction.text"), ImageLoader.createImageIcon(ImageLoader.YOUR_WALLETS_ICON_FILE),
                 tabPanel);
  
-//        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("showYourWalletsAction.tooltip"));
-//        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("showYourWalletsAction.mnemonicKey"));
-
         add(tabbedPane, BorderLayout.CENTER);
     }
 
