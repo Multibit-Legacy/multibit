@@ -25,10 +25,12 @@ public class MultiBitLabel extends JLabel {
     public MultiBitLabel(String labelText, int alignment) {
         super(labelText, alignment);
         setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        setOpaque(false);
     }
 
     public MultiBitLabel(String labelText) {
         super(labelText);
         setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        setOpaque(false);
     }
 }

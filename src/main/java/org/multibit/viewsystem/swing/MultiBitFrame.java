@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
@@ -30,7 +31,6 @@ import java.math.BigInteger;
 import java.util.Timer;
 
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -42,7 +42,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
@@ -68,7 +67,6 @@ import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.VerticalGradientPanel;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
 import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
 import org.simplericity.macify.eawt.ApplicationEvent;
@@ -189,7 +187,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
         });
 
-        getContentPane().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        getContentPane().setBackground(Color.WHITE);
         sizeAndCenter();
 
         viewFactory = new ViewFactory(controller, this);
@@ -213,6 +211,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         estimatedBalanceTextLabel.setFocusable(true);
         estimatedBalanceTextLabel.requestFocusInWindow();
+        
+        availableBalanceTextButton.setFocusable(false);
 
         walletsView.displayView();
 
@@ -260,7 +260,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         headerPanel = new VerticalGradientPanel();
         headerPanel.setLayout(new GridBagLayout());
-        headerPanel.setOpaque(true);
 
         JPanel balancePanel = createBalancePanel();
         constraints.fill = GridBagConstraints.BOTH;
@@ -345,7 +344,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.setMinimumSize(new Dimension(700, 55));
         headerPanel.setPreferredSize(new Dimension(700, 55));
         headerPanel.setOpaque(false);
-        headerPanel.setBackground(this.getBackground());
 
         headerPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
@@ -401,8 +399,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(estimatedBalanceTextLabel, constraints);
 
-        //availableBalanceTextButton = new MultiBitLabel("");
-        //availableBalanceTextButton.setToolTipText(controller.getLocaliser().getString("multiBitFrame.availableToSpend.tooltip"));
         Action availableBalanceHelpAction = new HelpContextAction(controller, null,
                 "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
                 HelpContentsPanel.HELP_AVAILABLE_TO_SPEND_URL);
@@ -412,6 +408,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 controller.getLocaliser().getString("multiBitFrame.availableToSpend.tooltip"), "\n",
                 controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip") });
         availableBalanceTextButton.setToolTipText(tooltipText);
+        
+        // initially invisible
+        availableBalanceTextButton.setVisible(false);
+        availableBalanceTextButton.setEnabled(false);
 
         constraints.gridx = 4;
         constraints.gridy = 0;
@@ -921,13 +921,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             if (model.getActiveWalletAvailableBalance() != null
                     && model.getActiveWalletAvailableBalance().equals(controller.getModel().getActiveWalletEstimatedBalance())) {
                 availableBalanceTextButton.setText("");
+                availableBalanceTextButton.setEnabled(false);
+                availableBalanceTextButton.setVisible(false);
+
             } else {
                 availableBalanceTextButton.setText(controller.getLocaliser().getString(
                         "multiBitFrame.availableToSpend",
                         new Object[] { controller.getLocaliser().bitcoinValueToString4(model.getActiveWalletAvailableBalance(),
                                 true, false) }));
-                
-                
+                availableBalanceTextButton.setEnabled(true);
+                availableBalanceTextButton.setVisible(true);
             }
 
             String titleText = localiser.getString("multiBitFrame.title");

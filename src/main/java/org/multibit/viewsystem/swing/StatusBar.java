@@ -86,7 +86,7 @@ import org.slf4j.LoggerFactory;
  * 2) Status messages - these are cleared after a period of time
  * 3) Synchronisatin progress bar
  */
-public class StatusBar extends JComponent {
+public class StatusBar extends JPanel {
 
     private static final long serialVersionUID = 7824115980324911080L;
 
@@ -131,7 +131,8 @@ public class StatusBar extends JComponent {
         idToZones = new HashMap<String, Component>();
         setZoneBorder(BorderFactory.createEmptyBorder());
         setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
+        setOpaque(true);
+        setBorder(BorderFactory.createMatteBorder(2, 0, 2, 0, ColorAndFontConstants.BACKGROUND_COLOR));
 
         setMaximumSize(new Dimension(A_LARGE_NUMBER_OF_PIXELS, STATUSBAR_HEIGHT));
         setMaximumSize(new Dimension(A_SMALL_NUMBER_OF_PIXELS, STATUSBAR_HEIGHT));
@@ -140,6 +141,9 @@ public class StatusBar extends JComponent {
 
         final MultiBitController finalController = controller;
         onlineLabel = new MultiBitLabel("");
+        onlineLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        onlineLabel.setOpaque(true);
+
         onlineLabel.setHorizontalAlignment(SwingConstants.CENTER);
         onlineLabel.addMouseListener(new MouseAdapter() {
             @Override
@@ -158,6 +162,8 @@ public class StatusBar extends JComponent {
         });
 
         statusLabel = new MultiBitLabel("");
+        statusLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        statusLabel.setOpaque(true);
 
         int onlineWidth = Math.max(
                 getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
@@ -170,11 +176,17 @@ public class StatusBar extends JComponent {
         syncProgressBar.setValue(0);
         syncProgressBar.setStringPainted(false);
         syncProgressBar.setVisible(false);
+        syncProgressBar.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        syncProgressBar.setOpaque(true);
+       
+        JPanel filler = new JPanel();
+        filler.setOpaque(true);
+        filler.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         
         addZone("online", onlineLabel, "" + onlineWidth, "left");
         addZone("progressBar", syncProgressBar, "" + 200, "left");
         addZone("network", statusLabel, "*", "");
-        addZone("filler2", new JPanel(), "0", "right");
+        addZone("filler2", filler, "0", "right");
 
         statusClearTimer = new java.util.Timer();
         statusClearTimer.schedule(new StatusClearTask(statusLabel), TIMER_REPEAT_TIME, TIMER_REPEAT_TIME);
@@ -278,6 +290,8 @@ public class StatusBar extends JComponent {
 
         if (zone instanceof JComponent) {
             JComponent jc = (JComponent) zone;
+            jc.setOpaque(true);
+            jc.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
             if (jc.getBorder() == null || jc.getBorder() instanceof UIResource) {
                 if (jc instanceof JLabel) {
                     if ("left".equals(tweak)) {
@@ -743,7 +757,7 @@ class LookAndFeelTweaks {
 
     private static final Logger log = LoggerFactory.getLogger(LookAndFeelTweaks.class);
 
-    public final static Border PANEL_BORDER = BorderFactory.createEmptyBorder(3, 3, 3, 3);
+    public final static Border PANEL_BORDER = BorderFactory.createMatteBorder(3, 3, 3, 3, ColorAndFontConstants.BACKGROUND_COLOR);
 
     // TODO These are never used
     public final static Border WINDOW_BORDER = BorderFactory.createEmptyBorder(4, 10, 10, 10);

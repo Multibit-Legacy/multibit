@@ -32,9 +32,9 @@ public class ColorAndFontConstants {
     public static final int MULTIBIT_DEFAULT_FONT_SIZE = ((Font)UIManager.get("Label.font")).getSize();
     public static final int MULTIBIT_LARGE_FONT_INCREASE = 2;
 
-    public static final Color BACKGROUND_COLOR = SystemColor.window;
-    public static final Color VERY_LIGHT_BACKGROUND_COLOR = SystemColor.window.brighter();
-    public static final Color DARK_BACKGROUND_COLOR = SystemColor.scrollbar;
+    public static final Color BACKGROUND_COLOR =  (Color) UIManager.get("Label.background");
+    public static final Color VERY_LIGHT_BACKGROUND_COLOR = BACKGROUND_COLOR.brighter();
+    public static final Color DARK_BACKGROUND_COLOR = BACKGROUND_COLOR.darker();
 
     public static Color SELECTION_FOREGROUND_COLOR = SystemColor.textHighlightText;
     public static Color SELECTION_BACKGROUND_COLOR = SystemColor.textHighlight;

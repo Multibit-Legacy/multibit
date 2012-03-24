@@ -30,17 +30,17 @@ public class HorizontalGradientPanel extends JPanel {
     private static final long serialVersionUID = 1992327444249499976L;
 
     public HorizontalGradientPanel() {
-        setOpaque(true);
+        setOpaque(false);
     }
     
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        
         Graphics2D g2d = (Graphics2D)g;
         Dimension d = this.getSize();
 
-        g2d.setPaint(new GradientPaint(0, 0,  ColorAndFontConstants.DARK_BACKGROUND_COLOR.brighter(),
+        g2d.setPaint(new GradientPaint(0, 0,  ColorAndFontConstants.BACKGROUND_COLOR,
             ((int)(d.width * 0.618)), 0, Color.WHITE, false));
         g2d.fillRect(0, 0, d.width , d.height);
+
+        super.paintComponent(g);
     }
 }

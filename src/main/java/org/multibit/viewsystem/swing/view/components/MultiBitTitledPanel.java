@@ -35,8 +35,8 @@ public class MultiBitTitledPanel extends JPanel {
     public MultiBitTitledPanel(String title) {
         // always use GridBagLayout
         setLayout(new GridBagLayout());
-        setOpaque(true);
-        setBackground(Color.WHITE);
+        setOpaque(false);
+        //setBackground(Color.WHITE);
 
         // setBorder(BorderFactory.createLineBorder(Color.CYAN));
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
@@ -141,7 +141,6 @@ public class MultiBitTitledPanel extends JPanel {
         filler1.setMinimumSize(new Dimension(LEFT_INDENT, height));
         filler1.setPreferredSize(new Dimension(LEFT_INDENT, height));
         filler1.setMaximumSize(new Dimension(LEFT_INDENT, height));
-        //filler1.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
 
         return filler1;
     }
@@ -157,9 +156,8 @@ public class MultiBitTitledPanel extends JPanel {
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         JPanel indent = MultiBitTitledPanel.getIndentPanel(1);
-        //indent.setBorder(BorderFactory.createLineBorder(Color.CYAN));
         panel.add(indent, constraints);
-
+ 
         MultiBitLabel label = new MultiBitLabel(text);
         label.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
         constraints.fill = GridBagConstraints.NONE;
