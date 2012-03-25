@@ -176,6 +176,52 @@ public class FileHandler {
         return;
     }
 
+    /**
+     * delete the wallet and the wallet info file
+     * 
+     * @param perWalletModelData
+     */
+    public void deleteWalletAndWalletInfo(PerWalletModelData perWalletModelData) {
+        if (perWalletModelData == null) {
+            // nothing to do
+            return;
+        }
+        
+        File walletFile = new File(perWalletModelData.getWalletFilename());
+        WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+        String walletInfoFilenameAsString = WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename());
+        File walletInfoFile = new File(walletInfoFilenameAsString);
+               
+        synchronized (walletInfo) {
+            // see if either of the files are readonly - abort
+            if (!walletFile.canWrite() || !walletInfoFile.canWrite()) {
+                throw new DeleteWalletException(controller.getLocaliser().getString("deleteWalletException.walletWasReadonly"));
+            }
+            
+            // delete the wallet info file first, then the wallet
+            boolean success = walletInfoFile.delete();
+            if (success) {
+                success = walletFile.delete();
+                if (success) {
+                    // wallet file deleted ok
+                    walletInfo.setDeleted(true);
+                } else {
+                    throw new DeleteWalletException(controller.getLocaliser().getString("deleteWalletException.genericCouldNotDelete",
+                            new String[]{perWalletModelData.getWalletFilename()}));                        
+                }
+            } else {
+                throw new DeleteWalletException(controller.getLocaliser().getString("deleteWalletException.couldNotDeleteWalletInfo",
+                        new String[] {perWalletModelData.getWalletFilename()}));    
+            }
+        }
+        
+        // if the wallet was deleted, delete the model data
+        if (walletInfo.isDeleted()) {
+                controller.getModel().remove(perWalletModelData);
+        }
+        return;
+    }
+
     public boolean haveFilesChanged(PerWalletModelData perWalletModelData) {
         if (perWalletModelData == null || perWalletModelData.getWalletFilename() == null) {
             return false;

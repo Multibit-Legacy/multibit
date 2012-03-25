@@ -935,8 +935,8 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         this.selectedFont = selectedFont;
 
         fontNameTextLabel.setText(selectedFont.getFamily());
-        setFontStyleText(selectedFont.getStyle());
         fontSizeTextLabel.setText("" + selectedFont.getSize());
+        setFontStyleText(selectedFont.getStyle());
 
         invalidate();
         validate();

@@ -104,7 +104,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private MultiBitController controller;
     private MultiBitModel model;
     private Localiser localiser;
-    
+
     private String helpContext;
 
     public String getHelpContext() {
@@ -211,7 +211,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         estimatedBalanceTextLabel.setFocusable(true);
         estimatedBalanceTextLabel.requestFocusInWindow();
-        
+
         availableBalanceTextButton.setFocusable(false);
 
         walletsView.displayView();
@@ -251,6 +251,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         Container contentPane = getContentPane();
         contentPane.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
+        GridBagConstraints constraints2 = new GridBagConstraints();
 
         // set the application icon
         ImageIcon imageIcon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_ICON_FILE);
@@ -262,15 +263,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.setLayout(new GridBagLayout());
 
         JPanel balancePanel = createBalancePanel();
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1.0;
-        constraints.weighty = 0.01;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints2.fill = GridBagConstraints.BOTH;
+        constraints2.gridx = 0;
+        constraints2.gridy = 0;
+        constraints2.gridwidth = 1;
+        constraints2.gridheight = 1;
+        constraints2.weightx = 1.0;
+        constraints2.weighty = 1.0;
+        constraints2.anchor = GridBagConstraints.LINE_START;
 
-        headerPanel.add(balancePanel, constraints);
+        headerPanel.add(balancePanel, constraints2);
 
         addMenuBar(constraints, contentPane);
 
@@ -279,7 +281,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridy = 0;
         constraints.gridwidth = 2;
         constraints.weightx = 1.0;
-        constraints.weighty = 0.01;
+        constraints.weighty = 1.0;
         constraints.anchor = GridBagConstraints.LINE_START;
         contentPane.add(headerPanel, constraints);
 
@@ -293,19 +295,22 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         JPanel sendBitcoinOutlinePanel = new JPanel(new BorderLayout());
         View sendBitcoinView = viewFactory.getView(View.SEND_BITCOIN_VIEW);
         sendBitcoinOutlinePanel.add((JPanel) sendBitcoinView, BorderLayout.CENTER);
-        viewTabbedPane.addTab(sendBitcoinView.getViewTitle(), sendBitcoinView.getViewIcon(),  sendBitcoinView.getViewTooltip(), sendBitcoinOutlinePanel);
+        viewTabbedPane.addTab(sendBitcoinView.getViewTitle(), sendBitcoinView.getViewIcon(), sendBitcoinView.getViewTooltip(),
+                sendBitcoinOutlinePanel);
 
         // add the receive bitcoin tab
         JPanel receiveBitcoinOutlinePanel = new JPanel(new BorderLayout());
         View receiveBitcoinView = viewFactory.getView(View.RECEIVE_BITCOIN_VIEW);
         receiveBitcoinOutlinePanel.add((JPanel) receiveBitcoinView, BorderLayout.CENTER);
-        viewTabbedPane.addTab(receiveBitcoinView.getViewTitle(), receiveBitcoinView.getViewIcon(), receiveBitcoinView.getViewTooltip(), receiveBitcoinOutlinePanel);
+        viewTabbedPane.addTab(receiveBitcoinView.getViewTitle(), receiveBitcoinView.getViewIcon(),
+                receiveBitcoinView.getViewTooltip(), receiveBitcoinOutlinePanel);
 
         // add the transactions tab
         JPanel transactionsOutlinePanel = new JPanel(new BorderLayout());
         View transactionsView = viewFactory.getView(View.TRANSACTIONS_VIEW);
         transactionsOutlinePanel.add((JPanel) transactionsView, BorderLayout.CENTER);
-        viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsView.getViewTooltip(), transactionsOutlinePanel);
+        viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsView.getViewTooltip(),
+                transactionsOutlinePanel);
 
         // Create a split pane with the two scroll panes in it.
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (JPanel) walletsView, viewTabbedPane);
@@ -314,8 +319,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 2;
+        constraints.gridheight = 1;
         constraints.weightx = 1.0;
-        constraints.weighty = 1;
+        constraints.weighty = 1000.0;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         contentPane.add(splitPane, constraints);
@@ -333,7 +339,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridx = 0;
         constraints.gridy = 2;
         constraints.weightx = 1;
-        constraints.weighty = 0.01;
+        constraints.weighty = 0.1;
         constraints.gridwidth = 2;
         contentPane.add(statusBar, constraints);
     }
@@ -399,16 +405,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(estimatedBalanceTextLabel, constraints);
 
-        Action availableBalanceHelpAction = new HelpContextAction(controller, null,
-                "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
-                HelpContentsPanel.HELP_AVAILABLE_TO_SPEND_URL);
+        Action availableBalanceHelpAction = new HelpContextAction(controller, null, "multiBitFrame.helpMenuText",
+                "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText", HelpContentsPanel.HELP_AVAILABLE_TO_SPEND_URL);
         availableBalanceTextButton = new HelpButton(availableBalanceHelpAction, controller);
 
         String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] {
                 controller.getLocaliser().getString("multiBitFrame.availableToSpend.tooltip"), "\n",
                 controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip") });
         availableBalanceTextButton.setToolTipText(tooltipText);
-        
+
         // initially invisible
         availableBalanceTextButton.setVisible(false);
         availableBalanceTextButton.setEnabled(false);
@@ -710,16 +715,18 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 if (viewTabbedPane.getTabCount() > 0) {
                     for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
                         JPanel tabComponent = (JPanel) viewTabbedPane.getComponentAt(i);
-                        Component[] childComponents = tabComponent.getComponents();
-                        String tabTitle = null;
-                        if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
-                            tabTitle = ((View) childComponents[0]).getViewTitle();
-                        }
-                        if (viewTitle != null && viewTitle.equals(tabTitle)) {
-                            foundTab = true;
-                            ((JPanel) viewTabbedPane.getComponentAt(i)).removeAll();
-                            ((JPanel) viewTabbedPane.getComponentAt(i)).add((JPanel) nextViewFinal);
-                            viewTabbedPane.setSelectedIndex(i);
+                        if (tabComponent != null) {
+                            Component[] childComponents = tabComponent.getComponents();
+                            String tabTitle = null;
+                            if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
+                                tabTitle = ((View) childComponents[0]).getViewTitle();
+                            }
+                            if (viewTitle != null && viewTitle.equals(tabTitle)) {
+                                foundTab = true;
+                                ((JPanel) viewTabbedPane.getComponentAt(i)).removeAll();
+                                ((JPanel) viewTabbedPane.getComponentAt(i)).add((JPanel) nextViewFinal);
+                                viewTabbedPane.setSelectedIndex(i);
+                            }
                         }
                     }
                 }
@@ -727,7 +734,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 if (!foundTab) {
                     JPanel tabOutlinePanel = new JPanel(new BorderLayout());
                     tabOutlinePanel.add((JPanel) nextViewFinal, BorderLayout.CENTER);
-                    viewTabbedPane.addTab(nextViewFinal.getViewTitle(), nextViewFinal.getViewIcon(), nextViewFinal.getViewTooltip(), tabOutlinePanel, true);
+                    viewTabbedPane.addTab(nextViewFinal.getViewTitle(), nextViewFinal.getViewIcon(),
+                            nextViewFinal.getViewTooltip(), tabOutlinePanel, true);
                     viewTabbedPane.setSelectedComponent(tabOutlinePanel);
                 }
 

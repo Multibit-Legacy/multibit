@@ -28,8 +28,13 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.model.WalletInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Wallet;
 
 public class FileHandlerTest extends TestCase {
 
@@ -42,6 +47,8 @@ public class FileHandlerTest extends TestCase {
 
     public static final String WALLET_TEST2 = "test2.wallet";
     public static final BigInteger WALLET_TEST2_BALANCE = new BigInteger("2000000");;
+
+    public static final String TEST_CREATE_AND_DELETE1_WALLET_PREFIX = "testCreateAndDelete1";
 
     @Test
     public void testLoadTest1() throws IOException {
@@ -98,5 +105,53 @@ public class FileHandlerTest extends TestCase {
         assertNotNull(perWalletModelData);
 
         assertEquals(WALLET_TEST2_BALANCE, perWalletModelData.getWallet().getBalance());
+    }
+    
+    @Test
+    public void testCreateAndDeleteWallet1() throws IOException {
+        MultiBitController controller = new MultiBitController();
+        Localiser localiser = new Localiser();
+        MultiBitModel model = new MultiBitModel(controller);
+
+        controller.setLocaliser(localiser);
+        controller.setModel(model);
+
+        FileHandler fileHandler = new FileHandler(controller);
+
+        File temporaryWallet = File.createTempFile(TEST_CREATE_AND_DELETE1_WALLET_PREFIX, ".wallet");
+        temporaryWallet.deleteOnExit();
+        
+        String newWalletFilename = temporaryWallet.getAbsolutePath();
+
+        // create a new wallet
+        Wallet newWallet = new Wallet(NetworkParameters.prodNet());
+        ECKey newKey = new ECKey();
+        newWallet.keychain.add(newKey);
+        PerWalletModelData perWalletModelData = new PerWalletModelData();
+        perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename));
+        perWalletModelData.setWallet(newWallet);
+        perWalletModelData.setWalletFilename(newWalletFilename);
+        perWalletModelData.setWalletDescription(TEST_CREATE_AND_DELETE1_WALLET_PREFIX);
+        controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
+
+        // check the wallet and wallet info file exists
+        File newWalletFile = new File(newWalletFilename);
+        assertTrue(newWalletFile.exists());
+        
+        String walletInfoFileAsString = WalletInfo.createWalletInfoFilename(newWalletFilename);
+
+        File walletInfoFile = new File(walletInfoFileAsString);
+        assertTrue(walletInfoFile.exists());
+ 
+        // check wallet can be loaded
+        PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
+        assertNotNull(perWalletModelDataReborn);
+        assertEquals(BigInteger.ZERO, perWalletModelDataReborn.getWallet().getBalance());
+        assertEquals(TEST_CREATE_AND_DELETE1_WALLET_PREFIX, perWalletModelDataReborn.getWalletDescription());
+        
+        // delete wallet
+        fileHandler.deleteWalletAndWalletInfo(perWalletModelDataReborn);
+        assertTrue(!newWalletFile.exists());
+        assertTrue(!walletInfoFile.exists());
     }
 }

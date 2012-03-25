@@ -48,6 +48,11 @@ public interface View {
     public static final int DEFAULT_VIEW = TRANSACTIONS_VIEW;
    
     /**
+     * load any required model data
+     */
+ //   public void loadForm();
+    
+    /**
      * display the view
      */
     public void displayView();

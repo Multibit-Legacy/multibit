@@ -70,6 +70,12 @@ public class WalletInfo {
     private String walletVersion;
 
     private Properties walletPreferences;
+    
+    /**
+     * flag indicated that the wallet has been deleted and should not be used
+     */
+    private boolean deleted = false;
+    
 
     /**
      * 
@@ -579,5 +585,13 @@ public class WalletInfo {
             // should not happen - UTF-8 is a valid encoding
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

@@ -48,7 +48,10 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.qrcode.SwatchGenerator;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>JFontChooser</code> class is a swing component for font selection.
@@ -67,11 +70,14 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
  * <pre>
  **/
 public class JFontChooser extends JComponent {
-    private static final long serialVersionUID = 7081944796802758452L;
     
+    private static final Logger log = LoggerFactory.getLogger(JFontChooser.class);
+
+    private static final long serialVersionUID = 7081944796802758452L;
+
     private static final int WIDTH_DELTA = 240;
     private static final int HEIGHT_DELTA = 120;
-    
+
     // class variables
     /**
      * Return value from <code>showDialog()</code>.
@@ -94,7 +100,8 @@ public class JFontChooser extends JComponent {
     private static final Font DEFAULT_SELECTED_FONT = new Font("Serif", Font.PLAIN, 13);
     private static Font defaultFont = new Font("Dialog", Font.PLAIN, 13);
     private static final int[] FONT_STYLE_CODES = { Font.PLAIN, Font.BOLD, Font.ITALIC, Font.BOLD | Font.ITALIC };
-    private static final String[] DEFAULT_FONT_SIZE_STRINGS = {"10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"};
+    private static final String[] DEFAULT_FONT_SIZE_STRINGS = { "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
+            "21", "22", "23", "24" };
 
     // instance variables
     protected int dialogResultValue = ERROR_OPTION;
@@ -113,7 +120,7 @@ public class JFontChooser extends JComponent {
     private JPanel fontSizePanel = null;
     private JPanel samplePanel = null;
     private JTextField sampleText = null;
-    
+
     private MultiBitController controller;
     private FontMetrics fontMetrics;
 
@@ -125,15 +132,14 @@ public class JFontChooser extends JComponent {
         this.fontSizeStrings = DEFAULT_FONT_SIZE_STRINGS;
 
         defaultFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
-        
+
         fontMetrics = getFontMetrics(defaultFont);
-        
+
         int minimumWidth = fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT) + WIDTH_DELTA;
         int minimumHeight = 12 * fontMetrics.getHeight() + HEIGHT_DELTA;
         setMinimumSize(new Dimension(minimumWidth, minimumHeight));
         setPreferredSize(new Dimension(minimumWidth, minimumHeight));
-               
-        
+
         JPanel selectPanel = new JPanel();
         selectPanel.setLayout(new BoxLayout(selectPanel, BoxLayout.X_AXIS));
         selectPanel.add(getFontFamilyPanel());
@@ -262,14 +268,13 @@ public class JFontChooser extends JComponent {
     public int getSelectedFontSize() {
         int fontSize = 1;
         String fontSizeString = getFontSizeTextField().getText();
-        while (true) {
-            try {
-                fontSize = Integer.parseInt(fontSizeString);
-                break;
-            } catch (NumberFormatException e) {
-                fontSizeString = (String) getFontSizeList().getSelectedValue();
-                getFontSizeTextField().setText(fontSizeString);
-            }
+        log.debug("fontSize (A) = " + fontSizeString);
+        try {
+            fontSize = Integer.parseInt(fontSizeString);
+        } catch (NumberFormatException e) {
+            log.debug("fontSize (B) = " + fontSizeString);
+            fontSizeString = (String) getFontSizeList().getSelectedValue();
+            getFontSizeTextField().setText(fontSizeString);
         }
 
         return fontSize;
@@ -668,7 +673,8 @@ public class JFontChooser extends JComponent {
             p.add(scrollPane, BorderLayout.CENTER);
 
             MultiBitLabel label = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontSize"));
-            Dimension requiredSize = new Dimension(fontMetrics.stringWidth(controller.getLocaliser().getString("fontChooser.fontSize")), fontMetrics.getHeight());
+            Dimension requiredSize = new Dimension(fontMetrics.stringWidth(controller.getLocaliser().getString(
+                    "fontChooser.fontSize")), fontMetrics.getHeight());
             label.setMinimumSize(requiredSize);
             label.setMaximumSize(requiredSize);
             label.setPreferredSize(requiredSize);
@@ -685,7 +691,8 @@ public class JFontChooser extends JComponent {
 
     protected JPanel getSamplePanel() {
         if (samplePanel == null) {
-            TitledBorder titledBorder = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), controller.getLocaliser().getString("fontChooser.sampleText"));
+            TitledBorder titledBorder = BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), controller
+                    .getLocaliser().getString("fontChooser.sampleText"));
             Border empty = BorderFactory.createEmptyBorder(5, 10, 10, 10);
             Border border = BorderFactory.createCompoundBorder(titledBorder, empty);
 

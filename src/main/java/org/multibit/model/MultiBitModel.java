@@ -364,6 +364,29 @@ public class MultiBitModel {
     }
 
     /**
+     * Remove the specified perWalletModelData
+     * Note that this does not remove any backing wallet or wallet info files
+     * 
+     * Removal is determined by matching the wallet filename
+     * Use FileHandler to do that
+     * 
+     * @param perWalletModeData
+     */
+    public void remove(PerWalletModelData perWalletModelDataToRemove) {
+        if (perWalletModelDataToRemove == null) {
+            return;
+        }
+        if (perWalletModelDataList != null) {
+            for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
+                if (perWalletModelDataToRemove.getWalletFilename().equals(loopPerWalletModelData.getWalletFilename())) {
+                    perWalletModelDataList.remove(loopPerWalletModelData);
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
      * set a wallet description, given a wallet filename
      * 
      * @param wallet

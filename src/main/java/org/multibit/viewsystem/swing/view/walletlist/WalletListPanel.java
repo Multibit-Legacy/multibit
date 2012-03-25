@@ -73,10 +73,6 @@ public class WalletListPanel extends JPanel implements View {
     public WalletListPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
-
-        //setBackground(SystemColor.window);
-        //setOpaque(true);
-
         this.controller = controller;
 
         walletPanels = new ArrayList<SingleWalletPanel>();
@@ -291,7 +287,6 @@ public class WalletListPanel extends JPanel implements View {
                             .setActiveWalletByFilename(selectedWalletPanel.getPerWalletModelData().getWalletFilename());
                     selectWalletPanelByFilename(selectedWalletPanel.getPerWalletModelData().getWalletFilename());
 
-                    //controller.fireRecreateAllViews();
                     controller.fireDataChanged();
                     controller.displayView(controller.getCurrentView());
                 }

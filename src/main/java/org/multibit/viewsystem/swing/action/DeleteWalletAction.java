@@ -27,12 +27,15 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.file.DeleteWalletException;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletInfoException;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.DeleteWalletConfirmDialog;
+import org.multibit.viewsystem.swing.view.SendBitcoinConfirmDialog;
 import org.multibit.viewsystem.swing.view.WalletFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,15 +69,15 @@ public class DeleteWalletAction extends AbstractAction {
     }
 
     /**
-     * delete a wallet
+     * prompt for deletion of a wallet
      */
     public void actionPerformed(ActionEvent e) {
         mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         setEnabled(false);
-
+  
         try {
-            // TODO
-            JOptionPane.showMessageDialog(mainFrame, "Delete wallet - TODO", "Delete wallet - TODO", JOptionPane.INFORMATION_MESSAGE);
+            DeleteWalletConfirmDialog deleteWalletConfirmDialog = new DeleteWalletConfirmDialog(controller, mainFrame);
+            deleteWalletConfirmDialog.setVisible(true);
         } finally {
             setEnabled(true);
             mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
