@@ -132,7 +132,7 @@ public class WalletListPanel extends JPanel implements View {
 
         this.removeAll();
         
-        setBackground(Color.WHITE);
+        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
         setLayout(new BorderLayout());
 

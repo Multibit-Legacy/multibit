@@ -189,7 +189,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
         });
 
-        getContentPane().setBackground(Color.WHITE);
+        getContentPane().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         sizeAndCenter();
 
         viewFactory = new ViewFactory(controller, this);
@@ -292,7 +292,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Create the tabbedpane that holds the views
         viewTabbedPane = new MultiBitTabbedPane(controller);
-        viewTabbedPane.setBackground(Color.WHITE);
+        viewTabbedPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
         // add the send bitcoin tab
         JPanel sendBitcoinOutlinePanel = new JPanel(new BorderLayout());
@@ -319,7 +319,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (JPanel) walletsView, viewTabbedPane);
         splitPane.setOneTouchExpandable(false);
         splitPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SystemColor.windowBorder));
-        splitPane.setBackground(Color.WHITE);
+        splitPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 1;
