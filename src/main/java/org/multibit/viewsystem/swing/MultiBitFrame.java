@@ -24,6 +24,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -31,6 +32,7 @@ import java.math.BigInteger;
 import java.util.Timer;
 
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -290,6 +292,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Create the tabbedpane that holds the views
         viewTabbedPane = new MultiBitTabbedPane(controller);
+        viewTabbedPane.setBackground(Color.WHITE);
 
         // add the send bitcoin tab
         JPanel sendBitcoinOutlinePanel = new JPanel(new BorderLayout());
@@ -315,6 +318,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // Create a split pane with the two scroll panes in it.
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (JPanel) walletsView, viewTabbedPane);
         splitPane.setOneTouchExpandable(false);
+        splitPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SystemColor.windowBorder));
+        splitPane.setBackground(Color.WHITE);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 1;

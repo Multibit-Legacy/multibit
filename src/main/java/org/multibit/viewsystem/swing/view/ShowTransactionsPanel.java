@@ -354,7 +354,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : ColorAndFontConstants.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -438,7 +438,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : ColorAndFontConstants.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -483,7 +483,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : ColorAndFontConstants.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -510,7 +510,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : ColorAndFontConstants.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }

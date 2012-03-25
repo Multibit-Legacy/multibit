@@ -147,7 +147,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
         setOpaque(true);
         setFocusable(true);
-        setBackground(Color.WHITE);
+        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         inactiveBackGroundColor = new Color(Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getRed() - COLOR_DELTA), Math.max(0,
                 ColorAndFontConstants.BACKGROUND_COLOR.getBlue() - COLOR_DELTA), Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getGreen() - COLOR_DELTA));

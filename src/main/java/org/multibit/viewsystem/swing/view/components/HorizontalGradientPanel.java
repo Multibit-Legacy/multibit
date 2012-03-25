@@ -15,7 +15,6 @@
  */
 package org.multibit.viewsystem.swing.view.components;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
@@ -38,7 +37,7 @@ public class HorizontalGradientPanel extends JPanel {
         Dimension d = this.getSize();
 
         g2d.setPaint(new GradientPaint(0, 0,  ColorAndFontConstants.BACKGROUND_COLOR,
-            ((int)(d.width * 0.618)), 0, Color.WHITE, false));
+            ((int)(d.width * 0.618)), 0, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR, false));
         g2d.fillRect(0, 0, d.width , d.height);
 
         super.paintComponent(g);

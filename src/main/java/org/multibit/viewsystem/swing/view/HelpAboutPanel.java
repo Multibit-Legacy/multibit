@@ -19,7 +19,6 @@ import java.awt.ComponentOrientation;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -53,8 +52,8 @@ public class HelpAboutPanel extends JPanel implements View {
      * Creates a new {@link HelpAboutPanel}.
      */
     public HelpAboutPanel(MultiBitController controller, MultiBitFrame mainFrame) {        
-        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0), BorderFactory.createMatteBorder(1, 0, 1, 0,  ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
-        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        //setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0), BorderFactory.createMatteBorder(1, 0, 1, 0,  ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
+        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         this.controller = controller;
 
         String versionNumber = controller.getLocaliser().getVersionNumber();

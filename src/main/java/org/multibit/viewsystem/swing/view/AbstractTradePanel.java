@@ -54,7 +54,6 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.TransferHandler;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -276,7 +275,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
     protected void initUI() {
         setMinimumSize(new Dimension(550, 220));
-        setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
+        //setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
         setLayout(new GridBagLayout());
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
@@ -507,7 +506,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected JPanel createAddressesHeaderPanel() {
         JPanel addressesHeaderPanel = new VerticalGradientPanel();
 
-        addressesHeaderPanel.setBorder(BorderFactory.createMatteBorder(0,0,1,0, SystemColor.windowBorder));
+        addressesHeaderPanel.setBorder(BorderFactory.createMatteBorder(1,0,0,0, SystemColor.windowBorder));
         addressesHeaderPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -564,7 +563,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         addressPanel.setOpaque(true);
         addressPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
-        addressPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
+        //addressPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
 
         // get the stored previously selected receive address
 
@@ -624,7 +623,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
-        scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker()));
+        //scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker()));
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -746,7 +745,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : ColorAndFontConstants.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -771,7 +770,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : ColorAndFontConstants.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -796,7 +795,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : ColorAndFontConstants.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -821,7 +820,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? Color.WHITE : ColorAndFontConstants.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }

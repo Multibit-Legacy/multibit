@@ -21,7 +21,6 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -60,9 +59,9 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
     public ResetTransactionsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
 
-        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
-                BorderFactory.createMatteBorder(1, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
-        setBackground(Color.WHITE);
+        //setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
+        //        BorderFactory.createMatteBorder(1, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
+        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         this.controller = controller;
 
@@ -127,7 +126,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         "resetTransactionsPanel.explainTitle"));
         
         explainPanel.setOpaque(false);
-        explainPanel.setBackground(Color.WHITE);
+        //explainPanel.setBackground(Color.WHITE);
 
         GridBagConstraints constraints = new GridBagConstraints();
 

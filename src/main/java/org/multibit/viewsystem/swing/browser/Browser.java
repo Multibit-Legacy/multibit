@@ -27,6 +27,7 @@ package org.multibit.viewsystem.swing.browser;
  */
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.HelpContentsPanel;
 
@@ -58,6 +59,7 @@ public class Browser extends javax.swing.JEditorPane implements PropertyChangeLi
         loadingMessage = controller.getLocaliser().getString("browser.loadingMessage");
         setEditable(false);
         addPropertyChangeListener(this);
+        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         visit(currentHref);
     }

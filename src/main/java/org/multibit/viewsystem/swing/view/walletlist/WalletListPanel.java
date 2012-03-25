@@ -37,6 +37,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.MultiBitTabbedPane;
 import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
@@ -130,6 +131,8 @@ public class WalletListPanel extends JPanel implements View {
         log.debug(" initUI called");
 
         this.removeAll();
+        
+        setBackground(Color.WHITE);
 
         setLayout(new BorderLayout());
 
@@ -141,7 +144,7 @@ public class WalletListPanel extends JPanel implements View {
         scrollPane.setViewportView(walletListPanel);
         scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.getViewport().setBackground(Color.WHITE);
+        scrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         scrollPane.getViewport().setOpaque(true);
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         tabPanel.add(scrollPane, BorderLayout.CENTER);
@@ -159,7 +162,7 @@ public class WalletListPanel extends JPanel implements View {
         walletListPanel = new JPanel();
         walletListPanel.setLayout(new GridBagLayout());
         walletListPanel.setOpaque(true);
-        walletListPanel.setBackground(Color.WHITE);
+        walletListPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         walletListPanel.setBorder(BorderFactory.createEmptyBorder());
         walletListPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
@@ -214,8 +217,9 @@ public class WalletListPanel extends JPanel implements View {
 
         GridBagConstraints constraints = new GridBagConstraints();
         
-        buttonPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
-                BorderFactory.createMatteBorder(1, 0, 1, 0, SystemColor.windowBorder)));
+        buttonPanel.setBorder(BorderFactory.createCompoundBorder( BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder),
+                BorderFactory.createEmptyBorder(2, 0, 2, 0)
+               ));
         buttonPanel.setOpaque(true);
         buttonPanel.setBackground(SystemColor.window);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));       

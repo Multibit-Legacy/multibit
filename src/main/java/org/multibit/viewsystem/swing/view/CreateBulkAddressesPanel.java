@@ -69,9 +69,9 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
     public CreateBulkAddressesPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
 
-        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
-                BorderFactory.createMatteBorder(1, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
-        setBackground(Color.WHITE);
+        //setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
+        //        BorderFactory.createMatteBorder(1, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
+        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         this.controller = controller;
 
@@ -142,7 +142,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         "createBulkAddressesPanel.filename.title"));
         
         filenamePanel.setOpaque(false);
-        filenamePanel.setBackground(Color.WHITE);
+        filenamePanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         GridBagConstraints constraints2 = new GridBagConstraints();
 
@@ -228,7 +228,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         "createBulkAddressesPanel.numberOfAddresses.title"));
         
         numberOfAddressesPanel.setOpaque(false);
-        numberOfAddressesPanel.setBackground(Color.WHITE);
+        numberOfAddressesPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         GridBagConstraints constraints = new GridBagConstraints();
 
