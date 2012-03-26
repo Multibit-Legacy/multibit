@@ -131,6 +131,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      */
     public void displayView(int viewToDisplay) {
         log.debug("Displaying view '" + viewToDisplay + "'");
+        
         // tell all views to close the current view
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.navigateAwayFromView(getCurrentView());
@@ -400,13 +401,16 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     public int getCurrentView() {
         if (getModel() != null) {
+            //log.debug ("getCurrentView = " + getModel().getCurrentView());
             return getModel().getCurrentView();
         } else {
+            //log.debug ("getCurrentView = DEFAULT_VIEW");
             return View.DEFAULT_VIEW;
         }
     }
 
     public void setCurrentView(int view) {
+        //log.debug("setCurrentView = " + view);
         if (getModel() != null) {
             getModel().setCurrentView(view);
         }
@@ -444,7 +448,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             updateStatusLabel(localiser.getString("showOpenUriView.paymentRequestIgnored"));
             return;
         }
-        if (rawBitcoinURI == null) {
+        if (rawBitcoinURI == null || "".equals(rawBitcoinURI)) {
             log.debug("No Bitcoin URI found to handle");
             //displayView(getCurrentView());
             return;

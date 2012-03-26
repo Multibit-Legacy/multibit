@@ -950,15 +950,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                     displayAsQRcode = false;
                     controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_SWATCH, "true");
                     controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_QR_CODE, "false");
-
-                    log.debug("displayAsSwatch");
-
                 } else if (selectedIndex == 0) {
                     displayAsSwatch = false;
                     displayAsQRcode = true;
                     controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_SWATCH, "false");
                     controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_QR_CODE, "true");
-                    log.debug("displayAsQRcode");
                 }
                 updateQRCodePanel();
             }

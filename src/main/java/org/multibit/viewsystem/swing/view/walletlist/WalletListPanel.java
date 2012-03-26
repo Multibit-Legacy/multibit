@@ -128,7 +128,7 @@ public class WalletListPanel extends JPanel implements View {
     }
 
     public void initUI() {
-        log.debug(" initUI called");
+        //log.debug(" initUI called");
 
         this.removeAll();
         

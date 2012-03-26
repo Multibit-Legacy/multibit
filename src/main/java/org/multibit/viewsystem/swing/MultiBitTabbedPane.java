@@ -47,6 +47,9 @@ public class MultiBitTabbedPane extends JTabbedPane {
         // Create a Dimension that can be used to size the close buttons.
         closeButtonSize = new Dimension(closeTabIcon.getIconWidth() + 2, closeTabIcon.getIconHeight() + 2);
 
+    }
+
+    public void addChangeListener() {
         // Register a change listener
         addChangeListener(new ChangeListener() {
             // This method is called whenever the selected tab changes
@@ -65,9 +68,9 @@ public class MultiBitTabbedPane extends JTabbedPane {
                     }
                 }
             }
-        });
+        });        
     }
-
+    
     @Override
     public void addTab(String title, Icon icon, Component component) {
         addTab(title, icon, "", component, false);

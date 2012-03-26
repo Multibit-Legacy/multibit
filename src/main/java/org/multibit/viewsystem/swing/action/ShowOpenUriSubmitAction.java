@@ -56,7 +56,7 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
     }
 
     /**
-     * delegate to generic showOpenUriSubmitAction
+     * show the showOpenUriDialog
      */
     public void actionPerformed(ActionEvent event) {
         // check to see if the wallet files have changed

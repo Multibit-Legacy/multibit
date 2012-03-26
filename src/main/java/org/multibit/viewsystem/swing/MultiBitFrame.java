@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
@@ -316,6 +315,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsView.getViewTooltip(),
                 transactionsOutlinePanel);
 
+        viewTabbedPane.addChangeListener();
+
         // Create a split pane with the two scroll panes in it.
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (JPanel) walletsView, viewTabbedPane);
         splitPane.setOneTouchExpandable(false);
@@ -389,11 +390,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         headerPanel.add(walletIconLabel, constraints);
 
-        // JPanel filler2 = new JPanel();
-        // filler2.setMinimumSize(new Dimension(8, 8));
-        // filler2.setMaximumSize(new Dimension(8, 8));
-        // filler2.setPreferredSize(new Dimension(8, 8));
-        // filler2.setOpaque(false);
         constraints.gridx = 2;
         constraints.gridy = 0;
         constraints.weightx = 0.01;
@@ -678,7 +674,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 JPanel tabComponent = (JPanel) viewTabbedPane.getComponentAt(i);
                 Component[] components = tabComponent.getComponents();
                 if (components != null && components.length > 0 && components[0] instanceof View) {
-                    ((View) components[0]).displayView();
+                    View loopView = ((View) components[0]);
+                    loopView.displayView();
+                    if (loopView.getViewId() == controller.getCurrentView()) {
+                        viewTabbedPane.setSelectedIndex(i);
+                    }
                 }
             }
         }
@@ -1024,5 +1024,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 repaint();
             }
         });
+    }
+
+    public WalletListPanel getWalletsView() {
+        return walletsView;
     }
 }

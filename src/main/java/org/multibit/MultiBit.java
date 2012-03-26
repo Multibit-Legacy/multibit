@@ -151,17 +151,20 @@ public class MultiBit {
 
         log.debug("Registering with controller");
         controller.registerViewSystem(swingViewSystem);
-
+        
         log.debug("Creating Bitcoin service");
         // create the MultiBitService that connects to the bitcoin network
         MultiBitService multiBitService = new MultiBitService(useTestNet, controller);
         controller.setMultiBitService(multiBitService);
+        
+        // display the stored view
+        controller.displayView(controller.getCurrentView());
 
         log.debug("Locating wallets");
         // find the active wallet filename in the multibit.properties
         String activeWalletFilename = userPreferences.getProperty(MultiBitModel.ACTIVE_WALLET_FILENAME);
 
-        // load up all the wallets
+         // load up all the wallets
         String numberOfWalletsAsString = userPreferences.getProperty(MultiBitModel.NUMBER_OF_WALLETS);
         if (numberOfWalletsAsString == null || "".equals(numberOfWalletsAsString)) {
             // if this is missing then there is just the one wallet (old format
@@ -169,7 +172,7 @@ public class MultiBit {
             try {
                 controller.addWalletFromFilename(activeWalletFilename);
                 controller.getModel().setActiveWalletByFilename(activeWalletFilename);
-                controller.fireRecreateAllViews(true);
+                controller.fireRecreateAllViews(false);
                 controller.fireDataChanged();
             } catch (IOException e) {
                 String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{activeWalletFilename, e.getMessage()});
@@ -202,7 +205,9 @@ public class MultiBit {
                             log.error(message);
                        }
                     }
-                    controller.fireRecreateAllViews(true);
+                    //controller.fireRecreateAllViews(true);
+                    ((MultiBitFrame)swingViewSystem).getWalletsView().initUI();
+                    ((MultiBitFrame)swingViewSystem).getWalletsView().displayView();
                     controller.fireDataChanged();
                 }
             } catch (NumberFormatException nfe) {
@@ -227,6 +232,7 @@ public class MultiBit {
         // Check for any pending URI operations
         controller.handleOpenURI();
 
+        
         log.debug("Downloading blockchain");
         multiBitService.downloadBlockChain();
     }

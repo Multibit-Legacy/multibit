@@ -68,7 +68,7 @@ public class UndoPreferencesChangesSubmitAction extends AbstractAction {
         String previousFontSize = (String) controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_FONT_SIZE);
         int previousFontSizeAsInt = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
         try {
-            previousFontSizeAsInt = Integer.parseInt(previousFontStyle);
+            previousFontSizeAsInt = Integer.parseInt(previousFontSize);
         } catch (NumberFormatException nfe) {
             // just use default
         }
