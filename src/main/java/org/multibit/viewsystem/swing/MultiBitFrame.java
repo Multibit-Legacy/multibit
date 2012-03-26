@@ -213,7 +213,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         .bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true, false) }));
 
         estimatedBalanceTextLabel.setFocusable(false);
-        //estimatedBalanceTextLabel.requestFocusInWindow();
+        // estimatedBalanceTextLabel.requestFocusInWindow();
 
         availableBalanceTextButton.setFocusable(false);
 
@@ -389,11 +389,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         headerPanel.add(walletIconLabel, constraints);
 
-//        JPanel filler2 = new JPanel();
-//        filler2.setMinimumSize(new Dimension(8, 8));
-//        filler2.setMaximumSize(new Dimension(8, 8));
-//        filler2.setPreferredSize(new Dimension(8, 8));
-//        filler2.setOpaque(false);
+        // JPanel filler2 = new JPanel();
+        // filler2.setMinimumSize(new Dimension(8, 8));
+        // filler2.setMaximumSize(new Dimension(8, 8));
+        // filler2.setPreferredSize(new Dimension(8, 8));
+        // filler2.setOpaque(false);
         constraints.gridx = 2;
         constraints.gridy = 0;
         constraints.weightx = 0.01;
@@ -818,8 +818,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void blockDownloaded() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                // update screen in case status bars have changed
-                thisFrame.fireDataChanged();
+                // update transaction screen in case status bars have changed
+                if (View.TRANSACTIONS_VIEW == controller.getCurrentView()) {
+                    thisFrame.fireDataChanged();
+                }
             }
         });
     }
