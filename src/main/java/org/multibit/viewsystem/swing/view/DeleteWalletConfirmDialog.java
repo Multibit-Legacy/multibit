@@ -32,6 +32,7 @@ import javax.swing.JPanel;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.DeleteWalletException;
 import org.multibit.file.FileHandler;
+import org.multibit.model.PerWalletModelData;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -353,6 +354,10 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
                     newWalletCreated = true;
                  }
             }
+            
+            // set the first wallet to be the active wallet
+            PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
+            controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
             controller.fireRecreateAllViews(true);
             controller.fireDataChanged();
             
