@@ -249,6 +249,9 @@ public class StatusBar extends JPanel {
     synchronized public void updateSync(int percent, String syncMessage) {
         syncProgressBar.setValue(percent);
         syncProgressBar.setToolTipText(syncMessage);
+        
+        // when a language changes the progress bar needs to be made visible
+        syncProgressBar.setVisible(true);
     }
     
     public void updateStatusLabel(String newStatusLabel) {
