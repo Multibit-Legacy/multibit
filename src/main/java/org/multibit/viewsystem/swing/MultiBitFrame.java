@@ -68,6 +68,7 @@ import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
+import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.components.VerticalGradientPanel;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
 import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
@@ -388,16 +389,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         headerPanel.add(walletIconLabel, constraints);
 
-        JPanel filler2 = new JPanel();
-        filler2.setMinimumSize(new Dimension(8, 8));
-        filler2.setMaximumSize(new Dimension(8, 8));
-        filler2.setPreferredSize(new Dimension(8, 8));
-        filler2.setOpaque(false);
+//        JPanel filler2 = new JPanel();
+//        filler2.setMinimumSize(new Dimension(8, 8));
+//        filler2.setMaximumSize(new Dimension(8, 8));
+//        filler2.setPreferredSize(new Dimension(8, 8));
+//        filler2.setOpaque(false);
         constraints.gridx = 2;
         constraints.gridy = 0;
         constraints.weightx = 0.01;
         constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(filler2, constraints);
+        headerPanel.add(MultiBitTitledPanel.createStent(10), constraints);
 
         estimatedBalanceTextLabel = new BlinkLabel(controller, true);
         estimatedBalanceTextLabel.setHorizontalAlignment(JTextField.LEFT);
@@ -434,7 +435,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 5;
         constraints.gridy = 0;
-        constraints.weightx = 10;
+        constraints.weightx = 100;
         constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(filler3, constraints);
 

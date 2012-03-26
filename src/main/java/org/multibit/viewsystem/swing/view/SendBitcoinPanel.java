@@ -178,7 +178,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 8;
         constraints.gridy = 1;
-        constraints.weightx = 0.2;
+        constraints.weightx = 10.0;
         constraints.weighty = 0.2;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -263,7 +263,6 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         MultiBitLabel amountUnitLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"));
         amountUnitLabel.setHorizontalTextPosition(SwingConstants.LEFT);
         amountUnitLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel.tooltip"));
-        // amountUnitLabel.setBorder(BorderFactory.createLineBorder(Color.CYAN));
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 3;
         constraints.gridy = 5;
@@ -272,7 +271,14 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        amountPanel.add(amountUnitLabel, BorderLayout.CENTER);
+
+        JPanel amountUnitLabelPanel = new JPanel();
+        amountUnitLabelPanel.setOpaque(false);
+        amountUnitLabelPanel.setLayout(new BorderLayout());
+        amountUnitLabelPanel.add(MultiBitTitledPanel.createStent(AbstractTradePanel.AMOUNT_BTC_INDENT), BorderLayout.WEST);
+        amountUnitLabelPanel.add(amountUnitLabel, BorderLayout.CENTER);
+
+        amountPanel.add(amountUnitLabelPanel, BorderLayout.CENTER);
 
         Action helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
                 "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",

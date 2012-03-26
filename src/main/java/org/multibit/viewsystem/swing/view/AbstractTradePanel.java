@@ -158,6 +158,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
     protected static final int TEXTFIELD_VERTICAL_DELTA = 6;
     protected static final int HELP_BUTTON_INDENT = 8;
+    protected static final int AMOUNT_BTC_INDENT = 4;
+    
 
     private final int STENT_DELTA = 4;
 
