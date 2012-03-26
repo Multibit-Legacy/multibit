@@ -130,7 +130,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      *            View to display. Must be one of the View constants
      */
     public void displayView(int viewToDisplay) {
-        log.debug("Displaying view '" + viewToDisplay + "'");
+        //log.debug("Displaying view '" + viewToDisplay + "'");
         
         // tell all views to close the current view
         for (ViewSystem viewSystem : viewSystems) {

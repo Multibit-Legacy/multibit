@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.view;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
+import java.awt.Cursor;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -76,12 +77,11 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
-    
 
     private JTable table;
     private WalletTableModel walletTableModel;
-    
-    private  TableRowSorter<TableModel> rowSorter;
+
+    private TableRowSorter<TableModel> rowSorter;
 
     private Data data;
 
@@ -90,7 +90,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     private static final int TABLE_BORDER = 3;
 
     private static final int MINIMUM_ICON_HEIGHT = 18;
-   
+
     private static final String PROGRESS_0_ICON_FILE = "/images/circleProgress0.png";
     private static final String PROGRESS_1_ICON_FILE = "/images/circleProgress1.png";
     private static final String PROGRESS_2_ICON_FILE = "/images/circleProgress2.png";
@@ -103,9 +103,8 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     private static final String RTL_PROGRESS_4_ICON_FILE = "/images/circleProgress4.png";
     private static final String RTL_PROGRESS_5_ICON_FILE = "/images/circleProgress5.png";
     private static final String TICK_ICON_FILE = "/images/tick.png";
-    
+
     private int selectedRow = -1;
-    
 
     public ShowTransactionsPanel(MultiBitFrame mainFrame, MultiBitController controller) {
         this.controller = controller;
@@ -144,7 +143,7 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
-        
+
         // no row is currently selected
         selectedRow = -1;
 
@@ -177,21 +176,21 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         tableColumn = table.getColumnModel().getColumn(1); // date
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
-        int dateWidth = Math.max(fontMetrics.stringWidth(
-                controller.getLocaliser().getString("walletData.debitText")), fontMetrics.stringWidth( dateFormatter.format(new Date())));
+        int dateWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.debitText")),
+                fontMetrics.stringWidth(dateFormatter.format(new Date())));
         tableColumn.setPreferredWidth(dateWidth);
 
         tableColumn = table.getColumnModel().getColumn(2); // description
         tableColumn.setPreferredWidth(300);
 
         tableColumn = table.getColumnModel().getColumn(3); // debit
-        int debitWidth = Math.max(fontMetrics.stringWidth(
-                controller.getLocaliser().getString("walletData.debitText")), fontMetrics.stringWidth("000.0000"));
+        int debitWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.debitText")),
+                fontMetrics.stringWidth("000.0000"));
         tableColumn.setPreferredWidth(debitWidth);
 
         tableColumn = table.getColumnModel().getColumn(4); // credit
-        int creditWidth = Math.max(fontMetrics.stringWidth(
-                controller.getLocaliser().getString("walletData.creditText")), fontMetrics.stringWidth("000.0000"));
+        int creditWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.creditText")),
+                fontMetrics.stringWidth("000.0000"));
         tableColumn.setPreferredWidth(creditWidth);
 
         // row sorter
@@ -247,17 +246,19 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
 
     @Override
     public void displayView() {
-        //log.debug("ShowTransactionsPanel#updateView called on panel " + System.identityHashCode(this));
+        // log.debug("ShowTransactionsPanel#updateView called on panel " +
+        // System.identityHashCode(this));
+
         walletTableModel.recreateWalletData();
 
         if (selectedRow > -1 && selectedRow < table.getRowCount()) {
             table.setRowSelectionInterval(selectedRow, selectedRow);
         }
-        
+
         table.invalidate();
         table.validate();
         table.repaint();
-        
+
         invalidate();
         validate();
         repaint();
@@ -354,7 +355,8 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR : ColorAndFontConstants.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                        : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -438,7 +440,8 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR : ColorAndFontConstants.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                        : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -483,7 +486,8 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR : ColorAndFontConstants.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                        : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -510,7 +514,8 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR : ColorAndFontConstants.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                        : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -523,12 +528,11 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         private static final long serialVersionUID = 1022706046979674798L;
         JMenuItem showTransactionsDetailsMenuItem;
 
-        
         public TransactionPopUp(WalletTableData rowTableData) {
             Action showTransactionDetailsAction = new ShowTransactionDetailsAction(controller, mainFrame, rowTableData);
             showTransactionsDetailsMenuItem = new JMenuItem(showTransactionDetailsAction);
             showTransactionsDetailsMenuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-            
+
             add(showTransactionsDetailsMenuItem);
         }
     }
@@ -550,21 +554,22 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
             int row = table.rowAtPoint(p);
             int col = table.columnAtPoint(p);
 
-            // The autoscroller can generate drag events outside the Table's range.
+            // The autoscroller can generate drag events outside the Table's
+            // range.
             if ((col == -1) || (row == -1)) {
                 // do nothing
             } else {
                 selectedRow = row;
                 table.setRowSelectionInterval(row, row);
             }
-            
+
             // get the transaction on the row
             WalletTableData rowTableData = walletTableModel.getRow(rowSorter.convertRowIndexToModel(row));
             TransactionPopUp menu = new TransactionPopUp(rowTableData);
             menu.show(e.getComponent(), e.getX(), e.getY());
         }
     }
-    
+
     @Override
     public Icon getViewIcon() {
         return ImageLoader.createImageIcon(ImageLoader.TRANSACTIONS_ICON_FILE);
@@ -574,12 +579,12 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     public String getViewTitle() {
         return controller.getLocaliser().getString("showTransactionsAction.text");
     }
-    
+
     @Override
     public String getViewTooltip() {
         return controller.getLocaliser().getString("showTransactionsAction.tooltip");
     }
-    
+
     @Override
     public int getViewId() {
         return View.TRANSACTIONS_VIEW;

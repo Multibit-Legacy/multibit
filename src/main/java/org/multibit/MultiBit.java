@@ -15,6 +15,7 @@
  */
 package org.multibit;
 
+import java.awt.Cursor;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -184,6 +185,8 @@ public class MultiBit {
                 int numberOfWallets = Integer.parseInt(numberOfWalletsAsString);
 
                 if (numberOfWallets > 0) {
+                    ((MultiBitFrame)swingViewSystem).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                    
                     for (int i = 1; i <= numberOfWallets; i++) {
                         // load up ith wallet filename
                         String loopWalletFilename = userPreferences.getProperty(MultiBitModel.WALLET_FILENAME_PREFIX + i);
@@ -212,6 +215,8 @@ public class MultiBit {
                 }
             } catch (NumberFormatException nfe) {
                 // carry on
+            } finally {
+                ((MultiBitFrame)swingViewSystem).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         }
 
