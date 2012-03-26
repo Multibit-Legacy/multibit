@@ -157,6 +157,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected static final int QRCODE_HEIGHT = 140;
 
     protected static final int TEXTFIELD_VERTICAL_DELTA = 6;
+    protected static final int HELP_BUTTON_INDENT = 8;
 
     private final int STENT_DELTA = 4;
 
@@ -510,17 +511,16 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         addressesHeaderPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
-        JLabel filler1 = new JLabel("");
-        filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 0.01;
         constraints.weighty = 0.01;
         constraints.anchor = GridBagConstraints.LINE_START;
-        addressesHeaderPanel.add(filler1, constraints);
+        addressesHeaderPanel.add(MultiBitTitledPanel.createStent(HELP_BUTTON_INDENT), constraints);
 
         createNewButton = new MultiBitButton(getCreateNewAddressAction(), controller);
+        createNewButton.setText(controller.getLocaliser().getString("crudButton.new"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 0;
@@ -530,27 +530,36 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         constraints.anchor = GridBagConstraints.LINE_START;
         addressesHeaderPanel.add(createNewButton, constraints);
 
-        titleLabel = new JLabel();
-        titleLabel.setHorizontalTextPosition(JLabel.CENTER);
-        titleLabel.setText(getLocalisationString(ADDRESSES_TITLE, null));
-        titleLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));
-
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.CENTER;
+        addressesHeaderPanel.add(MultiBitTitledPanel.createStent(HELP_BUTTON_INDENT * 2), constraints);
+
+        titleLabel = new JLabel();
+        titleLabel.setHorizontalTextPosition(JLabel.CENTER);
+        titleLabel.setText(getLocalisationString(ADDRESSES_TITLE, null));
+        titleLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
         addressesHeaderPanel.add(titleLabel, constraints);
 
         JPanel filler2 = new JPanel();
         filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 3;
+        constraints.gridx = 4;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
-        constraints.weightx = 0.6;
+        constraints.weightx = 100;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         addressesHeaderPanel.add(filler2, constraints);
@@ -573,6 +582,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         addressesTableModel = new AddressBookTableModel(controller, isReceiveBitcoin());
         addressesTable = new JTable(addressesTableModel);
         addressesTable.setOpaque(true);
+        addressesTable.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         addressesTable.setShowGrid(false);
         addressesTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         addressesTable.setRowSelectionAllowed(true);

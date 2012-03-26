@@ -54,8 +54,8 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
 
     private static final long serialVersionUID = 191435612345057705L;
 
-    private static final int HEIGHT_DELTA = 125;
-    private static final int WIDTH_DELTA = 250;
+    private static final int HEIGHT_DELTA = 100;
+    private static final int WIDTH_DELTA = 200;
 
     private MultiBitFrame mainFrame;
 

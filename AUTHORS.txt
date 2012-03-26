@@ -5,9 +5,11 @@ Developers:
 Gary Rowe
 Jim Burton
 Jonny Heggheim
+Tim Molter
 
 Internationalisation:
 ---------------------
+3phase              - Greek
 Arvis Lacis         - Latvian
 Azrael_PT           - Portuguese
 bitcoin.hu          - Hungarian

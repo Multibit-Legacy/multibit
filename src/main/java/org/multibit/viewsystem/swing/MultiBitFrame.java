@@ -211,8 +211,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 new Object[] { controller.getLocaliser()
                         .bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true, false) }));
 
-        estimatedBalanceTextLabel.setFocusable(true);
-        estimatedBalanceTextLabel.requestFocusInWindow();
+        estimatedBalanceTextLabel.setFocusable(false);
+        //estimatedBalanceTextLabel.requestFocusInWindow();
 
         availableBalanceTextButton.setFocusable(false);
 

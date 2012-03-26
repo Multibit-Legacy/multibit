@@ -221,7 +221,7 @@ public class WalletListPanel extends JPanel implements View {
                 BorderFactory.createEmptyBorder(2, 0, 2, 0)
                ));
         buttonPanel.setOpaque(true);
-        buttonPanel.setBackground(SystemColor.window);
+        buttonPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));       
 
         CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller, null, mainFrame);
