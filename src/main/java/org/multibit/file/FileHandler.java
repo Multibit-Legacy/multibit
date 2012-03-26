@@ -98,12 +98,13 @@ public class FileHandler {
         // perWalletModelData.getWalletFilename() + "\n"
         // + perWalletModelData.getWallet().toString());
  
-        if (perWalletModelData == null) {
+        if (perWalletModelData == null || perWalletModelData.getWalletFilename() == null) {
             // nothing to do
             return;
         }
         
         File walletFile = new File(perWalletModelData.getWalletFilename());
+        
         WalletInfo walletInfo = perWalletModelData.getWalletInfo();
         
         synchronized (walletInfo) {
