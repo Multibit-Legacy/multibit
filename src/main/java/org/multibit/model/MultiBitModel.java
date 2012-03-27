@@ -100,7 +100,7 @@ public class MultiBitModel {
     public static final String BRING_TO_FRONT = "bringToFront";
 
     // default is min fee of 0.0001 BTC
-    public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("10000");
+    public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("50000");
     // min fee of 0.0001 BTC
     public static final BigInteger SEND_MINIMUM_FEE = new BigInteger("10000");
 

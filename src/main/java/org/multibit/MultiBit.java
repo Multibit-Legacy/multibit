@@ -21,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -31,6 +32,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.PerWalletModelData;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
@@ -152,12 +154,12 @@ public class MultiBit {
 
         log.debug("Registering with controller");
         controller.registerViewSystem(swingViewSystem);
-        
+
         log.debug("Creating Bitcoin service");
         // create the MultiBitService that connects to the bitcoin network
         MultiBitService multiBitService = new MultiBitService(useTestNet, controller);
         controller.setMultiBitService(multiBitService);
-        
+
         // display the stored view
         controller.displayView(controller.getCurrentView());
 
@@ -165,18 +167,28 @@ public class MultiBit {
         // find the active wallet filename in the multibit.properties
         String activeWalletFilename = userPreferences.getProperty(MultiBitModel.ACTIVE_WALLET_FILENAME);
 
-         // load up all the wallets
+        // load up all the wallets
         String numberOfWalletsAsString = userPreferences.getProperty(MultiBitModel.NUMBER_OF_WALLETS);
         if (numberOfWalletsAsString == null || "".equals(numberOfWalletsAsString)) {
             // if this is missing then there is just the one wallet (old format
-            // properties)
+            // properties or user has just started up for the first time)
             try {
+                // activeWalletFilename may be null on first time startup
                 controller.addWalletFromFilename(activeWalletFilename);
-                controller.getModel().setActiveWalletByFilename(activeWalletFilename);
-                controller.fireRecreateAllViews(false);
+                List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+                if (perWalletModelDataList != null && !perWalletModelDataList.isEmpty()) {
+                    activeWalletFilename = perWalletModelDataList.get(0).getWalletFilename();
+                    controller.getModel().setActiveWalletByFilename(activeWalletFilename);
+                    log.debug("Created/loaded wallet '" + activeWalletFilename + "'");
+                    controller.updateStatusLabel(controller.getLocaliser().getString("multiBit.createdWallet",
+                            new Object[] { activeWalletFilename }));
+                }
+                ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
+                ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
                 controller.fireDataChanged();
             } catch (IOException e) {
-                String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{activeWalletFilename, e.getMessage()});
+                String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                        new Object[] { activeWalletFilename, e.getMessage() });
                 controller.updateStatusLabel(message);
                 log.error(message);
             }
@@ -185,8 +197,8 @@ public class MultiBit {
                 int numberOfWallets = Integer.parseInt(numberOfWalletsAsString);
 
                 if (numberOfWallets > 0) {
-                    ((MultiBitFrame)swingViewSystem).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                    
+                    ((MultiBitFrame) swingViewSystem).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
                     for (int i = 1; i <= numberOfWallets; i++) {
                         // load up ith wallet filename
                         String loopWalletFilename = userPreferences.getProperty(MultiBitModel.WALLET_FILENAME_PREFIX + i);
@@ -203,20 +215,20 @@ public class MultiBit {
                             controller.updateStatusLabel(controller.getLocaliser().getString("multiBit.openingWalletIsDone",
                                     new Object[] { loopWalletFilename }));
                         } catch (IOException e) {
-                            String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{activeWalletFilename, e.getMessage()});
+                            String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                                    new Object[] { activeWalletFilename, e.getMessage() });
                             controller.updateStatusLabel(message);
                             log.error(message);
-                       }
+                        }
                     }
-                    //controller.fireRecreateAllViews(true);
-                    ((MultiBitFrame)swingViewSystem).getWalletsView().initUI();
-                    ((MultiBitFrame)swingViewSystem).getWalletsView().displayView();
-                    controller.fireDataChanged();
-                }
+                } 
+                ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
+                ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
+                controller.fireDataChanged();
             } catch (NumberFormatException nfe) {
                 // carry on
             } finally {
-                ((MultiBitFrame)swingViewSystem).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                ((MultiBitFrame) swingViewSystem).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         }
 
@@ -237,7 +249,6 @@ public class MultiBit {
         // Check for any pending URI operations
         controller.handleOpenURI();
 
-        
         log.debug("Downloading blockchain");
         multiBitService.downloadBlockChain();
     }
