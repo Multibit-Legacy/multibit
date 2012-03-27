@@ -42,6 +42,7 @@ import org.multibit.platform.listener.GenericQuitEvent;
 import org.multibit.platform.listener.GenericQuitEventListener;
 import org.multibit.platform.listener.GenericQuitResponse;
 import org.multibit.qrcode.BitcoinURI;
+import org.multibit.qrcode.BitcoinURIParseException;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
@@ -130,8 +131,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      *            View to display. Must be one of the View constants
      */
     public void displayView(int viewToDisplay) {
-        //log.debug("Displaying view '" + viewToDisplay + "'");
-        
+        // log.debug("Displaying view '" + viewToDisplay + "'");
+
         // tell all views to close the current view
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.navigateAwayFromView(getCurrentView());
@@ -139,7 +140,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
         setCurrentView(viewToDisplay);
 
-         // tell all views which view to display
+        // tell all views which view to display
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.displayView(getCurrentView());
         }
@@ -159,8 +160,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         }
 
         setCurrentView(View.HELP_CONTENTS_VIEW);
-        
-         // tell all views which view to display
+
+        // tell all views which view to display
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.setHelpContext(helpContextToDisplay);
             viewSystem.displayView(View.HELP_CONTENTS_VIEW);
@@ -207,14 +208,14 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     public void fireLanguageChanged() {
         Locale newLocale = new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE));
         localiser.setLocale(newLocale);
-        
+
         int viewToDisplay = getCurrentView();
 
         // tell the viewSystems to refresh their views
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.recreateAllViews(true);
         }
-        
+
         setCurrentView(viewToDisplay);
         fireDataChanged();
     }
@@ -401,16 +402,16 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     public int getCurrentView() {
         if (getModel() != null) {
-            //log.debug ("getCurrentView = " + getModel().getCurrentView());
+            // log.debug ("getCurrentView = " + getModel().getCurrentView());
             return getModel().getCurrentView();
         } else {
-            //log.debug ("getCurrentView = DEFAULT_VIEW");
+            // log.debug ("getCurrentView = DEFAULT_VIEW");
             return View.DEFAULT_VIEW;
         }
     }
 
     public void setCurrentView(int view) {
-        //log.debug("setCurrentView = " + view);
+        // log.debug("setCurrentView = " + view);
         if (getModel() != null) {
             getModel().setCurrentView(view);
         }
@@ -444,13 +445,13 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             // ignore open URI request
             log.debug("Bitcoin URI ignored because useUriText = '" + useUriText + "', showOpenUriDialogText = '"
                     + showOpenUriDialogText + "'");
-            //displayView(getCurrentView());
+            // displayView(getCurrentView());
             updateStatusLabel(localiser.getString("showOpenUriView.paymentRequestIgnored"));
             return;
         }
         if (rawBitcoinURI == null || "".equals(rawBitcoinURI)) {
             log.debug("No Bitcoin URI found to handle");
-            //displayView(getCurrentView());
+            // displayView(getCurrentView());
             return;
         }
         // Process the URI
@@ -461,8 +462,14 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER i.e
         // be lenient
         String uriString = rawBitcoinURI.toString().replace(" ", ENCODED_SPACE_CHARACTER);
-        BitcoinURI bitcoinURI = new BitcoinURI(this.getMultiBitService().getNetworkParameters(), uriString);
-
+        BitcoinURI bitcoinURI = null;
+        try {
+            bitcoinURI = new BitcoinURI(this.getMultiBitService().getNetworkParameters(), uriString);
+        } catch (BitcoinURIParseException pe) {
+            log.error("Could not parse the uriString '" + uriString + "', aborting");
+            return;
+        }
+        
         // Convert the URI data into suitably formatted view data
         String address = bitcoinURI.getAddress().toString();
         String label = "";
