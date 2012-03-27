@@ -41,6 +41,7 @@ public class HelpContentsPanel extends JPanel implements View {
     public static final String HELP_AVAILABLE_TO_SPEND_URL = "help_availableToSpend.html";
     public static final String HELP_IMPORTING_PRIVATE_KEYS_URL = "help_importingPrivateKeys.html";
     public static final String HELP_EXPORTING_PRIVATE_KEYS_URL = "help_exportingPrivateKeys.html";
+    public static final String HELP_RESET_BLOCKCHAIN_URL = "help_resetBlockchain.html";
     
     private static final long serialVersionUID = 4921443778446348403L;
 
