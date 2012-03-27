@@ -1,5 +1,20 @@
 MultiBit release notes.
 
+28 Mar 2012 Version 0.3.1
+Enhancements:
++  Greek translation added.
+
+Substantial UI upgrade done:
++  On page wallets
++  New layout styling for text panels
++  New iconset
++  Use of system colours
++  Context sensitive help
+
+Bug fixes:
++  Fix for tooltip size being very small after set preferences undo
+
+
 13 Mar 2012 Version 0.3.0Beta6
 Enhancements
 +  Updated transaction status icons with "circle filling" theme.
