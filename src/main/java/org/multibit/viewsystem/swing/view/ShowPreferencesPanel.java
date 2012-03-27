@@ -727,8 +727,11 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
 
         GridBagConstraints constraints = new GridBagConstraints();
  
-        buttonPanel.setOpaque(false);
-        buttonPanel.setBackground(SystemColor.window);
+        buttonPanel.setBorder(BorderFactory.createCompoundBorder( BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder),
+                BorderFactory.createEmptyBorder(2, 0, 2, 0)
+               ));
+        buttonPanel.setOpaque(true);
+        buttonPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));       
 
         ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(controller, this, ImageLoader.createImageIcon(ImageLoader.PREFERENCES_ICON_FILE));

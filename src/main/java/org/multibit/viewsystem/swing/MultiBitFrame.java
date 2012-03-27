@@ -737,7 +737,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     }
                 }
 
-                if (!foundTab) {
+                if (!foundTab && nextViewFinal instanceof JPanel) {
                     JPanel tabOutlinePanel = new JPanel(new BorderLayout());
                     tabOutlinePanel.add((JPanel) nextViewFinal, BorderLayout.CENTER);
                     viewTabbedPane.addTab(nextViewFinal.getViewTitle(), nextViewFinal.getViewIcon(),

@@ -183,8 +183,10 @@ public class MultiBit {
                     controller.updateStatusLabel(controller.getLocaliser().getString("multiBit.createdWallet",
                             new Object[] { activeWalletFilename }));
                 }
-                ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
-                ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
+                if (swingViewSystem instanceof MultiBitFrame) {
+                    ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
+                    ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
+                }
                 controller.fireDataChanged();
             } catch (IOException e) {
                 String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
@@ -221,9 +223,11 @@ public class MultiBit {
                             log.error(message);
                         }
                     }
-                } 
-                ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
-                ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
+                }
+                if (swingViewSystem instanceof MultiBitFrame) {
+                    ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
+                    ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
+                }
                 controller.fireDataChanged();
             } catch (NumberFormatException nfe) {
                 // carry on

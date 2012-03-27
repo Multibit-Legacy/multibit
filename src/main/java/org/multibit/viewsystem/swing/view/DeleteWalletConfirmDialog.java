@@ -66,6 +66,7 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
     private MultiBitLabel sendLabelText;
     private MultiBitLabel balanceText;
 
+    private MultiBitLabel explainLabel;
     private MultiBitLabel confirmText1, confirmText2;
 
     private MultiBitButton deleteWalletButton;
@@ -147,7 +148,7 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
         JLabel bigIconLabel = new JLabel(bigIcon);
         mainPanel.add(bigIconLabel, constraints);
 
-        MultiBitLabel explainLabel = new MultiBitLabel("");
+        explainLabel = new MultiBitLabel("");
         explainLabel.setText(controller.getLocaliser().getString("deleteWalletConfirmDialog.message"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
@@ -362,6 +363,7 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
             controller.fireDataChanged();
             
             String confirm2 = newWalletCreated ? controller.getLocaliser().getString("deleteWalletConfirmDialog.newWalletCreated") : " ";
+            explainLabel.setText(" ");
             setDeleteConfirmText(
                     controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeletedOk",
                             new Object[] { walletDescription }), confirm2 );
@@ -370,6 +372,7 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
             if (dwe.getCause() != null) {
                 log.error(dwe.getClass().getName() + ", cause = " + dwe.getCause().getMessage());
             }
+            explainLabel.setText(" ");
             setDeleteConfirmText(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError1"), controller
                     .getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new Object[] { dwe.getMessage() }));
         } catch (IOException ioe) {
@@ -377,6 +380,7 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
             if (ioe.getCause() != null) {
                 log.error(ioe.getClass().getName() + ", cause = " + ioe.getCause().getMessage());
             }
+            explainLabel.setText(" ");
             setDeleteConfirmText(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError1"), controller
                     .getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new Object[] { ioe.getMessage() }));
         }
