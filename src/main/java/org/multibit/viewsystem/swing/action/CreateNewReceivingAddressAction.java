@@ -83,8 +83,9 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
 
             controller.displayView(controller.getCurrentView());
 
-            receiveBitcoinPanel.getFormPanel().requestFocusInWindow();
-            receiveBitcoinPanel.getLabelTextArea().requestFocusInWindow();
+            if (receiveBitcoinPanel != null && receiveBitcoinPanel.getLabelTextArea() != null) {
+                receiveBitcoinPanel.getLabelTextArea().requestFocusInWindow();
+            }
         }
     }
 }

@@ -129,7 +129,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
     protected MultiBitTextField amountTextField;
 
-    protected JPanel formPanel;
     protected JPanel upperPanel;
 
     protected AddressBookTableModel addressesTableModel;
@@ -1435,10 +1434,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
     public JTextArea getLabelTextArea() {
         return labelTextArea;
-    }
-
-    public JPanel getFormPanel() {
-        return formPanel;
     }
 
     public JLabel getQRCodeLabel() {

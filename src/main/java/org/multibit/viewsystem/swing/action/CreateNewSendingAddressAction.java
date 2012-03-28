@@ -84,8 +84,9 @@ public class CreateNewSendingAddressAction extends AbstractAction {
             }
             controller.displayView(controller.getCurrentView());
 
-            sendBitcoinPanel.getFormPanel().requestFocusInWindow();
-            sendBitcoinPanel.getLabelTextArea().requestFocusInWindow();
+            if (sendBitcoinPanel != null && sendBitcoinPanel.getLabelTextArea() != null) {
+                sendBitcoinPanel.getLabelTextArea().requestFocusInWindow();
+            }
         }
     }
 }
