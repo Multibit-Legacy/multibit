@@ -107,7 +107,7 @@ public class Validator {
                     String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
                     BigInteger feeBigInteger;
                     if (fee == null || fee.isEmpty()) {
-                        feeBigInteger = MultiBitModel.SEND_MINIMUM_FEE;
+                        feeBigInteger = MultiBitModel.SEND_FEE_DEFAULT;
                     } else {
                         feeBigInteger = Utils.toNanoCoins(fee);
                     }

@@ -88,7 +88,7 @@ public class SendBitcoinNowAction extends AbstractAction {
             String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
             BigInteger fee;
             if (sendFeeString == null || sendFeeString.equals("")) {
-                fee = MultiBitModel.SEND_MINIMUM_FEE;
+                fee = MultiBitModel.SEND_FEE_DEFAULT;
             } else {
                 fee = Utils.toNanoCoins(sendFeeString);
             }
