@@ -7,10 +7,12 @@ multibit.properties
 + Connect to single node
 If you want to connect to a single node set the following 
 property:
-singleConnectionNode=<node to connect to>
+singleNodeConnection=<node to connect to>
 
 The node can be specified as either a domain name (www.myNode.com) 
-or an IP address.
+or an IP address e.g if your node was 12.34.56.78 you would put:
+
+singleNodeConnection=12.34.56.78
 
 
 + Testnet
