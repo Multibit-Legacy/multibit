@@ -816,12 +816,17 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
             }
 
             for (TransactionInput input : this.inputs) {
-                if (input.getScriptSig().isSentToIP())
-                    continue;
-                // This is not thread safe as a key could be removed between the
-                // call to isPubKeyMine and receive.
-                if (input.isMine(wallet)) {
-                    return true;
+                try {
+                    if (input.getScriptSig().isSentToIP())
+                        continue;
+                    // This is not thread safe as a key could be removed between the
+                    // call to isPubKeyMine and receive.
+                    if (input.isMine(wallet)) {
+                        return true;
+                    }
+                } catch (ScriptException e) {
+                    // cannot understand this transaction input - ignore
+                    log.info(e.getMessage());
                 }
             }
             return false;

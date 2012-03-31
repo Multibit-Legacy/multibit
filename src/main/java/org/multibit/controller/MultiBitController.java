@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.Properties;
 
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Localiser;
@@ -56,6 +55,7 @@ import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.TransactionOutput;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 
@@ -113,15 +113,18 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      * used for testing only
      */
     public MultiBitController() {
-        this(null, null);
+        this(null);
     }
 
-    public MultiBitController(Properties userPreferences, ApplicationDataDirectoryLocator applicationDataDirectoryLocator) {
+    public MultiBitController(ApplicationDataDirectoryLocator applicationDataDirectoryLocator) {
         this.applicationDataDirectoryLocator = applicationDataDirectoryLocator;
 
         viewSystems = new ArrayList<ViewSystem>();
 
         fileHandler = new FileHandler(this);
+        
+        // by default localise to English
+        localiser = new Localiser(Locale.ENGLISH);
     }
 
     /**
@@ -547,6 +550,16 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         // loop through all the wallets, seeing if the transaction is relevant
         // and adding them as pending if so
         if (transaction != null) {
+//            String lookingFor = "1GqtGtn4fctXuKxsVzRPSLmYWN1YioLi9y";
+//            for (TransactionOutput o : transaction.getOutputs()) {
+//                try {
+//                    if (lookingFor.equals(o.getScriptPubKey().getToAddress().toString())) {
+//                        log.debug("Saw a transaction about address '" + lookingFor + "' : \n" + transaction.toString());
+//                    }
+//                } catch (ScriptException e) {
+//                    e.printStackTrace();
+//                }
+//            }
             try {
                 java.util.List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
 

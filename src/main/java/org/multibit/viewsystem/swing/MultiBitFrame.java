@@ -527,7 +527,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         fileMenu.add(menuItem);
 
         // exit action
-        if (!application.isMac()) {
+        if (application != null && !application.isMac()) {
             // non Macs have an Exit Menu item
             fileMenu.addSeparator();
 
@@ -546,7 +546,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setComponentOrientation(componentOrientation);
         helpMenu.add(menuItem);
 
-        if (!application.isMac()) {
+        if (application != null && !application.isMac()) {
             // non Macs have a Help About menu item
             MultiBitAction helpAboutAction = new MultiBitAction(controller, ImageLoader.MULTIBIT_SMALL_ICON_FILE,
                     "helpAboutAction.text", "helpAboutAction.tooltip", "helpAboutAction.mnemonic", View.HELP_ABOUT_VIEW);
@@ -582,7 +582,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         tradeMenu.add(menuItem);
 
         // show preferences
-        if (!application.isMac()) {
+        if (application != null && !application.isMac()) {
             // non Macs have a Preferences menu item
             MultiBitAction showPreferencesAction = new MultiBitAction(controller, ImageLoader.PREFERENCES_ICON_FILE,
                     "showPreferencesAction.text", "showPreferencesAction.tooltip", "showPreferencesAction.mnemonic",

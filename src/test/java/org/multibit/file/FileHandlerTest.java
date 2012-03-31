@@ -110,12 +110,7 @@ public class FileHandlerTest extends TestCase {
     @Test
     public void testCreateAndDeleteWallet1() throws IOException {
         MultiBitController controller = new MultiBitController();
-        Localiser localiser = new Localiser();
         MultiBitModel model = new MultiBitModel(controller);
-
-        controller.setLocaliser(localiser);
-        controller.setModel(model);
-
         FileHandler fileHandler = new FileHandler(controller);
 
         File temporaryWallet = File.createTempFile(TEST_CREATE_AND_DELETE1_WALLET_PREFIX, ".wallet");

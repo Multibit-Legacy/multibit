@@ -68,7 +68,7 @@ public class MultiBit {
         Properties userPreferences = FileHandler.loadUserPreferences(applicationDataDirectoryLocator);
 
         // create the controller
-        final MultiBitController controller = new MultiBitController(userPreferences, applicationDataDirectoryLocator);
+        final MultiBitController controller = new MultiBitController(applicationDataDirectoryLocator);
 
         log.info("Configuring native event handling");
         GenericApplicationSpecification specification = new GenericApplicationSpecification();
@@ -131,9 +131,8 @@ public class MultiBit {
 
         log.debug("Creating model");
 
-        // create the model and put it in the controller
+        // create the model
         MultiBitModel model = new MultiBitModel(controller, userPreferences);
-        controller.setModel(model);
 
         log.debug("Setting look and feel");
         try {

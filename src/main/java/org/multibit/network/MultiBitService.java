@@ -43,7 +43,6 @@ import com.google.bitcoin.core.AbstractPeerEventListener;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Block;
-import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.MultiBitBlockChain;
 import com.google.bitcoin.core.NetworkParameters;
@@ -500,7 +499,7 @@ public class MultiBitService {
         return peerGroup;
     }
 
-    public BlockChain getChain() {
+    public MultiBitBlockChain getChain() {
         return blockChain;
     }
 

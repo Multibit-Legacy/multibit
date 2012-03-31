@@ -220,6 +220,8 @@ public class MultiBitModel {
 
         setCurrentView(initialView);
         log.debug("Initial view from properties file is '" + getCurrentView() + "'");
+        
+        controller.setModel(this);
     }
 
     /**

@@ -52,7 +52,7 @@ public class MultiBitBlockChainTest {
         unitTestParams = NetworkParameters.unitTests();
         wallet = new Wallet(unitTestParams) {
             @Override
-            public void receiveFromBlock(Transaction tx, StoredBlock block, BlockChain.NewBlockType blockType) throws VerificationException, ScriptException {
+            public void receiveFromBlock(Transaction tx, StoredBlock block, MultiBitBlockChain.NewBlockType blockType) throws VerificationException, ScriptException {
                 super.receiveFromBlock(tx, block, blockType);
                 MultiBitBlockChainTest.this.block[0] = block;
             }

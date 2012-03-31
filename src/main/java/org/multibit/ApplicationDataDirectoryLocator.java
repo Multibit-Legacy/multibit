@@ -27,8 +27,13 @@ public class ApplicationDataDirectoryLocator {
     private static final Logger log = LoggerFactory.getLogger(ApplicationDataDirectoryLocator.class);
 
     public ApplicationDataDirectoryLocator() {
-        applicationDataDirectory = getApplicationDataDirectory();
-        log.info("Application data directory = '{}'",applicationDataDirectory);
+        this.applicationDataDirectory = getApplicationDataDirectory();
+        log.info("Application data directory.1 = '{}'",applicationDataDirectory);
+    }
+    
+    public ApplicationDataDirectoryLocator(File applicationDataDirectory) {
+        this.applicationDataDirectory = applicationDataDirectory.getAbsolutePath();
+        log.info("Application data directory.2 = '{}'",applicationDataDirectory);
     }
     
     /**
