@@ -29,7 +29,7 @@ import javax.swing.UIManager;
 public class ColorAndFontConstants {
     public static final String MULTIBIT_DEFAULT_FONT_NAME =  ((Font)UIManager.get("Label.font")).getFontName();
     public static final int MULTIBIT_DEFAULT_FONT_STYLE = ((Font)UIManager.get("Label.font")).getStyle();
-    public static final int MULTIBIT_DEFAULT_FONT_SIZE = ((Font)UIManager.get("Label.font")).getSize();
+    public static final int MULTIBIT_DEFAULT_FONT_SIZE = ((Font)UIManager.get("Label.font")).getSize() + 1;
     public static final int MULTIBIT_LARGE_FONT_INCREASE = 2;
 
     public static final Color BACKGROUND_COLOR =  (Color) UIManager.get("Label.background");

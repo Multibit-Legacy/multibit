@@ -15,6 +15,7 @@
  */
 package org.multibit.functionaltests;
 
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -22,7 +23,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -62,7 +62,6 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
     private static final String MINING_ADDRESS = "1GqtGtn4fctXuKxsVzRPSLmYWN1YioLi9y";
     private static final String MINING_PRIVATE_KEY = "5JDxPrBRghF1EvSBjDigywqfmAjpHPmTJxYtQTYJxJRHLLQA4mG";
 
-    @SuppressWarnings("deprecation")
     private static final String START_OF_REPLAY_PERIOD = "2012-03-03T13:00:00Z";
     private static final int NUMBER_OF_BLOCKS_TO_REPLAY = 20;
 
@@ -73,6 +72,12 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
 
     @Test
     public void testReplayMiningTransaction() throws Exception {
+        // currently uses Swing hence check if running on server and abort
+        if (GraphicsEnvironment.isHeadless()) {
+            log.debug("Aborting MiningCoinBaseTransactionsSeenTest#testReplayMiningTransaction as running headless");
+            return;
+        }
+        
         // date format is UTC with century, T time separator and Z for UTC
         // timezone
         formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
@@ -164,7 +169,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
 
         // tidy up
         multiBitService.getPeerGroup().stop();
-        
+
         controller.getFileHandler().deleteWalletAndWalletInfo(controller.getModel().getActivePerWalletModelData());
 
     }
@@ -177,7 +182,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
     private File createMultiBitRuntime() throws IOException {
         File multiBitDirectory = createTempDirectory();
         String multiBitDirectoryPath = multiBitDirectory.getAbsolutePath();
-        
+
         System.out.println("Building MultiBit runtime in : " + multiBitDirectory.getAbsolutePath());
 
         // create an empty multibit.properties
@@ -185,11 +190,12 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
         multibitProperties.createNewFile();
         multibitProperties.deleteOnExit();
 
-        // copy in the blockchain stored in git - this is in source/main/resources/
+        // copy in the blockchain stored in git - this is in
+        // source/main/resources/
         File multibitBlockchain = new File(multiBitDirectoryPath + File.separator + "multibit.blockchain");
         copyFile(new File("./src/main/resources/multibit.blockchain"), multibitBlockchain);
         multibitBlockchain.deleteOnExit();
-        
+
         return multiBitDirectory;
     }
 
@@ -238,7 +244,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
         if (!(temp.mkdir())) {
             throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
         }
-        
+
         temp.deleteOnExit();
 
         return temp;
