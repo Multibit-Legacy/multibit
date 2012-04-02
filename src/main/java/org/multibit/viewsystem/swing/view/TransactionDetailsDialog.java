@@ -21,13 +21,19 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -59,6 +65,10 @@ import com.google.bitcoin.core.Wallet;
  */
 public class TransactionDetailsDialog extends MultiBitDialog {
 
+    private static final String BLOCKCHAIN_INFO_PREFIX = "http://blockchain.info/tx-index/";
+
+    private static final String BLOCKEXPLORER_TRANSACTION_PREFIX = "http://blockexplorer.com/tx/";
+
     private static final long serialVersionUID = 191435612345057705L;
 
     private static final Logger log = LoggerFactory.getLogger(TransactionDetailsDialog.class);
@@ -76,6 +86,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
 
     private JPanel mainPanel;
     private JPanel buttonPanel;
+
     public JPanel getButtonPanel() {
         return buttonPanel;
     }
@@ -86,9 +97,9 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         return okButton;
     }
 
-    private  JScrollPane labelScrollPane;
+    private JScrollPane labelScrollPane;
     private JScrollPane detailScrollPane;
-    
+
     private SimpleDateFormat dateFormatter;
 
     /**
@@ -176,7 +187,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.gridy = 0;
         constraints.weightx = 0.3;
         constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(confidenceText, constraints);
 
@@ -198,7 +209,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.gridy = 1;
         constraints.weightx = 0.3;
         constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(dateText, constraints);
 
@@ -219,7 +230,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.gridy = 2;
         constraints.weightx = 0.3;
         constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(amountText, constraints);
 
@@ -240,7 +251,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.gridy = 3;
         constraints.weightx = 0.3;
         constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(feeText, constraints);
 
@@ -261,7 +272,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.gridy = 4;
         constraints.weightx = 0.3;
         constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(totalDebitText, constraints);
 
@@ -326,7 +337,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.gridy = 5;
         constraints.weightx = 0.3;
         constraints.weighty = 0.2;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(labelScrollPane, constraints);
 
@@ -351,7 +362,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.gridy = 6;
         constraints.weightx = 0.3;
         constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
 
         detailScrollPane = new JScrollPane(transactionDetailText, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -364,13 +375,63 @@ public class TransactionDetailsDialog extends MultiBitDialog {
 
         JLabel filler2 = new JLabel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 3;
+        constraints.gridx = 5;
         constraints.gridy = 6;
         constraints.weightx = 0.1;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(filler2, constraints);
+
+        
+        if (isBrowseSupported()) {
+            JButton openInBlockExplorerButton = new JButton(controller.getLocaliser().getString("transactionDetailsDialog.viewAtBlockExplorer"));
+            openInBlockExplorerButton.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent arg0) {
+                    try {
+                        String blockExplorerTransactionURL = BLOCKEXPLORER_TRANSACTION_PREFIX + rowTableData.getTransaction().getHashAsString();
+                        openURI(new URI(blockExplorerTransactionURL));
+                    } catch (URISyntaxException e) {
+                        log.debug(e.getMessage());
+                    }
+                    
+                }});
+            
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.gridx = 2;
+            constraints.gridy = 7;
+            constraints.weightx = 0.4;
+            constraints.weighty = 0.1;
+            constraints.gridwidth = 1;
+            constraints.gridheight = 1;
+            constraints.anchor = GridBagConstraints.LINE_END;
+            detailPanel.add(openInBlockExplorerButton, constraints);
+
+            JButton openInBlockChainInfoButton = new JButton(controller.getLocaliser().getString("transactionDetailsDialog.viewAtBlockChainInfo"));
+            openInBlockChainInfoButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent arg0) {
+                    try {
+                        String blockChainInfoTransactionInfo = BLOCKCHAIN_INFO_PREFIX + rowTableData.getTransaction().getHashAsString();
+                        openURI(new URI(blockChainInfoTransactionInfo));
+                    } catch (URISyntaxException e) {
+                        log.debug(e.getMessage());
+                    } 
+                }});
+            
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.gridx = 3;
+            constraints.gridy = 7;
+            constraints.weightx = 0.4;
+            constraints.weighty = 0.1;
+            constraints.gridwidth = 1;
+            constraints.gridheight = 1;
+            constraints.anchor = GridBagConstraints.LINE_END;
+            detailPanel.add(openInBlockChainInfoButton, constraints);
+
+        }
 
         OkBackToParentAction okAction = new OkBackToParentAction(controller, this);
         okButton = new MultiBitButton(okAction, controller);
@@ -380,11 +441,11 @@ public class TransactionDetailsDialog extends MultiBitDialog {
                     okButton.doClick();
             }
         });
-        
+   
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
+        constraints.gridx = 4;
         constraints.gridy = 7;
-        constraints.weightx = 0.8;
+        constraints.weightx = 0.4;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
@@ -491,5 +552,32 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             }
         }
         return toReturn;
+    }
+
+    private boolean isBrowseSupported() {
+
+        if (!java.awt.Desktop.isDesktopSupported()) {
+            return false;
+        }
+
+        java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+
+        if (!desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private void openURI(URI uri) {
+        try {
+            java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+            desktop.browse(uri);
+        } catch (IOException ioe) {
+
+            log.debug(ioe.getMessage());
+            controller.updateStatusLabel("Cannot display URL '" + uri.toString() + "'. Error was '" + ioe.getMessage() + "'");
+        }
     }
 }

@@ -3,7 +3,7 @@ MultiBit release notes.
 01 Apr 2012 Version 0.3.2
 Bug fixes:
 +  Fix so that mining pool coinbase transactions appear in wallets correctly.
-+  Fix in documentation 'configuration.txt' incorect parameter name specified.
++  Fix in documentation 'configuration.txt' incorrect parameter name specified.
 +  Tweaked point size of first-install default font (+1)
 
 28 Mar 2012 Version 0.3.1
