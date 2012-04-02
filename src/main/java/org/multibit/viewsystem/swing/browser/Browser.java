@@ -26,18 +26,22 @@ package org.multibit.viewsystem.swing.browser;
  * visit http://www.davidflanagan.com/javaexamples2.
  */
 
-import org.multibit.controller.MultiBitController;
-import org.multibit.viewsystem.swing.ColorAndFontConstants;
-import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.HelpContentsPanel;
-
-import java.awt.*;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.URL;
+
+import javax.swing.text.Document;
+import javax.swing.text.html.HTMLEditorKit;
+
+import org.multibit.controller.MultiBitController;
+import org.multibit.model.MultiBitModel;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
+import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.HelpContentsPanel;
 
 public class Browser extends javax.swing.JEditorPane implements PropertyChangeListener {
     private static final long serialVersionUID = 1L;
@@ -61,6 +65,29 @@ public class Browser extends javax.swing.JEditorPane implements PropertyChangeLi
         addPropertyChangeListener(this);
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
+        String fontName = controller.getModel().getUserPreference(MultiBitModel.FONT_NAME);
+        if (fontName == null || "".equals(fontName)) {
+            fontName = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_NAME;
+        }
+        // add in san-serif as a fallback
+        fontName = fontName + ", san-serif";
+
+        int fontSize = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
+        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+        if (fontSizeString != null && !"".equals(fontSizeString)) {
+            try {
+                fontSize = Integer.parseInt(fontSizeString);
+            } catch (NumberFormatException nfe) {
+                // use default
+            }
+        }
+        
+        HTMLEditorKit kit = new HTMLEditorKit();
+        setEditorKit(kit);
+        javax.swing.text.html.StyleSheet styleSheet = kit.getStyleSheet();
+        styleSheet.addRule("body {font-size:" + fontSize + "pt; font-family:" + fontName + ";}");
+        Document doc = kit.createDefaultDocument();
+        setDocument(doc);
         visit(currentHref);
     }
 
