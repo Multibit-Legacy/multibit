@@ -15,9 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -36,9 +34,7 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
-import org.multibit.viewsystem.swing.action.ResetTransactionsSubmitAction;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
-import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
@@ -53,10 +49,6 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
     private MultiBitController controller;
 
     private Data data;
-
-    private MultiBitLabel walletFilenameLabel;
-
-    private MultiBitLabel walletDescriptionLabel;
 
     /**
      * Creates a new {@link WelcomePanel}.
@@ -90,15 +82,6 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         add(createWelcomePanel(stentWidth), constraints);
-
-//        constraints.fill = GridBagConstraints.NONE;
-//        constraints.gridx = 0;
-//        constraints.gridy = 2;
-//        constraints.gridwidth = 1;
-//        constraints.weightx = 0.4;
-//        constraints.weighty = 0.06;
-//        constraints.anchor = GridBagConstraints.LINE_START;
-//        add(createButtonPanel(), constraints);
 
         JLabel filler1 = new JLabel();
         filler1.setOpaque(false);
@@ -153,108 +136,70 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
-                controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text1"), 3, welcomePanel);
+        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(" ", 3, welcomePanel);
 
-        constraints.fill = GridBagConstraints.BOTH;
+        MultiBitTextArea paragraph1TextArea = new MultiBitTextArea(controller.getLocaliser().getString("welcomePanel.paragraph1"), 4, 40, controller);
+        paragraph1TextArea.setOpaque(false);
+        paragraph1TextArea.setWrapStyleWord(true);
+        paragraph1TextArea.setLineWrap(true);
+        paragraph1TextArea.setEditable(false);
+        
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 4;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        welcomePanel.add(MultiBitTitledPanel.createStent(stentWidth), constraints);
+        welcomePanel.add(paragraph1TextArea, constraints);
 
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 2;
-        constraints.gridy = 5;
-        constraints.weightx = 0.05;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        welcomePanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
-
-        MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
-                "resetTransactionsPanel.walletFilenameLabel"));
-        constraints.fill = GridBagConstraints.NONE;
+        MultiBitTextArea paragraph2TextArea = new MultiBitTextArea(controller.getLocaliser().getString("welcomePanel.paragraph2"), 4, 40, controller);
+        paragraph2TextArea.setOpaque(false);
+        paragraph2TextArea.setWrapStyleWord(true);
+        paragraph2TextArea.setLineWrap(true);
+        paragraph2TextArea.setEditable(false);
+        
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 5;
-        constraints.weightx = 0.5;
+        constraints.weightx = 0.3;
         constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        welcomePanel.add(walletFilenameLabelLabel, constraints);
-
-        walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename());
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
-        constraints.gridy = 5;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        welcomePanel.add(walletFilenameLabel, constraints);
+        welcomePanel.add(paragraph2TextArea, constraints);
 
-        MultiBitLabel walletDescriptionLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
-                "resetTransactionsPanel.walletDescriptionLabel"));
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 4;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        welcomePanel.add(walletDescriptionLabelLabel, constraints);
-
-        walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
-        constraints.gridy = 4;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        welcomePanel.add(walletDescriptionLabel, constraints);
-
-        JPanel filler3 = new JPanel();
-        filler3.setOpaque(false);
-        constraints.fill = GridBagConstraints.BOTH;
+        MultiBitTextArea paragraph3TextArea = new MultiBitTextArea(controller.getLocaliser().getString("welcomePanel.paragraph3"), 3, 40, controller);
+        paragraph3TextArea.setOpaque(false);
+        paragraph3TextArea.setWrapStyleWord(true);
+        paragraph3TextArea.setLineWrap(true);
+        paragraph3TextArea.setEditable(false);
+        
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 6;
         constraints.weightx = 0.3;
-        constraints.weighty = 1.0;
-        constraints.gridwidth = 1;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        welcomePanel.add(filler3, constraints);
+        welcomePanel.add(paragraph3TextArea, constraints);
 
- 
-        MultiBitTextArea explainTextArea = new MultiBitTextArea(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text2"), 40, 2, controller);
-        explainTextArea.setOpaque(false);
-        constraints.fill = GridBagConstraints.NONE;
+        MultiBitTextArea paragraph4TextArea = new MultiBitTextArea(controller.getLocaliser().getString("welcomePanel.paragraph4"), 4, 40, controller);
+        paragraph4TextArea.setOpaque(false);
+        paragraph4TextArea.setWrapStyleWord(true);
+        paragraph4TextArea.setLineWrap(true);
+        paragraph4TextArea.setEditable(false);
+        
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 7;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        welcomePanel.add(explainTextArea, constraints);
+        welcomePanel.add(paragraph4TextArea, constraints);
 
         return welcomePanel;
     }
-
-//    private JPanel createButtonPanel() {
-//        JPanel buttonPanel = new JPanel();
-//        buttonPanel.setOpaque(false);
-//        FlowLayout flowLayout = new FlowLayout();
-//        flowLayout.setAlignment(FlowLayout.RIGHT);
-//        buttonPanel.setLayout(flowLayout);
-//
-//        ResetTransactionsSubmitAction submitAction = new ResetTransactionsSubmitAction(controller, ImageLoader.createImageIcon(ImageLoader.RESET_TRANSACTIONS_ICON_FILE));
-//        MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
-//        buttonPanel.add(submitButton);
-//
-//        return buttonPanel;
-//    }
      
     @Override
     public Data getData() {
