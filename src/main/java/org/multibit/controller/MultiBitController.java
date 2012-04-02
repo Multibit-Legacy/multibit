@@ -405,10 +405,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     public int getCurrentView() {
         if (getModel() != null) {
-            // log.debug ("getCurrentView = " + getModel().getCurrentView());
             return getModel().getCurrentView();
         } else {
-            // log.debug ("getCurrentView = DEFAULT_VIEW");
             return View.DEFAULT_VIEW;
         }
     }

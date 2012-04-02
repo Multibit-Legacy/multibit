@@ -21,7 +21,6 @@ import java.util.Map;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
 
 /**
  * a factory class that lazy loads views
@@ -62,8 +61,11 @@ public class ViewFactory {
 
         case View.SAME_VIEW: {
             assert false;
-            // give back a your wallets view just so that things do not break
-            //viewToReturn = new YourWalletsPanel(controller, mainFrame);
+            break;
+        }
+
+        case View.WELCOME_VIEW: {
+            viewToReturn = new WelcomePanel(controller, mainFrame);
             break;
         }
 

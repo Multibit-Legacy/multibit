@@ -537,6 +537,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             fileMenu.add(menuItem);
         }
 
+        // show weocome action
+        MultiBitAction showWelcomeAction = new MultiBitAction(controller, ImageLoader.WELCOME_ICON_FILE,
+                "welcomePanel.text", "welcomePanel.title", "welcomePanel.mnemonic",
+                View.WELCOME_VIEW);
+        menuItem = new JMenuItem(showWelcomeAction);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        helpMenu.add(menuItem);
+        
         // show help contents action
         MultiBitAction showHelpContentsAction = new MultiBitAction(controller, ImageLoader.HELP_CONTENTS_ICON_FILE,
                 "showHelpContentsAction.text", "showHelpContentsAction.tooltip", "showHelpContentsAction.mnemonic",

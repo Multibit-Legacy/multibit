@@ -36,6 +36,7 @@ public class HelpContentsPanel extends JPanel implements View {
 
     public static final String HELP_BASE_URL = "http://www.multibit.org/";
     
+    public static final String HELP_CONTENTS_URL = "help_contents.html";
     public static final String HELP_SENDING_URL = "help_sendingBitcoin.html";
     public static final String HELP_RECEIVING_URL = "help_receivingBitcoin.html";
     public static final String HELP_AVAILABLE_TO_SPEND_URL = "help_availableToSpend.html";

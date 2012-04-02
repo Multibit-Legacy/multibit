@@ -199,8 +199,8 @@ public class MultiBitModel {
         
 
         // initialize everything to look at the stored opened view
-        // if no properties passed in just initialize to the transactions view
-        int initialView = View.TRANSACTIONS_VIEW;
+        // if no properties passed in just initialize to the default view
+        int initialView = View.DEFAULT_VIEW;
         if (userPreferences != null) {
             String viewString = (String) userPreferences.get(MultiBitModel.SELECTED_VIEW);
             if (viewString != null) {
