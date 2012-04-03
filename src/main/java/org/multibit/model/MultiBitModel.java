@@ -457,9 +457,13 @@ public class MultiBitModel {
                     controller.onReorganise(wallet);
                 }
 
-                @Override
                 public void onTransactionConfidenceChanged(Wallet wallet, Transaction tx) {
                    controller.onTransactionConfidenceChanged(wallet, tx); 
+                }
+
+                public void onDeadTransaction(Wallet wallet, Transaction deadTx, Transaction replacementTx) {
+                    // TODO Auto-generated method stub
+                    
                 }
             });
         }

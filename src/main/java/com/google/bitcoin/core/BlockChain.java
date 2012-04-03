@@ -470,8 +470,6 @@ public class BlockChain implements IsMultiBitClass {
         for (Transaction tx : block.transactions) {
             try {
                 for (Wallet wallet : wallets) {
-                    //if (tx.isCoinBase())
-                    //    continue;
                     boolean shouldReceive = wallet.isTransactionRelevant(tx, true);
                     if (!shouldReceive) continue;
                     List<Transaction> txList = walletToTxMap.get(wallet);

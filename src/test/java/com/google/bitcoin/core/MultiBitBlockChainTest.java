@@ -47,7 +47,7 @@ public class MultiBitBlockChainTest {
 
     @Before
     public void setUp() throws Exception {
-        BriefLogFormatter.initVerbose();
+        //BriefLogFormatter.initVerbose();
         testNetChain = new BlockChain(testNet, new Wallet(testNet), new MemoryBlockStore(testNet));
         unitTestParams = NetworkParameters.unitTests();
         wallet = new Wallet(unitTestParams) {

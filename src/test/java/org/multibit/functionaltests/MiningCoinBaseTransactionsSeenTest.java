@@ -297,7 +297,6 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
         public void onReorganize(Wallet arg0) {
         }
 
-        @Override
         public void onTransactionConfidenceChanged(Wallet arg0, Transaction arg1) {
         }
 
@@ -346,6 +345,11 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
 
         @Override
         public void setHelpContext(String helpContextToDisplay) {
+        }
+
+        public void onDeadTransaction(Wallet wallet, Transaction deadTx, Transaction replacementTx) {
+            // TODO Auto-generated method stub
+            
         }
     }
 }

@@ -889,7 +889,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         recreateAllViews(false);
     }
 
-    @Override
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
         log.debug("Transaction confidence changed for tx " + transaction.toString());
     }
@@ -1037,5 +1036,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public WalletListPanel getWalletsView() {
         return walletsView;
+    }
+
+    public void onDeadTransaction(Wallet wallet, Transaction deadTx, Transaction replacementTx) {
+        // TODO Auto-generated method stub
+        
     }
 }

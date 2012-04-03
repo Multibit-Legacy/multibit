@@ -315,7 +315,7 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
         return sequence != NO_SEQUENCE;
     }
     
-    /** Mostly copied from transaction output */
+    /** determine whether the transaction input is in the wallet */
     public boolean isMine(Wallet wallet) {
         try {
             byte[] pubkey = getScriptSig().getPubKey();

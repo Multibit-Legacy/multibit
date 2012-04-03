@@ -577,7 +577,7 @@
     <staging.linux.dir>${project.build.directory}/staging.linux</staging.linux.dir>
 
     <!-- Version of BitCoinJ to use (multiple uses) -->
-    <bitcoinj.version>0.4-SNAPSHOT</bitcoinj.version>
+    <bitcoinj.version>0.4</bitcoinj.version>
 
     <!-- Location of staging directory for creation of windows IzPack installer -->
     <staging.windows.dir>${project.build.directory}/staging.windows</staging.windows.dir>

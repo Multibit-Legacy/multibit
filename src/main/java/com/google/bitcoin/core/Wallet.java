@@ -332,8 +332,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
         BigInteger valueSentToMe = tx.getValueSentToMe(this);
         BigInteger valueSentFromMe = tx.getValueSentFromMe(this);
         if (log.isInfoEnabled()) {
-            log.info(String.format("Received a pending transaction %s that spends %s BTC from our own wallet,"
-                    + " and sends us %s BTC", tx.getHashAsString(), Utils.bitcoinValueToFriendlyString(valueSentFromMe),
+            log.info(String.format("Received a pending transaction %s that spends %s BTC from our own wallet," +
+                    " and sends us %s BTC", tx.getHashAsString(), Utils.bitcoinValueToFriendlyString(valueSentFromMe),
                     Utils.bitcoinValueToFriendlyString(valueSentToMe)));
         }
 
@@ -430,8 +430,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
         BigInteger valueDifference = valueSentToMe.subtract(valueSentFromMe);
 
         if (!reorg) {
-            log.info("Received tx{} for {} BTC: {}", new Object[] { sideChain ? " on a side chain" : "",
-                    bitcoinValueToFriendlyString(valueDifference), tx.getHashAsString() });
+            log.info("Received tx{} for {} BTC: {}", new Object[]{sideChain ? " on a side chain" : "",
+                    bitcoinValueToFriendlyString(valueDifference), tx.getHashAsString()});
         }
 
         // If the transaction is already in our spent or unspent or there is no money in it it is probably
@@ -443,10 +443,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
             log.info("Already have tx " + tx.getHash() + " in spent/ unspent or there is no money in it and it is not mine so ignoring");
             return;
         }
-        // If this transaction is already in the wallet we may need to move it
-        // into a different pool. At the very
-        // least we need to ensure we're manipulating the canonical object
-        // rather than a duplicate.
+        // If this transaction is already in the wallet we may need to move it into a different pool. At the very
+        // least we need to ensure we're manipulating the canonical object rather than a duplicate.
         Transaction wtx;
         if ((wtx = pending.remove(txHash)) != null) {
             // Make sure "tx" is always the canonical object we want to manipulate, send to event handlers, etc.
@@ -713,13 +711,12 @@ public class Wallet implements Serializable, IsMultiBitClass {
     }
 
     /**
-     * Updates the wallet with the given transaction: puts it into the pending pool and sets the spent flags. Used in
-     * two situations:<p>
+     * Updates the wallet with the given transaction: puts it into the pending pool, sets the spent flags and runs
+     * the onCoinsSent/onCoinsReceived event listener. Used in two situations:<p>
      *
      * <ol>
      *     <li>When we have just successfully transmitted the tx we created to the network.</li>
-     *     <li>When we receive a pending transaction that didn't appear in the chain yet,
-     *         and we did not create it, and it spends some of our outputs.</li>
+     *     <li>When we receive a pending transaction that didn't appear in the chain yet, and we did not create it.</li>
      * </ol>
      */
     public synchronized void commitTx(Transaction tx) throws VerificationException {
