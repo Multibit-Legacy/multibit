@@ -40,14 +40,16 @@ import org.multibit.platform.listener.GenericPreferencesEventListener;
 import org.multibit.platform.listener.GenericQuitEvent;
 import org.multibit.platform.listener.GenericQuitEventListener;
 import org.multibit.platform.listener.GenericQuitResponse;
-import org.multibit.qrcode.BitcoinURI;
-import org.multibit.qrcode.BitcoinURIParseException;
+//import org.multibit.qrcode.BitcoinURI;
+//import org.multibit.qrcode.BitcoinURIParseException;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.uri.BitcoinURI;
+import com.google.bitcoin.uri.BitcoinURIParseException;
 import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.GetDataMessage;
 import com.google.bitcoin.core.Message;

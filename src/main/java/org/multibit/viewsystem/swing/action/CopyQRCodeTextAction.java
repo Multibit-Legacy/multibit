@@ -25,7 +25,6 @@ import org.multibit.model.Data;
 import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
-import org.multibit.qrcode.BitcoinURI;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
@@ -98,7 +97,7 @@ public class CopyQRCodeTextAction extends AbstractAction {
 
                 String bitcoinURI;
                 try {
-                    bitcoinURI = BitcoinURI.convertToBitcoinURI(new Address(controller.getMultiBitService().getNetworkParameters(), address), Utils.toNanoCoins(amount), label, null);
+                    bitcoinURI = com.google.bitcoin.uri.BitcoinURI.convertToBitcoinURI(new Address(controller.getMultiBitService().getNetworkParameters(), address), Utils.toNanoCoins(amount), label, null);
                 } catch (AddressFormatException e) {
                     throw new RuntimeException(e);
                 }

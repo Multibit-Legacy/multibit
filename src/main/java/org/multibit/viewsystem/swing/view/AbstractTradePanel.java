@@ -69,7 +69,7 @@ import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
-import org.multibit.qrcode.BitcoinURI;
+//import org.multibit.qrcode.BitcoinURI;
 import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.qrcode.SwatchGenerator;
 import org.multibit.utils.ImageLoader;
@@ -93,6 +93,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Address;
+import com.google.bitcoin.uri.BitcoinURI;
 
 /**
  * Abstract parent class for SendBitcoinPanel and ReceiveBitcoinPanel
