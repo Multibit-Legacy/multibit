@@ -117,9 +117,10 @@ public class MultiBit {
         log.debug("userLanguageCode = {}", userLanguageCode);
 
         if (userLanguageCode == null) {
-            // no language info supplied - set to English
-            userPreferences.setProperty(MultiBitModel.USER_LANGUAGE_CODE, Locale.ENGLISH.getLanguage());
-            localiser = new Localiser(Locale.ENGLISH);
+            // initial install - no language info supplied - see if we can use the user default, else Localiser will set it to English
+            localiser = new Localiser(Locale.getDefault());
+            
+            userPreferences.setProperty(MultiBitModel.USER_LANGUAGE_CODE, localiser.getLocale().getLanguage());
         } else {
             if (MultiBitModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
                 localiser = new Localiser(Locale.getDefault());

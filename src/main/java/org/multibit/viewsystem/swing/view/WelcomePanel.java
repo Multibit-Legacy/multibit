@@ -15,7 +15,9 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -42,6 +44,10 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
  * The reset blockchain and transactions view
  */
 public class WelcomePanel extends JPanel implements View, DataProvider {
+
+    private static final int TEXT_WIDTH = 40;
+    
+    private static final String EXAMPLE_TEXT="The quick brown fox jumps over the lazy dog 0123456789"; 
 
     private static final long serialVersionUID = 199992298245057705L;
 
@@ -70,23 +76,20 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
         GridBagConstraints constraints = new GridBagConstraints();
         setLayout(new GridBagLayout());
 
-        String[] keys = new String[] {"resetTransactionsPanel.walletDescriptionLabel", "resetTransactionsPanel.walletFilenameLabel"};
-        int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this);
-
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
-        constraints.gridy = 1;
+        constraints.gridy = 0;
         constraints.gridwidth = 2;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
+        constraints.weightx = 10;
+        constraints.weighty = 10;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(createWelcomePanel(stentWidth), constraints);
+        add(createWelcomePanel(), constraints);
 
         JLabel filler1 = new JLabel();
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 1;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.weightx = 1;
@@ -107,7 +110,7 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
         helpButton.setBorder(BorderFactory.createEmptyBorder(0, AbstractTradePanel.HELP_BUTTON_INDENT, AbstractTradePanel.HELP_BUTTON_INDENT, 0));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 2;
         constraints.weightx = 1;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -119,85 +122,123 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
         filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 5;
-        constraints.gridwidth = 2;
+        constraints.gridy = 3;
+        constraints.gridwidth = 1;
         constraints.weightx = 1;
-        constraints.weighty = 100;
+        constraints.weighty = 10000;
         constraints.anchor = GridBagConstraints.CENTER;
         add(filler2, constraints);
     }
 
-    private JPanel createWelcomePanel(int stentWidth) {
-        MultiBitTitledPanel welcomePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-        "welcomePanel.title"));
+    private JPanel createWelcomePanel() {
+        MultiBitTitledPanel welcomePanel = new MultiBitTitledPanel(controller.getLocaliser().getString("welcomePanel.title"));
         
         welcomePanel.setOpaque(false);
+       
+        FontMetrics fontMetrics = welcomePanel.getFontMetrics(welcomePanel.getFont());
+        int preferredWidth = fontMetrics.stringWidth(EXAMPLE_TEXT);
+        int fontHeight = fontMetrics.getHeight();
 
         GridBagConstraints constraints = new GridBagConstraints();
 
         MultiBitTitledPanel.addLeftJustifiedTextAtIndent(" ", 3, welcomePanel);
 
-        MultiBitTextArea paragraph1TextArea = new MultiBitTextArea(controller.getLocaliser().getString("welcomePanel.paragraph1"), 4, 40, controller);
+        String paragraph1 = controller.getLocaliser().getString("welcomePanel.paragraph1");
+        int height1 =  calculateHeight(paragraph1);
+        
+        MultiBitTextArea paragraph1TextArea = new MultiBitTextArea(paragraph1, height1, TEXT_WIDTH, controller);
+        paragraph1TextArea.setMinimumSize(new Dimension(preferredWidth, height1 * fontHeight));
         paragraph1TextArea.setOpaque(false);
         paragraph1TextArea.setWrapStyleWord(true);
         paragraph1TextArea.setLineWrap(true);
         paragraph1TextArea.setEditable(false);
-        
+        //paragraph1TextArea.setBorder(BorderFactory.createLineBorder(Color.RED));
+  
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 4;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         welcomePanel.add(paragraph1TextArea, constraints);
 
-        MultiBitTextArea paragraph2TextArea = new MultiBitTextArea(controller.getLocaliser().getString("welcomePanel.paragraph2"), 4, 40, controller);
+        String paragraph2 = controller.getLocaliser().getString("welcomePanel.paragraph2");
+        int height2 =  calculateHeight(paragraph2);
+
+        MultiBitTextArea paragraph2TextArea = new MultiBitTextArea(paragraph2, height2, TEXT_WIDTH, controller);
+        paragraph2TextArea.setMinimumSize(new Dimension(preferredWidth, height2 * fontHeight));
         paragraph2TextArea.setOpaque(false);
         paragraph2TextArea.setWrapStyleWord(true);
         paragraph2TextArea.setLineWrap(true);
         paragraph2TextArea.setEditable(false);
+        //paragraph2TextArea.setBorder(BorderFactory.createLineBorder(Color.BLUE));
         
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 5;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         welcomePanel.add(paragraph2TextArea, constraints);
 
-        MultiBitTextArea paragraph3TextArea = new MultiBitTextArea(controller.getLocaliser().getString("welcomePanel.paragraph3"), 3, 40, controller);
+        String paragraph3 = controller.getLocaliser().getString("welcomePanel.paragraph3");
+        int height3 =  calculateHeight(paragraph3);
+
+        MultiBitTextArea paragraph3TextArea = new MultiBitTextArea(paragraph3, height3, TEXT_WIDTH, controller);
+        paragraph3TextArea.setMinimumSize(new Dimension(preferredWidth, height3 * fontHeight));
         paragraph3TextArea.setOpaque(false);
         paragraph3TextArea.setWrapStyleWord(true);
         paragraph3TextArea.setLineWrap(true);
         paragraph3TextArea.setEditable(false);
+        //paragraph3TextArea.setBorder(BorderFactory.createLineBorder(Color.CYAN));
         
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 6;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         welcomePanel.add(paragraph3TextArea, constraints);
 
-        MultiBitTextArea paragraph4TextArea = new MultiBitTextArea(controller.getLocaliser().getString("welcomePanel.paragraph4"), 4, 40, controller);
+        String paragraph4 = controller.getLocaliser().getString("welcomePanel.paragraph4");
+        int height4 =  calculateHeight(paragraph4);
+
+        MultiBitTextArea paragraph4TextArea = new MultiBitTextArea(paragraph4, height4, TEXT_WIDTH, controller);
+        paragraph4TextArea.setMinimumSize(new Dimension(preferredWidth, height4 * fontHeight));
         paragraph4TextArea.setOpaque(false);
         paragraph4TextArea.setWrapStyleWord(true);
         paragraph4TextArea.setLineWrap(true);
         paragraph4TextArea.setEditable(false);
+        //paragraph4TextArea.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
         
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 7;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         welcomePanel.add(paragraph4TextArea, constraints);
 
+        JLabel filler1 = new JLabel();
+        filler1.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 8;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1000;
+        constraints.anchor = GridBagConstraints.CENTER;
+        add(filler1, constraints);
+
         return welcomePanel;
+    }
+    
+    private int calculateHeight(String text) {
+        return (int)Math.ceil((text.length())/(TEXT_WIDTH - 4) + 1);
     }
      
     @Override
