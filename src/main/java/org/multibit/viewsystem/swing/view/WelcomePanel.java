@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -26,6 +27,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import org.multibit.controller.MultiBitController;
@@ -60,6 +62,8 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
      */
     public WelcomePanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
+        
+        setLayout(new BorderLayout());
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
@@ -73,8 +77,12 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
     private void initUI() {
         setMinimumSize(new Dimension(550, 160));
 
+        JPanel mainPanel = new JPanel();
+        mainPanel.setMinimumSize(new Dimension(550, 160));
+        mainPanel.setLayout(new GridBagLayout());
+        mainPanel.setOpaque(false);
+        
         GridBagConstraints constraints = new GridBagConstraints();
-        setLayout(new GridBagLayout());
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -83,7 +91,7 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
         constraints.weightx = 10;
         constraints.weighty = 10;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(createWelcomePanel(), constraints);
+        mainPanel.add(createWelcomePanel(), constraints);
 
         JLabel filler1 = new JLabel();
         filler1.setOpaque(false);
@@ -95,7 +103,7 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
         constraints.weightx = 1;
         constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.CENTER;
-        add(filler1, constraints);
+        mainPanel.add(filler1, constraints);
 
         Action helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
                 "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
@@ -116,7 +124,7 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.BASELINE_LEADING;
-        add(helpButton, constraints);
+        mainPanel.add(helpButton, constraints);
 
         JLabel filler2 = new JLabel();
         filler2.setOpaque(false);
@@ -127,7 +135,17 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
         constraints.weightx = 1;
         constraints.weighty = 10000;
         constraints.anchor = GridBagConstraints.CENTER;
-        add(filler2, constraints);
+        mainPanel.add(filler2, constraints);
+        
+        JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        //mainScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.DARK_BACKGROUND_COLOR));
+        mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        mainScrollPane.getViewport().setOpaque(true);
+
+        add(mainScrollPane, BorderLayout.CENTER);
+
     }
 
     private JPanel createWelcomePanel() {
@@ -232,7 +250,7 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
         constraints.weightx = 1;
         constraints.weighty = 1000;
         constraints.anchor = GridBagConstraints.CENTER;
-        add(filler1, constraints);
+        welcomePanel.add(filler1, constraints);
 
         return welcomePanel;
     }
