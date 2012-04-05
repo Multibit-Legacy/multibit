@@ -89,12 +89,10 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
         constraints.gridy = 0;
         constraints.gridwidth = 2;
         constraints.weightx = 10;
-        constraints.weighty = 10;
+        constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(createWelcomePanel(), constraints);
 
-        JLabel filler1 = new JLabel();
-        filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 1;
@@ -103,7 +101,7 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
         constraints.weightx = 1;
         constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.CENTER;
-        mainPanel.add(filler1, constraints);
+        mainPanel.add(MultiBitTitledPanel.createStent(12, 12), constraints);
 
         Action helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
                 "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
@@ -144,7 +142,6 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
         mainScrollPane.getViewport().setOpaque(true);
 
         add(mainScrollPane, BorderLayout.CENTER);
-
     }
 
     private JPanel createWelcomePanel() {
