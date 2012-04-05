@@ -15,6 +15,13 @@
  */
 package org.multibit.platform.builder.mac;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationSpecification;
 import org.multibit.platform.builder.generic.DefaultApplicationBuilder;
@@ -24,13 +31,6 @@ import org.multibit.platform.handler.DefaultPreferencesHandler;
 import org.multibit.platform.handler.DefaultQuitHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 
 /**
  * <p>[Pattern] to provide the following to {@link Object}:</p>

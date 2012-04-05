@@ -15,12 +15,12 @@
  */
 package org.multibit.platform;
 
-import org.multibit.platform.builder.*;
+import org.multibit.platform.builder.OSUtils;
+import org.multibit.platform.builder.generic.DefaultApplicationBuilder;
 import org.multibit.platform.builder.linux.LinuxApplicationBuilder;
 import org.multibit.platform.builder.mac.MacApplicationBuilder;
 import org.multibit.platform.builder.solaris.SolarisApplicationBuilder;
 import org.multibit.platform.builder.unix.UnixApplicationBuilder;
-import org.multibit.platform.builder.generic.DefaultApplicationBuilder;
 import org.multibit.platform.builder.win.WindowsApplicationBuilder;
 
 /**

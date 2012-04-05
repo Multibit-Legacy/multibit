@@ -16,26 +16,24 @@
 
 package com.google.bitcoin.core;
 
-import com.google.bitcoin.store.BlockStore;
-import com.google.bitcoin.store.MemoryBlockStore;
-import com.google.bitcoin.store.WalletProtobufSerializer;
-import com.google.bitcoin.utils.BriefLogFormatter;
-import org.junit.Before;
-import org.junit.Test;
+import static com.google.bitcoin.core.CoreTestUtils.createFakeBlock;
+import static com.google.bitcoin.core.CoreTestUtils.createFakeTx;
+import static com.google.bitcoin.core.Utils.toNanoCoins;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import static com.google.bitcoin.core.CoreTestUtils.createFakeBlock;
-import static com.google.bitcoin.core.CoreTestUtils.createFakeTx;
-import static com.google.bitcoin.core.Utils.bitcoinValueToFriendlyString;
-import static com.google.bitcoin.core.Utils.toNanoCoins;
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.google.bitcoin.store.BlockStore;
+import com.google.bitcoin.store.MemoryBlockStore;
+import com.google.bitcoin.utils.BriefLogFormatter;
 
 public class WalletTest {
     static final NetworkParameters params = NetworkParameters.unitTests();

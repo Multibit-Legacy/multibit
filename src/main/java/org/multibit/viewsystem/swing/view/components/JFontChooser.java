@@ -48,7 +48,6 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.qrcode.SwatchGenerator;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

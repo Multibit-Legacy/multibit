@@ -15,13 +15,16 @@
  */
 package org.multibit.store;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+
+import org.junit.Test;
+
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.StoredBlock;
-import org.junit.Test;
-import java.io.File;
-import static org.junit.Assert.assertEquals;
 
 public class ReplayableBlockStoreTest {
     

@@ -15,19 +15,23 @@
  */
 package org.multibit.platform.builder.mac;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
+
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.handler.GenericAboutHandler;
 import org.multibit.platform.handler.GenericOpenURIHandler;
 import org.multibit.platform.handler.GenericPreferencesHandler;
 import org.multibit.platform.handler.GenericQuitHandler;
-import org.multibit.platform.listener.*;
+import org.multibit.platform.listener.GenericAboutEvent;
+import org.multibit.platform.listener.GenericOpenURIEvent;
+import org.multibit.platform.listener.GenericPreferencesEvent;
+import org.multibit.platform.listener.GenericQuitEvent;
+import org.multibit.platform.listener.GenericQuitResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Proxy;
 
 /**
  * <p>GenericApplication to provide the following to application:</p>

@@ -15,7 +15,9 @@
  */
 package org.multibit.view;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 
 /**
  * Reads file in UTF-8 encoding and output to STDOUT in ASCII with unicode

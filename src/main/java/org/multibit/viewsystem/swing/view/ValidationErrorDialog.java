@@ -29,7 +29,6 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

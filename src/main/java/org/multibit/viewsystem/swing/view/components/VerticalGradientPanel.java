@@ -15,7 +15,6 @@
  */
 package org.multibit.viewsystem.swing.view.components;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;

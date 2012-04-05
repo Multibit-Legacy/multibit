@@ -15,18 +15,31 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.Data;
@@ -37,11 +50,14 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.ResetTransactionsSubmitAction;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+
+import com.toedter.calendar.JCalendar;
 
 /**
  * The reset blockchain and transactions view
@@ -58,17 +74,39 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
 
     private MultiBitLabel walletDescriptionLabel;
 
+    private Date resetDate;
+    
+    private final SimpleDateFormat dateFormatter;
+    
+    private JRadioButton resetFromFirstTransactionRadioButton;
+    private JRadioButton chooseResetDateRadioButton;
+    private JCalendar calendarChooser;
+    
+    
+    public Date getResetDate() {
+        return resetDate;
+    }
+    
+    public boolean isResetFromFirstTransaction() {
+        if (resetFromFirstTransactionRadioButton != null) {
+            return resetFromFirstTransactionRadioButton.isSelected();
+        } else {
+            return true;
+        }
+    }
+
     /**
      * Creates a new {@link ResetTransactionsPanel}.
      */
     public ResetTransactionsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
 
-        //setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
-        //        BorderFactory.createMatteBorder(1, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        setLayout(new BorderLayout());
 
-        this.controller = controller;
+        resetDate = new Date(((new Date()).getTime()) - (1000 * 60 * 60 * 24 * 14) ); // 2
+                                                                                   // weeks ago
+        dateFormatter = new SimpleDateFormat("dd MMM yyyy", controller.getLocaliser().getLocale());
 
         data = new Data();
 
@@ -76,43 +114,54 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
     }
 
     private void initUI() {
-        setMinimumSize(new Dimension(550, 160));
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new GridBagLayout());
+        mainPanel.setOpaque(false);
 
         GridBagConstraints constraints = new GridBagConstraints();
-        setLayout(new GridBagLayout());
 
-        String[] keys = new String[] {"resetTransactionsPanel.walletDescriptionLabel", "resetTransactionsPanel.walletFilenameLabel"};
+        String[] keys = new String[] { "resetTransactionsPanel.walletDescriptionLabel",
+                "resetTransactionsPanel.walletFilenameLabel" };
         int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this);
 
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(createExplainPanel(stentWidth), constraints);
+        mainPanel.add(createExplainPanel(stentWidth), constraints);
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.gridwidth = 2;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(createResetDatePanel(stentWidth), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 2;
+        constraints.gridy = 3;
         constraints.gridwidth = 1;
         constraints.weightx = 0.4;
         constraints.weighty = 0.06;
         constraints.anchor = GridBagConstraints.LINE_START;
-        add(createButtonPanel(), constraints);
+        mainPanel.add(createButtonPanel(), constraints);
 
         JLabel filler1 = new JLabel();
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 4;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.weightx = 1;
         constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.CENTER;
-        add(filler1, constraints);
+        mainPanel.add(filler1, constraints);
 
         Action helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
                 "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
@@ -120,39 +169,49 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         HelpButton helpButton = new HelpButton(helpAction, controller);
         helpButton.setText("");
 
-        String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] {
-                controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip") });
+        String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] { controller.getLocaliser().getString(
+                "multiBitFrame.helpMenuTooltip") });
         helpButton.setToolTipText(tooltipText);
         helpButton.setHorizontalAlignment(SwingConstants.LEADING);
-        helpButton.setBorder(BorderFactory.createEmptyBorder(0, AbstractTradePanel.HELP_BUTTON_INDENT, AbstractTradePanel.HELP_BUTTON_INDENT, 0));
+        helpButton.setBorder(BorderFactory.createEmptyBorder(0, AbstractTradePanel.HELP_BUTTON_INDENT,
+                AbstractTradePanel.HELP_BUTTON_INDENT, 0));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 5;
         constraints.weightx = 1;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.BASELINE_LEADING;
-        add(helpButton, constraints);
+        mainPanel.add(helpButton, constraints);
 
         JLabel filler2 = new JLabel();
         filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 6;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 100;
         constraints.anchor = GridBagConstraints.CENTER;
-        add(filler2, constraints);
+        mainPanel.add(filler2, constraints);
+
+        JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        mainScrollPane.getViewport().setOpaque(true);
+
+        add(mainScrollPane, BorderLayout.CENTER);
+
     }
 
     private JPanel createExplainPanel(int stentWidth) {
         MultiBitTitledPanel explainPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-        "resetTransactionsPanel.explainTitle"));
-        
+                "resetTransactionsPanel.explainTitle"));
+
         explainPanel.setOpaque(false);
-        //explainPanel.setBackground(Color.WHITE);
+        //explainPanel.setBorder(BorderFactory.createLineBorder(Color.CYAN));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -230,9 +289,21 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         constraints.anchor = GridBagConstraints.LINE_START;
         explainPanel.add(filler3, constraints);
 
- 
-        MultiBitTextArea explainTextArea = new MultiBitTextArea(controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text2"), 40, 2, controller);
+        String explainText2 = controller.getLocaliser().getString(
+                "resetTransactionsPanel.explainLabel.text2");
+        MultiBitTextArea explainTextArea = new MultiBitTextArea(explainText2, 2, 40, controller);
         explainTextArea.setOpaque(false);
+
+        FontMetrics fontMetrics = getFontMetrics(getFont());
+        int preferredWidth = fontMetrics.stringWidth(WelcomePanel.EXAMPLE_TEXT);
+        int fontHeight = fontMetrics.getHeight();
+        int height1 =  WelcomePanel.calculateHeight(explainText2);
+        
+        Dimension preferredSize = new Dimension(preferredWidth, height1 * fontHeight);
+        explainTextArea.setMinimumSize(preferredSize);
+        explainTextArea.setPreferredSize(preferredSize);
+        explainTextArea.setMaximumSize(preferredSize);
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 7;
@@ -252,23 +323,151 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        ResetTransactionsSubmitAction submitAction = new ResetTransactionsSubmitAction(controller, ImageLoader.createImageIcon(ImageLoader.RESET_TRANSACTIONS_ICON_FILE));
+        ResetTransactionsSubmitAction submitAction = new ResetTransactionsSubmitAction(controller,
+                ImageLoader.createImageIcon(ImageLoader.RESET_TRANSACTIONS_ICON_FILE), this);
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
         return buttonPanel;
     }
-     
+
+    private JPanel createResetDatePanel(int stentWidth) {
+        // reset date radios
+        MultiBitTitledPanel resetDatePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
+                "resetTransactionsPanel.resetDate"));
+
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.05;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        JPanel indent = MultiBitTitledPanel.getIndentPanel(1);
+        resetDatePanel.add(indent, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 3;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        JPanel stent = MultiBitTitledPanel.createStent(stentWidth);
+        resetDatePanel.add(stent, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 3;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        resetDatePanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
+
+        ButtonGroup resetDateGroup = new ButtonGroup();
+        resetFromFirstTransactionRadioButton = new JRadioButton(controller.getLocaliser().getString(
+                "resetTransactionsPanel.resetFromFirstTransaction"));
+        resetFromFirstTransactionRadioButton.setOpaque(false);
+        resetFromFirstTransactionRadioButton.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        resetFromFirstTransactionRadioButton.setSelected(true);
+        
+        chooseResetDateRadioButton = new JRadioButton(controller.getLocaliser().getString(
+                "resetTransactionsPanel.chooseResetDate", new Object[]{dateFormatter.format(resetDate.getTime())}));
+        chooseResetDateRadioButton.setOpaque(false);
+        chooseResetDateRadioButton.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        chooseResetDateRadioButton.setSelected(false);
+        
+        resetDateGroup.add(resetFromFirstTransactionRadioButton);
+        resetDateGroup.add(chooseResetDateRadioButton);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 4;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 3;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        resetDatePanel.add(resetFromFirstTransactionRadioButton, constraints);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 5;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 3;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        resetDatePanel.add(chooseResetDateRadioButton, constraints);
+
+        // Create a border for the calendar
+        Border etchedBorder = BorderFactory.createEtchedBorder();
+        Border emptyBorder = BorderFactory.createEmptyBorder(4, 4, 4, 4);
+        Border compoundBorder = BorderFactory.createCompoundBorder(etchedBorder, emptyBorder);
+
+        calendarChooser = new JCalendar(resetDate, controller.getLocaliser().getLocale(), true, false);
+        calendarChooser.addPropertyChangeListener(
+                new PropertyChangeListener() {
+                    @Override
+                    public void propertyChange(PropertyChangeEvent e) {
+                        if ("calendar".equals(e.getPropertyName())) {
+                            GregorianCalendar calendar = ((GregorianCalendar) e.getNewValue());
+                            resetDate = calendar.getTime();
+                            chooseResetDateRadioButton.setText(controller.getLocaliser().getString(
+                                    "resetTransactionsPanel.chooseResetDate", new Object[]{dateFormatter.format(calendar.getTime())}));
+                        } 
+                    }
+                });
+        calendarChooser.setDate(resetDate);
+        calendarChooser.setBorder(compoundBorder);
+        calendarChooser.setEnabled(false);
+        // Set fonts rather than using defaults
+
+        // calendar1.setTitleFont(new Font("Serif", Font.BOLD | Font.ITALIC,
+        // 24));
+        // calendar1.setDayOfWeekFont(new Font("SansSerif", Font.ITALIC, 12));
+        // calendar1.setDayFont(new Font("SansSerif", Font.BOLD, 16));
+        // calendar1.setTimeFont(new Font("DialogInput", Font.PLAIN, 10));
+        // calendar1.setTodayFont(new Font("Dialog", Font.PLAIN, 14));
+
+        ItemListener itemListener = new ChangeResetDateListener();
+        resetFromFirstTransactionRadioButton.addItemListener(itemListener);
+        chooseResetDateRadioButton.addItemListener(itemListener);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 6;
+        constraints.weightx = 0.5;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        resetDatePanel.add(calendarChooser, constraints);
+
+        JPanel fill1 = new JPanel();
+        fill1.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 4;
+        constraints.gridy = 7;
+        constraints.weightx = 20;
+        constraints.weighty = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        resetDatePanel.add(fill1, constraints);
+
+        return resetDatePanel;
+    }
+
     @Override
     public Data getData() {
         return data;
     }
 
-
     @Override
     public void navigateAwayFromView() {
     }
-    
+
     /**
      * show explanatory text for resetting blockchain and transactions and a
      * button to do it
@@ -278,7 +477,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
     }
-    
+
     @Override
     public Icon getViewIcon() {
         return ImageLoader.createImageIcon(ImageLoader.RESET_TRANSACTIONS_ICON_FILE);
@@ -288,7 +487,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
     public String getViewTitle() {
         return controller.getLocaliser().getString("resetTransactionsSubmitAction.text");
     }
-    
+
     @Override
     public String getViewTooltip() {
         return controller.getLocaliser().getString("resetTransactionsSubmitAction.tooltip");
@@ -298,4 +497,19 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
     public int getViewId() {
         return View.RESET_TRANSACTIONS_VIEW;
     }
+    
+    class ChangeResetDateListener implements ItemListener {
+        public ChangeResetDateListener() {
+
+        }
+
+        public void itemStateChanged(ItemEvent e) {
+            if (e.getSource().equals(resetFromFirstTransactionRadioButton)) {
+                calendarChooser.setEnabled(false);
+            } else {
+                calendarChooser.setEnabled(true);
+            }
+        }
+    }
+
 }

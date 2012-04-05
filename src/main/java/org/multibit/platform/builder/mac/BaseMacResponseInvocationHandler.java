@@ -15,14 +15,14 @@
  */
 package org.multibit.platform.builder.mac;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import org.multibit.platform.handler.GenericHandler;
 import org.multibit.platform.listener.GenericEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 /**
  * <p>Base class to provide the following to Mac invocation handlers:</p>

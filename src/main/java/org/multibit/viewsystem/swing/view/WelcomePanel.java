@@ -49,7 +49,7 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
 
     private static final int TEXT_WIDTH = 40;
     
-    private static final String EXAMPLE_TEXT="The quick brown fox jumps over the lazy dog 0123456789"; 
+    static final String EXAMPLE_TEXT="The quick brown fox jumps over the lazy dog 0123456789"; 
 
     private static final long serialVersionUID = 199992298245057705L;
 
@@ -75,10 +75,10 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
     }
 
     private void initUI() {
-        setMinimumSize(new Dimension(550, 160));
+        setMinimumSize(new Dimension(400, 400));
 
         JPanel mainPanel = new JPanel();
-        mainPanel.setMinimumSize(new Dimension(550, 160));
+        mainPanel.setMinimumSize(new Dimension(400, 400));
         mainPanel.setLayout(new GridBagLayout());
         mainPanel.setOpaque(false);
         
@@ -139,7 +139,6 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
         
         JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        //mainScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.DARK_BACKGROUND_COLOR));
         mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
@@ -255,8 +254,8 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
         return welcomePanel;
     }
     
-    private int calculateHeight(String text) {
-        return (int)Math.ceil((text.length())/(TEXT_WIDTH - 4) + 1);
+    public static int calculateHeight(String text) {
+        return (int)Math.ceil((text.length())/(TEXT_WIDTH - 4));
     }
      
     @Override

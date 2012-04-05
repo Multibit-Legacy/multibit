@@ -15,15 +15,15 @@
  */
 package org.multibit.platform.handler;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.multibit.platform.listener.GenericEventListener;
 import org.multibit.platform.listener.GenericOpenURIEvent;
 import org.multibit.platform.listener.GenericOpenURIEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * <p>Generic event to provide the following to {@link org.multibit.platform.GenericApplication}:</p>

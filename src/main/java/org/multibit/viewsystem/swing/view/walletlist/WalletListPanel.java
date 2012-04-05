@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing.view.walletlist;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

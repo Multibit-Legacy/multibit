@@ -15,10 +15,10 @@
  */
 package org.multibit.model;
 
-import com.google.bitcoin.core.Transaction;
-
 import java.math.BigInteger;
 import java.util.Date;
+
+import com.google.bitcoin.core.Transaction;
 
 /**
  * class used to store the data in the table in a quick to access form

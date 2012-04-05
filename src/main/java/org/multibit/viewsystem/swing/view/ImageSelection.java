@@ -15,12 +15,9 @@
  */
 package org.multibit.viewsystem.swing.view;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -30,6 +27,17 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.StringTokenizer;
+
+import javax.imageio.ImageIO;
+import javax.swing.AbstractButton;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.TransferHandler;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ImageSelection extends TransferHandler implements Transferable {
     private static final long serialVersionUID = 756395092284264645L;

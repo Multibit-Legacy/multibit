@@ -15,12 +15,12 @@
  */
 package org.multibit.protcolhandler.builders;
 
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Test;
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
 import org.multibit.platform.GenericApplicationSpecification;
-
-import static org.junit.Assert.assertNotNull;
 
 public class GenericApplicationFactoryTest {
 

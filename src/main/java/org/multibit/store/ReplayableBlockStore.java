@@ -16,14 +16,6 @@
 
 package org.multibit.store;
 
-import com.google.bitcoin.core.*;
-import com.google.bitcoin.store.BlockStore;
-import com.google.bitcoin.store.BlockStoreException;
-
-import org.multibit.IsMultiBitClass;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,6 +25,19 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.multibit.IsMultiBitClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.bitcoin.core.Block;
+import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.ProtocolException;
+import com.google.bitcoin.core.Sha256Hash;
+import com.google.bitcoin.core.StoredBlock;
+import com.google.bitcoin.core.VerificationException;
+import com.google.bitcoin.store.BlockStore;
+import com.google.bitcoin.store.BlockStoreException;
 
 /**
  * Stores the block chain to disk.<p>

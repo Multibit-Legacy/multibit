@@ -15,16 +15,16 @@
  */
 package org.multibit.platform.handler;
 
-import org.multibit.platform.listener.GenericQuitEvent;
-import org.multibit.platform.listener.GenericQuitEventListener;
-import org.multibit.platform.listener.GenericEventListener;
-import org.multibit.platform.listener.GenericQuitResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.multibit.platform.listener.GenericEventListener;
+import org.multibit.platform.listener.GenericQuitEvent;
+import org.multibit.platform.listener.GenericQuitEventListener;
+import org.multibit.platform.listener.GenericQuitResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Generic event to provide the following to {@link org.multibit.platform.GenericApplication}:</p>

@@ -1,6 +1,5 @@
 package org.multibit.viewsystem.swing;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -21,7 +20,6 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 
 public class MultiBitTabbedPane extends JTabbedPane {
 

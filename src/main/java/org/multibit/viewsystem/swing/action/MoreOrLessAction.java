@@ -23,8 +23,8 @@ import javax.swing.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.view.AbstractTradePanel;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This {@link Action} represents the action to toggle the more or less button

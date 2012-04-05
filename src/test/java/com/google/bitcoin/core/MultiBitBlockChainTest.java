@@ -16,17 +16,20 @@
 
 package com.google.bitcoin.core;
 
-import com.google.bitcoin.store.BlockStore;
-import com.google.bitcoin.store.MemoryBlockStore;
-import com.google.bitcoin.utils.BriefLogFormatter;
-import org.junit.Before;
-import org.junit.Test;
+import static com.google.bitcoin.core.CoreTestUtils.createFakeBlock;
+import static com.google.bitcoin.core.CoreTestUtils.createFakeTx;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.math.BigInteger;
 
-import static com.google.bitcoin.core.CoreTestUtils.createFakeBlock;
-import static com.google.bitcoin.core.CoreTestUtils.createFakeTx;
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.google.bitcoin.store.BlockStore;
+import com.google.bitcoin.store.MemoryBlockStore;
 
 // Handling of chain splits/reorgs are in ChainSplitTests.
 

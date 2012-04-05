@@ -16,13 +16,13 @@
 
 package com.google.bitcoin.core;
 
-import org.multibit.IsMultiBitClass;
-
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Map;
+
+import org.multibit.IsMultiBitClass;
 
 /**
  * A transfer of coins from one address to another creates a transaction in which the outputs

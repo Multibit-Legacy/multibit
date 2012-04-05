@@ -16,16 +16,29 @@
 
 package com.google.bitcoin.core;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.google.bitcoin.core.Utils.bitcoinValueToPlainString;
+import static com.google.bitcoin.core.Utils.doubleDigest;
+import static com.google.bitcoin.core.Utils.reverseBytes;
+import static com.google.bitcoin.core.Utils.uint32ToByteStreamLE;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.multibit.IsMultiBitClass;
-
-import static com.google.bitcoin.core.Utils.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A transaction represents the movement of coins from some addresses to some other addresses. It can also represent

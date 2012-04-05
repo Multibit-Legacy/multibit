@@ -15,6 +15,12 @@
  */
 package org.multibit.qrcode;
 
+import java.awt.image.BufferedImage;
+import java.util.Hashtable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.ReaderException;
@@ -24,11 +30,6 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 import com.google.zxing.qrcode.QRCodeWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.awt.image.BufferedImage;
-import java.util.Hashtable;
 
 public class QRCodeEncoderDecoder {
     private final Logger log = LoggerFactory.getLogger(QRCodeEncoderDecoder.class);

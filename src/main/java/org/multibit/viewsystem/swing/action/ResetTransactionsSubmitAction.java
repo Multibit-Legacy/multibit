@@ -28,6 +28,7 @@ import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.viewsystem.swing.view.ResetTransactionsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,21 +41,24 @@ import com.google.bitcoin.store.BlockStoreException;
 public class ResetTransactionsSubmitAction extends AbstractAction {
 
     private static final Logger log = LoggerFactory.getLogger(ResetTransactionsSubmitAction.class);
-    
+
     private static final long serialVersionUID = 1923492460523457765L;
 
     private static final int NUMBER_OF_MILLISECOND_IN_A_SECOND = 1000;
 
     private static final long BUTTON_DOWNCLICK_TIME = 400;
-    
+
     private MultiBitController controller;
+
+    private ResetTransactionsPanel resetTransactionsPanel;
 
     /**
      * Creates a new {@link ResetTransactionsSubmitAction}.
      */
-    public ResetTransactionsSubmitAction(MultiBitController controller, Icon icon) {
+    public ResetTransactionsSubmitAction(MultiBitController controller, Icon icon, ResetTransactionsPanel resetTransactionsPanel) {
         super(controller.getLocaliser().getString("resetTransactionsSubmitAction.text"), icon);
         this.controller = controller;
+        this.resetTransactionsPanel = resetTransactionsPanel;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("resetTransactionsSubmitAction.tooltip"));
@@ -77,89 +81,107 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
         } else {
             final ResetTransactionsSubmitAction thisAction = this;
             setEnabled(false);
-            
-            resetTransactionsInBackground();
+
+            boolean resetFromFirstTransaction = resetTransactionsPanel.isResetFromFirstTransaction();
+            Date resetDate = resetTransactionsPanel.getResetDate();
+            resetTransactionsInBackground(resetFromFirstTransaction, resetDate);
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     thisAction.setEnabled(true);
-                }}, BUTTON_DOWNCLICK_TIME);
-            
+                }
+            }, BUTTON_DOWNCLICK_TIME);
+
         }
     }
-    
+
     /**
      * reset the transaction in a background Swing worker thread
      */
-    private void resetTransactionsInBackground() {
+    private void resetTransactionsInBackground(final boolean resetFromFirstTransaction, final Date resetDate) {
         final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
-            
+
             private String message = null;
-            
+
             @Override
             protected Boolean doInBackground() throws Exception {
-                Boolean successMeasure = Boolean.FALSE;
-                
-                // work out the earliest transaction date and save it to the wallet
                 PerWalletModelData activePerWalletModelData = controller.getModel().getActivePerWalletModelData();
 
-                Date earliestTransactionDate = new Date();
-                Set<Transaction> allTransactions = activePerWalletModelData.getWallet().getTransactions(true, true);
-                if (allTransactions != null) {
-                    for (Transaction transaction : allTransactions) {
-                        if (transaction != null) {
-                            Date updateTime = transaction.getUpdateTime();
-                            if (updateTime != null && earliestTransactionDate.after(updateTime)) {
-                                earliestTransactionDate = updateTime;
-                            }
-                            Date updateDate = transaction.getUpdatedAt();
-                            if (updateDate != null && earliestTransactionDate.after(updateDate)) {
-                                earliestTransactionDate = updateDate;
+                Boolean successMeasure = Boolean.FALSE;
+
+                Date actualResetDate = null;
+
+                if (resetFromFirstTransaction) {
+                    // work out the earliest transaction date and save it to the
+                    // wallet
+
+                    Date earliestTransactionDate = new Date();
+                    Set<Transaction> allTransactions = activePerWalletModelData.getWallet().getTransactions(true, true);
+                    if (allTransactions != null) {
+                        for (Transaction transaction : allTransactions) {
+                            if (transaction != null) {
+                                Date updateTime = transaction.getUpdateTime();
+                                if (updateTime != null && earliestTransactionDate.after(updateTime)) {
+                                    earliestTransactionDate = updateTime;
+                                }
+                                Date updateDate = transaction.getUpdatedAt();
+                                if (updateDate != null && earliestTransactionDate.after(updateDate)) {
+                                    earliestTransactionDate = updateDate;
+                                }
                             }
                         }
                     }
+
+                    // also look at the earliest key creation time - this is
+                    // returned in
+                    // seconds and is converted to milliseconds
+                    long earliestKeyCreationTime = activePerWalletModelData.getWallet().getEarliestKeyCreationTime()
+                            * NUMBER_OF_MILLISECOND_IN_A_SECOND;
+                    if (earliestKeyCreationTime != 0 && earliestKeyCreationTime < earliestTransactionDate.getTime()) {
+                        earliestTransactionDate = new Date(earliestKeyCreationTime);
+                        actualResetDate = earliestTransactionDate;
+                    }
+                } else {
+                    actualResetDate = resetDate;
                 }
 
-                // also look at the earliest key creation time - this is returned in
-                // seconds and is converted to milliseconds
-                long earliestKeyCreationTime = activePerWalletModelData.getWallet().getEarliestKeyCreationTime()
-                        * NUMBER_OF_MILLISECOND_IN_A_SECOND;
-                if (earliestKeyCreationTime != 0 && earliestKeyCreationTime < earliestTransactionDate.getTime()) {
-                    earliestTransactionDate = new Date(earliestKeyCreationTime);
-                }
-
-                 // remove the transactions from the wallet
-                activePerWalletModelData.getWallet().clearTransactions(0);
+                // remove the transactions from the wallet
+                activePerWalletModelData.getWallet().clearTransactions(actualResetDate);
 
                 // save the wallet without the transactions
                 controller.getFileHandler().savePerWalletModelData(finalPerWalletModelData, true);
+                controller.getModel().createWalletData(controller.getModel().getActiveWalletFilename());
+                controller.fireRecreateAllViews(false);
 
                 try {
-                    controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
+                    controller.getMultiBitService().replayBlockChain(actualResetDate);
                     successMeasure = Boolean.TRUE;
                     message = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
                 } catch (BlockStoreException e) {
-                    message = controller.getLocaliser().getString("resetTransactionsSubmitAction.replayUnsuccessful", new Object[]{e.getMessage()});;
+                    message = controller.getLocaliser().getString("resetTransactionsSubmitAction.replayUnsuccessful",
+                            new Object[] { e.getMessage() });
+                    ;
                 }
                 return successMeasure;
             }
-            
+
             protected void done() {
                 try {
                     Boolean wasSuccessful = get();
                     if (wasSuccessful) {
                         log.debug(message);
-                        controller.updateStatusLabel(message);  
+                        controller.updateStatusLabel(message);
                     } else {
                         log.error(message);
                         controller.updateStatusLabel(message);
                     }
                 } catch (Exception e) {
-                    // not really used but caught so that SwingWorker shuts down cleanly
+                    // not really used but caught so that SwingWorker shuts down
+                    // cleanly
                     log.error(e.getClass() + " " + e.getMessage());
-                } 
+                }
             }
         };
         log.debug("Resetting transactions in background SwingWorker thread");

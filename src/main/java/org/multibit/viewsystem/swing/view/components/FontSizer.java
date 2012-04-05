@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing.view.components;
 
 import java.awt.Font;
-import java.awt.Toolkit;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;

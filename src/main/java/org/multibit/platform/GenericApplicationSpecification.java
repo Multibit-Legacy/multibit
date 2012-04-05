@@ -15,13 +15,13 @@
  */
 package org.multibit.platform;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.multibit.platform.listener.GenericAboutEventListener;
 import org.multibit.platform.listener.GenericOpenURIEventListener;
 import org.multibit.platform.listener.GenericPreferencesEventListener;
 import org.multibit.platform.listener.GenericQuitEventListener;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * <p>Specification value object to provide the following to {@link GenericApplicationFactory}:</p>
