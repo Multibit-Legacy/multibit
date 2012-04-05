@@ -38,11 +38,11 @@ public class AddressBookTableModel extends DefaultTableModel {
 
     public AddressBookTableModel(MultiBitController controller, boolean isReceiving) {
         this.controller = controller;
-      for (String tableHeaderKey : tableHeaderKeys) {
-        headers.add(controller.getLocaliser().getString(tableHeaderKey));
-      }
+        for (String tableHeaderKey : tableHeaderKeys) {
+            headers.add(controller.getLocaliser().getString(tableHeaderKey));
+        }
 
-      this.isReceiving = isReceiving;
+        this.isReceiving = isReceiving;
     }
 
     public int getColumnCount() {
@@ -116,8 +116,11 @@ public class AddressBookTableModel extends DefaultTableModel {
 
     /**
      * find a row, given an address
-     * @param address The address
-     * @param isReceiving true if receiving
+     * 
+     * @param address
+     *            The address
+     * @param isReceiving
+     *            true if receiving
      * @return The row for the address
      */
     public int findRowByAddress(String address, boolean isReceiving) {
@@ -191,7 +194,8 @@ public class AddressBookTableModel extends DefaultTableModel {
 
         if (addresses != null && addresses.size() > row) {
             addresses.set(row, addressBookData);
-            fireTableRowsUpdated(row, row);
+
+            fireTableDataChanged();
         }
     }
 

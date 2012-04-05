@@ -153,8 +153,10 @@ public class SwatchGenerator {
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
         } catch (IllegalArgumentException e) {
             log.warn("The address '" + address + "' could not be converted to a bitcoin address. (IAE)");
+            return null;
         } catch (AddressFormatException e) {
             log.warn("The address '" + address + "' could not be converted to a bitcoin address. (AFE)");
+            return null;
         }
 
         // get a byte matrix for the data

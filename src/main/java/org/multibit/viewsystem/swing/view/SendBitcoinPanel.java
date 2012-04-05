@@ -377,7 +377,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
 
     public void setAddressBookDataByRow(AddressBookData addressBookData) {
         addressTextField.setText(addressBookData.getAddress());
-        addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRow, false);
+        addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRowModel, false);
     }
 
     @Override

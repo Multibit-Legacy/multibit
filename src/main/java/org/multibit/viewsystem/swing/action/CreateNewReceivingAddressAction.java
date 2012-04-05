@@ -76,6 +76,9 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
                 perWalletModelData.setWalletInfo(walletInfo);
             }
             walletInfo.addReceivingAddress(new AddressBookData("", addressString), false);
+            receiveBitcoinPanel.getAddressesTableModel().fireTableDataChanged();
+            receiveBitcoinPanel.selectRows();
+
             controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, addressString);
             controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
             

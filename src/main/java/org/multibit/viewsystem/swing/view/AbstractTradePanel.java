@@ -37,12 +37,15 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListSelectionModel;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -52,6 +55,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.TransferHandler;
 import javax.swing.border.EmptyBorder;
@@ -60,6 +64,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
@@ -138,7 +144,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected MultiBitTextField addressTextField;
     protected MultiBitTextArea addressTextArea;
 
-    protected int selectedAddressRow;
+    protected int selectedAddressRowModel;
 
     protected SelectionListener addressesListener;
 
@@ -158,7 +164,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected static final int TEXTFIELD_VERTICAL_DELTA = 6;
     protected static final int HELP_BUTTON_INDENT = 8;
     protected static final int AMOUNT_BTC_INDENT = 4;
-    
 
     private final int STENT_DELTA = 4;
 
@@ -277,7 +282,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
     protected void initUI() {
         setMinimumSize(new Dimension(550, 220));
-        //setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
+        // setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
         setLayout(new GridBagLayout());
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
@@ -508,7 +513,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     protected JPanel createAddressesHeaderPanel() {
         JPanel addressesHeaderPanel = new VerticalGradientPanel();
 
-        addressesHeaderPanel.setBorder(BorderFactory.createMatteBorder(1,0,0,0, SystemColor.windowBorder));
+        addressesHeaderPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder));
         addressesHeaderPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -573,8 +578,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         addressPanel.setOpaque(true);
         addressPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
-        //addressPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
-
         // get the stored previously selected receive address
 
         addressPanel.setLayout(new GridBagLayout());
@@ -590,6 +593,30 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         addressesTable.setColumnSelectionAllowed(false);
         addressesTable.setRowHeight(getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight());
 
+        //addressesTable.setAutoCreateRowSorter(true);
+        //addressesTable.getRowSorter().toggleSortOrder(0); // sort by label
+
+        // row sorter
+        TableRowSorter<TableModel> rowSorter = new TableRowSorter<TableModel>(addressesTable.getModel());
+        addressesTable.setRowSorter(rowSorter);
+
+        // sort by date descending
+        List<TableRowSorter.SortKey> sortKeys = new ArrayList<TableRowSorter.SortKey>();
+        sortKeys.add(new TableRowSorter.SortKey(0, SortOrder.ASCENDING));
+        rowSorter.setSortKeys(sortKeys);
+        Comparator<String> comparator = new Comparator<String>() {
+            public int compare(String o1, String o2) {
+                if (o1 == null) {
+                    return 1;
+                } else if (o2 == null) {
+                    return -1;
+                } else {
+                    return o1.compareTo(o2);
+                }
+            }
+        };
+        rowSorter.setComparator(0, comparator);
+        
         // TODO make sure table cannot be edited by double click
         // justify column headers
         TableCellRenderer renderer = addressesTable.getTableHeader().getDefaultRenderer();
@@ -634,7 +661,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
-        //scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker()));
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -703,37 +729,43 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     }
 
     class SelectionListener implements ListSelectionListener {
-        SelectionListener() {
+        boolean enabled;
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
         }
 
-        public void valueChanged(ListSelectionEvent e) {
-            if (e.getSource() instanceof DefaultListSelectionModel && !e.getValueIsAdjusting()) {
-                // Column selection changed
-                int firstIndex = e.getFirstIndex();
-                int lastIndex = e.getLastIndex();
+        SelectionListener() {
+            enabled = true;
+        }
 
-                if (selectedAddressRow == firstIndex) {
-                    selectedAddressRow = lastIndex;
+        public void valueChanged(ListSelectionEvent event) {
+            if (enabled) {
+                int viewRow = addressesTable.getSelectedRow();
+                if (viewRow < 0) {
+                    // Selection got filtered away.
                 } else {
-                    if (selectedAddressRow == lastIndex) {
-                        selectedAddressRow = firstIndex;
-                    }
-                }
-                AddressBookData rowData = addressesTableModel.getAddressBookDataByRow(selectedAddressRow,
-                        thisAbstractTradePanel.isReceiveBitcoin());
-                if (rowData != null) {
-                    controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAddressConstant(),
-                            rowData.getAddress());
-                    controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getLabelConstant(), rowData.getLabel());
-                    if (addressTextArea != null) {
-                        addressTextArea.setText(rowData.getAddress());
-                    }
-                    if (addressTextField != null) {
-                        addressTextField.setText(rowData.getAddress());
-                    }
-                    labelTextArea.setText(rowData.getLabel());
+                    selectedAddressRowModel = addressesTable.convertRowIndexToModel(viewRow);
+                    System.out.println(String.format("Selected Row in view: %d. " + "Selected Row in model: %d.", viewRow,
+                            selectedAddressRowModel));
 
-                    displaySwatch(rowData.getAddress(), amountTextField.getText(), labelTextArea.getText());
+                    AddressBookData rowData = addressesTableModel.getAddressBookDataByRow(selectedAddressRowModel,
+                            thisAbstractTradePanel.isReceiveBitcoin());
+                    if (rowData != null) {
+                        controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAddressConstant(),
+                                rowData.getAddress());
+                        controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getLabelConstant(),
+                                rowData.getLabel());
+                        if (addressTextArea != null) {
+                            addressTextArea.setText(rowData.getAddress());
+                        }
+                        if (addressTextField != null) {
+                            addressTextField.setText(rowData.getAddress());
+                        }
+                        labelTextArea.setText(rowData.getLabel());
+
+                        displaySwatch(rowData.getAddress(), amountTextField.getText(), labelTextArea.getText());
+                    }
                 }
             }
         }
@@ -756,7 +788,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR : ColorAndFontConstants.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                        : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -781,7 +814,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR : ColorAndFontConstants.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                        : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -806,7 +840,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR : ColorAndFontConstants.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                        : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -831,7 +866,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR : ColorAndFontConstants.BACKGROUND_COLOR);
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                        : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -1122,6 +1158,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     @Override
     public void displayView() {
         loadForm();
+        getAddressesTableModel().fireTableDataChanged();
         selectRows();
 
         // disable any new changes if another process has changed the wallet
@@ -1196,7 +1233,16 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 controller.getModel().setActiveWalletInfo(walletInfo);
             }
             address = WhitespaceTrimmer.trim(address);
-            addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRow, isReceiveBitcoin());
+            addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRowModel, isReceiveBitcoin());
+
+            int rowToSelect = addressesTable.convertRowIndexToView(selectedAddressRowModel);
+            addressesListener.setEnabled(false);
+            addressesTable.getSelectionModel().setSelectionInterval(rowToSelect, rowToSelect);
+            addressesListener.setEnabled(true);
+
+            // scroll to visible
+            addressesTable.scrollRectToVisible(addressesTable.getCellRect(rowToSelect, 0, false));
+
             controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAddressConstant(), address);
             controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getLabelConstant(), label);
             controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAmountConstant(), amount);
@@ -1209,7 +1255,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     /**
      * display the address, amount and label as a swatch
      */
-    private void displaySwatch(String address, String amount, String label) {
+    private void displaySwatch(String address, String amount, String label) {        
         if (swatchGenerator == null) {
             swatchGenerator = new SwatchGenerator(controller);
         }
@@ -1323,25 +1369,35 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             // see if the address is already in the address book
             // see if the current address is on the table and
             // select it
-            int rowToSelect = addressesTableModel.findRowByAddress(addressBookData.getAddress(), false);
-            if (rowToSelect >= 0) {
-                addressesTableModel.setAddressBookDataByRow(addressBookData, rowToSelect, false);
+            int rowToSelectModel = addressesTableModel.findRowByAddress(addressBookData.getAddress(), false);
+            if (rowToSelectModel >= 0) {
+                addressesTableModel.setAddressBookDataByRow(addressBookData, rowToSelectModel, false);
+                selectedAddressRowModel = rowToSelectModel;
+
+                int rowToSelect = addressesTable.convertRowIndexToView(rowToSelectModel);
                 addressesTable.getSelectionModel().setSelectionInterval(rowToSelect, rowToSelect);
-                selectedAddressRow = rowToSelect;
+
+                // scroll to visible
+                addressesTable.scrollRectToVisible(addressesTable.getCellRect(rowToSelect, 0, false));
             } else {
                 // add a new row to the table
                 controller.getModel().getActiveWalletWalletInfo().addSendingAddress(addressBookData);
                 controller.getModel().getActivePerWalletModelData().setDirty(true);
 
+                addressesTableModel.fireTableDataChanged();
+
                 // select new row
-                rowToSelect = addressesTableModel.findRowByAddress(addressBookData.getAddress(), false);
-                if (rowToSelect >= 0) {
+                rowToSelectModel = addressesTableModel.findRowByAddress(addressBookData.getAddress(), false);
+                if (rowToSelectModel >= 0) {
+                    selectedAddressRowModel = rowToSelectModel;
+
+                    int rowToSelect = addressesTable.convertRowIndexToView(rowToSelectModel);
                     addressesTable.getSelectionModel().setSelectionInterval(rowToSelect, rowToSelect);
-                    selectedAddressRow = rowToSelect;
+
+                    // scroll to visible
+                    addressesTable.scrollRectToVisible(addressesTable.getCellRect(rowToSelect, 0, false));
                 }
             }
-            // scroll to visible
-            addressesTable.scrollRectToVisible(addressesTable.getCellRect(rowToSelect, 0, false));
             addressesTable.invalidate();
             addressesTable.validate();
             addressesTable.repaint();
@@ -1385,14 +1441,23 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         displaySwatch(address, amountTextField.getText(), labelTextArea.getText());
 
         // see if the current address is on the table and select it
-        int rowToSelect = addressesTableModel.findRowByAddress(address, isReceiveBitcoin());
-        if (rowToSelect >= 0) {
-            addressesTable.getSelectionModel().setSelectionInterval(rowToSelect, rowToSelect);
-            selectedAddressRow = rowToSelect;
+        int rowToSelectModel = addressesTableModel.findRowByAddress(address, isReceiveBitcoin());
+        if (rowToSelectModel >= 0) {
+            selectedAddressRowModel = rowToSelectModel;
+
+            if (rowToSelectModel < addressesTableModel.getRowCount()) {
+                try {
+                    int rowToSelect = addressesTable.convertRowIndexToView(rowToSelectModel);
+                    addressesTable.getSelectionModel().setSelectionInterval(rowToSelect, rowToSelect);
+
+                    // scroll to visible
+                    addressesTable.scrollRectToVisible(addressesTable.getCellRect(rowToSelect, 0, false));
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    // absorb - row wrong
+                }
+            }
         }
 
-        // scroll to visible
-        addressesTable.scrollRectToVisible(addressesTable.getCellRect(rowToSelect, 0, false));
         addressesTable.invalidate();
         addressesTable.validate();
         addressesTable.repaint();
@@ -1475,5 +1540,13 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
     public boolean isDisplayAsQRcode() {
         return displayAsQRcode;
+    }
+
+    public AddressBookTableModel getAddressesTableModel() {
+        return addressesTableModel;
+    }
+
+    public JTable getAddressesTable() {
+        return addressesTable;
     }
 }

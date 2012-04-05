@@ -368,6 +368,10 @@ public class WalletInfo {
 
             // check the first line is what we expect
             String firstLine = bufferedReader.readLine();
+            if (firstLine == null) {
+                // this is not an multibit address book
+                throw new WalletInfoException("The file '" + walletInfoFilename + "' is not a valid wallet info file (empty line 1)");
+            }
             StringTokenizer tokenizer = new StringTokenizer(firstLine, SEPARATOR);
             int numberOfTokens = tokenizer.countTokens();
             if (numberOfTokens == 2) {
@@ -540,6 +544,9 @@ public class WalletInfo {
      *            The string to URL encode
      */
     public static String encodeURLString(String stringToEncode) {
+        if (stringToEncode == null) {
+            return "";
+        }
         try {
             return java.net.URLEncoder.encode(stringToEncode, "UTF-8").replace("+", ENCODED_SPACE_CHARACTER);
         } catch (UnsupportedEncodingException e) {
