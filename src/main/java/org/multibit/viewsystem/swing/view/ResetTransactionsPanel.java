@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
@@ -42,10 +41,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.Data;
-import org.multibit.model.DataProvider;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.dataproviders.ResetTransactionsDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
@@ -62,13 +60,11 @@ import com.toedter.calendar.JCalendar;
 /**
  * The reset blockchain and transactions view
  */
-public class ResetTransactionsPanel extends JPanel implements View, DataProvider {
+public class ResetTransactionsPanel extends JPanel implements View, ResetTransactionsDataProvider {
 
     private static final long serialVersionUID = 199992298245057705L;
 
     private MultiBitController controller;
-
-    private Data data;
 
     private MultiBitLabel walletFilenameLabel;
 
@@ -81,20 +77,7 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
     private JRadioButton resetFromFirstTransactionRadioButton;
     private JRadioButton chooseResetDateRadioButton;
     private JCalendar calendarChooser;
-    
-    
-    public Date getResetDate() {
-        return resetDate;
-    }
-    
-    public boolean isResetFromFirstTransaction() {
-        if (resetFromFirstTransactionRadioButton != null) {
-            return resetFromFirstTransactionRadioButton.isSelected();
-        } else {
-            return true;
-        }
-    }
-
+        
     /**
      * Creates a new {@link ResetTransactionsPanel}.
      */
@@ -104,11 +87,8 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         setLayout(new BorderLayout());
 
-        resetDate = new Date(((new Date()).getTime()) - (1000 * 60 * 60 * 24 * 14) ); // 2
-                                                                                   // weeks ago
+        resetDate = new Date(((new Date()).getTime()) - (1000 * 60 * 60 * 24 * 14) ); // 2 weeks ago
         dateFormatter = new SimpleDateFormat("dd MMM yyyy", controller.getLocaliser().getLocale());
-
-        data = new Data();
 
         initUI();
     }
@@ -203,7 +183,6 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         mainScrollPane.getViewport().setOpaque(true);
 
         add(mainScrollPane, BorderLayout.CENTER);
-
     }
 
     private JPanel createExplainPanel(int stentWidth) {
@@ -211,7 +190,6 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
                 "resetTransactionsPanel.explainTitle"));
 
         explainPanel.setOpaque(false);
-        //explainPanel.setBorder(BorderFactory.createLineBorder(Color.CYAN));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -460,11 +438,6 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
     }
 
     @Override
-    public Data getData() {
-        return data;
-    }
-
-    @Override
     public void navigateAwayFromView() {
     }
 
@@ -512,4 +485,16 @@ public class ResetTransactionsPanel extends JPanel implements View, DataProvider
         }
     }
 
+    // ResetTransactionDataProvider methods
+    public Date getResetDate() {
+        return resetDate;
+    }
+    
+    public boolean isResetFromFirstTransaction() {
+        if (resetFromFirstTransactionRadioButton != null) {
+            return resetFromFirstTransactionRadioButton.isSelected();
+        } else {
+            return true;
+        }
+    }
 }

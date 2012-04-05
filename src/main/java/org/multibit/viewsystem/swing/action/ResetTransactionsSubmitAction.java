@@ -28,7 +28,7 @@ import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.viewsystem.swing.view.ResetTransactionsPanel;
+import org.multibit.viewsystem.dataproviders.ResetTransactionsDataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,15 +50,16 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
 
     private MultiBitController controller;
 
-    private ResetTransactionsPanel resetTransactionsPanel;
+    private ResetTransactionsDataProvider resetTransactionsDataProvider;
 
     /**
      * Creates a new {@link ResetTransactionsSubmitAction}.
      */
-    public ResetTransactionsSubmitAction(MultiBitController controller, Icon icon, ResetTransactionsPanel resetTransactionsPanel) {
+    public ResetTransactionsSubmitAction(MultiBitController controller, Icon icon,
+            ResetTransactionsDataProvider resetTransactionsDataProvider) {
         super(controller.getLocaliser().getString("resetTransactionsSubmitAction.text"), icon);
         this.controller = controller;
-        this.resetTransactionsPanel = resetTransactionsPanel;
+        this.resetTransactionsDataProvider = resetTransactionsDataProvider;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("resetTransactionsSubmitAction.tooltip"));
@@ -82,9 +83,56 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
             final ResetTransactionsSubmitAction thisAction = this;
             setEnabled(false);
 
-            boolean resetFromFirstTransaction = resetTransactionsPanel.isResetFromFirstTransaction();
-            Date resetDate = resetTransactionsPanel.getResetDate();
-            resetTransactionsInBackground(resetFromFirstTransaction, resetDate);
+            boolean resetFromFirstTransaction = resetTransactionsDataProvider.isResetFromFirstTransaction();
+            Date resetDate = resetTransactionsDataProvider.getResetDate();
+
+            PerWalletModelData activePerWalletModelData = controller.getModel().getActivePerWalletModelData();
+
+            Date actualResetDate = null;
+
+            if (resetFromFirstTransaction) {
+                // work out the earliest transaction date and save it to the
+                // wallet
+
+                Date earliestTransactionDate = new Date();
+                Set<Transaction> allTransactions = activePerWalletModelData.getWallet().getTransactions(true, true);
+                if (allTransactions != null) {
+                    for (Transaction transaction : allTransactions) {
+                        if (transaction != null) {
+                            Date updateTime = transaction.getUpdateTime();
+                            if (updateTime != null && earliestTransactionDate.after(updateTime)) {
+                                earliestTransactionDate = updateTime;
+                            }
+                            Date updateDate = transaction.getUpdatedAt();
+                            if (updateDate != null && earliestTransactionDate.after(updateDate)) {
+                                earliestTransactionDate = updateDate;
+                            }
+                        }
+                    }
+                }
+
+                // also look at the earliest key creation time - this is
+                // returned in
+                // seconds and is converted to milliseconds
+                long earliestKeyCreationTime = activePerWalletModelData.getWallet().getEarliestKeyCreationTime()
+                        * NUMBER_OF_MILLISECOND_IN_A_SECOND;
+                if (earliestKeyCreationTime != 0 && earliestKeyCreationTime < earliestTransactionDate.getTime()) {
+                    earliestTransactionDate = new Date(earliestKeyCreationTime);
+                    actualResetDate = earliestTransactionDate;
+                }
+            } else {
+                actualResetDate = resetDate;
+            }
+
+            // remove the transactions from the wallet
+            activePerWalletModelData.getWallet().clearTransactions(actualResetDate);
+
+            // save the wallet without the transactions
+            controller.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
+            controller.getModel().createWalletData(controller.getModel().getActiveWalletFilename());
+            controller.fireRecreateAllViews(false);
+
+            resetTransactionsInBackground(resetFromFirstTransaction, actualResetDate);
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
@@ -92,7 +140,6 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
                     thisAction.setEnabled(true);
                 }
             }, BUTTON_DOWNCLICK_TIME);
-
         }
     }
 
@@ -100,63 +147,16 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
      * reset the transaction in a background Swing worker thread
      */
     private void resetTransactionsInBackground(final boolean resetFromFirstTransaction, final Date resetDate) {
-        final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
 
             private String message = null;
 
             @Override
             protected Boolean doInBackground() throws Exception {
-                PerWalletModelData activePerWalletModelData = controller.getModel().getActivePerWalletModelData();
-
                 Boolean successMeasure = Boolean.FALSE;
 
-                Date actualResetDate = null;
-
-                if (resetFromFirstTransaction) {
-                    // work out the earliest transaction date and save it to the
-                    // wallet
-
-                    Date earliestTransactionDate = new Date();
-                    Set<Transaction> allTransactions = activePerWalletModelData.getWallet().getTransactions(true, true);
-                    if (allTransactions != null) {
-                        for (Transaction transaction : allTransactions) {
-                            if (transaction != null) {
-                                Date updateTime = transaction.getUpdateTime();
-                                if (updateTime != null && earliestTransactionDate.after(updateTime)) {
-                                    earliestTransactionDate = updateTime;
-                                }
-                                Date updateDate = transaction.getUpdatedAt();
-                                if (updateDate != null && earliestTransactionDate.after(updateDate)) {
-                                    earliestTransactionDate = updateDate;
-                                }
-                            }
-                        }
-                    }
-
-                    // also look at the earliest key creation time - this is
-                    // returned in
-                    // seconds and is converted to milliseconds
-                    long earliestKeyCreationTime = activePerWalletModelData.getWallet().getEarliestKeyCreationTime()
-                            * NUMBER_OF_MILLISECOND_IN_A_SECOND;
-                    if (earliestKeyCreationTime != 0 && earliestKeyCreationTime < earliestTransactionDate.getTime()) {
-                        earliestTransactionDate = new Date(earliestKeyCreationTime);
-                        actualResetDate = earliestTransactionDate;
-                    }
-                } else {
-                    actualResetDate = resetDate;
-                }
-
-                // remove the transactions from the wallet
-                activePerWalletModelData.getWallet().clearTransactions(actualResetDate);
-
-                // save the wallet without the transactions
-                controller.getFileHandler().savePerWalletModelData(finalPerWalletModelData, true);
-                controller.getModel().createWalletData(controller.getModel().getActiveWalletFilename());
-                controller.fireRecreateAllViews(false);
-
                 try {
-                    controller.getMultiBitService().replayBlockChain(actualResetDate);
+                    controller.getMultiBitService().replayBlockChain(resetDate);
                     successMeasure = Boolean.TRUE;
                     message = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
                 } catch (BlockStoreException e) {
