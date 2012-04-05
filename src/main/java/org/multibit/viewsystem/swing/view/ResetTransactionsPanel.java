@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
@@ -71,13 +72,13 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
     private MultiBitLabel walletDescriptionLabel;
 
     private Date resetDate;
-    
+
     private final SimpleDateFormat dateFormatter;
-    
+
     private JRadioButton resetFromFirstTransactionRadioButton;
     private JRadioButton chooseResetDateRadioButton;
     private JCalendar calendarChooser;
-        
+
     /**
      * Creates a new {@link ResetTransactionsPanel}.
      */
@@ -87,7 +88,9 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         setLayout(new BorderLayout());
 
-        resetDate = new Date(((new Date()).getTime()) - (1000 * 60 * 60 * 24 * 14) ); // 2 weeks ago
+        resetDate = new Date(((new Date()).getTime()) - (1000 * 60 * 60 * 24 * 14)); // 2
+                                                                                     // weeks
+                                                                                     // ago
         dateFormatter = new SimpleDateFormat("dd MMM yyyy", controller.getLocaliser().getLocale());
 
         initUI();
@@ -193,12 +196,36 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
-                controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text1"), 3, explainPanel);
+        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(" ", 3, explainPanel);
+
+        String explainText1 = controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text1");
+        MultiBitTextArea explainTextArea1 = new MultiBitTextArea(explainText1, 2, 40, controller);
+        explainTextArea1.setOpaque(false);
+        explainTextArea1.setWrapStyleWord(true);
+        explainTextArea1.setLineWrap(true);
+
+        FontMetrics fontMetrics = getFontMetrics(getFont());
+        int preferredWidth = fontMetrics.stringWidth(WelcomePanel.EXAMPLE_TEXT);
+        int fontHeight = fontMetrics.getHeight();
+        int height1 = WelcomePanel.calculateHeight(explainText1);
+
+        Dimension preferredSize = new Dimension(preferredWidth, height1 * fontHeight);
+        explainTextArea1.setMinimumSize(preferredSize);
+        explainTextArea1.setPreferredSize(preferredSize);
+        explainTextArea1.setMaximumSize(preferredSize);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 4;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 3;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        explainPanel.add(explainTextArea1, constraints);
+        
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 5;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -207,7 +234,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
-        constraints.gridy = 5;
+        constraints.gridy = 6;
         constraints.weightx = 0.05;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -218,7 +245,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
                 "resetTransactionsPanel.walletFilenameLabel"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
-        constraints.gridy = 5;
+        constraints.gridy = 6;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -228,7 +255,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
-        constraints.gridy = 5;
+        constraints.gridy = 6;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -239,7 +266,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
                 "resetTransactionsPanel.walletDescriptionLabel"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
-        constraints.gridy = 4;
+        constraints.gridy = 5;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -249,7 +276,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
-        constraints.gridy = 4;
+        constraints.gridy = 5;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -260,36 +287,34 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         filler3.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
-        constraints.gridy = 6;
+        constraints.gridy = 7;
         constraints.weightx = 0.3;
         constraints.weighty = 1.0;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         explainPanel.add(filler3, constraints);
 
-        String explainText2 = controller.getLocaliser().getString(
-                "resetTransactionsPanel.explainLabel.text2");
-        MultiBitTextArea explainTextArea = new MultiBitTextArea(explainText2, 2, 40, controller);
-        explainTextArea.setOpaque(false);
+        String explainText2 = controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text2");
+        MultiBitTextArea explainTextArea2 = new MultiBitTextArea(explainText2, 2, 40, controller);
+        explainTextArea2.setOpaque(false);
+        explainTextArea2.setWrapStyleWord(true);
+        explainTextArea2.setLineWrap(true);
 
-        FontMetrics fontMetrics = getFontMetrics(getFont());
-        int preferredWidth = fontMetrics.stringWidth(WelcomePanel.EXAMPLE_TEXT);
-        int fontHeight = fontMetrics.getHeight();
-        int height1 =  WelcomePanel.calculateHeight(explainText2);
-        
-        Dimension preferredSize = new Dimension(preferredWidth, height1 * fontHeight);
-        explainTextArea.setMinimumSize(preferredSize);
-        explainTextArea.setPreferredSize(preferredSize);
-        explainTextArea.setMaximumSize(preferredSize);
+        int height2 = WelcomePanel.calculateHeight(explainText2);
+
+        Dimension preferredSize2 = new Dimension(preferredWidth, height2 * fontHeight);
+        explainTextArea2.setMinimumSize(preferredSize2);
+        explainTextArea2.setPreferredSize(preferredSize2);
+        explainTextArea2.setMaximumSize(preferredSize2);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
-        constraints.gridy = 7;
+        constraints.gridy = 8;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        explainPanel.add(explainTextArea, constraints);
+        explainPanel.add(explainTextArea2, constraints);
 
         return explainPanel;
     }
@@ -352,13 +377,13 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         resetFromFirstTransactionRadioButton.setOpaque(false);
         resetFromFirstTransactionRadioButton.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         resetFromFirstTransactionRadioButton.setSelected(true);
-        
-        chooseResetDateRadioButton = new JRadioButton(controller.getLocaliser().getString(
-                "resetTransactionsPanel.chooseResetDate", new Object[]{dateFormatter.format(resetDate.getTime())}));
+
+        chooseResetDateRadioButton = new JRadioButton(controller.getLocaliser().getString("resetTransactionsPanel.chooseResetDate",
+                new Object[] { dateFormatter.format(resetDate.getTime()) }));
         chooseResetDateRadioButton.setOpaque(false);
         chooseResetDateRadioButton.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         chooseResetDateRadioButton.setSelected(false);
-        
+
         resetDateGroup.add(resetFromFirstTransactionRadioButton);
         resetDateGroup.add(chooseResetDateRadioButton);
 
@@ -386,37 +411,41 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         Border compoundBorder = BorderFactory.createCompoundBorder(etchedBorder, emptyBorder);
 
         calendarChooser = new JCalendar(resetDate, controller.getLocaliser().getLocale(), true, false);
-        calendarChooser.addPropertyChangeListener(
-                new PropertyChangeListener() {
-                    @Override
-                    public void propertyChange(PropertyChangeEvent e) {
-                        if ("calendar".equals(e.getPropertyName())) {
-                            GregorianCalendar calendar = ((GregorianCalendar) e.getNewValue());
-                            resetDate = calendar.getTime();
-                            chooseResetDateRadioButton.setText(controller.getLocaliser().getString(
-                                    "resetTransactionsPanel.chooseResetDate", new Object[]{dateFormatter.format(calendar.getTime())}));
-                        } 
-                    }
-                });
+        calendarChooser.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent e) {
+                if ("calendar".equals(e.getPropertyName())) {
+                    GregorianCalendar calendar = ((GregorianCalendar) e.getNewValue());
+                    resetDate = calendar.getTime();
+                    chooseResetDateRadioButton.setText(controller.getLocaliser().getString(
+                            "resetTransactionsPanel.chooseResetDate", new Object[] { dateFormatter.format(calendar.getTime()) }));
+                }
+            }
+        });
         calendarChooser.setDate(resetDate);
         calendarChooser.setBorder(compoundBorder);
         calendarChooser.setEnabled(false);
+        
         // Set fonts rather than using defaults
-
-        // calendar1.setTitleFont(new Font("Serif", Font.BOLD | Font.ITALIC,
-        // 24));
-        // calendar1.setDayOfWeekFont(new Font("SansSerif", Font.ITALIC, 12));
-        // calendar1.setDayFont(new Font("SansSerif", Font.BOLD, 16));
-        // calendar1.setTimeFont(new Font("DialogInput", Font.PLAIN, 10));
-        // calendar1.setTodayFont(new Font("Dialog", Font.PLAIN, 14));
+        //calendarChooser.setDayFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        //calendarChooser.setTodayFont(new Font("Dialog", Font.PLAIN, 14));
 
         ItemListener itemListener = new ChangeResetDateListener();
         resetFromFirstTransactionRadioButton.addItemListener(itemListener);
         chooseResetDateRadioButton.addItemListener(itemListener);
 
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 6;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        resetDatePanel.add(MultiBitTitledPanel.createStent(8,8), constraints);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 7;
         constraints.weightx = 0.5;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -427,7 +456,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         fill1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 4;
-        constraints.gridy = 7;
+        constraints.gridy = 8;
         constraints.weightx = 20;
         constraints.weighty = 1;
         constraints.gridwidth = 1;
@@ -470,7 +499,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
     public int getViewId() {
         return View.RESET_TRANSACTIONS_VIEW;
     }
-    
+
     class ChangeResetDateListener implements ItemListener {
         public ChangeResetDateListener() {
 
@@ -489,7 +518,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
     public Date getResetDate() {
         return resetDate;
     }
-    
+
     public boolean isResetFromFirstTransaction() {
         if (resetFromFirstTransactionRadioButton != null) {
             return resetFromFirstTransactionRadioButton.isSelected();
