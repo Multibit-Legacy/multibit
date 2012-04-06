@@ -75,7 +75,7 @@ public class HelpAboutPanel extends JPanel implements View {
         fillerPanel1.setOpaque(false);
         add(fillerPanel1, constraints);
 
-        ImageIcon imageIcon = createImageIcon(SPLASH_ICON_FILE);
+        ImageIcon imageIcon = ImageLoader.createImageIcon(SPLASH_ICON_FILE);
         JLabel splashLabel = new JLabel();
         splashLabel.setIcon(imageIcon);
         constraints.fill = GridBagConstraints.NONE;
@@ -132,22 +132,6 @@ public class HelpAboutPanel extends JPanel implements View {
         add(fillerPanel2, constraints);
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-    }
-
-    /**
-     * TODO Consider refactoring this method into a static utility
-     * @param path The image path
-     * @return an ImageIcon, or null if the path was invalid.
-     */
-    private ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = MultiBitFrame.class.getResource(path);
-        if (imgURL != null) {
-            return new ImageIcon(imgURL);
-        } else {
-            log.error("org.multibit.ViewerFrame#createImageIcon: Could not find file: "
-              + path);
-            return null;
-        }
     }
 
     @Override
