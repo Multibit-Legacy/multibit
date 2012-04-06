@@ -743,8 +743,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                     // Selection got filtered away.
                 } else {
                     selectedAddressRowModel = addressesTable.convertRowIndexToModel(viewRow);
-                    System.out.println(String.format("Selected Row in view: %d. " + "Selected Row in model: %d.", viewRow,
-                            selectedAddressRowModel));
+//                    System.out.println(String.format("Selected Row in view: %d. " + "Selected Row in model: %d.", viewRow,
+//                            selectedAddressRowModel));
 
                     AddressBookData rowData = addressesTableModel.getAddressBookDataByRow(selectedAddressRowModel,
                             thisAbstractTradePanel.isReceiveBitcoin());

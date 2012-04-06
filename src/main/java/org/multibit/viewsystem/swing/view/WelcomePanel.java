@@ -45,8 +45,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 public class WelcomePanel extends JPanel implements View {
 
     private static final int TEXT_WIDTH = 40;
-    
-    static final String EXAMPLE_TEXT="The quick brown fox jumps over the lazy dog 0123456789"; 
+
+    static final String EXAMPLE_TEXT = "The quick brown fox jumps over the lazy dog 0123456789";
 
     private static final long serialVersionUID = 199992298245057705L;
 
@@ -57,7 +57,7 @@ public class WelcomePanel extends JPanel implements View {
      */
     public WelcomePanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
-        
+
         setLayout(new BorderLayout());
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
@@ -74,7 +74,7 @@ public class WelcomePanel extends JPanel implements View {
         mainPanel.setMinimumSize(new Dimension(400, 400));
         mainPanel.setLayout(new GridBagLayout());
         mainPanel.setOpaque(false);
-        
+
         GridBagConstraints constraints = new GridBagConstraints();
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -102,11 +102,12 @@ public class WelcomePanel extends JPanel implements View {
         HelpButton helpButton = new HelpButton(helpAction, controller);
         helpButton.setText("");
 
-        String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] {
-                controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip") });
+        String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] { controller.getLocaliser().getString(
+                "multiBitFrame.helpMenuTooltip") });
         helpButton.setToolTipText(tooltipText);
         helpButton.setHorizontalAlignment(SwingConstants.LEADING);
-        helpButton.setBorder(BorderFactory.createEmptyBorder(0, AbstractTradePanel.HELP_BUTTON_INDENT, AbstractTradePanel.HELP_BUTTON_INDENT, 0));
+        helpButton.setBorder(BorderFactory.createEmptyBorder(0, AbstractTradePanel.HELP_BUTTON_INDENT,
+                AbstractTradePanel.HELP_BUTTON_INDENT, 0));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 2;
@@ -127,7 +128,7 @@ public class WelcomePanel extends JPanel implements View {
         constraints.weighty = 10000;
         constraints.anchor = GridBagConstraints.CENTER;
         mainPanel.add(filler2, constraints);
-        
+
         JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -139,9 +140,8 @@ public class WelcomePanel extends JPanel implements View {
 
     private JPanel createWelcomePanel() {
         MultiBitTitledPanel welcomePanel = new MultiBitTitledPanel(controller.getLocaliser().getString("welcomePanel.title"));
-        
         welcomePanel.setOpaque(false);
-       
+
         FontMetrics fontMetrics = welcomePanel.getFontMetrics(welcomePanel.getFont());
         int preferredWidth = fontMetrics.stringWidth(EXAMPLE_TEXT);
         int fontHeight = fontMetrics.getHeight();
@@ -151,16 +151,17 @@ public class WelcomePanel extends JPanel implements View {
         MultiBitTitledPanel.addLeftJustifiedTextAtIndent(" ", 3, welcomePanel);
 
         String paragraph1 = controller.getLocaliser().getString("welcomePanel.paragraph1");
-        int height1 =  calculateHeight(paragraph1);
-        
+        int height1 = calculateHeight(paragraph1);
+
         MultiBitTextArea paragraph1TextArea = new MultiBitTextArea(paragraph1, height1, TEXT_WIDTH, controller);
         paragraph1TextArea.setMinimumSize(new Dimension(preferredWidth, height1 * fontHeight));
+        paragraph1TextArea.setPreferredSize(new Dimension(preferredWidth, height1 * fontHeight));
         paragraph1TextArea.setOpaque(false);
         paragraph1TextArea.setWrapStyleWord(true);
         paragraph1TextArea.setLineWrap(true);
         paragraph1TextArea.setEditable(false);
-        //paragraph1TextArea.setBorder(BorderFactory.createLineBorder(Color.RED));
-  
+        // paragraph1TextArea.setBorder(BorderFactory.createLineBorder(Color.RED));
+
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 4;
@@ -171,16 +172,17 @@ public class WelcomePanel extends JPanel implements View {
         welcomePanel.add(paragraph1TextArea, constraints);
 
         String paragraph2 = controller.getLocaliser().getString("welcomePanel.paragraph2");
-        int height2 =  calculateHeight(paragraph2);
+        int height2 = calculateHeight(paragraph2);
 
         MultiBitTextArea paragraph2TextArea = new MultiBitTextArea(paragraph2, height2, TEXT_WIDTH, controller);
         paragraph2TextArea.setMinimumSize(new Dimension(preferredWidth, height2 * fontHeight));
+        paragraph2TextArea.setPreferredSize(new Dimension(preferredWidth, height2 * fontHeight));
         paragraph2TextArea.setOpaque(false);
         paragraph2TextArea.setWrapStyleWord(true);
         paragraph2TextArea.setLineWrap(true);
         paragraph2TextArea.setEditable(false);
-        //paragraph2TextArea.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-        
+        // paragraph2TextArea.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 5;
@@ -191,16 +193,17 @@ public class WelcomePanel extends JPanel implements View {
         welcomePanel.add(paragraph2TextArea, constraints);
 
         String paragraph3 = controller.getLocaliser().getString("welcomePanel.paragraph3");
-        int height3 =  calculateHeight(paragraph3);
+        int height3 = calculateHeight(paragraph3);
 
         MultiBitTextArea paragraph3TextArea = new MultiBitTextArea(paragraph3, height3, TEXT_WIDTH, controller);
         paragraph3TextArea.setMinimumSize(new Dimension(preferredWidth, height3 * fontHeight));
+        paragraph3TextArea.setPreferredSize(new Dimension(preferredWidth, height3 * fontHeight));
         paragraph3TextArea.setOpaque(false);
         paragraph3TextArea.setWrapStyleWord(true);
         paragraph3TextArea.setLineWrap(true);
         paragraph3TextArea.setEditable(false);
-        //paragraph3TextArea.setBorder(BorderFactory.createLineBorder(Color.CYAN));
-        
+        // paragraph3TextArea.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 6;
@@ -211,16 +214,17 @@ public class WelcomePanel extends JPanel implements View {
         welcomePanel.add(paragraph3TextArea, constraints);
 
         String paragraph4 = controller.getLocaliser().getString("welcomePanel.paragraph4");
-        int height4 =  calculateHeight(paragraph4);
+        int height4 = calculateHeight(paragraph4);
 
         MultiBitTextArea paragraph4TextArea = new MultiBitTextArea(paragraph4, height4, TEXT_WIDTH, controller);
         paragraph4TextArea.setMinimumSize(new Dimension(preferredWidth, height4 * fontHeight));
+        paragraph4TextArea.setPreferredSize(new Dimension(preferredWidth, height4 * fontHeight));
         paragraph4TextArea.setOpaque(false);
         paragraph4TextArea.setWrapStyleWord(true);
         paragraph4TextArea.setLineWrap(true);
         paragraph4TextArea.setEditable(false);
-        //paragraph4TextArea.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
-        
+        // paragraph4TextArea.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
+
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 7;
@@ -243,28 +247,27 @@ public class WelcomePanel extends JPanel implements View {
 
         return welcomePanel;
     }
-    
-    public static int calculateHeight(String text) {
-        return (int)Math.ceil((text.length())/(TEXT_WIDTH - 4));
-    }
-     
-//    @Override
-//    public Data getData() {
-//        return data;
-//    }
 
+    public static int calculateHeight(String text) {
+        return (int) Math.ceil((text.length()) / (TEXT_WIDTH - 4));
+    }
+
+    // @Override
+    // public Data getData() {
+    // return data;
+    // }
 
     @Override
     public void navigateAwayFromView() {
     }
-    
+
     /**
      * show welcome panel
      */
     @Override
     public void displayView() {
     }
-    
+
     @Override
     public Icon getViewIcon() {
         return ImageLoader.createImageIcon(ImageLoader.WELCOME_ICON_FILE);
@@ -274,7 +277,7 @@ public class WelcomePanel extends JPanel implements View {
     public String getViewTitle() {
         return controller.getLocaliser().getString("welcomePanel.text");
     }
-    
+
     @Override
     public String getViewTooltip() {
         return controller.getLocaliser().getString("welcomePanel.title");
