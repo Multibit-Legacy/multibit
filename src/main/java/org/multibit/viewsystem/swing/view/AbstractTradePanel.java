@@ -37,6 +37,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.UnsupportedEncodingException;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -596,13 +597,19 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         sortKeys.add(new TableRowSorter.SortKey(0, SortOrder.ASCENDING));
         rowSorter.setSortKeys(sortKeys);
         Comparator<String> comparator = new Comparator<String>() {
+            
+            Collator collator;
+            
             public int compare(String o1, String o2) {
+                if (collator == null) {
+                    collator = Collator.getInstance(controller.getLocaliser().getLocale());
+                }
                 if (o1 == null) {
                     return 1;
                 } else if (o2 == null) {
                     return -1;
                 } else {
-                    return o1.compareTo(o2);
+                    return collator.compare(o1, o2);
                 }
             }
         };
