@@ -47,8 +47,6 @@ import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
-import org.multibit.model.Data;
-import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
@@ -64,7 +62,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 /**
  * The import private keys view
  */
-public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider {
+public class ImportPrivateKeysPanel extends JPanel implements View {
 
     private static final long serialVersionUID = 444992294329957705L;
 
@@ -621,11 +619,11 @@ public class ImportPrivateKeysPanel extends JPanel implements View, DataProvider
         return buttonPanel;
     }
 
-    @Override
-    public Data getData() {
-        assert false;
-        return null;
-    }
+//    @Override
+//    public Data getData() {
+//        assert false;
+//        return null;
+//    }
 
     @Override
     public void displayView() {

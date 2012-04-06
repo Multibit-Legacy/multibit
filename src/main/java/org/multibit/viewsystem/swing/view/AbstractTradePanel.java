@@ -68,9 +68,6 @@ import javax.swing.table.TableRowSorter;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
-import org.multibit.model.Data;
-import org.multibit.model.DataProvider;
-import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
@@ -79,6 +76,7 @@ import org.multibit.qrcode.SwatchGenerator;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.dataproviders.BitcoinFormDataProvider;
 import org.multibit.viewsystem.dataproviders.CopyQRCodeImageDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -106,7 +104,7 @@ import com.google.bitcoin.uri.BitcoinURI;
  * @author jim
  * 
  */
-public abstract class AbstractTradePanel extends JPanel implements View, CopyQRCodeImageDataProvider, DataProvider {
+public abstract class AbstractTradePanel extends JPanel implements View, CopyQRCodeImageDataProvider, BitcoinFormDataProvider {
 
     public boolean isShowSidePanel() {
         return showSidePanel;
@@ -1451,32 +1449,32 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         }
     }
 
-    public Data getData() {
-        Data data = new Data();
-
-        Item isReceiveBitcoinItem = new Item(MultiBitModel.IS_RECEIVE_BITCOIN);
-        isReceiveBitcoinItem.setNewValue(Boolean.toString(isReceiveBitcoin()));
-        data.addItem(MultiBitModel.IS_RECEIVE_BITCOIN, isReceiveBitcoinItem);
-
-        Item addressItem = new Item(getAddressConstant());
-        if (addressTextArea != null) {
-            addressItem.setNewValue(addressTextArea.getText());
-        }
-        if (addressTextField != null) {
-            addressItem.setNewValue(addressTextField.getText());
-        }
-        data.addItem(getAddressConstant(), addressItem);
-
-        Item labelItem = new Item(getLabelConstant());
-        labelItem.setNewValue(labelTextArea.getText());
-        data.addItem(getLabelConstant(), labelItem);
-
-        Item amountItem = new Item(getAmountConstant());
-        amountItem.setNewValue(amountTextField.getText());
-        data.addItem(getAmountConstant(), amountItem);
-
-        return data;
-    }
+//    public Data getData() {
+//        Data data = new Data();
+//
+//        Item isReceiveBitcoinItem = new Item(MultiBitModel.IS_RECEIVE_BITCOIN);
+//        isReceiveBitcoinItem.setNewValue(Boolean.toString(isReceiveBitcoin()));
+//        data.addItem(MultiBitModel.IS_RECEIVE_BITCOIN, isReceiveBitcoinItem);
+//
+//        Item addressItem = new Item(getAddressConstant());
+//        if (addressTextArea != null) {
+//            addressItem.setNewValue(addressTextArea.getText());
+//        }
+//        if (addressTextField != null) {
+//            addressItem.setNewValue(addressTextField.getText());
+//        }
+//        data.addItem(getAddressConstant(), addressItem);
+//
+//        Item labelItem = new Item(getLabelConstant());
+//        labelItem.setNewValue(labelTextArea.getText());
+//        data.addItem(getLabelConstant(), labelItem);
+//
+//        Item amountItem = new Item(getAmountConstant());
+//        amountItem.setNewValue(amountTextField.getText());
+//        data.addItem(getAmountConstant(), amountItem);
+//
+//        return data;
+//    }
 
     public JTextArea getLabelTextArea() {
         return labelTextArea;
@@ -1532,10 +1530,38 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     }
 
     // CopyQRCodeImageDataProvider methods
-    /**
-     * Get the URI image
-     */
+    @Override
     public JLabel getURIImage() {
         return qrCodeLabel;
+    }
+
+    
+    @Override
+    public String getAddress() {
+        if (addressTextField != null) {
+            return addressTextField.getText();
+        } else if (addressTextArea != null) {
+            return addressTextArea.getText();
+        } else {
+            return null;
+        }
+    }
+    
+    @Override
+    public String getLabel() {
+        if (labelTextArea != null) {
+            return labelTextArea.getText();
+        } else {
+            return null;
+        }
+    }
+    
+    @Override
+    public String getAmount() {
+       if (amountTextField != null) {
+           return amountTextField.getText();
+       } else {
+           return null;
+       }
     }
 }

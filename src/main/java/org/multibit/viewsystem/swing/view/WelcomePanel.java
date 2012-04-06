@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
@@ -31,8 +30,6 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.Data;
-import org.multibit.model.DataProvider;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -45,7 +42,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 /**
  * The reset blockchain and transactions view
  */
-public class WelcomePanel extends JPanel implements View, DataProvider {
+public class WelcomePanel extends JPanel implements View {
 
     private static final int TEXT_WIDTH = 40;
     
@@ -54,8 +51,6 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
     private static final long serialVersionUID = 199992298245057705L;
 
     private MultiBitController controller;
-
-    private Data data;
 
     /**
      * Creates a new {@link WelcomePanel}.
@@ -68,8 +63,6 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         this.controller = controller;
-
-        data = new Data();
 
         initUI();
     }
@@ -255,10 +248,10 @@ public class WelcomePanel extends JPanel implements View, DataProvider {
         return (int)Math.ceil((text.length())/(TEXT_WIDTH - 4));
     }
      
-    @Override
-    public Data getData() {
-        return data;
-    }
+//    @Override
+//    public Data getData() {
+//        return data;
+//    }
 
 
     @Override

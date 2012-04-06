@@ -46,12 +46,10 @@ import javax.swing.ListCellRenderer;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.Data;
-import org.multibit.model.DataProvider;
-import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ChooseFontAction;
@@ -66,7 +64,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 /**
  * The show preferences view
  */
-public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
+public class ShowPreferencesPanel extends JPanel implements View, PreferencesDataProvider {
 
     private static final int LANGUAGE_CODE_VERTICAL_INSET = 2;
 
@@ -110,8 +108,10 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     private String originalUseUriString;
     
     private MultiBitButton undoChangesButton;
+    
+    private String originalUserLanguageCode;
 
-    private Data data;
+    //private Data data;
 
     private Font selectedFont;
     
@@ -124,8 +124,6 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         this.controller = controller;
         this.mainFrame = mainFrame;
         this.controller = controller;
-
-        data = new Data();
 
         initUI();
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -425,10 +423,8 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         }
 
         // store original value for use by submit action
-        Item languageItem = new Item(MultiBitModel.USER_LANGUAGE_CODE);
-        languageItem.setOriginalValue(userLanguageCode);
-        data.addItem(MultiBitModel.USER_LANGUAGE_CODE, languageItem);
-
+        originalUserLanguageCode = userLanguageCode;
+        
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 6;
@@ -738,7 +734,7 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
-        UndoPreferencesChangesSubmitAction undoChangesAction = new UndoPreferencesChangesSubmitAction(controller, this, ImageLoader.createImageIcon(ImageLoader.UNDO_ICON_FILE));
+        UndoPreferencesChangesSubmitAction undoChangesAction = new UndoPreferencesChangesSubmitAction(controller, ImageLoader.createImageIcon(ImageLoader.UNDO_ICON_FILE));
         undoChangesButton = new MultiBitButton(undoChangesAction, controller);
 
         buttonPanel.add(undoChangesButton);
@@ -805,70 +801,70 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
         return new ImageIcon(bimg);
     }
 
-    public Data getData() {
-        Item previousUndoChangesTextItem = new Item(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT);
-        previousUndoChangesTextItem.setOriginalValue(controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.text"));
-        data.addItem(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT, previousUndoChangesTextItem);
-        
-        Item languageItem = data.getItem(MultiBitModel.USER_LANGUAGE_CODE);
-        if (useDefaultLocale.isSelected()) {
-            languageItem.setNewValue(MultiBitModel.USER_LANGUAGE_IS_DEFAULT);
-        } else {
-            Integer selectedLanguageIndex = (Integer) languageComboBox.getSelectedItem();
-            if (selectedLanguageIndex != null) {
-                int loopIndex = 0;
-                for (LanguageData languageData : languageDataSet) {
-                    if (selectedLanguageIndex.intValue() == loopIndex) {
-                        String newLanguageCode = languageData.languageCode;
-                        languageItem.setNewValue(newLanguageCode);
-                        break;
-                    }
-                    loopIndex++;
-                }
-            }
-        }
-
-        Item feeItem = new Item(MultiBitModel.SEND_FEE);
-        feeItem.setOriginalValue(originalFee);
-        feeItem.setNewValue(feeTextField.getText());
-        data.addItem(MultiBitModel.SEND_FEE, feeItem);
-
-        Item showDialogItem = new Item(MultiBitModel.OPEN_URI_SHOW_DIALOG);
-        showDialogItem.setOriginalValue(originalShowDialogString);
-        showDialogItem.setNewValue((new Boolean((askEveryTime.isSelected()))).toString());
-        data.addItem(MultiBitModel.OPEN_URI_SHOW_DIALOG, showDialogItem);
-
-        Item useUriItem = new Item(MultiBitModel.OPEN_URI_USE_URI);
-        boolean useUri = true;
-        if (ignoreAll.isSelected()) {
-            useUri = false;
-        }
-        useUriItem.setOriginalValue(originalUseUriString);
-        useUriItem.setNewValue((new Boolean(useUri)).toString());
-        data.addItem(MultiBitModel.OPEN_URI_USE_URI, useUriItem);
-
-        // put in for convenience - not stored in user properties so no original
-        Item fontItem = new Item(MultiBitModel.FONT);
-        fontItem.setNewValue(selectedFont);
-        data.addItem(MultiBitModel.FONT, fontItem);
-
-        Item fontNameItem = new Item(MultiBitModel.FONT_NAME);
-        fontNameItem.setOriginalValue(originalFontName);
-        fontNameItem.setNewValue(selectedFont.getFamily());
-        data.addItem(MultiBitModel.FONT_NAME, fontNameItem);
-
-        Item fontStyleItem = new Item(MultiBitModel.FONT_STYLE);
-        fontStyleItem.setOriginalValue(originalFontStyle);
-        fontStyleItem.setNewValue("" + selectedFont.getStyle());
-        data.addItem(MultiBitModel.FONT_STYLE, fontStyleItem);
-
-        Item fontSizeItem = new Item(MultiBitModel.FONT_SIZE);
-        fontSizeItem.setOriginalValue(originalFontSize);
-        fontSizeItem.setNewValue("" + selectedFont.getSize());
-        data.addItem(MultiBitModel.FONT_SIZE, fontSizeItem);
-
-        return data;
-    }
+//    public Data getData() {
+//        Item previousUndoChangesTextItem = new Item(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT);
+//        previousUndoChangesTextItem.setOriginalValue(controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.text"));
+//        data.addItem(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT, previousUndoChangesTextItem);
+//        
+//        Item languageItem = data.getItem(MultiBitModel.USER_LANGUAGE_CODE);
+//        if (useDefaultLocale.isSelected()) {
+//            languageItem.setNewValue(MultiBitModel.USER_LANGUAGE_IS_DEFAULT);
+//        } else {
+//            Integer selectedLanguageIndex = (Integer) languageComboBox.getSelectedItem();
+//            if (selectedLanguageIndex != null) {
+//                int loopIndex = 0;
+//                for (LanguageData languageData : languageDataSet) {
+//                    if (selectedLanguageIndex.intValue() == loopIndex) {
+//                        String newLanguageCode = languageData.languageCode;
+//                        languageItem.setNewValue(newLanguageCode);
+//                        break;
+//                    }
+//                    loopIndex++;
+//                }
+//            }
+//        }
+//
+//        Item feeItem = new Item(MultiBitModel.SEND_FEE);
+//        feeItem.setOriginalValue(originalFee);
+//        feeItem.setNewValue(feeTextField.getText());
+//        data.addItem(MultiBitModel.SEND_FEE, feeItem);
+//
+//        Item showDialogItem = new Item(MultiBitModel.OPEN_URI_SHOW_DIALOG);
+//        showDialogItem.setOriginalValue(originalShowDialogString);
+//        showDialogItem.setNewValue((new Boolean((askEveryTime.isSelected()))).toString());
+//        data.addItem(MultiBitModel.OPEN_URI_SHOW_DIALOG, showDialogItem);
+//
+//        Item useUriItem = new Item(MultiBitModel.OPEN_URI_USE_URI);
+//        boolean useUri = true;
+//        if (ignoreAll.isSelected()) {
+//            useUri = false;
+//        }
+//        useUriItem.setOriginalValue(originalUseUriString);
+//        useUriItem.setNewValue((new Boolean(useUri)).toString());
+//        data.addItem(MultiBitModel.OPEN_URI_USE_URI, useUriItem);
+//
+//        // put in for convenience - not stored in user properties so no original
+//        Item fontItem = new Item(MultiBitModel.FONT);
+//        fontItem.setNewValue(selectedFont);
+//        data.addItem(MultiBitModel.FONT, fontItem);
+//
+//        Item fontNameItem = new Item(MultiBitModel.FONT_NAME);
+//        fontNameItem.setOriginalValue(originalFontName);
+//        fontNameItem.setNewValue(selectedFont.getFamily());
+//        data.addItem(MultiBitModel.FONT_NAME, fontNameItem);
+//
+//        Item fontStyleItem = new Item(MultiBitModel.FONT_STYLE);
+//        fontStyleItem.setOriginalValue(originalFontStyle);
+//        fontStyleItem.setNewValue("" + selectedFont.getStyle());
+//        data.addItem(MultiBitModel.FONT_STYLE, fontStyleItem);
+//
+//        Item fontSizeItem = new Item(MultiBitModel.FONT_SIZE);
+//        fontSizeItem.setOriginalValue(originalFontSize);
+//        fontSizeItem.setNewValue("" + selectedFont.getSize());
+//        data.addItem(MultiBitModel.FONT_SIZE, fontSizeItem);
+//
+//        return data;
+//    }
 
     class ComboBoxRenderer extends MultiBitLabel implements ListCellRenderer {
         private static final long serialVersionUID = -3301957214353702172L;
@@ -963,10 +959,6 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
             break;
         }
     }
-
-    public Font getSelectedFont() {
-        return selectedFont;
-    }
     
     @Override
     public Icon getViewIcon() {
@@ -986,5 +978,105 @@ public class ShowPreferencesPanel extends JPanel implements View, DataProvider {
     @Override
     public int getViewId() {
         return View.PREFERENCES_VIEW;
+    }
+
+    // PreferencesDataProvider methods
+    @Override
+    public String getPreviousUndoChangesText() {
+        return controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.text");
+    }
+
+    @Override
+    public String getPreviousSendFee() {
+        return originalFee;
+    }
+
+    @Override
+    public String getNewSendFee() {
+        return feeTextField.getText();
+    }
+
+    @Override
+    public String getPreviousUserLanguageCode() {
+        return originalUserLanguageCode;
+    }
+
+    @Override
+    public String getNewUserLanguageCode() {
+        if (useDefaultLocale.isSelected()) {
+            return MultiBitModel.USER_LANGUAGE_IS_DEFAULT;
+        } else {
+            Integer selectedLanguageIndex = (Integer) languageComboBox.getSelectedItem();
+            if (selectedLanguageIndex != null) {
+                int loopIndex = 0;
+                for (LanguageData languageData : languageDataSet) {
+                    if (selectedLanguageIndex.intValue() == loopIndex) {
+                        String newLanguageCode = languageData.languageCode;
+                        return newLanguageCode;
+                    }
+                    loopIndex++;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String getPreviousOpenUriDialog() {
+        return originalShowDialogString;
+    }
+
+    @Override
+    public String getNewOpenUriDialog() {
+        return (new Boolean((askEveryTime.isSelected()))).toString();
+    }
+
+    @Override
+    public String getPreviousOpenUriUseUri() {
+        return originalUseUriString;
+    }
+
+    @Override
+    public String getNewOpenUriUseUri() {
+        boolean useUri = true;
+        if (ignoreAll.isSelected()) {
+            useUri = false;
+        }
+        return (new Boolean(useUri)).toString();
+    }
+
+    @Override
+    public String getPreviousFontName() {
+        return originalFontName;
+    }
+
+    @Override
+    public String getNewFontName() {
+        return selectedFont.getFamily();
+    }
+
+    @Override
+    public String getPreviousFontStyle() {
+        return originalFontStyle;
+    }
+
+    @Override
+    public String getNewFontStyle() {
+        return "" + selectedFont.getStyle();
+    }
+
+    @Override
+    public String getPreviousFontSize() {
+        return originalFontSize;
+    }
+
+    @Override
+    public String getNewFontSize() {
+        return "" + selectedFont.getSize();
+    }
+    
+    @Override
+    public Font getSelectedFont() {
+        return selectedFont;
     }
 }

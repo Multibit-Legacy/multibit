@@ -51,8 +51,6 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.Data;
-import org.multibit.model.DataProvider;
 import org.multibit.model.WalletTableData;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
@@ -68,7 +66,7 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 
-public class ShowTransactionsPanel extends JPanel implements DataProvider, View {
+public class ShowTransactionsPanel extends JPanel implements View {
 
     private static final Logger log = LoggerFactory.getLogger(ShowTransactionsPanel.class);
 
@@ -81,8 +79,6 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     private WalletTableModel walletTableModel;
 
     private TableRowSorter<TableModel> rowSorter;
-
-    private Data data;
 
     private static final String SPACER = "   "; // 3 spaces
 
@@ -108,8 +104,6 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
     public ShowTransactionsPanel(MultiBitFrame mainFrame, MultiBitController controller) {
         this.controller = controller;
         this.mainFrame = mainFrame;
-
-        data = new Data();
 
         initUI();
 
@@ -237,10 +231,6 @@ public class ShowTransactionsPanel extends JPanel implements DataProvider, View 
         constraints.weighty = 1;
 
         add(scrollPane, constraints);
-    }
-
-    public Data getData() {
-        return data;
     }
 
     @Override

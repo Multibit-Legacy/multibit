@@ -25,10 +25,8 @@ import javax.swing.Icon;
 import javax.swing.UIManager;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.Data;
-import org.multibit.model.DataProvider;
-import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
+import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 import com.google.bitcoin.core.Utils;
@@ -41,12 +39,12 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
     private static final long serialVersionUID = 1923492460523457765L;
 
     private MultiBitController controller;
-    private DataProvider dataProvider;
+    private PreferencesDataProvider dataProvider;
 
     /**
      * Creates a new {@link ShowPreferencesSubmitAction}.
      */
-    public ShowPreferencesSubmitAction(MultiBitController controller, DataProvider dataProvider, Icon icon) {
+    public ShowPreferencesSubmitAction(MultiBitController controller, PreferencesDataProvider dataProvider, Icon icon) {
         super(controller.getLocaliser().getString("showPreferencesSubmitAction.text"), icon);
         this.controller = controller;
         this.dataProvider = dataProvider;
@@ -64,142 +62,130 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         String updateStatusText = "";
 
         if (dataProvider != null) {
-            Data data = dataProvider.getData();
 
-            if (data != null) {
-                Item previousUndoChangesTextItem = data.getItem(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT);
-                if (previousUndoChangesTextItem != null) {
-                    controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT, (String)previousUndoChangesTextItem.getOriginalValue());                   
-                }
-                
-                Item feeItem = data.getItem(MultiBitModel.SEND_FEE);
-                if (feeItem != null) {
-                    controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_SEND_FEE, (String)feeItem.getOriginalValue());
-                    // check fee is set
-                    if (feeItem.getNewValue() == null || "".equals(feeItem.getNewValue())) {
-                        // fee must be set validation error
-                        controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, (String) feeItem.getOriginalValue());
+            controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT,
+                    dataProvider.getPreviousUndoChangesText());
+
+            String previousSendFee = dataProvider.getPreviousSendFee();
+            String newSendFee = dataProvider.getNewSendFee();
+            controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_SEND_FEE, previousSendFee);
+            // check fee is set
+            if (newSendFee == null || "".equals(newSendFee)) {
+                // fee must be set validation error
+                controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, previousSendFee);
+                feeValidationError = true;
+                updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.aFeeMustBeSet");
+            }
+
+            if (!feeValidationError) {
+                try {
+                    // check fee is a number
+                    BigInteger feeAsBigInteger = Utils.toNanoCoins(newSendFee);
+
+                    // check fee is at least the minimum fee
+                    if (feeAsBigInteger.compareTo(MultiBitModel.SEND_MINIMUM_FEE) < 0) {
                         feeValidationError = true;
-                        updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.aFeeMustBeSet");
+                        updateStatusText = controller.getLocaliser().getString(
+                                "showPreferencesPanel.feeCannotBeSmallerThanMinimumFee");
+                    } else {
+                        // fee is ok
+                        controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, newSendFee);
                     }
-
-                    if (!feeValidationError) {
-                        try {
-                            // check fee is a number
-                            BigInteger feeAsBigInteger = Utils.toNanoCoins((String) feeItem.getNewValue());
-
-                            // check fee is at least the minimum fee
-                            if (feeAsBigInteger.compareTo(MultiBitModel.SEND_MINIMUM_FEE) < 0) {
-                                feeValidationError = true;
-                                updateStatusText = controller.getLocaliser().getString(
-                                        "showPreferencesPanel.feeCannotBeSmallerThanMinimumFee");
-                            } else {
-                                // fee is ok
-                                controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, (String) feeItem.getNewValue());
-                            }
-                        } catch (NumberFormatException nfe) {
-                            // recycle the old fee and set status message
-                            controller.getModel()
-                                    .setUserPreference(MultiBitModel.SEND_FEE, (String) feeItem.getOriginalValue());
-                            feeValidationError = true;
-                            updateStatusText = controller.getLocaliser().getString(
-                                    "showPreferencesPanel.couldNotUnderstandFee", new Object[] { feeItem.getNewValue() });
-                        } catch (ArithmeticException ae) {
-                            // recycle the old fee and set status message
-                            controller.getModel()
-                                    .setUserPreference(MultiBitModel.SEND_FEE, (String) feeItem.getOriginalValue());
-                            feeValidationError = true;
-                            updateStatusText = controller.getLocaliser().getString(
-                                    "showPreferencesPanel.couldNotUnderstandFee", new Object[] { feeItem.getNewValue() });
-                        }
-                    }
-                }
-
-                Item languageItem = data.getItem(MultiBitModel.USER_LANGUAGE_CODE);
-                if (languageItem != null) {
-                    controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_USER_LANGUAGE_CODE, (String)languageItem.getOriginalValue());
-                }
-                if (languageItem != null && languageItem.getNewValue() != null
-                        && !languageItem.getNewValue().equals(languageItem.getOriginalValue())) {
-                    // new language to set on model
-                    controller.getModel().setUserPreference(MultiBitModel.USER_LANGUAGE_CODE,
-                            (String) languageItem.getNewValue());
-                    controller.fireLanguageChanged();
-                }
-
-                Item openURIDialogItem = data.getItem(MultiBitModel.OPEN_URI_SHOW_DIALOG);
-                if (openURIDialogItem != null) {
-                    controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_OPEN_URI_SHOW_DIALOG, (String) openURIDialogItem.getOriginalValue());
-                }
-                if (openURIDialogItem != null && openURIDialogItem.getNewValue() != null) {
-                    controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG,
-                            (String) openURIDialogItem.getNewValue());
-                }
-
-                Item openURIUseUriItem = data.getItem(MultiBitModel.OPEN_URI_USE_URI);
-                if (openURIUseUriItem != null) {
-                    controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_OPEN_URI_USE_URI, (String) openURIUseUriItem.getOriginalValue());
-                }
-                if (openURIUseUriItem != null && openURIUseUriItem.getNewValue() != null) {
-                    controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI,
-                            (String) openURIUseUriItem.getNewValue());
-                }
-                
-                // font data
-                boolean fontHasChanged = false;
-                Item fontNameItem = data.getItem(MultiBitModel.FONT_NAME);
-                if (fontNameItem != null) {
-                    controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_NAME, (String) fontNameItem.getOriginalValue());                    
-                }
-                if (fontNameItem != null && fontNameItem.getNewValue() != null) {
-                    controller.getModel().setUserPreference(MultiBitModel.FONT_NAME,
-                            (String) fontNameItem.getNewValue());
-                    
-                    if (!fontNameItem.getNewValue().equals(fontNameItem.getOriginalValue())) {
-                        fontHasChanged = true;
-                    }
-                }
-
-                Item fontStyleItem = data.getItem(MultiBitModel.FONT_STYLE);
-                if (fontStyleItem != null) {
-                    controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_STYLE, (String) fontStyleItem.getOriginalValue());                    
-                }
-                if (fontStyleItem != null && fontStyleItem.getNewValue() != null) {
-                    controller.getModel().setUserPreference(MultiBitModel.FONT_STYLE,
-                            (String) fontStyleItem.getNewValue());
-                    
-                    if (!fontStyleItem.getNewValue().equals(fontStyleItem.getOriginalValue())) {
-                        fontHasChanged = true;
-                    }
-                }
-
-                Item fontSizeItem = data.getItem(MultiBitModel.FONT_SIZE);
-                if (fontSizeItem != null) {
-                    controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_SIZE, (String) fontSizeItem.getOriginalValue());                    
-                }
-                controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_SIZE, (String) controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_FONT_SIZE));
-                    if (fontSizeItem != null && fontSizeItem.getNewValue() != null) {
-                    controller.getModel().setUserPreference(MultiBitModel.FONT_SIZE,
-                            (String) fontSizeItem.getNewValue());
-                    
-                    if (!fontSizeItem.getNewValue().equals(fontSizeItem.getOriginalValue())) {
-                        fontHasChanged = true;
-                    }
-                }
-                
-                controller.getModel().setUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES, "true");
-
-                if (fontHasChanged) {
-                    Item fontItem = data.getItem(MultiBitModel.FONT);
-                    FontSizer.INSTANCE.initialise(controller);
-                    if (fontItem != null && fontItem.getNewValue() != null) {
-                        UIManager.put("ToolTip.font",(Font)fontItem.getNewValue());   
-                    }
-                    
-                    // redo everything
-                    controller.fireLanguageChanged();
+                } catch (NumberFormatException nfe) {
+                    // recycle the old fee and set status message
+                    controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, previousSendFee);
+                    feeValidationError = true;
+                    updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
+                            new Object[] { newSendFee });
+                } catch (ArithmeticException ae) {
+                    // recycle the old fee and set status message
+                    controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, previousSendFee);
+                    feeValidationError = true;
+                    updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
+                            new Object[] { newSendFee });
                 }
             }
+        }
+
+        String previousLanguageCode = dataProvider.getPreviousUserLanguageCode();
+        String newLanguageCode = dataProvider.getNewUserLanguageCode();
+        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_USER_LANGUAGE_CODE, previousLanguageCode);
+
+        if (previousLanguageCode != null && !previousLanguageCode.equals(newLanguageCode)) {
+            // new language to set on model
+            controller.getModel().setUserPreference(MultiBitModel.USER_LANGUAGE_CODE, newLanguageCode);
+            controller.fireLanguageChanged();
+        }
+
+        String previousOpenUriDialog = dataProvider.getPreviousOpenUriDialog();
+        String newOpenUriDialog = dataProvider.getNewOpenUriDialog();
+
+        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_OPEN_URI_SHOW_DIALOG, previousOpenUriDialog);
+
+        if (newOpenUriDialog != null) {
+            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG, newOpenUriDialog);
+        }
+
+        String previousOpenUriUseUri = dataProvider.getPreviousOpenUriUseUri();
+        String newOpenUriUseUri = dataProvider.getNewOpenUriUseUri();
+        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_OPEN_URI_USE_URI, previousOpenUriUseUri);
+
+        if (newOpenUriUseUri != null) {
+            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI, newOpenUriUseUri);
+        }
+
+        // font data
+        boolean fontHasChanged = false;
+        String previousFontName = dataProvider.getPreviousFontName();
+        String newFontName = dataProvider.getNewFontName();
+
+        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_NAME, previousFontName);
+
+        if (newFontName != null) {
+            controller.getModel().setUserPreference(MultiBitModel.FONT_NAME, newFontName);
+
+            if (!newFontName.equals(previousFontName)) {
+                fontHasChanged = true;
+            }
+        }
+
+        String previousFontStyle = dataProvider.getPreviousFontStyle();
+        String newFontStyle = dataProvider.getNewFontStyle();
+
+        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_STYLE, previousFontStyle);
+
+        if (newFontStyle != null) {
+            controller.getModel().setUserPreference(MultiBitModel.FONT_STYLE, newFontStyle);
+
+            if (!newFontStyle.equals(previousFontStyle)) {
+                fontHasChanged = true;
+            }
+        }
+
+        String previousFontSize = dataProvider.getPreviousFontSize();
+        String newFontSize = dataProvider.getNewFontSize();
+
+        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_SIZE, previousFontSize);
+
+        if (newFontSize != null) {
+            controller.getModel().setUserPreference(MultiBitModel.FONT_SIZE, newFontSize);
+
+            if (!newFontSize.equals(previousFontSize)) {
+                fontHasChanged = true;
+            }
+        }
+
+        controller.getModel().setUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES, "true");
+
+        if (fontHasChanged) {
+            Font newFont = dataProvider.getSelectedFont();
+            FontSizer.INSTANCE.initialise(controller);
+            if (newFont != null) {
+                UIManager.put("ToolTip.font", newFont);
+            }
+
+            // redo everything
+            controller.fireLanguageChanged();
         }
 
         // return to the same view
@@ -208,7 +194,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         if (feeValidationError) {
             controller.updateStatusLabel(updateStatusText);
         } else {
-            // clear any previous validation error 
+            // clear any previous validation error
             controller.updateStatusLabel(" ");
         }
     }

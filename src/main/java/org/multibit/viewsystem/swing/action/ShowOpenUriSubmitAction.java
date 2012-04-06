@@ -21,11 +21,10 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.DataProvider;
-import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.ShowOpenUriDialog;
 
@@ -37,13 +36,14 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
     private static final long serialVersionUID = 1913592460523457765L;
 
     private MultiBitController controller;
-    private DataProvider dataProvider;
+    private ShowUriDialogDataProvider dataProvider;
     private ShowOpenUriDialog showOpenUriDialog;
 
     /**
      * Creates a new {@link ShowOpenUriSubmitAction}.
      */
-    public ShowOpenUriSubmitAction(MultiBitFrame mainFrame, MultiBitController controller, DataProvider dataProvider, ShowOpenUriDialog showOpenUriDialog) {
+    public ShowOpenUriSubmitAction(MultiBitFrame mainFrame, MultiBitController controller, ShowUriDialogDataProvider dataProvider,
+            ShowOpenUriDialog showOpenUriDialog) {
         super(controller.getLocaliser().getString("showOpenUriView.yesText"));
         this.controller = controller;
         this.dataProvider = dataProvider;
@@ -69,32 +69,42 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
             controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
-            // get the data out of the temporary data and put it in the wallet preferences
-            Item sendAddressItem = dataProvider.getData().getItem(MultiBitModel.OPEN_URI_ADDRESS);
-            Item sendLabelItem = dataProvider.getData().getItem(MultiBitModel.OPEN_URI_LABEL);
-            Item sendAmountItem = dataProvider.getData().getItem(MultiBitModel.OPEN_URI_AMOUNT);
-            Item showDialogItem = dataProvider.getData().getItem(MultiBitModel.OPEN_URI_SHOW_DIALOG);
- 
-            if (sendAddressItem != null) {
-                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, (String)sendAddressItem.getNewValue());                
+            // get the data out of the temporary data and put it in the wallet
+            // preferences
+
+            String sendAddress = dataProvider.getAddress();
+            String sendLabel = dataProvider.getLabel();
+            String sendAmount = dataProvider.getAmount();
+            boolean showDialog = dataProvider.isShowUriDialog();
+
+            // Item sendAddressItem =
+            // dataProvider.getData().getItem(MultiBitModel.OPEN_URI_ADDRESS);
+            // Item sendLabelItem =
+            // dataProvider.getData().getItem(MultiBitModel.OPEN_URI_LABEL);
+            // Item sendAmountItem =
+            // dataProvider.getData().getItem(MultiBitModel.OPEN_URI_AMOUNT);
+            // Item showDialogItem =
+            // dataProvider.getData().getItem(MultiBitModel.OPEN_URI_SHOW_DIALOG);
+
+            if (sendAddress != null) {
+                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, sendAddress);
             }
-            if (sendLabelItem != null) {
-                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, (String)sendLabelItem.getNewValue());                
+            if (sendLabel != null) {
+                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, sendLabel);
             }
-            if (sendAmountItem != null) {
-                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, (String)sendAmountItem.getNewValue());                
+            if (sendAmount != null) {
+                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, sendAmount);
             }
             // we want the send view to paste in the send data
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "true");
 
-            // we want to set the user preference to use the uri as the user clicked yes
-            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI, "true");      
-            
+            // we want to set the user preference to use the uri as the user
+            // clicked yes
+            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI, "true");
+
             // save as user preference whether to show dialog or not
-            if (showDialogItem != null) {
-                controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG, (String)showDialogItem.getNewValue());                
-            }
-            
+            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG, (new Boolean(showDialog)).toString());
+
             showOpenUriDialog.setVisible(false);
             controller.displayView(View.SEND_BITCOIN_VIEW);
         }

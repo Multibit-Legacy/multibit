@@ -51,6 +51,6 @@ public class CopySendAddressAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         // copy to clipboard
         TextTransfer textTransfer = new TextTransfer();
-        textTransfer.setClipboardContents(sendBitcoinPanel.getSendAddress());
+        textTransfer.setClipboardContents(sendBitcoinPanel.getAddress());
     }
 }

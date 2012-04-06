@@ -33,7 +33,6 @@ import javax.swing.SwingConstants;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
-import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
@@ -59,7 +58,7 @@ import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Utils;
 
-public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider, View {
+public class SendBitcoinPanel extends AbstractTradePanel implements View {
 
     private static final long serialVersionUID = -2065108865497111662L;
 
@@ -323,7 +322,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         return formPanel;
     }
 
-    public String getSendAddress() {
+    public String getAddress() {
         if (addressTextField != null) {
             return addressTextField.getText();
         } else {

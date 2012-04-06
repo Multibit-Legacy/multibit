@@ -21,9 +21,8 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.DataProvider;
-import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.dataproviders.BitcoinFormDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.SendBitcoinConfirmDialog;
 import org.multibit.viewsystem.swing.view.ValidationErrorDialog;
@@ -37,12 +36,12 @@ public class SendBitcoinConfirmAction extends AbstractAction {
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
-    private DataProvider dataProvider;
+    private BitcoinFormDataProvider dataProvider;
 
     /**
      * Creates a new {@link SendBitcoinConfirmAction}.
      */
-    public SendBitcoinConfirmAction(MultiBitController controller, MultiBitFrame mainFrame, DataProvider dataProvider) {
+    public SendBitcoinConfirmAction(MultiBitController controller, MultiBitFrame mainFrame, BitcoinFormDataProvider dataProvider) {
         super(controller.getLocaliser().getString("sendBitcoinConfirmAction.text"), ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
         this.controller = controller;
         this.mainFrame = mainFrame;
@@ -61,11 +60,14 @@ public class SendBitcoinConfirmAction extends AbstractAction {
         ValidationErrorDialog validationErrorDialog = null;
 
         // copy the data into the user preferences (side effect of getData call)
-        dataProvider.getData();
+        //dataProvider.getData();
 
-        String sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
-        String sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
+        //String sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
+        //String sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
 
+        String sendAddress = dataProvider.getAddress();
+        String sendAmount = dataProvider.getAmount();
+        
         Validator validator = new Validator(controller);
         if (validator.validate(sendAddress, sendAmount)) {
             sendBitcoinConfirmDialog = new SendBitcoinConfirmDialog(controller, mainFrame);

@@ -35,7 +35,6 @@ import javax.swing.SwingConstants;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
-import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletInfo;
 import org.multibit.utils.ImageLoader;
@@ -57,7 +56,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvider, View {
+public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
 
     static final Logger log = LoggerFactory.getLogger(ReceiveBitcoinPanel.class);
 

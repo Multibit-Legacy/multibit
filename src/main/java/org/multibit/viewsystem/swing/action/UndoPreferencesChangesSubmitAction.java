@@ -24,7 +24,6 @@ import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.DataProvider;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -38,15 +37,13 @@ public class UndoPreferencesChangesSubmitAction extends AbstractAction {
     private static final long serialVersionUID = 1923492412423457765L;
 
     private MultiBitController controller;
-    private DataProvider dataProvider;
 
     /**
      * Creates a new {@link UndoPreferencesChangesSubmitAction}.
      */
-    public UndoPreferencesChangesSubmitAction(MultiBitController controller, DataProvider dataProvider, ImageIcon icon) {
+    public UndoPreferencesChangesSubmitAction(MultiBitController controller, ImageIcon icon) {
         super(controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.text"), icon);
         this.controller = controller;
-        this.dataProvider = dataProvider;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.tooltip"));

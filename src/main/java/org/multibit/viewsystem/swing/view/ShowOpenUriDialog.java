@@ -28,12 +28,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.Data;
-import org.multibit.model.DataProvider;
-import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ShowOpenUriCancelAction;
 import org.multibit.viewsystem.swing.action.ShowOpenUriSubmitAction;
@@ -44,7 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The show open uri view
  */
-public class ShowOpenUriDialog extends MultiBitDialog implements View, DataProvider {
+public class ShowOpenUriDialog extends MultiBitDialog implements View, ShowUriDialogDataProvider {
 
     private Logger log = LoggerFactory.getLogger(ShowOpenUriDialog.class);
 
@@ -208,27 +206,28 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, DataProvi
         log.debug("Navigate away from view called for ShowOpenUriDialog " + this.toString());
     }
 
-    @Override
-    public Data getData() {
-        Data data = new Data();
-        Item addressItem = new Item(MultiBitModel.OPEN_URI_ADDRESS);
-        addressItem.setNewValue(sendAddress);
-        data.addItem(MultiBitModel.OPEN_URI_ADDRESS, addressItem);
-
-        Item labelItem = new Item(MultiBitModel.OPEN_URI_LABEL);
-        labelItem.setNewValue(sendLabel);
-        data.addItem(MultiBitModel.OPEN_URI_LABEL, labelItem);
-
-        Item amountItem = new Item(MultiBitModel.OPEN_URI_AMOUNT);
-        amountItem.setNewValue(sendAmount);
-        data.addItem(MultiBitModel.OPEN_URI_AMOUNT, amountItem);
-
-        Item showDialogItem = new Item(MultiBitModel.OPEN_URI_SHOW_DIALOG);
-        showDialogItem.setNewValue((new Boolean((!rememberCheckBox.isSelected()))).toString());
-        data.addItem(MultiBitModel.OPEN_URI_SHOW_DIALOG, showDialogItem );
-
-        return data;
-    }
+    // @Override
+    // public Data getData() {
+    // Data data = new Data();
+    // Item addressItem = new Item(MultiBitModel.OPEN_URI_ADDRESS);
+    // addressItem.setNewValue(sendAddress);
+    // data.addItem(MultiBitModel.OPEN_URI_ADDRESS, addressItem);
+    //
+    // Item labelItem = new Item(MultiBitModel.OPEN_URI_LABEL);
+    // labelItem.setNewValue(sendLabel);
+    // data.addItem(MultiBitModel.OPEN_URI_LABEL, labelItem);
+    //
+    // Item amountItem = new Item(MultiBitModel.OPEN_URI_AMOUNT);
+    // amountItem.setNewValue(sendAmount);
+    // data.addItem(MultiBitModel.OPEN_URI_AMOUNT, amountItem);
+    //
+    // Item showDialogItem = new Item(MultiBitModel.OPEN_URI_SHOW_DIALOG);
+    // showDialogItem.setNewValue((new
+    // Boolean((!rememberCheckBox.isSelected()))).toString());
+    // data.addItem(MultiBitModel.OPEN_URI_SHOW_DIALOG, showDialogItem );
+    //
+    // return data;
+    // }
 
     @Override
     public void displayView() { 
@@ -281,5 +280,28 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, DataProvi
     @Override
     public int getViewId() {
         return View.SHOW_OPEN_URI_DIALOG_VIEW;
+    }
+
+    // BitcoinFormDataProvider methods
+    @Override
+    public String getAddress() {
+        return controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_ADDRESS);
+    }
+
+    @Override
+    public String getLabel() {
+        return controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_LABEL);
+    }
+
+    @Override
+    public String getAmount() {
+        return controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_AMOUNT);
+    }
+
+    // ShowUriDialogDataProvider method
+    @Override
+    public boolean isShowUriDialog() {
+        // TODO Auto-generated method stub
+        return false;
     }
 }

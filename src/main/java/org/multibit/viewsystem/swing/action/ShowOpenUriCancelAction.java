@@ -21,10 +21,9 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.DataProvider;
-import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
 import org.multibit.viewsystem.swing.view.ShowOpenUriDialog;
 
 /**
@@ -36,14 +35,14 @@ public class ShowOpenUriCancelAction extends AbstractAction {
 
     private MultiBitController controller;
     
-    private DataProvider dataProvider;
+    private ShowUriDialogDataProvider dataProvider;
     
     private ShowOpenUriDialog showOpenUriDialog;
 
     /**
      * Creates a new {@link ShowOpenUriCancelAction}.
      */
-    public ShowOpenUriCancelAction(MultiBitController controller, DataProvider dataProvider, ShowOpenUriDialog showOpenUriDialog) {
+    public ShowOpenUriCancelAction(MultiBitController controller, ShowUriDialogDataProvider dataProvider, ShowOpenUriDialog showOpenUriDialog) {
         super(controller.getLocaliser().getString("showOpenUriView.noText"));
         this.controller = controller;
         this.dataProvider = dataProvider;
@@ -58,12 +57,13 @@ public class ShowOpenUriCancelAction extends AbstractAction {
      * return to the transactions view
      */
     public void actionPerformed(ActionEvent e) {
-        Item showDialogItem = dataProvider.getData().getItem(MultiBitModel.OPEN_URI_SHOW_DIALOG);
-        
-        if (showDialogItem != null) {
-            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG, (String)showDialogItem.getNewValue());                
+//        Item showDialogItem = dataProvider.getData().getItem(MultiBitModel.OPEN_URI_SHOW_DIALOG);
+             
+        if (dataProvider != null) {
+            String openUriDialogAsString = (new Boolean(dataProvider.isShowUriDialog())).toString();
+            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG, openUriDialogAsString);                
         }
-
+        
         // we do not want to use the uri as the user clicked cancel
         controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI, "false");   
         

@@ -27,10 +27,6 @@ import javax.swing.JPanel;
 
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.Data;
-import org.multibit.model.DataProvider;
-import org.multibit.model.Item;
-import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.CreateBulkAddressesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;

@@ -28,7 +28,6 @@ import javax.swing.Action;
 import javax.swing.Icon;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.DataProvider;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.swing.view.AbstractTradePanel;
@@ -41,15 +40,15 @@ public class PasteSwatchAction extends AbstractAction {
     private static final long serialVersionUID = 193452235465057705L;
 
     private MultiBitController controller;
-    private DataProvider dataProvider;
+    private AbstractTradePanel tradePanel;
 
     /**
      * Creates a new {@link PasteSwatchAction}.
      */
-    public PasteSwatchAction(MultiBitController controller, DataProvider dataProvider, Icon icon) {
+    public PasteSwatchAction(MultiBitController controller, AbstractTradePanel tradePanel, Icon icon) {
         super("", icon);
         this.controller = controller;
-        this.dataProvider = dataProvider;
+        this.tradePanel = tradePanel;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("pasteSwatchAction.tooltip"));
@@ -73,9 +72,8 @@ public class PasteSwatchAction extends AbstractAction {
             // see if an image was pasted
             Image image = getImageFromClipboard();
             if (image != null) {
-                if (dataProvider != null) {
-                    AbstractTradePanel abstractTradePanel = (AbstractTradePanel) dataProvider;
-                    abstractTradePanel.processDroppedImage(image);
+                if (tradePanel != null) {
+                     tradePanel.processDroppedImage(image);
                 }
             } else {
                 // see if text was pasted
@@ -85,9 +83,8 @@ public class PasteSwatchAction extends AbstractAction {
                     // some text was pasted
                     stringToPaste = WhitespaceTrimmer.trim(stringToPaste);
 
-                    if (dataProvider != null) {
-                        AbstractTradePanel abstractTradePanel = (AbstractTradePanel) dataProvider;
-                        abstractTradePanel.processDecodedString(stringToPaste, null);
+                    if (tradePanel != null) {
+                        tradePanel.processDecodedString(stringToPaste, null);
                     }
                 }
             }
