@@ -20,7 +20,7 @@ import org.multibit.model.PerWalletModelData;
 import com.google.bitcoin.core.WalletEventListener;
 
 /**
- * an interface describing a collection of views that are used to render the MultiBit application
+ * An interface describing a collection of views that are used to render the MultiBit application
  * @author jim
  *
  */
@@ -87,5 +87,4 @@ public interface ViewSystem extends WalletEventListener {
      * @param helpContextToDisplay
      */
     public void setHelpContext(String helpContextToDisplay);
-
 }

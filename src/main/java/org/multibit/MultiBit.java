@@ -39,6 +39,7 @@ import org.multibit.platform.GenericApplicationFactory;
 import org.multibit.platform.GenericApplicationSpecification;
 import org.multibit.platform.listener.GenericOpenURIEvent;
 import org.multibit.viewsystem.ViewSystem;
+import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,6 +155,7 @@ public class MultiBit {
 
         log.debug("Registering with controller");
         controller.registerViewSystem(swingViewSystem);
+        //controller.registerViewSystem(new SimpleViewSystem());
 
         log.debug("Creating Bitcoin service");
         // create the MultiBitService that connects to the bitcoin network

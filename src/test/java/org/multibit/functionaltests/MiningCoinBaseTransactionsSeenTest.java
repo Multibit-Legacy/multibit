@@ -36,6 +36,7 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.ViewSystem;
+import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,10 +100,6 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
         MultiBitService multiBitService = new MultiBitService(false, controller);
         controller.setMultiBitService(multiBitService);
 
-        // hook up a peer event listener
-        CountPeerEventListener countPeersListener = new CountPeerEventListener();
-        multiBitService.getPeerGroup().addEventListener(countPeersListener);
-
         // add the simple view system
         SimpleViewSystem simpleViewSystem = new SimpleViewSystem();
         controller.registerViewSystem(simpleViewSystem);
@@ -149,11 +146,11 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
 
         // wait for a peer connection
         log.debug("Waiting for peer connection. . . ");
-        while (countPeersListener.getNumberOfPeers() == 0) {
+        while (!simpleViewSystem.isOnline()) {
             Thread.sleep(1000);
         }
-        log.debug("Number of peers is now " + countPeersListener.getNumberOfPeers());
-
+        log.debug("Now online.");
+        
         log.debug("Replaying blockchain");
         multiBitService.replayBlockChain(formatter.parse(START_OF_REPLAY_PERIOD));
 
@@ -268,88 +265,4 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             return numberOfPeers;
         }
     };
-
-    /**
-     * utility class used in notification of downloaded blocks
-     */
-    class SimpleViewSystem implements ViewSystem {
-        int numberOfBlocksDownloaded = 0;
-
-        public int getNumberOfBlocksDownloaded() {
-            return numberOfBlocksDownloaded;
-        }
-
-        boolean online = false;
-
-        public boolean isOnline() {
-            return online;
-        }
-
-        @Override
-        public void onCoinsReceived(Wallet arg0, Transaction arg1, BigInteger arg2, BigInteger arg3) {
-        }
-
-        @Override
-        public void onCoinsSent(Wallet arg0, Transaction arg1, BigInteger arg2, BigInteger arg3) {
-        }
-
-        @Override
-        public void onReorganize(Wallet arg0) {
-        }
-
-        public void onTransactionConfidenceChanged(Wallet arg0, Transaction arg1) {
-        }
-
-        @Override
-        public void displayView(int viewToDisplay) {
-        }
-
-        @Override
-        public void navigateAwayFromView(int viewToNavigateAwayFrom) {
-        }
-
-        @Override
-        public void fireDataChanged() {
-        }
-
-        @Override
-        public void recreateAllViews(boolean initUI) {
-        }
-
-        @Override
-        public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
-        }
-
-        @Override
-        public void nowOnline() {
-            online = true;
-        }
-
-        @Override
-        public void nowOffline() {
-            online = false;
-        }
-
-        @Override
-        public void blockDownloaded() {
-            numberOfBlocksDownloaded++;
-        }
-
-        @Override
-        public void updateStatusLabel(String updateDownloadStatus, boolean clearAutomatically) {
-        }
-
-        @Override
-        public void updateStatusLabel(String updateDownloadStatus, double percentComplete) {
-        }
-
-        @Override
-        public void setHelpContext(String helpContextToDisplay) {
-        }
-
-        public void onDeadTransaction(Wallet wallet, Transaction deadTx, Transaction replacementTx) {
-            // TODO Auto-generated method stub
-            
-        }
-    }
 }
