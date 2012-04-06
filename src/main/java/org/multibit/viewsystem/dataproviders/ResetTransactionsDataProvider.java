@@ -7,7 +7,7 @@ import java.util.Date;
  * @author jim
  *
  */
-public interface ResetTransactionsDataProvider {
+public interface ResetTransactionsDataProvider extends DataProvider{
 
     /**
      * Is the reset to be from the date of the first transaction ?

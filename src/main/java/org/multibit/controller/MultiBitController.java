@@ -121,7 +121,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         viewSystems = new ArrayList<ViewSystem>();
 
         fileHandler = new FileHandler(this);
-        
+
         // by default localise to English
         localiser = new Localiser(Locale.ENGLISH);
     }
@@ -357,7 +357,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
         // update the model
         getModel().processNewCoin(wallet, transaction);
-        
+
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
         }
@@ -475,7 +475,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             log.error("Could not parse the uriString '" + uriString + "', aborting");
             return;
         }
-        
+
         // Convert the URI data into suitably formatted view data
         String address = bitcoinURI.getAddress().toString();
         String label = "";
@@ -553,29 +553,21 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         // loop through all the wallets, seeing if the transaction is relevant
         // and adding them as pending if so
         if (transaction != null) {
-//            String lookingFor = "1GqtGtn4fctXuKxsVzRPSLmYWN1YioLi9y";
-//            for (TransactionOutput o : transaction.getOutputs()) {
-//                try {
-//                    if (lookingFor.equals(o.getScriptPubKey().getToAddress().toString())) {
-//                        log.debug("Saw a transaction about address '" + lookingFor + "' : \n" + transaction.toString());
-//                    }
-//                } catch (ScriptException e) {
-//                    e.printStackTrace();
-//                }
-//            }
             try {
                 java.util.List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
 
                 if (perWalletModelDataList != null) {
                     for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
                         Wallet loopWallet = perWalletModelData.getWallet();
-                        if (loopWallet.isTransactionRelevant(transaction, true)) {
-                            // the perWalletModelData is marked as dirty
-                            perWalletModelData.setDirty(true);
-                            if (loopWallet.getTransaction(transaction.getHash()) == null) {
-                                log.debug("MultiBit adding a new pending transaction for the wallet '"
-                                        + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());
-                                loopWallet.receivePending(transaction);
+                        if (loopWallet != null) {
+                            if (loopWallet.isTransactionRelevant(transaction, true)) {
+                                // the perWalletModelData is marked as dirty
+                                perWalletModelData.setDirty(true);
+                                if (loopWallet.getTransaction(transaction.getHash()) == null) {
+                                    log.debug("MultiBit adding a new pending transaction for the wallet '"
+                                            + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());
+                                    loopWallet.receivePending(transaction);
+                                }
                             }
                         }
                     }

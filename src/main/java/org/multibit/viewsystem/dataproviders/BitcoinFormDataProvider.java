@@ -6,7 +6,7 @@ package org.multibit.viewsystem.dataproviders;
  * @author jim
  *
  */
-public interface BitcoinFormDataProvider { 
+public interface BitcoinFormDataProvider extends DataProvider { 
     /**
      * Get the address
      */

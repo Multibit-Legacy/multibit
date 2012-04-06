@@ -8,7 +8,7 @@ import java.awt.Font;
  * @author jim
  *
  */
-public interface PreferencesDataProvider { 
+public interface PreferencesDataProvider extends DataProvider { 
     /**
      * Get the previous 'undo changes' text
      */

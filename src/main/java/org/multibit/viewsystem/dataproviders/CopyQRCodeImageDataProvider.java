@@ -7,7 +7,7 @@ import javax.swing.JLabel;
  * @author jim
  *
  */
-public interface CopyQRCodeImageDataProvider { 
+public interface CopyQRCodeImageDataProvider extends DataProvider { 
     /**
      * Get the URI image
      */

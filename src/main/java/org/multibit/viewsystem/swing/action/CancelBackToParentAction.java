@@ -50,6 +50,8 @@ public class CancelBackToParentAction extends AbstractAction {
      * close the root dialog
      */
     public void actionPerformed(ActionEvent e) {
-        dialog.setVisible(false);
+        if (dialog != null) {
+            dialog.setVisible(false);
+        }
     }
 }

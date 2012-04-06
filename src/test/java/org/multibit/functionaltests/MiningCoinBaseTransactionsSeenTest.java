@@ -15,7 +15,6 @@
  */
 package org.multibit.functionaltests;
 
-import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -35,9 +34,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.network.MultiBitService;
-import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
-import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +42,6 @@ import com.google.bitcoin.core.AbstractPeerEventListener;
 import com.google.bitcoin.core.DumpedPrivateKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Peer;
-import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 
 /**
@@ -73,11 +69,6 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
 
     @Test
     public void testReplayMiningTransaction() throws Exception {
-        // currently uses Swing hence check if running on server and abort
-//        if (GraphicsEnvironment.isHeadless()) {
-//            log.debug("Aborting MiningCoinBaseTransactionsSeenTest#testReplayMiningTransaction as running headless");
-//            return;
-//        }
         
         // date format is UTC with century, T time separator and Z for UTC
         // timezone
@@ -152,8 +143,8 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             log.debug("Blocks downloaded =  " + simpleViewSystem.getNumberOfBlocksDownloaded());
         }
 
-        // check new balance on wallet
-        assertEquals(BALANCE_AFTER_REPLAY, controller.getModel().getActiveWallet().getBalance());
+        // check new balance on wallet - balance should be at least the expected (may have later tx too)
+        assertTrue(BALANCE_AFTER_REPLAY.compareTo(controller.getModel().getActiveWallet().getBalance()) <= 0);
 
         // tidy up
         multiBitService.getPeerGroup().stop();

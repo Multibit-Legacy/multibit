@@ -183,7 +183,7 @@ public class MultiBitService {
         peerGroup.setUserAgent("MultiBit", controller.getLocaliser().getVersionNumber());
         
         // this event listener puts the number of peers to the log
-        peerGroup.addEventListener(new CountPeerEventListener());
+        //peerGroup.addEventListener(new CountPeerEventListener());
 
         String singleNodeConnection = controller.getModel().getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
         if (singleNodeConnection != null && !singleNodeConnection.equals("")) {

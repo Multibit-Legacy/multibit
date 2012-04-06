@@ -5,7 +5,7 @@ package org.multibit.viewsystem.dataproviders;
  * @author jim
  *
  */
-public interface CreateBulkAddressesDataProvider {
+public interface CreateBulkAddressesDataProvider extends DataProvider {
 
     /**
      * Get the filename to output the addresses to
