@@ -25,6 +25,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigInteger;
@@ -33,6 +35,7 @@ import java.util.Timer;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -69,6 +72,7 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.components.VerticalGradientPanel;
+import org.multibit.viewsystem.swing.view.ticker.TickerPanel;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
 import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
 import org.simplericity.macify.eawt.ApplicationEvent;
@@ -154,6 +158,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private Timer fileChangeTimer;
 
     private JPanel headerPanel;
+
+    private JPanel tickerPanel;
 
     @SuppressWarnings("deprecation")
     public MultiBitFrame(MultiBitController controller, GenericApplication application) {
@@ -431,9 +437,26 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 5;
         constraints.gridy = 0;
-        constraints.weightx = 100;
+        constraints.weightx = 10000;
         constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(filler3, constraints);
+
+        // add ticker panel
+        tickerPanel = new TickerPanel(controller, this);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 6;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        headerPanel.add(tickerPanel, constraints);
+
+        // add a little stent to keep it off the right hand edge
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 7;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
+        headerPanel.add(MultiBitTitledPanel.createStent(8), constraints);
 
         return headerPanel;
     }
@@ -537,15 +560,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             fileMenu.add(menuItem);
         }
 
-        // show weocome action
-        MultiBitAction showWelcomeAction = new MultiBitAction(controller, ImageLoader.WELCOME_ICON_FILE,
-                "welcomePanel.text", "welcomePanel.title", "welcomePanel.mnemonic",
-                View.WELCOME_VIEW);
+        // show welcome action
+        MultiBitAction showWelcomeAction = new MultiBitAction(controller, ImageLoader.WELCOME_ICON_FILE, "welcomePanel.text",
+                "welcomePanel.title", "welcomePanel.mnemonic", View.WELCOME_VIEW);
         menuItem = new JMenuItem(showWelcomeAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
         helpMenu.add(menuItem);
-        
+
         // show help contents action
         MultiBitAction showHelpContentsAction = new MultiBitAction(controller, ImageLoader.HELP_CONTENTS_ICON_FILE,
                 "showHelpContentsAction.text", "showHelpContentsAction.tooltip", "showHelpContentsAction.mnemonic",
@@ -601,6 +623,37 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             menuItem.setComponentOrientation(componentOrientation);
             viewMenu.add(menuItem);
         }
+
+        viewMenu.addSeparator();
+
+        // show ticker
+        JCheckBoxMenuItem showTicker = new JCheckBoxMenuItem(controller.getLocaliser().getString("multiBitFrame.ticker.text"));
+        showTicker.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        showTicker.setComponentOrientation(componentOrientation);
+        showTicker.setIcon(ImageLoader.createImageIcon(ImageLoader.MONEY_ICON_FILE));
+
+        String viewTicker = controller.getModel().getUserPreference(MultiBitModel.SHOW_TICKER);
+        boolean isTickerVisible = !Boolean.FALSE.toString().equals(viewTicker); 
+        showTicker.setState(isTickerVisible);
+        if (tickerPanel != null) {
+            tickerPanel.setVisible(isTickerVisible);
+        }
+
+        showTicker.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                if (tickerPanel != null) {
+                    if (tickerPanel.isVisible()) {
+                        tickerPanel.setVisible(false);
+                        controller.getModel().setUserPreference(MultiBitModel.SHOW_TICKER, Boolean.FALSE.toString());
+                    } else {
+                        tickerPanel.setVisible(true);
+                        controller.getModel().setUserPreference(MultiBitModel.SHOW_TICKER, Boolean.TRUE.toString());
+                    }
+                }
+            }
+        });
+
+        viewMenu.add(showTicker);
 
         // import private keys
         MultiBitAction showImportPrivateKeysAction = new MultiBitAction(controller, ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE,
@@ -1040,6 +1093,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public void onDeadTransaction(Wallet wallet, Transaction deadTx, Transaction replacementTx) {
         // TODO Auto-generated method stub
-        
+
     }
 }

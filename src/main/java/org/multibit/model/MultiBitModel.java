@@ -72,8 +72,10 @@ public class MultiBitModel {
 
     public static final String USER_LANGUAGE_CODE = "languageCode";
     public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
+    
+    public static final String SHOW_TICKER = "showTicker";
 
-    // my wallets, open wallet and save wallet as dialog
+    // wallets, open wallet and save wallet as dialog
     public static final String ACTIVE_WALLET_FILENAME = "selectedWalletFilename";
     public static final String WALLET_FILENAME_PREFIX = "walletFilename.";
     public static final String WALLET_DESCRIPTION_PREFIX = "walletDescription.";
@@ -84,7 +86,6 @@ public class MultiBitModel {
     public static final String SEND_ADDRESS = "sendAddress";
     public static final String SEND_LABEL = "sendLabel";
     public static final String SEND_AMOUNT = "sendAmount";
-//    public static final String SEND_URI_IMAGE = "sendUriImage";
     public static final String SEND_FEE = "sendFee";
     public static final String SEND_PERFORM_PASTE_NOW = "sendPerformPasteNow";
     public static final String SHOW_SIDE_PANEL = "showSidePanel";
@@ -113,7 +114,6 @@ public class MultiBitModel {
     public static final String RECEIVE_LABEL = "receiveLabel";
     public static final String RECEIVE_AMOUNT = "receiveAmount";
     public static final String RECEIVE_NEW_KEY = "receiveNewKey"; // to delete
-//    public static final String RECEIVE_URI_IMAGE = "receiveUriImage";
 
     // validation
     public static final String VALIDATION_ADDRESS_IS_INVALID = "validationAddressIsInvalid";
@@ -142,8 +142,6 @@ public class MultiBitModel {
 
     // merchant menu
     public static final String SHOW_MERCHANT_MENU = "showMerchantMenu";
-//    public static final String MERCHANT_BULK_ADDRESSES_NUMBER_OF_ADDRESSES = "merchantBulkAddressesNumberOfAddresses";
-//    public static final String MERCHANT_BULK_ADDRESSES_OUTPUT_FILENAME = "merchantBulkAddressesOutputFilename";
 
     // user preference font
     public static final String FONT = "font";
