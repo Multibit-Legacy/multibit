@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2012 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
@@ -27,8 +26,10 @@ import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -72,6 +73,12 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
     private MultiBitLabel walletDescriptionLabel;
 
     private Date resetDate;
+    
+    private static final int CALENDAR_BORDER_WIDTH = 4;
+    
+    private static final int NUMBER_OF_HOURS_IN_A_DAY = 24;
+    
+    private static final int DEFAULT_NUMBER_OF_DAYS = 14;
 
     private final SimpleDateFormat dateFormatter;
 
@@ -87,10 +94,12 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         setLayout(new BorderLayout());
-
-        resetDate = new Date(((new Date()).getTime()) - (1000 * 60 * 60 * 24 * 14)); // 2
-                                                                                     // weeks
-                                                                                     // ago
+                                                                                    // ago
+        // default reset date is 2 weeks ago
+        Calendar now = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        now.add(Calendar.HOUR, -1 * NUMBER_OF_HOURS_IN_A_DAY * DEFAULT_NUMBER_OF_DAYS);
+        resetDate = now.getTime();
+        
         dateFormatter = new SimpleDateFormat("dd MMM yyyy", controller.getLocaliser().getLocale());
 
         initUI();
@@ -407,7 +416,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
         // Create a border for the calendar
         Border etchedBorder = BorderFactory.createEtchedBorder();
-        Border emptyBorder = BorderFactory.createEmptyBorder(4, 4, 4, 4);
+        Border emptyBorder = BorderFactory.createEmptyBorder(CALENDAR_BORDER_WIDTH, CALENDAR_BORDER_WIDTH, CALENDAR_BORDER_WIDTH, CALENDAR_BORDER_WIDTH);
         Border compoundBorder = BorderFactory.createCompoundBorder(etchedBorder, emptyBorder);
 
         calendarChooser = new JCalendar(resetDate, controller.getLocaliser().getLocale(), true, false);
@@ -426,10 +435,6 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         calendarChooser.setBorder(compoundBorder);
         calendarChooser.setEnabled(false);
         
-        // Set fonts rather than using defaults
-        //calendarChooser.setDayFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        //calendarChooser.setTodayFont(new Font("Dialog", Font.PLAIN, 14));
-
         ItemListener itemListener = new ChangeResetDateListener();
         resetFromFirstTransactionRadioButton.addItemListener(itemListener);
         chooseResetDateRadioButton.addItemListener(itemListener);
