@@ -77,15 +77,6 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
             String sendAmount = dataProvider.getAmount();
             boolean showDialog = dataProvider.isShowUriDialog();
 
-            // Item sendAddressItem =
-            // dataProvider.getData().getItem(MultiBitModel.OPEN_URI_ADDRESS);
-            // Item sendLabelItem =
-            // dataProvider.getData().getItem(MultiBitModel.OPEN_URI_LABEL);
-            // Item sendAmountItem =
-            // dataProvider.getData().getItem(MultiBitModel.OPEN_URI_AMOUNT);
-            // Item showDialogItem =
-            // dataProvider.getData().getItem(MultiBitModel.OPEN_URI_SHOW_DIALOG);
-
             if (sendAddress != null) {
                 controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, sendAddress);
             }
@@ -95,6 +86,7 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
             if (sendAmount != null) {
                 controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, sendAmount);
             }
+            
             // we want the send view to paste in the send data
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "true");
 

@@ -52,9 +52,9 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, ShowUriDi
 
     private MultiBitController controller;
 
-    private String sendAddress;
-    private String sendLabel;
-    private String sendAmount;
+//    private String sendAddress;
+//    private String sendLabel;
+//    private String sendAmount;
 
     private JButton submitButton;
     private JButton cancelButton;
@@ -92,9 +92,9 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, ShowUriDi
 
         setLayout(new GridBagLayout());
         // get the data out of the wallet preferences
-        sendAddress = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_ADDRESS);
-        sendLabel = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_LABEL);
-        sendAmount = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_AMOUNT);
+//        sendAddress = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_ADDRESS);
+//        sendLabel = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_LABEL);
+//        sendAmount = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_AMOUNT);
         GridBagConstraints constraints = new GridBagConstraints();
 
         JLabel filler00 = new JLabel();
@@ -234,9 +234,9 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, ShowUriDi
         log.debug("display called for ShowOpenUriDialog " + this.toString());
 
         // get the data out of the wallet preferences
-        sendAddress = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_ADDRESS);
-        sendLabel = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_LABEL);
-        sendAmount = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_AMOUNT);
+//        sendAddress = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_ADDRESS);
+//        sendLabel = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_LABEL);
+//        sendAmount = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_AMOUNT);
 
         String showDialogString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
        
@@ -301,7 +301,6 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, ShowUriDi
     // ShowUriDialogDataProvider method
     @Override
     public boolean isShowUriDialog() {
-        // TODO Auto-generated method stub
-        return false;
+        return !rememberCheckBox.isSelected();
     }
 }
