@@ -74,10 +74,10 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
     @Test
     public void testReplayMiningTransaction() throws Exception {
         // currently uses Swing hence check if running on server and abort
-        if (GraphicsEnvironment.isHeadless()) {
-            log.debug("Aborting MiningCoinBaseTransactionsSeenTest#testReplayMiningTransaction as running headless");
-            return;
-        }
+//        if (GraphicsEnvironment.isHeadless()) {
+//            log.debug("Aborting MiningCoinBaseTransactionsSeenTest#testReplayMiningTransaction as running headless");
+//            return;
+//        }
         
         // date format is UTC with century, T time separator and Z for UTC
         // timezone
@@ -100,12 +100,9 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
         MultiBitService multiBitService = new MultiBitService(false, controller);
         controller.setMultiBitService(multiBitService);
 
-        // add the simple view system
+        // add the simple view system (no Swing)
         SimpleViewSystem simpleViewSystem = new SimpleViewSystem();
         controller.registerViewSystem(simpleViewSystem);
-
-        ViewSystem swingViewSystem = new MultiBitFrame(controller, null);
-        controller.registerViewSystem(swingViewSystem);
 
         //
         // MultiBit runtime is now setup and running
@@ -133,12 +130,6 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
         // blockchain
         controller.getMultiBitService().addWalletFromFilename(miningWalletPath);
         controller.getModel().setActiveWalletByFilename(miningWalletPath);
-
-        if (swingViewSystem instanceof MultiBitFrame) {
-            ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
-            ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
-        }
-        controller.fireDataChanged();
 
         log.debug("Mining wallet = \n" + miningWallet.toString());
 
@@ -168,7 +159,6 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
         multiBitService.getPeerGroup().stop();
 
         controller.getFileHandler().deleteWalletAndWalletInfo(controller.getModel().getActivePerWalletModelData());
-
     }
 
     /**
