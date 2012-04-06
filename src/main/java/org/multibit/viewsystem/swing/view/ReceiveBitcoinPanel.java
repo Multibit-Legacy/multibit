@@ -91,11 +91,6 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements DataProvi
         return MultiBitModel.RECEIVE_AMOUNT;
     }
     
-    @Override
-    protected String getUriImageConstant() {
-        return MultiBitModel.RECEIVE_URI_IMAGE;
-    }
-    
     /**
      * method for concrete impls to populate the localisation map
      */

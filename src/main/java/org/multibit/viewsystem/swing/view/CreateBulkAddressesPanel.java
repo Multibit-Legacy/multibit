@@ -32,6 +32,7 @@ import org.multibit.model.DataProvider;
 import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.dataproviders.CreateBulkAddressesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CreateBulkAddressesSubmitAction;
@@ -42,7 +43,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 /**
  * The create bulk addresses view (MultiBitMerchant support)
  */
-public class CreateBulkAddressesPanel extends JPanel implements View, DataProvider {
+public class CreateBulkAddressesPanel extends JPanel implements View, CreateBulkAddressesDataProvider {
 
     private static final String DEFAULT_BULK_ADDRESSES_FILENAME = "bulkAddresses.csv";
 
@@ -55,7 +56,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
     private MultiBitLabel actualNumberOfAddressesLabel;
     private MultiBitLabel actualFilenameLabel;
 
-    private Data data;
+//    private Data data;
 
     /**
      * Creates a new {@link CreateBulkAddressesPanel}.
@@ -67,7 +68,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
 
         this.controller = controller;
 
-        data = new Data();
+//        data = new Data();
 
         initUI();
     }
@@ -303,18 +304,18 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
         return buttonPanel;
     }
 
-    public Data getData() {
-        data = new Data();
-
-        Item outputFilenameItem = new Item(MultiBitModel.MERCHANT_BULK_ADDRESSES_OUTPUT_FILENAME);
-        outputFilenameItem.setNewValue(actualFilenameLabel.getText());
-        data.addItem(MultiBitModel.MERCHANT_BULK_ADDRESSES_OUTPUT_FILENAME, outputFilenameItem);
-
-        Item numberOfAddressesItem = new Item(MultiBitModel.MERCHANT_BULK_ADDRESSES_NUMBER_OF_ADDRESSES);
-        numberOfAddressesItem.setNewValue(actualNumberOfAddressesLabel.getText());
-        data.addItem(MultiBitModel.MERCHANT_BULK_ADDRESSES_NUMBER_OF_ADDRESSES, numberOfAddressesItem);
-        return data;
-    }
+//    public Data getData() {
+//        data = new Data();
+//
+//        Item outputFilenameItem = new Item(MultiBitModel.MERCHANT_BULK_ADDRESSES_OUTPUT_FILENAME);
+//        outputFilenameItem.setNewValue(actualFilenameLabel.getText());
+//        data.addItem(MultiBitModel.MERCHANT_BULK_ADDRESSES_OUTPUT_FILENAME, outputFilenameItem);
+//
+//        Item numberOfAddressesItem = new Item(MultiBitModel.MERCHANT_BULK_ADDRESSES_NUMBER_OF_ADDRESSES);
+//        numberOfAddressesItem.setNewValue(actualNumberOfAddressesLabel.getText());
+//        data.addItem(MultiBitModel.MERCHANT_BULK_ADDRESSES_NUMBER_OF_ADDRESSES, numberOfAddressesItem);
+//        return data;
+//    }
 
     @Override
     public void displayView() {
@@ -340,5 +341,17 @@ public class CreateBulkAddressesPanel extends JPanel implements View, DataProvid
     @Override
     public int getViewId() {
         return View.CREATE_BULK_ADDRESSES_VIEW;
+    }
+
+    // CreateBulkAddressesDataProvider methods
+    
+    @Override
+    public String getOutputFilename() {
+        return actualFilenameLabel.getText();
+    }
+
+    @Override
+    public int getNumberOfAddresses() {
+        return Integer.parseInt(actualNumberOfAddressesLabel.getText());
     }
 }

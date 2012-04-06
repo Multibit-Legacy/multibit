@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2012 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,6 @@ import java.awt.image.BufferedImage;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,6 +79,7 @@ import org.multibit.qrcode.SwatchGenerator;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.dataproviders.CopyQRCodeImageDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
@@ -106,7 +106,7 @@ import com.google.bitcoin.uri.BitcoinURI;
  * @author jim
  * 
  */
-public abstract class AbstractTradePanel extends JPanel implements View, DataProvider {
+public abstract class AbstractTradePanel extends JPanel implements View, CopyQRCodeImageDataProvider, DataProvider {
 
     public boolean isShowSidePanel() {
         return showSidePanel;
@@ -244,8 +244,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     public abstract String getLabelConstant();
 
     public abstract String getAmountConstant();
-
-    protected abstract String getUriImageConstant();
 
     protected abstract Action getCreateNewAddressAction();
 
@@ -578,8 +576,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         addressPanel.setOpaque(true);
         addressPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
-        // get the stored previously selected receive address
-
         addressPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -592,9 +588,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         addressesTable.setRowSelectionAllowed(true);
         addressesTable.setColumnSelectionAllowed(false);
         addressesTable.setRowHeight(getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight());
-
-        //addressesTable.setAutoCreateRowSorter(true);
-        //addressesTable.getRowSorter().toggleSortOrder(0); // sort by label
 
         // row sorter
         TableRowSorter<TableModel> rowSorter = new TableRowSorter<TableModel>(addressesTable.getModel());
@@ -616,8 +609,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             }
         };
         rowSorter.setComparator(0, comparator);
-        
-        // TODO make sure table cannot be edited by double click
+
         // justify column headers
         TableCellRenderer renderer = addressesTable.getTableHeader().getDefaultRenderer();
         JLabel label = (JLabel) renderer;
@@ -1235,13 +1227,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
             address = WhitespaceTrimmer.trim(address);
             addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRowModel, isReceiveBitcoin());
 
-            int rowToSelect = addressesTable.convertRowIndexToView(selectedAddressRowModel);
-            addressesListener.setEnabled(false);
-            addressesTable.getSelectionModel().setSelectionInterval(rowToSelect, rowToSelect);
-            addressesListener.setEnabled(true);
-
-            // scroll to visible
-            addressesTable.scrollRectToVisible(addressesTable.getCellRect(rowToSelect, 0, false));
+            selectRowInTableFromModelRow(selectedAddressRowModel);
 
             controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAddressConstant(), address);
             controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getLabelConstant(), label);
@@ -1255,7 +1241,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
     /**
      * display the address, amount and label as a swatch
      */
-    private void displaySwatch(String address, String amount, String label) {        
+    private void displaySwatch(String address, String amount, String label) {
         if (swatchGenerator == null) {
             swatchGenerator = new SwatchGenerator(controller);
         }
@@ -1352,11 +1338,12 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 amountString = controller.getLocaliser().bitcoinValueToString(bitcoinURI.getAmount(), false, false);
             }
             log.debug("SendBitcoinPanel - ping 4");
-            String decodedLabel = null;
+            String decodedLabel = "";
             try {
-                decodedLabel = java.net.URLDecoder.decode(bitcoinURI.getLabel(), "UTF-8");
+                if (bitcoinURI.getLabel() != null) {
+                    decodedLabel = java.net.URLDecoder.decode(bitcoinURI.getLabel(), "UTF-8");
+                }
             } catch (UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
@@ -1374,11 +1361,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 addressesTableModel.setAddressBookDataByRow(addressBookData, rowToSelectModel, false);
                 selectedAddressRowModel = rowToSelectModel;
 
-                int rowToSelect = addressesTable.convertRowIndexToView(rowToSelectModel);
-                addressesTable.getSelectionModel().setSelectionInterval(rowToSelect, rowToSelect);
-
-                // scroll to visible
-                addressesTable.scrollRectToVisible(addressesTable.getCellRect(rowToSelect, 0, false));
+                selectRowInTableFromModelRow(rowToSelectModel);
             } else {
                 // add a new row to the table
                 controller.getModel().getActiveWalletWalletInfo().addSendingAddress(addressBookData);
@@ -1391,11 +1374,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
                 if (rowToSelectModel >= 0) {
                     selectedAddressRowModel = rowToSelectModel;
 
-                    int rowToSelect = addressesTable.convertRowIndexToView(rowToSelectModel);
-                    addressesTable.getSelectionModel().setSelectionInterval(rowToSelect, rowToSelect);
-
-                    // scroll to visible
-                    addressesTable.scrollRectToVisible(addressesTable.getCellRect(rowToSelect, 0, false));
+                    selectRowInTableFromModelRow(rowToSelectModel);
                 }
             }
             addressesTable.invalidate();
@@ -1435,7 +1414,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
      */
     public void selectRows() {
         // stop listener firing
-        addressesTable.getSelectionModel().removeListSelectionListener(addressesListener);
+        addressesListener.setEnabled(false);
 
         String address = controller.getModel().getActiveWalletPreference(getAddressConstant());
         displaySwatch(address, amountTextField.getText(), labelTextArea.getText());
@@ -1445,25 +1424,31 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         if (rowToSelectModel >= 0) {
             selectedAddressRowModel = rowToSelectModel;
 
-            if (rowToSelectModel < addressesTableModel.getRowCount()) {
-                try {
-                    int rowToSelect = addressesTable.convertRowIndexToView(rowToSelectModel);
-                    addressesTable.getSelectionModel().setSelectionInterval(rowToSelect, rowToSelect);
-
-                    // scroll to visible
-                    addressesTable.scrollRectToVisible(addressesTable.getCellRect(rowToSelect, 0, false));
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    // absorb - row wrong
-                }
-            }
+            selectRowInTableFromModelRow(rowToSelectModel);
         }
 
         addressesTable.invalidate();
         addressesTable.validate();
         addressesTable.repaint();
 
-        // put the listeners back
-        addressesTable.getSelectionModel().addListSelectionListener(addressesListener);
+        // enable listener
+        addressesListener.setEnabled(true);
+    }
+
+    private void selectRowInTableFromModelRow(int rowToSelectModel) {
+        if (rowToSelectModel < addressesTableModel.getRowCount()) {
+            try {
+                int rowToSelect = addressesTable.convertRowIndexToView(rowToSelectModel);
+                addressesListener.setEnabled(false);
+                addressesTable.getSelectionModel().setSelectionInterval(rowToSelect, rowToSelect);
+                addressesListener.setEnabled(true);
+
+                // scroll to visible
+                addressesTable.scrollRectToVisible(addressesTable.getCellRect(rowToSelect, 0, false));
+            } catch (ArrayIndexOutOfBoundsException e) {
+                // absorb - row wrong
+            }
+        }
     }
 
     public Data getData() {
@@ -1489,10 +1474,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
         Item amountItem = new Item(getAmountConstant());
         amountItem.setNewValue(amountTextField.getText());
         data.addItem(getAmountConstant(), amountItem);
-
-        Item uriImageItem = new Item(getUriImageConstant());
-        uriImageItem.setNewValue(qrCodeLabel);
-        data.addItem(getUriImageConstant(), uriImageItem);
 
         return data;
     }
@@ -1548,5 +1529,13 @@ public abstract class AbstractTradePanel extends JPanel implements View, DataPro
 
     public JTable getAddressesTable() {
         return addressesTable;
+    }
+
+    // CopyQRCodeImageDataProvider methods
+    /**
+     * Get the URI image
+     */
+    public JLabel getURIImage() {
+        return qrCodeLabel;
     }
 }

@@ -34,6 +34,7 @@ import org.multibit.model.Item;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
+import org.multibit.viewsystem.dataproviders.CreateBulkAddressesDataProvider;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.ECKey;
@@ -47,12 +48,12 @@ public class CreateBulkAddressesSubmitAction extends AbstractAction {
     private static final long serialVersionUID = 1923492460523457765L;
 
     private MultiBitController controller;
-    private DataProvider dataProvider;
+    private CreateBulkAddressesDataProvider dataProvider;
 
     /**
      * Creates a new {@link CreateBulkAddressesSubmitAction}.
      */
-    public CreateBulkAddressesSubmitAction(MultiBitController controller, DataProvider dataProvider) {
+    public CreateBulkAddressesSubmitAction(MultiBitController controller, CreateBulkAddressesDataProvider dataProvider) {
         super(controller.getLocaliser().getString("createBulkAddressesSubmitAction.text"));
         this.controller = controller;
         this.dataProvider = dataProvider;
@@ -77,24 +78,22 @@ public class CreateBulkAddressesSubmitAction extends AbstractAction {
             controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
             if (dataProvider != null) {
-                Data data = dataProvider.getData();
+                String outputFilename = dataProvider.getOutputFilename();
+                int numberOfAddresses = dataProvider.getNumberOfAddresses();
 
-                String outputFilename = null;
-                int numberOfAddresses = -1;
-
-                Item outputFilenameItem = data.getItem(MultiBitModel.MERCHANT_BULK_ADDRESSES_OUTPUT_FILENAME);
-                if (outputFilenameItem != null && outputFilenameItem.getNewValue() != null) {
-                    outputFilename = (String) outputFilenameItem.getNewValue();
-                }
-
-                Item numberOfAddressesItem = data.getItem(MultiBitModel.MERCHANT_BULK_ADDRESSES_NUMBER_OF_ADDRESSES);
-                if (numberOfAddressesItem != null && numberOfAddressesItem.getNewValue() != null) {
-                    try {
-                        numberOfAddresses = Integer.parseInt((String) numberOfAddressesItem.getNewValue());
-                    } catch (NumberFormatException nfe) {
-                        nfe.printStackTrace();
-                    }
-                }
+//                Item outputFilenameItem = data.getItem(MultiBitModel.MERCHANT_BULK_ADDRESSES_OUTPUT_FILENAME);
+//                if (outputFilenameItem != null && outputFilenameItem.getNewValue() != null) {
+//                    outputFilename = (String) outputFilenameItem.getNewValue();
+//                }
+//
+//                Item numberOfAddressesItem = data.getItem(MultiBitModel.MERCHANT_BULK_ADDRESSES_NUMBER_OF_ADDRESSES);
+//                if (numberOfAddressesItem != null && numberOfAddressesItem.getNewValue() != null) {
+//                    try {
+//                        numberOfAddresses = Integer.parseInt((String) numberOfAddressesItem.getNewValue());
+//                    } catch (NumberFormatException nfe) {
+//                        nfe.printStackTrace();
+//                    }
+//                }
 
                 WalletInfo walletInfo = perWalletModelData.getWalletInfo();
                 if (walletInfo == null) {

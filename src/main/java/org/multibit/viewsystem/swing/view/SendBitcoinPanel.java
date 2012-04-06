@@ -97,11 +97,6 @@ public class SendBitcoinPanel extends AbstractTradePanel implements DataProvider
         return MultiBitModel.SEND_AMOUNT;
     }
 
-    @Override
-    protected String getUriImageConstant() {
-        return MultiBitModel.SEND_URI_IMAGE;
-    }
-
     /**
      * method for concrete impls to populate the localisation map
      */

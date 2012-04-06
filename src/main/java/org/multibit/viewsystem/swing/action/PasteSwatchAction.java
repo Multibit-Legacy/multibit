@@ -47,7 +47,6 @@ public class PasteSwatchAction extends AbstractAction {
      * Creates a new {@link PasteSwatchAction}.
      */
     public PasteSwatchAction(MultiBitController controller, DataProvider dataProvider, Icon icon) {
-        //super(controller.getLocaliser().getString("pasteSwatchAction.text"));
         super("", icon);
         this.controller = controller;
         this.dataProvider = dataProvider;

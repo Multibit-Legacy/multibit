@@ -25,25 +25,21 @@ import javax.swing.JLabel;
 import javax.swing.TransferHandler;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.Data;
-import org.multibit.model.DataProvider;
-import org.multibit.model.Item;
-import org.multibit.model.MultiBitModel;
+import org.multibit.viewsystem.dataproviders.CopyQRCodeImageDataProvider;
 
 /**
- * This {@link Action} represents the swing copy QRCode action
+ * This {@link Action} represents the swing copy QRCode image action
  */
 public class CopyQRCodeImageAction extends AbstractAction {
 
     private static final long serialVersionUID = 191352235465057705L;
 
-    private DataProvider dataProvider;
+    private CopyQRCodeImageDataProvider dataProvider;
 
     /**
      * Creates a new {@link CopyQRCodeImageAction}.
      */
-    public CopyQRCodeImageAction(MultiBitController controller, DataProvider dataProvider, Icon icon) {
-        //super(controller.getLocaliser().getString("copyQRCodeImageAction.text"), icon);
+    public CopyQRCodeImageAction(MultiBitController controller, CopyQRCodeImageDataProvider dataProvider, Icon icon) {
         super("", icon);
         this.dataProvider = dataProvider;
 
@@ -57,32 +53,13 @@ public class CopyQRCodeImageAction extends AbstractAction {
      */
     public void actionPerformed(ActionEvent e) {
         if (dataProvider != null) {
-            Data data = dataProvider.getData();
+            JLabel qrCodeLabel = dataProvider.getURIImage();
 
-            if (data != null) {
-                boolean isReceive = false;
+            final Clipboard clipboard = qrCodeLabel.getTopLevelAncestor().getToolkit().getSystemClipboard();
 
-                Item isReceiveItem = data.getItem(MultiBitModel.IS_RECEIVE_BITCOIN);
-                if (isReceiveItem != null && Boolean.TRUE.toString().equals(isReceiveItem.getNewValue())) {
-                    isReceive = true;
-                }
-
-                Item qrCodeImageItem = null;
-                if (isReceive) {
-                    qrCodeImageItem = data.getItem(MultiBitModel.RECEIVE_URI_IMAGE);
-                } else {
-                    qrCodeImageItem = data.getItem(MultiBitModel.SEND_URI_IMAGE);
-                }
-                
-                if (qrCodeImageItem != null && qrCodeImageItem.getNewValue() != null) {
-                    JLabel qrCodeLabel = (JLabel) qrCodeImageItem.getNewValue();
-                    final Clipboard clipboard = qrCodeLabel.getTopLevelAncestor().getToolkit().getSystemClipboard();
-
-                    // copy to clipboard
-                    TransferHandler handler = qrCodeLabel.getTransferHandler();
-                    handler.exportToClipboard(qrCodeLabel, clipboard, TransferHandler.COPY);
-                }
-            }
+            // copy to clipboard
+            TransferHandler handler = qrCodeLabel.getTransferHandler();
+            handler.exportToClipboard(qrCodeLabel, clipboard, TransferHandler.COPY);
         }
     }
 }
