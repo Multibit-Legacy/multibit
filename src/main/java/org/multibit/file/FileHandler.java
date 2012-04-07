@@ -336,6 +336,7 @@ public class FileHandler {
             List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
             int numberOfWallets = perWalletModelDataList.size();
+            log.debug("When writing wallets, there were " + numberOfWallets);
             controller.getModel().setUserPreference(MultiBitModel.NUMBER_OF_WALLETS, numberOfWallets + "");
             controller.getModel().setUserPreference(MultiBitModel.ACTIVE_WALLET_FILENAME,
                     controller.getModel().getActiveWalletFilename());

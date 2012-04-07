@@ -171,6 +171,8 @@ public class MultiBit {
 
         // load up all the wallets
         String numberOfWalletsAsString = userPreferences.getProperty(MultiBitModel.NUMBER_OF_WALLETS);
+        log.debug("When loading wallets, there were " + numberOfWalletsAsString);
+
         if (numberOfWalletsAsString == null || "".equals(numberOfWalletsAsString)) {
             // if this is missing then there is just the one wallet (old format
             // properties or user has just started up for the first time)
