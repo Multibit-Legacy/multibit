@@ -6,7 +6,7 @@ import java.io.PrintStream;
 import javax.swing.Icon;
 
 import org.multibit.Localiser;
-import org.multibit.viewsystem.commandline.CommandLineViewSystem;
+import org.multibit.viewsystem.commandline.ObseleteCommandLineViewSystem;
 
 /**
  * help contents view for command line view system
@@ -27,8 +27,8 @@ public class HelpContentsView extends AbstractView {
     public void displayView() {
         String helpContentsMessage = localiser.getString("helpContentsView.todo", null);
 
-        printStream.println(CommandLineViewSystem.TEXT_VIEW_OUTPUT_PREFIX
-                        + CommandLineViewSystem.DISPLAY_VIEW_PREFIX + description + "\n"
+        printStream.println(ObseleteCommandLineViewSystem.TEXT_VIEW_OUTPUT_PREFIX
+                        + ObseleteCommandLineViewSystem.DISPLAY_VIEW_PREFIX + description + "\n"
                         + helpContentsMessage);
 
         // if there was a form it would go here

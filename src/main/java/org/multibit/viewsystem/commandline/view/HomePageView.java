@@ -10,7 +10,7 @@ import javax.swing.Icon;
 import org.multibit.Localiser;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletTableData;
-import org.multibit.viewsystem.commandline.CommandLineViewSystem;
+import org.multibit.viewsystem.commandline.ObseleteCommandLineViewSystem;
 
 /**
  * the help about command line view
@@ -35,7 +35,7 @@ public class HomePageView extends AbstractView {
     @Override
     public void displayView() {
         printStream
-                .println(CommandLineViewSystem.TEXT_VIEW_OUTPUT_PREFIX + CommandLineViewSystem.DISPLAY_VIEW_PREFIX + description);
+                .println(ObseleteCommandLineViewSystem.TEXT_VIEW_OUTPUT_PREFIX + ObseleteCommandLineViewSystem.DISPLAY_VIEW_PREFIX + description);
 
         // output filename
         String walletFilename = model.getActiveWalletFilename();

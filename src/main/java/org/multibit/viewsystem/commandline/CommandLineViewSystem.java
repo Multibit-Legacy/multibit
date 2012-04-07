@@ -64,6 +64,8 @@ public class CommandLineViewSystem implements ViewSystem {
     public static String ERROR_PREFIX = "Error     : ";
     public static String DISPLAY_MENU_OPTIONS_PREFIX = "Menu      : ";
     public static String MENU_CHOOSE_PREFIX = "CHOOSE    > ";
+    
+    private MultiBitTool multiBitTool;
 
     public CommandLineViewSystem(MultiBitController controller) {
         this.controller = controller;
@@ -73,221 +75,19 @@ public class CommandLineViewSystem implements ViewSystem {
         inputStream = System.in;
         printStream = System.out;
 
-        populateViewList();
+        multiBitTool = new MultiBitTool(controller);
+        ConsoleReadingThread consoleReader = new ConsoleReadingThread(System.in, System.out, multiBitTool);
+        consoleReader.start();
     }
-
-    /**
-     * populate the list of views note that the id used for the key matches the
-     * constants in the View interface
-     */
-    private void populateViewList() {
-        viewMap = new HashMap<Integer, CommandLineView>();
-        MultiBitModel model = controller.getModel();
-        Localiser localiser = controller.getLocaliser();
-
-        viewMap.put(View.UNKNOWN_VIEW, new SimpleView(localiser, "Unknown view", inputStream, printStream));
-
-        // home page
-        CommandLineView homePageView = new HomePageView(model, localiser, "Home Page", inputStream, printStream);
-        Collection<Action> homePageActions = new ArrayList<Action>();
-        // homePageActions.add(new HelpContentsAction(controller));
-        homePageActions.add(new OpenWalletAction(controller, null, null));
-        // homePageActions.add(new ReceiveBitcoinAction(controller));
-        // homePageActions.add(new SendBitcoinAction(controller));
-        // homePageActions.add(new OpenAddressBookAction(controller, true,
-        // true));
-        // homePageActions.add(new ShowPreferencesAction(controller));
-        // homePageActions.add(new HelpAboutAction(controller));
-        homePageActions.add(new ExitAction(controller, null));
-        homePageView.setPossibleActions(homePageActions);
-        viewMap.put(View.TRANSACTIONS_VIEW, homePageView);
-
-        // Send bitcoin
-        CommandLineView sendBitcoinView = new SendBitcoinView(localiser, "Send Bitcoin", inputStream, printStream);
-        Collection<Action> sendBitcoinActions = new ArrayList<Action>();
-        sendBitcoinActions.add(new PasteAddressAction(controller, null, null));
-        sendBitcoinActions.add(new CancelBackToParentAction(controller, null, null));
-        sendBitcoinActions.add(new SendBitcoinConfirmAction(controller, null, null));
-        sendBitcoinView.setPossibleActions(sendBitcoinActions);
-        viewMap.put(View.SEND_BITCOIN_VIEW, sendBitcoinView);
-
-        // Send bitcoin confirm
-        CommandLineView sendBitcoinConfirmView = new SendBitcoinView(localiser, "Send Bitcoin Confirm", inputStream, printStream);
-        Collection<Action> sendBitcoinConfirmActions = new ArrayList<Action>();
-        sendBitcoinConfirmActions.add(new CancelBackToParentAction(controller, null, null));
-        sendBitcoinConfirmActions.add(new SendBitcoinNowAction(null, controller, null, null));
-        sendBitcoinConfirmView.setPossibleActions(sendBitcoinConfirmActions);
-        viewMap.put(View.SEND_BITCOIN_CONFIRM_VIEW, sendBitcoinConfirmView);
-
-        // Receive bitcoin
-        CommandLineView receiveBitcoinView = new ReceiveBitcoinView(localiser, "Receive Bitcoin", inputStream, printStream);
-        Collection<Action> receiveBitcoinActions = new ArrayList<Action>();
-        // receiveBitcoinActions.add(new CopyQRCodeTextAction(controller));
-        // receiveBitcoinActions.add(new CreateOrEditAddressAction(controller,
-        // true, true));
-        receiveBitcoinActions.add(new OkBackToParentAction(controller, null));
-        receiveBitcoinView.setPossibleActions(receiveBitcoinActions);
-        viewMap.put(View.RECEIVE_BITCOIN_VIEW, receiveBitcoinView);
-
-        // Help contents
-        CommandLineView helpContentsView = new HelpContentsView(localiser, "Help Contents", inputStream, printStream);
-        Collection<Action> helpContentsActions = new ArrayList<Action>();
-        helpContentsActions.add(new OkBackToParentAction(controller, null));
-        helpContentsView.setPossibleActions(helpContentsActions);
-        viewMap.put(View.HELP_CONTENTS_VIEW, helpContentsView);
-
-        // Help About
-        CommandLineView helpAboutView = new HelpAboutView(localiser, "Help About MultiBit", inputStream, printStream);
-        Collection<Action> helpAboutActions = new ArrayList<Action>();
-        helpAboutActions.add(new OkBackToParentAction(controller, null));
-        helpAboutView.setPossibleActions(helpAboutActions);
-        viewMap.put(View.HELP_ABOUT_VIEW, helpAboutView);
-
-        // Settings
-        CommandLineView settingsView = new SimpleView(localiser, "Preferences", inputStream, printStream);
-        Collection<Action> settingsActions = new ArrayList<Action>();
-        settingsActions.add(new OkBackToParentAction(controller, null));
-        settingsView.setPossibleActions(settingsActions);
-        viewMap.put(View.PREFERENCES_VIEW, settingsView);
-
-        // // Address book receiving
-        // View addressBookReceivingView = new
-        // AddressBookReceivingView(localiser, "Address Book (Receiving)",
-        // inputStream, printStream);
-        // Collection<Action> addressBookReceivingActions = new
-        // ArrayList<Action>();
-        // // need selection of address shown
-        // addressBookReceivingActions.add(new
-        // CopyQRCodeTextAction(controller));
-        // addressBookReceivingActions.add(new
-        // CreateOrEditAddressAction(controller, true, true));
-        // addressBookReceivingActions.add(new
-        // CreateOrEditAddressAction(controller, false, true));
-        // addressBookReceivingActions.add(new OpenAddressBookAction(controller,
-        // false, false));
-        // addressBookReceivingActions.add(new
-        // OkBackToParentAction(controller));
-        // addressBookReceivingView.setPossibleActions(addressBookReceivingActions);
-        // viewMap.put(View.ADDRESS_BOOK_RECEIVING_VIEW,
-        // addressBookReceivingView);
-        //
-        // // Address book sending
-        // View addressBookSendingView = new AddressBookSendingView(localiser,
-        // "Address Book (Sending)", inputStream, printStream);
-        // Collection<Action> addressBookSendingActions = new
-        // ArrayList<Action>();
-        // // need selection of addresses shown
-        // addressBookSendingActions.add(new CopyQRCodeTextAction(controller));
-        // addressBookSendingActions.add(new
-        // CreateOrEditAddressAction(controller, true, false));
-        // addressBookSendingActions.add(new
-        // CreateOrEditAddressAction(controller, false, false));
-        // addressBookSendingActions.add(new OpenAddressBookAction(controller,
-        // false, true));
-        // addressBookSendingActions.add(new OkBackToParentAction(controller));
-        // addressBookSendingView.setPossibleActions(addressBookSendingActions);
-        // viewMap.put(View.ADDRESS_BOOK_SENDING_VIEW, addressBookSendingView);
-        //
-        // // Create new receiving address
-        // CommandLineView createNewReceivingAddressView = new
-        // SimpleView(localiser, "Create New Receiving Address", inputStream,
-        // printStream);
-        // Collection<Action> createNewReceivingAddressActions = new
-        // ArrayList<Action>();
-        // createNewReceivingAddressActions.add(new
-        // CancelBackToParentAction(controller, null, null));
-        // createNewReceivingAddressActions.add(new
-        // OkBackToParentAction(controller, null));
-        // createNewReceivingAddressView.setPossibleActions(createNewReceivingAddressActions);
-        // viewMap.put(View.CREATE_NEW_RECEIVING_ADDRESS_VIEW,
-        // createNewReceivingAddressView);
-        //
-        // // Create new sending address
-        // CommandLineView createNewSendingAddressView = new
-        // SimpleView(localiser, "Create New Sending Address", inputStream,
-        // printStream);
-        // Collection<Action> createNewSendingAddressActions = new
-        // ArrayList<Action>();
-        // createNewSendingAddressActions.add(new
-        // CancelBackToParentAction(controller, null. null));
-        // createNewSendingAddressActions.add(new
-        // OkBackToParentAction(controller, null));
-        // createNewSendingAddressView.setPossibleActions(createNewSendingAddressActions);
-        // viewMap.put(View.CREATE_NEW_SENDING_ADDRESS_VIEW,
-        // createNewSendingAddressView);
-
-        // // Edit receiving address
-        // CommandLineView editReceivingAddressView = new SimpleView(localiser,
-        // "Edit Receiving Address", inputStream, printStream);
-        // Collection<Action> editReceivingAddressActions = new
-        // ArrayList<Action>();
-        // editReceivingAddressActions.add(new
-        // CancelBackToParentAction(controller, null, null));
-        // editReceivingAddressActions.add(new OkBackToParentAction(controller,
-        // null));
-        // editReceivingAddressView.setPossibleActions(editReceivingAddressActions);
-        // viewMap.put(View.EDIT_RECEIVING_ADDRESS_VIEW,
-        // editReceivingAddressView);
-        //
-        // // Edit sending address
-        // CommandLineView editSendingAddressView = new SimpleView(localiser,
-        // "Edit Sending Address", inputStream, printStream);
-        // Collection<Action> editSendingAddressActions = new
-        // ArrayList<Action>();
-        // editSendingAddressActions.add(new
-        // CancelBackToParentAction(controller, null, null));
-        // editSendingAddressActions.add(new OkBackToParentAction(controller,
-        // null));
-        // editSendingAddressView.setPossibleActions(editSendingAddressActions);
-        // viewMap.put(View.EDIT_SENDING_ADDRESS_VIEW, editSendingAddressView);
-        //
-        // Open wallet
-        CommandLineView openWalletView = new SimpleView(localiser, "Open Wallet", inputStream, printStream);
-        Collection<Action> openWalletActions = new ArrayList<Action>();
-        openWalletActions.add(new CancelBackToParentAction(controller, null, null));
-        openWalletActions.add(new OkBackToParentAction(controller, null));
-        openWalletView.setPossibleActions(openWalletActions);
-        viewMap.put(View.OPEN_WALLET_VIEW, openWalletView);
-    }
-
-    // public void displayMessage(String messageKey, Object[] messageData,
-    // String titleKey) {
-    // CommandLineView currentView = viewMap.get(currentViewId);
-    //
-    // if (currentView != null) {
-    // currentView.displayMessage(messageKey, messageData, titleKey);
-    // } else {
-    // printStream.println(TEXT_VIEW_OUTPUT_PREFIX + ERROR_PREFIX
-    // + "No view to output a message to with id " + currentViewId);
-    // }
-    //
-    // }
 
     public void displayView(int viewId) {
-        currentViewId = viewId;
-
-        CommandLineView currentView = viewMap.get(viewId);
-
-        if (currentView != null) {
-            currentView.displayView();
-        } else {
             printStream.println(TEXT_VIEW_OUTPUT_PREFIX + ERROR_PREFIX + "No view to display with id " + viewId);
-        }
     }
 
     public void navigateAwayFromView(int viewToNavigateAwayFrom, int nextViewId, int relationshipOfNewViewToPrevious) {
-        printStream.print("\n");
-        assert viewToNavigateAwayFrom == currentViewId : "Different current views";
-        CommandLineView currentView = viewMap.get(currentViewId);
 
-        currentViewId = View.UNKNOWN_VIEW;
-
-        if (currentView != null) {
-            currentView.navigateAwayFromView();
-        } else {
             printStream.println(TEXT_VIEW_OUTPUT_PREFIX + ERROR_PREFIX + "No view to navigate away from.   Next view id is "
                     + nextViewId);
-        }
     }
 
     /**
@@ -387,5 +187,9 @@ public class CommandLineViewSystem implements ViewSystem {
     public void setHelpContext(String helpContextToDisplay) {
         // TODO Auto-generated method stub
 
+    }
+
+    public MultiBitTool getMultiBitTool() {
+        return multiBitTool;
     }
 }

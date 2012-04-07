@@ -6,7 +6,7 @@ import java.io.PrintStream;
 import javax.swing.Icon;
 
 import org.multibit.Localiser;
-import org.multibit.viewsystem.commandline.CommandLineViewSystem;
+import org.multibit.viewsystem.commandline.ObseleteCommandLineViewSystem;
 
 /**
  * the command line view for receive bitcoin
@@ -24,7 +24,7 @@ public class ReceiveBitcoinView extends AbstractView {
      */
     @Override
     public void displayView() {
-        printStream.println(CommandLineViewSystem.TEXT_VIEW_OUTPUT_PREFIX + CommandLineViewSystem.DISPLAY_VIEW_PREFIX + description);        
+        printStream.println(ObseleteCommandLineViewSystem.TEXT_VIEW_OUTPUT_PREFIX + ObseleteCommandLineViewSystem.DISPLAY_VIEW_PREFIX + description);        
  
         // show menu of actions and process response
         displayActionsAndProcessResponse();

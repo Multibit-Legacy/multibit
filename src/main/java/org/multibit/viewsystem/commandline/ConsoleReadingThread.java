@@ -8,26 +8,18 @@ import java.util.Collection;
 
 import javax.swing.Action;
 
-public class ConsoleReadingThread extends Thread implements org.multibit.viewsystem.dataproviders.DataProvider {
+public class ConsoleReadingThread extends Thread {
 
     private BufferedReader reader;
     private PrintStream printStream;
 
-    private Collection<Action> possibleActions;
+    private MultiBitTool multiBitTool;
 
-    private boolean enableReaderFiring;
-
-    public ConsoleReadingThread(InputStream inputStream, PrintStream printStream,
-            Collection<Action> possibleActions) {
-        this.possibleActions = possibleActions;
+    public ConsoleReadingThread(InputStream inputStream, PrintStream printStream, MultiBitTool multiBitTool) {
         this.printStream = printStream;
         reader = new BufferedReader(new InputStreamReader(inputStream));
+        this.multiBitTool = multiBitTool;
 
-        enableReaderFiring = true;
-    }
-
-    synchronized public void setPossibleActions(Collection<Action> possibleActions) {
-        this.possibleActions = possibleActions;
     }
 
     @Override
@@ -35,39 +27,15 @@ public class ConsoleReadingThread extends Thread implements org.multibit.viewsys
         getHoldOfTheConsole();
     }
 
-    /**
-     * enable whethere reader will fire on actions
-     */
-    public void enableReaderFiring(boolean enable) {
-        enableReaderFiring = enable;
-    }
-
     public void getHoldOfTheConsole() {
         while (true) {
             try {
-                //printStream.print("|");
+                printStream.print("MB > ");
                 String inputLine = reader.readLine();
-                if (enableReaderFiring) {
-                        if (possibleActions != null) {
-                        for (Action possibleAction : possibleActions) {
-                            // if the text entered matches the start of an action - fire the first encountered
-                            if (inputLine != null && inputLine.length() > 0 
-                                    && ((String)possibleAction.getValue(Action.NAME)).toLowerCase().startsWith(inputLine.toLowerCase())) {
-                                // fire the action
-                                if (enableReaderFiring) {
-                                    enableReaderFiring = false;
-                                    possibleAction.actionPerformed(null);
-                                    //System.out.println("ConsoleReadingThread " + this.getName()
-                                    //        + " ran an execute on "
-                                    //        + possibleAction.getDisplayText());
-                                 }
-                                break;
-                            }
-                        }
-                    }
-                } else {
-                    Thread.sleep(100);
-                }
+
+                // pass the line read in to the multibit tool command processor
+                multiBitTool.processLine(new String[] { inputLine });
+                Thread.sleep(100);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

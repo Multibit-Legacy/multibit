@@ -45,7 +45,7 @@ public class MultiBitCommandLine {
     public static void main(String args[]) {
         log.info("Starting MultiBitCommandLine");
 
-        ViewSystem commandLineViewSystem = null;
+        CommandLineViewSystem commandLineViewSystem = null;
 
         ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
 
@@ -69,9 +69,10 @@ public class MultiBitCommandLine {
         log.debug("userLanguageCode = {}", userLanguageCode);
 
         if (userLanguageCode == null) {
-            // initial install - no language info supplied - see if we can use the user default, else Localiser will set it to English
+            // initial install - no language info supplied - see if we can use
+            // the user default, else Localiser will set it to English
             localiser = new Localiser(Locale.getDefault());
-            
+
             userPreferences.setProperty(MultiBitModel.USER_LANGUAGE_CODE, localiser.getLocale().getLanguage());
         } else {
             if (MultiBitModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
@@ -155,7 +156,7 @@ public class MultiBitCommandLine {
 
             } catch (NumberFormatException nfe) {
                 // carry on
-            } 
+            }
         }
 
         // Indicate to the application that startup has completed
@@ -163,7 +164,15 @@ public class MultiBitCommandLine {
 
         log.debug("Downloading blockchain");
         multiBitService.downloadBlockChain();
-        
+
         controller.displayView(controller.getCurrentView());
+        
+        // show the command line help
+        try {
+            commandLineViewSystem.getMultiBitTool().processLine(new String[]{"HELP"});
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }
