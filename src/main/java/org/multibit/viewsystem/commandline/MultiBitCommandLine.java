@@ -169,7 +169,7 @@ public class MultiBitCommandLine {
         
         // show the command line help
         try {
-            commandLineViewSystem.getMultiBitTool().processLine(new String[]{"HELP"});
+            commandLineViewSystem.getMultiBitShell().processLine("HELP");
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

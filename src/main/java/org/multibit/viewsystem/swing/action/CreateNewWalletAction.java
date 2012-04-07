@@ -68,7 +68,9 @@ public class CreateNewWalletAction extends AbstractAction {
      * create new wallet
      */
     public void actionPerformed(ActionEvent e) {
-        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        if (mainFrame != null) {
+            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        }
         setEnabled(false);
 
         try {
@@ -99,16 +101,19 @@ public class CreateNewWalletAction extends AbstractAction {
             }
         } finally {
             setEnabled(true);
-            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            if (mainFrame != null) {
+                mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
         }
     }
 
-    private void createNewWallet(String newWalletFilename) {
+    public void createNewWallet(String newWalletFilename) {
         String message;
         if (new File(newWalletFilename).isDirectory()) {
-            message = controller.getLocaliser().getString("createNewWalletAction.walletFileIsADirectory", new Object[]{newWalletFilename});
+            message = controller.getLocaliser().getString("createNewWalletAction.walletFileIsADirectory",
+                    new Object[] { newWalletFilename });
             log.debug(message);
-            controller.updateStatusLabel(message);  
+            controller.updateStatusLabel(message);
             return;
         }
 
@@ -159,13 +164,15 @@ public class CreateNewWalletAction extends AbstractAction {
                 controller.fireDataChanged();
             }
         } catch (IOException e) {
-            message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated", new Object[]{newWalletFilename, e.getMessage()});
+            message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
+                    new Object[] { newWalletFilename, e.getMessage() });
             log.error(message);
-            controller.updateStatusLabel(message);  
+            controller.updateStatusLabel(message);
         } catch (WalletInfoException e) {
-            message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated", new Object[]{newWalletFilename, e.getMessage()});
+            message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
+                    new Object[] { newWalletFilename, e.getMessage() });
             log.error(message);
-            controller.updateStatusLabel(message);  
+            controller.updateStatusLabel(message);
         }
     }
 }

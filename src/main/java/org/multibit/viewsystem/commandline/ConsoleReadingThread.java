@@ -13,9 +13,9 @@ public class ConsoleReadingThread extends Thread {
     private BufferedReader reader;
     private PrintStream printStream;
 
-    private MultiBitTool multiBitTool;
+    private MultiBitShell multiBitTool;
 
-    public ConsoleReadingThread(InputStream inputStream, PrintStream printStream, MultiBitTool multiBitTool) {
+    public ConsoleReadingThread(InputStream inputStream, PrintStream printStream, MultiBitShell multiBitTool) {
         this.printStream = printStream;
         reader = new BufferedReader(new InputStreamReader(inputStream));
         this.multiBitTool = multiBitTool;
@@ -34,7 +34,7 @@ public class ConsoleReadingThread extends Thread {
                 String inputLine = reader.readLine();
 
                 // pass the line read in to the multibit tool command processor
-                multiBitTool.processLine(new String[] { inputLine });
+                multiBitTool.processLine(inputLine);
                 Thread.sleep(100);
             } catch (Exception ex) {
                 ex.printStackTrace();

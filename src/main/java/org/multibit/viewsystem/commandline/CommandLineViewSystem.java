@@ -65,7 +65,7 @@ public class CommandLineViewSystem implements ViewSystem {
     public static String DISPLAY_MENU_OPTIONS_PREFIX = "Menu      : ";
     public static String MENU_CHOOSE_PREFIX = "CHOOSE    > ";
     
-    private MultiBitTool multiBitTool;
+    private MultiBitShell multiBitShell;
 
     public CommandLineViewSystem(MultiBitController controller) {
         this.controller = controller;
@@ -75,8 +75,8 @@ public class CommandLineViewSystem implements ViewSystem {
         inputStream = System.in;
         printStream = System.out;
 
-        multiBitTool = new MultiBitTool(controller);
-        ConsoleReadingThread consoleReader = new ConsoleReadingThread(System.in, System.out, multiBitTool);
+        multiBitShell = new MultiBitShell(controller);
+        ConsoleReadingThread consoleReader = new ConsoleReadingThread(System.in, System.out, multiBitShell);
         consoleReader.start();
     }
 
@@ -189,7 +189,7 @@ public class CommandLineViewSystem implements ViewSystem {
 
     }
 
-    public MultiBitTool getMultiBitTool() {
-        return multiBitTool;
+    public MultiBitShell getMultiBitShell() {
+        return multiBitShell;
     }
 }

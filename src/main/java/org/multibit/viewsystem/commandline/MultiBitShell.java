@@ -31,6 +31,8 @@ import joptsimple.OptionSpec;
 import joptsimple.util.DateConverter;
 import org.bouncycastle.util.encoders.Hex;
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.PerWalletModelData;
+import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,63 +46,72 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 
 /**
- * A command line tool for manipulating wallets and working with Bitcoin.<p>
+ * A command line tool for manipulating wallets and working with Bitcoin.
+ * <p>
  */
-public class MultiBitTool {
-    private static final Logger log = LoggerFactory.getLogger(MultiBitTool.class);
+public class MultiBitShell {
+    private static final Logger log = LoggerFactory.getLogger(MultiBitShell.class);
 
-    public static final String SUBJECT_PREFIX = "--action=";
-    
-    private  MultiBitController controller;
-    
-    private static final String HELP_TEXT =
-            "MultiBitTool: print and manipulate the MultiBit object model\n\n" +
+    public static final String ACTION_PREFIX = "--action=";
 
-            "Usage (Implemented):\n" +
- //           ">>> GENERAL OPTIONS\n" +
- //           "  --debuglog           Enables logging from the core library.\n" +
- //           "  --wallet=<file>      Specifies what wallet file to load and save.\n" +
- //           "  --chain=<file>       Specifies the name of the file that stores the block chain.\n" +
- //           "  --force              Overrides any safety checks on the requested action.\n" +
- //           "  --date               Provide a date in form YYYY/MM/DD to any action that requires one.\n" +
- //           "  --peer=1.2.3.4       Use the given IP address for connections instead of peer discovery.\n" +
-            
-            "  HELP                 Show this help text.\n" +
-            "  EXIT                 Exit the MultiBitTool session.\n" +
-            "\n(Not Implemented Yet):\n" +
-            "  CREATE         --wallet --filename=<>                     Makes a new wallet in the file specified.\n" +
-            "                 --sendingAddress --address=<> --label=<>   Makes a new sending address with the given address and label.\n" +
-            "                 --receivingAddress --label=<>              Makes a new receiving address with the given label.\n\n" +
-            "  EDIT           --preferences                              Edit the MultiBit preferences.\n" +
-            "                 --sendingAddress --address=<> --label=<>   Edit the sending address matching the given address or label.\n" +
-            "                 --receivingAddress --address=<> --label=<> Edit the receiving address matching the given address or label.\n\n" +
-            "  LIST           --wallets                                  Lists all open wallets in a format suitable for picking.\n" + 
-            "                 --sendingAddresses                         Lists all sending addresses in a format suitable for picking.\n" +
-            "                 --receivingAddresses                       Lists all receiving addresses in a format suitable for picking.\n" +
-            "                 --transactions                             Lists all transactions for the active wallet for picking.\n\n" +
-            "  PICK           --number=<> or --value=<>                  Pick from the last list either by list number or match by value.\n\n" +
-            "  DELETE         --wallet --filename=<>                     Delete the wallet with the file specified.\n" +
-            "                 --sendingAddress --address=<> --label=<>   Delete the sending address with the given address and label.\n" +
-            "                 --receivingAddress --address --label=<>    Delete the receiving address with the given address or label.\n\n" +
-            "  SEND           --address=<> --amount=<>                   Send the specified amount of BTC to the address specified.\n\n" +
-            "  RESET          --date=<>                                  Remove all transactions on or after the date, or all if no date specified.\n" +
-            "  REPLAY         --date=<>                                  Replay the blockchain from the date specified.\n\n" +
-            "  IMPORT_KEYS    --filename=<> --password=<>                Import private keys from the filename specified, using the password.\n" +
-            "  EXPORT_KEYS    --filename=<> --password=<>                Import private keys from the filename specified, using the password.\n\n" +
-            "  WAIT_FOR       --online or --replayComplete               Wait for MultiBit to come online or for the blockchain replay to complete.\n\n" +
-            "  SHOW           --activeWallet                             Show which wallet is the active wallet.\n" +
-            "                 --online                                   Show whether MultiBit is onine or not.\n" +
-            "                 --helpAbout                                Show the help about MultiBit details.\n" +
-            "                 --ticker                                   Show the most recent ticker details.\n" +
-            "                 --messages=<number>                        Show the most recent <number> of messages.\n" +
-            "                 --transaction                              Show the details of the last picked transaction.\n";
+    private MultiBitController controller;
 
+    private PerWalletModelData activePerWalletModelData;
 
-    public MultiBitTool(MultiBitController controller) {
+    private static final String HELP_TEXT = "MultiBitShell: print and manipulate the MultiBit object model\n\n"
+            +
+
+            "Usage (Implemented):\n"
+            +
+            // ">>> GENERAL OPTIONS\n" +
+            // "  --debuglog           Enables logging from the core library.\n"
+            // +
+            // "  --wallet=<file>      Specifies what wallet file to load and save.\n"
+            // +
+            // "  --chain=<file>       Specifies the name of the file that stores the block chain.\n"
+            // +
+            // "  --force              Overrides any safety checks on the requested action.\n"
+            // +
+            // "  --date               Provide a date in form YYYY/MM/DD to any action that requires one.\n"
+            // +
+            // "  --peer=1.2.3.4       Use the given IP address for connections instead of peer discovery.\n"
+            // +
+
+              "  HELP           Show this help text.\n"
+            + "  EXIT           Exit this MultiBitShell session.\n"
+            + "  CREATE         --wallet --filename=<>                     Makes a new wallet in the file specified.\n"
+            + "\n(Not Implemented Yet):\n"
+            + "  CREATE         --sendingAddress --address=<> --label=<>   Makes a new sending address with the given address and label.\n"
+            + "                 --receivingAddress --label=<>              Makes a new receiving address with the given label.\n\n"
+            + "  EDIT           --preferences                              Edit the MultiBit preferences.\n"
+            + "                 --sendingAddress --address=<> --label=<>   Edit the sending address matching the given address or label.\n"
+            + "                 --receivingAddress --address=<> --label=<> Edit the receiving address matching the given address or label.\n\n"
+            + "  LIST           --wallets                                  Lists all open wallets in a format suitable for picking.\n"
+            + "                 --sendingAddresses                         Lists all sending addresses in a format suitable for picking.\n"
+            + "                 --receivingAddresses                       Lists all receiving addresses in a format suitable for picking.\n"
+            + "                 --transactions                             Lists all transactions for the active wallet for picking.\n\n"
+            + "  PICK           --number=<> or --value=<>                  Pick from the last list either by list number or match by value.\n\n"
+            + "  DELETE         --wallet --filename=<>                     Delete the wallet with the file specified.\n"
+            + "                 --sendingAddress --address=<> --label=<>   Delete the sending address with the given address and label.\n"
+            + "                 --receivingAddress --address --label=<>    Delete the receiving address with the given address or label.\n\n"
+            + "  SEND           --address=<> --amount=<>                   Send the specified amount of BTC to the address specified.\n\n"
+            + "  RESET          --date=<>                                  Remove all transactions on or after the date, or all if no date specified.\n"
+            + "  REPLAY         --date=<>                                  Replay the blockchain from the date specified.\n\n"
+            + "  IMPORT_KEYS    --filename=<> --password=<>                Import private keys from the filename specified, using the password.\n"
+            + "  EXPORT_KEYS    --filename=<> --password=<>                Import private keys from the filename specified, using the password.\n\n"
+            + "  WAIT_FOR       --online or --replayComplete               Wait for MultiBit to come online or for the blockchain replay to complete.\n\n"
+            + "  SHOW           --activeWallet                             Show which wallet is the active wallet.\n"
+            + "                 --online                                   Show whether MultiBit is onine or not.\n"
+            + "                 --helpAbout                                Show the help about MultiBit details.\n"
+            + "                 --ticker                                   Show the most recent ticker details.\n"
+            + "                 --messages=<number>                        Show the most recent <number> of messages.\n"
+            + "                 --transaction                              Show the details of the last picked transaction.\n";
+
+    public MultiBitShell(MultiBitController controller) {
         this.controller = controller;
     }
-    
-    private static OptionSpec<String> walletFileName;
+
+    private static OptionSpec<String> filename;
     private static OptionSpec<ActionEnum> actionFlag;
     private static OptionSpec<Date> dateFlag;
     private static NetworkParameters params;
@@ -108,61 +119,55 @@ public class MultiBitTool {
     private static OptionSet options;
 
     public enum ActionEnum {
-        HELP,        
-        DUMP,
-        CREATE,
-        ADD_KEY,
-        DELETE_KEY,
-        SYNC,
-        RESET,
-        EXIT
+        HELP, DUMP, CREATE, ADD_KEY, DELETE_KEY, SYNC, RESET, EXIT
     };
 
-    public void processLine(String[] args) throws IOException {
+    public void processLine(String inputLine) throws IOException {
+        if (inputLine == null || "".equals(inputLine)) {
+            return;
+        }
 
+        String[] args = inputLine.split(" "); // split on spaces
         // if nothing is passed, show the help
         if (args == null || args.length == 0 || "".equals(args[0])) {
-            args = new String[]{"HELP"};
+            args = new String[] { "HELP" };
         }
-        
-        //  everything gets 'optionised' as an subject option
-        args[0] = MultiBitTool.SUBJECT_PREFIX + args[0];
-        
+
+        // Everything gets 'optionised' as an action option
+        // this is just for the OptionParser
+        args[0] = MultiBitShell.ACTION_PREFIX + args[0];
+
         System.out.print("MultiBitTool#processLine args = ");
         if (args != null) {
-            for (int i=0; i< args.length; i++) {
+            for (int i = 0; i < args.length; i++) {
                 System.out.print(args[i] + " ");
             }
         }
         System.out.println("\n");
-        
+
         OptionParser parser = new OptionParser();
         parser.accepts("force");
         parser.accepts("debuglog");
-        walletFileName = parser.accepts("wallet")
-                .withRequiredArg()
-                .defaultsTo("wallet");
-        actionFlag = parser.accepts("action")
-                .withRequiredArg()
-                .ofType(ActionEnum.class)
-                .defaultsTo(ActionEnum.DUMP);
-        dateFlag = parser.accepts("date")
-                .withRequiredArg()
-                .ofType(Date.class)
+        parser.accepts("wallet").withOptionalArg();
+        filename = parser.accepts("filename").withRequiredArg().defaultsTo("multibit.wallet");
+        actionFlag = parser.accepts("action").withRequiredArg().ofType(ActionEnum.class).defaultsTo(ActionEnum.DUMP);
+        dateFlag = parser.accepts("date").withRequiredArg().ofType(Date.class)
                 .withValuesConvertedBy(DateConverter.datePattern("yyyy/MM/dd"));
-        OptionSpec<String> chainFlag = parser.accepts("chain").withRequiredArg();
-        // For addkey/delkey.
-        parser.accepts("pubkey").withRequiredArg();
-        parser.accepts("privkey").withRequiredArg();
-        parser.accepts("addr").withRequiredArg();
-        parser.accepts("peer").withRequiredArg();
+        // OptionSpec<String> chainFlag =
+        // parser.accepts("chain").withRequiredArg();
+        // // For addkey/delkey.
+        // parser.accepts("pubkey").withRequiredArg();
+        // parser.accepts("privkey").withRequiredArg();
+        // parser.accepts("addr").withRequiredArg();
+        // parser.accepts("peer").withRequiredArg();
         options = parser.parse(args);
-        
-//        if (args.length == 0 || options.hasArgument("help") || options.nonOptionArguments().size() > 0) {
-//            System.out.println(HELP_TEXT);
-//            return;
-//        }
-        
+
+        // if (args.length == 0 || options.hasArgument("help") ||
+        // options.nonOptionArguments().size() > 0) {
+        // System.out.println(HELP_TEXT);
+        // return;
+        // }
+
         if (options.has("debuglog")) {
             BriefLogFormatter.init();
             log.info("Starting up ...");
@@ -174,39 +179,44 @@ public class MultiBitTool {
         File chainFileName;
 
         // Allow the user to override the name of the chain used.
-        if (options.has(chainFlag)) {
-            chainFileName = new File(chainFlag.value(options));
-        }
+        // if (options.has(chainFlag)) {
+        // chainFileName = new File(chainFlag.value(options));
+        // }
 
         ActionEnum action = actionFlag.value(options);
-        
+
         // What should we do?
         switch (action) {
-            case HELP: {
-                System.out.println(HELP_TEXT);
-                return;
-            }
-            case EXIT: {
-                exit();
-                break;
-            }
-            default:{
-                // carry on parsing
-            }
-        }
-        
-        walletFile = new File(walletFileName.value(options));
-        if (action == ActionEnum.CREATE) {
-            createWallet(options, params, walletFile);
-            return;  // We're done.
-        }
-        if (!walletFile.exists()) {
-            System.err.println("Specified wallet file " + walletFile + " does not exist. Try --action=CREATE");
+        case HELP: {
+            System.out.println(HELP_TEXT);
             return;
         }
-        Wallet wallet;
+        case EXIT: {
+            exit();
+            break;
+        }
+        default: {
+            // carry on parsing
+        }
+        }
+
+        walletFile = new File(filename.value(options));
+        if (action == ActionEnum.CREATE) {
+            if (options.has("wallet")) {
+                CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller, null, null);
+                createNewWalletAction.createNewWallet(filename.value(options));
+            }
+            // createWallet(options, params, walletFile);
+            return; // We're done.
+
+        }
+        // if (!walletFile.exists()) {
+        // System.err.println("Specified wallet file " + walletFile +
+        // " does not exist. Try --action=CREATE");
+        // return;
+        // }
         try {
-            wallet = Wallet.loadFromFile(walletFile);
+            activePerWalletModelData = controller.getFileHandler().loadFromFile(walletFile);
         } catch (Exception e) {
             System.err.println("Failed to load wallet '" + walletFile + "': " + e.getMessage());
             e.printStackTrace();
@@ -214,31 +224,33 @@ public class MultiBitTool {
         }
 
         // What should we do?
-        switch (action) {
-            case DUMP: dumpWallet(wallet); break;
-            case ADD_KEY: addKey(wallet); break;
-            case DELETE_KEY: deleteKey(wallet); break;
-            //case SYNC: syncChain(wallet, chainFileName); break;
-            case RESET: reset(wallet); break;
-        }
-        saveWallet(walletFile, wallet);
+        // switch (action) {
+        // case DUMP: dumpWallet(wallet); break;
+        // case ADD_KEY: addKey(wallet); break;
+        // case DELETE_KEY: deleteKey(wallet); break;
+        // //case SYNC: syncChain(wallet, chainFileName); break;
+        // case RESET: reset(wallet); break;
+        // }
+        // saveWallet(walletFile, wallet);
     }
 
     private static void exit() {
         System.out.println("MultiBitTool#processLine - exit called.");
-        System.exit(0);         
+        System.exit(0);
     }
-    
+
     private static void reset(Wallet wallet) {
-        // Delete the transactions and save. In future, reset the chain head pointer.
+        // Delete the transactions and save. In future, reset the chain head
+        // pointer.
         wallet.clearTransactions(0);
         saveWallet(walletFile, wallet);
     }
 
     private static void syncChain(final Wallet wallet, File chainFileName) {
         try {
-            // Will create a fresh chain if one doesn't exist or there is an issue with this one.
-            System.out.println("Connecting ..." );
+            // Will create a fresh chain if one doesn't exist or there is an
+            // issue with this one.
+            System.out.println("Connecting ...");
             final BoundedOverheadBlockStore store = new BoundedOverheadBlockStore(params, chainFileName);
             final BlockChain chain = new BlockChain(params, wallet, store);
 
@@ -248,7 +260,7 @@ public class MultiBitTool {
                     saveWallet(walletFile, wallet);
                 }
             });
-            
+
             int startTransactions = wallet.getTransactions(true, true).size();
 
             PeerGroup peers = connect(wallet, chain);
@@ -302,10 +314,12 @@ public class MultiBitTool {
     }
 
     private static void saveWallet(File walletFile, Wallet wallet) {
-        // Save the new state of the wallet to a temp file then rename, in case anything goes wrong.
+        // Save the new state of the wallet to a temp file then rename, in case
+        // anything goes wrong.
         File tmp;
         try {
-            // Create tmp in same directory as wallet to ensure we create on the same drive/volume.
+            // Create tmp in same directory as wallet to ensure we create on the
+            // same drive/volume.
             tmp = File.createTempFile("wallet", null, walletFile.getParentFile());
             tmp.deleteOnExit();
             wallet.saveToFile(tmp);
@@ -332,7 +346,7 @@ public class MultiBitTool {
             }
             key.setCreationTimeSeconds(creationTimeSeconds);
         } else if (options.has("pubkey")) {
-            byte[] pubkey = Hex.decode((String)options.valueOf("pubkey"));
+            byte[] pubkey = Hex.decode((String) options.valueOf("pubkey"));
             key = new ECKey(null, pubkey);
             key.setCreationTimeSeconds(creationTimeSeconds);
         } else {
@@ -364,15 +378,15 @@ public class MultiBitTool {
             } catch (AddressFormatException e) {
                 System.err.println(addr + " does not parse as a Bitcoin address of the right network parameters.");
                 return;
-            }            
+            }
         }
         if (key == null) {
             System.err.println("Wallet does not seem to contain that key.");
             return;
         }
         wallet.keychain.remove(key);
-    }    
-    
+    }
+
     private static void dumpWallet(Wallet wallet) {
         System.out.println(wallet.toString());
     }
