@@ -156,14 +156,18 @@
         </executions>
       </plugin>
 
-      <!-- Create executable jar -->
+      <!-- Create main and commandline executable jar -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.2.1</version>
         <configuration>
           <descriptors>
             <!-- this assembly descriptor also includes the bitcoinj classes unpacked earlier -->
+            <!-- excludes commandline code -->
             <descriptor>src/assemble/exe.xml</descriptor>
+            
+            <!-- includes commandline code -->
+            <descriptor>src/assemble/shell-exe.xml</descriptor>
           </descriptors>
           <archive>
             <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
