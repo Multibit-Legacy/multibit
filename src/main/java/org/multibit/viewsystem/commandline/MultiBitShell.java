@@ -92,13 +92,13 @@ public class MultiBitShell {
             + "                 --transactions                             Lists all transactions for the active wallet for picking.\n\n"
             + "  PICK           --number=<> or --value=<>                  Pick from the last list either by list number or match by value.\n\n"
             + "  DELETE         --wallet --filename=<>                     Delete the wallet with the file specified.\n"
-            + "                 --sendingAddress --address=<> --label=<>   Delete the sending address with the given address and label.\n"
+            + "                 --sendingAddress --address=<> --label=<>   Delete the sending address with the given address or label.\n"
             + "                 --receivingAddress --address --label=<>    Delete the receiving address with the given address or label.\n\n"
             + "  SEND           --address=<> --amount=<>                   Send the specified amount of BTC to the address specified.\n\n"
             + "  RESET          --date=<>                                  Remove all transactions on or after the date, or all if no date specified.\n"
             + "  REPLAY         --date=<>                                  Replay the blockchain from the date specified.\n\n"
             + "  IMPORT_KEYS    --filename=<> --password=<>                Import private keys from the filename specified, using the password.\n"
-            + "  EXPORT_KEYS    --filename=<> --password=<>                Import private keys from the filename specified, using the password.\n\n"
+            + "  EXPORT_KEYS    --filename=<> --password=<>                Export private keys from the filename specified, using the password.\n\n"
             + "  WAIT_FOR       --online or --replayComplete               Wait for MultiBit to come online or for the blockchain replay to complete.\n\n"
             + "  SHOW           --activeWallet                             Show which wallet is the active wallet.\n"
             + "                 --online                                   Show whether MultiBit is onine or not.\n"
@@ -137,7 +137,7 @@ public class MultiBitShell {
         // this is just for the OptionParser
         args[0] = MultiBitShell.ACTION_PREFIX + args[0];
 
-        System.out.print("MultiBitTool#processLine args = ");
+        System.out.print("MultiBitShell#processLine args = ");
         if (args != null) {
             for (int i = 0; i < args.length; i++) {
                 System.out.print(args[i] + " ");
@@ -235,7 +235,7 @@ public class MultiBitShell {
     }
 
     private static void exit() {
-        System.out.println("MultiBitTool#processLine - exit called.");
+        System.out.println("MultiBitShell#processLine - exit called.");
         System.exit(0);
     }
 
