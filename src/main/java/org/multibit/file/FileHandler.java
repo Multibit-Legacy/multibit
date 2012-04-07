@@ -38,6 +38,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.network.MultiBitService;
+import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -458,9 +459,9 @@ public class FileHandler {
                     // it should exist since installer puts them in
                     log.info("Copying blockchain from '" + sourceBlockchainFilename + "' to '" + destinationBlockChainFilename
                             + "'");
-                    long startTime = (new Date()).getTime();
+                    long startTime = (DateUtils.nowUtc()).getMillis();
                     copyFile(sourceBlockchain, destinationBlockchain);
-                    long stopTime = (new Date()).getTime();
+                    long stopTime = (DateUtils.nowUtc()).getMillis();
                     log.info("Time taken to copy blockchain was " + (stopTime - startTime) + " ms.");
 
                     // check all the data was copied

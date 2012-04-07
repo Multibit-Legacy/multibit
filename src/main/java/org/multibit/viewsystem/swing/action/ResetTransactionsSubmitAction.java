@@ -28,6 +28,7 @@ import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.utils.DateUtils;
 import org.multibit.viewsystem.dataproviders.ResetTransactionsDataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,7 +95,7 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
                 // work out the earliest transaction date and save it to the
                 // wallet
 
-                Date earliestTransactionDate = new Date();
+                Date earliestTransactionDate = new Date(DateUtils.nowUtc().getMillis());
                 Set<Transaction> allTransactions = activePerWalletModelData.getWallet().getTransactions(true, true);
                 if (allTransactions != null) {
                     for (Transaction transaction : allTransactions) {

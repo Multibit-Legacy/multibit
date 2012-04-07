@@ -37,6 +37,7 @@ import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.PrivateKeysHandlerException;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.utils.DateUtils;
 import org.multibit.viewsystem.swing.view.ImportPrivateKeysPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,7 +143,7 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
 
                     // keep track of earliest transaction date go backwards from now
                     Wallet walletToAddKeysTo = finalPerWalletModelData.getWallet();
-                    Date earliestTransactionDate = new Date();
+                    Date earliestTransactionDate = new Date(DateUtils.nowUtc().getMillis());
                     if (privateKeyAndDateArray != null) {
                         for (PrivateKeyAndDate privateKeyAndDate : privateKeyAndDateArray) {
                             ECKey keyToAdd = privateKeyAndDate.getKey();

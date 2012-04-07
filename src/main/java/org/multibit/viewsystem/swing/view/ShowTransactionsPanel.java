@@ -52,6 +52,7 @@ import javax.swing.table.TableRowSorter;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.WalletTableData;
+import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -170,7 +171,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
         int dateWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.debitText")),
-                fontMetrics.stringWidth(dateFormatter.format(new Date())));
+                fontMetrics.stringWidth(dateFormatter.format(new Date(DateUtils.nowUtc().getMillis()))));
         tableColumn.setPreferredWidth(dateWidth);
 
         tableColumn = table.getColumnModel().getColumn(2); // description

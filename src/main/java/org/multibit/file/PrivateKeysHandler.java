@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import org.multibit.crypto.EncrypterDecrypter;
+import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -373,7 +374,7 @@ public class PrivateKeysHandler {
 
     public Date calculateReplayDate(Collection<PrivateKeyAndDate> privateKeyAndDates, Wallet wallet) {
         boolean thereWereMissingDates = false;
-        Date replayDate = new Date();
+        Date replayDate =  new Date(DateUtils.nowUtc().getMillis());
         for (PrivateKeyAndDate loop : privateKeyAndDates) {
             if (loop.getDate() == null) {
                 thereWereMissingDates = true;
