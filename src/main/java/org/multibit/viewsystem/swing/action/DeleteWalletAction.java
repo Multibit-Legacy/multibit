@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This {@link Action}deletes a wallet
+ * This {@link Action} show the delete walet confirmation dialog
  */
 public class DeleteWalletAction extends AbstractAction {
 

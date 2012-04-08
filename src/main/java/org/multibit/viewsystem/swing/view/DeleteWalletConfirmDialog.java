@@ -38,6 +38,7 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
+import org.multibit.viewsystem.swing.action.DeleteWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.OkBackToParentAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
@@ -274,18 +275,21 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        deleteWalletButton = new MultiBitButton(new AbstractAction() {
-
-            private static final long serialVersionUID = 5286313168657300836L;
-
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                deleteActiveWallet();
-            }
-
-        }, controller);
-        deleteWalletButton.setText(controller.getLocaliser().getString("deleteWalletAction.text"));
-        deleteWalletButton.setIcon(ImageLoader.createImageIcon(ImageLoader.DELETE_WALLET_ICON_FILE));
+        DeleteWalletSubmitAction deleteWalletSubmitAction = new DeleteWalletSubmitAction(controller, ImageLoader.createImageIcon(ImageLoader.DELETE_WALLET_ICON_FILE), mainFrame, this);
+        deleteWalletButton = new MultiBitButton(deleteWalletSubmitAction, controller);
+        
+        //        deleteWalletButton = new MultiBitButton(new AbstractAction() {
+//
+//            private static final long serialVersionUID = 5286313168657300836L;
+//
+//            @Override
+//            public void actionPerformed(ActionEvent arg0) {
+//                deleteActiveWallet();
+//            }
+//
+//        }, controller);
+//        deleteWalletButton.setText(controller.getLocaliser().getString("deleteWalletAction.text"));
+//        deleteWalletButton.setIcon();
         buttonPanel.add(deleteWalletButton);
 
         confirmText1 = new MultiBitLabel("");
@@ -340,49 +344,53 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
         cancelButton.setVisible(false);
     }
 
-    private void deleteActiveWallet() {
-        try {
-            FileHandler fileHandler = new FileHandler(controller);
-            String walletDescription = controller.getModel().getActivePerWalletModelData().getWalletDescription();
-            fileHandler.deleteWalletAndWalletInfo(controller.getModel().getActivePerWalletModelData());
+//    private void deleteActiveWallet() {
+//        try {
+//            FileHandler fileHandler = new FileHandler(controller);
+//            String walletDescription = controller.getModel().getActivePerWalletModelData().getWalletDescription();
+//            fileHandler.deleteWalletAndWalletInfo(controller.getModel().getActivePerWalletModelData());
+//
+//            // if no wallets, create an empty one
+//            boolean newWalletCreated = false;
+//            if (controller.getModel().getPerWalletModelDataList().size() == 0) {
+//                if (controller.getMultiBitService() != null) {
+//                    controller.getMultiBitService().addWalletFromFilename(null);
+//                  
+//                    newWalletCreated = true;
+//                 }
+//            }
+//            
+//            // set the first wallet to be the active wallet
+//            PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
+//            controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
+//            controller.fireRecreateAllViews(true);
+//            controller.fireDataChanged();
+//            
+//            String confirm2 = newWalletCreated ? controller.getLocaliser().getString("deleteWalletConfirmDialog.newWalletCreated") : " ";
+//            explainLabel.setText(" ");
+//            setDeleteConfirmText(
+//                    controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeletedOk",
+//                            new Object[] { walletDescription }), confirm2 );
+//         } catch (DeleteWalletException dwe) {
+//            log.error(dwe.getClass().getName() + " " + dwe.getMessage());
+//            if (dwe.getCause() != null) {
+//                log.error(dwe.getClass().getName() + ", cause = " + dwe.getCause().getMessage());
+//            }
+//            explainLabel.setText(" ");
+//            setDeleteConfirmText(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError1"), controller
+//                    .getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new Object[] { dwe.getMessage() }));
+//        } catch (IOException ioe) {
+//            log.error(ioe.getClass().getName() + " " + ioe.getMessage());
+//            if (ioe.getCause() != null) {
+//                log.error(ioe.getClass().getName() + ", cause = " + ioe.getCause().getMessage());
+//            }
+//            explainLabel.setText(" ");
+//            setDeleteConfirmText(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError1"), controller
+//                    .getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new Object[] { ioe.getMessage() }));
+//        }
+//    }
 
-            // if no wallets, create an empty one
-            boolean newWalletCreated = false;
-            if (controller.getModel().getPerWalletModelDataList().size() == 0) {
-                if (controller.getMultiBitService() != null) {
-                    controller.getMultiBitService().addWalletFromFilename(null);
-                  
-                    newWalletCreated = true;
-                 }
-            }
-            
-            // set the first wallet to be the active wallet
-            PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
-            controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
-            controller.fireRecreateAllViews(true);
-            controller.fireDataChanged();
-            
-            String confirm2 = newWalletCreated ? controller.getLocaliser().getString("deleteWalletConfirmDialog.newWalletCreated") : " ";
-            explainLabel.setText(" ");
-            setDeleteConfirmText(
-                    controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeletedOk",
-                            new Object[] { walletDescription }), confirm2 );
-         } catch (DeleteWalletException dwe) {
-            log.error(dwe.getClass().getName() + " " + dwe.getMessage());
-            if (dwe.getCause() != null) {
-                log.error(dwe.getClass().getName() + ", cause = " + dwe.getCause().getMessage());
-            }
-            explainLabel.setText(" ");
-            setDeleteConfirmText(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError1"), controller
-                    .getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new Object[] { dwe.getMessage() }));
-        } catch (IOException ioe) {
-            log.error(ioe.getClass().getName() + " " + ioe.getMessage());
-            if (ioe.getCause() != null) {
-                log.error(ioe.getClass().getName() + ", cause = " + ioe.getCause().getMessage());
-            }
-            explainLabel.setText(" ");
-            setDeleteConfirmText(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError1"), controller
-                    .getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new Object[] { ioe.getMessage() }));
-        }
+    public MultiBitLabel getExplainLabel() {
+        return explainLabel;
     }
 }

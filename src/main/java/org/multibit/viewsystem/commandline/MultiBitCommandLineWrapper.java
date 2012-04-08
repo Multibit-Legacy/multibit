@@ -104,9 +104,9 @@ public class MultiBitCommandLineWrapper {
             fileStream = new PrintStream(new FileOutputStream(consoleOutputFilename, true));
 
             // Redirecting console output to file
-            System.setOut(fileStream);
+            //System.setOut(fileStream);
             // Redirecting runtime exceptions to file
-            System.setErr(fileStream);
+            //System.setErr(fileStream);
         } catch (FileNotFoundException e) {
             if (log != null) {
                 log.error("Error in IO Redirection", e);
@@ -121,7 +121,8 @@ public class MultiBitCommandLineWrapper {
             MultiBitCommandLine.main(args);
 
             // Restoring back to console
-            System.setOut(originalStream);
+            //System.setOut(originalStream);
+            //System.setErr(originalStream);
             // Gets printed in the console
             if (log != null) {
                 log.debug("Redirecting file output back to console");

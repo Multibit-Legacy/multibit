@@ -33,6 +33,8 @@ import org.bouncycastle.util.encoders.Hex;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
+import org.multibit.viewsystem.swing.action.DeleteWalletAction;
+import org.multibit.viewsystem.swing.action.DeleteWalletSubmitAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,9 +79,11 @@ public class MultiBitShell {
             // "  --peer=1.2.3.4       Use the given IP address for connections instead of peer discovery.\n"
             // +
 
-              "  HELP           Show this help text.\n"
+            "  HELP           Show this help text.\n"
             + "  EXIT           Exit this MultiBitShell session.\n"
             + "  CREATE         --wallet --filename=<>                     Makes a new wallet in the file specified.\n"
+            + "  DELETE         --wallet --filename=<>                     Delete the wallet with the file specified.\n"
+
             + "\n(Not Implemented Yet):\n"
             + "  CREATE         --sendingAddress --address=<> --label=<>   Makes a new sending address with the given address and label.\n"
             + "                 --receivingAddress --label=<>              Makes a new receiving address with the given label.\n\n"
@@ -91,8 +95,7 @@ public class MultiBitShell {
             + "                 --receivingAddresses                       Lists all receiving addresses in a format suitable for picking.\n"
             + "                 --transactions                             Lists all transactions for the active wallet for picking.\n\n"
             + "  PICK           --number=<> or --value=<>                  Pick from the last list either by list number or match by value.\n\n"
-            + "  DELETE         --wallet --filename=<>                     Delete the wallet with the file specified.\n"
-            + "                 --sendingAddress --address=<> --label=<>   Delete the sending address with the given address or label.\n"
+            + "  DELETE         --sendingAddress --address=<> --label=<>   Delete the sending address with the given address or label.\n"
             + "                 --receivingAddress --address --label=<>    Delete the receiving address with the given address or label.\n\n"
             + "  SEND           --address=<> --amount=<>                   Send the specified amount of BTC to the address specified.\n\n"
             + "  RESET          --date=<>                                  Remove all transactions on or after the date, or all if no date specified.\n"
@@ -118,8 +121,10 @@ public class MultiBitShell {
     private static File walletFile;
     private static OptionSet options;
 
+    private static final boolean verbose = false;
+
     public enum ActionEnum {
-        HELP, DUMP, CREATE, ADD_KEY, DELETE_KEY, SYNC, RESET, EXIT
+        HELP, DUMP, CREATE, DELETE, ADD_KEY, DELETE_KEY, SYNC, RESET, EXIT
     };
 
     public void processLine(String inputLine) throws IOException {
@@ -137,14 +142,16 @@ public class MultiBitShell {
         // this is just for the OptionParser
         args[0] = MultiBitShell.ACTION_PREFIX + args[0];
 
-        System.out.print("MultiBitShell#processLine args = ");
-        if (args != null) {
-            for (int i = 0; i < args.length; i++) {
-                System.out.print(args[i] + " ");
+        if (verbose) {
+            System.out.print("MultiBitShell#processLine args = ");
+            if (args != null) {
+                for (int i = 0; i < args.length; i++) {
+                    System.out.print(args[i] + " ");
+                }
             }
+            System.out.println("\n");
         }
-        System.out.println("\n");
-
+        
         OptionParser parser = new OptionParser();
         parser.accepts("force");
         parser.accepts("debuglog");
@@ -205,16 +212,26 @@ public class MultiBitShell {
             if (options.has("wallet")) {
                 CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller, null, null);
                 createNewWalletAction.createNewWallet(filename.value(options));
+            } else {
+                System.out.println(CommandLineViewSystem.TEXT_VIEW_OUTPUT_PREFIX
+                        + "A CREATE was specified but MultiBitShell did not how to do that.");
             }
-            // createWallet(options, params, walletFile);
             return; // We're done.
-
+        } else {
+            if (action == ActionEnum.DELETE) {
+                if (options.has("wallet")) {
+                    DeleteWalletSubmitAction deleteWalletSubmitAction = new DeleteWalletSubmitAction(controller, null, null, null);
+                    deleteWalletSubmitAction.deleteWallet(filename.value(options));
+                    System.out.println(CommandLineViewSystem.TEXT_VIEW_OUTPUT_PREFIX + "wallet '" + filename.value(options)
+                            + "' deleted.");
+                } else {
+                    System.out.println(CommandLineViewSystem.TEXT_VIEW_OUTPUT_PREFIX
+                            + "A DELETE was specified but MultiBitShell did not how to do that.");
+                }
+                return; // We're done.
+            }
         }
-        // if (!walletFile.exists()) {
-        // System.err.println("Specified wallet file " + walletFile +
-        // " does not exist. Try --action=CREATE");
-        // return;
-        // }
+
         try {
             activePerWalletModelData = controller.getFileHandler().loadFromFile(walletFile);
         } catch (Exception e) {
@@ -303,15 +320,15 @@ public class MultiBitShell {
         return peers;
     }
 
-    private static void createWallet(OptionSet options, NetworkParameters params, File walletFile) throws IOException {
-        if (walletFile.exists() && !options.has("force")) {
-            System.err.println("Wallet creation requested but " + walletFile + " already exists, use --force");
-            return;
-        }
-        new Wallet(params).saveToFile(walletFile);
-        // Don't add any keys by default.
-        return;
-    }
+//    private static void createWallet(OptionSet options, NetworkParameters params, File walletFile) throws IOException {
+//        if (walletFile.exists() && !options.has("force")) {
+//            System.err.println("Wallet creation requested but " + walletFile + " already exists, use --force");
+//            return;
+//        }
+//        new Wallet(params).saveToFile(walletFile);
+//        // Don't add any keys by default.
+//        return;
+//    }
 
     private static void saveWallet(File walletFile, Wallet wallet) {
         // Save the new state of the wallet to a temp file then rename, in case
