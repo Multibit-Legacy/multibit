@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TickerTimerTask extends TimerTask {
 
-    public static final int DEFAULT_REPEAT_RATE = 11000; // milliseconds
+    public static final int DEFAULT_REPEAT_RATE = 1000; // milliseconds
 
     private static Logger log = LoggerFactory.getLogger(TickerTimerTask.class);
 
@@ -49,6 +49,8 @@ public class TickerTimerTask extends TimerTask {
      * When the timer executes, this code is run.
      */
     public void run() {
+    	
+    	log.debug("tick tock.");
     	
     	controller.getModel().getExchangeData().setLastTickUSD(Math.random());
     	

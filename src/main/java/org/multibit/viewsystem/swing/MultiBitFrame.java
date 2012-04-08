@@ -31,6 +31,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigInteger;
 import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -81,9 +82,7 @@ import org.simplericity.macify.eawt.ApplicationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 
 /*
@@ -159,7 +158,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private Timer fileChangeTimer;
     
     private Timer tickerTimer;
-
+    
     private JPanel headerPanel;
 
     private TickerPanel tickerPanel;
@@ -651,12 +650,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     if (tickerPanel.isVisible()) {
                         tickerPanel.setVisible(false);
                         controller.getModel().setUserPreference(MultiBitModel.SHOW_TICKER, Boolean.FALSE.toString());
-                        // TODO stop ticker timer
-//                         tickerTimer.cancel();
+                        tickerTimer.cancel();
                     } else {
                         tickerPanel.setVisible(true);
                         controller.getModel().setUserPreference(MultiBitModel.SHOW_TICKER, Boolean.TRUE.toString());
-                     // TODO start ticker timer
+                        // TODO start ticker timer
+//                        tickerTimer.schedule(new TickerTimerTask(controller, this), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
                     }
                 }
             }
