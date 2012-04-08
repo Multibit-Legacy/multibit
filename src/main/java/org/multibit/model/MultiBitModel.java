@@ -182,6 +182,11 @@ public class MultiBitModel {
      * The currently displayed view. One of the View constants.
      */
     private int currentView;
+    
+    /**
+     * Holds exchange Data
+     */
+    private ExchangeData exchangeData = new ExchangeData(); // new up an empty ExchangeData object
   
     public MultiBitModel(MultiBitController controller) {
         this(controller, new Properties());
@@ -799,4 +804,14 @@ public class MultiBitModel {
         this.currentView = view;
         setUserPreference(MultiBitModel.SELECTED_VIEW, "" + view);
     }
+
+	public ExchangeData getExchangeData() {
+		return exchangeData;
+	}
+
+	public void setExchangeData(ExchangeData exchangeData) {
+		this.exchangeData = exchangeData;
+	}
+    
+    
 }
