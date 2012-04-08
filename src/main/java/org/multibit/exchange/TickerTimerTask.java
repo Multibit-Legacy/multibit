@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TickerTimerTask extends TimerTask {
 
-    public static final int DEFAULT_REPEAT_RATE = 1000; // milliseconds
+    public static final int DEFAULT_REPEAT_RATE = 11000; // milliseconds
 
     private static Logger log = LoggerFactory.getLogger(TickerTimerTask.class);
 
