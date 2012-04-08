@@ -32,7 +32,7 @@ import joptsimple.util.DateConverter;
 import org.bouncycastle.util.encoders.Hex;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
+import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletSubmitAction;
 import org.slf4j.Logger;
@@ -210,7 +210,7 @@ public class MultiBitShell {
         walletFile = new File(filename.value(options));
         if (action == ActionEnum.CREATE) {
             if (options.has("wallet")) {
-                CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller, null, null);
+                CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller, null, null);
                 createNewWalletAction.createNewWallet(filename.value(options));
             } else {
                 System.out.println(CommandLineViewSystem.TEXT_VIEW_OUTPUT_PREFIX

@@ -58,7 +58,7 @@ import org.multibit.platform.GenericApplication;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
-import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
+import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
@@ -527,7 +527,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuBar.add(helpMenu);
 
         // create new wallet action
-        CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller,
+        CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller,
                 ImageLoader.createImageIcon(ImageLoader.CREATE_NEW_ICON_FILE), this);
         JMenuItem menuItem = new JMenuItem(createNewWalletAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());

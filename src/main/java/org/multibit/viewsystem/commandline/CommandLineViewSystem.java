@@ -3,33 +3,10 @@ package org.multibit.viewsystem.commandline;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
-import javax.swing.Action;
-
-import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
-import org.multibit.viewsystem.commandline.view.CommandLineView;
-import org.multibit.viewsystem.commandline.view.HelpAboutView;
-import org.multibit.viewsystem.commandline.view.HelpContentsView;
-import org.multibit.viewsystem.commandline.view.HomePageView;
-import org.multibit.viewsystem.commandline.view.ReceiveBitcoinView;
-import org.multibit.viewsystem.commandline.view.SendBitcoinView;
-import org.multibit.viewsystem.commandline.view.SimpleView;
-import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
-import org.multibit.viewsystem.swing.action.ExitAction;
-import org.multibit.viewsystem.swing.action.OkBackToParentAction;
-import org.multibit.viewsystem.swing.action.OpenWalletAction;
-import org.multibit.viewsystem.swing.action.PasteAddressAction;
-import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
-import org.multibit.viewsystem.swing.action.SendBitcoinNowAction;
 
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
@@ -47,14 +24,7 @@ public class CommandLineViewSystem implements ViewSystem {
     private InputStream inputStream;
     private PrintStream printStream;
 
-    private Map<Integer, CommandLineView> viewMap;
-
     private boolean alreadySaidIsOnline = false;
-
-    /**
-     * the current viewId - int - one of the View constants
-     */
-    private int currentViewId;
 
     public static String TEXT_VIEW_OUTPUT_PREFIX = "MB:";
     public static String SEPARATOR = " ";
@@ -70,8 +40,6 @@ public class CommandLineViewSystem implements ViewSystem {
     public CommandLineViewSystem(MultiBitController controller) {
         this.controller = controller;
 
-        currentViewId = View.TRANSACTIONS_VIEW;
-
         inputStream = System.in;
         printStream = System.out;
 
@@ -81,17 +49,16 @@ public class CommandLineViewSystem implements ViewSystem {
     }
 
     public void displayView(int viewId) {
-            printStream.println(TEXT_VIEW_OUTPUT_PREFIX + ERROR_PREFIX + "No view to display with id " + viewId);
+            //printStream.println(TEXT_VIEW_OUTPUT_PREFIX + ERROR_PREFIX + "No view to display with id " + viewId);
     }
 
     public void navigateAwayFromView(int viewToNavigateAwayFrom, int nextViewId, int relationshipOfNewViewToPrevious) {
-
-            printStream.println(TEXT_VIEW_OUTPUT_PREFIX + ERROR_PREFIX + "No view to navigate away from.   Next view id is "
-                    + nextViewId);
+            //printStream.println(TEXT_VIEW_OUTPUT_PREFIX + ERROR_PREFIX + "No view to navigate away from.   Next view id is "
+            //        + nextViewId);
     }
 
     /**
-     * no need to recreate views as they are not cached
+     * command line does not have views
      */
     public void recreateAllViews() {
         // nothing to do

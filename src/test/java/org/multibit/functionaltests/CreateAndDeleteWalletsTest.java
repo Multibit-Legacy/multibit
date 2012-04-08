@@ -30,7 +30,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.commandline.MultiBitShell;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
-import org.multibit.viewsystem.swing.action.CreateNewWalletAction;
+import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletSubmitAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +85,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
         assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
        
         // create test1 wallet
-        CreateNewWalletAction createNewWalletAction = new CreateNewWalletAction(controller, null, null);     
+        CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller, null, null);     
         createNewWalletAction.createNewWallet(test1WalletPath);
         assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
 

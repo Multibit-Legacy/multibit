@@ -42,9 +42,9 @@ import com.google.bitcoin.core.Wallet;
 /**
  * This {@link Action} creates a new wallet
  */
-public class CreateNewWalletAction extends AbstractAction {
+public class CreateWalletSubmitAction extends AbstractAction {
 
-    private static final Logger log = LoggerFactory.getLogger(CreateNewWalletAction.class);
+    private static final Logger log = LoggerFactory.getLogger(CreateWalletSubmitAction.class);
 
     private static final long serialVersionUID = 1923492460523457765L;
 
@@ -52,9 +52,9 @@ public class CreateNewWalletAction extends AbstractAction {
     private MultiBitFrame mainFrame;
 
     /**
-     * Creates a new {@link CreateNewWalletAction}.
+     * Creates a new {@link CreateWalletSubmitAction}.
      */
-    public CreateNewWalletAction(MultiBitController controller, ImageIcon icon, MultiBitFrame mainFrame) {
+    public CreateWalletSubmitAction(MultiBitController controller, ImageIcon icon, MultiBitFrame mainFrame) {
         super(controller.getLocaliser().getString("createNewWalletAction.text"), icon);
         this.controller = controller;
         this.mainFrame = mainFrame;
