@@ -52,6 +52,7 @@ import javax.swing.UIManager;
 
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.TickerTimerTask;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.platform.GenericApplication;
@@ -156,10 +157,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private ViewFactory viewFactory;
 
     private Timer fileChangeTimer;
+    
+    private Timer tickerTimer;
 
     private JPanel headerPanel;
 
-    private JPanel tickerPanel;
+    private TickerPanel tickerPanel;
 
     @SuppressWarnings("deprecation")
     public MultiBitFrame(MultiBitController controller, GenericApplication application) {
@@ -236,6 +239,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         fileChangeTimer = new Timer();
         fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), 0, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
+        
+        tickerTimer = new Timer();
+        tickerTimer.schedule(new TickerTimerTask(controller, this), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
     }
 
     public GenericApplication getApplication() {
@@ -645,9 +651,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     if (tickerPanel.isVisible()) {
                         tickerPanel.setVisible(false);
                         controller.getModel().setUserPreference(MultiBitModel.SHOW_TICKER, Boolean.FALSE.toString());
+                        // TODO stop ticker timer
+//                         tickerTimer.cancel();
                     } else {
                         tickerPanel.setVisible(true);
                         controller.getModel().setUserPreference(MultiBitModel.SHOW_TICKER, Boolean.TRUE.toString());
+                     // TODO start ticker timer
                     }
                 }
             }
@@ -978,6 +987,24 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 thisFrame.repaint();
             }
         });
+    }
+    
+    /**
+     * update the Ticker Panel after the exchange data has changed
+     */
+    public void fireExchangeDataChanged() {
+    	
+    	
+    	
+    	SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+            	tickerPanel.updatePanel();
+            	tickerPanel.invalidate();
+            	tickerPanel.validate();
+            	tickerPanel.repaint();
+            }
+        });
+    	
     }
 
     private void updateHeader() {
