@@ -30,6 +30,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.MultiBitController;
+import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
@@ -153,12 +154,12 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
     }
 
     /**
-     * create a working, portable runtime of MultiBit in a temporary directory
+     * Create a working, portable runtime of MultiBit in a temporary directory
      * 
      * @return the temporary directory the multibit runtime has been created in
      */
     private File createMultiBitRuntime() throws IOException {
-        File multiBitDirectory = createTempDirectory();
+        File multiBitDirectory = FileHandler.createTempDirectory("multibit");
         String multiBitDirectoryPath = multiBitDirectory.getAbsolutePath();
 
         System.out.println("Building MultiBit runtime in : " + multiBitDirectory.getAbsolutePath());
@@ -168,82 +169,11 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
         multibitProperties.createNewFile();
         multibitProperties.deleteOnExit();
 
-        // copy in the blockchain stored in git - this is in
-        // source/main/resources/
+        // copy in the blockchain stored in git - this is in source/main/resources/
         File multibitBlockchain = new File(multiBitDirectoryPath + File.separator + "multibit.blockchain");
-        copyFile(new File("./src/main/resources/multibit.blockchain"), multibitBlockchain);
+        FileHandler.copyFile(new File("./src/main/resources/multibit.blockchain"), multibitBlockchain);
         multibitBlockchain.deleteOnExit();
 
         return multiBitDirectory;
     }
-
-    private void copyFile(File sourceFile, File destinationFile) throws IOException {
-        if (!destinationFile.exists()) {
-            destinationFile.createNewFile();
-        }
-        FileInputStream fileInputStream = null;
-        FileOutputStream fileOutputStream = null;
-        FileChannel source = null;
-        FileChannel destination = null;
-        try {
-            fileInputStream = new FileInputStream(sourceFile);
-            source = fileInputStream.getChannel();
-            fileOutputStream = new FileOutputStream(destinationFile);
-            destination = fileOutputStream.getChannel();
-            long transfered = 0;
-            long bytes = source.size();
-            while (transfered < bytes) {
-                transfered += destination.transferFrom(source, 0, source.size());
-                destination.position(transfered);
-            }
-        } finally {
-            if (source != null) {
-                source.close();
-            } else if (fileInputStream != null) {
-                fileInputStream.close();
-            }
-            if (destination != null) {
-                destination.close();
-            } else if (fileOutputStream != null) {
-                fileOutputStream.close();
-            }
-        }
-    }
-
-    public static File createTempDirectory() throws IOException {
-        final File temp;
-
-        temp = File.createTempFile("multibit", Long.toString(System.currentTimeMillis()));
-
-        if (!(temp.delete())) {
-            throw new IOException("Could not delete temp file: " + temp.getAbsolutePath());
-        }
-
-        if (!(temp.mkdir())) {
-            throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
-        }
-
-        temp.deleteOnExit();
-
-        return temp;
-    }
-
-    /**
-     * utility class just to show the number of peers connected in the log
-     */
-    class CountPeerEventListener extends AbstractPeerEventListener {
-        int numberOfPeers = 0;
-
-        public void onPeerDisconnected(Peer peer, int peerCount) {
-            numberOfPeers = peerCount;
-        }
-
-        public void onPeerConnected(Peer peer, int peerCount) {
-            numberOfPeers = peerCount;
-        }
-
-        public int getNumberOfPeers() {
-            return numberOfPeers;
-        }
-    };
 }

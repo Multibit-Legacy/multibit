@@ -486,7 +486,7 @@ public class FileHandler {
         }
     }
 
-    public void copyFile(File sourceFile, File destinationFile) throws IOException {
+    public static void copyFile(File sourceFile, File destinationFile) throws IOException {
         if (!destinationFile.exists()) {
             destinationFile.createNewFile();
         }
@@ -517,5 +517,23 @@ public class FileHandler {
                 fileOutputStream.close();
             }
         }
+    }
+    
+    public static File createTempDirectory(String filePrefix) throws IOException {
+        final File temp;
+
+        temp = File.createTempFile(filePrefix, Long.toString(System.currentTimeMillis()));
+
+        if (!(temp.delete())) {
+            throw new IOException("Could not delete temp file: " + temp.getAbsolutePath());
+        }
+
+        if (!(temp.mkdir())) {
+            throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
+        }
+
+        temp.deleteOnExit();
+
+        return temp;
     }
 }
