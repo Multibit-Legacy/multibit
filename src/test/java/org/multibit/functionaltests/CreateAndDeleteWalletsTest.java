@@ -15,12 +15,13 @@
  */
 package org.multibit.functionaltests;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 
 import junit.framework.TestCase;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
@@ -28,6 +29,8 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.network.MultiBitService;
+import org.multibit.viewsystem.commandline.Message;
+import org.multibit.viewsystem.commandline.MessageFormatter;
 import org.multibit.viewsystem.commandline.MultiBitShell;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
@@ -78,8 +81,8 @@ public class CreateAndDeleteWalletsTest extends TestCase {
     
     @Test
     public void testCreateAndDeleteWalletsWithActions() throws Exception {
-        String test1WalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "test1.wallet";
-        String test2WalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "test2.wallet";
+        String test1WalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "actionTest1.wallet";
+        String test2WalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "actionTest2.wallet";
 
         // initially there is a blank PerWalletModelData
         assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
@@ -105,30 +108,51 @@ public class CreateAndDeleteWalletsTest extends TestCase {
 
     @Test
     public void testCreateAndDeleteWalletsWithShell() throws Exception {
-        String test1WalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "test1.wallet";
-        String test2WalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "test2.wallet";
+        String test1WalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "shellTest1.wallet";
+        String test2WalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "shellTest2.wallet";
 
         // initially there is a blank PerWalletModelData
         assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
        
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(byteArrayOutputStream);
+        
         // create shell 
-        MultiBitShell multiBitShell = new MultiBitShell(controller);
+        MultiBitShell multiBitShell = new MultiBitShell(controller, printStream);
         
         // create test1 wallet
-        multiBitShell.processLine("CREATE --wallet --filename=" + test1WalletPath);
+        runShellCommand("create -wallet -filename=" + test1WalletPath, 
+                multiBitShell, byteArrayOutputStream, Message.WALLET_CREATED);
         assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
 
         // create test2 wallet
-        multiBitShell.processLine("CREATE --wallet --filename=" + test2WalletPath);
+        runShellCommand("create -wallet -filename=" + test2WalletPath, 
+                multiBitShell, byteArrayOutputStream, Message.WALLET_CREATED);
         assertEquals(2, controller.getModel().getPerWalletModelDataList().size());
-
+        
         // delete the test1wallet
-        multiBitShell.processLine("DELETE --wallet --filename=" + test1WalletPath);
+        runShellCommand("delete -wallet -filename=" + test1WalletPath, 
+                multiBitShell, byteArrayOutputStream, Message.WALLET_DELETED);
         assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
-
+       
         // delete the test2wallet - a default one should then be created
-        multiBitShell.processLine("DELETE --wallet --filename=" + test2WalletPath);
+        runShellCommand("delete -wallet -filename=" + test2WalletPath, 
+                multiBitShell, byteArrayOutputStream, Message.WALLET_DELETED);
         assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
+    }
+    
+    /**
+     * Run the shell command on the MultiBitShell and then check the byteArrayOutputStream saw the expected message 
+     * @param shellCommand The shell command to run.
+     * @param shell The multiBitShell to use.
+     * @param result The byteArrayOutputStream backing the output.
+     * @param expectedMessage The expected message that should be returned.
+     * @throws IOException 
+     */
+    private void runShellCommand(String shellCommand, MultiBitShell shell, ByteArrayOutputStream result, Message expectedMessage) throws IOException {
+        result.reset();
+        shell.processLine(shellCommand);
+        assertTrue(result.toString().startsWith(MessageFormatter.expectedStartOfOutput(expectedMessage)));
     }
 
     /**
@@ -136,7 +160,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
      * 
      * @return the temporary directory the multibit runtime has been created in
      */
-    private static File createMultiBitRuntime() throws IOException {
+    private File createMultiBitRuntime() throws IOException {
         File multiBitDirectory = FileHandler.createTempDirectory("CreateAndDeleteWalletsTest");
         String multiBitDirectoryPath = multiBitDirectory.getAbsolutePath();
 

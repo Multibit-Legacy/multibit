@@ -4,9 +4,6 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.util.Collection;
-
-import javax.swing.Action;
 
 public class ConsoleReadingThread extends Thread {
 
@@ -30,7 +27,7 @@ public class ConsoleReadingThread extends Thread {
     public void getHoldOfTheConsole() {
         while (true) {
             try {
-                printStream.print("MB > ");
+                printStream.print(MessageFormatter.INPUT_PREFIX);
                 String inputLine = reader.readLine();
 
                 // pass the line read in to the multibit tool command processor

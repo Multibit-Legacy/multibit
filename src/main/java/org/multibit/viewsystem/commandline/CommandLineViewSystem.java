@@ -43,7 +43,7 @@ public class CommandLineViewSystem implements ViewSystem {
         inputStream = System.in;
         printStream = System.out;
 
-        multiBitShell = new MultiBitShell(controller);
+        multiBitShell = new MultiBitShell(controller, printStream);
         ConsoleReadingThread consoleReader = new ConsoleReadingThread(System.in, System.out, multiBitShell);
         consoleReader.start();
     }

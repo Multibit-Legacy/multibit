@@ -20,11 +20,9 @@
 
 package org.multibit.viewsystem.commandline;
 
-import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -35,7 +33,6 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import joptsimple.util.DateConverter;
 
-import org.bouncycastle.util.encoders.Hex;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
@@ -43,19 +40,6 @@ import org.multibit.viewsystem.swing.action.DeleteWalletSubmitAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.AbstractWalletEventListener;
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.BlockChain;
-import com.google.bitcoin.core.DownloadListener;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.PeerAddress;
-import com.google.bitcoin.core.PeerGroup;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.discovery.DnsDiscovery;
-import com.google.bitcoin.store.BlockStoreException;
-import com.google.bitcoin.store.BoundedOverheadBlockStore;
 import com.google.bitcoin.utils.BriefLogFormatter;
 
 /**
@@ -68,27 +52,15 @@ public class MultiBitShell {
     public static final String ACTION_PREFIX = "--action=";
 
     private MultiBitController controller;
+    
+    private PrintStream printStream;
+    
+    private static MessageFormatter formatter = new MessageFormatter();
 
-    private static final String HELP_TEXT = "\nMultiBitShell: print and manipulate the MultiBit object model\n\n"
-            +
-
-            "Usage (Implemented):\n"
-            +
-            // ">>> GENERAL OPTIONS\n" +
-            // "  --debuglog           Enables logging from the core library.\n"
-            // +
-            // "  --wallet=<file>      Specifies what wallet file to load and save.\n"
-            // +
-            // "  --chain=<file>       Specifies the name of the file that stores the block chain.\n"
-            // +
-            // "  --force              Overrides any safety checks on the requested action.\n"
-            // +
-            // "  --date               Provide a date in form YYYY/MM/DD to any action that requires one.\n"
-            // +
-            // "  --peer=1.2.3.4       Use the given IP address for connections instead of peer discovery.\n"
-            // +
-
-            "  help                                            Show this help text.\n"
+    private static final String HELP_TEXT = formatter.formatMessage(Message.START_OF_HELP)
+            + "\n\nMultiBitShell: print and manipulate the MultiBit object model\n\n"
+            + "Usage (Implemented):\n"
+            + "  help                                            Show this help text.\n"
             + "  exit                                            Exit this MultiBitShell session.\n"
             + "  create  -wallet -filename=<>                    Makes a new wallet in the file specified.\n"
             + "  delete  -wallet -filename=<>                    Delete the wallet with the file specified.\n"
@@ -117,17 +89,18 @@ public class MultiBitShell {
             + "          -version                                Show the MultiBit version number.\n"
             + "          -ticker                                 Show the most recent ticker details.\n"
             + "          -message max=<number>                   Show the most recent <number> of messages.\n"
-            + "          -transaction                            Show the details of the last picked transaction.\n";
+            + "          -transaction                            Show the details of the last picked transaction.\n"
+            + formatter.formatMessage(Message.END_OF_HELP);
 
-    public MultiBitShell(MultiBitController controller) {
+    public MultiBitShell(MultiBitController controller, PrintStream printStream) {
         this.controller = controller;
+        this.printStream = printStream;
+        formatter.setPrintStream(printStream);
     }
 
     private static OptionSpec<String> filename;
     private static OptionSpec<ActionEnum> actionFlag;
     private static OptionSpec<Date> dateFlag;
-    private static NetworkParameters params;
-    private static File walletFile;
     private static OptionSet options;
 
     private static final boolean verbose = false;
@@ -211,7 +184,7 @@ public class MultiBitShell {
     }
 
     private void exit() {
-        System.out.println("MultiBitShell has stopped.");
+        formatter.printMessage(Message.MULTIBIT_SHELL_HAS_STOPPED);
         System.exit(0);
     }
 
@@ -219,6 +192,7 @@ public class MultiBitShell {
         if (options.has("wallet")) {
             CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller, null, null);
             createNewWalletAction.createNewWallet(filename.value(options));
+            formatter.printMessage(Message.WALLET_CREATED, new Object[] { filename.value(options) });
         } else {
             cannotHandle("create");
         }
@@ -228,8 +202,7 @@ public class MultiBitShell {
         if (options.has("wallet")) {
             DeleteWalletSubmitAction deleteWalletSubmitAction = new DeleteWalletSubmitAction(controller, null, null, null);
             deleteWalletSubmitAction.deleteWallet(filename.value(options));
-            System.out
-                    .println(CommandLineViewSystem.TEXT_VIEW_OUTPUT_PREFIX + " wallet '" + filename.value(options) + "' deleted.");
+            formatter.printMessage(Message.WALLET_DELETED, new Object[] { filename.value(options) });
         } else {
             cannotHandle("delete");
         }
@@ -244,16 +217,11 @@ public class MultiBitShell {
                 maxDescriptionWidth = Math.max(maxDescriptionWidth, loopData.getWalletDescription() == null ? 0 : loopData
                         .getWalletDescription().length());
             }
+            formatter.printMessage(Message.START_OF_LIST_OF_WALLETS);
             System.out.format("%-5s | %-" + maxDescriptionWidth + "s | %-20s\n", "$Item", "@Description", "Filename");
             System.out.format("%-5s | %-" + maxDescriptionWidth + "s | %-20s\n", "-----", "------------", "--------");
 
-            // System.out.println("---------------------------------------");
             for (PerWalletModelData loopData : controller.getModel().getPerWalletModelDataList()) {
-//                boolean isActive = false;
-//                if (loopData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
-//                    isActive = true;
-//                    System.out.println("PICKED");
-//                }
                 String itemText;
                 if (loopData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
                     itemText = "<" + item + ">";
@@ -262,11 +230,10 @@ public class MultiBitShell {
                 }
                 System.out.format("%-5s | %-" + maxDescriptionWidth + "s | %-20s\n", itemText, loopData.getWalletDescription(),
                         loopData.getWalletFilename());
-//                if (isActive) {
-//                    System.out.println(" ");
-//                }
                 item++;
             }
+            formatter.printMessage(Message.END_OF_LIST_OF_WALLETS);
+
         } else {
             cannotHandle("list");
         }
@@ -300,18 +267,17 @@ public class MultiBitShell {
                     }
                 }
             } else {
-                System.err.println("A 'pick' argument must start with $ (for pick-by-item) or @ (for pick-by-search");
+                formatter.printError(ErrorMessage.PICK_START_CHARACTER_WRONG);
             }
 
             if (found == null) {
-                System.err.println("Could not find wallet matching pick choice of '" + pickChoice + "'");
+                formatter.printError(ErrorMessage.COULD_NOT_FIND_MATCHING_WALLET, new Object[]{pickChoice});
             } else {
                 controller.getModel().setActiveWalletByFilename(found.getWalletFilename());
-                System.out.println(CommandLineViewSystem.TEXT_VIEW_OUTPUT_PREFIX + " Picked wallet '"
-                        + found.getWalletDescription() + "'");
+                formatter.printMessage(Message.PICKED_WALLET, new Object[] { found.getWalletDescription() });
             }
         } else {
-            System.err.println("Missing or wrong number of arguments for 'pick'");
+            formatter.printError(ErrorMessage.WRONG_NUMBER_OF_ARGUMENTS_FOR_PICK);
         }
     }
 
@@ -327,146 +293,7 @@ public class MultiBitShell {
     }
 
     private void cannotHandle(String verb) {
-        System.out.println(CommandLineViewSystem.TEXT_VIEW_OUTPUT_PREFIX + "A " + verb + " "
-                + options.nonOptionArguments().toString() + " was specified but MultiBitShell did not how to do that.");
-
-    }
-
-    private static void reset(Wallet wallet) {
-        // Delete the transactions and save. In future, reset the chain head
-        // pointer.
-        wallet.clearTransactions(0);
-        saveWallet(walletFile, wallet);
-    }
-
-    private static void syncChain(final Wallet wallet, File chainFileName) {
-        try {
-            // Will create a fresh chain if one doesn't exist or there is an
-            // issue with this one.
-            System.out.println("Connecting ...");
-            final BoundedOverheadBlockStore store = new BoundedOverheadBlockStore(params, chainFileName);
-            final BlockChain chain = new BlockChain(params, wallet, store);
-
-            wallet.addEventListener(new AbstractWalletEventListener() {
-                @Override
-                public void onChange() {
-                    saveWallet(walletFile, wallet);
-                }
-            });
-
-            int startTransactions = wallet.getTransactions(true, true).size();
-
-            PeerGroup peers = connect(wallet, chain);
-            DownloadListener listener = new DownloadListener();
-            peers.startBlockChainDownload(listener);
-            try {
-                listener.await();
-            } catch (InterruptedException e) {
-                System.err.println("Chain download interrupted, quitting ...");
-                System.exit(1);
-            }
-            peers.stop();
-            int endTransactions = wallet.getTransactions(true, true).size();
-            if (endTransactions > startTransactions) {
-                System.out.println("Synced " + (endTransactions - startTransactions) + " transactions.");
-            }
-        } catch (BlockStoreException e) {
-            System.err.println("Error reading block chain file " + chainFileName + ": " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    private static PeerGroup connect(Wallet wallet, BlockChain chain) {
-        PeerGroup peers = new PeerGroup(params, chain);
-        peers.setUserAgent("WalletTool", "1.0");
-        peers.addWallet(wallet);
-        peers.setFastCatchupTimeSecs(wallet.getEarliestKeyCreationTime());
-        if (options.has("peer")) {
-            String peer = (String) options.valueOf("peer");
-            try {
-                peers.addAddress(new PeerAddress(InetAddress.getByName(peer), params.port));
-            } catch (UnknownHostException e) {
-                System.err.println("Could not understand peer domain name/IP address: " + peer + ": " + e.getMessage());
-                System.exit(1);
-            }
-        } else {
-            peers.addPeerDiscovery(new DnsDiscovery(params));
-        }
-        peers.start();
-        return peers;
-    }
-
-    private static void saveWallet(File walletFile, Wallet wallet) {
-        // Save the new state of the wallet to a temp file then rename, in case
-        // anything goes wrong.
-        File tmp;
-        try {
-            // Create tmp in same directory as wallet to ensure we create on the
-            // same drive/volume.
-            tmp = File.createTempFile("wallet", null, walletFile.getParentFile());
-            tmp.deleteOnExit();
-            wallet.saveToFile(tmp);
-            tmp.renameTo(walletFile);
-        } catch (IOException e) {
-            System.err.println("Failed to save wallet! Old wallet should be left untouched.");
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    private static void addKey(Wallet wallet) {
-        ECKey key;
-        long creationTimeSeconds = 0;
-        if (options.has(dateFlag)) {
-            creationTimeSeconds = dateFlag.value(options).getTime() / 1000;
-        }
-        if (options.has("privkey")) {
-            String data = (String) options.valueOf("privkey");
-            key = new ECKey(new BigInteger(1, Hex.decode(data)));
-            if (options.has("pubkey")) {
-                // Give the user a hint.
-                System.out.println("You don't have to specify --pubkey when a private key is supplied.");
-            }
-            key.setCreationTimeSeconds(creationTimeSeconds);
-        } else if (options.has("pubkey")) {
-            byte[] pubkey = Hex.decode((String) options.valueOf("pubkey"));
-            key = new ECKey(null, pubkey);
-            key.setCreationTimeSeconds(creationTimeSeconds);
-        } else {
-            // Freshly generated key.
-            key = new ECKey();
-        }
-        if (wallet.findKeyFromPubKey(key.getPubKey()) != null) {
-            System.err.println("That key already exists in this wallet.");
-            return;
-        }
-        wallet.addKey(key);
-        System.out.println("addr:" + key.toAddress(params) + " " + key);
-    }
-
-    private static void deleteKey(Wallet wallet) {
-        String pubkey = (String) options.valueOf("pubkey");
-        String addr = (String) options.valueOf("addr");
-        if (pubkey == null && addr == null) {
-            System.err.println("One of --pubkey or --addr must be specified.");
-            return;
-        }
-        ECKey key = null;
-        if (pubkey != null) {
-            key = wallet.findKeyFromPubKey(Hex.decode(pubkey));
-        } else if (addr != null) {
-            try {
-                Address address = new Address(wallet.getParams(), addr);
-                key = wallet.findKeyFromPubHash(address.getHash160());
-            } catch (AddressFormatException e) {
-                System.err.println(addr + " does not parse as a Bitcoin address of the right network parameters.");
-                return;
-            }
-        }
-        if (key == null) {
-            System.err.println("Wallet does not seem to contain that key.");
-            return;
-        }
-        wallet.keychain.remove(key);
+        formatter.printMessage(Message.CANNOT_HANDLE,
+                new Object[] { verb + " " + options.nonOptionArguments().toString() });
     }
 }
