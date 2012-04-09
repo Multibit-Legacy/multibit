@@ -26,6 +26,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
@@ -93,6 +94,7 @@ public class MultiBitShell {
             + "  delete  -wallet -filename=<>                    Delete the wallet with the file specified.\n"
             + "  show    -wallet                                 Show the details of the last picked (active) wallet.\n"
             + "  list    -wallet                                 Lists all open wallets in a format suitable for picking.\n"
+            + "  pick     $<item number> or @<search term>       Pick from the last list either by item number or match by search term (for wallets)\n\n"
 
             + "\n(Not Implemented Yet):\n"
             + "  create  -sendingAddress -address=<> -label=<>   Makes a new sending address with the given address and label.\n"
@@ -103,7 +105,6 @@ public class MultiBitShell {
             + "  list    -sendingAddress                         Lists all sending addresses in a format suitable for picking.\n"
             + "          -receivingAddress                       Lists all receiving addresses in a format suitable for picking.\n"
             + "          -transaction                            Lists all transactions for the active wallet for picking.\n\n"
-            + "  pick     #<item number> or @<search term>       Pick from the last list either by item number or match by search term\n\n"
             + "  delete  -sendingAddress -address=<> -label=<>   Delete the sending address with the given address or label.\n"
             + "          -receivingAddress -address -label=<>    Delete the receiving address with the given address or label.\n\n"
             + "  send    -address=<> -amount=<>                  Send the specified amount of BTC to the address specified.\n\n"
@@ -132,7 +133,7 @@ public class MultiBitShell {
     private static final boolean verbose = false;
 
     public enum ActionEnum {
-        HELP, SHOW, CREATE, DELETE, LIST, ADD_KEY, DELETE_KEY, SYNC, RESET, EXIT
+        HELP, SHOW, CREATE, DELETE, LIST, PICK, ADD_KEY, DELETE_KEY, SYNC, RESET, EXIT
     };
 
     public void processLine(String inputLine) throws IOException {
@@ -203,6 +204,9 @@ public class MultiBitShell {
         case LIST:
             list();
             break;
+        case PICK:
+            pick();
+            break;
         }
     }
 
@@ -234,29 +238,80 @@ public class MultiBitShell {
     private void list() {
         if (options.has("wallet")) {
             int item = 1;
-            
+
             int maxDescriptionWidth = 0;
             for (PerWalletModelData loopData : controller.getModel().getPerWalletModelDataList()) {
-                maxDescriptionWidth = Math.max(maxDescriptionWidth, loopData.getWalletDescription() == null ? 0 :loopData.getWalletDescription().length());
+                maxDescriptionWidth = Math.max(maxDescriptionWidth, loopData.getWalletDescription() == null ? 0 : loopData
+                        .getWalletDescription().length());
             }
-            System.out.format("%-5s | %-" + maxDescriptionWidth + "s | %-20s\n", "#Item", "@Description", "Filename");
+            System.out.format("%-5s | %-" + maxDescriptionWidth + "s | %-20s\n", "$Item", "@Description", "Filename");
             System.out.format("%-5s | %-" + maxDescriptionWidth + "s | %-20s\n", "-----", "------------", "--------");
 
-            //System.out.println("---------------------------------------");
+            // System.out.println("---------------------------------------");
             for (PerWalletModelData loopData : controller.getModel().getPerWalletModelDataList()) {
-                boolean isActive = false;
+//                boolean isActive = false;
+//                if (loopData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
+//                    isActive = true;
+//                    System.out.println("PICKED");
+//                }
+                String itemText;
                 if (loopData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
-                    isActive = true;
-                    System.out.println("PICKED");
+                    itemText = "<" + item + ">";
+                } else {
+                    itemText = "" + item;
                 }
-                System.out.format("%-5s | %-" + maxDescriptionWidth + "s | %-20s\n", item, loopData.getWalletDescription(), loopData.getWalletFilename());
-                if (isActive) {
-                    System.out.println(" ");
-                }
+                System.out.format("%-5s | %-" + maxDescriptionWidth + "s | %-20s\n", itemText, loopData.getWalletDescription(),
+                        loopData.getWalletFilename());
+//                if (isActive) {
+//                    System.out.println(" ");
+//                }
                 item++;
             }
         } else {
             cannotHandle("list");
+        }
+    }
+
+    private void pick() {
+        List<String> nonOptionArguments = options.nonOptionArguments();
+
+        if (nonOptionArguments != null && nonOptionArguments.size() == 1) {
+            // one argument exactly
+            String pickChoice = nonOptionArguments.get(0);
+            PerWalletModelData found = null;
+
+            if (pickChoice.startsWith("$")) {
+                // item number pick
+                int itemLoop = 1;
+                for (PerWalletModelData loopData : controller.getModel().getPerWalletModelDataList()) {
+                    if (("$" + itemLoop).equals(pickChoice)) {
+                        found = loopData;
+                        break;
+                    }
+                    itemLoop++;
+                }
+            } else if (pickChoice.startsWith("@")) {
+                // search pick
+                String searchTerm = pickChoice.substring(1);
+                for (PerWalletModelData loopData : controller.getModel().getPerWalletModelDataList()) {
+                    if (("" + loopData.getWalletDescription()).indexOf(searchTerm) > -1) {
+                        found = loopData;
+                        break;
+                    }
+                }
+            } else {
+                System.err.println("A 'pick' argument must start with $ (for pick-by-item) or @ (for pick-by-search");
+            }
+
+            if (found == null) {
+                System.err.println("Could not find wallet matching pick choice of '" + pickChoice + "'");
+            } else {
+                controller.getModel().setActiveWalletByFilename(found.getWalletFilename());
+                System.out.println(CommandLineViewSystem.TEXT_VIEW_OUTPUT_PREFIX + " Picked wallet '"
+                        + found.getWalletDescription() + "'");
+            }
+        } else {
+            System.err.println("Missing or wrong number of arguments for 'pick'");
         }
     }
 
