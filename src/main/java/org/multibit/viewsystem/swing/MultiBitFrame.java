@@ -112,7 +112,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private Localiser localiser;
 
     private String helpContext;
-
+    
     public String getHelpContext() {
         return helpContext;
     }
@@ -654,8 +654,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     } else {
                         tickerPanel.setVisible(true);
                         controller.getModel().setUserPreference(MultiBitModel.SHOW_TICKER, Boolean.TRUE.toString());
-                        // TODO start ticker timer
-//                        tickerTimer.schedule(new TickerTimerTask(controller, this), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
+                        // start ticker timer
+                        tickerTimer = new Timer();
+                        tickerTimer.schedule(new TickerTimerTask(controller, thisFrame), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
                     }
                 }
             }
