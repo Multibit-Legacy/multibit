@@ -50,7 +50,7 @@ public class TickerTimerTask extends TimerTask {
      */
     public void run() {
     	
-    	log.debug("tick tock.");
+    	//log.debug("tick tock.");
     	
     	controller.getModel().getExchangeData().setLastTickUSD(Math.random());
     	

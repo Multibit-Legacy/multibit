@@ -33,6 +33,7 @@ public class ImageLoader {
     public static final String CREATE_NEW_ICON_FILE = "/images/createNew.png";
     public static final String CROSS_ICON_FILE = "/images/cross.png";
     public static final String DELETE_WALLET_ICON_FILE = "/images/deleteWallet.png";
+    public static final String EXCHANGES_ICON_FILE = "/images/exchanges.png";
     public static final String EXCLAMATION_MARK_ICON_FILE = "/images/exclamationMark.png";
     public static final String EXPORT_PRIVATE_KEYS_ICON_FILE = "/images/exportKey.png";
     public static final String HELP_CONTENTS_BIG_ICON_FILE = "/images/helpContentsBig.png";

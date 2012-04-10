@@ -31,7 +31,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigInteger;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -74,7 +73,6 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.components.VerticalGradientPanel;
-import org.multibit.viewsystem.swing.view.ticker.TickerPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTablePanel;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
 import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
@@ -602,6 +600,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setComponentOrientation(componentOrientation);
         viewMenu.add(menuItem);
 
+        MultiBitAction exchangesSetupAction = new MultiBitAction(controller, ImageLoader.EXCHANGES_ICON_FILE,
+                "exchangesSetup.text", "exchangesSetup.tooltip", "showTransactionsAction.mnemonic",
+                View.EXCHANGES_SETUP_VIEW);
+        menuItem = new JMenuItem(exchangesSetupAction);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        viewMenu.add(menuItem);
+
         // send bitcoin action
         MultiBitAction sendBitcoinAction = new MultiBitAction(controller, ImageLoader.SEND_BITCOIN_ICON_FILE,
                 "sendBitcoinAction.text", "sendBitcoinAction.tooltip", "sendBitcoinAction.mnemonic", View.SEND_BITCOIN_VIEW);
@@ -633,13 +639,21 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewMenu.addSeparator();
 
         // show ticker
-        JCheckBoxMenuItem showTicker = new JCheckBoxMenuItem(controller.getLocaliser().getString("multiBitFrame.ticker.text"));
+        String viewTicker = controller.getModel().getUserPreference(MultiBitModel.SHOW_TICKER);
+        boolean isTickerVisible = Boolean.TRUE.toString().equals(viewTicker); 
+
+        String tickerKey;
+        if (isTickerVisible) {
+            tickerKey = "multiBitFrame.ticker.hide.text";
+        } else {
+            tickerKey = "multiBitFrame.ticker.show.text";
+            
+        }
+        final JCheckBoxMenuItem showTicker = new JCheckBoxMenuItem(controller.getLocaliser().getString(tickerKey));
         showTicker.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         showTicker.setComponentOrientation(componentOrientation);
         showTicker.setIcon(ImageLoader.createImageIcon(ImageLoader.MONEY_ICON_FILE));
 
-        String viewTicker = controller.getModel().getUserPreference(MultiBitModel.SHOW_TICKER);
-        boolean isTickerVisible = !Boolean.FALSE.toString().equals(viewTicker); 
         showTicker.setState(isTickerVisible);
         if (tickerTablePanel != null) {
             tickerTablePanel.setVisible(isTickerVisible);
@@ -651,10 +665,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     if (tickerTablePanel.isVisible()) {
                         tickerTablePanel.setVisible(false);
                         controller.getModel().setUserPreference(MultiBitModel.SHOW_TICKER, Boolean.FALSE.toString());
+                        showTicker.setText(controller.getLocaliser().getString("multiBitFrame.ticker.show.text"));
                         tickerTimer.cancel();
                     } else {
                         tickerTablePanel.setVisible(true);
                         controller.getModel().setUserPreference(MultiBitModel.SHOW_TICKER, Boolean.TRUE.toString());
+                        showTicker.setText(controller.getLocaliser().getString("multiBitFrame.ticker.hide.text"));
                         // start ticker timer
                         tickerTimer = new Timer();
                         tickerTimer.schedule(new TickerTimerTask(controller, thisFrame), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);

@@ -27,6 +27,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -71,8 +72,9 @@ import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 
 /**
  * A panel with a table showing the exchange rate data
+ * 
  * @author jim
- *
+ * 
  */
 public class TickerTablePanel extends JPanel {
 
@@ -92,33 +94,17 @@ public class TickerTablePanel extends JPanel {
 
     private static final int MINIMUM_ICON_HEIGHT = 18;
 
-    private static final String PROGRESS_0_ICON_FILE = "/images/circleProgress0.png";
-    private static final String PROGRESS_1_ICON_FILE = "/images/circleProgress1.png";
-    private static final String PROGRESS_2_ICON_FILE = "/images/circleProgress2.png";
-    private static final String PROGRESS_3_ICON_FILE = "/images/circleProgress3.png";
-    private static final String PROGRESS_4_ICON_FILE = "/images/circleProgress4.png";
-    private static final String PROGRESS_5_ICON_FILE = "/images/circleProgress5.png";
-    private static final String RTL_PROGRESS_1_ICON_FILE = "/images/circleProgress1.png";
-    private static final String RTL_PROGRESS_2_ICON_FILE = "/images/circleProgress2.png";
-    private static final String RTL_PROGRESS_3_ICON_FILE = "/images/circleProgress3.png";
-    private static final String RTL_PROGRESS_4_ICON_FILE = "/images/circleProgress4.png";
-    private static final String RTL_PROGRESS_5_ICON_FILE = "/images/circleProgress5.png";
-    private static final String TICK_ICON_FILE = "/images/tick.png";
-
-    private int selectedRow = -1;
-    
     FontMetrics fontMetrics;
     Font font;
 
     public TickerTablePanel(MultiBitFrame mainFrame, MultiBitController controller) {
         this.controller = controller;
         this.mainFrame = mainFrame;
-        
+
         setPreferredSize(new Dimension(300, 58));
-        
+
         font = FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-2);
         fontMetrics = getFontMetrics(font);
-
 
         initUI();
 
@@ -133,6 +119,15 @@ public class TickerTablePanel extends JPanel {
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         setLayout(new GridBagLayout());
         setOpaque(true);
+        
+        setToolTipText(controller.getLocaliser().getString("tickerTablePanel.tooltip"));
+        // on mouse click - view the exchanges tab
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent arg0) {
+                controller.displayView(View.EXCHANGES_SETUP_VIEW);
+            }});
+        
         GridBagConstraints constraints = new GridBagConstraints();
 
         tickerTableModel = new TickerTableModel(controller);
@@ -145,11 +140,14 @@ public class TickerTablePanel extends JPanel {
         table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         table.setRowSelectionAllowed(false);
         table.setColumnSelectionAllowed(false);
+        table.setToolTipText(controller.getLocaliser().getString("tickerTablePanel.tooltip"));
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent arg0) {
+                controller.displayView(View.EXCHANGES_SETUP_VIEW);
+            }});
+        
 
-        // no row is currently selected
-        selectedRow = -1;
-
-   
         // justify column headers
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
         JLabel label = (JLabel) renderer;
@@ -203,11 +201,6 @@ public class TickerTablePanel extends JPanel {
     }
 
     public void update() {
-
-//        if (selectedRow > -1 && selectedRow < table.getRowCount()) {
-//            table.setRowSelectionInterval(selectedRow, selectedRow);
-//        }
-
         table.invalidate();
         table.validate();
         table.repaint();
@@ -215,157 +208,6 @@ public class TickerTablePanel extends JPanel {
         invalidate();
         validate();
         repaint();
-    }
-
-    class ImageRenderer extends DefaultTableCellRenderer {
-        private static final long serialVersionUID = 154545L;
-
-        JLabel label = new JLabel();
- 
-        ImageIcon tickIcon = ImageLoader.createImageIcon(TICK_ICON_FILE);
-        ImageIcon progress0Icon = ImageLoader.createImageIcon(PROGRESS_0_ICON_FILE);
-        ImageIcon progress1Icon = ImageLoader.createImageIcon(PROGRESS_1_ICON_FILE);
-        ImageIcon progress2Icon = ImageLoader.createImageIcon(PROGRESS_2_ICON_FILE);
-        ImageIcon progress3Icon = ImageLoader.createImageIcon(PROGRESS_3_ICON_FILE);
-        ImageIcon progress4Icon = ImageLoader.createImageIcon(PROGRESS_4_ICON_FILE);
-        ImageIcon progress5Icon = ImageLoader.createImageIcon(PROGRESS_5_ICON_FILE);
-        ImageIcon rtlProgress1Icon = ImageLoader.createImageIcon(RTL_PROGRESS_1_ICON_FILE);
-        ImageIcon rtlProgress2Icon = ImageLoader.createImageIcon(RTL_PROGRESS_2_ICON_FILE);
-        ImageIcon rtlProgress3Icon = ImageLoader.createImageIcon(RTL_PROGRESS_3_ICON_FILE);
-        ImageIcon rtlProgress4Icon = ImageLoader.createImageIcon(RTL_PROGRESS_4_ICON_FILE);
-        ImageIcon rtlProgress5Icon = ImageLoader.createImageIcon(RTL_PROGRESS_5_ICON_FILE);
-
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
-                int column) {
-            label.setHorizontalAlignment(SwingConstants.CENTER);
-            label.setOpaque(true);
-            label.setFont(font);
-
-            TransactionConfidence confidence = (TransactionConfidence) value;
-
-            ConfidenceType confidenceType = null;
-            if (confidence != null) {
-                confidenceType = confidence.getConfidenceType();
-            }
-            if (confidenceType == null) {
-                confidenceType = ConfidenceType.UNKNOWN;
-            }
-            switch (confidenceType) {
-            case UNKNOWN: {
-                label.setText("?");
-                label.setIcon(null);
-                // label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.notConfirmed"));
-                break;
-            }
-            case BUILDING: {
-                int numberOfBlocksEmbedded = confidence.getDepthInBlocks(controller.getMultiBitService().getChain());
-                ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded);
-                label.setIcon(buildingIcon);
-                label.setText("");
-                if (numberOfBlocksEmbedded >= 6) {
-                    label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.isConfirmed"));
-                } else {
-                    label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
-                }
-                break;
-            }
-            case NOT_SEEN_IN_CHAIN: {
-                label.setIcon(progress0Icon);
-                label.setText("");
-                label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.notConfirmed"));
-
-                // label.setText("NSIC");
-                break;
-            }
-            case NOT_IN_BEST_CHAIN: {
-                label.setIcon(progress0Icon);
-                label.setText("");
-                label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.notConfirmed"));
-                // label.setText("NSIBC");
-                break;
-            }
-            case OVERRIDDEN_BY_DOUBLE_SPEND: {
-                label.setIcon(null);
-                label.setText("DS");
-                break;
-            }
-            default: {
-                label.setIcon(null);
-                label.setText("?");
-                break;
-            }
-            }
-
-            if (isSelected) {
-                selectedRow = row;
-                label.setBackground(table.getSelectionBackground());
-                label.setForeground(table.getSelectionForeground());
-            } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
-                        : ColorAndFontConstants.BACKGROUND_COLOR);
-                label.setBackground(backgroundColor);
-                label.setForeground(table.getForeground());
-            }
-
-            return label;
-        }
-
-        private ImageIcon getBuildingIcon(int numberOfBlocksEmbedded) {
-            if (numberOfBlocksEmbedded < 0) {
-                numberOfBlocksEmbedded = 0;
-            }
-            if (numberOfBlocksEmbedded > 6) {
-                numberOfBlocksEmbedded = 6;
-            }
-
-            boolean isLeftToRight = ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight();
-
-            switch (numberOfBlocksEmbedded) {
-            case 0: {
-                return progress0Icon;
-            }
-            case 1: {
-                if (isLeftToRight) {
-                    return progress1Icon;
-                } else {
-                    return rtlProgress1Icon;
-                }
-            }
-            case 2: {
-                if (isLeftToRight) {
-                    return progress2Icon;
-                } else {
-                    return rtlProgress2Icon;
-                }
-            }
-            case 3: {
-                if (isLeftToRight) {
-                    return progress3Icon;
-                } else {
-                    return rtlProgress3Icon;
-                }
-            }
-            case 4: {
-                if (isLeftToRight) {
-                    return progress4Icon;
-                } else {
-                    return rtlProgress4Icon;
-                }
-            }
-            case 5: {
-                if (isLeftToRight) {
-                    return progress5Icon;
-                } else {
-                    return rtlProgress5Icon;
-                }
-            }
-            case 6: {
-                return tickIcon;
-            }
-            default:
-                return progress0Icon;
-            }
-        }
     }
 
     class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
@@ -382,16 +224,10 @@ public class TickerTablePanel extends JPanel {
 
             label.setText(value + SPACER);
 
-            if (isSelected) {
-                selectedRow = row;
-                label.setBackground(table.getSelectionBackground());
-                label.setForeground(table.getSelectionForeground());
-            } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
-                        : ColorAndFontConstants.BACKGROUND_COLOR);
-                label.setBackground(backgroundColor);
-                label.setForeground(table.getForeground());
-            }
+            Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                    : ColorAndFontConstants.BACKGROUND_COLOR);
+            label.setBackground(backgroundColor);
+            label.setForeground(table.getForeground());
 
             return label;
         }
@@ -411,16 +247,10 @@ public class TickerTablePanel extends JPanel {
             label.setText((String) value);
             label.setFont(font);
 
-            if (isSelected) {
-                selectedRow = row;
-                label.setBackground(table.getSelectionBackground());
-                label.setForeground(table.getSelectionForeground());
-            } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
-                        : ColorAndFontConstants.BACKGROUND_COLOR);
-                label.setBackground(backgroundColor);
-                label.setForeground(table.getForeground());
-            }
+            Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                    : ColorAndFontConstants.BACKGROUND_COLOR);
+            label.setBackground(backgroundColor);
+            label.setForeground(table.getForeground());
 
             return label;
         }
