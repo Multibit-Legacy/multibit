@@ -21,7 +21,6 @@
 package org.multibit.viewsystem.commandline;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Date;
 import java.util.List;
@@ -218,8 +217,8 @@ public class MultiBitShell {
                         .getWalletDescription().length());
             }
             formatter.printMessage(Message.START_OF_LIST_OF_WALLETS);
-            System.out.format("%-5s | %-" + maxDescriptionWidth + "s | %-20s\n", "$Item", "@Description", "Filename");
-            System.out.format("%-5s | %-" + maxDescriptionWidth + "s | %-20s\n", "-----", "------------", "--------");
+            printStream.format("%-5s | %-" + maxDescriptionWidth + "s | %-20s\n", "$Item", "@Description", "Filename");
+            printStream.format("%-5s | %-" + maxDescriptionWidth + "s | %-20s\n", "-----", "------------", "--------");
 
             for (PerWalletModelData loopData : controller.getModel().getPerWalletModelDataList()) {
                 String itemText;
@@ -228,7 +227,7 @@ public class MultiBitShell {
                 } else {
                     itemText = "" + item;
                 }
-                System.out.format("%-5s | %-" + maxDescriptionWidth + "s | %-20s\n", itemText, loopData.getWalletDescription(),
+                printStream.format("%-5s | %-" + maxDescriptionWidth + "s | %-20s\n", itemText, loopData.getWalletDescription(),
                         loopData.getWalletFilename());
                 item++;
             }
@@ -284,9 +283,9 @@ public class MultiBitShell {
     private void show() {
         if (options.has("wallet")) {
             PerWalletModelData activePerWalletModelData = controller.getModel().getActivePerWalletModelData();
-            System.out.println("\nDescription : " + activePerWalletModelData.getWalletDescription());
-            System.out.println("Filename    : " + activePerWalletModelData.getWalletFilename());
-            System.out.println("Contents    :\n" + activePerWalletModelData.getWallet().toString());
+            printStream.println("\nDescription : " + activePerWalletModelData.getWalletDescription());
+            printStream.println("Filename    : " + activePerWalletModelData.getWalletFilename());
+            printStream.println("Contents    :\n" + activePerWalletModelData.getWallet().toString());
         } else {
             cannotHandle("show");
         }

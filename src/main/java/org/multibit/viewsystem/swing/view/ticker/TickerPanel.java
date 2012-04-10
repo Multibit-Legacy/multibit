@@ -40,7 +40,7 @@ public class TickerPanel extends JPanel {
 
     private static final long serialVersionUID = 191356387345057705L;
     
-    private MultiBitLabel tickerLabel;
+    private TickerTablePanel tickerTablePanel;
 
     private MultiBitController controller;
     
@@ -67,23 +67,19 @@ public class TickerPanel extends JPanel {
     private JPanel createTickerPanel() {
     	
         JPanel tickerPanel = new JPanel();
-        tickerPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-        tickerPanel.setBackground(Color.PINK);
-        tickerPanel.setPreferredSize(new Dimension(400,50));
+        tickerPanel.setPreferredSize(new Dimension(300,50));
         
         GridBagConstraints constraints = new GridBagConstraints();
         
-        tickerLabel = new MultiBitLabel("TEST");
-        tickerLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        tickerLabel.setOpaque(true);
-        tickerPanel.add(tickerLabel, constraints);
+        tickerTablePanel = new TickerTablePanel(mainFrame, controller);
+        tickerTablePanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        tickerTablePanel.setOpaque(true);
+        tickerPanel.add(tickerTablePanel, constraints);
 
         return tickerPanel;      
     }
     
     public void updatePanel(){
-    	
-    	tickerLabel.setText("MtGox: " + this.controller.getModel().getExchangeData().getLastTickUSD());
-    	
+        tickerTablePanel.update();  //.setText("MtGox: " + this.controller.getModel().getExchangeData().getLastTickUSD());
     }
 }

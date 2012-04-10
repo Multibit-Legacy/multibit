@@ -75,6 +75,7 @@ import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.components.VerticalGradientPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerPanel;
+import org.multibit.viewsystem.swing.view.ticker.TickerTablePanel;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
 import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
 import org.simplericity.macify.eawt.ApplicationEvent;
@@ -161,7 +162,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     
     private JPanel headerPanel;
 
-    private TickerPanel tickerPanel;
+    private TickerTablePanel tickerTablePanel;
 
     @SuppressWarnings("deprecation")
     public MultiBitFrame(MultiBitController controller, GenericApplication application) {
@@ -365,8 +366,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private JPanel createBalancePanel() {
         JPanel headerPanel = new JPanel();
 
-        headerPanel.setMinimumSize(new Dimension(700, 55));
-        headerPanel.setPreferredSize(new Dimension(700, 55));
+        headerPanel.setMinimumSize(new Dimension(700, 58));
+        headerPanel.setPreferredSize(new Dimension(700, 58));
         headerPanel.setOpaque(false);
 
         headerPanel.setLayout(new GridBagLayout());
@@ -447,13 +448,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.add(filler3, constraints);
 
         // add ticker panel
-        tickerPanel = new TickerPanel(controller, this);
+        tickerTablePanel = new TickerTablePanel(this, controller);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 6;
         constraints.gridy = 0;
         constraints.weightx = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(tickerPanel, constraints);
+        headerPanel.add(tickerTablePanel, constraints);
 
         // add a little stent to keep it off the right hand edge
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -640,19 +641,19 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         String viewTicker = controller.getModel().getUserPreference(MultiBitModel.SHOW_TICKER);
         boolean isTickerVisible = !Boolean.FALSE.toString().equals(viewTicker); 
         showTicker.setState(isTickerVisible);
-        if (tickerPanel != null) {
-            tickerPanel.setVisible(isTickerVisible);
+        if (tickerTablePanel != null) {
+            tickerTablePanel.setVisible(isTickerVisible);
         }
 
         showTicker.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if (tickerPanel != null) {
-                    if (tickerPanel.isVisible()) {
-                        tickerPanel.setVisible(false);
+                if (tickerTablePanel != null) {
+                    if (tickerTablePanel.isVisible()) {
+                        tickerTablePanel.setVisible(false);
                         controller.getModel().setUserPreference(MultiBitModel.SHOW_TICKER, Boolean.FALSE.toString());
                         tickerTimer.cancel();
                     } else {
-                        tickerPanel.setVisible(true);
+                        tickerTablePanel.setVisible(true);
                         controller.getModel().setUserPreference(MultiBitModel.SHOW_TICKER, Boolean.TRUE.toString());
                         // start ticker timer
                         tickerTimer = new Timer();
@@ -998,10 +999,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     	
     	SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-            	tickerPanel.updatePanel();
-            	tickerPanel.invalidate();
-            	tickerPanel.validate();
-            	tickerPanel.repaint();
+            	tickerTablePanel.update();
+            	tickerTablePanel.invalidate();
+            	tickerTablePanel.validate();
+            	tickerTablePanel.repaint();
             }
         });
     	
