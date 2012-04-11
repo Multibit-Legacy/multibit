@@ -30,7 +30,8 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 /**
- * This {@link Action} undoes the last changes made to the preferences panel
+ * This {@link Action} undoes the last language and font changes made to the
+ * preferences panel
  */
 public class UndoPreferencesChangesSubmitAction extends AbstractAction {
 
@@ -51,7 +52,7 @@ public class UndoPreferencesChangesSubmitAction extends AbstractAction {
     }
 
     /**
-     * get all the previous changes and undo them
+     * Get the previous language and font changes and undo them
      */
     public void actionPerformed(ActionEvent event) {
         String previousFontName = (String) controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_FONT_NAME);
@@ -70,25 +71,19 @@ public class UndoPreferencesChangesSubmitAction extends AbstractAction {
             // just use default
         }
 
-        controller.getModel().setUserPreference(MultiBitModel.SEND_FEE,
-                (String) controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_SEND_FEE));
         controller.getModel().setUserPreference(MultiBitModel.USER_LANGUAGE_CODE,
                 (String) controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_USER_LANGUAGE_CODE));
-        controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG,
-                (String) controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_OPEN_URI_SHOW_DIALOG));
-        controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI,
-                (String) controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_OPEN_URI_USE_URI));
         controller.getModel().setUserPreference(MultiBitModel.FONT_NAME, previousFontName);
         controller.getModel().setUserPreference(MultiBitModel.FONT_STYLE, previousFontStyle);
         controller.getModel().setUserPreference(MultiBitModel.FONT_SIZE, previousFontSize);
         controller.getModel().setUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES, "false");
 
-        // return to the same view but fire a language change to reset
+        // return to the same view but fire data structure change to reset
         // everything
         FontSizer.INSTANCE.initialise(controller);
         UIManager.put("ToolTip.font", new Font(previousFontName, previousFontStyleAsInt, previousFontSizeAsInt));
 
-        controller.fireLanguageChanged();
+        controller.fireDataStructureChanged();
         controller.displayView(View.PREFERENCES_VIEW);
     }
 }

@@ -27,14 +27,17 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Table model for ticker
+ * 
  * @author jim
- *
+ * 
  */
 public class TickerTableModel extends AbstractTableModel {
 
-    private static final String[] COLUMN_HEADER_KEYS = new String[] { "tickerTableModel.symbol",
-        "tickerTableModel.bid", "tickerTableModel.ask",
-        "tickerTableModel.exchange" };
+    private static final String[] COLUMN_HEADER_BID_ASK_KEYS = new String[] { "tickerTableModel.symbol", "tickerTableModel.bid",
+            "tickerTableModel.ask", "tickerTableModel.exchange" };
+
+    private static final String[] COLUMN_HEADER_RATE_KEYS = new String[] { "tickerTableModel.symbol", "tickerTableModel.rate",
+            "tickerTableModel.exchange" };
 
     private static final long serialVersionUID = -775886012854496208L;
 
@@ -46,8 +49,8 @@ public class TickerTableModel extends AbstractTableModel {
      * The exchange data
      */
     private ExchangeData exchangeData;
-    
-    private static final int NUMBER_OF_CURRENCIES_IN_EXCHANGE_DATA = 2;
+
+    private static final int NUMBER_OF_CURRENCIES_IN_EXCHANGE_DATA = 1;
 
     /**
      * the MultiBit model
@@ -56,17 +59,24 @@ public class TickerTableModel extends AbstractTableModel {
 
     private MultiBitController controller;
 
+    private boolean showRate;
+
     public TickerTableModel(MultiBitController controller) {
         this.multiBitModel = controller.getModel();
         this.controller = controller;
 
+        showRate = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_RATE));
         createHeaders();
 
         exchangeData = multiBitModel.getExchangeData();
     }
 
     public int getColumnCount() {
-        return COLUMN_HEADER_KEYS.length;
+        if (showRate) {
+            return COLUMN_HEADER_RATE_KEYS.length;
+        } else {
+            return COLUMN_HEADER_BID_ASK_KEYS.length;
+        }
     }
 
     public int getRowCount() {
@@ -78,25 +88,45 @@ public class TickerTableModel extends AbstractTableModel {
     }
 
     public Object getValueAt(int row, int column) {
-        if (row < 0 && row >= NUMBER_OF_CURRENCIES_IN_EXCHANGE_DATA) {
-            return null;
-        }
+        if (showRate) {
+            if (row < 0 && row >= NUMBER_OF_CURRENCIES_IN_EXCHANGE_DATA) {
+                return null;
+            }
 
-        switch (column) {
-        case 0: {
-            return "USD";
-        }
-        case 1: {
-            // bid
-            return String.format("%1$,.4f", exchangeData.getLastTickUSD());
-        }
-        case 2:
-            //ask
-            return String.format("%1$,.4f", exchangeData.getLastTickUSD());
-        case 3:
-            return "MtGox";
-        default:
-            return null;
+            switch (column) {
+            case 0: {
+                return "USD";
+            }
+            case 1: {
+                // rate
+                return String.format("%1$,.4f", exchangeData.getLastTickUSD());
+            }
+            case 2:
+                return "MtGox";
+            default:
+                return null;
+            }
+        } else {
+            if (row < 0 && row >= NUMBER_OF_CURRENCIES_IN_EXCHANGE_DATA) {
+                return null;
+            }
+
+            switch (column) {
+            case 0: {
+                return "USD";
+            }
+            case 1: {
+                // bid
+                return String.format("%1$,.4f", exchangeData.getLastTickUSD());
+            }
+            case 2:
+                // ask
+                return String.format("%1$,.4f", exchangeData.getLastTickUSD());
+            case 3:
+                return "MtGox";
+            default:
+                return null;
+            }
         }
     }
 
@@ -109,8 +139,18 @@ public class TickerTableModel extends AbstractTableModel {
 
     public void createHeaders() {
         headers = new ArrayList<String>();
-        for (int j = 0; j < COLUMN_HEADER_KEYS.length; j++) {
-            headers.add(controller.getLocaliser().getString(COLUMN_HEADER_KEYS[j]));
+        if (showRate) {
+            for (int j = 0; j < COLUMN_HEADER_RATE_KEYS.length; j++) {
+                headers.add(controller.getLocaliser().getString(COLUMN_HEADER_RATE_KEYS[j]));
+            }
+        } else {
+            for (int j = 0; j < COLUMN_HEADER_BID_ASK_KEYS.length; j++) {
+                headers.add(controller.getLocaliser().getString(COLUMN_HEADER_BID_ASK_KEYS[j]));
+            }
         }
+    }
+
+    public boolean isShowRate() {
+        return showRate;
     }
 }

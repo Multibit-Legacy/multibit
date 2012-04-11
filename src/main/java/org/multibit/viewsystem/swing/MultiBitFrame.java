@@ -111,7 +111,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private Localiser localiser;
 
     private String helpContext;
-    
+
     public String getHelpContext() {
         return helpContext;
     }
@@ -155,9 +155,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private ViewFactory viewFactory;
 
     private Timer fileChangeTimer;
-    
+
     private Timer tickerTimer;
-    
+
     private JPanel headerPanel;
 
     private TickerTablePanel tickerTablePanel;
@@ -237,7 +237,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         fileChangeTimer = new Timer();
         fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), 0, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
-        
+
         tickerTimer = new Timer();
         tickerTimer.schedule(new TickerTimerTask(controller, this), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
     }
@@ -364,8 +364,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private JPanel createBalancePanel() {
         JPanel headerPanel = new JPanel();
 
-        headerPanel.setMinimumSize(new Dimension(700, 58));
-        headerPanel.setPreferredSize(new Dimension(700, 58));
+        headerPanel.setMinimumSize(new Dimension(700, 60));
+        headerPanel.setPreferredSize(new Dimension(700, 60));
         headerPanel.setOpaque(false);
 
         headerPanel.setLayout(new GridBagLayout());
@@ -441,7 +441,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 5;
         constraints.gridy = 0;
-        constraints.weightx = 10000;
+        constraints.weightx = 1000;
         constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(filler3, constraints);
 
@@ -454,14 +454,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(tickerTablePanel, constraints);
 
-        // add a little stent to keep it off the right hand edge
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 7;
-        constraints.gridy = 0;
-        constraints.weightx = 1;
-        constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
-        headerPanel.add(MultiBitTitledPanel.createStent(8), constraints);
-
+        // add a little stent to keep it off the right hand edge on macs
+        if (application != null && application.isMac()) {
+            constraints.fill = GridBagConstraints.HORIZONTAL;
+            constraints.gridx = 7;
+            constraints.gridy = 0;
+            constraints.weightx = 1;
+            constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
+            headerPanel.add(MultiBitTitledPanel.createStent(8), constraints);
+        }
         return headerPanel;
     }
 
@@ -600,13 +601,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setComponentOrientation(componentOrientation);
         viewMenu.add(menuItem);
 
-        MultiBitAction exchangesSetupAction = new MultiBitAction(controller, ImageLoader.EXCHANGES_ICON_FILE,
-                "exchangesSetup.text", "exchangesSetup.tooltip", "showTransactionsAction.mnemonic",
-                View.EXCHANGES_SETUP_VIEW);
-        menuItem = new JMenuItem(exchangesSetupAction);
-        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        menuItem.setComponentOrientation(componentOrientation);
-        viewMenu.add(menuItem);
+//        MultiBitAction exchangesSetupAction = new MultiBitAction(controller, ImageLoader.EXCHANGES_ICON_FILE,
+//                "exchangesSetup.text", "exchangesSetup.tooltip", "showTransactionsAction.mnemonic", View.PREFERENCES_VIEW);
+//        menuItem = new JMenuItem(exchangesSetupAction);
+//        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+//        menuItem.setComponentOrientation(componentOrientation);
+//        viewMenu.add(menuItem);
 
         // send bitcoin action
         MultiBitAction sendBitcoinAction = new MultiBitAction(controller, ImageLoader.SEND_BITCOIN_ICON_FILE,
@@ -639,15 +639,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewMenu.addSeparator();
 
         // show ticker
-        String viewTicker = controller.getModel().getUserPreference(MultiBitModel.SHOW_TICKER);
-        boolean isTickerVisible = Boolean.TRUE.toString().equals(viewTicker); 
+        String viewTicker = controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW);
+        boolean isTickerVisible = Boolean.TRUE.toString().equals(viewTicker);
 
         String tickerKey;
         if (isTickerVisible) {
             tickerKey = "multiBitFrame.ticker.hide.text";
         } else {
             tickerKey = "multiBitFrame.ticker.show.text";
-            
+
         }
         final JCheckBoxMenuItem showTicker = new JCheckBoxMenuItem(controller.getLocaliser().getString(tickerKey));
         showTicker.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -664,12 +664,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 if (tickerTablePanel != null) {
                     if (tickerTablePanel.isVisible()) {
                         tickerTablePanel.setVisible(false);
-                        controller.getModel().setUserPreference(MultiBitModel.SHOW_TICKER, Boolean.FALSE.toString());
+                        controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, Boolean.FALSE.toString());
                         showTicker.setText(controller.getLocaliser().getString("multiBitFrame.ticker.show.text"));
                         tickerTimer.cancel();
                     } else {
                         tickerTablePanel.setVisible(true);
-                        controller.getModel().setUserPreference(MultiBitModel.SHOW_TICKER, Boolean.TRUE.toString());
+                        controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, Boolean.TRUE.toString());
                         showTicker.setText(controller.getLocaliser().getString("multiBitFrame.ticker.hide.text"));
                         // start ticker timer
                         tickerTimer = new Timer();
@@ -918,41 +918,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
     }
 
-//    private void processNewCoin(Wallet wallet, Transaction transaction) {
-//        // loop through all the wallets, updating them as required with the new
-//        // transaction
-//        log.debug("processNewCoin is processing transaction " + transaction.toString());
-//        try {
-//            java.util.List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
-//
-//            if (perWalletModelDataList != null) {
-//                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
-//                    try {
-//                        Wallet loopWallet = perWalletModelData.getWallet();
-//                        if (loopWallet.isTransactionRelevant(transaction, true)) {
-//                            // the perWalletModelData is marked as dirty
-//
-//                            // check to see if the transaction is already in the
-//                            // wallet
-//                            if (loopWallet.getTransaction(transaction.getHash()) == null) {
-//                                log.debug("processNewCoin is receivingPending");
-//                                loopWallet.receivePending(transaction);
-//                            }
-//                            perWalletModelData.setDirty(true);
-//                            log.debug("Marking wallet '" + perWalletModelData.getWalletFilename() + "' as dirty.");
-//                            fireDataChanged();
-//                        }
-//                    } catch (VerificationException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        } catch (ScriptException e) {
-//            // If we didn't understand the scriptSig, just log it
-//            log.error(e.getMessage(), e);
-//        }
-//    }
-
     @Override
     public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
     }
@@ -1005,23 +970,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             }
         });
     }
-    
+
     /**
      * update the Ticker Panel after the exchange data has changed
      */
     public void fireExchangeDataChanged() {
-    	
-    	
-    	
-    	SwingUtilities.invokeLater(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-            	tickerTablePanel.update();
-            	tickerTablePanel.invalidate();
-            	tickerTablePanel.validate();
-            	tickerTablePanel.repaint();
+                tickerTablePanel.update();
             }
         });
-    	
     }
 
     private void updateHeader() {

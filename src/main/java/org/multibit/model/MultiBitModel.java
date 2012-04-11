@@ -74,8 +74,10 @@ public class MultiBitModel {
     public static final String USER_LANGUAGE_CODE = "languageCode";
     public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
     
-    public static final String SHOW_TICKER = "showTicker";
-
+    // ticker
+    public static final String TICKER_SHOW = "tickerShow";
+    public static final String TICKER_SHOW_RATE = "tickerShowRate";
+    
     // wallets, open wallet and save wallet as dialog
     public static final String ACTIVE_WALLET_FILENAME = "selectedWalletFilename";
     public static final String WALLET_FILENAME_PREFIX = "walletFilename.";

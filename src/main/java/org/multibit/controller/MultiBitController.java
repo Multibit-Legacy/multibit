@@ -207,7 +207,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     /**
      * the language has been changed
      */
-    public void fireLanguageChanged() {
+    public void fireDataStructureChanged() {
         Locale newLocale = new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE));
         localiser.setLocale(newLocale);
 

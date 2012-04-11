@@ -62,7 +62,6 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         String updateStatusText = "";
 
         if (dataProvider != null) {
-
             controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT,
                     dataProvider.getPreviousUndoChangesText());
 
@@ -114,24 +113,19 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         if (previousLanguageCode != null && !previousLanguageCode.equals(newLanguageCode)) {
             // new language to set on model
             controller.getModel().setUserPreference(MultiBitModel.USER_LANGUAGE_CODE, newLanguageCode);
-            controller.fireLanguageChanged();
+            controller.fireDataStructureChanged();
         }
 
-        String previousOpenUriDialog = dataProvider.getPreviousOpenUriDialog();
-        String newOpenUriDialog = dataProvider.getNewOpenUriDialog();
-
-        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_OPEN_URI_SHOW_DIALOG, previousOpenUriDialog);
-
-        if (newOpenUriDialog != null) {
-            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG, newOpenUriDialog);
+        // open URI - use dialog
+        String openUriDialog = dataProvider.getOpenUriDialog();
+        if (openUriDialog != null) {
+            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG, openUriDialog);
         }
 
-        String previousOpenUriUseUri = dataProvider.getPreviousOpenUriUseUri();
-        String newOpenUriUseUri = dataProvider.getNewOpenUriUseUri();
-        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_OPEN_URI_USE_URI, previousOpenUriUseUri);
-
-        if (newOpenUriUseUri != null) {
-            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI, newOpenUriUseUri);
+        // open URI - use URI
+        String openUriUseUri = dataProvider.getOpenUriUseUri();
+        if (openUriUseUri != null) {
+            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI, openUriUseUri);
         }
 
         // font data
@@ -175,6 +169,17 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             }
         }
 
+        // currency ticker
+        // show rate (or bidAndAsk)
+        String previousShowRate = new Boolean(dataProvider.getPreviousShowRate()).toString();
+        String newShowRate = new Boolean(dataProvider.getNewShowRate()).toString();
+        if (previousShowRate != null && !previousShowRate.equals(newShowRate)) {
+            // new show rate is set on model
+            controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW_RATE, newShowRate);
+            controller.fireDataStructureChanged();
+        }
+
+        // can undo
         controller.getModel().setUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES, "true");
 
         if (fontHasChanged) {
@@ -185,7 +190,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             }
 
             // redo everything
-            controller.fireLanguageChanged();
+            controller.fireDataStructureChanged();
         }
 
         // return to the same view

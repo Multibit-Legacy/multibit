@@ -36,27 +36,17 @@ public interface PreferencesDataProvider extends DataProvider {
      */
     public String getNewUserLanguageCode();
     
-    
-    /**
-     * Get the previous open URI dialog text
-     */
-    public String getPreviousOpenUriDialog();
-    
+      
     /**
      * Get the new open URI dialog text
      */
-    public String getNewOpenUriDialog();
+    public String getOpenUriDialog();
     
-    
-    /**
-     * Get the previous open URI use URI text
-     */
-    public String getPreviousOpenUriUseUri();
-    
+       
     /**
      * Get the new open URI use URI text
      */
-    public String getNewOpenUriUseUri();
+    public String getOpenUriUseUri();
     
     
     /**
@@ -80,6 +70,19 @@ public interface PreferencesDataProvider extends DataProvider {
      */
     public String getNewFontStyle();
    
+    
+    /**
+     * Get if the previous value for if midpoint currency rate is to be shown by the ticker
+     * @returns true If rate to be shown, false if bid and ask are to be shown
+     */
+    public boolean getPreviousShowRate();
+    
+    /**
+     * Get if the new value for if midpoint currency rate is to be shown by the ticker
+     * @returns true If rate to be shown, false if bid and ask are to be shown
+     */
+    public boolean getNewShowRate();
+    
     
     /**
      * get the previous font size

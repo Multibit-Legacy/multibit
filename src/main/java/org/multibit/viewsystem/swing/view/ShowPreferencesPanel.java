@@ -103,15 +103,14 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     private String originalFontName;
     private String originalFontStyle;
     private String originalFontSize;
-    
-    private String originalShowDialogString;
-    private String originalUseUriString;
-    
+      
     private MultiBitButton undoChangesButton;
     
     private String originalUserLanguageCode;
 
-    //private Data data;
+    private boolean originalShowRate;
+    private JRadioButton showRate;
+    private JRadioButton showBidAndAsk;
 
     private Font selectedFont;
     
@@ -141,14 +140,14 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         originalFee = sendFeeString;
         feeTextField.setText(sendFeeString);
 
-        originalShowDialogString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
-        originalUseUriString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_USE_URI);
+        String showDialogString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
+        String useUriString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_USE_URI);
 
-        if (!(Boolean.FALSE.toString().equalsIgnoreCase(originalShowDialogString))) {
+        if (!(Boolean.FALSE.toString().equalsIgnoreCase(showDialogString))) {
             // missing showDialog or it is set to true
             askEveryTime.setSelected(true);
         } else {
-            if (!(Boolean.FALSE.toString().equalsIgnoreCase(originalUseUriString))) {
+            if (!(Boolean.FALSE.toString().equalsIgnoreCase(useUriString))) {
                 // missing useUri or it is set to true
                 fillAutomatically.setSelected(true);
             } else {
@@ -262,13 +261,22 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weightx = 1;
         constraints.weighty = 1.6;
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
+        mainPanel.add(createTickerPanel(stentWidth), constraints);
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        constraints.gridwidth = 2;
+        constraints.weightx = 1;
+        constraints.weighty = 1.6;
+        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         mainPanel.add(createBrowserIntegrationPanel(stentWidth), constraints);
 
         JLabel filler1 = new JLabel();
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 5;
         constraints.gridwidth = 2;
         constraints.weightx = 1;
         constraints.weighty = 100;
@@ -277,7 +285,6 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        //mainScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.DARK_BACKGROUND_COLOR));
         mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
@@ -663,6 +670,90 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         return fontChooserPanel;
     }
 
+    private JPanel createTickerPanel(int stentWidth) {
+        MultiBitTitledPanel tickerPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
+                "showPreferencesPanel.tickerTitle"));
+
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        JPanel indent = MultiBitTitledPanel.getIndentPanel(1);
+        tickerPanel.add(indent, constraints);
+
+
+        ButtonGroup rateOrBidAndAskGroup = new ButtonGroup();
+        showRate = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.showRate"));
+        showRate.setOpaque(false);
+        showRate.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+
+        showBidAndAsk = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.showBidAndAsk"));
+        showBidAndAsk.setOpaque(false);
+        showBidAndAsk.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+
+        ItemListener itemListener = new ChangeLanguageUsageListener();
+        showRate.addItemListener(itemListener);
+        showBidAndAsk.addItemListener(itemListener);
+        rateOrBidAndAskGroup.add(showRate);
+        rateOrBidAndAskGroup.add(showBidAndAsk);
+
+        String showRateString = controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_RATE);
+        originalShowRate = !Boolean.FALSE.toString().equals(showRateString);
+        if (originalShowRate) {
+            showRate.setSelected(true);
+        } else {
+            showBidAndAsk.setSelected(true);
+        }
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 4;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 3;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        tickerPanel.add(showRate, constraints);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 5;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 3;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        tickerPanel.add(showBidAndAsk, constraints);
+      
+        JPanel filler3 = new JPanel();
+        filler3.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 6;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        tickerPanel.add(filler3, constraints);
+
+
+        JPanel fill1 = new JPanel();
+        fill1.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 5;
+        constraints.gridy = 4;
+        constraints.weightx = 20;
+        constraints.weighty = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        tickerPanel.add(fill1, constraints);
+
+        return tickerPanel;
+    }
+    
     private JPanel createBrowserIntegrationPanel(int stentWidth) {
         MultiBitTitledPanel browserIntegrationPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
         "showPreferencesPanel.browserIntegrationTitle"));
@@ -800,71 +891,6 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         return new ImageIcon(bimg);
     }
-
-//    public Data getData() {
-//        Item previousUndoChangesTextItem = new Item(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT);
-//        previousUndoChangesTextItem.setOriginalValue(controller.getLocaliser().getString("undoPreferencesChangesSubmitAction.text"));
-//        data.addItem(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT, previousUndoChangesTextItem);
-//        
-//        Item languageItem = data.getItem(MultiBitModel.USER_LANGUAGE_CODE);
-//        if (useDefaultLocale.isSelected()) {
-//            languageItem.setNewValue(MultiBitModel.USER_LANGUAGE_IS_DEFAULT);
-//        } else {
-//            Integer selectedLanguageIndex = (Integer) languageComboBox.getSelectedItem();
-//            if (selectedLanguageIndex != null) {
-//                int loopIndex = 0;
-//                for (LanguageData languageData : languageDataSet) {
-//                    if (selectedLanguageIndex.intValue() == loopIndex) {
-//                        String newLanguageCode = languageData.languageCode;
-//                        languageItem.setNewValue(newLanguageCode);
-//                        break;
-//                    }
-//                    loopIndex++;
-//                }
-//            }
-//        }
-//
-//        Item feeItem = new Item(MultiBitModel.SEND_FEE);
-//        feeItem.setOriginalValue(originalFee);
-//        feeItem.setNewValue(feeTextField.getText());
-//        data.addItem(MultiBitModel.SEND_FEE, feeItem);
-//
-//        Item showDialogItem = new Item(MultiBitModel.OPEN_URI_SHOW_DIALOG);
-//        showDialogItem.setOriginalValue(originalShowDialogString);
-//        showDialogItem.setNewValue((new Boolean((askEveryTime.isSelected()))).toString());
-//        data.addItem(MultiBitModel.OPEN_URI_SHOW_DIALOG, showDialogItem);
-//
-//        Item useUriItem = new Item(MultiBitModel.OPEN_URI_USE_URI);
-//        boolean useUri = true;
-//        if (ignoreAll.isSelected()) {
-//            useUri = false;
-//        }
-//        useUriItem.setOriginalValue(originalUseUriString);
-//        useUriItem.setNewValue((new Boolean(useUri)).toString());
-//        data.addItem(MultiBitModel.OPEN_URI_USE_URI, useUriItem);
-//
-//        // put in for convenience - not stored in user properties so no original
-//        Item fontItem = new Item(MultiBitModel.FONT);
-//        fontItem.setNewValue(selectedFont);
-//        data.addItem(MultiBitModel.FONT, fontItem);
-//
-//        Item fontNameItem = new Item(MultiBitModel.FONT_NAME);
-//        fontNameItem.setOriginalValue(originalFontName);
-//        fontNameItem.setNewValue(selectedFont.getFamily());
-//        data.addItem(MultiBitModel.FONT_NAME, fontNameItem);
-//
-//        Item fontStyleItem = new Item(MultiBitModel.FONT_STYLE);
-//        fontStyleItem.setOriginalValue(originalFontStyle);
-//        fontStyleItem.setNewValue("" + selectedFont.getStyle());
-//        data.addItem(MultiBitModel.FONT_STYLE, fontStyleItem);
-//
-//        Item fontSizeItem = new Item(MultiBitModel.FONT_SIZE);
-//        fontSizeItem.setOriginalValue(originalFontSize);
-//        fontSizeItem.setNewValue("" + selectedFont.getSize());
-//        data.addItem(MultiBitModel.FONT_SIZE, fontSizeItem);
-//
-//        return data;
-//    }
 
     class ComboBoxRenderer extends MultiBitLabel implements ListCellRenderer {
         private static final long serialVersionUID = -3301957214353702172L;
@@ -1022,22 +1048,12 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     }
 
     @Override
-    public String getPreviousOpenUriDialog() {
-        return originalShowDialogString;
-    }
-
-    @Override
-    public String getNewOpenUriDialog() {
+    public String getOpenUriDialog() {
         return (new Boolean((askEveryTime.isSelected()))).toString();
     }
 
     @Override
-    public String getPreviousOpenUriUseUri() {
-        return originalUseUriString;
-    }
-
-    @Override
-    public String getNewOpenUriUseUri() {
+    public String getOpenUriUseUri() {
         boolean useUri = true;
         if (ignoreAll.isSelected()) {
             useUri = false;
@@ -1078,5 +1094,15 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     @Override
     public Font getSelectedFont() {
         return selectedFont;
+    }
+    
+    @Override
+    public boolean getPreviousShowRate() {
+        return originalShowRate;
+    }    
+    
+    @Override
+    public boolean getNewShowRate() {
+        return showRate.isSelected();
     }
 }

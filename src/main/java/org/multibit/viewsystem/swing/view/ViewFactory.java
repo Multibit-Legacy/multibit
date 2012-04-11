@@ -124,11 +124,6 @@ public class ViewFactory {
             break;
         }
 
-        case View.EXCHANGES_SETUP_VIEW: {
-            viewToReturn = new ExchangesSetupPanel(controller, mainFrame);
-            break;
-        }
-
         default: {
         }
         }
