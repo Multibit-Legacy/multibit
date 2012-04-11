@@ -173,9 +173,13 @@ public class MultiBit {
         String numberOfWalletsAsString = userPreferences.getProperty(MultiBitModel.NUMBER_OF_WALLETS);
         log.debug("When loading wallets, there were " + numberOfWalletsAsString);
 
+        boolean useFastCatchup = false;
+        
         if (numberOfWalletsAsString == null || "".equals(numberOfWalletsAsString)) {
             // if this is missing then there is just the one wallet (old format
             // properties or user has just started up for the first time)
+            useFastCatchup = true;
+            
             try {
                 // activeWalletFilename may be null on first time startup
                 controller.addWalletFromFilename(activeWalletFilename);
@@ -258,6 +262,10 @@ public class MultiBit {
         controller.handleOpenURI();
 
         log.debug("Downloading blockchain");
+        if (useFastCatchup) {
+            long earliestTimeSecs = controller.getModel().getActiveWallet().getEarliestKeyCreationTime();
+            controller.getMultiBitService().getPeerGroup().setFastCatchupTimeSecs(earliestTimeSecs);
+        }
         multiBitService.downloadBlockChain();
     }
 
