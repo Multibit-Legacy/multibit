@@ -649,12 +649,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             tickerKey = "multiBitFrame.ticker.show.text";
 
         }
-        final JCheckBoxMenuItem showTicker = new JCheckBoxMenuItem(controller.getLocaliser().getString(tickerKey));
+        final JMenuItem showTicker = new JMenuItem(controller.getLocaliser().getString(tickerKey));
         showTicker.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         showTicker.setComponentOrientation(componentOrientation);
         showTicker.setIcon(ImageLoader.createImageIcon(ImageLoader.MONEY_ICON_FILE));
 
-        showTicker.setState(isTickerVisible);
         if (tickerTablePanel != null) {
             tickerTablePanel.setVisible(isTickerVisible);
         }

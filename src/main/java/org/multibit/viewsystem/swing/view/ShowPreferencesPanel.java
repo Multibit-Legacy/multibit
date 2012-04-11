@@ -111,6 +111,11 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     private boolean originalShowRate;
     private JRadioButton showRate;
     private JRadioButton showBidAndAsk;
+    private JComboBox exchangeComboBox1;
+    private JComboBox currencyComboBox1;
+    private JComboBox exchangeComboBox2;
+    private JComboBox currencyComboBox2;
+
 
     private Font selectedFont;
     
@@ -221,7 +226,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         mainPanel.setOpaque(false);
 
         String[] keys = new String[] {"showPreferencesPanel.feeLabel.text", "fontChooser.fontName",
-                "fontChooser.fontStyle", "fontChooser.fontSize"};
+                "fontChooser.fontStyle", "fontChooser.fontSize", "showPreferencesPanel.ticker.exchange", "showPreferencesPanel.ticker.currency"};
         int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this) + STENT_DELTA;
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -397,7 +402,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
             languageComboBox.setUI(new MetalComboBoxUI());
         }
         languageComboBox.setOpaque(false);
-        ComboBoxRenderer renderer = new ComboBoxRenderer();
+        LanguageComboBoxRenderer renderer = new LanguageComboBoxRenderer();
 
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         Dimension preferredSize = new Dimension(fontMetrics.stringWidth(A_LONG_LANGUAGE_NAME) + LANGUAGE_COMBO_WIDTH_DELTA + LANGUAGE_CODE_IMAGE_WIDTH,
@@ -672,7 +677,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
     private JPanel createTickerPanel(int stentWidth) {
         MultiBitTitledPanel tickerPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "showPreferencesPanel.tickerTitle"));
+                "showPreferencesPanel.ticker.title"));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -686,13 +691,31 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         JPanel indent = MultiBitTitledPanel.getIndentPanel(1);
         tickerPanel.add(indent, constraints);
 
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 3;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        JPanel stent = MultiBitTitledPanel.createStent(stentWidth);
+        tickerPanel.add(stent, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 3;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        tickerPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
 
         ButtonGroup rateOrBidAndAskGroup = new ButtonGroup();
-        showRate = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.showRate"));
+        showRate = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.ticker.showRate"));
         showRate.setOpaque(false);
         showRate.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
-        showBidAndAsk = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.showBidAndAsk"));
+        showBidAndAsk = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.ticker.showBidAndAsk"));
         showBidAndAsk.setOpaque(false);
         showBidAndAsk.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
@@ -728,8 +751,6 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.anchor = GridBagConstraints.LINE_START;
         tickerPanel.add(showBidAndAsk, constraints);
       
-        JPanel filler3 = new JPanel();
-        filler3.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 6;
@@ -737,14 +758,164 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        tickerPanel.add(filler3, constraints);
+        tickerPanel.add(MultiBitTitledPanel.createStent(12, 12), constraints);
 
+        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
+                controller.getLocaliser().getString("showPreferencesPanel.ticker.firstRow"), 7, tickerPanel);
+
+        MultiBitLabel exchangeLabel1 = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.ticker.exchange"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 8;
+        constraints.weightx = 0.3;
+        constraints.weighty = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        tickerPanel.add(exchangeLabel1, constraints);
+
+        exchangeComboBox1 = new JComboBox(new Integer[]{new Integer(1)});
+        exchangeComboBox1.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        if (mainFrame.getApplication().isMac()) {
+            exchangeComboBox1.setUI(new MetalComboBoxUI());
+        }
+        exchangeComboBox1.setOpaque(false);
+        ExchangeComboBoxRenderer rendererExchange1 = new ExchangeComboBoxRenderer();
+
+        FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        Dimension preferredSize = new Dimension(fontMetrics.stringWidth(A_LONG_LANGUAGE_NAME) + LANGUAGE_COMBO_WIDTH_DELTA + LANGUAGE_CODE_IMAGE_WIDTH,
+                fontMetrics.getHeight() + LANGUAGE_COMBO_HEIGHT_DELTA);
+        rendererExchange1.setPreferredSize(preferredSize);
+        exchangeComboBox1.setRenderer(rendererExchange1);
+        exchangeComboBox1.setBackground(Color.WHITE);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 8;
+        constraints.weightx = 0.8;
+        constraints.weighty = 0.6;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        tickerPanel.add(exchangeComboBox1, constraints);
+
+        MultiBitLabel currencyLabel1 = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.ticker.currency"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 9;
+        constraints.weightx = 0.3;
+        constraints.weighty = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        tickerPanel.add(currencyLabel1, constraints);
+
+        currencyComboBox1 = new JComboBox(new Integer[]{new Integer(1)});
+        currencyComboBox1.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        if (mainFrame.getApplication().isMac()) {
+            currencyComboBox1.setUI(new MetalComboBoxUI());
+        }
+        currencyComboBox1.setOpaque(false);
+        CurrencyComboBoxRenderer renderCurrency1 = new CurrencyComboBoxRenderer();
+
+        renderCurrency1.setPreferredSize(preferredSize);
+        currencyComboBox1.setRenderer(renderCurrency1);
+        currencyComboBox1.setBackground(Color.WHITE);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 9;
+        constraints.weightx = 0.8;
+        constraints.weighty = 0.6;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        tickerPanel.add(currencyComboBox1, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 10;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        tickerPanel.add(MultiBitTitledPanel.createStent(12, 12), constraints);
+
+        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
+                controller.getLocaliser().getString("showPreferencesPanel.ticker.secondRow"), 11, tickerPanel);
+
+        MultiBitLabel exchangeLabel2 = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.ticker.exchange"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 13;
+        constraints.weightx = 0.3;
+        constraints.weighty = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        tickerPanel.add(exchangeLabel2, constraints);
+
+        exchangeComboBox2 = new JComboBox(new Integer[]{new Integer(1)});
+        exchangeComboBox2.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        if (mainFrame.getApplication().isMac()) {
+            exchangeComboBox2.setUI(new MetalComboBoxUI());
+        }
+        exchangeComboBox2.setOpaque(false);
+        ExchangeComboBoxRenderer rendererExchange2 = new ExchangeComboBoxRenderer();
+
+        rendererExchange2.setPreferredSize(preferredSize);
+        exchangeComboBox2.setRenderer(rendererExchange2);
+        exchangeComboBox2.setBackground(Color.WHITE);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 13;
+        constraints.weightx = 0.8;
+        constraints.weighty = 0.6;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        tickerPanel.add(exchangeComboBox2, constraints);
+
+        MultiBitLabel currencyLabel2 = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.ticker.currency"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 14;
+        constraints.weightx = 0.3;
+        constraints.weighty = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        tickerPanel.add(currencyLabel2, constraints);
+
+        currencyComboBox2 = new JComboBox(new Integer[]{new Integer(1)});
+        currencyComboBox2.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        if (mainFrame.getApplication().isMac()) {
+            currencyComboBox2.setUI(new MetalComboBoxUI());
+        }
+        currencyComboBox2.setOpaque(false);
+        CurrencyComboBoxRenderer renderCurrency2 = new CurrencyComboBoxRenderer();
+
+        renderCurrency2.setPreferredSize(preferredSize);
+        currencyComboBox2.setRenderer(renderCurrency1);
+        currencyComboBox2.setBackground(Color.WHITE);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 14;
+        constraints.weightx = 0.8;
+        constraints.weighty = 0.6;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        tickerPanel.add(currencyComboBox2, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 15;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        tickerPanel.add(MultiBitTitledPanel.createStent(12, 12), constraints);
 
         JPanel fill1 = new JPanel();
         fill1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 5;
-        constraints.gridy = 4;
+        constraints.gridy = 13;
         constraints.weightx = 20;
         constraints.weighty = 1;
         constraints.gridwidth = 1;
@@ -892,10 +1063,110 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         return new ImageIcon(bimg);
     }
 
-    class ComboBoxRenderer extends MultiBitLabel implements ListCellRenderer {
+    class LanguageComboBoxRenderer extends MultiBitLabel implements ListCellRenderer {
         private static final long serialVersionUID = -3301957214353702172L;
 
-        public ComboBoxRenderer() {
+        public LanguageComboBoxRenderer() {
+            super("");
+            setOpaque(true);
+            setHorizontalAlignment(LEADING);
+            setVerticalAlignment(CENTER);
+
+            setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        }
+
+        /*
+         * This method finds the image and text corresponding to the selected
+         * value and returns the label, set up to display the text and image.
+         */
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            // Get the selected index. (The index param isn't
+            // always valid, so just use the value.)
+            int selectedIndex = 0;
+            if (value != null) {
+                selectedIndex = (Integer) value;
+            }
+            if (isSelected) {
+                setBackground(list.getSelectionBackground());
+                setForeground(list.getSelectionForeground());
+            } else {
+                setBackground(list.getBackground());
+                setForeground(list.getForeground());
+            }
+
+            // Set the icon and text. If icon was null, say so.
+            int loopIndex = 0;
+            for (LanguageData languageData : languageDataSet) {
+                if (selectedIndex == loopIndex) {
+                    ImageIcon icon = languageData.image;
+                    String language = languageData.language;
+                    setIcon(icon);
+                    setText(language);
+                    break;
+                }
+                loopIndex++;
+            }
+
+            setFont(list.getFont());
+
+            return this;
+        }
+    }
+    
+    class ExchangeComboBoxRenderer extends MultiBitLabel implements ListCellRenderer {
+        private static final long serialVersionUID = -3301957214353702172L;
+
+        public ExchangeComboBoxRenderer() {
+            super("");
+            setOpaque(true);
+            setHorizontalAlignment(LEADING);
+            setVerticalAlignment(CENTER);
+
+            setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        }
+
+        /*
+         * This method finds the image and text corresponding to the selected
+         * value and returns the label, set up to display the text and image.
+         */
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            // Get the selected index. (The index param isn't
+            // always valid, so just use the value.)
+            int selectedIndex = 0;
+            if (value != null) {
+                selectedIndex = (Integer) value;
+            }
+            if (isSelected) {
+                setBackground(list.getSelectionBackground());
+                setForeground(list.getSelectionForeground());
+            } else {
+                setBackground(list.getBackground());
+                setForeground(list.getForeground());
+            }
+
+            // Set the icon and text. If icon was null, say so.
+            int loopIndex = 0;
+            for (LanguageData languageData : languageDataSet) {
+                if (selectedIndex == loopIndex) {
+                    ImageIcon icon = languageData.image;
+                    String language = languageData.language;
+                    setIcon(icon);
+                    setText(language);
+                    break;
+                }
+                loopIndex++;
+            }
+
+            setFont(list.getFont());
+
+            return this;
+        }
+    }
+
+    class CurrencyComboBoxRenderer extends MultiBitLabel implements ListCellRenderer {
+        private static final long serialVersionUID = -3301957214353702172L;
+
+        public CurrencyComboBoxRenderer() {
             super("");
             setOpaque(true);
             setHorizontalAlignment(LEADING);

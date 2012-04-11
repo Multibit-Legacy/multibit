@@ -26,6 +26,7 @@ import java.awt.GridBagLayout;
 import java.awt.SystemColor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -100,12 +101,18 @@ public class TickerTablePanel extends JPanel {
                 controller.getLocaliser().getString("tickerTablePanel.tooltip.clickToConfigure") }));
 
         // on mouse click - view the exchanges tab
-        addMouseListener(new MouseAdapter() {
+        MouseListener viewPreferencesMouseListener = new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent arg0) {
                 controller.displayView(View.PREFERENCES_VIEW);
             }
-        });
+        };
+        
+        String tickerTooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] {
+                controller.getLocaliser().getString("tickerTablePanel.tooltip"),
+                controller.getLocaliser().getString("tickerTablePanel.tooltip.clickToConfigure") });
+        
+        addMouseListener(viewPreferencesMouseListener);
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -113,22 +120,17 @@ public class TickerTablePanel extends JPanel {
         table = new JTable(tickerTableModel);
         table.setOpaque(true);
         table.setShowGrid(true);
-        //table.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        table.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+         table.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         table.setRowHeight(getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight());
 
         table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         table.setRowSelectionAllowed(false);
         table.setColumnSelectionAllowed(false);
-        table.setToolTipText(HelpContentsPanel.createMultilineTooltipText(new String[] {
-                controller.getLocaliser().getString("tickerTablePanel.tooltip"),
-                controller.getLocaliser().getString("tickerTablePanel.tooltip.clickToConfigure") }));
-        table.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseReleased(MouseEvent arg0) {
-                controller.displayView(View.PREFERENCES_VIEW);
-            }
-        });
+        
+        table.setToolTipText(tickerTooltipText);
+        table.addMouseListener(viewPreferencesMouseListener);
+        table.getTableHeader().addMouseListener(viewPreferencesMouseListener);
+        table.getTableHeader().setToolTipText(tickerTooltipText);
 
         // justify column headers
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
