@@ -15,6 +15,9 @@
  */
 package org.multibit.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 
  * @author timmolter
@@ -24,21 +27,36 @@ public class ExchangeData {
 
     public static final String MT_GOX_EXCHANGE_NAME = "MtGox";
 
-    private double lastTickUSD = -1; // -1 = do not know
-
-    public double getLastTickUSD() {
-        return lastTickUSD;
+    public static final String DEFAULT_EXCHANGE = MT_GOX_EXCHANGE_NAME;
+    
+    public static final String DEFAULT_CURRENCY = "USD";
+    
+    public static final double DO_NOT_KNOW_EXCHANGE_RATE = -1;
+    
+    private Map<String, Double> currencyToExchangeRateMap;
+    
+    public ExchangeData() {
+        currencyToExchangeRateMap = new HashMap<String, Double>();
+    }
+    
+    public double getLastTick(String currency) {
+        Double exchangeRate = currencyToExchangeRateMap.get(currency);
+        if (exchangeRate == null) {
+            return DO_NOT_KNOW_EXCHANGE_RATE;
+        } else {
+            return exchangeRate.doubleValue();
+        }
     }
 
-    public void setLastTickUSD(double lastTickUSD) {
-        this.lastTickUSD = lastTickUSD;
+    public void setLastTick(String currency, double lastTick) {
+        currencyToExchangeRateMap.put(currency, new Double(lastTick));
     }
 
     public String[] getAvailableExchanges() {
-        return new String[] { MT_GOX_EXCHANGE_NAME };
+        return new String[] { MT_GOX_EXCHANGE_NAME, "Jim" };
     }
 
     public String[] getAvailableCurrenciesForExchange(String exchangeName) {
-        return new String[] { "USD" };
+        return new String[] { "USD", "EUR", "GBP"};
     }
 }

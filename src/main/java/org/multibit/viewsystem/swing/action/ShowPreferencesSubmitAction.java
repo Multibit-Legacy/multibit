@@ -59,6 +59,9 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
      */
     public void actionPerformed(ActionEvent event) {
         boolean feeValidationError = false;
+
+        boolean wantToFireDataStructureChanged = false;
+
         String updateStatusText = "";
 
         if (dataProvider != null) {
@@ -113,7 +116,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         if (previousLanguageCode != null && !previousLanguageCode.equals(newLanguageCode)) {
             // new language to set on model
             controller.getModel().setUserPreference(MultiBitModel.USER_LANGUAGE_CODE, newLanguageCode);
-            controller.fireDataStructureChanged();
+            wantToFireDataStructureChanged = true;
         }
 
         // open URI - use dialog
@@ -173,10 +176,46 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         // show rate (or bidAndAsk)
         String previousShowRate = new Boolean(dataProvider.getPreviousShowRate()).toString();
         String newShowRate = new Boolean(dataProvider.getNewShowRate()).toString();
-        if (previousShowRate != null && !previousShowRate.equals(newShowRate)) {
+        if (newShowRate != null && !newShowRate.equals(previousShowRate)) {
             // new show rate is set on model
             controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW_RATE, newShowRate);
-            controller.fireDataStructureChanged();
+            wantToFireDataStructureChanged = true;
+        }
+
+        String previousExchange1 = dataProvider.getPreviousExchange1();
+        String newExchange1 = dataProvider.getNewExchange1();
+        if (newExchange1 != null && !newExchange1.equals(previousExchange1)) {
+            controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE, newExchange1);
+            wantToFireDataStructureChanged = true;
+        }
+        
+        String previousCurrency1 = dataProvider.getPreviousCurrency1();
+        String newCurrency1 = dataProvider.getNewCurrency1();
+        if (newCurrency1 != null && !newCurrency1.equals(previousCurrency1)) {
+            controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, newCurrency1);
+            wantToFireDataStructureChanged = true;
+        }
+        
+        String previousShowSecondRow = new Boolean(dataProvider.getPreviousShowSecondRow()).toString();
+        String newShowSecondRow = new Boolean(dataProvider.getNewShowSecondRow()).toString();
+        if (newShowSecondRow != null && !newShowSecondRow.equals(previousShowSecondRow)) {
+            // new show second row is set on model
+            controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW, newShowSecondRow);
+            wantToFireDataStructureChanged = true;
+        }
+        
+        String previousExchange2 = dataProvider.getPreviousExchange2();
+        String newExchange2 = dataProvider.getNewExchange2();
+        if (newExchange2 != null && !newExchange2.equals(previousExchange2)) {
+            controller.getModel().setUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE, newExchange2);
+            wantToFireDataStructureChanged = true;
+        }
+        
+        String previousCurrency2 = dataProvider.getPreviousCurrency2();
+        String newCurrency2 = dataProvider.getNewCurrency2();
+        if (newCurrency2 != null && !newCurrency2.equals(previousCurrency2)) {
+            controller.getModel().setUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY, newCurrency2);
+            wantToFireDataStructureChanged = true;
         }
 
         // can undo
@@ -189,6 +228,10 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 UIManager.put("ToolTip.font", newFont);
             }
 
+            wantToFireDataStructureChanged = true;
+        }
+
+        if (wantToFireDataStructureChanged) {
             // redo everything
             controller.fireDataStructureChanged();
         }

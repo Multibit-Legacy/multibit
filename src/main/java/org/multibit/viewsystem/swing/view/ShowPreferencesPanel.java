@@ -794,6 +794,11 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         tickerPanel.add(exchangeLabel1, constraints);
 
         exchangeComboBox1 = new JComboBox(controller.getModel().getExchangeData().getAvailableExchanges());
+        if (originalExchange1 == null | "".equals(originalExchange1)) {
+            exchangeComboBox1.setSelectedItem(ExchangeData.DEFAULT_EXCHANGE);
+        } else {
+            exchangeComboBox1.setSelectedItem(originalExchange1);
+        }
         exchangeComboBox1.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         if (mainFrame.getApplication().isMac()) {
             exchangeComboBox1.setUI(new MetalComboBoxUI());
@@ -827,7 +832,12 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         tickerPanel.add(currencyLabel1, constraints);
 
         currencyComboBox1 = new JComboBox(controller.getModel().getExchangeData()
-                .getAvailableCurrenciesForExchange(ExchangeData.MT_GOX_EXCHANGE_NAME));
+                .getAvailableCurrenciesForExchange(originalExchange1));
+        if (originalCurrency1 == null | "".equals(originalCurrency1)) {
+            currencyComboBox1.setSelectedItem(ExchangeData.DEFAULT_CURRENCY);
+        } else {
+            currencyComboBox1.setSelectedItem(originalCurrency1);
+        }
         currencyComboBox1.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         if (mainFrame.getApplication().isMac()) {
             currencyComboBox1.setUI(new MetalComboBoxUI());
@@ -861,7 +871,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         showSecondRowCheckBox.setOpaque(false);
         showSecondRowCheckBox.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         showSecondRowCheckBox.addItemListener(new ChangeTickerShowSecondRowListener());
-        
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 12;
@@ -871,8 +881,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.anchor = GridBagConstraints.LINE_END;
         tickerPanel.add(showSecondRowCheckBox, constraints);
 
-        exchangeLabel2 = new MultiBitLabel(controller.getLocaliser()
-                .getString("showPreferencesPanel.ticker.exchange"));
+        exchangeLabel2 = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.ticker.exchange"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 13;
@@ -883,6 +892,12 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         tickerPanel.add(exchangeLabel2, constraints);
 
         exchangeComboBox2 = new JComboBox(controller.getModel().getExchangeData().getAvailableExchanges());
+        if (originalExchange2 == null | "".equals(originalExchange2)) {
+            exchangeComboBox2.setSelectedItem(ExchangeData.DEFAULT_EXCHANGE);
+        } else {
+            exchangeComboBox2.setSelectedItem(originalExchange2);
+        }
+
         exchangeComboBox2.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         if (mainFrame.getApplication().isMac()) {
             exchangeComboBox2.setUI(new MetalComboBoxUI());
@@ -900,8 +915,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.anchor = GridBagConstraints.LINE_START;
         tickerPanel.add(exchangeComboBox2, constraints);
 
-        currencyLabel2 = new MultiBitLabel(controller.getLocaliser()
-                .getString("showPreferencesPanel.ticker.currency"));
+        currencyLabel2 = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.ticker.currency"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 14;
@@ -912,7 +926,13 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         tickerPanel.add(currencyLabel2, constraints);
 
         currencyComboBox2 = new JComboBox(controller.getModel().getExchangeData()
-                .getAvailableCurrenciesForExchange(ExchangeData.MT_GOX_EXCHANGE_NAME));
+                .getAvailableCurrenciesForExchange(originalExchange2));
+        if (originalCurrency2 == null | "".equals(originalCurrency2)) {
+            currencyComboBox2.setSelectedItem(ExchangeData.DEFAULT_CURRENCY);
+        } else {
+            currencyComboBox2.setSelectedItem(originalCurrency2);
+        }
+
         currencyComboBox2.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         if (mainFrame.getApplication().isMac()) {
             currencyComboBox2.setUI(new MetalComboBoxUI());
@@ -1341,6 +1361,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         return originalExchange1;
     }
 
+    @Override
     public String getNewExchange1() {
         return (String) exchangeComboBox1.getSelectedItem();
     }
@@ -1350,6 +1371,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         return originalCurrency1;
     }
 
+    @Override
     public String getNewCurrency1() {
         return (String) currencyComboBox1.getSelectedItem();
     }
@@ -1359,6 +1381,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         return originalShowSecondRow;
     }
 
+    @Override
     public boolean getNewShowSecondRow() {
         return showSecondRowCheckBox.isSelected();
     }
@@ -1368,6 +1391,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         return originalExchange2;
     }
 
+    @Override
     public String getNewExchange2() {
         return (String) exchangeComboBox2.getSelectedItem();
     }
@@ -1377,8 +1401,8 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         return originalCurrency2;
     }
 
+    @Override
     public String getNewCurrency2() {
         return (String) currencyComboBox2.getSelectedItem();
     }
-
 }

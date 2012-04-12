@@ -67,10 +67,24 @@ public class TickerTimerTask extends TimerTask {
             MarketDataService marketDataService = mtGox.getMarketDataService();
 
             // Get the latest ticker data showing BTC to USD
-            Ticker ticker = marketDataService.getTicker(SymbolPair.BTC_USD);
-            String btcusd = ticker.getLast().multipliedBy(1000).toString();
+            Ticker tickerUSD = marketDataService.getTicker(SymbolPair.BTC_USD);
+            String btcusd = tickerUSD.getLast().multipliedBy(1000).toString();
             System.out.println("TickerTimerTask - Current exchange rate for BTC / USD: " + btcusd);
-            controller.getModel().getExchangeData().setLastTickUSD(Double.parseDouble(ticker.getLast().multipliedBy(1000).getAmount().toPlainString()));
+            controller.getModel().getExchangeData().setLastTick("USD", Double.parseDouble(tickerUSD.getLast().multipliedBy(1000).getAmount().toPlainString()));
+
+            // Get the latest ticker data showing BTC to EUR
+            Ticker tickerEUR = marketDataService.getTicker(SymbolPair.BTC_EUR);
+            String btceur = tickerEUR.getLast().multipliedBy(1000).toString();
+            System.out.println("TickerTimerTask - Current exchange rate for BTC / EUR: " + btceur);
+ 
+            controller.getModel().getExchangeData().setLastTick("EUR", Double.parseDouble(tickerEUR.getLast().multipliedBy(1000).getAmount().toPlainString()));
+            
+            // Get the latest ticker data showing BTC to GBP
+            Ticker tickerGBP = marketDataService.getTicker(SymbolPair.BTC_GBP);
+            String btcgbp = tickerGBP.getLast().multipliedBy(1000).toString();
+            System.out.println("TickerTimerTask - Current exchange rate for BTC / GBP: " + btcgbp);
+            controller.getModel().getExchangeData().setLastTick("GBP", Double.parseDouble(tickerGBP.getLast().multipliedBy(1000).getAmount().toPlainString()));
+
         } catch (Exception e) {
             e.printStackTrace();
         }

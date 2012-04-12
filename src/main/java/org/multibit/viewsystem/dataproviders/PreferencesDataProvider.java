@@ -99,15 +99,26 @@ public interface PreferencesDataProvider extends DataProvider {
      */
     public Font getSelectedFont();
 
+    public String getNewExchange1();
 
     public String getPreviousExchange1();
     
+    public String getNewCurrency1();
+ 
+    public String getPreviousCurrency1();
 
-    public String getPreviousCurrency2();
-
-    public String getPreviousExchange2();
+    public boolean getNewShowSecondRow();
 
     public boolean getPreviousShowSecondRow();
 
-    public String getPreviousCurrency1();
+    public String getNewExchange2();
+
+    public String getPreviousExchange2();
+
+    public String getNewCurrency2();
+
+    public String getPreviousCurrency2();
+
+
+ 
 }
