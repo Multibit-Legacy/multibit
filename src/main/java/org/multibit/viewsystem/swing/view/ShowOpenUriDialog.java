@@ -303,4 +303,20 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, ShowUriDi
     public boolean isShowUriDialog() {
         return !rememberCheckBox.isSelected();
     }
+
+    public String getPreviousCurrency2() {
+        return null;
+    }
+
+    public String getPreviousExchange2() {
+        return null;
+    }
+
+    public boolean getPreviousShowSecondRow() {
+        return false;
+    }
+
+    public String getPreviousCurrency1() {
+        return null;
+    }
 }

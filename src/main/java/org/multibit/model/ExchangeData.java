@@ -18,20 +18,27 @@ package org.multibit.model;
 /**
  * 
  * @author timmolter
- *
+ * 
  */
 public class ExchangeData {
-	
-	private double lastTickUSD;
 
-	public double getLastTickUSD() {
-		return lastTickUSD;
-	}
+    public static final String MT_GOX_EXCHANGE_NAME = "MtGox";
 
-	public void setLastTickUSD(double lastTickUSD) {
-		this.lastTickUSD = lastTickUSD;
-	}
-	
-	
+    private double lastTickUSD = -1; // -1 = do not know
 
+    public double getLastTickUSD() {
+        return lastTickUSD;
+    }
+
+    public void setLastTickUSD(double lastTickUSD) {
+        this.lastTickUSD = lastTickUSD;
+    }
+
+    public String[] getAvailableExchanges() {
+        return new String[] { MT_GOX_EXCHANGE_NAME };
+    }
+
+    public String[] getAvailableCurrenciesForExchange(String exchangeName) {
+        return new String[] { "USD" };
+    }
 }

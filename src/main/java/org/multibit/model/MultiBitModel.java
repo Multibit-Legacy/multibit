@@ -59,7 +59,7 @@ public class MultiBitModel {
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitModel.class);
 
-    // constants used in the multibit.properties and in data provider data payloads
+    // constants used in the multibit.properties
 
     // MultiBit start up
     public static final String TEST_OR_PRODUCTION_NETWORK = "testOrProductionNetwork";
@@ -77,6 +77,11 @@ public class MultiBitModel {
     // ticker
     public static final String TICKER_SHOW = "tickerShow";
     public static final String TICKER_SHOW_RATE = "tickerShowRate";
+    public static final String TICKER_FIRST_ROW_EXCHANGE = "tickerFirstRowExchange";
+    public static final String TICKER_FIRST_ROW_CURRENCY = "tickerFirstRowCurrency";
+    public static final String TICKER_SHOW_SECOND_ROW = "tickerShowSecondRow";
+    public static final String TICKER_SECOND_ROW_EXCHANGE = "tickerSecondRowExchange";
+    public static final String TICKER_SECOND_ROW_CURRENCY = "tickerSecondRowCurrency";
     
     // wallets, open wallet and save wallet as dialog
     public static final String ACTIVE_WALLET_FILENAME = "selectedWalletFilename";

@@ -99,7 +99,11 @@ public class TickerTableModel extends AbstractTableModel {
             }
             case 1: {
                 // rate
-                return String.format("%1$,.4f", exchangeData.getLastTickUSD());
+                if (exchangeData.getLastTickUSD() < 0) {
+                    return " ";
+                } else {
+                    return String.format("%1$,.5f", exchangeData.getLastTickUSD());
+                }
             }
             case 2:
                 return "MtGox";
@@ -117,11 +121,19 @@ public class TickerTableModel extends AbstractTableModel {
             }
             case 1: {
                 // bid
-                return String.format("%1$,.4f", exchangeData.getLastTickUSD());
+                if (exchangeData.getLastTickUSD() < 0) {
+                    return " ";
+                } else {
+                    return String.format("%1$,.5f", exchangeData.getLastTickUSD());
+                }
             }
             case 2:
                 // ask
-                return String.format("%1$,.4f", exchangeData.getLastTickUSD());
+                if (exchangeData.getLastTickUSD() < 0) {
+                    return " ";
+                } else {
+                    return String.format("%1$,.5f", exchangeData.getLastTickUSD());
+                }
             case 3:
                 return "MtGox";
             default:

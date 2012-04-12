@@ -1571,4 +1571,20 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
            return null;
        }
     }
+
+    public String getPreviousCurrency2() {
+        return null;
+    }
+
+    public String getPreviousExchange2() {
+        return null;
+    }
+
+    public boolean getPreviousShowSecondRow() {
+        return false;
+    }
+
+    public String getPreviousCurrency1() {
+        return null;
+    }
 }

@@ -22,13 +22,19 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.xeiam.xchange.Exchange;
+import com.xeiam.xchange.ExchangeFactory;
+import com.xeiam.xchange.SymbolPair;
+import com.xeiam.xchange.service.marketdata.MarketDataService;
+import com.xeiam.xchange.service.marketdata.Ticker;
+
 /**
  * TimerTask to poll MtGox for ticker data
  * process
  */
 public class TickerTimerTask extends TimerTask {
 
-    public static final int DEFAULT_REPEAT_RATE = 11000; // milliseconds
+    public static final int DEFAULT_REPEAT_RATE = 20000; // milliseconds
 
     private static Logger log = LoggerFactory.getLogger(TickerTimerTask.class);
 
@@ -52,9 +58,23 @@ public class TickerTimerTask extends TimerTask {
     	
     	//log.debug("tick tock.");
     	
-    	controller.getModel().getExchangeData().setLastTickUSD(Math.random());
-    	
+        try {
+            // Demonstrate the public market data service
+            // Use the factory to get the version 1 MtGox exchange API using default settings
+            Exchange mtGox = ExchangeFactory.INSTANCE.createExchange("com.xeiam.xchange.mtgox.v1.MtGoxExchange");
+
+            // Interested in the public market data feed (no authentication)
+            MarketDataService marketDataService = mtGox.getMarketDataService();
+
+            // Get the latest ticker data showing BTC to USD
+            Ticker ticker = marketDataService.getTicker(SymbolPair.BTC_USD);
+            String btcusd = ticker.getLast().multipliedBy(1000).toString();
+            System.out.println("TickerTimerTask - Current exchange rate for BTC / USD: " + btcusd);
+            controller.getModel().getExchangeData().setLastTickUSD(Double.parseDouble(ticker.getLast().multipliedBy(1000).getAmount().toPlainString()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
     	mainFrame.fireExchangeDataChanged();
-   
     }
 }

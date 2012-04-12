@@ -36,6 +36,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -46,6 +47,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
@@ -76,7 +78,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
     private static final String A_LONG_LANGUAGE_NAME = "LithuanianXY";
     private static final int LANGUAGE_COMBO_WIDTH_DELTA = 40;
-    private static final int LANGUAGE_COMBO_HEIGHT_DELTA = 5;
+    private static final int COMBO_HEIGHT_DELTA = 5;
 
     private static final int FEE_TEXT_FIELD_HEIGHT = 30;
     private static final int FEE_TEXT_FIELD_WIDTH = 200;
@@ -103,9 +105,9 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     private String originalFontName;
     private String originalFontStyle;
     private String originalFontSize;
-      
+
     private MultiBitButton undoChangesButton;
-    
+
     private String originalUserLanguageCode;
 
     private boolean originalShowRate;
@@ -113,12 +115,21 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     private JRadioButton showBidAndAsk;
     private JComboBox exchangeComboBox1;
     private JComboBox currencyComboBox1;
+    private JCheckBox showSecondRowCheckBox;
+    private MultiBitLabel exchangeLabel2;
+    private MultiBitLabel currencyLabel2;
     private JComboBox exchangeComboBox2;
     private JComboBox currencyComboBox2;
+    private static final int TICKER_COMBO_WIDTH_DELTA = 80;
 
+    private String originalExchange1;
+    private String originalCurrency1;
+    private boolean originalShowSecondRow;
+    private String originalExchange2;
+    private String originalCurrency2;
 
     private Font selectedFont;
-    
+
     private static final int STENT_DELTA = 0;
 
     /**
@@ -190,9 +201,9 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         originalFontSize = "" + fontSize;
 
         setSelectedFont(new Font(fontNameString, fontStyle, fontSize));
-        
+
         String canUndoPreferencesChanges = controller.getModel().getUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES);
-        if(Boolean.TRUE.toString().equals(canUndoPreferencesChanges)) {
+        if (Boolean.TRUE.toString().equals(canUndoPreferencesChanges)) {
             undoChangesButton.setEnabled(true);
             String previousUndoChangesText = controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT);
             if (previousUndoChangesText != null && !"".equals(previousUndoChangesText)) {
@@ -201,12 +212,13 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
             String previousFontName = controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_FONT_NAME);
 
             if (previousFontName != null && !"".equals(previousFontName)) {
-                undoChangesButton.setFont(new Font(previousFontName, FontSizer.INSTANCE.getAdjustedDefaultFont().getStyle(), FontSizer.INSTANCE.getAdjustedDefaultFont().getSize()));
+                undoChangesButton.setFont(new Font(previousFontName, FontSizer.INSTANCE.getAdjustedDefaultFont().getStyle(),
+                        FontSizer.INSTANCE.getAdjustedDefaultFont().getSize()));
             }
         } else {
             undoChangesButton.setEnabled(false);
         }
-        
+
         invalidate();
         validate();
         repaint();
@@ -225,13 +237,13 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         JPanel mainPanel = new JPanel();
         mainPanel.setOpaque(false);
 
-        String[] keys = new String[] {"showPreferencesPanel.feeLabel.text", "fontChooser.fontName",
-                "fontChooser.fontStyle", "fontChooser.fontSize", "showPreferencesPanel.ticker.exchange", "showPreferencesPanel.ticker.currency"};
+        String[] keys = new String[] { "showPreferencesPanel.feeLabel.text", "fontChooser.fontName", "fontChooser.fontStyle",
+                "fontChooser.fontSize", "showPreferencesPanel.ticker.exchange", "showPreferencesPanel.ticker.currency" };
         int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this) + STENT_DELTA;
 
         GridBagConstraints constraints = new GridBagConstraints();
         mainPanel.setLayout(new GridBagLayout());
-        
+
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -304,7 +316,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     private JPanel createLanguagePanel(int stentWidth) {
         // language radios
         MultiBitTitledPanel languagePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-        "showPreferencesPanel.languageTitle"));
+                "showPreferencesPanel.languageTitle"));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -405,8 +417,8 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         LanguageComboBoxRenderer renderer = new LanguageComboBoxRenderer();
 
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        Dimension preferredSize = new Dimension(fontMetrics.stringWidth(A_LONG_LANGUAGE_NAME) + LANGUAGE_COMBO_WIDTH_DELTA + LANGUAGE_CODE_IMAGE_WIDTH,
-                fontMetrics.getHeight() + LANGUAGE_COMBO_HEIGHT_DELTA);
+        Dimension preferredSize = new Dimension(fontMetrics.stringWidth(A_LONG_LANGUAGE_NAME) + LANGUAGE_COMBO_WIDTH_DELTA
+                + LANGUAGE_CODE_IMAGE_WIDTH, fontMetrics.getHeight() + COMBO_HEIGHT_DELTA);
         renderer.setPreferredSize(preferredSize);
 
         languageComboBox.setRenderer(renderer);
@@ -436,7 +448,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         // store original value for use by submit action
         originalUserLanguageCode = userLanguageCode;
-        
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 6;
@@ -461,8 +473,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     }
 
     private JPanel createFeePanel(int stentWidth) {
-        MultiBitTitledPanel feePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-        "showPreferencesPanel.feeTitle"));
+        MultiBitTitledPanel feePanel = new MultiBitTitledPanel(controller.getLocaliser().getString("showPreferencesPanel.feeTitle"));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -555,7 +566,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
     private JPanel createFontChooserPanel(int stentWidth) {
         MultiBitTitledPanel fontChooserPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-        "showPreferencesPanel.fontChooserTitle"));
+                "showPreferencesPanel.fontChooserTitle"));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -671,11 +682,19 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         fontChooserPanel.add(fill1, constraints);
-        
+
         return fontChooserPanel;
     }
 
     private JPanel createTickerPanel(int stentWidth) {
+        // load up the original values
+        originalExchange1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE);
+        originalCurrency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
+        originalShowSecondRow = Boolean.TRUE.toString().equals(
+                controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW));
+        originalExchange2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE);
+        originalCurrency2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY);
+
         MultiBitTitledPanel tickerPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
                 "showPreferencesPanel.ticker.title"));
 
@@ -750,7 +769,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         tickerPanel.add(showBidAndAsk, constraints);
-      
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 6;
@@ -760,10 +779,11 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.anchor = GridBagConstraints.LINE_START;
         tickerPanel.add(MultiBitTitledPanel.createStent(12, 12), constraints);
 
-        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
-                controller.getLocaliser().getString("showPreferencesPanel.ticker.firstRow"), 7, tickerPanel);
+        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(controller.getLocaliser()
+                .getString("showPreferencesPanel.ticker.firstRow"), 7, tickerPanel);
 
-        MultiBitLabel exchangeLabel1 = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.ticker.exchange"));
+        MultiBitLabel exchangeLabel1 = new MultiBitLabel(controller.getLocaliser()
+                .getString("showPreferencesPanel.ticker.exchange"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 8;
@@ -773,20 +793,18 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.anchor = GridBagConstraints.LINE_END;
         tickerPanel.add(exchangeLabel1, constraints);
 
-        exchangeComboBox1 = new JComboBox(new Integer[]{new Integer(1)});
+        exchangeComboBox1 = new JComboBox(controller.getModel().getExchangeData().getAvailableExchanges());
         exchangeComboBox1.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         if (mainFrame.getApplication().isMac()) {
             exchangeComboBox1.setUI(new MetalComboBoxUI());
         }
         exchangeComboBox1.setOpaque(false);
-        ExchangeComboBoxRenderer rendererExchange1 = new ExchangeComboBoxRenderer();
 
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        Dimension preferredSize = new Dimension(fontMetrics.stringWidth(A_LONG_LANGUAGE_NAME) + LANGUAGE_COMBO_WIDTH_DELTA + LANGUAGE_CODE_IMAGE_WIDTH,
-                fontMetrics.getHeight() + LANGUAGE_COMBO_HEIGHT_DELTA);
-        rendererExchange1.setPreferredSize(preferredSize);
-        exchangeComboBox1.setRenderer(rendererExchange1);
+        int textWidth = Math.max(fontMetrics.stringWidth(ExchangeData.MT_GOX_EXCHANGE_NAME), fontMetrics.stringWidth("USD"));
+        Dimension preferredSize = new Dimension(textWidth + TICKER_COMBO_WIDTH_DELTA, fontMetrics.getHeight() + COMBO_HEIGHT_DELTA);
         exchangeComboBox1.setBackground(Color.WHITE);
+        exchangeComboBox1.setPreferredSize(preferredSize);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -797,7 +815,8 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.anchor = GridBagConstraints.LINE_START;
         tickerPanel.add(exchangeComboBox1, constraints);
 
-        MultiBitLabel currencyLabel1 = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.ticker.currency"));
+        MultiBitLabel currencyLabel1 = new MultiBitLabel(controller.getLocaliser()
+                .getString("showPreferencesPanel.ticker.currency"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 9;
@@ -807,17 +826,15 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.anchor = GridBagConstraints.LINE_END;
         tickerPanel.add(currencyLabel1, constraints);
 
-        currencyComboBox1 = new JComboBox(new Integer[]{new Integer(1)});
+        currencyComboBox1 = new JComboBox(controller.getModel().getExchangeData()
+                .getAvailableCurrenciesForExchange(ExchangeData.MT_GOX_EXCHANGE_NAME));
         currencyComboBox1.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         if (mainFrame.getApplication().isMac()) {
             currencyComboBox1.setUI(new MetalComboBoxUI());
         }
         currencyComboBox1.setOpaque(false);
-        CurrencyComboBoxRenderer renderCurrency1 = new CurrencyComboBoxRenderer();
-
-        renderCurrency1.setPreferredSize(preferredSize);
-        currencyComboBox1.setRenderer(renderCurrency1);
         currencyComboBox1.setBackground(Color.WHITE);
+        currencyComboBox1.setPreferredSize(preferredSize);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -840,7 +857,22 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
                 controller.getLocaliser().getString("showPreferencesPanel.ticker.secondRow"), 11, tickerPanel);
 
-        MultiBitLabel exchangeLabel2 = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.ticker.exchange"));
+        showSecondRowCheckBox = new JCheckBox(controller.getLocaliser().getString("showPreferencesPanel.ticker.showSecondRow"));
+        showSecondRowCheckBox.setOpaque(false);
+        showSecondRowCheckBox.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        showSecondRowCheckBox.addItemListener(new ChangeTickerShowSecondRowListener());
+        
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 12;
+        constraints.weightx = 0.3;
+        constraints.weighty = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        tickerPanel.add(showSecondRowCheckBox, constraints);
+
+        exchangeLabel2 = new MultiBitLabel(controller.getLocaliser()
+                .getString("showPreferencesPanel.ticker.exchange"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 13;
@@ -850,17 +882,14 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.anchor = GridBagConstraints.LINE_END;
         tickerPanel.add(exchangeLabel2, constraints);
 
-        exchangeComboBox2 = new JComboBox(new Integer[]{new Integer(1)});
+        exchangeComboBox2 = new JComboBox(controller.getModel().getExchangeData().getAvailableExchanges());
         exchangeComboBox2.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         if (mainFrame.getApplication().isMac()) {
             exchangeComboBox2.setUI(new MetalComboBoxUI());
         }
         exchangeComboBox2.setOpaque(false);
-        ExchangeComboBoxRenderer rendererExchange2 = new ExchangeComboBoxRenderer();
-
-        rendererExchange2.setPreferredSize(preferredSize);
-        exchangeComboBox2.setRenderer(rendererExchange2);
         exchangeComboBox2.setBackground(Color.WHITE);
+        exchangeComboBox2.setPreferredSize(preferredSize);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -871,7 +900,8 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.anchor = GridBagConstraints.LINE_START;
         tickerPanel.add(exchangeComboBox2, constraints);
 
-        MultiBitLabel currencyLabel2 = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.ticker.currency"));
+        currencyLabel2 = new MultiBitLabel(controller.getLocaliser()
+                .getString("showPreferencesPanel.ticker.currency"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 14;
@@ -881,17 +911,15 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.anchor = GridBagConstraints.LINE_END;
         tickerPanel.add(currencyLabel2, constraints);
 
-        currencyComboBox2 = new JComboBox(new Integer[]{new Integer(1)});
+        currencyComboBox2 = new JComboBox(controller.getModel().getExchangeData()
+                .getAvailableCurrenciesForExchange(ExchangeData.MT_GOX_EXCHANGE_NAME));
         currencyComboBox2.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         if (mainFrame.getApplication().isMac()) {
             currencyComboBox2.setUI(new MetalComboBoxUI());
         }
         currencyComboBox2.setOpaque(false);
-        CurrencyComboBoxRenderer renderCurrency2 = new CurrencyComboBoxRenderer();
-
-        renderCurrency2.setPreferredSize(preferredSize);
-        currencyComboBox2.setRenderer(renderCurrency1);
         currencyComboBox2.setBackground(Color.WHITE);
+        currencyComboBox2.setPreferredSize(preferredSize);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
@@ -901,6 +929,9 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         tickerPanel.add(currencyComboBox2, constraints);
+
+        showSecondRowCheckBox.setSelected(originalShowSecondRow);
+        enableTickerSecondRow(originalShowSecondRow);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
@@ -924,15 +955,16 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         return tickerPanel;
     }
-    
+
     private JPanel createBrowserIntegrationPanel(int stentWidth) {
         MultiBitTitledPanel browserIntegrationPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-        "showPreferencesPanel.browserIntegrationTitle"));
+                "showPreferencesPanel.browserIntegrationTitle"));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
         MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
-                controller.getLocaliser().getString("showPreferencesPanel.browserIntegration.messageText"), 3, browserIntegrationPanel);
+                controller.getLocaliser().getString("showPreferencesPanel.browserIntegration.messageText"), 3,
+                browserIntegrationPanel);
 
         ButtonGroup browserIntegrationGroup = new ButtonGroup();
         ignoreAll = new JRadioButton(controller.getLocaliser().getString("showPreferencesPanel.ignoreAll"));
@@ -984,23 +1016,26 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         buttonPanel.setLayout(new GridBagLayout());
 
         GridBagConstraints constraints = new GridBagConstraints();
- 
-        buttonPanel.setBorder(BorderFactory.createCompoundBorder( BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder),
-                BorderFactory.createEmptyBorder(2, 0, 2, 0)
-               ));
+
+        buttonPanel
+                .setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder),
+                        BorderFactory.createEmptyBorder(2, 0, 2, 0)));
         buttonPanel.setOpaque(true);
         buttonPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));       
+        buttonPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(controller, this, ImageLoader.createImageIcon(ImageLoader.PREFERENCES_ICON_FILE));
+        ShowPreferencesSubmitAction submitAction = new ShowPreferencesSubmitAction(controller, this,
+                ImageLoader.createImageIcon(ImageLoader.PREFERENCES_ICON_FILE));
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
-        UndoPreferencesChangesSubmitAction undoChangesAction = new UndoPreferencesChangesSubmitAction(controller, ImageLoader.createImageIcon(ImageLoader.UNDO_ICON_FILE));
+        UndoPreferencesChangesSubmitAction undoChangesAction = new UndoPreferencesChangesSubmitAction(controller,
+                ImageLoader.createImageIcon(ImageLoader.UNDO_ICON_FILE));
         undoChangesButton = new MultiBitButton(undoChangesAction, controller);
 
         buttonPanel.add(undoChangesButton);
-  
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -1032,7 +1067,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         buttonPanel.add(fill1, constraints);
-        
+
         return buttonPanel;
     }
 
@@ -1047,6 +1082,30 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
             } else {
                 languageComboBox.setEnabled(true);
             }
+        }
+    }
+
+    class ChangeTickerShowSecondRowListener implements ItemListener {
+        public ChangeTickerShowSecondRowListener() {
+
+        }
+
+        public void itemStateChanged(ItemEvent e) {
+            enableTickerSecondRow(showSecondRowCheckBox.isSelected());
+        }
+    }
+
+    private void enableTickerSecondRow(boolean enableTickerSecondRow) {
+        if (enableTickerSecondRow) {
+            exchangeLabel2.setEnabled(true);
+            exchangeComboBox2.setEnabled(true);
+            currencyLabel2.setEnabled(true);
+            currencyComboBox2.setEnabled(true);
+        } else {
+            exchangeLabel2.setEnabled(false);
+            exchangeComboBox2.setEnabled(false);
+            currencyLabel2.setEnabled(false);
+            currencyComboBox2.setEnabled(false);
         }
     }
 
@@ -1067,106 +1126,6 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         private static final long serialVersionUID = -3301957214353702172L;
 
         public LanguageComboBoxRenderer() {
-            super("");
-            setOpaque(true);
-            setHorizontalAlignment(LEADING);
-            setVerticalAlignment(CENTER);
-
-            setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        }
-
-        /*
-         * This method finds the image and text corresponding to the selected
-         * value and returns the label, set up to display the text and image.
-         */
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            // Get the selected index. (The index param isn't
-            // always valid, so just use the value.)
-            int selectedIndex = 0;
-            if (value != null) {
-                selectedIndex = (Integer) value;
-            }
-            if (isSelected) {
-                setBackground(list.getSelectionBackground());
-                setForeground(list.getSelectionForeground());
-            } else {
-                setBackground(list.getBackground());
-                setForeground(list.getForeground());
-            }
-
-            // Set the icon and text. If icon was null, say so.
-            int loopIndex = 0;
-            for (LanguageData languageData : languageDataSet) {
-                if (selectedIndex == loopIndex) {
-                    ImageIcon icon = languageData.image;
-                    String language = languageData.language;
-                    setIcon(icon);
-                    setText(language);
-                    break;
-                }
-                loopIndex++;
-            }
-
-            setFont(list.getFont());
-
-            return this;
-        }
-    }
-    
-    class ExchangeComboBoxRenderer extends MultiBitLabel implements ListCellRenderer {
-        private static final long serialVersionUID = -3301957214353702172L;
-
-        public ExchangeComboBoxRenderer() {
-            super("");
-            setOpaque(true);
-            setHorizontalAlignment(LEADING);
-            setVerticalAlignment(CENTER);
-
-            setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        }
-
-        /*
-         * This method finds the image and text corresponding to the selected
-         * value and returns the label, set up to display the text and image.
-         */
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            // Get the selected index. (The index param isn't
-            // always valid, so just use the value.)
-            int selectedIndex = 0;
-            if (value != null) {
-                selectedIndex = (Integer) value;
-            }
-            if (isSelected) {
-                setBackground(list.getSelectionBackground());
-                setForeground(list.getSelectionForeground());
-            } else {
-                setBackground(list.getBackground());
-                setForeground(list.getForeground());
-            }
-
-            // Set the icon and text. If icon was null, say so.
-            int loopIndex = 0;
-            for (LanguageData languageData : languageDataSet) {
-                if (selectedIndex == loopIndex) {
-                    ImageIcon icon = languageData.image;
-                    String language = languageData.language;
-                    setIcon(icon);
-                    setText(language);
-                    break;
-                }
-                loopIndex++;
-            }
-
-            setFont(list.getFont());
-
-            return this;
-        }
-    }
-
-    class CurrencyComboBoxRenderer extends MultiBitLabel implements ListCellRenderer {
-        private static final long serialVersionUID = -3301957214353702172L;
-
-        public CurrencyComboBoxRenderer() {
             super("");
             setOpaque(true);
             setHorizontalAlignment(LEADING);
@@ -1256,7 +1215,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
             break;
         }
     }
-    
+
     @Override
     public Icon getViewIcon() {
         return ImageLoader.createImageIcon(ImageLoader.PREFERENCES_ICON_FILE);
@@ -1266,7 +1225,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     public String getViewTitle() {
         return controller.getLocaliser().getString("showPreferencesAction.text");
     }
- 
+
     @Override
     public String getViewTooltip() {
         return controller.getLocaliser().getString("showPreferencesAction.tooltip");
@@ -1361,19 +1320,65 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     public String getNewFontSize() {
         return "" + selectedFont.getSize();
     }
-    
+
     @Override
     public Font getSelectedFont() {
         return selectedFont;
     }
-    
+
     @Override
     public boolean getPreviousShowRate() {
         return originalShowRate;
-    }    
-    
+    }
+
     @Override
     public boolean getNewShowRate() {
         return showRate.isSelected();
     }
+
+    @Override
+    public String getPreviousExchange1() {
+        return originalExchange1;
+    }
+
+    public String getNewExchange1() {
+        return (String) exchangeComboBox1.getSelectedItem();
+    }
+
+    @Override
+    public String getPreviousCurrency1() {
+        return originalCurrency1;
+    }
+
+    public String getNewCurrency1() {
+        return (String) currencyComboBox1.getSelectedItem();
+    }
+
+    @Override
+    public boolean getPreviousShowSecondRow() {
+        return originalShowSecondRow;
+    }
+
+    public boolean getNewShowSecondRow() {
+        return showSecondRowCheckBox.isSelected();
+    }
+
+    @Override
+    public String getPreviousExchange2() {
+        return originalExchange2;
+    }
+
+    public String getNewExchange2() {
+        return (String) exchangeComboBox2.getSelectedItem();
+    }
+
+    @Override
+    public String getPreviousCurrency2() {
+        return originalCurrency2;
+    }
+
+    public String getNewCurrency2() {
+        return (String) currencyComboBox2.getSelectedItem();
+    }
+
 }

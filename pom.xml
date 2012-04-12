@@ -547,6 +547,21 @@
      <artifactId>jcalendar</artifactId>
      <version>1.3.2</version>
    </dependency>
+    <!-- The XChange jars have to be copied manually as the repo is not working yet -->
+   <dependency>
+     <groupId>com.xeiam.xchange</groupId>
+     <artifactId>xchange</artifactId>
+     <version>0.0.1</version>
+     <scope>system</scope>
+     <systemPath>${basedir}/src/lib/xchange-0.0.1.jar</systemPath>
+    </dependency>
+   <dependency>
+     <groupId>com.xeiam.xchange</groupId>
+     <artifactId>xchange-mtgox</artifactId>
+     <version>0.0.1</version>
+     <scope>system</scope>
+     <systemPath>${basedir}/src/lib/xchange-mtgox-0.0.1.jar</systemPath>
+    </dependency>
     <!-- All time handling is through Joda Time -->
     <dependency>
       <groupId>joda-time</groupId>
@@ -559,6 +574,12 @@
       <artifactId>joda-money</artifactId>
       <version>0.6</version> 
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+      <version>1.9.5</version>
+    </dependency>
+    
   </dependencies>
 
   <reporting>
