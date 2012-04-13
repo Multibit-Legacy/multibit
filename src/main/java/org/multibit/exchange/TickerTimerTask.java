@@ -80,38 +80,42 @@ public class TickerTimerTask extends TimerTask {
                 Ticker tickerEUR = marketDataService.getTicker(SymbolPair.BTC_EUR);
                 Ticker tickerGBP = marketDataService.getTicker(SymbolPair.BTC_GBP);
 
-//                OrderBook mtgoxUSDOrderBook = marketDataService.getOrderBook(SymbolPair.BTC_USD);
-//                List<Order> asksUSD = mtgoxUSDOrderBook.getAsks();
-//                System.out.println("TickerTimerTask - Current asks (USD) " + asksUSD.toString());
-//
-//                List<Order> bidsUSD = mtgoxUSDOrderBook.getBids();
-//                System.out.println("TickerTimerTask - Current bids (USD) " + bidsUSD.toString());
-//
-//                OrderBook mtgoxEUROrderBook = marketDataService.getOrderBook(SymbolPair.BTC_EUR);
-//                List<Order> asksEUR = mtgoxEUROrderBook.getAsks();
-//                System.out.println("TickerTimerTask - Current asks (EUR)" + asksEUR.toString());
-//
-//                List<Order> bidsEUR = mtgoxEUROrderBook.getBids();
-//                System.out.println("TickerTimerTask - Current bids (EUR) " + bidsEUR.toString());
-
                 // Get the latest ticker data showing BTC to USD
-                String btcusd = tickerUSD.getLast().toString();
-                System.out.println("TickerTimerTask - Current exchange rate for BTC / USD: " + btcusd);
+                String btcUSDRate = tickerUSD.getLast().toString();
+                String btcUSDBid = tickerUSD.getBid().toString();
+                String btcUSDAsk = tickerUSD.getAsk().toString();
+                System.out.println("TickerTimerTask - Current exchange rate for BTC / USD: " + btcUSDRate + ", bid = " + btcUSDBid + ", ask = " + btcUSDAsk);
                 controller.getModel().getExchangeData()
-                        .setLastTick("USD", Double.parseDouble(tickerUSD.getLast().getAmount().toPlainString()));
+                        .setLastRate("USD", Double.parseDouble(tickerUSD.getLast().getAmount().toPlainString()));
+                controller.getModel().getExchangeData()
+                .setLastBid("USD", Double.parseDouble(tickerUSD.getBid().getAmount().toPlainString()));
+                controller.getModel().getExchangeData()
+                .setLastAsk("USD", Double.parseDouble(tickerUSD.getAsk().getAmount().toPlainString()));
 
                 // Get the latest ticker data showing BTC to EUR
-                String btceur = tickerEUR.getLast().toString();
-                System.out.println("TickerTimerTask - Current exchange rate for BTC / EUR: " + btceur);
+                String btcEURRate = tickerEUR.getLast().toString();
+                String btcEURBid = tickerEUR.getBid().toString();
+                String btcEURAsk = tickerEUR.getAsk().toString();
+                System.out.println("TickerTimerTask - Current exchange rate for BTC / EUR: " + btcEURRate  + ", bid = " + btcEURBid + ", ask = " + btcEURAsk);
 
                 controller.getModel().getExchangeData()
-                        .setLastTick("EUR", Double.parseDouble(tickerEUR.getLast().getAmount().toPlainString()));
+                .setLastRate("EUR", Double.parseDouble(tickerEUR.getLast().getAmount().toPlainString()));
+                controller.getModel().getExchangeData()
+                .setLastBid("EUR", Double.parseDouble(tickerEUR.getBid().getAmount().toPlainString()));
+                controller.getModel().getExchangeData()
+                .setLastAsk("EUR", Double.parseDouble(tickerEUR.getAsk().getAmount().toPlainString()));
 
                 // Get the latest ticker data showing BTC to GBP
-                String btcgbp = tickerGBP.getLast().toString();
-                System.out.println("TickerTimerTask - Current exchange rate for BTC / GBP: " + btcgbp);
+                String btcGBPRate = tickerGBP.getLast().toString();
+                String btcGBPBid = tickerGBP.getBid().toString();
+                String btcGBPAsk = tickerGBP.getAsk().toString();
+                System.out.println("TickerTimerTask - Current exchange rate for BTC / GBP: " + btcGBPRate + ", bid = " + btcGBPBid + ", ask = " + btcGBPAsk);
                 controller.getModel().getExchangeData()
-                        .setLastTick("GBP", Double.parseDouble(tickerGBP.getLast().getAmount().toPlainString()));
+                        .setLastRate("GBP", Double.parseDouble(tickerGBP.getLast().getAmount().toPlainString()));
+                controller.getModel().getExchangeData()
+                .setLastBid("GBP", Double.parseDouble(tickerGBP.getBid().getAmount().toPlainString()));
+                controller.getModel().getExchangeData()
+                .setLastAsk("GBP", Double.parseDouble(tickerGBP.getAsk().getAmount().toPlainString()));
 
                 mainFrame.fireExchangeDataChanged();
             }

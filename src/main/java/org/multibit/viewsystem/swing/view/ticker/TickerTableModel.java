@@ -142,10 +142,10 @@ public class TickerTableModel extends AbstractTableModel {
             }
             case 1: {
                 // rate
-                if (exchangeData.getLastTick(currency) < 0) {
+                if (exchangeData.getLastRate(currency) < 0) {
                     return " ";
                 } else {
-                    return String.format("%1$,.5f", exchangeData.getLastTick(currency));
+                    return String.format("%1$,.5f", exchangeData.getLastRate(currency));
                 }
             }
             case 2:
@@ -160,18 +160,18 @@ public class TickerTableModel extends AbstractTableModel {
             }
             case 1: {
                 // bid
-                if (exchangeData.getLastTick(currency) < 0) {
+                if (exchangeData.getLastBid(currency) < 0) {
                     return " ";
                 } else {
-                    return String.format("%1$,.5f", exchangeData.getLastTick(currency));
+                    return String.format("%1$,.5f", exchangeData.getLastBid(currency));
                 }
             }
             case 2:
                 // ask
-                if (exchangeData.getLastTick(currency) < 0) {
+                if (exchangeData.getLastAsk(currency) < 0) {
                     return " ";
                 } else {
-                    return String.format("%1$,.5f", exchangeData.getLastTick(currency));
+                    return String.format("%1$,.5f", exchangeData.getLastAsk(currency));
                 }
             case 3:
                 return exchange;

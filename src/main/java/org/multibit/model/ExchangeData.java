@@ -31,25 +31,55 @@ public class ExchangeData {
     
     public static final String DEFAULT_CURRENCY = "USD";
     
-    public static final double DO_NOT_KNOW_EXCHANGE_RATE = -1;
+    public static final double DO_NOT_KNOW = -1;
     
-    private Map<String, Double> currencyToExchangeRateMap;
+    private Map<String, Double> currencyToRateMap;
+    private Map<String, Double> currencyToAskMap;
+    private Map<String, Double> currencyToBidMap;
     
     public ExchangeData() {
-        currencyToExchangeRateMap = new HashMap<String, Double>();
+        currencyToRateMap = new HashMap<String, Double>();
+        currencyToBidMap = new HashMap<String, Double>();
+        currencyToAskMap = new HashMap<String, Double>();
     }
     
-    public double getLastTick(String currency) {
-        Double exchangeRate = currencyToExchangeRateMap.get(currency);
-        if (exchangeRate == null) {
-            return DO_NOT_KNOW_EXCHANGE_RATE;
+    public double getLastRate(String currency) {
+        Double rate = currencyToRateMap.get(currency);
+        if (rate == null) {
+            return DO_NOT_KNOW;
         } else {
-            return exchangeRate.doubleValue();
+            return rate.doubleValue();
         }
     }
 
-    public void setLastTick(String currency, double lastTick) {
-        currencyToExchangeRateMap.put(currency, new Double(lastTick));
+    public double getLastBid(String currency) {
+        Double bid = currencyToBidMap.get(currency);
+        if (bid == null) {
+            return DO_NOT_KNOW;
+        } else {
+            return bid.doubleValue();
+        }
+    }
+    
+    public double getLastAsk(String currency) {
+        Double ask = currencyToAskMap.get(currency);
+        if (ask == null) {
+            return DO_NOT_KNOW;
+        } else {
+            return ask.doubleValue();
+        }
+    }
+
+    public void setLastRate(String currency, double lastRate) {
+        currencyToRateMap.put(currency, new Double(lastRate));
+    }
+
+    public void setLastBid(String currency, double lastBid) {
+        currencyToBidMap.put(currency, new Double(lastBid));
+    }
+
+    public void setLastAsk(String currency, double lastAsk) {
+        currencyToAskMap.put(currency, new Double(lastAsk));
     }
 
     public String[] getAvailableExchanges() {
