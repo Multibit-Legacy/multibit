@@ -288,7 +288,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         addMenuBar(constraints, contentPane);
 
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.gridwidth = 2;

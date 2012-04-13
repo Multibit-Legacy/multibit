@@ -53,7 +53,7 @@ public class ExchangeData {
     }
 
     public String[] getAvailableExchanges() {
-        return new String[] { MT_GOX_EXCHANGE_NAME, "Jim" };
+        return new String[] { MT_GOX_EXCHANGE_NAME };
     }
 
     public String[] getAvailableCurrenciesForExchange(String exchangeName) {

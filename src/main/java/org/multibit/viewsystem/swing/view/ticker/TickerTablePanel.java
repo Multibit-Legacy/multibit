@@ -74,8 +74,10 @@ public class TickerTablePanel extends JPanel {
 
     private static final String SPACER = "  "; // 2 spaces
 
-    private static final int VERTICAL_DELTA = 12;
+    private static final int VERTICAL_DELTA_MAC = 8;
+    private static final int VERTICAL_DELTA_NON_MAC = 16;
     private static final int HORIZONTAL_DELTA = 30;
+    private static final int SCROLLBAR_WIDTH = 20;
 
     FontMetrics fontMetrics;
     Font font;
@@ -126,7 +128,9 @@ public class TickerTablePanel extends JPanel {
         table = new JTable(tickerTableModel);
         table.setOpaque(true);
         table.setShowGrid(true);
-         table.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        table.setGridColor(Color.lightGray);
+      
+        table.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         table.setRowHeight(getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight());
 
         table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -137,6 +141,9 @@ public class TickerTablePanel extends JPanel {
         table.addMouseListener(viewPreferencesMouseListener);
         table.getTableHeader().addMouseListener(viewPreferencesMouseListener);
         table.getTableHeader().setToolTipText(tickerTooltipText);
+        table.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.LIGHT_GRAY));
+
+        table.setBorder(BorderFactory.createEmptyBorder());
 
         // justify column headers
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
@@ -145,7 +152,7 @@ public class TickerTablePanel extends JPanel {
         table.getTableHeader().setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-2));
 
         // symbol leading justified
-        table.getColumnModel().getColumn(0).setCellRenderer(new LeadingJustifiedRenderer());
+        table.getColumnModel().getColumn(0).setCellRenderer(new SymbolLeadingJustifiedRenderer());
 
         TableColumn tableColumn = table.getColumnModel().getColumn(0); // symbol
         int symbolWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel.symbol")),
@@ -165,7 +172,7 @@ public class TickerTablePanel extends JPanel {
             table.getColumnModel().getColumn(1).setPreferredWidth(rateWidth);
 
             // exchange
-            table.getColumnModel().getColumn(2).setCellRenderer(new TrailingJustifiedRenderer());
+            table.getColumnModel().getColumn(2).setCellRenderer(new ExchangeTrailingJustifiedRenderer());
             exchangeWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel.exchange")),
                     fontMetrics.stringWidth("Mt.Gox"));
             table.getColumnModel().getColumn(2).setPreferredWidth(exchangeWidth);
@@ -183,25 +190,32 @@ public class TickerTablePanel extends JPanel {
             table.getColumnModel().getColumn(2).setPreferredWidth(askWidth);
             
             // exchange
-            table.getColumnModel().getColumn(3).setCellRenderer(new TrailingJustifiedRenderer());
+            table.getColumnModel().getColumn(3).setCellRenderer(new ExchangeTrailingJustifiedRenderer());
             exchangeWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel.exchange")),
                     fontMetrics.stringWidth("Mt.Gox"));
             table.getColumnModel().getColumn(3).setPreferredWidth(exchangeWidth);
          }
 
-        int overallWidth = symbolWidth + rateWidth + bidWidth + askWidth + exchangeWidth + HORIZONTAL_DELTA;
+        int overallWidth = symbolWidth + rateWidth + bidWidth + askWidth + exchangeWidth + HORIZONTAL_DELTA + SCROLLBAR_WIDTH;
+        int verticalDelta;
+        if (mainFrame.getApplication().isMac()) {
+            verticalDelta = VERTICAL_DELTA_MAC;
+        } else {
+            verticalDelta = VERTICAL_DELTA_NON_MAC;
+        }
 
-        setPreferredSize(new Dimension(overallWidth, fontMetrics.getHeight() * (tickerTableModel.getRowCount() + 1) + VERTICAL_DELTA));
+        setPreferredSize(new Dimension(overallWidth, (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta));
 
         JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.getViewport()
-                .setPreferredSize(new Dimension(overallWidth - 2, fontMetrics.getHeight() * (tickerTableModel.getRowCount() + 1) + VERTICAL_DELTA - 2));
-        scrollPane.setMinimumSize(new Dimension(overallWidth, fontMetrics.getHeight() * (tickerTableModel.getRowCount() + 1) + VERTICAL_DELTA));
+                .setPreferredSize(new Dimension(overallWidth - 2, (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta - 2));
+        scrollPane.setMinimumSize(new Dimension(overallWidth, (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta));
 
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -238,7 +252,7 @@ public class TickerTablePanel extends JPanel {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
             label.setFont(font);
-            label.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1,Color.LIGHT_GRAY));
+            //label.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1,Color.LIGHT_GRAY));
 
             label.setText(value + SPACER);
 
@@ -251,7 +265,7 @@ public class TickerTablePanel extends JPanel {
         }
     }
 
-    class LeadingJustifiedRenderer extends DefaultTableCellRenderer {
+    class SymbolLeadingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
         MultiBitLabel label = new MultiBitLabel("");
@@ -263,7 +277,8 @@ public class TickerTablePanel extends JPanel {
             label.setOpaque(true);
             label.setText(SPACER + (String) value);
             label.setFont(font);
-            label.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.LIGHT_GRAY));
+            label.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0,Color.LIGHT_GRAY));
+
 
 
             Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
@@ -274,4 +289,28 @@ public class TickerTablePanel extends JPanel {
             return label;
         }
     }
+    
+    class ExchangeTrailingJustifiedRenderer extends DefaultTableCellRenderer {
+        private static final long serialVersionUID = 1999545L;
+
+        MultiBitLabel label = new MultiBitLabel("");
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
+            label.setHorizontalAlignment(SwingConstants.TRAILING);
+            label.setOpaque(true);
+            label.setFont(font);
+            //label.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.LIGHT_GRAY));
+
+            label.setText(value + SPACER);
+
+            Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                    : ColorAndFontConstants.BACKGROUND_COLOR);
+            label.setBackground(backgroundColor);
+            label.setForeground(table.getForeground());
+
+            return label;
+        }
+    }
+
 }
