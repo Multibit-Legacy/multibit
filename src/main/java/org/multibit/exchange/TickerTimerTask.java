@@ -32,8 +32,7 @@ import com.xeiam.xchange.service.marketdata.OrderBook;
 import com.xeiam.xchange.service.marketdata.Ticker;
 
 /**
- * TimerTask to poll MtGox for ticker data
- * process
+ * TimerTask to poll MtGox for ticker data process
  */
 public class TickerTimerTask extends TimerTask {
 
@@ -43,9 +42,9 @@ public class TickerTimerTask extends TimerTask {
 
     private final MultiBitController controller;
     private final MultiBitFrame mainFrame;
-    
-    private final Exchange mtGox;
-    private final MarketDataService marketDataService;
+
+    private Exchange mtGox;
+    private MarketDataService marketDataService;
 
     /**
      * Constructs the object, sets the string to be output in function run()
@@ -55,59 +54,70 @@ public class TickerTimerTask extends TimerTask {
     public TickerTimerTask(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
- 
+
         // Demonstrate the public market data service
-        // Use the factory to get the version 1 MtGox exchange API using default settings
-        mtGox = ExchangeFactory.INSTANCE.createExchange("com.xeiam.xchange.mtgox.v1.MtGoxExchange");
- 
-        // Interested in the public market data feed (no authentication)
-        marketDataService = mtGox.getMarketDataService(); 
+        // Use the factory to get the version 1 MtGox exchange API using default
+        // settings
+        try {
+            mtGox = ExchangeFactory.INSTANCE.createExchange("com.xeiam.xchange.mtgox.v1.MtGoxExchange");
+
+            // Interested in the public market data feed (no authentication)
+            marketDataService = mtGox.getMarketDataService();
+        } catch (NoClassDefFoundError e) {
+            // probably xchange is not on classpath - ticker will not run
+            // but error should not spread out from here to rest of MultiBit
+            log.error(e.getClass().getName() + " " + e.getMessage());
+        }
     }
 
     /**
      * When the timer executes, this code is run.
      */
-    public void run() {  	
+    public void run() {
         try {
-            Ticker tickerUSD = marketDataService.getTicker(SymbolPair.BTC_USD);
-            Ticker tickerEUR = marketDataService.getTicker(SymbolPair.BTC_EUR);
-            Ticker tickerGBP = marketDataService.getTicker(SymbolPair.BTC_GBP);               
+            if (marketDataService != null) {
+                Ticker tickerUSD = marketDataService.getTicker(SymbolPair.BTC_USD);
+                Ticker tickerEUR = marketDataService.getTicker(SymbolPair.BTC_EUR);
+                Ticker tickerGBP = marketDataService.getTicker(SymbolPair.BTC_GBP);
 
-            OrderBook mtgoxUSDOrderBook = marketDataService.getOrderBook(SymbolPair.BTC_USD);
-            List<Order> asksUSD = mtgoxUSDOrderBook.getAsks();
-            System.out.println("TickerTimerTask - Current asks (USD) " + asksUSD.toString());
-            
-            List<Order> bidsUSD = mtgoxUSDOrderBook.getBids();
-            System.out.println("TickerTimerTask - Current bids (USD) " + bidsUSD.toString());
-            
-            OrderBook mtgoxEUROrderBook = marketDataService.getOrderBook(SymbolPair.BTC_EUR);
-            List<Order> asksEUR = mtgoxEUROrderBook.getAsks();
-            System.out.println("TickerTimerTask - Current asks (EUR)" + asksEUR.toString());
- 
-            List<Order> bidsEUR = mtgoxEUROrderBook.getBids();
-            System.out.println("TickerTimerTask - Current bids (EUR) " + bidsEUR.toString());
-            
- 
-            // Get the latest ticker data showing BTC to USD
-            String btcusd = tickerUSD.getLast().multipliedBy(1000).toString();
-            System.out.println("TickerTimerTask - Current exchange rate for BTC / USD: " + btcusd);
-            controller.getModel().getExchangeData().setLastTick("USD", Double.parseDouble(tickerUSD.getLast().multipliedBy(1000).getAmount().toPlainString()));
+//                OrderBook mtgoxUSDOrderBook = marketDataService.getOrderBook(SymbolPair.BTC_USD);
+//                List<Order> asksUSD = mtgoxUSDOrderBook.getAsks();
+//                System.out.println("TickerTimerTask - Current asks (USD) " + asksUSD.toString());
+//
+//                List<Order> bidsUSD = mtgoxUSDOrderBook.getBids();
+//                System.out.println("TickerTimerTask - Current bids (USD) " + bidsUSD.toString());
+//
+//                OrderBook mtgoxEUROrderBook = marketDataService.getOrderBook(SymbolPair.BTC_EUR);
+//                List<Order> asksEUR = mtgoxEUROrderBook.getAsks();
+//                System.out.println("TickerTimerTask - Current asks (EUR)" + asksEUR.toString());
+//
+//                List<Order> bidsEUR = mtgoxEUROrderBook.getBids();
+//                System.out.println("TickerTimerTask - Current bids (EUR) " + bidsEUR.toString());
 
-            // Get the latest ticker data showing BTC to EUR
-            String btceur = tickerEUR.getLast().multipliedBy(1000).toString();
-            System.out.println("TickerTimerTask - Current exchange rate for BTC / EUR: " + btceur);
- 
-            controller.getModel().getExchangeData().setLastTick("EUR", Double.parseDouble(tickerEUR.getLast().multipliedBy(1000).getAmount().toPlainString()));
-            
-            // Get the latest ticker data showing BTC to GBP
-            String btcgbp = tickerGBP.getLast().multipliedBy(1000).toString();
-            System.out.println("TickerTimerTask - Current exchange rate for BTC / GBP: " + btcgbp);
-            controller.getModel().getExchangeData().setLastTick("GBP", Double.parseDouble(tickerGBP.getLast().multipliedBy(1000).getAmount().toPlainString()));
+                // Get the latest ticker data showing BTC to USD
+                String btcusd = tickerUSD.getLast().toString();
+                System.out.println("TickerTimerTask - Current exchange rate for BTC / USD: " + btcusd);
+                controller.getModel().getExchangeData()
+                        .setLastTick("USD", Double.parseDouble(tickerUSD.getLast().getAmount().toPlainString()));
 
+                // Get the latest ticker data showing BTC to EUR
+                String btceur = tickerEUR.getLast().toString();
+                System.out.println("TickerTimerTask - Current exchange rate for BTC / EUR: " + btceur);
+
+                controller.getModel().getExchangeData()
+                        .setLastTick("EUR", Double.parseDouble(tickerEUR.getLast().getAmount().toPlainString()));
+
+                // Get the latest ticker data showing BTC to GBP
+                String btcgbp = tickerGBP.getLast().toString();
+                System.out.println("TickerTimerTask - Current exchange rate for BTC / GBP: " + btcgbp);
+                controller.getModel().getExchangeData()
+                        .setLastTick("GBP", Double.parseDouble(tickerGBP.getLast().getAmount().toPlainString()));
+
+                mainFrame.fireExchangeDataChanged();
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            // stop any xchange errors percolating out
+            log.error(e.getClass().getName() + " " + e.getMessage());
         }
-        
-    	mainFrame.fireExchangeDataChanged();
     }
 }

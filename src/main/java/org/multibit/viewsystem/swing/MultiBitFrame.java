@@ -1094,4 +1094,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // TODO Auto-generated method stub
 
     }
+
+    public JPanel getHeaderPanel() {
+        return headerPanel;
+    }
 }

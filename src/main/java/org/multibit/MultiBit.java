@@ -21,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -265,6 +266,7 @@ public class MultiBit {
         if (useFastCatchup) {
             long earliestTimeSecs = controller.getModel().getActiveWallet().getEarliestKeyCreationTime();
             controller.getMultiBitService().getPeerGroup().setFastCatchupTimeSecs(earliestTimeSecs);
+            log.debug("Using FastCatchup for blockchain sync with time of " + (new Date(earliestTimeSecs)).toString());
         }
         multiBitService.downloadBlockChain();
     }

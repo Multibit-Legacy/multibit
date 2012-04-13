@@ -221,6 +221,11 @@ public class TickerTablePanel extends JPanel {
         invalidate();
         validate();
         repaint();
+
+        mainFrame.getHeaderPanel().invalidate();
+        mainFrame.getHeaderPanel().validate();
+        mainFrame.getHeaderPanel().repaint();
+
     }
 
     class TrailingJustifiedRenderer extends DefaultTableCellRenderer {

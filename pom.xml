@@ -54,6 +54,11 @@
       <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
       <name>Adam Gent Maven Repository</name>
     </repository>
+    <!-- Local repo for exchange jars -->
+    <repository>
+      <id>my</id>
+      <url>file://${basedir}/my-repo</url>
+  </repository>
   </repositories>
 
   <build>
@@ -553,14 +558,14 @@
      <artifactId>xchange</artifactId>
      <version>0.0.1</version>
      <scope>system</scope>
-     <systemPath>${basedir}/src/lib/xchange-0.0.1.jar</systemPath>
+     <systemPath>${basedir}/src/lib/xchange-0.0.1-SNAPSHOT.jar</systemPath>
     </dependency>
    <dependency>
      <groupId>com.xeiam.xchange</groupId>
      <artifactId>xchange-mtgox</artifactId>
      <version>0.0.1</version>
      <scope>system</scope>
-     <systemPath>${basedir}/src/lib/xchange-mtgox-0.0.1.jar</systemPath>
+     <systemPath>${basedir}/src/lib/xchange-mtgox-0.0.1-SNAPSHOT.jar</systemPath>
     </dependency>
     <!-- All time handling is through Joda Time -->
     <dependency>

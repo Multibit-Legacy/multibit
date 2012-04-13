@@ -30,5 +30,13 @@
       <directory>target/bitcoinj</directory>
       <outputDirectory></outputDirectory>
     </fileSet>
+   <fileSet>
+      <directory>src/lib/xchange-0.0.1-snapshot</directory>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>src/lib/xchange-mtgox-0.0.1-snapshot</directory>
+      <outputDirectory></outputDirectory>
+    </fileSet>
   </fileSets>
-</assembly>
+ </assembly>
