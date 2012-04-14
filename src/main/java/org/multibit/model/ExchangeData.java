@@ -18,6 +18,8 @@ package org.multibit.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.joda.money.BigMoney;
+
 /**
  * 
  * @author timmolter
@@ -31,62 +33,87 @@ public class ExchangeData {
     
     public static final String DEFAULT_CURRENCY = "USD";
     
-    public static final double DO_NOT_KNOW = -1;
+    public static final String[] DEFAULT_CURRENCY_LIST = new String[] {"USD",  "EUR"};
     
-    private Map<String, Double> currencyToRateMap;
-    private Map<String, Double> currencyToAskMap;
-    private Map<String, Double> currencyToBidMap;
+    public static final BigMoney DO_NOT_KNOW = null;
+    
+    private Map<String, BigMoney> currencyToLastPriceMap;
+    private Map<String, BigMoney> currencyToAskMap;
+    private Map<String, BigMoney> currencyToBidMap;
+    
+    private String[] currenciesWeAreInterestedIn;
+    
+    private Map<String, String[]> exchangeNameToAvailableCurrenciesMap;
     
     public ExchangeData() {
-        currencyToRateMap = new HashMap<String, Double>();
-        currencyToBidMap = new HashMap<String, Double>();
-        currencyToAskMap = new HashMap<String, Double>();
+        currencyToLastPriceMap = new HashMap<String, BigMoney>();
+        currencyToBidMap = new HashMap<String, BigMoney>();
+        currencyToAskMap = new HashMap<String, BigMoney>();
+        currenciesWeAreInterestedIn = DEFAULT_CURRENCY_LIST;
+        exchangeNameToAvailableCurrenciesMap = new HashMap<String, String[]>();
     }
     
-    public double getLastRate(String currency) {
-        Double rate = currencyToRateMap.get(currency);
-        if (rate == null) {
+    public BigMoney getLastPrice(String currency) {
+        BigMoney lastPrice = currencyToLastPriceMap.get(currency);
+        if (lastPrice == null) {
             return DO_NOT_KNOW;
         } else {
-            return rate.doubleValue();
+            return lastPrice;
         }
     }
 
-    public double getLastBid(String currency) {
-        Double bid = currencyToBidMap.get(currency);
+    public BigMoney getLastBid(String currency) {
+        BigMoney bid = currencyToBidMap.get(currency);
         if (bid == null) {
             return DO_NOT_KNOW;
         } else {
-            return bid.doubleValue();
+            return bid;
         }
     }
     
-    public double getLastAsk(String currency) {
-        Double ask = currencyToAskMap.get(currency);
+    public BigMoney getLastAsk(String currency) {
+        BigMoney ask = currencyToAskMap.get(currency);
         if (ask == null) {
             return DO_NOT_KNOW;
         } else {
-            return ask.doubleValue();
+            return ask;
         }
     }
 
-    public void setLastRate(String currency, double lastRate) {
-        currencyToRateMap.put(currency, new Double(lastRate));
+    public void setLastPrice(String currency, BigMoney lastPrice) {
+        currencyToLastPriceMap.put(currency, lastPrice);
     }
 
-    public void setLastBid(String currency, double lastBid) {
-        currencyToBidMap.put(currency, new Double(lastBid));
+    public void setLastBid(String currency, BigMoney lastBid) {
+        currencyToBidMap.put(currency, lastBid);
     }
 
-    public void setLastAsk(String currency, double lastAsk) {
-        currencyToAskMap.put(currency, new Double(lastAsk));
+    public void setLastAsk(String currency, BigMoney lastAsk) {
+        currencyToAskMap.put(currency, lastAsk);
     }
 
     public String[] getAvailableExchanges() {
         return new String[] { MT_GOX_EXCHANGE_NAME };
     }
 
+    public String[] getCurrenciesWeAreInterestedIn() {
+        return currenciesWeAreInterestedIn;
+    }
+
+    public void setCurrenciesWeAreInterestedIn(String[] currenciesWeAreInterestedIn) {
+        this.currenciesWeAreInterestedIn = currenciesWeAreInterestedIn;
+    }
+
     public String[] getAvailableCurrenciesForExchange(String exchangeName) {
-        return new String[] { "USD", "EUR", "GBP"};
+        String[] availableCurrencies = exchangeNameToAvailableCurrenciesMap.get(exchangeName);
+        if (availableCurrencies == null) {
+            return DEFAULT_CURRENCY_LIST;
+        } else {
+            return availableCurrencies;
+        }
+    }
+
+    public void setAvailableCurrenciesForExchange(String exchangeName, String[] currencies) {
+        exchangeNameToAvailableCurrenciesMap.put(exchangeName, currencies);
     }
 }

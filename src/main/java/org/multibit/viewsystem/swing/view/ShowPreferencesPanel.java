@@ -118,7 +118,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     private boolean originalShowExchange;
     
     private JCheckBox showCurrency;
-    private JCheckBox showRate;
+    private JCheckBox showLastPrice;
     private JCheckBox showBid;
     private JCheckBox showAsk;
     private JCheckBox showExchange;
@@ -744,9 +744,9 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         showCurrency.setOpaque(false);
         showCurrency.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
-        showRate = new JCheckBox(controller.getLocaliser().getString("showPreferencesPanel.ticker.showRate"));
-        showRate.setOpaque(false);
-        showRate.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        showLastPrice = new JCheckBox(controller.getLocaliser().getString("tickerTableModel.lastPrice"));
+        showLastPrice.setOpaque(false);
+        showLastPrice.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         showBid = new JCheckBox(controller.getLocaliser().getString("showPreferencesPanel.ticker.showBid"));
         showBid.setOpaque(false);
@@ -760,13 +760,16 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         showExchange.setOpaque(false);
         showExchange.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
-        String tickerColumnsToShow = "" + controller.getModel().getUserPreference(MultiBitModel.TICKER_COLUMNS_TO_SHOW);
+        String tickerColumnsToShow = controller.getModel().getUserPreference(MultiBitModel.TICKER_COLUMNS_TO_SHOW);
+        if (tickerColumnsToShow == null || tickerColumnsToShow.equals("")) {
+            tickerColumnsToShow = TickerTableModel.DEFAULT_COLUMNS_TO_SHOW;
+        }
         
         originalShowCurrency = tickerColumnsToShow.indexOf(TickerTableModel.TICKER_COLUMN_CURRENCY) > -1;
         showCurrency.setSelected(originalShowCurrency);
         
-        originalShowRate = tickerColumnsToShow.indexOf(TickerTableModel.TICKER_COLUMN_RATE) > -1;
-        showRate.setSelected(originalShowRate);
+        originalShowRate = tickerColumnsToShow.indexOf(TickerTableModel.TICKER_COLUMN_LAST_PRICE) > -1;
+        showLastPrice.setSelected(originalShowRate);
         
         originalShowBid = tickerColumnsToShow.indexOf(TickerTableModel.TICKER_COLUMN_BID) > -1;
         showBid.setSelected(originalShowBid);
@@ -796,7 +799,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 0.3;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        tickerPanel.add(showRate, constraints);
+        tickerPanel.add(showLastPrice, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
@@ -1408,7 +1411,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
     @Override
     public boolean getNewShowRate() {
-        return showRate.isSelected();
+        return showLastPrice.isSelected();
     }
 
     @Override

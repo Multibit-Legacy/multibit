@@ -194,10 +194,16 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         
         String columnsToShow = "";
         if (showCurrency) columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_CURRENCY;
-        if (showRate) columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_RATE;
+        if (showRate) columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_LAST_PRICE;
         if (showBid) columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_BID;
         if (showAsk) columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_ASK;
         if (showExchange) columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_EXCHANGE;
+        
+        if ("".equals(columnsToShow)) {
+            // a user could just switch all the columns off in the settings so put a 'none' in the list of columns
+            // this is to stop the default columns appearing
+            columnsToShow = TickerTableModel.TICKER_COLUMN_NONE;
+        }
         controller.getModel().setUserPreference(MultiBitModel.TICKER_COLUMNS_TO_SHOW, columnsToShow);
 
         String previousExchange1 = dataProvider.getPreviousExchange1();
@@ -235,6 +241,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             controller.getModel().setUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY, newCurrency2);
             wantToFireDataStructureChanged = true;
         }
+        controller.getModel().getExchangeData().setCurrenciesWeAreInterestedIn(new String[] {newCurrency1, newCurrency2});
 
         // can undo
         controller.getModel().setUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES, "true");
