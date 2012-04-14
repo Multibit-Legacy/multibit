@@ -76,7 +76,7 @@ public class MultiBitModel {
     
     // ticker
     public static final String TICKER_SHOW = "tickerShow";
-    public static final String TICKER_SHOW_RATE = "tickerShowRate";
+    public static final String TICKER_COLUMNS_TO_SHOW = "tickerColumnsToShow";
     public static final String TICKER_FIRST_ROW_EXCHANGE = "tickerFirstRowExchange";
     public static final String TICKER_FIRST_ROW_CURRENCY = "tickerFirstRowCurrency";
     public static final String TICKER_SHOW_SECOND_ROW = "tickerShowSecondRow";

@@ -70,20 +70,6 @@ public interface PreferencesDataProvider extends DataProvider {
      */
     public String getNewFontStyle();
    
-    
-    /**
-     * Get if the previous value for if midpoint currency rate is to be shown by the ticker
-     * @returns true If rate to be shown, false if bid and ask are to be shown
-     */
-    public boolean getPreviousShowRate();
-    
-    /**
-     * Get if the new value for if midpoint currency rate is to be shown by the ticker
-     * @returns true If rate to be shown, false if bid and ask are to be shown
-     */
-    public boolean getNewShowRate();
-    
-    
     /**
      * get the previous font size
      */
@@ -99,26 +85,37 @@ public interface PreferencesDataProvider extends DataProvider {
      */
     public Font getSelectedFont();
 
-    public String getNewExchange1();
-
-    public String getPreviousExchange1();
+    /**
+     * ticker information
+     * @return
+     */
+    public boolean getPreviousShowCurrency();
+    public boolean getNewShowCurrency();
     
+    public boolean getPreviousShowRate();
+    public boolean getNewShowRate();
+    
+    public boolean getPreviousShowBid();
+    public boolean getNewShowBid();
+    
+    public boolean getPreviousShowAsk();
+    public boolean getNewShowAsk();
+    
+    public boolean getPreviousShowExchange();
+    public boolean getNewShowExchange();
+    
+    public String getPreviousExchange1();
+    public String getNewExchange1();
+    
+    public String getPreviousCurrency1();
     public String getNewCurrency1();
  
-    public String getPreviousCurrency1();
-
+    public boolean getPreviousShowSecondRow();
     public boolean getNewShowSecondRow();
 
-    public boolean getPreviousShowSecondRow();
-
+    public String getPreviousExchange2();
     public String getNewExchange2();
 
-    public String getPreviousExchange2();
-
-    public String getNewCurrency2();
-
     public String getPreviousCurrency2();
-
-
- 
+    public String getNewCurrency2();
 }

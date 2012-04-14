@@ -33,6 +33,12 @@ import org.slf4j.LoggerFactory;
  */
 public class TickerTableModel extends AbstractTableModel {
 
+    public static final String TICKER_COLUMN_CURRENCY = "currency";
+    public static final String TICKER_COLUMN_RATE = "rate";
+    public static final String TICKER_COLUMN_BID = "bid";
+    public static final String TICKER_COLUMN_ASK = "ask";
+    public static final String TICKER_COLUMN_EXCHANGE = "exchange";
+
     private static final String[] COLUMN_HEADER_BID_ASK_KEYS = new String[] { "tickerTableModel.symbol", "tickerTableModel.bid",
             "tickerTableModel.ask", "tickerTableModel.exchange" };
 
@@ -65,13 +71,50 @@ public class TickerTableModel extends AbstractTableModel {
 
     private MultiBitController controller;
 
+    private boolean showCurrency;
     private boolean showRate;
+    private boolean showBid;
+    private boolean showAsk;
+    private boolean showExchange;
+
+    private String[] columnVariables;
+    private int numberOfColumns;
 
     public TickerTableModel(MultiBitController controller) {
         this.multiBitModel = controller.getModel();
         this.controller = controller;
 
-        showRate = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_RATE));
+        String tickerColumnsToShow = "" + controller.getModel().getUserPreference(MultiBitModel.TICKER_COLUMNS_TO_SHOW);
+
+        showCurrency = tickerColumnsToShow.indexOf(TICKER_COLUMN_CURRENCY) > -1;
+        showRate = tickerColumnsToShow.indexOf(TICKER_COLUMN_RATE) > -1;
+        showBid = tickerColumnsToShow.indexOf(TICKER_COLUMN_BID) > -1;
+        showAsk = tickerColumnsToShow.indexOf(TICKER_COLUMN_ASK) > -1;
+        showExchange = tickerColumnsToShow.indexOf(TICKER_COLUMN_EXCHANGE) > -1;
+
+        columnVariables = new String[5]; // 5 = max number of columns
+        
+        numberOfColumns = 0;
+        if (showCurrency) {
+            columnVariables[numberOfColumns] = TICKER_COLUMN_CURRENCY;
+            numberOfColumns++;
+        }
+        if (showRate) {
+            columnVariables[numberOfColumns] = TICKER_COLUMN_RATE;
+            numberOfColumns++;
+        }
+        if (showBid) {
+            columnVariables[numberOfColumns] = TICKER_COLUMN_BID;
+            numberOfColumns++;
+        }
+        if (showAsk) {
+            columnVariables[numberOfColumns] = TICKER_COLUMN_ASK;
+            numberOfColumns++;
+        }
+        if (showExchange) {
+            columnVariables[numberOfColumns] = TICKER_COLUMN_EXCHANGE;
+            numberOfColumns++;
+        }
 
         showSecondRow = Boolean.TRUE.toString().equals(
                 controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW));
@@ -80,12 +123,12 @@ public class TickerTableModel extends AbstractTableModel {
         if (exchange1 == null || "".equals(exchange1)) {
             exchange1 = ExchangeData.DEFAULT_EXCHANGE;
         }
-        
+
         currency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
         if (currency1 == null || "".equals(currency1)) {
             currency1 = ExchangeData.DEFAULT_CURRENCY;
         }
-        
+
         exchange2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE);
         if (exchange2 == null || "".equals(exchange2)) {
             exchange2 = ExchangeData.DEFAULT_EXCHANGE;
@@ -101,11 +144,7 @@ public class TickerTableModel extends AbstractTableModel {
     }
 
     public int getColumnCount() {
-        if (showRate) {
-            return COLUMN_HEADER_RATE_KEYS.length;
-        } else {
-            return COLUMN_HEADER_BID_ASK_KEYS.length;
-        }
+        return numberOfColumns;
     }
 
     public int getRowCount() {
@@ -117,7 +156,7 @@ public class TickerTableModel extends AbstractTableModel {
     }
 
     public String getColumnName(int column) {
-        return headers.get(column);
+        return controller.getLocaliser().getString("tickerTableModel." + columnVariables[column]);
     }
 
     public Object getValueAt(int row, int column) {
@@ -132,52 +171,41 @@ public class TickerTableModel extends AbstractTableModel {
             currency = currency1;
         } else {
             exchange = exchange2;
-            currency = currency2;           
+            currency = currency2;
         }
+
+        String variable = columnVariables[column];
         
-        if (showRate) {
-            switch (column) {
-            case 0: {
-                return currency;
+        if (TICKER_COLUMN_CURRENCY.equals(variable)) {
+            // currency
+            return currency;
+        } else if (TICKER_COLUMN_RATE.equals(variable)) {
+            // rate
+            if (exchangeData.getLastRate(currency) < 0) {
+                return " ";
+            } else {
+                return String.format("%1$,.5f", exchangeData.getLastRate(currency));
             }
-            case 1: {
-                // rate
-                if (exchangeData.getLastRate(currency) < 0) {
-                    return " ";
-                } else {
-                    return String.format("%1$,.5f", exchangeData.getLastRate(currency));
-                }
+        } else if (TICKER_COLUMN_BID.equals(variable)) {
+            // bid
+            if (exchangeData.getLastBid(currency) < 0) {
+                return " ";
+            } else {
+                return String.format("%1$,.5f", exchangeData.getLastBid(currency));
             }
-            case 2:
-                return exchange;
-            default:
-                return null;
+        } else if (TICKER_COLUMN_ASK.equals(variable)) {
+            // ask
+            if (exchangeData.getLastAsk(currency) < 0) {
+                return " ";
+            } else {
+                return String.format("%1$,.5f", exchangeData.getLastAsk(currency));
             }
+        } else if (TICKER_COLUMN_EXCHANGE.equals(variable)) {
+            // exchange
+            return exchange;
         } else {
-            switch (column) {
-            case 0: {
-                return currency;
-            }
-            case 1: {
-                // bid
-                if (exchangeData.getLastBid(currency) < 0) {
-                    return " ";
-                } else {
-                    return String.format("%1$,.5f", exchangeData.getLastBid(currency));
-                }
-            }
-            case 2:
-                // ask
-                if (exchangeData.getLastAsk(currency) < 0) {
-                    return " ";
-                } else {
-                    return String.format("%1$,.5f", exchangeData.getLastAsk(currency));
-                }
-            case 3:
-                return exchange;
-            default:
-                return null;
-            }
+            // do not know 
+            return "";
         }
     }
 

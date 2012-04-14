@@ -145,74 +145,78 @@ public class TickerTablePanel extends JPanel {
 
         table.setBorder(BorderFactory.createEmptyBorder());
 
-        // justify column headers
-        TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
-        JLabel label = (JLabel) renderer;
-        label.setHorizontalAlignment(JLabel.CENTER);
-        table.getTableHeader().setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-2));
+//        // justify column headers
+//        TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
+//        JLabel label = (JLabel) renderer;
+//        label.setHorizontalAlignment(JLabel.CENTER);
+//        table.getTableHeader().setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-2));
+//
+//        // currency leading justified
+//        table.getColumnModel().getColumn(0).setCellRenderer(new SymbolLeadingJustifiedRenderer());
+//
+//        TableColumn tableColumn = table.getColumnModel().getColumn(0); // currency
+//        int currencyWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel.currency")),
+//                fontMetrics.stringWidth("iii USD"));
+//        tableColumn.setPreferredWidth(currencyWidth);
+//
+//        int rateWidth = 0;
+//        int bidWidth = 0;
+//        int askWidth = 0;
+//        int exchangeWidth = 0;
+//        
+//        if (tickerTableModel.isShowRate()) {
+//            // rate
+//            table.getColumnModel().getColumn(1).setCellRenderer(new TrailingJustifiedRenderer());
+//            rateWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel.bid")),
+//                    fontMetrics.stringWidth("000.0000"));
+//            table.getColumnModel().getColumn(1).setPreferredWidth(rateWidth);
+//
+//            // exchange
+//            table.getColumnModel().getColumn(2).setCellRenderer(new ExchangeTrailingJustifiedRenderer());
+//            exchangeWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel.exchange")),
+//                    fontMetrics.stringWidth("Mt.Gox"));
+//            table.getColumnModel().getColumn(2).setPreferredWidth(exchangeWidth);
+//        } else {
+//             // bid
+//            table.getColumnModel().getColumn(1).setCellRenderer(new TrailingJustifiedRenderer());
+//            bidWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel.bid")),
+//                    fontMetrics.stringWidth("000.0000"));
+//            table.getColumnModel().getColumn(1).setPreferredWidth(bidWidth);
+//
+//            // ask
+//            table.getColumnModel().getColumn(2).setCellRenderer(new TrailingJustifiedRenderer());
+//            askWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel.ask")),
+//                    fontMetrics.stringWidth("000.0000"));
+//            table.getColumnModel().getColumn(2).setPreferredWidth(askWidth);
+//            
+//            // exchange
+//            table.getColumnModel().getColumn(3).setCellRenderer(new ExchangeTrailingJustifiedRenderer());
+//            exchangeWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel.exchange")),
+//                    fontMetrics.stringWidth("Mt.Gox"));
+//            table.getColumnModel().getColumn(3).setPreferredWidth(exchangeWidth);
+//         }
+//
+//        int overallWidth = currencyWidth + rateWidth + bidWidth + askWidth + exchangeWidth + HORIZONTAL_DELTA + SCROLLBAR_WIDTH;
+//        int verticalDelta;
+//        if (mainFrame.getApplication().isMac()) {
+//            verticalDelta = VERTICAL_DELTA_MAC;
+//        } else {
+//            verticalDelta = VERTICAL_DELTA_NON_MAC;
+//        }
+//
+//        setPreferredSize(new Dimension(overallWidth, (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta));
 
-        // symbol leading justified
-        table.getColumnModel().getColumn(0).setCellRenderer(new SymbolLeadingJustifiedRenderer());
-
-        TableColumn tableColumn = table.getColumnModel().getColumn(0); // symbol
-        int symbolWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel.symbol")),
-                fontMetrics.stringWidth("iii USD"));
-        tableColumn.setPreferredWidth(symbolWidth);
-
-        int rateWidth = 0;
-        int bidWidth = 0;
-        int askWidth = 0;
-        int exchangeWidth = 0;
-        
-        if (tickerTableModel.isShowRate()) {
-            // rate
-            table.getColumnModel().getColumn(1).setCellRenderer(new TrailingJustifiedRenderer());
-            rateWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel.bid")),
-                    fontMetrics.stringWidth("000.0000"));
-            table.getColumnModel().getColumn(1).setPreferredWidth(rateWidth);
-
-            // exchange
-            table.getColumnModel().getColumn(2).setCellRenderer(new ExchangeTrailingJustifiedRenderer());
-            exchangeWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel.exchange")),
-                    fontMetrics.stringWidth("Mt.Gox"));
-            table.getColumnModel().getColumn(2).setPreferredWidth(exchangeWidth);
-        } else {
-             // bid
-            table.getColumnModel().getColumn(1).setCellRenderer(new TrailingJustifiedRenderer());
-            bidWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel.bid")),
-                    fontMetrics.stringWidth("000.0000"));
-            table.getColumnModel().getColumn(1).setPreferredWidth(bidWidth);
-
-            // ask
-            table.getColumnModel().getColumn(2).setCellRenderer(new TrailingJustifiedRenderer());
-            askWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel.ask")),
-                    fontMetrics.stringWidth("000.0000"));
-            table.getColumnModel().getColumn(2).setPreferredWidth(askWidth);
-            
-            // exchange
-            table.getColumnModel().getColumn(3).setCellRenderer(new ExchangeTrailingJustifiedRenderer());
-            exchangeWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel.exchange")),
-                    fontMetrics.stringWidth("Mt.Gox"));
-            table.getColumnModel().getColumn(3).setPreferredWidth(exchangeWidth);
-         }
-
-        int overallWidth = symbolWidth + rateWidth + bidWidth + askWidth + exchangeWidth + HORIZONTAL_DELTA + SCROLLBAR_WIDTH;
-        int verticalDelta;
-        if (mainFrame.getApplication().isMac()) {
-            verticalDelta = VERTICAL_DELTA_MAC;
-        } else {
-            verticalDelta = VERTICAL_DELTA_NON_MAC;
-        }
-
-        setPreferredSize(new Dimension(overallWidth, (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta));
-
+        setPreferredSize(new Dimension(300,60));
         JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        scrollPane.getViewport()
-                .setPreferredSize(new Dimension(overallWidth - 2, (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta - 2));
-        scrollPane.setMinimumSize(new Dimension(overallWidth, (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta));
+//        scrollPane.getViewport()
+//                .setPreferredSize(new Dimension(overallWidth - 2, (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta - 2));
+//        scrollPane.setMinimumSize(new Dimension(overallWidth, (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta));
+
+        scrollPane.getViewport().setPreferredSize(new Dimension(300,60));
+        scrollPane.setMinimumSize(new Dimension(300,60));
 
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -252,8 +256,7 @@ public class TickerTablePanel extends JPanel {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
             label.setFont(font);
-            //label.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1,Color.LIGHT_GRAY));
-
+ 
             label.setText(value + SPACER);
 
             Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
@@ -278,9 +281,7 @@ public class TickerTablePanel extends JPanel {
             label.setText(SPACER + (String) value);
             label.setFont(font);
             label.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0,Color.LIGHT_GRAY));
-
-
-
+            
             Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
                     : ColorAndFontConstants.BACKGROUND_COLOR);
             label.setBackground(backgroundColor);
@@ -300,8 +301,6 @@ public class TickerTablePanel extends JPanel {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
             label.setFont(font);
-            //label.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.LIGHT_GRAY));
-
             label.setText(value + SPACER);
 
             Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
@@ -312,5 +311,4 @@ public class TickerTablePanel extends JPanel {
             return label;
         }
     }
-
 }

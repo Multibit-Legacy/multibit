@@ -28,6 +28,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 
 import com.google.bitcoin.core.Utils;
 
@@ -173,14 +174,31 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         }
 
         // currency ticker
-        // show rate (or bidAndAsk)
-        String previousShowRate = new Boolean(dataProvider.getPreviousShowRate()).toString();
-        String newShowRate = new Boolean(dataProvider.getNewShowRate()).toString();
-        if (newShowRate != null && !newShowRate.equals(previousShowRate)) {
-            // new show rate is set on model
-            controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW_RATE, newShowRate);
+        boolean showCurrency = dataProvider.getNewShowCurrency();
+        boolean showRate = dataProvider.getNewShowRate();
+        boolean showBid = dataProvider.getNewShowBid();
+        boolean showAsk =  dataProvider.getNewShowAsk();
+        boolean showExchange =  dataProvider.getNewShowExchange();
+        
+        if (dataProvider.getPreviousShowCurrency() != dataProvider.getNewShowCurrency()) {
+            wantToFireDataStructureChanged = true;
+        } else if (dataProvider.getPreviousShowRate() != dataProvider.getNewShowRate()) {
+            wantToFireDataStructureChanged = true;
+        } else if (dataProvider.getPreviousShowBid() != dataProvider.getNewShowBid()) {
+            wantToFireDataStructureChanged = true;
+        } else if (dataProvider.getPreviousShowAsk() != dataProvider.getNewShowAsk()) {
+            wantToFireDataStructureChanged = true;
+        } else if (dataProvider.getPreviousShowExchange() != dataProvider.getNewShowExchange()) {
             wantToFireDataStructureChanged = true;
         }
+        
+        String columnsToShow = "";
+        if (showCurrency) columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_CURRENCY;
+        if (showRate) columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_RATE;
+        if (showBid) columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_BID;
+        if (showAsk) columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_ASK;
+        if (showExchange) columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_EXCHANGE;
+        controller.getModel().setUserPreference(MultiBitModel.TICKER_COLUMNS_TO_SHOW, columnsToShow);
 
         String previousExchange1 = dataProvider.getPreviousExchange1();
         String newExchange1 = dataProvider.getNewExchange1();
