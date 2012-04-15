@@ -79,6 +79,7 @@ public class TickerTablePanel extends JPanel {
     private static final int VERTICAL_DELTA_NON_MAC = 16;
     private static final int HORIZONTAL_DELTA = 30;
     private static final int SCROLLBAR_WIDTH = 20;
+    private static final int PER_COLUMN_DELTA = 2;
 
     FontMetrics fontMetrics;
     Font font;
@@ -155,18 +156,23 @@ public class TickerTablePanel extends JPanel {
         // column widths
         String[] columnVariables = tickerTableModel.getColumnVariables();
 
-        int tickerWidth = HORIZONTAL_DELTA + SCROLLBAR_WIDTH;
+        int tickerWidth = HORIZONTAL_DELTA;
+        if (tickerTableModel.getRowCount() > 1) {
+            // there may be a scroll bar so give it some space
+            tickerWidth += SCROLLBAR_WIDTH;
+        }
+        
         for (int i = 0; i < Math.min(table.getColumnCount(), columnVariables.length); i++) {
             // work out width
             int columnWidth;
 
             if (TickerTableModel.TICKER_COLUMN_CURRENCY.equals(columnVariables[i])) {
-                columnWidth = 4 + Math.max(
+                columnWidth = 5 * PER_COLUMN_DELTA + Math.max(
                         fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel." + columnVariables[i])),
                         fontMetrics.stringWidth("XYZ")); // currency codes
                                                          // always 3 character
             } else {
-                columnWidth = Math.max(
+                columnWidth = PER_COLUMN_DELTA + Math.max(
                         fontMetrics.stringWidth(controller.getLocaliser().getString("tickerTableModel." + columnVariables[i])),
                         fontMetrics.stringWidth("0000.00000"));
             }
@@ -174,7 +180,9 @@ public class TickerTablePanel extends JPanel {
             table.getColumnModel().getColumn(i).setPreferredWidth(columnWidth);
 
             if (TickerTableModel.TICKER_COLUMN_CURRENCY.equals(columnVariables[i])) {
-                table.getColumnModel().getColumn(i).setCellRenderer(new CurrencyLeadingJustifiedRenderer());
+                table.getColumnModel().getColumn(i).setCellRenderer(new CurrencyCenterJustifiedRenderer());
+            } else if (TickerTableModel.TICKER_COLUMN_EXCHANGE.equals(columnVariables[i])) {
+                table.getColumnModel().getColumn(i).setCellRenderer(new LeadingJustifiedRenderer());
             } else {
                 table.getColumnModel().getColumn(i).setCellRenderer(new TrailingJustifiedRenderer());
             }
@@ -261,8 +269,42 @@ public class TickerTablePanel extends JPanel {
             return label;
         }
     }
+    
+    class LeadingJustifiedRenderer extends DefaultTableCellRenderer {
+        private static final long serialVersionUID = 1549545L;
 
-    class CurrencyLeadingJustifiedRenderer extends DefaultTableCellRenderer {
+        MultiBitLabel label = new MultiBitLabel("");
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
+            label.setHorizontalAlignment(SwingConstants.LEADING);
+            label.setOpaque(true);
+            label.setFont(font);
+
+            String text = "";
+            if (value != null) {
+                if (value instanceof BigMoney) {
+                    text = ((BigMoney) value).getAmount().toPlainString();
+                } else {
+                    text = value.toString();
+                }
+            }
+            label.setText(SPACER+ text);
+
+            if (column == 0) {
+                label.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.LIGHT_GRAY));
+            }
+            
+            Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                    : ColorAndFontConstants.BACKGROUND_COLOR);
+            label.setBackground(backgroundColor);
+            label.setForeground(table.getForeground());
+
+            return label;
+        }
+    }
+
+    class CurrencyCenterJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
         MultiBitLabel label = new MultiBitLabel("");

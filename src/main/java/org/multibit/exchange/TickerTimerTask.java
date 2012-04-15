@@ -39,7 +39,7 @@ import com.xeiam.xchange.service.marketdata.Ticker;
  */
 public class TickerTimerTask extends TimerTask {
 
-    public static final int DEFAULT_REPEAT_RATE = 20000; // milliseconds
+    public static final int DEFAULT_REPEAT_RATE = 15000; // milliseconds
 
     private static Logger log = LoggerFactory.getLogger(TickerTimerTask.class);
 
@@ -88,7 +88,12 @@ public class TickerTimerTask extends TimerTask {
         // set the list of currencies we are interested in
         String currency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
         String currency2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY);
-        controller.getModel().getExchangeData().setCurrenciesWeAreInterestedIn(new String[] { currency1, currency2 });
+        String showSecondRow = controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW);
+         if (Boolean.TRUE.toString().equals(showSecondRow)) {
+            controller.getModel().getExchangeData().setCurrenciesWeAreInterestedIn(new String[] { currency1, currency2 });
+        } else {
+            controller.getModel().getExchangeData().setCurrenciesWeAreInterestedIn(new String[] { currency1 });
+        }
 
     }
 
@@ -123,7 +128,6 @@ public class TickerTimerTask extends TimerTask {
                                 controller.getModel().getExchangeData().setLastPrice(loopSymbolPair.counterSymbol, last);
                                 controller.getModel().getExchangeData().setLastBid(loopSymbolPair.counterSymbol, bid);
                                 controller.getModel().getExchangeData().setLastAsk(loopSymbolPair.counterSymbol, ask);
-
                             }
                         }
                     }

@@ -177,9 +177,9 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         boolean showCurrency = dataProvider.getNewShowCurrency();
         boolean showRate = dataProvider.getNewShowRate();
         boolean showBid = dataProvider.getNewShowBid();
-        boolean showAsk =  dataProvider.getNewShowAsk();
-        boolean showExchange =  dataProvider.getNewShowExchange();
-        
+        boolean showAsk = dataProvider.getNewShowAsk();
+        boolean showExchange = dataProvider.getNewShowExchange();
+
         if (dataProvider.getPreviousShowCurrency() != dataProvider.getNewShowCurrency()) {
             wantToFireDataStructureChanged = true;
         } else if (dataProvider.getPreviousShowRate() != dataProvider.getNewShowRate()) {
@@ -191,16 +191,22 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         } else if (dataProvider.getPreviousShowExchange() != dataProvider.getNewShowExchange()) {
             wantToFireDataStructureChanged = true;
         }
-        
+
         String columnsToShow = "";
-        if (showCurrency) columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_CURRENCY;
-        if (showRate) columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_LAST_PRICE;
-        if (showBid) columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_BID;
-        if (showAsk) columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_ASK;
-        if (showExchange) columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_EXCHANGE;
-        
+        if (showCurrency)
+            columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_CURRENCY;
+        if (showRate)
+            columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_LAST_PRICE;
+        if (showBid)
+            columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_BID;
+        if (showAsk)
+            columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_ASK;
+        if (showExchange)
+            columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_EXCHANGE;
+
         if ("".equals(columnsToShow)) {
-            // a user could just switch all the columns off in the settings so put a 'none' in the list of columns
+            // a user could just switch all the columns off in the settings so
+            // put a 'none' in the list of columns
             // this is to stop the default columns appearing
             columnsToShow = TickerTableModel.TICKER_COLUMN_NONE;
         }
@@ -212,14 +218,14 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE, newExchange1);
             wantToFireDataStructureChanged = true;
         }
-        
+
         String previousCurrency1 = dataProvider.getPreviousCurrency1();
         String newCurrency1 = dataProvider.getNewCurrency1();
         if (newCurrency1 != null && !newCurrency1.equals(previousCurrency1)) {
             controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, newCurrency1);
             wantToFireDataStructureChanged = true;
         }
-        
+
         String previousShowSecondRow = new Boolean(dataProvider.getPreviousShowSecondRow()).toString();
         String newShowSecondRow = new Boolean(dataProvider.getNewShowSecondRow()).toString();
         if (newShowSecondRow != null && !newShowSecondRow.equals(previousShowSecondRow)) {
@@ -227,21 +233,28 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW, newShowSecondRow);
             wantToFireDataStructureChanged = true;
         }
-        
+
         String previousExchange2 = dataProvider.getPreviousExchange2();
         String newExchange2 = dataProvider.getNewExchange2();
         if (newExchange2 != null && !newExchange2.equals(previousExchange2)) {
             controller.getModel().setUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE, newExchange2);
             wantToFireDataStructureChanged = true;
         }
-        
+
         String previousCurrency2 = dataProvider.getPreviousCurrency2();
         String newCurrency2 = dataProvider.getNewCurrency2();
         if (newCurrency2 != null && !newCurrency2.equals(previousCurrency2)) {
             controller.getModel().setUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY, newCurrency2);
             wantToFireDataStructureChanged = true;
         }
-        controller.getModel().getExchangeData().setCurrenciesWeAreInterestedIn(new String[] {newCurrency1, newCurrency2});
+
+        // set on the model the currencies we are interested in - only these get
+        // downloaded to save bandwidth/ server time
+        if (dataProvider.getNewShowSecondRow()) {
+            controller.getModel().getExchangeData().setCurrenciesWeAreInterestedIn(new String[] { newCurrency1, newCurrency2 });
+        } else {
+            controller.getModel().getExchangeData().setCurrenciesWeAreInterestedIn(new String[] { newCurrency1 });
+        }
 
         // can undo
         controller.getModel().setUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES, "true");
