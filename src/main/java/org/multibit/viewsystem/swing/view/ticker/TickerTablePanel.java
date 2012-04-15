@@ -76,7 +76,7 @@ public class TickerTablePanel extends JPanel {
     private static final String SPACER = "  "; // 2 spaces
 
     private static final int VERTICAL_DELTA_MAC = 8;
-    private static final int VERTICAL_DELTA_NON_MAC = 16;
+    private static final int VERTICAL_DELTA_NON_MAC = 12;
     private static final int HORIZONTAL_DELTA = 30;
     private static final int SCROLLBAR_WIDTH = 20;
     private static final int PER_COLUMN_DELTA = 2;

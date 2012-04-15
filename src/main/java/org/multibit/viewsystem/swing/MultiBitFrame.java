@@ -379,6 +379,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 0.01;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 2;
+
         constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(filler1, constraints);
 
@@ -451,8 +454,24 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridx = 6;
         constraints.gridy = 0;
         constraints.weightx = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.weighty = 1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+
+        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_TRAILING;
         headerPanel.add(tickerTablePanel, constraints);
+
+        JLabel pusher1 = new JLabel();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 6;
+        constraints.gridy = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 100;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+
+        constraints.anchor = GridBagConstraints.LINE_END;
+        headerPanel.add(pusher1, constraints);
 
         // add a little stent to keep it off the right hand edge on macs
         if (application != null && application.isMac()) {
@@ -460,6 +479,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             constraints.gridx = 7;
             constraints.gridy = 0;
             constraints.weightx = 1;
+            constraints.weighty = 1;
             constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
             headerPanel.add(MultiBitTitledPanel.createStent(8), constraints);
         }
