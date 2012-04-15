@@ -23,6 +23,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +76,7 @@ public class TickerTimerTask extends TimerTask {
                 String[] availableCurrencies = new String[exchangeSymbols.size()];
                 for (int i = 0; i < exchangeSymbols.size(); i++) {
                     availableCurrencies[i] = exchangeSymbols.get(i).counterSymbol;
+                    log.debug("Available currency " + i + " = " +  exchangeSymbols.get(i).counterSymbol);
                 }
                 controller.getModel().getExchangeData()
                         .setAvailableCurrenciesForExchange(ExchangeData.MT_GOX_EXCHANGE_NAME, availableCurrencies);
@@ -87,6 +89,9 @@ public class TickerTimerTask extends TimerTask {
 
         // set the list of currencies we are interested in
         String currency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
+        if (currency1 == null || "".equals(currency1)) {
+            currency1 = TickerTableModel.DEFAULT_CURRENCY;
+        }
         String currency2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY);
         String showSecondRow = controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW);
          if (Boolean.TRUE.toString().equals(showSecondRow)) {

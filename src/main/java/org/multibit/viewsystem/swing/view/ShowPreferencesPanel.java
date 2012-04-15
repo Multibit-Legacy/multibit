@@ -116,7 +116,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     private boolean originalShowBid;
     private boolean originalShowAsk;
     private boolean originalShowExchange;
-    
+
     private JCheckBox showCurrency;
     private JCheckBox showLastPrice;
     private JCheckBox showBid;
@@ -137,7 +137,6 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     private JComboBox exchangeComboBox2;
     private JComboBox currencyComboBox2;
     private static final int TICKER_COMBO_WIDTH_DELTA = 80;
-
 
     private Font selectedFont;
 
@@ -764,24 +763,24 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         if (tickerColumnsToShow == null || tickerColumnsToShow.equals("")) {
             tickerColumnsToShow = TickerTableModel.DEFAULT_COLUMNS_TO_SHOW;
         }
-        
+
         originalShowCurrency = tickerColumnsToShow.indexOf(TickerTableModel.TICKER_COLUMN_CURRENCY) > -1;
         showCurrency.setSelected(originalShowCurrency);
-        
+
         originalShowRate = tickerColumnsToShow.indexOf(TickerTableModel.TICKER_COLUMN_LAST_PRICE) > -1;
         showLastPrice.setSelected(originalShowRate);
-        
+
         originalShowBid = tickerColumnsToShow.indexOf(TickerTableModel.TICKER_COLUMN_BID) > -1;
         showBid.setSelected(originalShowBid);
-        
+
         originalShowAsk = tickerColumnsToShow.indexOf(TickerTableModel.TICKER_COLUMN_ASK) > -1;
         showAsk.setSelected(originalShowAsk);
-        
+
         originalShowExchange = tickerColumnsToShow.indexOf(TickerTableModel.TICKER_COLUMN_EXCHANGE) > -1;
         showExchange.setSelected(originalShowExchange);
 
-        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(controller.getLocaliser()
-                .getString("showPreferencesPanel.ticker.columnsToShow"), 4, tickerPanel);
+        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
+                controller.getLocaliser().getString("showPreferencesPanel.ticker.columnsToShow"), 4, tickerPanel);
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
@@ -851,12 +850,23 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.anchor = GridBagConstraints.LINE_END;
         tickerPanel.add(exchangeLabel1, constraints);
 
-        exchangeComboBox1 = new JComboBox(controller.getModel().getExchangeData().getAvailableExchanges());
+        String exchangeToUse1;
         if (originalExchange1 == null | "".equals(originalExchange1)) {
-            exchangeComboBox1.setSelectedItem(ExchangeData.DEFAULT_EXCHANGE);
+            exchangeToUse1 = ExchangeData.DEFAULT_EXCHANGE;
         } else {
-            exchangeComboBox1.setSelectedItem(originalExchange1);
+            exchangeToUse1 = originalExchange1;
         }
+
+        String exchangeToUse2;
+        if (originalExchange2 == null | "".equals(originalExchange2)) {
+            exchangeToUse2 = ExchangeData.DEFAULT_EXCHANGE;
+        } else {
+            exchangeToUse2 = originalExchange2;
+        }
+
+        exchangeComboBox1 = new JComboBox(controller.getModel().getExchangeData().getAvailableExchanges());
+        exchangeComboBox1.setSelectedItem(exchangeToUse1);
+
         exchangeComboBox1.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         if (mainFrame.getApplication().isMac()) {
             exchangeComboBox1.setUI(new MetalComboBoxUI());
@@ -890,7 +900,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         tickerPanel.add(currencyLabel1, constraints);
 
         currencyComboBox1 = new JComboBox(controller.getModel().getExchangeData()
-                .getAvailableCurrenciesForExchange(originalExchange1));
+                .getAvailableCurrenciesForExchange(exchangeToUse1));
         if (originalCurrency1 == null | "".equals(originalCurrency1)) {
             currencyComboBox1.setSelectedItem(ExchangeData.DEFAULT_CURRENCY);
         } else {
@@ -950,11 +960,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         tickerPanel.add(exchangeLabel2, constraints);
 
         exchangeComboBox2 = new JComboBox(controller.getModel().getExchangeData().getAvailableExchanges());
-        if (originalExchange2 == null | "".equals(originalExchange2)) {
-            exchangeComboBox2.setSelectedItem(ExchangeData.DEFAULT_EXCHANGE);
-        } else {
-            exchangeComboBox2.setSelectedItem(originalExchange2);
-        }
+        exchangeComboBox2.setSelectedItem(exchangeToUse2);
 
         exchangeComboBox2.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         if (mainFrame.getApplication().isMac()) {
@@ -984,7 +990,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         tickerPanel.add(currencyLabel2, constraints);
 
         currencyComboBox2 = new JComboBox(controller.getModel().getExchangeData()
-                .getAvailableCurrenciesForExchange(originalExchange2));
+                .getAvailableCurrenciesForExchange(exchangeToUse2));
         if (originalCurrency2 == null | "".equals(originalCurrency2)) {
             currencyComboBox2.setSelectedItem(ExchangeData.DEFAULT_CURRENCY);
         } else {
@@ -1491,7 +1497,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
     @Override
     public boolean getNewShowAsk() {
-       return showAsk.isSelected();
+        return showAsk.isSelected();
     }
 
     @Override
