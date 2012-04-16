@@ -841,7 +841,8 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         MultiBitLabel exchangeLabel1 = new MultiBitLabel(controller.getLocaliser()
                 .getString("showPreferencesPanel.ticker.exchange"));
-        constraints.fill = GridBagConstraints.NONE;
+        exchangeLabel1.setHorizontalAlignment(JLabel.TRAILING);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 12;
         constraints.weightx = 0.3;
@@ -890,7 +891,8 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         MultiBitLabel currencyLabel1 = new MultiBitLabel(controller.getLocaliser()
                 .getString("showPreferencesPanel.ticker.currency"));
-        constraints.fill = GridBagConstraints.NONE;
+        currencyLabel1.setHorizontalAlignment(JLabel.TRAILING);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 13;
         constraints.weightx = 0.3;
@@ -950,7 +952,8 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         tickerPanel.add(showSecondRowCheckBox, constraints);
 
         exchangeLabel2 = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.ticker.exchange"));
-        constraints.fill = GridBagConstraints.NONE;
+        exchangeLabel2.setHorizontalAlignment(JLabel.TRAILING);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 17;
         constraints.weightx = 0.3;
@@ -980,7 +983,8 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         tickerPanel.add(exchangeComboBox2, constraints);
 
         currencyLabel2 = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.ticker.currency"));
-        constraints.fill = GridBagConstraints.NONE;
+        currencyLabel2.setHorizontalAlignment(JLabel.TRAILING);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 18;
         constraints.weightx = 0.3;

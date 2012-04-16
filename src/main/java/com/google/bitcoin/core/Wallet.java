@@ -1052,6 +1052,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
     }
 
     private void removeEntriesAfterDate(Map<Sha256Hash, Transaction> pool, Date fromDate) {
+        System.out.println("Wallet#removeEntriesAfterDate - Removing transactions later than " + fromDate.toString());
         Set<Entry<Sha256Hash, Transaction>> loopEntries = pool.entrySet();
         Iterator<Entry<Sha256Hash, Transaction>> iterator = loopEntries.iterator();
         while(iterator.hasNext()) {
@@ -1060,13 +1061,13 @@ public class Wallet implements Serializable, IsMultiBitClass {
                 Date updatedAt = member.getValue().getUpdatedAt();
                 if (updatedAt != null && updatedAt.after(fromDate)) {
                     iterator.remove();
-                    System.out.println("Removed tx.1 " + member.getValue());
+                    System.out.println("Wallet#removeEntriesAfterDate - Removed tx.1 " + member.getValue());
                     continue;
                 }
                 Date updateTime = member.getValue().getUpdateTime();
                 if (updateTime != null && updateTime.after(fromDate)) {
                     iterator.remove();
-                    System.out.println("Removed tx.2 " + member.getValue());
+                    System.out.println("Wallet#removeEntriesAfterDate - Removed tx.2 " + member.getValue());
                     continue;
                 }
                 

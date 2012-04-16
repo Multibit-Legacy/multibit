@@ -60,6 +60,8 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
     private JPasswordField passwordField;
 
     private static final long BUTTON_DOWNCLICK_TIME = 400;
+    
+    private static final long NUMBER_OF_MILLISECONDS_IN_A_SECOND = 1000;
 
     /**
      * Creates a new {@link ImportPrivateKeysSubmitAction}.
@@ -148,6 +150,10 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                         for (PrivateKeyAndDate privateKeyAndDate : privateKeyAndDateArray) {
                             ECKey keyToAdd = privateKeyAndDate.getKey();
                             if (keyToAdd != null) {
+                                if (privateKeyAndDate.getDate() != null) {
+                                    keyToAdd.setCreationTimeSeconds(privateKeyAndDate.getDate().getTime() / NUMBER_OF_MILLISECONDS_IN_A_SECOND);
+                                }
+                                
                                 if (walletToAddKeysTo != null
                                         && !keyChainContainsPrivateKey(walletToAddKeysTo.getKeychain(), keyToAdd)) {
                                     walletToAddKeysTo.addKey(keyToAdd);
@@ -166,6 +172,9 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                             }
                         }
                     }
+                    
+                    log.debug(walletToAddKeysTo.toString());
+                    
                     controller.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
                     controller.getModel().createAddressBookReceivingAddresses(finalPerWalletModelData.getWalletFilename());
                     SwingUtilities.invokeLater(new Runnable() {

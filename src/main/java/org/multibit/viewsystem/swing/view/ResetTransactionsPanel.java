@@ -73,11 +73,11 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
     private MultiBitLabel walletDescriptionLabel;
 
     private Date resetDate;
-    
+
     private static final int CALENDAR_BORDER_WIDTH = 4;
-    
+
     private static final int NUMBER_OF_HOURS_IN_A_DAY = 24;
-    
+
     private static final int DEFAULT_NUMBER_OF_DAYS = 14;
 
     private final SimpleDateFormat dateFormatter;
@@ -94,12 +94,18 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         setLayout(new BorderLayout());
-                                                                                    // ago
-        // default reset date is 2 weeks ago
+
+        // default reset date is the beginning of the day 2 weeks ago
         Calendar now = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         now.add(Calendar.HOUR, -1 * NUMBER_OF_HOURS_IN_A_DAY * DEFAULT_NUMBER_OF_DAYS);
+
+        now.set(Calendar.HOUR_OF_DAY, 0);
+        now.set(Calendar.MINUTE, 0);
+        now.set(Calendar.SECOND, 0);
+        now.set(Calendar.MILLISECOND, 0);
+
         resetDate = now.getTime();
-        
+
         dateFormatter = new SimpleDateFormat("dd MMM yyyy", controller.getLocaliser().getLocale());
 
         initUI();
@@ -231,7 +237,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         explainPanel.add(explainTextArea1, constraints);
-        
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 5;
@@ -416,7 +422,8 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
         // Create a border for the calendar
         Border etchedBorder = BorderFactory.createEtchedBorder();
-        Border emptyBorder = BorderFactory.createEmptyBorder(CALENDAR_BORDER_WIDTH, CALENDAR_BORDER_WIDTH, CALENDAR_BORDER_WIDTH, CALENDAR_BORDER_WIDTH);
+        Border emptyBorder = BorderFactory.createEmptyBorder(CALENDAR_BORDER_WIDTH, CALENDAR_BORDER_WIDTH, CALENDAR_BORDER_WIDTH,
+                CALENDAR_BORDER_WIDTH);
         Border compoundBorder = BorderFactory.createCompoundBorder(etchedBorder, emptyBorder);
 
         calendarChooser = new JCalendar(resetDate, controller.getLocaliser().getLocale(), true, false);
@@ -434,7 +441,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         calendarChooser.setDate(resetDate);
         calendarChooser.setBorder(compoundBorder);
         calendarChooser.setEnabled(false);
-        
+
         ItemListener itemListener = new ChangeResetDateListener();
         resetFromFirstTransactionRadioButton.addItemListener(itemListener);
         chooseResetDateRadioButton.addItemListener(itemListener);
@@ -446,7 +453,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        resetDatePanel.add(MultiBitTitledPanel.createStent(8,8), constraints);
+        resetDatePanel.add(MultiBitTitledPanel.createStent(8, 8), constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;

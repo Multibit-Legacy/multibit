@@ -49,6 +49,10 @@ public class FileHandlerTest extends TestCase {
 
     public static final String TEST_CREATE_AND_DELETE1_WALLET_PREFIX = "testCreateAndDelete1";
 
+    public static final String WALLET_TEST033B = "test033b.wallet";
+
+    public static final String WALLET_TEST033C = "test033c.wallet";
+
     @Test
     public void testLoadTest1() throws IOException {
         MultiBitController controller = new MultiBitController();
@@ -105,7 +109,7 @@ public class FileHandlerTest extends TestCase {
 
         assertEquals(WALLET_TEST2_BALANCE, perWalletModelData.getWallet().getBalance());
     }
-    
+
     @Test
     public void testCreateAndDeleteWallet1() throws IOException {
         MultiBitController controller = new MultiBitController();
@@ -114,7 +118,7 @@ public class FileHandlerTest extends TestCase {
 
         File temporaryWallet = File.createTempFile(TEST_CREATE_AND_DELETE1_WALLET_PREFIX, ".wallet");
         temporaryWallet.deleteOnExit();
-        
+
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
         // create a new wallet
@@ -131,18 +135,18 @@ public class FileHandlerTest extends TestCase {
         // check the wallet and wallet info file exists
         File newWalletFile = new File(newWalletFilename);
         assertTrue(newWalletFile.exists());
-        
+
         String walletInfoFileAsString = WalletInfo.createWalletInfoFilename(newWalletFilename);
 
         File walletInfoFile = new File(walletInfoFileAsString);
         assertTrue(walletInfoFile.exists());
- 
+
         // check wallet can be loaded
         PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
         assertNotNull(perWalletModelDataReborn);
         assertEquals(BigInteger.ZERO, perWalletModelDataReborn.getWallet().getBalance());
         assertEquals(TEST_CREATE_AND_DELETE1_WALLET_PREFIX, perWalletModelDataReborn.getWalletDescription());
-        
+
         // delete wallet
         fileHandler.deleteWalletAndWalletInfo(perWalletModelDataReborn);
         assertTrue(!newWalletFile.exists());

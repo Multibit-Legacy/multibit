@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view.ticker;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
@@ -75,7 +76,7 @@ public class TickerTablePanel extends JPanel {
 
     private static final String SPACER = "  "; // 2 spaces
 
-    private static final int VERTICAL_DELTA_MAC = 8;
+    private static final int VERTICAL_DELTA_MAC = 6;
     private static final int VERTICAL_DELTA_NON_MAC = 12;
     private static final int HORIZONTAL_DELTA = 30;
     private static final int SCROLLBAR_WIDTH = 20;
@@ -88,7 +89,7 @@ public class TickerTablePanel extends JPanel {
         this.controller = controller;
         this.mainFrame = mainFrame;
 
-        font = FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-2);
+        font = FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-1);
         fontMetrics = getFontMetrics(font);
 
         initUI();
@@ -127,11 +128,16 @@ public class TickerTablePanel extends JPanel {
         GridBagConstraints constraints = new GridBagConstraints();
 
         tickerTableModel = new TickerTableModel(controller);
+        JPanel tableEncloser = new JPanel();
+        tableEncloser.setOpaque(false);
+        tableEncloser.setLayout(new BorderLayout());
+        
         table = new JTable(tickerTableModel);
         table.setOpaque(true);
         table.setShowGrid(true);
         table.setGridColor(Color.lightGray);
-
+        table.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        
         table.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         table.setRowHeight(getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight());
 
@@ -195,18 +201,18 @@ public class TickerTablePanel extends JPanel {
             verticalDelta = VERTICAL_DELTA_NON_MAC;
         }
 
-        setPreferredSize(new Dimension(tickerWidth, (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1)
-                + verticalDelta));
+        int idealHeight = (1 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta;
+        setPreferredSize(new Dimension(tickerWidth, idealHeight));
 
-        JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+        tableEncloser.add(table.getTableHeader(), BorderLayout.NORTH);
+        tableEncloser.add(table, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(tableEncloser, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.getViewport().setPreferredSize(
-                new Dimension(tickerWidth - 2, (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta
-                        - 2));
-        scrollPane.setMinimumSize(new Dimension(tickerWidth, (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1)
-                + verticalDelta));
+                new Dimension(tickerWidth, idealHeight));
+        scrollPane.setMinimumSize(new Dimension(tickerWidth, Math.min(idealHeight, MultiBitFrame.HEIGHT_OF_HEADER)));
 
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -260,7 +266,7 @@ public class TickerTablePanel extends JPanel {
             if (column == 0) {
                 label.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.LIGHT_GRAY));
             }
-            
+
             Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
                     : ColorAndFontConstants.BACKGROUND_COLOR);
             label.setBackground(backgroundColor);
@@ -269,7 +275,7 @@ public class TickerTablePanel extends JPanel {
             return label;
         }
     }
-    
+
     class LeadingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
@@ -289,12 +295,12 @@ public class TickerTablePanel extends JPanel {
                     text = value.toString();
                 }
             }
-            label.setText(SPACER+ text);
+            label.setText(SPACER + text);
 
             if (column == 0) {
                 label.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.LIGHT_GRAY));
             }
-            
+
             Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
                     : ColorAndFontConstants.BACKGROUND_COLOR);
             label.setBackground(backgroundColor);

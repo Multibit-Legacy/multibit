@@ -23,6 +23,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -99,6 +100,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final int WALLET_WIDTH_DELTA = 30;
 
     private static final int SCROLL_BAR_DELTA = 20;
+
+    public static final int HEIGHT_OF_HEADER = 64;
 
     private StatusBar statusBar;
     private boolean online = false;
@@ -364,8 +367,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private JPanel createBalancePanel() {
         JPanel headerPanel = new JPanel();
 
-        headerPanel.setMinimumSize(new Dimension(700, 60));
-        headerPanel.setPreferredSize(new Dimension(700, 60));
+        headerPanel.setMinimumSize(new Dimension(700, HEIGHT_OF_HEADER));
+        headerPanel.setPreferredSize(new Dimension(700, HEIGHT_OF_HEADER));
         headerPanel.setOpaque(false);
 
         headerPanel.setLayout(new GridBagLayout());
@@ -392,9 +395,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             walletIconLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.RTL_WALLET_ICON_FILE));
         }
         walletIconLabel.setOpaque(false);
-        walletIconLabel.setMinimumSize(new Dimension(60, 50));
-        walletIconLabel.setMaximumSize(new Dimension(60, 50));
-        walletIconLabel.setPreferredSize(new Dimension(60, 50));
+        walletIconLabel.setMinimumSize(new Dimension(60, HEIGHT_OF_HEADER - 10));
+        walletIconLabel.setMaximumSize(new Dimension(60, HEIGHT_OF_HEADER - 10));
+        walletIconLabel.setPreferredSize(new Dimension(60, HEIGHT_OF_HEADER - 10));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 0;
@@ -473,16 +476,21 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.anchor = GridBagConstraints.LINE_END;
         headerPanel.add(pusher1, constraints);
 
-        // add a little stent to keep it off the right hand edge on macs
-        if (application != null && application.isMac()) {
-            constraints.fill = GridBagConstraints.HORIZONTAL;
-            constraints.gridx = 7;
-            constraints.gridy = 0;
-            constraints.weightx = 1;
-            constraints.weighty = 1;
-            constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
-            headerPanel.add(MultiBitTitledPanel.createStent(8), constraints);
+        // add a little stent to keep it off the right hand edge
+        int stent = 6;  // a reasonable default
+        Insets tabAreaInsets = UIManager.getInsets("TabbedPane.tabAreaInsets");
+        if (tabAreaInsets != null) {
+            log.debug("Setting ticker right stent to " + tabAreaInsets.right);
+            stent = tabAreaInsets.right;
         }
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 7;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
+        headerPanel.add(MultiBitTitledPanel.createStent(stent), constraints);
+
         return headerPanel;
     }
 
@@ -621,12 +629,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setComponentOrientation(componentOrientation);
         viewMenu.add(menuItem);
 
-//        MultiBitAction exchangesSetupAction = new MultiBitAction(controller, ImageLoader.EXCHANGES_ICON_FILE,
-//                "exchangesSetup.text", "exchangesSetup.tooltip", "showTransactionsAction.mnemonic", View.PREFERENCES_VIEW);
-//        menuItem = new JMenuItem(exchangesSetupAction);
-//        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-//        menuItem.setComponentOrientation(componentOrientation);
-//        viewMenu.add(menuItem);
+        // MultiBitAction exchangesSetupAction = new MultiBitAction(controller,
+        // ImageLoader.EXCHANGES_ICON_FILE,
+        // "exchangesSetup.text", "exchangesSetup.tooltip",
+        // "showTransactionsAction.mnemonic", View.PREFERENCES_VIEW);
+        // menuItem = new JMenuItem(exchangesSetupAction);
+        // menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        // menuItem.setComponentOrientation(componentOrientation);
+        // viewMenu.add(menuItem);
 
         // send bitcoin action
         MultiBitAction sendBitcoinAction = new MultiBitAction(controller, ImageLoader.SEND_BITCOIN_ICON_FILE,
