@@ -163,18 +163,22 @@ public class MultiBitService {
 
             blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), false);
 
-            log.debug("Connecting ...");
+            log.debug("Creating blockchain ...");
             blockChain = new MultiBitBlockChain(networkParameters, blockStore);
+            log.debug("Created blockchain '" + blockChain + "'");
 
+            log.debug("Creating peergroup ...");
             peerGroup = createNewPeerGroup();
+            log.debug("Created peergroup '" + peerGroup + "'");
+
+            log.debug("Starting peergroup ...");
             peerGroup.start();
+            log.debug("Started peergroup.");
         } catch (BlockStoreException e) {
-            log.error("multiBitService.errorText", new Object[] { e.getClass().getName() + " " + e.getMessage() },
-                    "multiBitService.errorTitleText");
+            log.error("Error creating MultiBitService.1 " + e.getClass().getName() + " " + e.getMessage() );
         } catch (Exception e) {
-            log.error("multiBitService.errorText", new Object[] { e.getClass().getName() + " " + e.getMessage() },
-                    "multiBitService.errorTitleText");
-        }
+            log.error("Error creating MultiBitService.2 " + e.getClass().getName() + " " + e.getMessage() );
+                   }
     }
 
     private MultiBitPeerGroup createNewPeerGroup() {
@@ -182,9 +186,6 @@ public class MultiBitService {
         peerGroup.setFastCatchupTimeSecs(0); // genesis block
         peerGroup.setUserAgent("MultiBit", controller.getLocaliser().getVersionNumber());
         
-        // this event listener puts the number of peers to the log
-        //peerGroup.addEventListener(new CountPeerEventListener());
-
         String singleNodeConnection = controller.getModel().getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
         if (singleNodeConnection != null && !singleNodeConnection.equals("")) {
             try {
@@ -192,7 +193,6 @@ public class MultiBitService {
                 peerGroup.setMaxConnections(1);
             } catch (UnknownHostException e) {
                 log.error(e.getMessage(), e);
-
             }
         } else {
             // use DNS for production, IRC for test
@@ -301,7 +301,12 @@ public class MultiBitService {
             }
 
             // add wallet to blockchain
+            if (blockChain != null) {
             blockChain.addWallet(wallet);
+            } else {
+                log.error("Could not add wallet '" + walletFilename + "' to the blockChain as the blockChain is missing.\n" +
+                		"This is bad. MultiBit is currently looking for a blockChain at '" + blockchainFilename + "'");
+            }
 
             // add wallet to PeerGroup - this is done in a background thread as it is slow
             @SuppressWarnings("rawtypes")
@@ -334,8 +339,9 @@ public class MultiBitService {
             // create empty new block store
             blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), true);
 
-            log.debug("Creating new blockStore - need to redownload from Genesis block");
+            log.debug("Creating new blockStore.2 - need to redownload from Genesis block");
             blockChain = new MultiBitBlockChain(networkParameters, (BlockStore) blockStore);
+            log.debug("Created new blockStore.2 '" + blockChain + "'");
         } else {
             StoredBlock storedBlock = blockStore.getChainHead();
 
