@@ -111,6 +111,7 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
                         }
                     }
                 }
+                actualResetDate = earliestTransactionDate;
 
                 // also look at the earliest key creation time - this is
                 // returned in
