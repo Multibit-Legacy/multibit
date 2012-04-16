@@ -1,10 +1,22 @@
 MultiBit release notes.
 
+16 Apr 2012 Version 0.3.3
+Enhancements:
++  Added FastCatchup for fast new user blockchain synchronisation (less than 1 minute)
++  Added currency ticker with support for MtGox exchange
++  Address books are now sorted and current row moves-as-you-type
++  Welcome screen added : available in de, en, es, nl.
++  From the transactions details dialog, the user can open transaction details 
+   in blockchain.info or blockexplorer.com in a browser
++  Can now specify a date from which to reset the blockchain and transactions
+
+
 01 Apr 2012 Version 0.3.2
 Bug fixes:
 +  Fix so that mining pool coinbase transactions appear in wallets correctly.
 +  Fix in documentation 'configuration.txt' incorrect parameter name specified.
 +  Tweaked point size of first-install default font (+1)
+
 
 28 Mar 2012 Version 0.3.1
 Enhancements:

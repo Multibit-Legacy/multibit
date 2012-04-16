@@ -31,8 +31,6 @@ import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
 import com.xeiam.xchange.SymbolPair;
 import com.xeiam.xchange.service.marketdata.MarketDataService;
-import com.xeiam.xchange.service.marketdata.Order;
-import com.xeiam.xchange.service.marketdata.OrderBook;
 import com.xeiam.xchange.service.marketdata.Ticker;
 
 /**
@@ -40,7 +38,7 @@ import com.xeiam.xchange.service.marketdata.Ticker;
  */
 public class TickerTimerTask extends TimerTask {
 
-    public static final int DEFAULT_REPEAT_RATE = 15000; // milliseconds
+    public static final int DEFAULT_REPEAT_RATE = 20000; // milliseconds
 
     private static Logger log = LoggerFactory.getLogger(TickerTimerTask.class);
 
