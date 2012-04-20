@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package com.piuk.blockchain;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
@@ -38,8 +38,10 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.encoders.Hex;
-import org.json.simple.JSONValue; 
-import org.json.simple.parser.JSONParser;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 
 import com.google.bitcoin.core.Base58;
 import com.google.bitcoin.core.ECKey;
@@ -62,20 +64,20 @@ public class MyWallet {
 		if (root == null)
 			throw new Exception("Error Decrypting Wallet");
 	}
-	
+
 	public MyWallet(String base64Payload) throws Exception {
 		this.root = parsePlainPayload(base64Payload);
 
 		if (root == null)
 			throw new Exception("Error Decrypting Wallet");
 	}
-	
+
 	public static byte[] concat(byte[] first, byte[] second) {
 		byte[] result = Arrays.copyOf(first, first.length + second.length);
-		  System.arraycopy(second, 0, result, first.length, second.length);
-		  return result;
+		System.arraycopy(second, 0, result, first.length, second.length);
+		return result;
 	}
-	
+
 	//Create a new Wallet 
 	public MyWallet() throws Exception {
 		this.root = new HashMap<String, Object>();
@@ -92,7 +94,6 @@ public class MyWallet {
 		addKey(new ECKey(), "New");
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> getKeysMap() {
 		return (List<Map<String, Object>>) root.get("keys");
 	}
@@ -105,7 +106,7 @@ public class MyWallet {
 		} 
 		return list.toArray(new String[list.size()]);
 	}
-	
+
 	public String[] getArchivedAddresses() {
 		List<String> list = new ArrayList<String>();
 		for (Map<String, Object> map : getKeysMap()) {
@@ -115,7 +116,6 @@ public class MyWallet {
 		return list.toArray(new String[list.size()]);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> getAddressBookMap() {
 		return (List<Map<String, Object>>) root.get("address_book");
 	}
@@ -150,7 +150,19 @@ public class MyWallet {
 	}
 
 	public String toJSONString() {
-		return JSONValue.toJSONString(root);
+		ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
+
+		try {
+			return mapper.writer().writeValueAsString(root);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	public String getPayload() throws Exception {
@@ -237,7 +249,7 @@ public class MyWallet {
 			findKey(address).put("tag", tag);
 		}
 	}
-	
+
 	public void addLabel(String address, String label) {
 		if (this.isMine(address)) {
 			findKey(address).put("label", label);
@@ -400,26 +412,27 @@ public class MyWallet {
 		return encrypt(key, sharedKey + password);
 	}
 
-	
-	public static Map<String, Object> parsePlainPayload(String payload) throws Exception {
-		JSONParser parser = new JSONParser();
-       
+
+	public static Map<String, Object> parsePlainPayload(String payload) throws Exception {       
+		ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
+
+		TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {}; 
 		try {
-			return (Map<String, Object>) parser.parse(payload);
+			return (Map<String, Object>) mapper.readValue(payload, typeRef);
 		} catch (Exception e) {
-			System.out.println(payload);
-			
+			System.out.println(payload + " " + e.getLocalizedMessage());
+
 			throw e;
 		}
 	}
-	
+
 	//Decrypt a Wallet file and parse the JSON
 	public static Map<String, Object> decryptPayload(String payload, String password) throws Exception {
 		if (payload == null || payload.length() == 0 || password == null || password.length() == 0)
 			return null;
 
 		String decrypted = decrypt(payload, password);
-		
+
 		if (decrypted == null || decrypted.length() == 0)
 			return null;
 

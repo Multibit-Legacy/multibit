@@ -17,7 +17,6 @@ package com.piuk.blockchain;
 
 import java.io.File;
 
-import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 
 public class MyWalletPlainKeyFileFilter extends javax.swing.filechooser.FileFilter {
