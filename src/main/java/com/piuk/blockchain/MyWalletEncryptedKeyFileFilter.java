@@ -13,28 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package com.piuk.blockchain;
 
 import java.io.File;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 
-public class PrivateKeyFileFilter extends javax.swing.filechooser.FileFilter {
+public class MyWalletEncryptedKeyFileFilter extends javax.swing.filechooser.FileFilter {
 
-    private static final String MAC_APPLICATION_SUFFIX = ".app";
-    private MultiBitController controller;
-    
-    public PrivateKeyFileFilter(MultiBitController controller) {
-        this.controller = controller;
-    }
+    public MyWalletEncryptedKeyFileFilter() {    }
     
     public boolean accept(File file) {
-        return (file.isDirectory() && !(file.getName().toLowerCase().endsWith(MAC_APPLICATION_SUFFIX))) || (file.getName().toLowerCase().endsWith(MultiBitModel.PRIVATE_KEY_FILE_EXTENSION));
+        return (file.getName().toLowerCase().endsWith(MultiBitModel.BLOCKCHAIN_WALLET_ENCRYPTED_SUFFIX));
     }
 
     public String getDescription() {
-        String multiBitText = controller.getLocaliser().getString("multiBitFrame.title");
-        return multiBitText + " (*." + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION + ")";
+        String multiBitText = "";
+        
+        multiBitText += "Blockchain.info " + " (*." + MultiBitModel.BLOCKCHAIN_WALLET_ENCRYPTED_SUFFIX + ")";
+
+         return multiBitText;
     }
 }
