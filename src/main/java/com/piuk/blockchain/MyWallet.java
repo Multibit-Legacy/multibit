@@ -375,7 +375,7 @@ public class MyWallet {
 	public static String encrypt(String text, String password) throws Exception{
 
 		if (password == null)
-			throw new Exception("You must provide an ecryption password");
+			throw new Exception("You must provide an encryption password");
 
 		//Use secure random to generate a 16 byte iv
 		SecureRandom random = new SecureRandom();

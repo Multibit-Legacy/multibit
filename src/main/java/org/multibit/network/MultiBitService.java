@@ -175,17 +175,17 @@ public class MultiBitService {
             peerGroup.start();
             log.debug("Started peergroup.");
         } catch (BlockStoreException e) {
-            log.error("Error creating MultiBitService.1 " + e.getClass().getName() + " " + e.getMessage() );
+            log.error("Error creating MultiBitService.1 " + e.getClass().getName() + " " + e.getMessage());
         } catch (Exception e) {
-            log.error("Error creating MultiBitService.2 " + e.getClass().getName() + " " + e.getMessage() );
-                   }
+            log.error("Error creating MultiBitService.2 " + e.getClass().getName() + " " + e.getMessage());
+        }
     }
 
     private MultiBitPeerGroup createNewPeerGroup() {
         MultiBitPeerGroup peerGroup = new MultiBitPeerGroup(controller, networkParameters, blockChain);
         peerGroup.setFastCatchupTimeSecs(0); // genesis block
         peerGroup.setUserAgent("MultiBit", controller.getLocaliser().getVersionNumber());
-        
+
         String singleNodeConnection = controller.getModel().getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
         if (singleNodeConnection != null && !singleNodeConnection.equals("")) {
             try {
@@ -302,13 +302,14 @@ public class MultiBitService {
 
             // add wallet to blockchain
             if (blockChain != null) {
-            blockChain.addWallet(wallet);
+                blockChain.addWallet(wallet);
             } else {
-                log.error("Could not add wallet '" + walletFilename + "' to the blockChain as the blockChain is missing.\n" +
-                		"This is bad. MultiBit is currently looking for a blockChain at '" + blockchainFilename + "'");
+                log.error("Could not add wallet '" + walletFilename + "' to the blockChain as the blockChain is missing.\n"
+                        + "This is bad. MultiBit is currently looking for a blockChain at '" + blockchainFilename + "'");
             }
 
-            // add wallet to PeerGroup - this is done in a background thread as it is slow
+            // add wallet to PeerGroup - this is done in a background thread as
+            // it is slow
             @SuppressWarnings("rawtypes")
             SwingWorker worker = new SwingWorker() {
                 @Override
@@ -318,7 +319,7 @@ public class MultiBitService {
                 }
             };
             worker.execute();
-         }
+        }
 
         return perWalletModelDataToReturn;
     }
@@ -409,22 +410,34 @@ public class MultiBitService {
             blockChain.setChainHeadClearCachesAndTruncateBlockStore(storedBlock);
         }
 
+        log.debug("ping1");
         // restart peerGroup and download
         String message = controller.getLocaliser().getString("multiBitService.stoppingBitcoinNetworkConnection");
         controller.updateStatusLabel(message, false);
         peerGroup.stop();
+        log.debug("ping2");
 
         // reset UI to zero peers
         controller.onPeerDisconnected(null, 0);
-        
-        message = controller.getLocaliser().getString("resetTransactionSubmitAction.replayingBlockchain", new Object[]{DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale())
-                .format(dateToReplayFrom)});
+        log.debug("ping3");
+        if (dateToReplayFrom != null) {
+            message = controller.getLocaliser().getString(
+                    "resetTransactionSubmitAction.replayingBlockchain",
+                    new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
+                            dateToReplayFrom) });
+        } else {
+            message = controller.getLocaliser().getString(
+                    "resetTransactionSubmitAction.replayingBlockchain",
+                    new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
+                            genesisBlockCreationDate) });
+        }
         controller.updateStatusLabel(message, false);
-
+        log.debug("ping4");
         peerGroup = createNewPeerGroup();
         peerGroup.start();
-
+        log.debug("ping5");
         downloadBlockChain();
+        log.debug("ping6");
     }
 
     /**
@@ -452,7 +465,8 @@ public class MultiBitService {
      *            fee to pay in nanocoin
      * @param amount
      *            the amount to send to, in BTC, as a String
-     * @return The sent transaction (may be null if there were insufficient funds for send)
+     * @return The sent transaction (may be null if there were insufficient
+     *         funds for send)
      */
 
     public Transaction sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee)
@@ -461,8 +475,8 @@ public class MultiBitService {
         Address sendAddress = new Address(networkParameters, sendAddressString);
 
         log.debug("MultiBitService#sendCoins - Just about to send coins");
-        Transaction sendTransaction = perWalletModelData.getWallet().sendCoinsAsync(peerGroup, sendAddress, Utils.toNanoCoins(amount),
-                fee);
+        Transaction sendTransaction = perWalletModelData.getWallet().sendCoinsAsync(peerGroup, sendAddress,
+                Utils.toNanoCoins(amount), fee);
         log.debug("MultiBitService#sendCoins - Sent coins has completed");
 
         assert sendTransaction != null; // We should never try to send more
@@ -476,7 +490,8 @@ public class MultiBitService {
             // clone the sent transaction
             try {
                 Transaction clonedSentTransaction = new Transaction(networkParameters, sendTransaction.bitcoinSerialize());
-                // modify the transaction so that its TransactionOutputs are unspent
+                // modify the transaction so that its TransactionOutputs are
+                // unspent
                 // what is spent from the perspective of the sender is available
                 // to the recipient
                 clonedSentTransaction.markOutputsAsSpendable();
@@ -496,7 +511,8 @@ public class MultiBitService {
             }
 
         } else {
-            // transaction was null - not enough funds - dealt with at the UI level
+            // transaction was null - not enough funds - dealt with at the UI
+            // level
         }
         return sendTransaction;
     }
@@ -512,7 +528,7 @@ public class MultiBitService {
     public NetworkParameters getNetworkParameters() {
         return networkParameters;
     }
-    
+
     public ReplayableBlockStore getBlockStore() {
         return blockStore;
     }
