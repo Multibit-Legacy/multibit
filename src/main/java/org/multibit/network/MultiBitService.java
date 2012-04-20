@@ -410,16 +410,14 @@ public class MultiBitService {
             blockChain.setChainHeadClearCachesAndTruncateBlockStore(storedBlock);
         }
 
-        log.debug("ping1");
         // restart peerGroup and download
         String message = controller.getLocaliser().getString("multiBitService.stoppingBitcoinNetworkConnection");
         controller.updateStatusLabel(message, false);
         peerGroup.stop();
-        log.debug("ping2");
 
         // reset UI to zero peers
         controller.onPeerDisconnected(null, 0);
-        log.debug("ping3");
+
         if (dateToReplayFrom != null) {
             message = controller.getLocaliser().getString(
                     "resetTransactionSubmitAction.replayingBlockchain",
@@ -432,12 +430,11 @@ public class MultiBitService {
                             genesisBlockCreationDate) });
         }
         controller.updateStatusLabel(message, false);
-        log.debug("ping4");
+
         peerGroup = createNewPeerGroup();
         peerGroup.start();
-        log.debug("ping5");
+ 
         downloadBlockChain();
-        log.debug("ping6");
     }
 
     /**
