@@ -493,7 +493,7 @@ public class PrivateKeysHandler {
         }
     }
 
-    private String readFile(File file) throws IOException {
+    public static String readFile(File file) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String line = null;
         StringBuilder stringBuilder = new StringBuilder();
