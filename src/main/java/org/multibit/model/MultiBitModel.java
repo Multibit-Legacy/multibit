@@ -138,6 +138,10 @@ public class MultiBitModel {
     public static final String PRIVATE_KEY_FILE_EXTENSION = "key";
     public static final String PRIVATE_KEY_FILENAME = "privateKeyFilename";
 
+    //Blockchain.info
+    public static final String BLOCKCHAIN_WALLET_ENCRYPTED_SUFFIX = "aes.json";
+    public static final String BLOCKCHAIN_WALLET_PLAIN_SUFFIX = "json";
+
     // connect to single node
     public static final String SINGLE_NODE_CONNECTION = "singleNodeConnection";
 
