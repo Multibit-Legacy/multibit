@@ -659,7 +659,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // show ticker
         String viewTicker = controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW);
-        boolean isTickerVisible = Boolean.TRUE.toString().equals(viewTicker);
+        boolean isTickerVisible = !Boolean.FALSE.toString().equals(viewTicker);
 
         String tickerKey;
         if (isTickerVisible) {

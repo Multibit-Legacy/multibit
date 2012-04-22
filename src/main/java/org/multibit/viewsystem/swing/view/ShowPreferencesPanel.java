@@ -162,7 +162,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
      * update preferences panel
      */
     public void displayView() {
-        originalShowTicker = Boolean.TRUE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
+        originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
         showTicker.setSelected(originalShowTicker);
         
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
@@ -705,7 +705,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
     private JPanel createTickerPanel(int stentWidth) {
         // load up the original values
-        originalShowTicker = Boolean.TRUE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
+        originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
         originalExchange1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE);
         originalCurrency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
         originalShowSecondRow = Boolean.TRUE.toString().equals(
