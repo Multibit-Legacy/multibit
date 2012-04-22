@@ -251,9 +251,11 @@ public class Network {
 							for (i = 0; i < len; i++) {
 								temp = buffer[i];
 								 // adjust from C-Byte to Java-Byte
-								if (temp < 0)
+								if (temp < 0) {
 									temp += 256;
-								if (temp == divider) {
+								}
+								System.out.print((char)temp + "-");
+								if (temp == divider || temp % 256 == 0) {
 									if  (numTempBytes > 0) {
 										contact.parseInput(id, numTempBytes,
 												tempBytes);
@@ -381,7 +383,7 @@ public class Network {
 				for (i = 0; i < numBytes; ++i) {
 						outputStream.write(changeToByte(message[i]));
 				}
-				outputStream.write(changeToByte(divider));
+				//outputStream.write(changeToByte(divider));
 			} catch (IOException e) {
 				success = false;
 				disconnect();
