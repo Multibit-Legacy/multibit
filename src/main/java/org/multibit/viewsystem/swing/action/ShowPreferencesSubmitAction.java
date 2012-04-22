@@ -183,7 +183,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
         if (dataProvider.getPreviousShowCurrency() != dataProvider.getNewShowCurrency()) {
             wantToFireDataStructureChanged = true;
-        } else if (dataProvider.getPreviousShowTicker() != dataProvider.getNewShowTicker()) {
+        } else if (dataProvider.getPreviousShowTicker() != dataProvider.getNewShowTicker() || dataProvider.getNewShowTicker() != dataProvider.isTickerVisible()) {
             wantToFireDataStructureChanged = true;
         } else if (dataProvider.getPreviousShowRate() != dataProvider.getNewShowRate()) {
             wantToFireDataStructureChanged = true;

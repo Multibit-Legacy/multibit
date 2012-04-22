@@ -161,6 +161,9 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
      * update preferences panel
      */
     public void displayView() {
+        originalShowTicker = Boolean.TRUE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
+        showTicker.setSelected(originalShowTicker);
+        
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
 
         if (sendFeeString == null || sendFeeString == "") {
@@ -1521,6 +1524,11 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         return showTicker.isSelected();
     }
 
+    @Override
+    public boolean isTickerVisible() {
+        return mainFrame.getTickerTablePanel().isVisible();
+    }
+    
     @Override
     public boolean getPreviousShowBid() {
         return originalShowBid;

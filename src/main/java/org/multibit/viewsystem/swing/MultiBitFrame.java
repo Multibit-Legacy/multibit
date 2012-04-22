@@ -1117,4 +1117,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public JPanel getHeaderPanel() {
         return headerPanel;
     }
+
+    public TickerTablePanel getTickerTablePanel() {
+        return tickerTablePanel;
+    }
 }

@@ -120,6 +120,8 @@ public interface PreferencesDataProvider extends DataProvider {
     public String getNewCurrency2();
 
 
+    boolean isTickerVisible();
+
     boolean getPreviousShowTicker();
 
 
