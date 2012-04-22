@@ -111,11 +111,14 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
     private String originalUserLanguageCode;
 
+    private boolean originalShowTicker;
     private boolean originalShowCurrency;
     private boolean originalShowRate;
     private boolean originalShowBid;
     private boolean originalShowAsk;
     private boolean originalShowExchange;
+
+    private JCheckBox showTicker;
 
     private JCheckBox showCurrency;
     private JCheckBox showLastPrice;
@@ -698,6 +701,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
     private JPanel createTickerPanel(int stentWidth) {
         // load up the original values
+        originalShowTicker = Boolean.TRUE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
         originalExchange1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE);
         originalCurrency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
         originalShowSecondRow = Boolean.TRUE.toString().equals(
@@ -739,6 +743,11 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.anchor = GridBagConstraints.CENTER;
         tickerPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
 
+        showTicker = new JCheckBox(controller.getLocaliser().getString("multiBitFrame.ticker.show.text"));
+        showTicker.setOpaque(false);
+        showTicker.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        showTicker.setSelected(originalShowTicker);
+        
         showCurrency = new JCheckBox(controller.getLocaliser().getString("showPreferencesPanel.ticker.currency"));
         showCurrency.setOpaque(false);
         showCurrency.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -779,8 +788,14 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         originalShowExchange = tickerColumnsToShow.indexOf(TickerTableModel.TICKER_COLUMN_EXCHANGE) > -1;
         showExchange.setSelected(originalShowExchange);
 
-        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
-                controller.getLocaliser().getString("showPreferencesPanel.ticker.columnsToShow"), 4, tickerPanel);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 1;
+        constraints.gridy = 4;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 3;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        tickerPanel.add(showTicker, constraints);
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
@@ -789,25 +804,19 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 0.3;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        tickerPanel.add(showCurrency, constraints);
+        tickerPanel.add(MultiBitTitledPanel.createStent(12, 12), constraints);
 
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 6;
-        constraints.weightx = 0.2;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 3;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        tickerPanel.add(showLastPrice, constraints);
+        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
+                controller.getLocaliser().getString("showPreferencesPanel.ticker.columnsToShow"), 6, tickerPanel);
 
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 7;
         constraints.weightx = 0.2;
         constraints.weighty = 0.3;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        tickerPanel.add(showBid, constraints);
+        tickerPanel.add(showCurrency, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
@@ -816,7 +825,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 0.3;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        tickerPanel.add(showAsk, constraints);
+        tickerPanel.add(showLastPrice, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
@@ -825,11 +834,29 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 0.3;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
+        tickerPanel.add(showBid, constraints);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 10;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 3;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        tickerPanel.add(showAsk, constraints);
+
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 11;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 3;
+        constraints.anchor = GridBagConstraints.LINE_START;
         tickerPanel.add(showExchange, constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
-        constraints.gridy = 10;
+        constraints.gridy = 12;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -837,14 +864,14 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         tickerPanel.add(MultiBitTitledPanel.createStent(12, 12), constraints);
 
         MultiBitTitledPanel.addLeftJustifiedTextAtIndent(controller.getLocaliser()
-                .getString("showPreferencesPanel.ticker.firstRow"), 11, tickerPanel);
+                .getString("showPreferencesPanel.ticker.firstRow"), 13, tickerPanel);
 
         MultiBitLabel exchangeLabel1 = new MultiBitLabel(controller.getLocaliser()
                 .getString("showPreferencesPanel.ticker.exchange"));
         exchangeLabel1.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
-        constraints.gridy = 12;
+        constraints.gridy = 14;
         constraints.weightx = 0.3;
         constraints.weighty = 1;
         constraints.gridwidth = 1;
@@ -882,7 +909,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
-        constraints.gridy = 12;
+        constraints.gridy = 14;
         constraints.weightx = 0.8;
         constraints.weighty = 0.6;
         constraints.gridwidth = 1;
@@ -894,7 +921,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         currencyLabel1.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
-        constraints.gridy = 13;
+        constraints.gridy = 15;
         constraints.weightx = 0.3;
         constraints.weighty = 1;
         constraints.gridwidth = 1;
@@ -918,7 +945,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
-        constraints.gridy = 13;
+        constraints.gridy = 15;
         constraints.weightx = 0.8;
         constraints.weighty = 0.6;
         constraints.gridwidth = 1;
@@ -927,7 +954,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
-        constraints.gridy = 14;
+        constraints.gridy = 16;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -935,7 +962,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         tickerPanel.add(MultiBitTitledPanel.createStent(12, 12), constraints);
 
         MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
-                controller.getLocaliser().getString("showPreferencesPanel.ticker.secondRow"), 15, tickerPanel);
+                controller.getLocaliser().getString("showPreferencesPanel.ticker.secondRow"), 17, tickerPanel);
 
         showSecondRowCheckBox = new JCheckBox(controller.getLocaliser().getString("showPreferencesPanel.ticker.showSecondRow"));
         showSecondRowCheckBox.setOpaque(false);
@@ -944,7 +971,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
-        constraints.gridy = 16;
+        constraints.gridy = 18;
         constraints.weightx = 0.3;
         constraints.weighty = 1;
         constraints.gridwidth = 1;
@@ -955,7 +982,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         exchangeLabel2.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
-        constraints.gridy = 17;
+        constraints.gridy = 19;
         constraints.weightx = 0.3;
         constraints.weighty = 1;
         constraints.gridwidth = 1;
@@ -975,7 +1002,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
-        constraints.gridy = 17;
+        constraints.gridy = 19;
         constraints.weightx = 0.8;
         constraints.weighty = 0.6;
         constraints.gridwidth = 1;
@@ -986,7 +1013,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         currencyLabel2.setHorizontalAlignment(JLabel.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
-        constraints.gridy = 18;
+        constraints.gridy = 20;
         constraints.weightx = 0.3;
         constraints.weighty = 1;
         constraints.gridwidth = 1;
@@ -1011,7 +1038,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
-        constraints.gridy = 18;
+        constraints.gridy = 20;
         constraints.weightx = 0.8;
         constraints.weighty = 0.6;
         constraints.gridwidth = 1;
@@ -1023,7 +1050,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
-        constraints.gridy = 19;
+        constraints.gridy = 21;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
@@ -1034,7 +1061,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         fill1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 5;
-        constraints.gridy = 17;
+        constraints.gridy = 22;
         constraints.weightx = 1000;
         constraints.weighty = 1;
         constraints.gridwidth = 1;
@@ -1482,6 +1509,16 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     @Override
     public boolean getNewShowCurrency() {
         return showCurrency.isSelected();
+    }
+
+    @Override
+    public boolean getPreviousShowTicker() {
+        return originalShowTicker;
+    }
+
+    @Override
+    public boolean getNewShowTicker() {
+        return showTicker.isSelected();
     }
 
     @Override

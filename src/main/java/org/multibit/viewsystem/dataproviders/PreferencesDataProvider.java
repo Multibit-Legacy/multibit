@@ -118,4 +118,10 @@ public interface PreferencesDataProvider extends DataProvider {
 
     public String getPreviousCurrency2();
     public String getNewCurrency2();
+
+
+    boolean getPreviousShowTicker();
+
+
+    boolean getNewShowTicker();
 }

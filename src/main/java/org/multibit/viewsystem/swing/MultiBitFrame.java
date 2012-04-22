@@ -36,7 +36,6 @@ import java.util.Timer;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -477,10 +476,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.add(pusher1, constraints);
 
         // add a little stent to keep it off the right hand edge
-        int stent = 6;  // a reasonable default
+        int stent = 6; // a reasonable default
         Insets tabAreaInsets = UIManager.getInsets("TabbedPane.tabAreaInsets");
         if (tabAreaInsets != null) {
-            log.debug("Setting ticker right stent to " + tabAreaInsets.right);
             stent = tabAreaInsets.right;
         }
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -628,15 +626,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
         viewMenu.add(menuItem);
-
-        // MultiBitAction exchangesSetupAction = new MultiBitAction(controller,
-        // ImageLoader.EXCHANGES_ICON_FILE,
-        // "exchangesSetup.text", "exchangesSetup.tooltip",
-        // "showTransactionsAction.mnemonic", View.PREFERENCES_VIEW);
-        // menuItem = new JMenuItem(exchangesSetupAction);
-        // menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        // menuItem.setComponentOrientation(componentOrientation);
-        // viewMenu.add(menuItem);
 
         // send bitcoin action
         MultiBitAction sendBitcoinAction = new MultiBitAction(controller, ImageLoader.SEND_BITCOIN_ICON_FILE,

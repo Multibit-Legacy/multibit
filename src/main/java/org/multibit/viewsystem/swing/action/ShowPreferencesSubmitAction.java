@@ -174,6 +174,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         }
 
         // currency ticker
+        boolean showTicker = dataProvider.getNewShowTicker();
         boolean showCurrency = dataProvider.getNewShowCurrency();
         boolean showRate = dataProvider.getNewShowRate();
         boolean showBid = dataProvider.getNewShowBid();
@@ -181,6 +182,8 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         boolean showExchange = dataProvider.getNewShowExchange();
 
         if (dataProvider.getPreviousShowCurrency() != dataProvider.getNewShowCurrency()) {
+            wantToFireDataStructureChanged = true;
+        } else if (dataProvider.getPreviousShowTicker() != dataProvider.getNewShowTicker()) {
             wantToFireDataStructureChanged = true;
         } else if (dataProvider.getPreviousShowRate() != dataProvider.getNewShowRate()) {
             wantToFireDataStructureChanged = true;
@@ -192,6 +195,8 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             wantToFireDataStructureChanged = true;
         }
 
+        controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, new Boolean(showTicker).toString());
+        
         String columnsToShow = "";
         if (showCurrency)
             columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_CURRENCY;
