@@ -35,6 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -91,7 +92,7 @@ public class TickerTablePanel extends JPanel {
 
         font = FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-1);
         fontMetrics = getFontMetrics(font);
-
+        
         initUI();
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -188,9 +189,9 @@ public class TickerTablePanel extends JPanel {
             if (TickerTableModel.TICKER_COLUMN_CURRENCY.equals(columnVariables[i])) {
                 table.getColumnModel().getColumn(i).setCellRenderer(new CurrencyCenterJustifiedRenderer());
             } else if (TickerTableModel.TICKER_COLUMN_EXCHANGE.equals(columnVariables[i])) {
-                table.getColumnModel().getColumn(i).setCellRenderer(new LeadingJustifiedRenderer());
+                table.getColumnModel().getColumn(i).setCellRenderer(new CurrencyCenterJustifiedRenderer());
             } else {
-                table.getColumnModel().getColumn(i).setCellRenderer(new TrailingJustifiedRenderer());
+                table.getColumnModel().getColumn(i).setCellRenderer(new CurrencyCenterJustifiedRenderer());
             }
         }
 

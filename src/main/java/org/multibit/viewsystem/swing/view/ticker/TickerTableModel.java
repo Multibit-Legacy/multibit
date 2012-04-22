@@ -93,6 +93,10 @@ public class TickerTableModel extends AbstractTableModel {
         showExchange = tickerColumnsToShow.indexOf(TICKER_COLUMN_EXCHANGE) > -1;
 
         numberOfColumns = 0;
+        if (showExchange) {
+        	tempColumns[numberOfColumns] = TICKER_COLUMN_EXCHANGE;
+        	numberOfColumns++;
+        }
         if (showCurrency) {
             tempColumns[numberOfColumns] = TICKER_COLUMN_CURRENCY;
             numberOfColumns++;
@@ -107,10 +111,6 @@ public class TickerTableModel extends AbstractTableModel {
         }
         if (showAsk) {
             tempColumns[numberOfColumns] = TICKER_COLUMN_ASK;
-            numberOfColumns++;
-        }
-        if (showExchange) {
-            tempColumns[numberOfColumns] = TICKER_COLUMN_EXCHANGE;
             numberOfColumns++;
         }
 
