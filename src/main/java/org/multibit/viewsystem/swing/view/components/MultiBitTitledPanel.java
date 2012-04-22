@@ -22,6 +22,7 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
  * 
  */
 public class MultiBitTitledPanel extends JPanel {
+	
     private static final long serialVersionUID = 4532881356315823376L;
 
     public static final int LEFT_INDENT = 25;
