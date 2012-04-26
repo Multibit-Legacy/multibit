@@ -1,5 +1,11 @@
 MultiBit release notes.
 
+26 Apr 2012 Version 0.3.4
+Enhancements:
++  Can now import blockchain.info wallet backups
++  Currency ticker aesthetic improvements
+
+
 17 Apr 2012 Version 0.3.3
 Enhancements:
 +  Added FastCatchup for fast new user blockchain synchronisation (less than 1 minute)
