@@ -23,13 +23,6 @@ package org.multibit.xchange;
 
 import junit.framework.TestCase;
 
-import com.xeiam.xchange.Exchange;
-import com.xeiam.xchange.ExchangeFactory;
-import com.xeiam.xchange.SymbolPair;
-import com.xeiam.xchange.service.marketdata.MarketDataService;
-import com.xeiam.xchange.service.marketdata.OrderBook;
-import com.xeiam.xchange.service.marketdata.Ticker;
-import com.xeiam.xchange.service.marketdata.Trades;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

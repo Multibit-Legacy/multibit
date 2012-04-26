@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
-import com.xeiam.xchange.SymbolPair;
+import com.xeiam.xchange.CurrencyPair;
 import com.xeiam.xchange.service.marketdata.MarketDataService;
 import com.xeiam.xchange.service.marketdata.Ticker;
 
@@ -47,7 +47,7 @@ public class TickerTimerTask extends TimerTask {
 
     private Exchange mtGox;
     private MarketDataService marketDataService;
-    private List<SymbolPair> exchangeSymbols;
+    private List<CurrencyPair> exchangeSymbols;
 
     /**
      * Constructs the object, sets the string to be output in function run()
@@ -107,7 +107,7 @@ public class TickerTimerTask extends TimerTask {
         try {
             if (marketDataService != null) {
                 if (exchangeSymbols != null) {
-                    for (SymbolPair loopSymbolPair : exchangeSymbols) {
+                    for (CurrencyPair loopSymbolPair : exchangeSymbols) {
                         // get symbol ticker if it is one of the currencies we
                         // are interested in
                         // (this is to save hitting the server for ever currency
