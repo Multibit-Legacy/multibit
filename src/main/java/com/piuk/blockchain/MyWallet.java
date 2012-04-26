@@ -20,22 +20,26 @@ package com.piuk.blockchain;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
-import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-
-import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.bouncycastle.crypto.BufferedBlockCipher;
+import org.bouncycastle.crypto.CipherParameters;
+import org.bouncycastle.crypto.engines.AESEngine;
+import org.bouncycastle.crypto.modes.CBCBlockCipher;
+import org.bouncycastle.crypto.paddings.BlockCipherPadding;
+import org.bouncycastle.crypto.paddings.ISO10126d2Padding;
+import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
+import org.bouncycastle.crypto.params.KeyParameter;
+import org.bouncycastle.crypto.params.ParametersWithIV;
 import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.encoders.Hex;
 import org.codehaus.jackson.JsonGenerationException;
@@ -76,22 +80,6 @@ public class MyWallet {
 		byte[] result = Arrays.copyOf(first, first.length + second.length);
 		System.arraycopy(second, 0, result, first.length, second.length);
 		return result;
-	}
-
-	//Create a new Wallet 
-	public MyWallet() throws Exception {
-		this.root = new HashMap<String, Object>();
-
-		root.put("guid", UUID.randomUUID().toString());
-		root.put("sharedKey", UUID.randomUUID().toString());
-
-		List<Map<String, Object>> keys = new ArrayList<Map<String, Object>>();
-		List<Map<String, Object>> address_book = new ArrayList<Map<String, Object>>();
-
-		root.put("keys", keys);
-		root.put("address_book", address_book);
-
-		addKey(new ECKey(), "New");
 	}
 
 	public List<Map<String, Object>> getKeysMap() {
@@ -164,11 +152,6 @@ public class MyWallet {
 
 		return null;
 	}
-
-	public String getPayload() throws Exception {
-		return encrypt(toJSONString(), this.temporyPassword);
-	}
-
 	public ECKey decodePK(String base58Priv) throws Exception {
 		if (this.isDoubleEncrypted()) {
 
@@ -296,34 +279,6 @@ public class MyWallet {
 		return keywallet;
 	}
 
-	public boolean addKey(ECKey key, String label) throws Exception {
-		Map<String, Object> map = new HashMap<String, Object>();
-
-		String base58Priv = new String(Base58.encode(key.getPrivKeyBytes()));
-
-		map.put("addr", key.toAddress(params).toString());
-
-		if (label != null) {
-			if (label.length() == 0 || label.length() > 255)
-				throw new Exception("Label must be between 0 & 255 characters");
-
-			map.put("label", label);
-		}
-
-		if (this.isDoubleEncrypted()) {
-			if (temporySecondPassword == null)
-				throw new Exception("You must provide a second password");
-
-			map.put("priv", encryptPK(base58Priv, getSharedKey(), temporySecondPassword));
-
-		} else {
-			map.put("priv", base58Priv);
-		}
-
-		getKeysMap().add(map);
-
-		return true;
-	}
 
 	public boolean validateSecondPassword(String secondPassword) {
 		try {
@@ -344,74 +299,47 @@ public class MyWallet {
 
 		return false;
 	}
-
-	//AES 256 PBKDF2 CBC iso10126 decryption
-	//16 byte IV must be prepended to ciphertext - Compatible with crypto-js
 	public static String decrypt(String ciphertext, String password) throws Exception {
-		byte[] cipherdata = Base64.decode(ciphertext);
+    	byte[] cipherdata = Base64.decode(ciphertext);
 
 		//Sperate the IV and cipher data
 		byte[] iv = Arrays.copyOfRange(cipherdata, 0, AESBlockSize * 4);
 		byte[] input = Arrays.copyOfRange(cipherdata, AESBlockSize * 4, cipherdata.length);
-
-		IvParameterSpec ivspec = new IvParameterSpec(iv);
-
+ 
 		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 		KeySpec spec = new PBEKeySpec(password.toCharArray(), iv, PBKDF2Iterations, 256);
 		SecretKey tmp = factory.generateSecret(spec);
-
 		SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
 
-		byte[] output = null;
+	    byte[] key = secret.getEncoded();
+ 
+	    // setup cipher parameters with key and IV
+	    KeyParameter keyParam = new KeyParameter(key);
+	    CipherParameters params = new ParametersWithIV(keyParam, iv);
 
-		Cipher cipher = Cipher.getInstance("AES/CBC/ISO10126Padding");
-		cipher.init(Cipher.DECRYPT_MODE, secret, ivspec);
-		output = cipher.doFinal(input);
+	    // setup AES cipher in CBC mode with PKCS7 padding
+	    BlockCipherPadding padding = new ISO10126d2Padding();
+	    BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESEngine()), padding);
+	    cipher.reset();
+	    cipher.init(false, params);
 
-		return new String(output, "UTF-8");
-	}
+	    // create a temporary buffer to decode into (it'll include padding)
+	    byte[] buf = new byte[cipher.getOutputSize(input.length)];
+	    int len = cipher.processBytes(input, 0, input.length, buf, 0);
+	    len += cipher.doFinal(buf, len);
 
-	//Encrypt compatible with crypto-js
-	public static String encrypt(String text, String password) throws Exception{
+	    // remove padding
+	    byte[] out = new byte[len];
+	    System.arraycopy(buf, 0, out, 0, len);
 
-		if (password == null)
-			throw new Exception("You must provide an encryption password");
-
-		//Use secure random to generate a 16 byte iv
-		SecureRandom random = new SecureRandom();
-		byte iv[] = new byte[AESBlockSize*4];
-		random.nextBytes(iv);
-
-		byte[] textbytes = text.getBytes("UTF-8");
-
-		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-		KeySpec spec = new PBEKeySpec(password.toCharArray(), iv, PBKDF2Iterations, 256);
-		SecretKey tmp = factory.generateSecret(spec);
-
-		IvParameterSpec ivspec = new IvParameterSpec(iv);
-
-		SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
-		Cipher cipher = Cipher.getInstance("AES/CBC/ISO10126Padding");
-		cipher.init(Cipher.ENCRYPT_MODE, secret, ivspec);
-
-		byte[] output = cipher.doFinal(textbytes);
-
-		//Append to IV to the output
-		byte[] ivAppended = concat(iv, output);
-
-		return new String(Base64.encode(ivAppended), "UTF-8");
-	}
+	    // return string representation of decoded bytes
+	    return new String(out, "UTF-8");
+    }
 
 	//Decrypt a double encrypted private key
 	public static String decryptPK(String key, String sharedKey, String password) throws Exception {
 		return decrypt(key, sharedKey + password);
 	}
-
-	//Decrypt a double encrypted private key
-	public static String encryptPK(String key, String sharedKey, String password) throws Exception {
-		return encrypt(key, sharedKey + password);
-	}
-
 
 	public static Map<String, Object> parsePlainPayload(String payload) throws Exception {       
 		ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally

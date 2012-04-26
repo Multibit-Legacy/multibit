@@ -162,6 +162,7 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
 
                     }
                 } catch (Exception e) {
+                    log.error(e.getClass().getName() + " " + e.getMessage());
                     setEnabled(true);
 
                     importPrivateKeysPanel.setMessage(controller.getLocaliser().getString(
