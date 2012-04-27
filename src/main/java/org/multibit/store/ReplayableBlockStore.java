@@ -379,4 +379,8 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
             return new StoredBlock(getHeader(params), getChainWork(), getHeight());
         }
     }
+
+    public RandomAccessFile getFile() {
+        return file;
+    }
 }

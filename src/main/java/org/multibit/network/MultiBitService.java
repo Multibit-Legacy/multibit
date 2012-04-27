@@ -107,7 +107,19 @@ public class MultiBitService {
 
     private final NetworkParameters networkParameters;
 
-    private Date genesisBlockCreationDate;
+    public static Date genesisBlockCreationDate;
+    
+    static {
+        try {
+            java.text.SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            java.util.Calendar cal = Calendar.getInstance(new SimpleTimeZone(0, "GMT"));
+            format.setCalendar(cal);
+            genesisBlockCreationDate = format.parse("2009-01-03 18:15:05");
+        } catch (ParseException e) {
+            // will never happen
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 
@@ -133,15 +145,15 @@ public class MultiBitService {
         this.useTestNet = useTestNet;
         this.controller = controller;
 
-        java.text.SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        java.util.Calendar cal = Calendar.getInstance(new SimpleTimeZone(0, "GMT"));
-        format.setCalendar(cal);
-        try {
-            genesisBlockCreationDate = format.parse("2009-01-03 18:15:05");
-        } catch (ParseException e) {
-            // will never happen
-            e.printStackTrace();
-        }
+//        java.text.SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        java.util.Calendar cal = Calendar.getInstance(new SimpleTimeZone(0, "GMT"));
+//        format.setCalendar(cal);
+//        try {
+//            genesisBlockCreationDate = format.parse("2009-01-03 18:15:05");
+//        } catch (ParseException e) {
+//            // will never happen
+//            e.printStackTrace();
+//        }
 
         networkParameters = useTestNet ? NetworkParameters.testNet() : NetworkParameters.prodNet();
 

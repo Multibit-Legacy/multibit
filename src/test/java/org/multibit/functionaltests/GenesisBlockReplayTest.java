@@ -17,7 +17,6 @@ package org.multibit.functionaltests;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -30,42 +29,32 @@ import org.multibit.Constants;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletInfo;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.DumpedPrivateKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Wallet;
-
 /**
- * functional test to check that Mining Coinbase Transactions can be seen.
+ * functional test to check that replay from the genesis block works ok
  * 
  * See bug report: https://github.com/jim618/multibit/issues/21
  * 
  * @author jim
  * 
  */
-public class MiningCoinBaseTransactionsSeenTest extends TestCase {
+public class GenesisBlockReplayTest extends TestCase {
 
-    private static final Logger log = LoggerFactory.getLogger(MiningCoinBaseTransactionsSeenTest.class);
+    private static final Logger log = LoggerFactory.getLogger(GenesisBlockReplayTest.class);
 
-    private static final String MINING_ADDRESS = "1GqtGtn4fctXuKxsVzRPSLmYWN1YioLi9y";
-    private static final String MINING_PRIVATE_KEY = "5JDxPrBRghF1EvSBjDigywqfmAjpHPmTJxYtQTYJxJRHLLQA4mG";
+    private static final int NUMBER_OF_BLOCKS_TO_REPLAY = 10;
 
-    private static final String START_OF_REPLAY_PERIOD = "2012-03-03T13:00:00Z";
-    private static final int NUMBER_OF_BLOCKS_TO_REPLAY = 20;
-
-    private static final BigInteger BALANCE_AT_START = BigInteger.ZERO;
-    private static final BigInteger BALANCE_AFTER_REPLAY = BigInteger.valueOf(22223642);
+    private static final int BLOCKSIZE_BEFORE_REPLAY = 133;
+    private static final int BLOCKSIZE_AFTER_REPLAY = 2133; // each block is 100 bytes, min NUMBER_OF_BLOCKS_TO_REPLAY blocks downloaded
 
     private SimpleDateFormat formatter;
 
     @Test
-    public void testReplayMiningTransaction() throws Exception {
+    public void testReplayFromGenesisBlock() throws Exception {
 
         // get the system property runFunctionalTest to see if the functional tests need running
         String runFunctionalTests = System.getProperty(Constants.RUN_FUNCTIONAL_TESTS_PARAMETER);
@@ -100,33 +89,6 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             // MultiBit runtime is now setup and running
             //
 
-            String miningWalletPath = multiBitDirectory.getAbsolutePath() + File.separator + "mining.wallet";
-
-            // create a new wallet
-            Wallet miningWallet = new Wallet(NetworkParameters.prodNet());
-
-            // add in the mining key with the coinbase transactions
-            DumpedPrivateKey miningPrivateKey = new DumpedPrivateKey(NetworkParameters.prodNet(), MINING_PRIVATE_KEY);
-
-            miningWallet.keychain.add(miningPrivateKey.getKey());
-            PerWalletModelData perWalletModelData = new PerWalletModelData();
-            perWalletModelData.setWalletInfo(new WalletInfo(miningWalletPath));
-            perWalletModelData.setWallet(miningWallet);
-            perWalletModelData.setWalletFilename(miningWalletPath);
-            perWalletModelData.setWalletDescription("testReplayMiningTransaction test");
-
-            // save the new wallet
-            controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
-
-            // get the multibitService to load it up and hook it up to the
-            // blockchain
-            controller.getMultiBitService().addWalletFromFilename(miningWalletPath);
-            controller.getModel().setActiveWalletByFilename(miningWalletPath);
-
-            log.debug("Mining wallet = \n" + miningWallet.toString());
-
-            assertEquals(BALANCE_AT_START, miningWallet.getBalance());
-
             // wait for a peer connection
             log.debug("Waiting for peer connection. . . ");
             while (!simpleViewSystem.isOnline()) {
@@ -134,8 +96,9 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             }
             log.debug("Now online.");
 
-            log.debug("Replaying blockchain");
-            multiBitService.replayBlockChain(formatter.parse(START_OF_REPLAY_PERIOD));
+            log.debug("Replaying blockchain from genesis block");
+            multiBitService.replayBlockChain(null);
+            assertEquals(BLOCKSIZE_BEFORE_REPLAY, multiBitService.getBlockStore().getFile().length());            
 
             // wait for blockchain replay to download more than the required
             // amount
@@ -145,16 +108,13 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
                 log.debug("Blocks downloaded =  " + simpleViewSystem.getNumberOfBlocksDownloaded());
             }
 
-            // check new balance on wallet - balance should be at least the
-            // expected (may have later tx too)
-            assertTrue(BALANCE_AFTER_REPLAY.compareTo(controller.getModel().getActiveWallet().getBalance()) <= 0);
+            // check the blockstore has added the downloaded blocks
+            assertTrue(BLOCKSIZE_AFTER_REPLAY <=  multiBitService.getBlockStore().getFile().length());
 
             // tidy up
             multiBitService.getPeerGroup().stop();
-
-            controller.getFileHandler().deleteWalletAndWalletInfo(controller.getModel().getActivePerWalletModelData());
         } else {
-            log.debug("Not running functional test: MiningCoinBaseTransactionsSeenTest#testReplayMiningTransaction. Add '-DrunFunctionalTests=true' to run");
+            log.debug("Not running functional test: GenesisBlockReplayTest#testReplayFromGenesisBlock. Add '-DrunFunctionalTests=true' to run");
         }
     }
 

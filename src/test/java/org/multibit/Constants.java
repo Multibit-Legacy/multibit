@@ -17,4 +17,6 @@ package org.multibit;
 
 public class Constants {
     public static final String TESTDATA_DIRECTORY = "./src/test/resources";
+    
+    public static final String RUN_FUNCTIONAL_TESTS_PARAMETER = "runFunctionalTests";
 }
