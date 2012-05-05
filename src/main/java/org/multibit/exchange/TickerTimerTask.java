@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 import com.xeiam.xchange.CurrencyPair;
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
-import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.marketdata.MarketDataService;
+import com.xeiam.xchange.service.marketdata.Ticker;
 
 /**
  * TimerTask to poll MtGox for ticker data process
