@@ -584,9 +584,9 @@
     <dependency>
 	  <groupId>org.rxtx</groupId>
 	  <artifactId>rxtx</artifactId>
-	<version>2.1.7</version>
-</dependency>
-    
+	  <version>2.1.7</version>
+	</dependency>
+
   </dependencies>
 
   <reporting>
