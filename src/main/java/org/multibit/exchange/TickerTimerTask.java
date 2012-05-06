@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 import com.xeiam.xchange.CurrencyPair;
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
+import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.marketdata.MarketDataService;
-import com.xeiam.xchange.service.marketdata.Ticker;
 
 /**
  * TimerTask to poll MtGox for ticker data process
@@ -73,8 +73,8 @@ public class TickerTimerTask extends TimerTask {
             if (exchangeSymbols != null) {
                 String[] availableCurrencies = new String[exchangeSymbols.size()];
                 for (int i = 0; i < exchangeSymbols.size(); i++) {
-                    availableCurrencies[i] = exchangeSymbols.get(i).counterSymbol;
-                    log.debug("Available currency " + i + " = " +  exchangeSymbols.get(i).counterSymbol);
+                    availableCurrencies[i] = exchangeSymbols.get(i).counterCurrency;
+                    log.debug("Available currency " + i + " = " +  exchangeSymbols.get(i).counterCurrency);
                 }
                 controller.getModel().getExchangeData()
                         .setAvailableCurrenciesForExchange(ExchangeData.MT_GOX_EXCHANGE_NAME, availableCurrencies);
@@ -116,21 +116,21 @@ public class TickerTimerTask extends TimerTask {
                                 .getCurrenciesWeAreInterestedIn();
                         if (currenciesWeAreInterestedIn != null) {
                             for (int i = 0; i < currenciesWeAreInterestedIn.length; i++) {
-                                if (loopSymbolPair.counterSymbol.equals(currenciesWeAreInterestedIn[i])) {
+                                if (loopSymbolPair.counterCurrency.equals(currenciesWeAreInterestedIn[i])) {
                                     getItFromTheServer = true;
                                     break;
                                 }
                             }
                             if (getItFromTheServer) {
-                                Ticker loopTicker = marketDataService.getTicker(loopSymbolPair);
+                                Ticker loopTicker = marketDataService.getTicker(loopSymbolPair.baseCurrency,loopSymbolPair.counterCurrency);
                                 BigMoney last = loopTicker.getLast();
                                 BigMoney bid = loopTicker.getBid();
                                 BigMoney ask = loopTicker.getAsk();
                                 System.out.println("TickerTimerTask - Current exchange rate for " + loopSymbolPair.toString()
                                         + ": " + last + ", bid = " + bid + ", ask = " + ask);
-                                controller.getModel().getExchangeData().setLastPrice(loopSymbolPair.counterSymbol, last);
-                                controller.getModel().getExchangeData().setLastBid(loopSymbolPair.counterSymbol, bid);
-                                controller.getModel().getExchangeData().setLastAsk(loopSymbolPair.counterSymbol, ask);
+                                controller.getModel().getExchangeData().setLastPrice(loopSymbolPair.counterCurrency, last);
+                                controller.getModel().getExchangeData().setLastBid(loopSymbolPair.counterCurrency, bid);
+                                controller.getModel().getExchangeData().setLastAsk(loopSymbolPair.counterCurrency, ask);
                             }
                         }
                     }
