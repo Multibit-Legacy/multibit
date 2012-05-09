@@ -455,9 +455,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
             String formattedDate = "";
             if (value != null) {
                 if (value instanceof Date) {
-                    if (((Date) value).getTime() == 0) {
-                        // date is actually missing - just keep a blank string
-                    } else {
+                    if (((Date) value).getTime() != 0) {
                         try {
                             formattedDate = dateFormatter.format(value);
                         } catch (IllegalArgumentException iae) {
@@ -546,9 +544,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
             // The autoscroller can generate drag events outside the Table's
             // range.
-            if ((col == -1) || (row == -1)) {
-                // do nothing
-            } else {
+            if ((col != -1) && (row != -1)) {
                 selectedRow = row;
                 table.setRowSelectionInterval(row, row);
             }

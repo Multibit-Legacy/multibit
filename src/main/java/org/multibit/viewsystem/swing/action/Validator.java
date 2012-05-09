@@ -113,9 +113,7 @@ public class Validator {
                     }
                     BigInteger totalSpend = amountBigInteger.add(feeBigInteger);
                     BigInteger availableBalance = controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE);
-                    if (totalSpend.compareTo(availableBalance) <= 0) {
-                        // there is enough money
-                    } else {
+                    if (totalSpend.compareTo(availableBalance) > 0) {
                         // not enough funds
                         amountValidatesOk = Boolean.FALSE;
                         notEnoughFunds = Boolean.TRUE;

@@ -278,9 +278,7 @@ public class PrivateKeysHandler {
                                 Date updateTime1 = tx.getUpdateTime();
                                 Date updateTime2 = tx.getUpdatedAt();
                                 if (updateTime1 == null) {
-                                    if (updateTime2 == null) {
-                                        // no data
-                                    } else {
+                                    if (updateTime2 != null) {
                                         updateTime = updateTime2;
                                     }
                                 } else {
@@ -453,9 +451,7 @@ public class PrivateKeysHandler {
     }
 
     private void processLine(String line, ArrayList<PrivateKeyAndDate> parseResults) {
-        if (line == null || line.trim().equals("") || line.startsWith(COMMENT_STRING_PREFIX)) {
-            // nothing to do
-        } else {
+        if (line != null && !line.trim().equals("") && !line.startsWith(COMMENT_STRING_PREFIX)) {
             Scanner scanner = null;
             try {
                 scanner = new Scanner(line);

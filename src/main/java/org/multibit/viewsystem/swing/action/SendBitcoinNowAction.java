@@ -133,11 +133,11 @@ public class SendBitcoinNowAction extends AbstractAction {
         } catch (AddressFormatException e) {
             log.error(e.getMessage(), e);
             message = e.getMessage();
-        } catch (Throwable t) {
+        } catch (Exception e) {
             // really trying to catch anything that goes wrong with the
             // send bitcoin
-            log.error(t.getMessage(), t);
-            message = t.getMessage();
+            log.error(e.getMessage(), e);
+            message = e.getMessage();
         }
 
         if (sendWasSuccessful) {
@@ -202,11 +202,11 @@ public class SendBitcoinNowAction extends AbstractAction {
                 } catch (AddressFormatException e) {
                     log.error(e.getMessage(), e);
                     message = e.getMessage();
-                } catch (Throwable t) {
+                } catch (Exception e) {
                     // really trying to catch anything that goes wrong with the
                     // send bitcoin
-                    log.error(t.getMessage(), t);
-                    message = t.getMessage();
+                    log.error(e.getMessage(), e);
+                    message = e.getMessage();
                 }
 
                 return sendWasSuccessful;

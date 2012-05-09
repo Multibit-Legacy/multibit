@@ -309,9 +309,7 @@ public class StatusBar extends JPanel {
                     }
                     ((JLabel) jc).setText(" ");
                 } else {
-                    if (jc instanceof JPanel) {
-                        // no border
-                    } else {
+                    if (!(jc instanceof JPanel)) {
                         jc.setBorder(zoneBorder);
                     }
                 }

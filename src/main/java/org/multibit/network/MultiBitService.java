@@ -145,16 +145,6 @@ public class MultiBitService {
         this.useTestNet = useTestNet;
         this.controller = controller;
 
-//        java.text.SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        java.util.Calendar cal = Calendar.getInstance(new SimpleTimeZone(0, "GMT"));
-//        format.setCalendar(cal);
-//        try {
-//            genesisBlockCreationDate = format.parse("2009-01-03 18:15:05");
-//        } catch (ParseException e) {
-//            // will never happen
-//            e.printStackTrace();
-//        }
-
         networkParameters = useTestNet ? NetworkParameters.testNet() : NetworkParameters.prodNet();
 
         try {
@@ -518,11 +508,7 @@ public class MultiBitService {
             } catch (ProtocolException e) {
                 e.printStackTrace();
             }
-
-        } else {
-            // transaction was null - not enough funds - dealt with at the UI
-            // level
-        }
+        } 
         return sendTransaction;
     }
 
