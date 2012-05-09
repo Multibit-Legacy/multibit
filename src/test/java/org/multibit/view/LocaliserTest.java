@@ -71,7 +71,7 @@ public class LocaliserTest extends TestCase {
     private String SUBSTITUTE_ONE_EXPECTED_DUTCH = "eerste = " + SUBSTITUTE_ONE_DATA;
     private String SUBSTITUTE_TWO_EXPECTED_DUTCH = "eerste = " + SUBSTITUTE_ONE_DATA + ", tweede = " + SUBSTITUTE_TWO_DATA;
 
-    private String CAPITAL_CITY_EXPECTED_LATVIAN = "Riga";
+    private String CAPITAL_CITY_EXPECTED_LATVIAN = "R\u012bga";
     private String SUBSTITUTE_ONE_EXPECTED_LATVIAN = "pirmais = " + SUBSTITUTE_ONE_DATA;
     private String SUBSTITUTE_TWO_EXPECTED_LATVIAN = "pirmais = " + SUBSTITUTE_ONE_DATA + ", otrais = " + SUBSTITUTE_TWO_DATA;
 
