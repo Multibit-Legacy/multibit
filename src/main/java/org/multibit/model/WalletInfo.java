@@ -584,9 +584,7 @@ public class WalletInfo {
                         String nextCharacter = stringToDecode.substring(nextCharacterPosition, nextCharacterPosition + 1).toLowerCase();
                         String nextNextCharacter = stringToDecode.substring(nextNextCharacterPosition, nextNextCharacterPosition + 1).toLowerCase();
                         
-                        if (VALID_HEX_CHARACTERS.indexOf(nextCharacter) > -1 && VALID_HEX_CHARACTERS.indexOf(nextNextCharacter) > -1) {
-                            // characters following % are hex, probably encoded
-                        } else {
+                        if (VALID_HEX_CHARACTERS.indexOf(nextCharacter) < 0 || VALID_HEX_CHARACTERS.indexOf(nextNextCharacter) < 0) {
                             isEncoded = false;
                         }    
                     }

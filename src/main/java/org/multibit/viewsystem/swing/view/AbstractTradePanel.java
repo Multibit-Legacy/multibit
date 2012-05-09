@@ -739,13 +739,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         public void valueChanged(ListSelectionEvent event) {
             if (enabled) {
                 int viewRow = addressesTable.getSelectedRow();
-                if (viewRow < 0) {
-                    // Selection got filtered away.
-                } else {
+                if (viewRow >= 0) {
                     selectedAddressRowModel = addressesTable.convertRowIndexToModel(viewRow);
-//                    System.out.println(String.format("Selected Row in view: %d. " + "Selected Row in model: %d.", viewRow,
-//                            selectedAddressRowModel));
-
                     AddressBookData rowData = addressesTableModel.getAddressBookDataByRow(selectedAddressRowModel,
                             thisAbstractTradePanel.isReceiveBitcoin());
                     if (rowData != null) {

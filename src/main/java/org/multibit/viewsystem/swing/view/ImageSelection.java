@@ -210,13 +210,12 @@ public class ImageSelection extends TransferHandler implements Transferable {
 
                 // url-lists are defined by rfc 2483 as crlf-delimited
                 // TODO iterate over list for all of them
-                StringTokenizer izer = new StringTokenizer(uris, "\r\n");
-                if (izer.hasMoreTokens()) {
-                    String uri = izer.nextToken();
+                StringTokenizer tokenizer = new StringTokenizer(uris, "\r\n");
+                if (tokenizer.hasMoreTokens()) {
+                    String uri = tokenizer.nextToken();
 
-                    if (uri.startsWith("#") || uri.isEmpty()) {
-                        // comment line, by RFC 2483
-                    } else {
+                    // ignore comments
+                    if (!uri.startsWith("#") && !uri.isEmpty()) {
                         log.debug("uri = '{}'", uri);
                         java.awt.Image image = getURLImage(new URL(uri));
 

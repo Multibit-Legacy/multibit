@@ -92,8 +92,8 @@ public class WalletTableModel extends AbstractTableModel {
             if (walletDataRow.getDate() == null) {
                 return new Date(0); // the earliest date (for sorting)
             } else {
+                return walletDataRow.getDate();
             }
-            return walletDataRow.getDate();
         }
         case 2:
             return walletDataRow.getDescription();

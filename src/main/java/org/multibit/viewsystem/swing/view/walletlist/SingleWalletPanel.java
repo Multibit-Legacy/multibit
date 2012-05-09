@@ -329,9 +329,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             if (selected) {
                 walletDescriptionTextField.setEnabled(true);
                 walletDescriptionTextField.setForeground(Color.BLACK);
-                if (walletDescriptionTextField.isEditable()) {
-                    // already editble
-                } else {
+                if (!walletDescriptionTextField.isEditable()) {
                     walletDescriptionTextField.setEditable(true);
                     // may not have the caret quite right
                     // send the focus to the panel
@@ -381,9 +379,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             walletDescriptionTextField.setCaretPosition(text == null ? 0 : text.length());
             perWalletModelData.setWalletDescription(text);
 
-            if (arg0.getSource() instanceof JTextField) {
-                // text field selection
-            } else {
+            if (!(arg0.getSource() instanceof JTextField)) {
                 // panel selection
                 requestFocusInWindow();
             }
