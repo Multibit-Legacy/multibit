@@ -16,6 +16,8 @@
 
 package com.google.bitcoin.core;
 
+import com.google.common.base.Preconditions;
+
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -23,6 +25,8 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.multibit.IsMultiBitClass;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A transfer of coins from one address to another creates a transaction in which the outputs
@@ -104,16 +108,15 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
      * @param params NetworkParameters object.
      * @param msg Bitcoin protocol formatted byte array containing message content.
      * @param offset The location of the first msg byte within the array.
-     * @param protocolVersion Bitcoin protocol version.
      * @param parseLazy Whether to perform a full parse immediately or delay until a read is requested.
      * @param parseRetain Whether to retain the backing byte array for quick reserialization.  
      * If true and the backing byte array is invalidated due to modification of a field then 
      * the cached bytes may be repopulated and retained if the message is serialized again in the future.
-     * @param length The length of message if known.  Usually this is provided when deserializing of the wire
      * as the length will be provided as part of the header.  If unknown then set to Message.UNKNOWN_LENGTH
      * @throws ProtocolException
      */
-    public TransactionInput(NetworkParameters params, Transaction parentTransaction, byte[] msg, int offset, boolean parseLazy, boolean parseRetain)
+    public TransactionInput(NetworkParameters params, Transaction parentTransaction, byte[] msg, int offset,
+                            boolean parseLazy, boolean parseRetain)
             throws ProtocolException {
         super(params, msg, offset, parentTransaction, parseLazy, parseRetain, UNKNOWN_LENGTH);
         this.parentTransaction = parentTransaction;
@@ -158,8 +161,7 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
         // parameter is overloaded to be something totally different.
         if (scriptSig == null) {
             maybeParse();
-            assert scriptBytes != null;
-            scriptSig = new Script(params, scriptBytes, 0, scriptBytes.length);
+            scriptSig = new Script(params, Preconditions.checkNotNull(scriptBytes), 0, scriptBytes.length);
         }
         return scriptSig;
     }
@@ -170,7 +172,10 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
      * @throws ScriptException if the scriptSig could not be understood (eg, if this is a coinbase transaction).
      */
     public Address getFromAddress() throws ScriptException {
-        assert !isCoinBase();
+        if (isCoinBase()) {
+            throw new ScriptException(
+                    "This is a coinbase transaction which generates new coins. It does not have a from address.");
+        }
         return getScriptSig().getFromAddress();
     }
 
@@ -257,7 +262,7 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
      *
      * @return The TransactionOutput or null if the transactions map doesn't contain the referenced tx.
      */
-    public TransactionOutput getConnectedOutput(Map<Sha256Hash, Transaction> transactions) {
+    TransactionOutput getConnectedOutput(Map<Sha256Hash, Transaction> transactions) {
         Transaction tx = transactions.get(outpoint.getHash());
         if (tx == null)
             return null;
@@ -265,28 +270,42 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
         return out;
     }
 
+    enum ConnectMode {
+        DISCONNECT_ON_CONFLICT,
+        ABORT_ON_CONFLICT
+    }
+
     /**
      * Connects this input to the relevant output of the referenced transaction if it's in the given map.
-     * Connecting means updating the internal pointers and spent flags.
+     * Connecting means updating the internal pointers and spent flags. If the mode is to ABORT_ON_CONFLICT then
+     * the spent output won't be changed, but the outpoint.fromTx pointer will still be updated.
      *
      * @param transactions Map of txhash->transaction.
-     * @param disconnect   Whether to abort if there's a pre-existing connection or not.
+     * @param mode   Whether to abort if there's a pre-existing connection or not.
      * @return true if connection took place, false if the referenced transaction was not in the list.
      */
-    ConnectionResult connect(Map<Sha256Hash, Transaction> transactions, boolean disconnect) {
+    ConnectionResult connect(Map<Sha256Hash, Transaction> transactions, ConnectMode mode) {
         Transaction tx = transactions.get(outpoint.getHash());
-        if (tx == null)
+        if (tx == null) {
             return TransactionInput.ConnectionResult.NO_SUCH_TX;
+        }
         TransactionOutput out = tx.getOutputs().get((int) outpoint.getIndex());
         if (!out.isAvailableForSpending()) {
-            if (disconnect)
+            if (mode == ConnectMode.DISCONNECT_ON_CONFLICT) {
                 out.markAsUnspent();
-            else
+            } else if (mode == ConnectMode.ABORT_ON_CONFLICT) {
+                outpoint.fromTx = checkNotNull(out.parentTransaction);
                 return TransactionInput.ConnectionResult.ALREADY_SPENT;
+            }
         }
-        outpoint.fromTx = tx;
-        out.markAsSpent(this);
+        connect(out);
         return TransactionInput.ConnectionResult.SUCCESS;
+    }
+
+    /** Internal use only: connects this TransactionInput to the given output (updates pointers and spent flags) */
+    public void connect(TransactionOutput out) {
+        outpoint.fromTx = checkNotNull(out.parentTransaction);
+        out.markAsSpent(this);
     }
 
     /**

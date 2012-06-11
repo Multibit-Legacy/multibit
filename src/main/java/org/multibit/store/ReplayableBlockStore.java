@@ -383,4 +383,10 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
     public RandomAccessFile getFile() {
         return file;
     }
+
+    @Override
+    public void close() throws BlockStoreException {
+        // TODO Auto-generated method stub
+        
+    }
 }

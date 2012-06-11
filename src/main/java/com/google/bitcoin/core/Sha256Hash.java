@@ -16,13 +16,16 @@
 
 package com.google.bitcoin.core;
 
+import org.spongycastle.util.encoders.Hex;
+
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import org.bouncycastle.util.encoders.Hex;
+import static com.google.common.base.Preconditions.checkArgument;
+
 import org.multibit.IsMultiBitClass;
 
 /**
@@ -70,13 +73,13 @@ public class Sha256Hash implements Serializable, IsMultiBitClass {
      * Creates a Sha256Hash by wrapping the given byte array. It must be 32 bytes long.
      */
     public Sha256Hash(byte[] bytes) {
-        assert bytes.length == 32;
+        checkArgument(bytes.length == 32);
         this.bytes = bytes;
 
     }
 
     private Sha256Hash(byte[] bytes, int hash) {
-        assert bytes.length == 32;
+        checkArgument(bytes.length == 32);
         this.bytes = bytes;
         this.hash = hash;
     }
@@ -85,7 +88,7 @@ public class Sha256Hash implements Serializable, IsMultiBitClass {
      * Creates a Sha256Hash by decoding the given hex string. It must be 64 characters long.
      */
     public Sha256Hash(String string) {
-        assert string.length() == 64;
+        checkArgument(string.length() == 64);
         this.bytes = Hex.decode(string);
     }
 

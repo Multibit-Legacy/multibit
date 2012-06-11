@@ -20,10 +20,6 @@
   <fileSets>
     <fileSet>
       <directory>target/classes</directory>
-	<excludes>
-            <exclude>org/multibit/viewsystem/commandline/**/*</exclude>
-            <exclude>org/multibit/viewsystem/commandline</exclude>
-        </excludes>
       <outputDirectory></outputDirectory>
     </fileSet>
     <fileSet>

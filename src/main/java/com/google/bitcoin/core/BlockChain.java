@@ -16,20 +16,16 @@
 
 package com.google.bitcoin.core;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.multibit.IsMultiBitClass;
+import com.google.bitcoin.store.BlockStore;
+import com.google.bitcoin.store.BlockStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.store.BlockStore;
-import com.google.bitcoin.store.BlockStoreException;
+import java.math.BigInteger;
+import java.util.*;
+
+import static com.google.common.base.Preconditions.*;
 
 /**
  * A BlockChain holds a series of {@link Block} objects, links them together, and knows how to verify that the
@@ -70,9 +66,11 @@ public class BlockChain implements IsMultiBitClass {
      * potentially invalidating transactions in our wallet.
      */
     protected StoredBlock chainHead;
-    // chainHead is accessed under this lock rather than the BlockChain lock. This is to try and keep accessors
-    // responsive whilst the chain is downloading, without free-threading the entire chain add process (which could
-    // get very confusing in the case of multiple blocks being added simultaneously).
+
+    // The chainHead field is read/written synchronized with this object rather than BlockChain. However writing is
+    // also guaranteed to happen whilst BlockChain is synchronized (see setChainHead). The goal of this is to let
+    // clients quickly access the chain head even whilst the block chain is downloading and thus the BlockChain is
+    // locked most of the time.
     protected final Object chainHeadLock = new Object();
 
     protected final NetworkParameters params;
@@ -165,7 +163,7 @@ public class BlockChain implements IsMultiBitClass {
             statsBlocksAdded = 0;
         }
         // We check only the chain head for double adds here to avoid potentially expensive block chain misses.
-        if (block.equals(chainHead.getHeader())) {
+        if (block.equals(getChainHead().getHeader())) {
             // Duplicate add of the block at the top of the chain, can be a natural artifact of the download process.
             log.debug("Chain head added more than once: {}", block.getHash());
             return true;
@@ -175,10 +173,8 @@ public class BlockChain implements IsMultiBitClass {
         // blocks validity so we can skip the merkle root verification if the contents aren't interesting. This saves
         // a lot of time for big blocks.
         boolean contentsImportant = false;
-        HashMap<Wallet, List<Transaction>> walletToTxMap = new HashMap<Wallet, List<Transaction>>();
         if (block.transactions != null) {
-            scanTransactions(block, walletToTxMap);
-            contentsImportant = walletToTxMap.size() > 0;
+            contentsImportant = containsRelevantTransactions(block);
         }
 
         // Prove the block is internally valid: hash is lower than target, etc. This only checks the block contents
@@ -202,8 +198,8 @@ public class BlockChain implements IsMultiBitClass {
             // We can't find the previous block. Probably we are still in the process of downloading the chain and a
             // block was solved whilst we were doing it. We put it to one side and try to connect it later when we
             // have more blocks.
-            assert tryConnecting : "bug in tryConnectingUnconnected";
-            log.warn("Block does not connect: {}", block.getHashAsString());
+            checkState(tryConnecting, "bug in tryConnectingUnconnected");
+            log.warn("Block does not connect: {} prev {}", block.getHashAsString(), block.getPrevBlockHash());
             unconnectedBlocks.add(block);
             return false;
         } else {
@@ -214,7 +210,7 @@ public class BlockChain implements IsMultiBitClass {
             StoredBlock newStoredBlock = storedPrev.build(block);
             checkDifficultyTransitions(storedPrev, newStoredBlock);
             blockStore.put(newStoredBlock);
-            connectBlock(newStoredBlock, storedPrev, walletToTxMap);
+            connectBlock(newStoredBlock, storedPrev, block.transactions);
         }
 
         if (tryConnecting)
@@ -225,44 +221,48 @@ public class BlockChain implements IsMultiBitClass {
     }
 
     private void connectBlock(StoredBlock newStoredBlock, StoredBlock storedPrev,
-                              HashMap<Wallet, List<Transaction>> newTransactions)
+                              List<Transaction> transactions)
             throws BlockStoreException, VerificationException {
-        if (storedPrev.equals(chainHead)) {
+        StoredBlock head = getChainHead();
+        if (storedPrev.equals(head)) {
             // This block connects to the best known block, it is a normal continuation of the system.
             setChainHead(newStoredBlock);
-            log.debug("Chain is now {} blocks high", chainHead.getHeight());
-            if (newTransactions != null)
-                sendTransactionsToWallet(newStoredBlock, NewBlockType.BEST_CHAIN, newTransactions);
+            log.debug("Chain is now {} blocks high", newStoredBlock.getHeight());
+            if (transactions != null)
+                sendTransactionsToWallet(newStoredBlock, NewBlockType.BEST_CHAIN, transactions);
         } else {
             // This block connects to somewhere other than the top of the best known chain. We treat these differently.
             //
             // Note that we send the transactions to the wallet FIRST, even if we're about to re-organize this block
             // to become the new best chain head. This simplifies handling of the re-org in the Wallet class.
-            boolean haveNewBestChain = newStoredBlock.moreWorkThan(chainHead);
+            boolean haveNewBestChain = newStoredBlock.moreWorkThan(head);
             if (haveNewBestChain) {
                 log.info("Block is causing a re-organize");
             } else {
-                StoredBlock splitPoint = findSplit(newStoredBlock, chainHead);
+                StoredBlock splitPoint = findSplit(newStoredBlock, head);
                 if (splitPoint == newStoredBlock) {
                     // newStoredBlock is a part of the same chain, there's no fork. This happens when we receive a block
                     // that we already saw and linked into the chain previously, which isn't the chain head.
                     // Re-processing it is confusing for the wallet so just skip.
-                    log.debug("Saw duplicated block in main chain at height {}: {}",
+                    log.warn("Saw duplicated block in main chain at height {}: {}",
                             newStoredBlock.getHeight(), newStoredBlock.getHeader().getHash());
                     return;
                 }
-                int splitPointHeight = splitPoint != null ? splitPoint.getHeight() : -1;
-                String splitPointHash =
-                        splitPoint != null ? splitPoint.getHeader().getHashAsString() : "?";
-                log.info("Block forks the chain at height {}/block {}, but it did not cause a reorganize:\n{}",
+                if (splitPoint == null) {
+                    log.error("Block forks the chain but splitPoint is null");
+                } else {
+                    int splitPointHeight = splitPoint.getHeight();
+                    String splitPointHash = splitPoint.getHeader().getHashAsString();
+                    log.info("Block forks the chain at height {}/block {}, but it did not cause a reorganize:\n{}",
                         new Object[]{splitPointHeight, splitPointHash, newStoredBlock});
+                }
             }
 
             // We may not have any transactions if we received only a header, which can happen during fast catchup.
             // If we do, send them to the wallet but state that they are on a side chain so it knows not to try and
             // spend them until they become activated.
-            if (newTransactions != null) {
-                sendTransactionsToWallet(newStoredBlock, NewBlockType.SIDE_CHAIN, newTransactions);
+            if (transactions != null) {
+                sendTransactionsToWallet(newStoredBlock, NewBlockType.SIDE_CHAIN, transactions);
             }
 
             if (haveNewBestChain)
@@ -278,13 +278,14 @@ public class BlockChain implements IsMultiBitClass {
         //
         // Firstly, calculate the block at which the chain diverged. We only need to examine the
         // chain from beyond this block to find differences.
-        StoredBlock splitPoint = findSplit(newChainHead, chainHead);
+        StoredBlock head = getChainHead();
+        StoredBlock splitPoint = findSplit(newChainHead, head);
         log.info("Re-organize after split at height {}", splitPoint.getHeight());
-        log.info("Old chain head: {}", chainHead.getHeader().getHashAsString());
+        log.info("Old chain head: {}", head.getHeader().getHashAsString());
         log.info("New chain head: {}", newChainHead.getHeader().getHashAsString());
         log.info("Split at block: {}", splitPoint.getHeader().getHashAsString());
         // Then build a list of all blocks in the old part of the chain and the new part.
-        List<StoredBlock> oldBlocks = getPartialChain(chainHead, splitPoint);
+        List<StoredBlock> oldBlocks = getPartialChain(head, splitPoint);
         List<StoredBlock> newBlocks = getPartialChain(newChainHead, splitPoint);
         // Now inform the wallets. This is necessary so the set of currently active transactions (that we can spend)
         // can be updated to take into account the re-organize. We might also have received new coins we didn't have
@@ -300,13 +301,12 @@ public class BlockChain implements IsMultiBitClass {
      * Returns the set of contiguous blocks between 'higher' and 'lower'. Higher is included, lower is not.
      */
     private List<StoredBlock> getPartialChain(StoredBlock higher, StoredBlock lower) throws BlockStoreException {
-        assert higher.getHeight() > lower.getHeight();
+        checkArgument(higher.getHeight() > lower.getHeight(), "higher and lower are reversed");
         LinkedList<StoredBlock> results = new LinkedList<StoredBlock>();
         StoredBlock cursor = higher;
         while (true) {
             results.add(cursor);
-            cursor = cursor.getPrev(blockStore);
-            assert cursor != null : "Ran off the end of the chain";
+            cursor = checkNotNull(cursor.getPrev(blockStore), "Ran off the end of the chain");
             if (cursor.equals(lower)) break;
         }
         return results;
@@ -317,22 +317,22 @@ public class BlockChain implements IsMultiBitClass {
      * found (ie they are not part of the same chain). Returns newChainHead or chainHead if they don't actually diverge
      * but are part of the same chain.
      */
-    private StoredBlock findSplit(StoredBlock newChainHead, StoredBlock chainHead) throws BlockStoreException {
-        StoredBlock currentChainCursor = chainHead;
+    private StoredBlock findSplit(StoredBlock newChainHead, StoredBlock oldChainHead) throws BlockStoreException {
+        StoredBlock currentChainCursor = oldChainHead;
         StoredBlock newChainCursor = newChainHead;
         // Loop until we find the block both chains have in common. Example:
         //
         //    A -> B -> C -> D
         //         \--> E -> F -> G
         //
-        // findSplit will return block B. chainHead = D and newChainHead = G.
+        // findSplit will return block B. oldChainHead = D and newChainHead = G.
         while (!currentChainCursor.equals(newChainCursor)) {
             if (currentChainCursor.getHeight() > newChainCursor.getHeight()) {
                 currentChainCursor = currentChainCursor.getPrev(blockStore);
-                assert currentChainCursor != null : "Attempt to follow an orphan chain";
+                checkNotNull(currentChainCursor, "Attempt to follow an orphan chain");
             } else {
                 newChainCursor = newChainCursor.getPrev(blockStore);
-                assert newChainCursor != null : "Attempt to follow an orphan chain";
+                checkNotNull(newChainCursor, "Attempt to follow an orphan chain");
             }
         }
         return currentChainCursor;
@@ -351,17 +351,17 @@ public class BlockChain implements IsMultiBitClass {
     }
 
     private void sendTransactionsToWallet(StoredBlock block, NewBlockType blockType,
-                                          HashMap<Wallet, List<Transaction>> newTransactions) throws VerificationException {
-        for (Map.Entry<Wallet, List<Transaction>> entry : newTransactions.entrySet()) {
-            try {
-                List<Transaction> txns = entry.getValue();
-                for (Transaction tx : txns) {
-                    entry.getKey().receiveFromBlock(tx, block, blockType);
+                                          List<Transaction> transactions) throws VerificationException {
+        for (Transaction tx : transactions) {
+            for (Wallet wallet : wallets) {
+                try {
+                    if (wallet.isTransactionRelevant(tx, true))
+                        wallet.receiveFromBlock(tx, block, blockType);
+                } catch (ScriptException e) {
+                    // We don't want scripts we don't understand to break the block chain so just note that this tx was
+                    // not scanned here and continue.
+                    log.warn("Failed to parse a script: " + e.toString());
                 }
-            } catch (ScriptException e) {
-                // We don't want scripts we don't understand to break the block chain so just note that this tx was
-                // not scanned here and continue.
-                log.warn("Failed to parse a script: " + e.toString());
             }
         }
     }
@@ -406,6 +406,9 @@ public class BlockChain implements IsMultiBitClass {
         } while (blocksConnectedThisRound > 0);
     }
 
+    // February 16th 2012
+    private static Date testnetDiffDate = new Date(1329264000000L);
+
     /**
      * Throws an exception if the blocks difficulty is not correct.
      */
@@ -413,8 +416,18 @@ public class BlockChain implements IsMultiBitClass {
             throws BlockStoreException, VerificationException {
         Block prev = storedPrev.getHeader();
         Block next = storedNext.getHeader();
+
         // Is this supposed to be a difficulty transition point?
         if ((storedPrev.getHeight() + 1) % params.interval != 0) {
+
+            // TODO: Refactor this hack after 0.5 is released and we stop supporting deserialization compatibility.
+            // This should be a method of the NetworkParameters, which should in turn be using singletons and a subclass
+            // for each network type. Then each network can define its own difficulty transition rules.
+            if (params.getId().equals(NetworkParameters.ID_TESTNET) && next.getTime().after(testnetDiffDate)) {
+                checkTestnetDifficulty(storedPrev, prev, next);
+                return;
+            }
+
             // No ... so check the difficulty didn't actually change.
             if (next.getDifficultyTarget() != prev.getDifficultyTarget())
                 throw new VerificationException("Unexpected change in difficulty at height " + storedPrev.getHeight() +
@@ -435,7 +448,7 @@ public class BlockChain implements IsMultiBitClass {
             }
             cursor = blockStore.get(cursor.getHeader().getPrevBlockHash());
         }
-        log.debug("Difficulty transition traversal took {}msec", System.currentTimeMillis() - now);
+        log.info("Difficulty transition traversal took {}msec", System.currentTimeMillis() - now);
 
         Block blockIntervalAgo = cursor.getHeader();
         int timespan = (int) (prev.getTimeSeconds() - blockIntervalAgo.getTimeSeconds());
@@ -450,7 +463,7 @@ public class BlockChain implements IsMultiBitClass {
         newDifficulty = newDifficulty.divide(BigInteger.valueOf(params.targetTimespan));
 
         if (newDifficulty.compareTo(params.proofOfWorkLimit) > 0) {
-            log.debug("Difficulty hit proof of work limit: {}", newDifficulty.toString(16));
+            log.info("Difficulty hit proof of work limit: {}", newDifficulty.toString(16));
             newDifficulty = params.proofOfWorkLimit;
         }
 
@@ -464,6 +477,33 @@ public class BlockChain implements IsMultiBitClass {
         if (newDifficulty.compareTo(receivedDifficulty) != 0)
             throw new VerificationException("Network provided difficulty bits do not match what was calculated: " +
                     receivedDifficulty.toString(16) + " vs " + newDifficulty.toString(16));
+    }
+
+    private void checkTestnetDifficulty(StoredBlock storedPrev, Block prev, Block next) throws VerificationException, BlockStoreException {
+        // After 15th February 2012 the rules on the testnet change to avoid people running up the difficulty
+        // and then leaving, making it too hard to mine a block. On non-difficulty transition points, easy
+        // blocks are allowed if there has been a span of 20 minutes without one.
+        final long timeDelta = next.getTimeSeconds() - prev.getTimeSeconds();
+        // There is an integer underflow bug in bitcoin-qt that means mindiff blocks are accepted when time
+        // goes backwards.
+        // Should be in NetworkParameters as static public
+        int TARGET_SPACING = 10 * 60;  // 10 minutes per block.
+
+        if (timeDelta >= 0 && timeDelta <= TARGET_SPACING * 2) {
+            // Walk backwards until we find a block that doesn't have the easiest proof of work, then check
+            // that difficulty is equal to that one.
+            StoredBlock cursor = storedPrev;
+            while (!cursor.getHeader().equals(params.genesisBlock) &&
+                   cursor.getHeight() % params.interval != 0 &&
+                   cursor.getHeader().getDifficultyTargetAsInteger().equals(params.proofOfWorkLimit))
+                cursor = cursor.getPrev(blockStore);
+            BigInteger cursorDifficulty = cursor.getHeader().getDifficultyTargetAsInteger();
+            BigInteger newDifficulty = next.getDifficultyTargetAsInteger();
+            if (!cursorDifficulty.equals(newDifficulty))
+                throw new VerificationException("Testnet block transition that is not allowed: " +
+                    Long.toHexString(cursor.getHeader().getDifficultyTarget()) + " vs " +
+                    Long.toHexString(next.getDifficultyTarget()));
+        }
     }
 
     /**
@@ -490,6 +530,24 @@ public class BlockChain implements IsMultiBitClass {
                 log.warn("Failed to parse a script: " + e.toString());
             }
         }
+    }
+
+    /**
+     * Returns true if any connected wallet considers any transaction in the block to be relevant.
+     */
+    private boolean containsRelevantTransactions(Block block) {
+        for (Transaction tx : block.transactions) {
+            try {
+                for (Wallet wallet : wallets) {
+                    if (wallet.isTransactionRelevant(tx, true)) return true;
+                }
+            } catch (ScriptException e) {
+                // We don't want scripts we don't understand to break the block chain so just note that this tx was
+                // not scanned here and continue.
+                log.warn("Failed to parse a script: " + e.toString());
+            }
+        }
+        return false;
     }
 
     /**

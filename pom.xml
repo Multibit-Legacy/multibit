@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.multibit</groupId>
   <artifactId>multibit</artifactId>
-  <version>0.3.5</version>
+  <version>0.3.6</version>
   <name>MultiBit</name>
   <description>A Java Swing client for Bitcoin</description>
   <url>http://www.multibit.org</url>
@@ -168,11 +168,7 @@
         <configuration>
           <descriptors>
             <!-- this assembly descriptor also includes the bitcoinj classes unpacked earlier -->
-            <!-- excludes commandline code -->
             <descriptor>src/assemble/exe.xml</descriptor>
-            
-            <!-- includes commandline code -->
-            <descriptor>src/assemble/shell-exe.xml</descriptor>
           </descriptors>
           <archive>
             <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
@@ -509,6 +505,13 @@
       <version>0.9.30</version>
       <scope>compile</scope>
     </dependency>
+    <!-- spongycastle used by bitcoinj clones -->
+    <dependency>
+        <groupId>com.madgag</groupId>
+        <artifactId>sc-light-jdk15on</artifactId>
+        <version>${sc-light-jdk15on.version}</version>
+    </dependency>
+    <!-- bouncycastle used in blockchain.info code -->
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk15</artifactId>
@@ -521,6 +524,11 @@
       <groupId>com.google.zxing</groupId>
       <artifactId>javase</artifactId>
       <version>1.6</version>
+    </dependency>
+    <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava-base</artifactId>
+        <version>r03</version>
     </dependency>
     <dependency>
       <groupId>org.simplericity.macify</groupId>
@@ -538,13 +546,13 @@
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
       <artifactId>xchange</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>1.0.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
       <artifactId>xchange-mtgox</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>1.0.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -581,12 +589,6 @@
       <artifactId>jackson-mapper-asl</artifactId>
       <version>1.9.5</version>
     </dependency>
-    <dependency>
-	  <groupId>org.rxtx</groupId>
-	  <artifactId>rxtx</artifactId>
-	  <version>2.1.7</version>
-	</dependency>
-
   </dependencies>
 
   <reporting>
@@ -626,8 +628,10 @@
     <staging.linux.dir>${project.build.directory}/staging.linux</staging.linux.dir>
 
     <!-- Version of BitCoinJ to use (multiple uses) -->
-    <bitcoinj.version>0.4</bitcoinj.version>
+    <bitcoinj.version>0.5.1</bitcoinj.version>
 
+    <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>
+ 
     <!-- Location of staging directory for creation of windows IzPack installer -->
     <staging.windows.dir>${project.build.directory}/staging.windows</staging.windows.dir>
   </properties>

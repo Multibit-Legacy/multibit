@@ -31,7 +31,7 @@ import com.xeiam.xchange.CurrencyPair;
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
 import com.xeiam.xchange.dto.marketdata.Ticker;
-import com.xeiam.xchange.service.marketdata.async.AsyncMarketDataService;
+import com.xeiam.xchange.service.marketdata.polling.PollingMarketDataService;
 
 /**
  * TimerTask to poll MtGox for ticker data process
@@ -46,7 +46,7 @@ public class TickerTimerTask extends TimerTask {
     private final MultiBitFrame mainFrame;
 
     private Exchange mtGox;
-    private AsyncMarketDataService marketDataService;
+    private PollingMarketDataService marketDataService;
     private List<CurrencyPair> exchangeSymbols;
 
     /**
@@ -66,7 +66,7 @@ public class TickerTimerTask extends TimerTask {
             mtGox = ExchangeFactory.INSTANCE.createExchange("com.xeiam.xchange.mtgox.v1.MtGoxExchange");
 
             // Interested in the public market data feed (no authentication)
-            marketDataService = mtGox.getAsyncMarketDataService();
+            marketDataService = mtGox.getPollingMarketDataService();
 
             // get the list of available currencies
             exchangeSymbols = marketDataService.getExchangeSymbols();
