@@ -815,14 +815,6 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         out.defaultWriteObject();
     }
 
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
     /**
      * returns whether this transaction was sent by this wallet
      * 

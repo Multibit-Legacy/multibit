@@ -32,6 +32,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
+import org.multibit.file.WalletLoadException;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.network.MultiBitService;
@@ -197,6 +198,11 @@ public class MultiBit {
                     ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
                 }
                 controller.fireDataChanged();
+            } catch (WalletLoadException e) {
+                String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                        new Object[] { activeWalletFilename, e.getMessage() });
+                controller.updateStatusLabel(message);
+                log.error(message);
             } catch (IOException e) {
                 String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                         new Object[] { activeWalletFilename, e.getMessage() });
@@ -225,6 +231,11 @@ public class MultiBit {
                             }
                             controller.updateStatusLabel(controller.getLocaliser().getString("multiBit.openingWalletIsDone",
                                     new Object[] { loopWalletFilename }));
+                        } catch (NullPointerException e) {
+                            String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                                    new Object[] { activeWalletFilename, e.getMessage() });
+                            controller.updateStatusLabel(message);
+                            log.error(message);
                         } catch (IOException e) {
                             String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                                     new Object[] { activeWalletFilename, e.getMessage() });

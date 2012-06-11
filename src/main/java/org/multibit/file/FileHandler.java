@@ -71,26 +71,32 @@ public class FileHandler {
         this.controller = controller;
     }
 
-    public PerWalletModelData loadFromFile(File walletFile) throws IOException {
+    public PerWalletModelData loadFromFile(File walletFile) throws WalletLoadException {
         if (walletFile == null) {
             return null;
         }
 
         String walletFilename = walletFile.getAbsolutePath();
-        Wallet wallet = Wallet.loadFromFile(walletFile);
+        
+        try {
+            Wallet wallet = Wallet.loadFromFile(walletFile);
 
-        // add the new wallet into the model
-        PerWalletModelData perWalletModelData = controller.getModel().addWallet(wallet, walletFilename);
+            // add the new wallet into the model
+            PerWalletModelData perWalletModelData = controller.getModel().addWallet(wallet, walletFilename);
 
-        WalletInfo walletInfo = new WalletInfo(walletFilename);
-        perWalletModelData.setWalletInfo(walletInfo);
+            WalletInfo walletInfo = new WalletInfo(walletFilename);
+            perWalletModelData.setWalletInfo(walletInfo);
 
-        synchronized (walletInfo) {
-            rememberFileSizesAndLastModified(walletFile, walletInfo);
-            perWalletModelData.setDirty(false);
-        }
+            synchronized (walletInfo) {
+                rememberFileSizesAndLastModified(walletFile, walletInfo);
+                perWalletModelData.setDirty(false);
+            }
 
-        return perWalletModelData;
+            return perWalletModelData;
+        } catch (Exception e) {
+            log.error(e.getClass().getCanonicalName() + " "  + e.getMessage());
+            throw new WalletLoadException(e.getClass().getCanonicalName() + " "  + e.getMessage(), e);
+        } 
     }
 
     /**

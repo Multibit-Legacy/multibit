@@ -742,8 +742,8 @@ public class MultiBitModel {
      */
     private Date createDate(Transaction transaction) {
         // if transaction has altered date - return that
-        if (transaction.getUpdatedAt() != null) {
-            return transaction.getUpdatedAt();
+        if (transaction.getUpdateTime() != null) {
+            return transaction.getUpdateTime();
         }
 
         // other wise return the date of the block it first appeared in

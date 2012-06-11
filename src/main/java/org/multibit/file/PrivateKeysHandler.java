@@ -274,20 +274,7 @@ public class PrivateKeysHandler {
                     if (allTransactions != null) {
                         for (Transaction tx : allTransactions) {
                             if (transactionUsesKey(tx, ecKey)) {
-                                Date updateTime = null;
-                                Date updateTime1 = tx.getUpdateTime();
-                                Date updateTime2 = tx.getUpdatedAt();
-                                if (updateTime1 == null) {
-                                    if (updateTime2 != null) {
-                                        updateTime = updateTime2;
-                                    }
-                                } else {
-                                    if (updateTime2 == null) {
-                                        updateTime = updateTime1;
-                                    } else {
-                                        updateTime = updateTime1.before(updateTime2) ? updateTime1 : updateTime2;
-                                    }
-                                }
+                                Date updateTime = tx.getUpdateTime();
                                 if (updateTime != null) {
                                     if (updateTime != null) {
                                         if (overallLastUsageDate == null) {

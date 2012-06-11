@@ -981,23 +981,17 @@ public class Wallet implements Serializable, IsMultiBitClass {
         while(iterator.hasNext()) {
             Entry<Sha256Hash, Transaction> member = iterator.next();
             if (member.getValue() != null) {
-                Date updatedAt = member.getValue().getUpdatedAt();
-                if (updatedAt != null && updatedAt.after(fromDate)) {
+                Date updateTime = member.getValue().getUpdateTime();
+                if (updateTime != null && updateTime.after(fromDate)) {
                     iterator.remove();
                     System.out.println("Wallet#removeEntriesAfterDate - Removed tx.1 " + member.getValue());
                     continue;
                 }
-                Date updateTime = member.getValue().getUpdateTime();
-                if (updateTime != null && updateTime.after(fromDate)) {
-                    iterator.remove();
-                    System.out.println("Wallet#removeEntriesAfterDate - Removed tx.2 " + member.getValue());
-                    continue;
-                }
                 
-                // if no updatedAt or updateTime remove them
-                if (updatedAt == null && updateTime == null) {
+                // if no updateTime remove them
+                if (updateTime == null || updateTime.getTime() == 0) {
                     iterator.remove();
-                    System.out.println("Removed tx.3 " + member.getValue());
+                    System.out.println("Removed tx.2 " + member.getValue());
                     continue;                    
                 }
             }
@@ -1247,7 +1241,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
         // keep a track of the date the tx was created (used in MultiBitService
         // to work out the block it appears in)
-        sendTx.setUpdatedAt(new Date());
+        sendTx.setUpdateTime(new Date());
 
         log.info("  completed {}", sendTx.getHashAsString());
         return true;

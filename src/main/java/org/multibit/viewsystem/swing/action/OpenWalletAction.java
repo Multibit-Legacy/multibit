@@ -28,6 +28,7 @@ import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
+import org.multibit.file.WalletLoadException;
 import org.multibit.model.WalletInfoException;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.WalletFileFilter;
@@ -134,8 +135,8 @@ public class OpenWalletAction extends AbstractAction {
                     message = controller.getLocaliser().getString("multiBit.openingWalletIsDone", new Object[]{selectedWalletFilenameFinal});
                     
                     return Boolean.TRUE;
-                } catch (NullPointerException npe) {
-                    message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, npe.getMessage()});
+                } catch (WalletLoadException e) {
+                    message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
                     return Boolean.FALSE;
                 } catch (IOException e) {
                     message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
@@ -148,15 +149,25 @@ public class OpenWalletAction extends AbstractAction {
             
             protected void done() {
                 try {
+                    //System.out.println("OpenWalletAction#ping 1");
                     Boolean wasSuccessful = get();
+                    //System.out.println("OpenWalletAction#ping 2");
                     if (wasSuccessful) {
+                        //System.out.println("OpenWalletAction#ping 3");
                         log.debug(message);
+                        System.out.println("OpenWalletAction#ping 4");
                         controller.updateStatusLabel(message);  
+                        System.out.println("OpenWalletAction#ping 5");
                         controller.fireRecreateAllViews(true);
+                        System.out.println("OpenWalletAction#ping 6");
                         controller.fireDataChanged();
+                        //System.out.println("OpenWalletAction#ping 7");
                     } else {
+                        //System.out.println("OpenWalletAction#ping 8");
                         log.error(message);
+                        System.out.println("OpenWalletAction#ping 9");
                         controller.updateStatusLabel(message);
+                        //System.out.println("OpenWalletAction#ping 10");
                     }
                 } catch (Exception e) {
                     // not really used but caught so that SwingWorker shuts down cleanly

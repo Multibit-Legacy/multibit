@@ -26,6 +26,7 @@ import javax.swing.ImageIcon;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.DeleteWalletException;
 import org.multibit.file.FileHandler;
+import org.multibit.file.WalletLoadException;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.DeleteWalletConfirmDialog;
@@ -83,6 +84,14 @@ public class DeleteWalletSubmitAction extends AbstractAction {
                     controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeletedOk",
                             new Object[] { walletDescription }), confirm2 );
             }
+         } catch (WalletLoadException wle) {
+             log.error(wle.getClass().getName() + " " + wle.getMessage());
+             if (wle.getCause() != null) {
+                 log.error(wle.getClass().getName() + ", cause = " + wle.getCause().getMessage());
+             }
+             deleteWalletConfirmDialog.getExplainLabel().setText(" ");
+             deleteWalletConfirmDialog.setDeleteConfirmText(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError1"), controller
+                     .getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new Object[] { wle.getMessage() }));
          } catch (DeleteWalletException dwe) {
             log.error(dwe.getClass().getName() + " " + dwe.getMessage());
             if (dwe.getCause() != null) {

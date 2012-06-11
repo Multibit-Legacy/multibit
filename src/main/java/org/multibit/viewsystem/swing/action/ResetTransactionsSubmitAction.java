@@ -104,10 +104,6 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
                             if (updateTime != null && earliestTransactionDate.after(updateTime)) {
                                 earliestTransactionDate = updateTime;
                             }
-                            Date updateDate = transaction.getUpdatedAt();
-                            if (updateDate != null && earliestTransactionDate.after(updateDate)) {
-                                earliestTransactionDate = updateDate;
-                            }
                         }
                     }
                 }

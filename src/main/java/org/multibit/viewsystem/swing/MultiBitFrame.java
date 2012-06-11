@@ -950,7 +950,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
-        log.debug("Transaction confidence changed for tx " + transaction.toString());
+        //log.debug("Transaction confidence changed for tx " + transaction.toString());
     }
 
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
