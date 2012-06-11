@@ -161,7 +161,7 @@
         </executions>
       </plugin>
 
-      <!-- Create main and commandline executable jar -->
+      <!-- Create main executable jar -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.2.1</version>
@@ -511,14 +511,6 @@
         <artifactId>sc-light-jdk15on</artifactId>
         <version>${sc-light-jdk15on.version}</version>
     </dependency>
-    <!-- bouncycastle used in blockchain.info code -->
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-jdk15</artifactId>
-      <version>1.46</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
     <!-- zxing used for swatches -->
     <dependency>
       <groupId>com.google.zxing</groupId>
@@ -630,6 +622,7 @@
     <!-- Version of BitCoinJ to use (multiple uses) -->
     <bitcoinj.version>0.5.1</bitcoinj.version>
 
+    <!-- Version of spongycastle to use -->
     <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>
  
     <!-- Location of staging directory for creation of windows IzPack installer -->

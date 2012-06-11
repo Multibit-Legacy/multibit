@@ -19,14 +19,14 @@ import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 
 import org.apache.commons.codec.binary.Base64;
-import org.bouncycastle.crypto.BufferedBlockCipher;
-import org.bouncycastle.crypto.CipherParameters;
-import org.bouncycastle.crypto.PBEParametersGenerator;
-import org.bouncycastle.crypto.engines.AESFastEngine;
-import org.bouncycastle.crypto.generators.OpenSSLPBEParametersGenerator;
-import org.bouncycastle.crypto.modes.CBCBlockCipher;
-import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
-import org.bouncycastle.crypto.params.ParametersWithIV;
+import org.spongycastle.crypto.BufferedBlockCipher;
+import org.spongycastle.crypto.CipherParameters;
+import org.spongycastle.crypto.PBEParametersGenerator;
+import org.spongycastle.crypto.engines.AESFastEngine;
+import org.spongycastle.crypto.generators.OpenSSLPBEParametersGenerator;
+import org.spongycastle.crypto.modes.CBCBlockCipher;
+import org.spongycastle.crypto.paddings.PaddedBufferedBlockCipher;
+import org.spongycastle.crypto.params.ParametersWithIV;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

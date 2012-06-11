@@ -134,6 +134,9 @@ public class OpenWalletAction extends AbstractAction {
                     message = controller.getLocaliser().getString("multiBit.openingWalletIsDone", new Object[]{selectedWalletFilenameFinal});
                     
                     return Boolean.TRUE;
+                } catch (NullPointerException npe) {
+                    message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, npe.getMessage()});
+                    return Boolean.FALSE;
                 } catch (IOException e) {
                     message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
                     return Boolean.FALSE;

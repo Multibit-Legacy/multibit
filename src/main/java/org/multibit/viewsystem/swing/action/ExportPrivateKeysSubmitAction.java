@@ -25,7 +25,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 
-import org.bouncycastle.util.Arrays;
+import org.spongycastle.util.Arrays;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.Verification;
