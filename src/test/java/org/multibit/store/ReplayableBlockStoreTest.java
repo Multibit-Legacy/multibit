@@ -48,6 +48,9 @@ public class ReplayableBlockStoreTest {
         StoredBlock block1 = genesis.build(genesis.getHeader().createNextBlock(toAddress1).cloneAsHeader());
         store.put(block1);
         store.setChainHead(block1);
+        
+        // close the store
+        store.close();
 
         // Check we can get it back out again if we rebuild the store object.
         store = new ReplayableBlockStore(networkParameters, temporaryBlockStore, false);
@@ -62,6 +65,9 @@ public class ReplayableBlockStoreTest {
         StoredBlock block2 = block1.build(block1.getHeader().createNextBlock(toAddress2).cloneAsHeader());
         store.put(block2);
         store.setChainHead(block2);
+        
+        // close the store
+        store.close();
 
         // Check we can get it back out again if we rebuild the store object.
         store = new ReplayableBlockStore(networkParameters, temporaryBlockStore, false);

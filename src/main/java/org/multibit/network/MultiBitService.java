@@ -340,6 +340,9 @@ public class MultiBitService {
 
         if (dateToReplayFrom == null || genesisBlockCreationDate.after(dateToReplayFrom)) {
             // create empty new block store
+            if (blockStore != null) {
+                blockStore.close();
+            }
             blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), true);
 
             log.debug("Creating new blockStore.2 - need to redownload from Genesis block");
