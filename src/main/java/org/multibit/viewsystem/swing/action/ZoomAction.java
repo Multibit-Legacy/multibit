@@ -39,16 +39,11 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.qrcode.SwatchGenerator;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.AbstractTradePanel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This {@link Action} displays a swatch or QR code zoomed to the whole display
  */
 public class ZoomAction extends AbstractAction {
-
-    private static final Logger log = LoggerFactory.getLogger(ZoomAction.class);
-
     private static final long serialVersionUID = 1923492460523457765L;
 
     private MultiBitController controller;

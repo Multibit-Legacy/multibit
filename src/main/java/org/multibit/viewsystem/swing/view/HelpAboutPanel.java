@@ -30,16 +30,11 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * The help about view
+ * The help about view.
  */
 public class HelpAboutPanel extends JPanel implements View {
-
-    private static final Logger log = LoggerFactory.getLogger(HelpAboutPanel.class);
-
     private static final long serialVersionUID = 191352212345057705L;
 
     private static final String SPLASH_ICON_FILE = "/images/splash.jpg";

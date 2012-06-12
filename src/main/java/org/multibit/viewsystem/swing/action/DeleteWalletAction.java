@@ -25,16 +25,11 @@ import javax.swing.ImageIcon;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.DeleteWalletConfirmDialog;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This {@link Action} show the delete walet confirmation dialog
  */
 public class DeleteWalletAction extends AbstractAction {
-
-    private static final Logger log = LoggerFactory.getLogger(DeleteWalletAction.class);
-
     private static final long serialVersionUID = 1923933460523457765L;
 
     private MultiBitController controller;

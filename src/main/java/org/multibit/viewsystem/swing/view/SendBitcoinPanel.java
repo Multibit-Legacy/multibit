@@ -51,8 +51,6 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
@@ -61,8 +59,6 @@ import com.google.bitcoin.core.Utils;
 public class SendBitcoinPanel extends AbstractTradePanel implements View {
 
     private static final long serialVersionUID = -2065108865497111662L;
-
-    private final Logger log = LoggerFactory.getLogger(SendBitcoinPanel.class);
 
     private MultiBitButton pasteAddressButton;
     private MultiBitButton sendButton;

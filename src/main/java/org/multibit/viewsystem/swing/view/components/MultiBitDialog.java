@@ -23,19 +23,13 @@ import java.lang.reflect.Method;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
- * JDialog with some utility methods to position on screen
+ * JDialog with some utility methods to position on screen.
 
  * @author jim
  *
  */
 abstract public class MultiBitDialog extends JDialog {
-
-    private static final Logger log = LoggerFactory.getLogger(MultiBitDialog.class);
-
     private static final long serialVersionUID = -917160539607329862L;
 
     protected JFrame mainFrame;

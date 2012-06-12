@@ -16,16 +16,11 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.ComponentOrientation;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.util.Collection;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -42,17 +37,11 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * The messages view
+ * The messages view.
  */
 public class MessagesPanel extends JPanel implements View, MessageListener {
-
-    private static final Logger log = LoggerFactory.getLogger(MessagesPanel.class);
-
     private static final long serialVersionUID = 191662512399957705L;
 
     private MultiBitController controller;

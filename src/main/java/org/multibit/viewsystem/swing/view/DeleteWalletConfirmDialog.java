@@ -21,45 +21,31 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.io.IOException;
 
-import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.file.DeleteWalletException;
-import org.multibit.file.FileHandler;
-import org.multibit.model.PerWalletModelData;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
-import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.OkBackToParentAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The delete wallet confirm dialog
  */
 public class DeleteWalletConfirmDialog extends MultiBitDialog {
-
-    private static final Logger log = LoggerFactory.getLogger(DeleteWalletAction.class);
-
     private static final long serialVersionUID = 191435612345057705L;
 
     private static final int HEIGHT_DELTA = 100;
     private static final int WIDTH_DELTA = 200;
-
-    private MultiBitFrame mainFrame;
 
     private MultiBitController controller;
 
@@ -79,7 +65,6 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
     public DeleteWalletConfirmDialog(MultiBitController controller, MultiBitFrame mainFrame) {
         super(mainFrame, controller.getLocaliser().getString("deleteWalletConfirmDialog.title"));
         this.controller = controller;
-        this.mainFrame = mainFrame;
 
         ImageIcon imageIcon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_ICON_FILE);
         if (imageIcon != null) {
@@ -275,7 +260,7 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        DeleteWalletSubmitAction deleteWalletSubmitAction = new DeleteWalletSubmitAction(controller, ImageLoader.createImageIcon(ImageLoader.DELETE_WALLET_ICON_FILE), mainFrame, this);
+        DeleteWalletSubmitAction deleteWalletSubmitAction = new DeleteWalletSubmitAction(controller, ImageLoader.createImageIcon(ImageLoader.DELETE_WALLET_ICON_FILE), this);
         deleteWalletButton = new MultiBitButton(deleteWalletSubmitAction, controller);
         
         //        deleteWalletButton = new MultiBitButton(new AbstractAction() {

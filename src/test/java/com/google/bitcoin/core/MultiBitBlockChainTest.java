@@ -54,6 +54,8 @@ public class MultiBitBlockChainTest {
         testNetChain = new BlockChain(testNet, new Wallet(testNet), new MemoryBlockStore(testNet));
         unitTestParams = NetworkParameters.unitTests();
         wallet = new Wallet(unitTestParams) {
+            private static final long serialVersionUID = 1L;
+
             @Override
             public void receiveFromBlock(Transaction tx, StoredBlock block, MultiBitBlockChain.NewBlockType blockType) throws VerificationException, ScriptException {
                 super.receiveFromBlock(tx, block, blockType);

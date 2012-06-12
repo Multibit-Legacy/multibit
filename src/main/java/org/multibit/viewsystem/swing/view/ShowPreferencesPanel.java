@@ -44,7 +44,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
-import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 
 import org.multibit.controller.MultiBitController;

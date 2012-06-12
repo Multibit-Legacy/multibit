@@ -22,7 +22,6 @@ import java.math.BigInteger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
-import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
@@ -168,88 +167,5 @@ public class SendBitcoinNowAction extends AbstractAction {
         log.debug("firing fireRecreateAllViews...");
         controller.fireRecreateAllViews(false);
         log.debug("firing fireRecreateAllViews...done");
-    }
-
-    /**
-     * send the transaction in a background Swing worker thread
-     */
-    private void performSendInBackground(final PerWalletModelData perWalletModelData, final String sendAddress,
-            final String sendAmount, final BigInteger fee) {
-        SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
-            private String message = null;
-
-            @Override
-            protected Boolean doInBackground() throws Exception {
-                boolean sendWasSuccessful = Boolean.FALSE;
-                try {
-                    log.debug("Sending from wallet " + perWalletModelData.getWalletFilename() + ", amount = " + sendAmount
-                            + ", fee = " + fee + " to address = " + sendAddress);
-                    Transaction transaction = controller.getMultiBitService().sendCoins(perWalletModelData, sendAddress,
-                            sendAmount, fee);
-                    if (transaction == null) {
-                        // a null transaction returned indicates there was not
-                        // enough money (in spite of our validation)
-                        message = controller.getLocaliser().getString("sendBitcoinNowAction.thereWereInsufficientFundsForTheSend");
-                        log.error(message);
-                    } else {
-                        sendWasSuccessful = Boolean.TRUE;
-                        log.debug("Sent transaction was:\n" + transaction.toString());
-                    }
-
-                    // save the wallet
-                    controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
-                } catch (IOException e) {
-                    log.error(e.getMessage(), e);
-                    message = e.getMessage();
-                } catch (AddressFormatException e) {
-                    log.error(e.getMessage(), e);
-                    message = e.getMessage();
-                } catch (Exception e) {
-                    // really trying to catch anything that goes wrong with the
-                    // send bitcoin
-                    log.error(e.getMessage(), e);
-                    message = e.getMessage();
-                }
-
-                return sendWasSuccessful;
-            }
-
-            protected void done() {
-                try {
-                    Boolean sendWasSuccessful = get();
-                    if (sendWasSuccessful) {
-                        String successMessage = controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk");
-                        if (sendBitcoinConfirmView != null && sendBitcoinConfirmView.isVisible()) {
-                            sendBitcoinConfirmView.setSendConfirmText(
-                                    controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk"), "");
-                        } else {
-                            MessageManager.INSTANCE.addMessage(new Message(successMessage));
-                        }
-                    } else {
-                        log.error(message);
-
-                        if (message != null && message.length() > MAX_LENGTH_OF_ERROR_MESSAGE) {
-                            message = message.substring(0, MAX_LENGTH_OF_ERROR_MESSAGE) + "...";
-                        }
-
-                        String errorMessage = controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSendFailed");
-                        if (sendBitcoinConfirmView != null && sendBitcoinConfirmView.isVisible()) {
-                            sendBitcoinConfirmView.setSendConfirmText(errorMessage, message);
-                        } else {
-                            MessageManager.INSTANCE.addMessage(new Message(errorMessage + " " + message));
-                        }
-                    }
-                } catch (Exception e) {
-                    // not really used but caught so that SwingWorker shuts down
-                    // cleanly
-                    log.error(e.getClass() + " " + e.getMessage());
-                }
-                log.debug("firing fireRecreateAllViews...");
-                controller.fireRecreateAllViews(false);
-                log.debug("firing fireRecreateAllViews...done");
-            }
-        };
-        log.debug("Sending coins in background SwingWorker thread");
-        worker.execute();
     }
 }

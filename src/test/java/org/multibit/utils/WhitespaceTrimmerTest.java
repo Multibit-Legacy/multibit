@@ -20,13 +20,8 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class WhitespaceTrimmerTest extends TestCase {
-
-    private static final Logger log = LoggerFactory.getLogger(WhitespaceTrimmerTest.class);
-
     @Test
     public void testLTrim() throws IOException {
         assertEquals("noTrim", WhitespaceTrimmer.ltrim("noTrim"));

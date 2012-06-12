@@ -29,16 +29,11 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * The validation error dialog - used to tell the user their input is invalid
+ * The validation error dialog - used to tell the user their input is invalid.
  */
 public class ValidationErrorDialog extends MultiBitDialog {
-
-    private static final Logger log = LoggerFactory.getLogger(ValidationErrorDialog.class);
-
     private static final long serialVersionUID = 191499812345057705L;
 
     private static final int HEIGHT_DELTA = 150;

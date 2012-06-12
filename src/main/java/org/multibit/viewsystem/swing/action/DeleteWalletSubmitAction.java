@@ -15,7 +15,6 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 
@@ -28,7 +27,6 @@ import org.multibit.file.DeleteWalletException;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.DeleteWalletConfirmDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,16 +41,14 @@ public class DeleteWalletSubmitAction extends AbstractAction {
     private static final long serialVersionUID = 1923933460523457765L;
 
     private MultiBitController controller;
-    private MultiBitFrame mainFrame;
     private DeleteWalletConfirmDialog deleteWalletConfirmDialog;
 
     /**
      * Creates a new {@link DeleteWalletSubmitAction}.
      */
-    public DeleteWalletSubmitAction(MultiBitController controller, ImageIcon icon, MultiBitFrame mainFrame, DeleteWalletConfirmDialog deleteWalletConfirmDialog) {
+    public DeleteWalletSubmitAction(MultiBitController controller, ImageIcon icon, DeleteWalletConfirmDialog deleteWalletConfirmDialog) {
         super(controller.getLocaliser().getString("deleteWalletAction.text"), icon);
         this.controller = controller;
-        this.mainFrame = mainFrame;
         this.deleteWalletConfirmDialog = deleteWalletConfirmDialog;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());

@@ -74,6 +74,7 @@ public class GenesisBlockReplayTest extends TestCase {
             final MultiBitController controller = new MultiBitController(applicationDataDirectoryLocator);
 
             // create the model - gets hooked up to controller automatically
+            @SuppressWarnings("unused")
             MultiBitModel model = new MultiBitModel(controller);
 
             log.debug("Creating Bitcoin service");

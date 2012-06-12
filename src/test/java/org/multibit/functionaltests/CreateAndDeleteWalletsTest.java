@@ -15,10 +15,8 @@
  */
 package org.multibit.functionaltests;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 
 import junit.framework.TestCase;
 
@@ -62,6 +60,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
         controller = new MultiBitController(applicationDataDirectoryLocator);
 
         // create the model - gets hooked up to controller automatically
+        @SuppressWarnings("unused")
         MultiBitModel model = new MultiBitModel(controller);
 
         log.debug("Creating Bitcoin service");
@@ -94,7 +93,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
         assertEquals(2, controller.getModel().getPerWalletModelDataList().size());
 
         // delete the test1wallet
-        DeleteWalletSubmitAction deleteWalletSubmitAction = new DeleteWalletSubmitAction(controller, null, null, null);
+        DeleteWalletSubmitAction deleteWalletSubmitAction = new DeleteWalletSubmitAction(controller, null, null);
         deleteWalletSubmitAction.deleteWallet(test1WalletPath);
         assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
 

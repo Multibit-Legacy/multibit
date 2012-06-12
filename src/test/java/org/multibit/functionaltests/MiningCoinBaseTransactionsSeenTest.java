@@ -42,9 +42,9 @@ import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
 
 /**
- * functional test to check that Mining Coinbase Transactions can be seen.
+ * Functional test to check that Mining Coinbase Transactions can be seen.
  * 
- * See bug report: https://github.com/jim618/multibit/issues/21
+ * See bug report: https://github.com/jim618/multibit/issues/21.
  * 
  * @author jim
  * 
@@ -53,7 +53,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
 
     private static final Logger log = LoggerFactory.getLogger(MiningCoinBaseTransactionsSeenTest.class);
 
-    private static final String MINING_ADDRESS = "1GqtGtn4fctXuKxsVzRPSLmYWN1YioLi9y";
+    // The address for this private key is "1GqtGtn4fctXuKxsVzRPSLmYWN1YioLi9y".
     private static final String MINING_PRIVATE_KEY = "5JDxPrBRghF1EvSBjDigywqfmAjpHPmTJxYtQTYJxJRHLLQA4mG";
 
     private static final String START_OF_REPLAY_PERIOD = "2012-03-03T13:00:00Z";
@@ -85,6 +85,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             final MultiBitController controller = new MultiBitController(applicationDataDirectoryLocator);
 
             // create the model - gets hooked up to controller automatically
+            @SuppressWarnings("unused")
             MultiBitModel model = new MultiBitModel(controller);
 
             log.debug("Creating Bitcoin service");

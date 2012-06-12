@@ -20,11 +20,9 @@ import javax.swing.table.AbstractTableModel;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Table model for ticker
+ * Table model for ticker.
  * 
  * @author jim
  * 
@@ -44,8 +42,6 @@ public class TickerTableModel extends AbstractTableModel {
     public static final String DEFAULT_CURRENCY = "USD";
 
     private static final long serialVersionUID = -775886012854496208L;
-
-    private static final Logger log = LoggerFactory.getLogger(TickerTableModel.class);
 
     /**
      * The exchange data

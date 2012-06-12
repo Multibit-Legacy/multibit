@@ -48,8 +48,6 @@ import org.multibit.viewsystem.swing.view.HelpContentsPanel;
 public class Browser extends javax.swing.JEditorPane implements PropertyChangeListener {
     private static final long serialVersionUID = 1L;
 
-    private MultiBitFrame mainFrame;
-
     private String loadingMessage;
     
     /**
@@ -58,7 +56,6 @@ public class Browser extends javax.swing.JEditorPane implements PropertyChangeLi
      */
     public Browser(MultiBitController controller, MultiBitFrame mainFrame, String currentHref) {
         super();
-        this.mainFrame = mainFrame;
 
         addHyperlinkListener(new ActivatedHyperlinkListener(mainFrame, this, currentHref));
 

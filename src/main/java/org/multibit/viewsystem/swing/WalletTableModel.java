@@ -24,8 +24,6 @@ import javax.swing.table.AbstractTableModel;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletTableData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 
@@ -33,14 +31,12 @@ public class WalletTableModel extends AbstractTableModel {
 
     private static final long serialVersionUID = -937886012854496208L;
 
-    private static final Logger log = LoggerFactory.getLogger(WalletTableModel.class);
-
     private ArrayList<String> headers;
 
     private ArrayList<WalletTableData> walletData;
 
     /**
-     * the MultiBit model
+     * The MultiBit model.
      */
     private MultiBitModel multiBitModel;
 

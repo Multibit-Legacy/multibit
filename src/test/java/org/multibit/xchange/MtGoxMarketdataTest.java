@@ -23,9 +23,6 @@ package org.multibit.xchange;
 
 import junit.framework.TestCase;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * <p>
  * Example showing the following:
@@ -39,8 +36,6 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class MtGoxMarketdataTest  extends TestCase  {
-
-  private final Logger log = LoggerFactory.getLogger(MtGoxMarketdataTest.class);
 
   /**
    * Test the basic access to the MtGox data works ok in the MultiBit environment

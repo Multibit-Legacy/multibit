@@ -27,14 +27,12 @@ import org.spongycastle.crypto.generators.OpenSSLPBEParametersGenerator;
 import org.spongycastle.crypto.modes.CBCBlockCipher;
 import org.spongycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.spongycastle.crypto.params.ParametersWithIV;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Utils;
 
 /**
  * This class encrypts and decrypts a string in a manner that is compatible with
- * OpenSSL
+ * OpenSSL.
  * 
  * If you encrypt a string with this class you can decrypt it with the OpenSSL
  * command: openssl enc -d -aes-256-cbc -a -in cipher.txt -out plain.txt -pass
@@ -44,14 +42,12 @@ import com.google.bitcoin.core.Utils;
  * want the plaintext to be saved
  * 
  * substitute your password for "aTestPassword" or remove the "-pass" parameter
- * to be prompted
+ * to be prompted.
  * 
  * @author jim
  * 
  */
 public class EncrypterDecrypter {
-    private static final Logger log = LoggerFactory.getLogger(EncrypterDecrypter.class);
-
     /**
      * The string encoding to use when converting strings to bytes
      */

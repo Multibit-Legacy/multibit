@@ -45,19 +45,14 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * A panel with a table showing the exchange rate data
+ * A panel with a table showing the exchange rate data.
  * 
  * @author jim
  * 
  */
 public class TickerTablePanel extends JPanel {
-
-    private static final Logger log = LoggerFactory.getLogger(TickerTablePanel.class);
-
     private static final long serialVersionUID = 1235108820207842662L;
 
     private MultiBitController controller;

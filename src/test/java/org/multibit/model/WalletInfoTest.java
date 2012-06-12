@@ -24,13 +24,8 @@ import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class WalletInfoTest extends TestCase {
-
-    private static final Logger log = LoggerFactory.getLogger(WalletInfoTest.class);
-
     public static final String WALLET_TESTDATA_DIRECTORY = "wallets";
 
     public static final String WALLET_TEST1 = "walletInfoTest.wallet";

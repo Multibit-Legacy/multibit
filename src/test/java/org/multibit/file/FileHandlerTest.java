@@ -28,17 +28,12 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
 
 public class FileHandlerTest extends TestCase {
-
-    private static final Logger log = LoggerFactory.getLogger(FileHandlerTest.class);
-
     public static final String WALLET_TESTDATA_DIRECTORY = "wallets";
 
     public static final String WALLET_TEST1 = "test1.wallet";
@@ -113,6 +108,7 @@ public class FileHandlerTest extends TestCase {
     @Test
     public void testCreateAndDeleteWallet1() throws IOException {
         MultiBitController controller = new MultiBitController();
+        @SuppressWarnings("unused")
         MultiBitModel model = new MultiBitModel(controller);
         FileHandler fileHandler = new FileHandler(controller);
 

@@ -24,8 +24,6 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 public enum FontSizer {
         INSTANCE;
         
-    private static final double NORMAL_SCREEN_RESOLUTION = 72.0;
-
     private MultiBitController controller;
     private Font adjustedDefaultFont;
     

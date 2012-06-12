@@ -52,8 +52,6 @@ import javax.swing.JOptionPane;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
@@ -72,10 +70,6 @@ import com.google.zxing.qrcode.encoder.QRCode;
  * 
  */
 public class SwatchGenerator {
-
-    private static final Logger log = LoggerFactory.getLogger(SwatchGenerator.class);
-
-    // small
     private static final int QUIET_ZONE_SIZE = 4;
     private static final int WIDTH_OF_TEXT_BORDER = 2;
     private static final int LEFT_TEXT_INSET = 3;
@@ -119,6 +113,7 @@ public class SwatchGenerator {
         fontToFontMetricsMap.put(amountFont, emptyGraphics.getFontMetrics(amountFont));
 
         // make sure fonts are loaded
+        @SuppressWarnings("unused")
         JFrame frame = new JFrame();
     }
 

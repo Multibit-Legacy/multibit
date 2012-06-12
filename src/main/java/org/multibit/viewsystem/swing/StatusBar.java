@@ -73,7 +73,6 @@ import javax.swing.text.html.HTMLDocument;
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageListener;
-import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.view.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
@@ -96,8 +95,6 @@ import org.slf4j.LoggerFactory;
 public class StatusBar extends JPanel implements MessageListener {
 
     private static final long serialVersionUID = 7824115980324911080L;
-
-    private Logger log = LoggerFactory.getLogger(StatusBar.class);
 
     private static final int A_SMALL_NUMBER_OF_PIXELS = 100;
     private static final int A_LARGE_NUMBER_OF_PIXELS = 1000000;

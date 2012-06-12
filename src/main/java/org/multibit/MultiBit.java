@@ -43,7 +43,6 @@ import org.multibit.platform.GenericApplicationFactory;
 import org.multibit.platform.GenericApplicationSpecification;
 import org.multibit.platform.listener.GenericOpenURIEvent;
 import org.multibit.viewsystem.ViewSystem;
-import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,6 +137,7 @@ public class MultiBit {
         log.debug("Creating model");
 
         // create the model
+        @SuppressWarnings("unused")
         MultiBitModel model = new MultiBitModel(controller, userPreferences);
 
         log.debug("Setting look and feel");

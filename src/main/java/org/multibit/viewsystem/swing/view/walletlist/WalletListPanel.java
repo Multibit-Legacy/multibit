@@ -43,17 +43,13 @@ import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * The your wallets view
+ * The wallet list view.
  */
 public class WalletListPanel extends JPanel implements View {
 
     private static final long serialVersionUID = 191352298245057705L;
-
-    private static final Logger log = LoggerFactory.getLogger(WalletListPanel.class);
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
