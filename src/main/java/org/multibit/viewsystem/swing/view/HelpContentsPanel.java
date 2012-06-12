@@ -109,7 +109,7 @@ public class HelpContentsPanel extends JPanel implements View {
 
     @Override
     public void navigateAwayFromView() {
-        MessageManager.INSTANCE.addMessage(new Message(""));
+        MessageManager.INSTANCE.addMessage(new Message(" "));
     }
 
     @Override

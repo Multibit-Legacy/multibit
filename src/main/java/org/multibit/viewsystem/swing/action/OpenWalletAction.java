@@ -151,25 +151,19 @@ public class OpenWalletAction extends AbstractAction {
             
             protected void done() {
                 try {
-                    //System.out.println("OpenWalletAction#ping 1");
                     Boolean wasSuccessful = get();
-                    //System.out.println("OpenWalletAction#ping 2");
                     if (wasSuccessful) {
-                        //System.out.println("OpenWalletAction#ping 3");
                         log.debug(message);
-                        System.out.println("OpenWalletAction#ping 4");
+                        System.out.println("OpenWalletAction#ping 1");
                         MessageManager.INSTANCE.addMessage(new Message(message));  
-                        System.out.println("OpenWalletAction#ping 5");
-                        controller.fireRecreateAllViews(true);
-                        System.out.println("OpenWalletAction#ping 6");
+                        System.out.println("OpenWalletAction#ping 2");
+                        controller.fireRecreateAllViews(false);
+                        System.out.println("OpenWalletAction#ping 3");
                         controller.fireDataChanged();
-                        //System.out.println("OpenWalletAction#ping 7");
                     } else {
-                        //System.out.println("OpenWalletAction#ping 8");
                         log.error(message);
-                        System.out.println("OpenWalletAction#ping 9");
+                        System.out.println("OpenWalletAction#ping 4");
                         MessageManager.INSTANCE.addMessage(new Message(message));
-                        //System.out.println("OpenWalletAction#ping 10");
                     }
                 } catch (Exception e) {
                     // not really used but caught so that SwingWorker shuts down cleanly

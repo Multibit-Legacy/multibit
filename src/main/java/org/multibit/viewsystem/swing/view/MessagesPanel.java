@@ -15,20 +15,33 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.Collection;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.text.DefaultCaret;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.message.LimitLinesDocumentListener;
+import org.multibit.message.Message;
+import org.multibit.message.MessageListener;
+import org.multibit.message.MessageManager;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,101 +49,60 @@ import org.slf4j.LoggerFactory;
 /**
  * The messages view
  */
-public class MessagesPanel extends JPanel implements View {
+public class MessagesPanel extends JPanel implements View, MessageListener {
 
     private static final Logger log = LoggerFactory.getLogger(MessagesPanel.class);
 
-    private static final long serialVersionUID = 191346512399957705L;
+    private static final long serialVersionUID = 191662512399957705L;
 
-    private static final String SPLASH_ICON_FILE = "/images/splash.jpg";
-
-    private static final String MULTIBIT_URL = "http://multibit.org";
-    
     private MultiBitController controller;
 
+    private JTextArea textArea;
+    
+    private String lastMessageAdded = "";
+       
   /**
-     * Creates a new {@link HelpAboutPanel}.
+     * Creates a new {@link MessagesPanel}.
      */
     public MessagesPanel(MultiBitController controller, MultiBitFrame mainFrame) {        
          setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         this.controller = controller;
-
-        String versionNumber = controller.getLocaliser().getVersionNumber();
-
-        String versionText = controller.getLocaliser().getString("helpAboutAction.versionText",
-                new Object[] { versionNumber });
-
-        GridBagConstraints constraints = new GridBagConstraints();
-        setLayout(new GridBagLayout());
+       
+        setLayout(new BorderLayout());
         
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0.1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        JPanel fillerPanel1 = new JPanel();
-        fillerPanel1.setOpaque(false);
-        add(fillerPanel1, constraints);
+        textArea = new JTextArea();
+        textArea.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setEditable(false);
+        
+        textArea.getDocument().addDocumentListener(new LimitLinesDocumentListener(MessageManager.INSTANCE.MAXIMUM_NUMBER_OF_MESSAGES_STORED + 1) );
+        
+        DefaultCaret caret = (DefaultCaret)textArea.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        
+        JScrollPane mainScrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        mainScrollPane.getViewport().setOpaque(true);
 
-        ImageIcon imageIcon = ImageLoader.createImageIcon(SPLASH_ICON_FILE);
-        JLabel splashLabel = new JLabel();
-        splashLabel.setIcon(imageIcon);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0.4;
-        constraints.anchor = GridBagConstraints.CENTER;
-        add(splashLabel, constraints);
-
-        MultiBitLabel titleLabel = new MultiBitLabel("");
-        titleLabel.setHorizontalTextPosition(JLabel.CENTER);
-        titleLabel.setText(controller.getLocaliser().getString("helpAboutAction.messageBoxTitle"));
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0.1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        add(titleLabel, constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 3;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0.1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        MultiBitLabel urlLabel = new MultiBitLabel(MULTIBIT_URL);
-        add(urlLabel, constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 4;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0.1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        MultiBitLabel versionLabel = new MultiBitLabel(versionText);
-        add(versionLabel, constraints);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 5;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0.2;
-        constraints.anchor = GridBagConstraints.CENTER;
-        JPanel fillerPanel2 = new JPanel();
-        fillerPanel2.setOpaque(false);
-        add(fillerPanel2, constraints);
+        add(mainScrollPane, BorderLayout.CENTER);
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        
+        MessageManager.INSTANCE.addMessageListener(this);
+        
+        Collection<Message> messages = MessageManager.INSTANCE.getMessages();
+        
+        for (Message message : messages) {
+            if (textArea != null) {
+                if (message.getText() != null && !message.getText().equals(lastMessageAdded)) {
+                    textArea.append(message.getText() + "\n");
+                    lastMessageAdded = message.getText();
+                }
+            }
+        }
     }
 
     @Override
@@ -138,7 +110,7 @@ public class MessagesPanel extends JPanel implements View {
     }
 
     @Override
-    public void displayView() {        
+    public void displayView() {
     }
        
     @Override
@@ -159,5 +131,20 @@ public class MessagesPanel extends JPanel implements View {
     @Override
     public int getViewId() {
         return View.MESSAGES_VIEW;
+    }
+
+    @Override
+    public void newMessageReceived(final Message message) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                if (textArea != null) {
+                    if (message.getText() != null && !message.getText().equals(lastMessageAdded)) {
+                        textArea.append(message.getText() + "\n");
+                        lastMessageAdded = message.getText();
+                    }                
+                }
+            }
+        });    
     }
 }

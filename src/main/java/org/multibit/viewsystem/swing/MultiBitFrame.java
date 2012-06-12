@@ -779,9 +779,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // tell the wallets list to display
         if (walletsView != null) {
-            if (initUI) {
-                walletsView.initUI();
-            }
+            walletsView.initUI();
             walletsView.displayView();
         }
 

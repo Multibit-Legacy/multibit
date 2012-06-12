@@ -145,10 +145,12 @@ public class SwatchGenerator {
                     && controller.getMultiBitService().getNetworkParameters() != null) {
                 decodeAddress = new Address(controller.getMultiBitService().getNetworkParameters(), address);
             }
-            if (amount != null && !"".equals(amount)) {
-                bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amount), label, null);
-            } else {
-                bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, null, label, null);
+            if (address != null && !"".equals(address)) {
+                if (amount != null && !"".equals(amount)) {
+                    bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amount), label, null);
+                } else {
+                    bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, null, label, null);
+                }
             }
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
         } catch (IllegalArgumentException e) {
@@ -228,12 +230,16 @@ public class SwatchGenerator {
                     && controller.getMultiBitService().getNetworkParameters() != null) {
                 decodeAddress = new Address(controller.getMultiBitService().getNetworkParameters(), address);
             }
-            if (amount != null && !"".equals(amount)) {
-                bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amount), label, null);
-            } else {
-                bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, null, label, null);
+            if (decodeAddress != null) {
+                if (amount != null && !"".equals(amount)) {
+                    bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amount), label, null);
+                } else {
+                    bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, null, label, null);
+                }
             }
-            controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
+            if (controller.getModel() != null) {
+                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
+            }
         } catch (IllegalArgumentException e) {
             //log.warn("The address '" + address + "' could not be converted to a bitcoin address.");
         } catch (AddressFormatException e) {
