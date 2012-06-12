@@ -76,7 +76,8 @@ public class WalletInfo {
     private static final String INFO_VERSION_TEXT = "1";
 
     private static final String WALLET_VERSION_MARKER = "walletVersion";
-    private static final String WALLET_VERSION_TEXT = "1";
+    private static final String WALLET_VERSION_SERIALISED_WALLET_TEXT = "1";
+    private static final String WALLET_VERSION_PROTOBUF_WALLET_TEXT = "2";
 
     public static final String DESCRIPTION_PROPERTY = "walletDescription";
     public static final String SIZE_PROPERTY = "walletSize";
@@ -307,7 +308,7 @@ public class WalletInfo {
             out.write(INFO_MAGIC_TEXT + SEPARATOR + INFO_VERSION_TEXT + "\n");
 
             // write out the wallet version
-            out.write(WALLET_VERSION_MARKER + SEPARATOR + WALLET_VERSION_TEXT + "\n");
+            out.write(WALLET_VERSION_MARKER + SEPARATOR + WALLET_VERSION_SERIALISED_WALLET_TEXT + "\n");
 
             Collection<AddressBookData> receiveAddressValues = allReceivingAddresses.values();
             for (AddressBookData addressBookData : receiveAddressValues) {
@@ -393,7 +394,7 @@ public class WalletInfo {
             if (walletVersionTokenNumber == 2) {
                 String walletVersionMarker = walletVersionTokenizer.nextToken();
                 String walletVersionString = walletVersionTokenizer.nextToken();
-                if (!WALLET_VERSION_MARKER.equals(walletVersionMarker) || !WALLET_VERSION_TEXT.equals(walletVersionString)) {
+                if (!WALLET_VERSION_MARKER.equals(walletVersionMarker) || !WALLET_VERSION_SERIALISED_WALLET_TEXT.equals(walletVersionString)) {
                     // this refers to a version of the wallet we do not know
                     // about
 

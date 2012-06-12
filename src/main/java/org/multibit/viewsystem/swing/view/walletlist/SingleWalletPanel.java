@@ -43,6 +43,7 @@ import javax.swing.border.Border;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.utils.ImageLoader;
+import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
@@ -501,7 +502,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         innerDetailPanel.add(walletFilenameLabel, constraints);
 
         MultiBitLabel sendLabelLabel = new MultiBitLabel("");
-        sendLabelLabel.setText("Type");
+        sendLabelLabel.setText(controller.getLocaliser().getString("singleWalletPanel.type"));
         sendLabelLabel.setBorder(underlineBorder);
         sendLabelLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
@@ -528,7 +529,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         innerDetailPanel.add(filler2, constraints);
 
         MultiBitLabel sendLabelText = new MultiBitLabel("");
-        sendLabelText.setText("unencrypted");
+        sendLabelText.setText(controller.getLocaliser().getString("singleWalletPanel.unencrypted"));
         sendLabelText.setBorder(underlineBorder);
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -541,7 +542,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         innerDetailPanel.add(sendLabelText, constraints);
 
         MultiBitLabel sendLabelLabel2 = new MultiBitLabel("");
-        sendLabelLabel2.setText("Version");
+        String versionString = controller.getLocaliser().getString("helpAboutAction.versionText", new Object[]{""});
+        versionString = WhitespaceTrimmer.trim(versionString.replaceAll(":", ""));
+        sendLabelLabel2.setText(versionString);
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -565,7 +568,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         innerDetailPanel.add(filler3, constraints);
 
         MultiBitLabel sendLabelText2 = new MultiBitLabel("");
-        sendLabelText2.setText("1 (serialised)");
+        String walletVersion = WhitespaceTrimmer.trim(perWalletModelData.getWalletInfo().getWalletVersion());
+        String walletVersionDescriptionKey = "walletVersion." + walletVersion;
+        sendLabelText2.setText(walletVersion + " (" + controller.getLocaliser().getString(walletVersionDescriptionKey) + ")");
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
