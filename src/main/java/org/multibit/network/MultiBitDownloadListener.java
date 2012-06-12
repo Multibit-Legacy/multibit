@@ -114,10 +114,9 @@ public class MultiBitDownloadListener extends DownloadListener {
 
                 // when busy occasionally the localiser fails to localise
                 if (!(startDownloadText.indexOf("multiBitDownloadListener") > -1)) {
-                    Message message = new Message(startDownloadTextForLabel, false);
+                    Message message = new Message(startDownloadTextForLabel, Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);
                     MessageManager.INSTANCE.addMessage(message);
-                    
-                    message = new Message(startDownloadText, 0);
+                    message = new Message(startDownloadTextForLabel, 0);
                     MessageManager.INSTANCE.addMessage(message);
                 }
             }
@@ -130,10 +129,10 @@ public class MultiBitDownloadListener extends DownloadListener {
      */
     protected void doneDownload() {
         String downloadStatusText = controller.getLocaliser().getString("multiBitDownloadListener.doneDownloadText");
-
-        Message message = new Message(downloadStatusText);
+     
+        Message message = new Message(downloadStatusText, true, Message.NOT_RELEVANT_PERCENTAGE_COMPLETE);
         MessageManager.INSTANCE.addMessage(message);
-        
+
         message = new Message(downloadStatusText, 100);
         MessageManager.INSTANCE.addMessage(message);
 

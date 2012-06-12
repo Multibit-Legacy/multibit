@@ -264,16 +264,13 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      * parties
      */
 
-    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
-        // log.debug("onBlocksDownloaded called");
-        //System.out.println("MultiBitController#onBlocksDownloaded block.getHash().toString() = " + block.getHash().toString() + ", nonce = " + block.getNonce());
-        
+    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {      
         // looking for block 169482
-        if (block.getHash().toString().equals("0000000000000756935f1ee9d5987857b604046f846d3df56d024cdb5f368665")) {
-            // this is the coinbase block we are interested in
-            System.out.println("MultiBitController#onBlocksDownloaded - foundit.1");
-            System.out.println("Block data =\nSTART\n" + Utils.bytesToHexString(block.bitcoinSerialize()) + "\nEND");
-        }
+//        if (block.getHash().toString().equals("0000000000000756935f1ee9d5987857b604046f846d3df56d024cdb5f368665")) {
+//            // this is the coinbase block we are interested in
+//            System.out.println("MultiBitController#onBlocksDownloaded - foundit.1");
+//            System.out.println("Block data =\nSTART\n" + Utils.bytesToHexString(block.bitcoinSerialize()) + "\nEND");
+//        }
         
         fireBlockDownloaded();
     }

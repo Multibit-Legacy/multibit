@@ -46,7 +46,14 @@ public enum MessageManager {
     
     synchronized public void addMessage(Message message) {
         if (message != null) {
-            messageQueue.add(message);
+            boolean wasAdded = messageQueue.offer(message);
+            if (!wasAdded) {
+                // remove the oldest message
+                messageQueue.poll();
+                
+                // add it again
+                messageQueue.offer(message);
+            }
             notifyMessageListeners(message);
         }
     }

@@ -37,7 +37,7 @@ public class Message {
         this(text, true, percentComplete);
     }
 
-    private Message(String text, boolean clearAutomatically, double percentComplete) {
+    public Message(String text, boolean clearAutomatically, double percentComplete) {
         this.text = text;
         this.clearAutomatically = clearAutomatically;
         this.percentComplete = percentComplete;
@@ -63,7 +63,46 @@ public class Message {
         return percentComplete;
     }
 
-    public void setPercentComplete(int percentComplete) {
+    public void setPercentComplete(double percentComplete) {
         this.percentComplete = percentComplete;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (clearAutomatically ? 1231 : 1237);
+        long temp;
+        temp = Double.doubleToLongBits(percentComplete);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + ((text == null) ? 0 : text.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Message other = (Message) obj;
+        if (clearAutomatically != other.clearAutomatically)
+            return false;
+        if (Double.doubleToLongBits(percentComplete) != Double.doubleToLongBits(other.percentComplete))
+            return false;
+        if (text == null) {
+            if (other.text != null)
+                return false;
+        } else if (!text.equals(other.text))
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Message [text=" + text + ", clearAutomatically=" + clearAutomatically + ", percentComplete=" + percentComplete
+                + "]";
     }
 }

@@ -92,9 +92,13 @@ public class StatusBar extends JPanel implements MessageListener {
 
     private static final long serialVersionUID = 7824115980324911080L;
 
+    private Logger log = LoggerFactory.getLogger(StatusBar.class);
+
     private static final int A_SMALL_NUMBER_OF_PIXELS = 100;
     private static final int A_LARGE_NUMBER_OF_PIXELS = 1000000;
     private static final int STATUSBAR_HEIGHT = 30;
+    
+    private static final double TOLERANCE = 0.0000001;
 
     public static final int ONLINE_LABEL_DELTA = 10;
 
@@ -239,13 +243,21 @@ public class StatusBar extends JPanel implements MessageListener {
     }
 
     synchronized private void startSync() {
-        syncProgressBar.setValue(0);
-        syncProgressBar.setVisible(true);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                syncProgressBar.setValue(0);
+                syncProgressBar.setVisible(true);
+            }
+        });    
     }
     
     synchronized private void finishSync() {
-        syncProgressBar.setValue(100);
-        syncProgressBar.setVisible(false);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                syncProgressBar.setValue(100);
+                syncProgressBar.setVisible(false);
+            }
+        });    
     }
     
     synchronized private void updateSync(final int percent, final String syncMessage) {
@@ -265,12 +277,12 @@ public class StatusBar extends JPanel implements MessageListener {
         if (newMessage.getPercentComplete() == Message.NOT_RELEVANT_PERCENTAGE_COMPLETE) {
             updateStatusLabel(newMessage.getText(), newMessage.isClearAutomatically());
         } else {
-            if ((int)newMessage.getPercentComplete() == 0) {
+            if (Math.abs(newMessage.getPercentComplete() - 0) < TOLERANCE) {
                 startSync();
             }
             updateSync((int)newMessage.getPercentComplete(), newMessage.getText());
 
-            if ((int)newMessage.getPercentComplete() == 100) {
+            if (Math.abs(newMessage.getPercentComplete() - 100) < TOLERANCE) {
                 finishSync();
             }
         }

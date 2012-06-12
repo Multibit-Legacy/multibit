@@ -90,6 +90,8 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         outputs = new ArrayList<TransactionOutput>();
         // We don't initialize appearsIn deliberately as it's only useful for transactions stored in the wallet.
         length = 10; // 8 for std fields + 1 for each 0 varint
+
+        updatedAt = new Date();
     }
 
     public Transaction(NetworkParameters params, int version, Sha256Hash hash) {
@@ -100,6 +102,8 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         this.hash = hash;
         // We don't initialize appearsIn deliberately as it's only useful for transactions stored in the wallet.
         length = 10; //8 for std fields + 1 for each 0 varint
+
+        updatedAt = new Date();
     }
 
     /**
