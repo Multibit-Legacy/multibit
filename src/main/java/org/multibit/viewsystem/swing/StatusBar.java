@@ -52,6 +52,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
@@ -72,8 +73,12 @@ import javax.swing.text.html.HTMLDocument;
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageListener;
+import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.swing.action.MultiBitAction;
+import org.multibit.viewsystem.swing.view.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +108,7 @@ public class StatusBar extends JPanel implements MessageListener {
     public static final int ONLINE_LABEL_DELTA = 10;
 
     private MultiBitLabel onlineLabel;
-    private MultiBitLabel statusLabel;
+    private MultiBitButton statusLabel;
     private boolean isOnline;
 
     public static final long TIMER_REPEAT_TIME = 5000; // millisecond
@@ -167,9 +172,18 @@ public class StatusBar extends JPanel implements MessageListener {
             }
         });
 
-        statusLabel = new MultiBitLabel("");
+        statusLabel = new MultiBitButton("");
         statusLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         statusLabel.setOpaque(true);
+        // show messages action
+        MultiBitAction showMessagesAction = new MultiBitAction(controller, null, "messagesPanel.text",
+                "messagesPanel.title", "messagesPanel.mnemonic", org.multibit.viewsystem.View.MESSAGES_VIEW);
+        statusLabel.setAction(showMessagesAction);
+        statusLabel.setHorizontalAlignment(JButton.LEADING);
+        String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] {
+                controller.getLocaliser().getString("multiBitFrame.statusBar.tooltip1"), "\n",
+                controller.getLocaliser().getString("multiBitFrame.statusBar.tooltip2") });
+        statusLabel.setToolTipText(tooltipText);
 
         int onlineWidth = Math.max(
                 getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
@@ -738,11 +752,11 @@ class PercentLayout implements LayoutManager2 {
 }
 
 class StatusClearTask extends TimerTask {
-    JLabel statusLabel;
+    JButton statusLabel;
     private String previousStatusLabelText = null;
     private int previousLabelRepeats = 0;
 
-    StatusClearTask(JLabel statusLabel) {
+    StatusClearTask(JButton statusLabel) {
         this.statusLabel = statusLabel;
     }
 
