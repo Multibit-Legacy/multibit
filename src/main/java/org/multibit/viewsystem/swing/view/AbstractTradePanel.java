@@ -1454,33 +1454,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         }
     }
 
-//    public Data getData() {
-//        Data data = new Data();
-//
-//        Item isReceiveBitcoinItem = new Item(MultiBitModel.IS_RECEIVE_BITCOIN);
-//        isReceiveBitcoinItem.setNewValue(Boolean.toString(isReceiveBitcoin()));
-//        data.addItem(MultiBitModel.IS_RECEIVE_BITCOIN, isReceiveBitcoinItem);
-//
-//        Item addressItem = new Item(getAddressConstant());
-//        if (addressTextArea != null) {
-//            addressItem.setNewValue(addressTextArea.getText());
-//        }
-//        if (addressTextField != null) {
-//            addressItem.setNewValue(addressTextField.getText());
-//        }
-//        data.addItem(getAddressConstant(), addressItem);
-//
-//        Item labelItem = new Item(getLabelConstant());
-//        labelItem.setNewValue(labelTextArea.getText());
-//        data.addItem(getLabelConstant(), labelItem);
-//
-//        Item amountItem = new Item(getAmountConstant());
-//        amountItem.setNewValue(amountTextField.getText());
-//        data.addItem(getAmountConstant(), amountItem);
-//
-//        return data;
-//    }
-
     public JTextArea getLabelTextArea() {
         return labelTextArea;
     }
@@ -1568,21 +1541,5 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
        } else {
            return null;
        }
-    }
-
-    public String getPreviousCurrency2() {
-        return null;
-    }
-
-    public String getPreviousExchange2() {
-        return null;
-    }
-
-    public boolean getPreviousShowSecondRow() {
-        return false;
-    }
-
-    public String getPreviousCurrency1() {
-        return null;
     }
 }

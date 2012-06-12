@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This {@link Action} represents the action to toggle the more or less button
- * on the send/ receive bitcoin panels
+ * on the send/ receive bitcoin panels.
  */
 public class MoreOrLessAction extends AbstractAction {
 
@@ -50,7 +50,7 @@ public class MoreOrLessAction extends AbstractAction {
     }
 
     /**
-     * delegate to generic paste address action
+     * Perform the action.
      */
     public void actionPerformed(ActionEvent e) {
         boolean showSidePanel = !abstractTradePanel.isShowSidePanel();
@@ -58,11 +58,10 @@ public class MoreOrLessAction extends AbstractAction {
         
         log.debug("showSidePanel = " + showSidePanel);
 
-        // put it in the user preferences - will then get loaded when view
-        // form loads
+        // Put it in the user preferences - will then get loaded when view form loads.
         controller.getModel().setUserPreference(MultiBitModel.SHOW_SIDE_PANEL, (new Boolean(showSidePanel)).toString());
         
-        // display the side panel (or not)
+        // Display the side panel (or not).
         abstractTradePanel.displaySidePanel();
     }
 }
