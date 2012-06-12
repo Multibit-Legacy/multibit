@@ -32,6 +32,8 @@ import java.util.SimpleTimeZone;
 import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
@@ -416,25 +418,25 @@ public class MultiBitService {
         }
 
         // restart peerGroup and download
-        String message = controller.getLocaliser().getString("multiBitService.stoppingBitcoinNetworkConnection");
-        controller.updateStatusLabel(message, false);
+        Message message = new Message(controller.getLocaliser().getString("multiBitService.stoppingBitcoinNetworkConnection"), false);
+        MessageManager.INSTANCE.addMessage(message);
         peerGroup.stop();
 
         // reset UI to zero peers
         controller.onPeerDisconnected(null, 0);
 
         if (dateToReplayFrom != null) {
-            message = controller.getLocaliser().getString(
+            message = new Message(controller.getLocaliser().getString(
                     "resetTransactionSubmitAction.replayingBlockchain",
                     new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
-                            dateToReplayFrom) });
+                            dateToReplayFrom) }), false);
         } else {
-            message = controller.getLocaliser().getString(
+            message = new Message(controller.getLocaliser().getString(
                     "resetTransactionSubmitAction.replayingBlockchain",
                     new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
-                            genesisBlockCreationDate) });
+                            genesisBlockCreationDate) }), false);
         }
-        controller.updateStatusLabel(message, false);
+        MessageManager.INSTANCE.addMessage(message);
 
         peerGroup = createNewPeerGroup();
         peerGroup.start();

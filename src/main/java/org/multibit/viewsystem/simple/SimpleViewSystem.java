@@ -85,16 +85,6 @@ public class SimpleViewSystem implements ViewSystem {
     }
 
     @Override
-    public void updateStatusLabel(String updateDownloadStatus, boolean clearAutomatically) {
-        System.out.println("SIMPLE. Status : " + updateDownloadStatus);
-    }
-
-    @Override
-    public void updateStatusLabel(String updateDownloadStatus, double percentComplete) {
-        System.out.println("SIMPLE. Status : " + updateDownloadStatus + ", " + percentComplete + "% complete.");
-    }
-
-    @Override
     public void setHelpContext(String helpContextToDisplay) {
         System.out.println("SIMPLE. Help : " + helpContextToDisplay);
     }

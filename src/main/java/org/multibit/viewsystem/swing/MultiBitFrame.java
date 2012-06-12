@@ -53,6 +53,7 @@ import javax.swing.UIManager;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.TickerTimerTask;
+import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
@@ -899,24 +900,24 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
     }
 
-    public void updateStatusLabel(String newStatusLabel, boolean clearAutomatically) {
-        if (statusBar != null) {
-            statusBar.updateStatusLabel(newStatusLabel, clearAutomatically);
-        }
-    }
-
-    public void updateStatusLabel(String newStatusLabel, double percentComplete) {
-        if (statusBar != null) {
-            if (percentComplete == 0) {
-                statusBar.startSync();
-            }
-            statusBar.updateSync((int) percentComplete, newStatusLabel);
-
-            if (percentComplete == 100) {
-                statusBar.finishSync();
-            }
-        }
-    }
+//    public void updateStatusLabel(String newStatusLabel, boolean clearAutomatically) {
+//        if (statusBar != null) {
+//            statusBar.updateStatusLabel(newStatusLabel, clearAutomatically);
+//        }
+//    }
+//
+//    public void updateStatusLabel(String newStatusLabel, double percentComplete) {
+//        if (statusBar != null) {
+//            if (percentComplete == 0) {
+//                statusBar.startSync();
+//            }
+//            statusBar.updateSync((int) percentComplete, newStatusLabel);
+//
+//            if (percentComplete == 100) {
+//                statusBar.finishSync();
+//            }
+//        }
+//    }
 
     @Override
     /**
@@ -958,8 +959,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
         if (controller.getModel().getActiveWalletFilename() != null
                 && controller.getModel().getActiveWalletFilename().equals(perWalletModelData.getWalletFilename())) {
-            updateStatusLabel(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.1") + " "
+            Message message = new Message(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.1") + " "
                     + controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip.2"), true);
+            MessageManager.INSTANCE.addMessage(message);
         }
         fireDataChanged();
     }

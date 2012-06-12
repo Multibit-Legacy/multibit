@@ -28,6 +28,8 @@ import javax.swing.JFileChooser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
@@ -114,7 +116,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
             message = controller.getLocaliser().getString("createNewWalletAction.walletFileIsADirectory",
                     new Object[] { newWalletFilename });
             log.debug(message);
-            controller.updateStatusLabel(message);
+            MessageManager.INSTANCE.addMessage(new Message(message));
             return;
         }
 
@@ -168,17 +170,17 @@ public class CreateWalletSubmitAction extends AbstractAction {
             message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
                     new Object[] { newWalletFilename, e.getMessage() });
             log.error(message);
-            controller.updateStatusLabel(message);
+            MessageManager.INSTANCE.addMessage(new Message(message));
         } catch (IOException e) {
             message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
                     new Object[] { newWalletFilename, e.getMessage() });
             log.error(message);
-            controller.updateStatusLabel(message);
+            MessageManager.INSTANCE.addMessage(new Message(message));
         } catch (WalletInfoException e) {
             message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
                     new Object[] { newWalletFilename, e.getMessage() });
             log.error(message);
-            controller.updateStatusLabel(message);
+            MessageManager.INSTANCE.addMessage(new Message(message));
         }
     }
 }

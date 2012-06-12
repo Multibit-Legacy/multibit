@@ -39,6 +39,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletTableData;
 import org.multibit.utils.ImageLoader;
@@ -575,9 +577,9 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
             desktop.browse(uri);
         } catch (IOException ioe) {
-
             log.debug(ioe.getMessage());
-            controller.updateStatusLabel("Cannot display URL '" + uri.toString() + "'. Error was '" + ioe.getMessage() + "'");
+            Message message = new Message("Cannot display URL '" + uri.toString() + "'. Error was '" + ioe.getMessage() + "'");
+            MessageManager.INSTANCE.addMessage(message);
         }
     }
 }

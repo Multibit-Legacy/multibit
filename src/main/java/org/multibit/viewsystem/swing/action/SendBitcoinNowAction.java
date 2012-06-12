@@ -25,6 +25,8 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
@@ -146,7 +148,7 @@ public class SendBitcoinNowAction extends AbstractAction {
                 sendBitcoinConfirmView.setSendConfirmText(
                         controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk"), "");
             } else {
-                controller.updateStatusLabel(successMessage);
+                MessageManager.INSTANCE.addMessage(new Message(successMessage));
             }
         } else {
             log.error(message);
@@ -159,7 +161,7 @@ public class SendBitcoinNowAction extends AbstractAction {
             if (sendBitcoinConfirmView != null && sendBitcoinConfirmView.isVisible()) {
                 sendBitcoinConfirmView.setSendConfirmText(errorMessage, message);
             } else {
-                controller.updateStatusLabel(errorMessage + " " + message);
+                MessageManager.INSTANCE.addMessage(new Message(errorMessage + " " + message));
             }
         }
 
@@ -221,7 +223,7 @@ public class SendBitcoinNowAction extends AbstractAction {
                             sendBitcoinConfirmView.setSendConfirmText(
                                     controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk"), "");
                         } else {
-                            controller.updateStatusLabel(successMessage);
+                            MessageManager.INSTANCE.addMessage(new Message(successMessage));
                         }
                     } else {
                         log.error(message);
@@ -234,7 +236,7 @@ public class SendBitcoinNowAction extends AbstractAction {
                         if (sendBitcoinConfirmView != null && sendBitcoinConfirmView.isVisible()) {
                             sendBitcoinConfirmView.setSendConfirmText(errorMessage, message);
                         } else {
-                            controller.updateStatusLabel(errorMessage + " " + message);
+                            MessageManager.INSTANCE.addMessage(new Message(errorMessage + " " + message));
                         }
                     }
                 } catch (Exception e) {

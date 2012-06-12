@@ -192,8 +192,8 @@ public class MultiBit {
                     activeWalletFilename = perWalletModelDataList.get(0).getWalletFilename();
                     controller.getModel().setActiveWalletByFilename(activeWalletFilename);
                     log.debug("Created/loaded wallet '" + activeWalletFilename + "'");
-                    controller.updateStatusLabel(controller.getLocaliser().getString("multiBit.createdWallet",
-                            new Object[] { activeWalletFilename }));
+                    MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("multiBit.createdWallet",
+                            new Object[] { activeWalletFilename })));
                 }
                 if (swingViewSystem instanceof MultiBitFrame) {
                     ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
@@ -203,12 +203,12 @@ public class MultiBit {
             } catch (WalletLoadException e) {
                 String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                         new Object[] { activeWalletFilename, e.getMessage() });
-                controller.updateStatusLabel(message);
+                MessageManager.INSTANCE.addMessage(new Message(message));
                 log.error(message);
             } catch (IOException e) {
                 String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                         new Object[] { activeWalletFilename, e.getMessage() });
-                controller.updateStatusLabel(message);
+                MessageManager.INSTANCE.addMessage(new Message(message));
                 log.error(message);
             }
         } else {
@@ -234,8 +234,8 @@ public class MultiBit {
                             } else {
                                 controller.addWalletFromFilename(loopWalletFilename);
                             }
-                            controller.updateStatusLabel(controller.getLocaliser().getString("multiBit.openingWalletIsDone",
-                                    new Object[] { loopWalletFilename }));
+                            MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("multiBit.openingWalletIsDone",
+                                    new Object[] { loopWalletFilename })));
                         } catch (NullPointerException e) {
                             message = new Message( controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                                     new Object[] { activeWalletFilename, e.getMessage() }));

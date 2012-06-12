@@ -27,6 +27,8 @@ import javax.swing.Icon;
 import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.utils.DateUtils;
 import org.multibit.viewsystem.dataproviders.ResetTransactionsDataProvider;
@@ -170,10 +172,10 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
                     Boolean wasSuccessful = get();
                     if (wasSuccessful) {
                         log.debug(message);
-                        controller.updateStatusLabel(message);
+                        MessageManager.INSTANCE.addMessage(new Message(message));
                     } else {
                         log.error(message);
-                        controller.updateStatusLabel(message);
+                        MessageManager.INSTANCE.addMessage(new Message(message));
                     }
                 } catch (Exception e) {
                     // not really used but caught so that SwingWorker shuts down

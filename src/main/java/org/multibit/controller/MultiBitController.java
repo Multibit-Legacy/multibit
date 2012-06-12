@@ -28,6 +28,7 @@ import java.util.Locale;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Localiser;
 import org.multibit.file.FileHandler;
+import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.network.MultiBitService;
@@ -303,44 +304,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * Update download status with a message
-     * 
-     * @param newStatusText
-     *            The new status string
-     */
-    public void updateStatusLabel(String newStatusText) {
-        updateStatusLabel(newStatusText, true);
-    }
-
-    /**
-     * Update download status with a message that can clear automatically
-     * 
-     * @param newStatusText
-     *            The new status string
-     * @param clearAutomatically
-     *            Clear automatically if true
-     */
-    public void updateStatusLabel(String newStatusText, boolean clearAutomatically) {
-        for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.updateStatusLabel(newStatusText, clearAutomatically);
-        }
-    }
-
-    /**
-     * Update download status with percentage task complete (for sync messages)
-     * 
-     * @param newStatusText
-     *            The new status string
-     * @param percent
-     *            Percent sync is complete
-     */
-    public void updateStatusLabel(String newStatusText, double percentComplete) {
-        for (ViewSystem viewSystem : viewSystems) {
-            viewSystem.updateStatusLabel(newStatusText, percentComplete);
-        }
-    }
-
-    /**
      * method called by downloadListener whenever a block is downloaded
      */
     public void fireBlockDownloaded() {
@@ -461,8 +424,9 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             // ignore open URI request
             log.debug("Bitcoin URI ignored because useUriText = '" + useUriText + "', showOpenUriDialogText = '"
                     + showOpenUriDialogText + "'");
-            // displayView(getCurrentView());
-            updateStatusLabel(localiser.getString("showOpenUriView.paymentRequestIgnored"));
+            org.multibit.message.Message message = new org.multibit.message.Message(localiser.getString("showOpenUriView.paymentRequestIgnored"));
+            MessageManager.INSTANCE.addMessage(message);
+            
             return;
         }
         if (rawBitcoinURI == null || "".equals(rawBitcoinURI)) {

@@ -26,6 +26,8 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -107,7 +109,7 @@ public class HelpContentsPanel extends JPanel implements View {
 
     @Override
     public void navigateAwayFromView() {
-        controller.updateStatusLabel("");
+        MessageManager.INSTANCE.addMessage(new Message(""));
     }
 
     @Override

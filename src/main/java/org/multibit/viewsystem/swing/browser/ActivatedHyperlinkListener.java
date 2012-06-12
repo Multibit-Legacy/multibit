@@ -22,6 +22,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
 public class ActivatedHyperlinkListener implements HyperlinkListener {
@@ -48,9 +50,11 @@ public class ActivatedHyperlinkListener implements HyperlinkListener {
         HyperlinkEvent.EventType type = hyperlinkEvent.getEventType();
         final URL url = hyperlinkEvent.getURL();
         if (type == HyperlinkEvent.EventType.ENTERED) {
-            mainFrame.updateStatusLabel(SPACER + url.toString(), true);
+            Message message = new Message(SPACER + url.toString(), true);
+            MessageManager.INSTANCE.addMessage(message);
         } else if (type == HyperlinkEvent.EventType.EXITED) {
-            mainFrame.updateStatusLabel(SPACER + currentUrl, true);
+            Message message = new Message(SPACER + currentUrl, true);
+            MessageManager.INSTANCE.addMessage(message);
         } else if (type == HyperlinkEvent.EventType.ACTIVATED) {
             Runnable runner = new Runnable() {
                 public void run() {

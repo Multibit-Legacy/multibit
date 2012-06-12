@@ -25,6 +25,8 @@ import javax.swing.Icon;
 import javax.swing.UIManager;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -283,10 +285,12 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         controller.displayView(controller.getCurrentView());
 
         if (feeValidationError) {
-            controller.updateStatusLabel(updateStatusText);
+
+            MessageManager.INSTANCE.addMessage(new Message(updateStatusText));
+            
         } else {
             // clear any previous validation error
-            controller.updateStatusLabel(" ");
+            MessageManager.INSTANCE.addMessage(new Message(" "));
         }
     }
 }

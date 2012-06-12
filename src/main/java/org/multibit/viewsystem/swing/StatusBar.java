@@ -199,7 +199,7 @@ public class StatusBar extends JPanel implements MessageListener {
      */
     public void initialise() {
         updateOnlineStatusText(false);
-        updateStatusLabel("");
+        updateStatusLabel("", true);
     }
 
     /**
@@ -238,17 +238,17 @@ public class StatusBar extends JPanel implements MessageListener {
         });
     }
 
-    synchronized public void startSync() {
+    synchronized private void startSync() {
         syncProgressBar.setValue(0);
         syncProgressBar.setVisible(true);
     }
     
-    synchronized public void finishSync() {
+    synchronized private void finishSync() {
         syncProgressBar.setValue(100);
         syncProgressBar.setVisible(false);
     }
     
-    synchronized public void updateSync(final int percent, final String syncMessage) {
+    synchronized private void updateSync(final int percent, final String syncMessage) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 syncProgressBar.setValue(percent);
@@ -265,15 +265,18 @@ public class StatusBar extends JPanel implements MessageListener {
         if (newMessage.getPercentComplete() == Message.NOT_RELEVANT_PERCENTAGE_COMPLETE) {
             updateStatusLabel(newMessage.getText(), newMessage.isClearAutomatically());
         } else {
+            if ((int)newMessage.getPercentComplete() == 0) {
+                startSync();
+            }
             updateSync((int)newMessage.getPercentComplete(), newMessage.getText());
+
+            if ((int)newMessage.getPercentComplete() == 100) {
+                finishSync();
+            }
         }
     }
-    
-    public void updateStatusLabel(String newStatusLabel) {
-        updateStatusLabel(newStatusLabel, true);
-    }
 
-    public void updateStatusLabel(String newStatusLabel, Boolean clearAutomatically) {
+    private void updateStatusLabel(String newStatusLabel, Boolean clearAutomatically) {
         StatusBar.clearAutomatically = clearAutomatically;
         final String finalNewStatusLabel = newStatusLabel;
         SwingUtilities.invokeLater(new Runnable() {

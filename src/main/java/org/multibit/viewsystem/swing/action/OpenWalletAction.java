@@ -29,6 +29,8 @@ import javax.swing.SwingWorker;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.model.WalletInfoException;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.WalletFileFilter;
@@ -92,7 +94,7 @@ public class OpenWalletAction extends AbstractAction {
                 if (file != null) {
                     if (!file.isDirectory()) {
                         selectedWalletFilename = file.getAbsolutePath();
-                        controller.updateStatusLabel(controller.getLocaliser().getString("multiBit.openingWallet", new Object[]{selectedWalletFilename}));
+                        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("multiBit.openingWallet", new Object[]{selectedWalletFilename})));
                         openWalletInBackground(selectedWalletFilename);
                     }
                 } else {
@@ -156,7 +158,7 @@ public class OpenWalletAction extends AbstractAction {
                         //System.out.println("OpenWalletAction#ping 3");
                         log.debug(message);
                         System.out.println("OpenWalletAction#ping 4");
-                        controller.updateStatusLabel(message);  
+                        MessageManager.INSTANCE.addMessage(new Message(message));  
                         System.out.println("OpenWalletAction#ping 5");
                         controller.fireRecreateAllViews(true);
                         System.out.println("OpenWalletAction#ping 6");
@@ -166,7 +168,7 @@ public class OpenWalletAction extends AbstractAction {
                         //System.out.println("OpenWalletAction#ping 8");
                         log.error(message);
                         System.out.println("OpenWalletAction#ping 9");
-                        controller.updateStatusLabel(message);
+                        MessageManager.INSTANCE.addMessage(new Message(message));
                         //System.out.println("OpenWalletAction#ping 10");
                     }
                 } catch (Exception e) {

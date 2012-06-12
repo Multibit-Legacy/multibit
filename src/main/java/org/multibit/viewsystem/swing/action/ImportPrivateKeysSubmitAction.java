@@ -36,6 +36,8 @@ import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.PrivateKeysHandlerException;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.utils.DateUtils;
 import org.multibit.viewsystem.swing.view.ImportPrivateKeysPanel;
@@ -279,8 +281,8 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                         finalThisPanel.setMessage(uiMessage);
                     }
 
-                    controller.updateStatusLabel(statusBarMessage);
-
+                    MessageManager.INSTANCE.addMessage(new Message(statusBarMessage));
+                    
                     if (wasSuccessful) {
                         log.debug(statusBarMessage);
                     } else {

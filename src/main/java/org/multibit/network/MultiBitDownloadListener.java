@@ -20,6 +20,8 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +82,8 @@ public class MultiBitDownloadListener extends DownloadListener {
 
                 // when busy occasionally the localiser fails to localise
                 if (!(downloadStatusText.indexOf("multiBitDownloadListener") > -1)) {
-                    controller.updateStatusLabel(downloadStatusText, pct);
+                    Message message = new Message(downloadStatusText, pct);
+                    MessageManager.INSTANCE.addMessage(message);
                 }
             }
             controller.fireBlockDownloaded();
@@ -111,8 +114,11 @@ public class MultiBitDownloadListener extends DownloadListener {
 
                 // when busy occasionally the localiser fails to localise
                 if (!(startDownloadText.indexOf("multiBitDownloadListener") > -1)) {
-                    controller.updateStatusLabel(startDownloadTextForLabel, false);
-                    controller.updateStatusLabel(startDownloadText, 0);
+                    Message message = new Message(startDownloadTextForLabel, false);
+                    MessageManager.INSTANCE.addMessage(message);
+                    
+                    message = new Message(startDownloadText, 0);
+                    MessageManager.INSTANCE.addMessage(message);
                 }
             }
             controller.fireBlockDownloaded();
@@ -124,8 +130,13 @@ public class MultiBitDownloadListener extends DownloadListener {
      */
     protected void doneDownload() {
         String downloadStatusText = controller.getLocaliser().getString("multiBitDownloadListener.doneDownloadText");
-        controller.updateStatusLabel(downloadStatusText);
-        controller.updateStatusLabel(downloadStatusText, 100);
+
+        Message message = new Message(downloadStatusText);
+        MessageManager.INSTANCE.addMessage(message);
+        
+        message = new Message(downloadStatusText, 100);
+        MessageManager.INSTANCE.addMessage(message);
+
         controller.fireBlockDownloaded();
     }
 }

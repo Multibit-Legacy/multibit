@@ -26,6 +26,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public enum MessageManager {
     INSTANCE;
+
+    private final int MAXIMUM_NUMBER_OF_MESSAGES_STORED = 100;
     
     /**
      * Queue containing Messages received.
@@ -38,7 +40,7 @@ public enum MessageManager {
     private Collection<MessageListener> messageListeners;
     
     MessageManager() {
-        messageQueue = new LinkedBlockingQueue<Message>();
+        messageQueue = new LinkedBlockingQueue<Message>(MAXIMUM_NUMBER_OF_MESSAGES_STORED);
         messageListeners = new ArrayList<MessageListener>();
     }
     

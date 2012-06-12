@@ -68,6 +68,8 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
@@ -1398,7 +1400,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             log.debug("SendBitcoinPanel - ping 12");
             labelTextArea.setText(decodedLabel);
             log.debug("SendBitcoinPanel - ping 13");
-            controller.updateStatusLabel("");
+            Message message = new Message("");
+            MessageManager.INSTANCE.addMessage(message);
 
             if (icon != null) {
                 qrCodeLabel.setIcon(icon);
