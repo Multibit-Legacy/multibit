@@ -39,6 +39,7 @@ public class ImageLoader {
     public static final String HELP_CONTENTS_BIG_ICON_FILE = "/images/helpContentsBig.png";
     public static final String HELP_CONTENTS_ICON_FILE = "/images/helpContents.png";
     public static final String IMPORT_PRIVATE_KEYS_ICON_FILE = "/images/importKey.png";
+    public static final String MESSAGES_ICON_FILE = "/images/comment.png";
     public static final String MONEY_ICON_FILE = "/images/money.png";
     public static final String MULTIBIT_128_ICON_FILE = "/images/multibit128.png";
     public static final String MULTIBIT_ICON_FILE = "/images/multibit.png";

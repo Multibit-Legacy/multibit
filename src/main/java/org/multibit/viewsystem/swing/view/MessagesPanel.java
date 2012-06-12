@@ -34,13 +34,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The help about view
+ * The messages view
  */
-public class HelpAboutPanel extends JPanel implements View {
+public class MessagesPanel extends JPanel implements View {
 
-    private static final Logger log = LoggerFactory.getLogger(HelpAboutPanel.class);
+    private static final Logger log = LoggerFactory.getLogger(MessagesPanel.class);
 
-    private static final long serialVersionUID = 191352212345057705L;
+    private static final long serialVersionUID = 191346512399957705L;
 
     private static final String SPLASH_ICON_FILE = "/images/splash.jpg";
 
@@ -51,9 +51,8 @@ public class HelpAboutPanel extends JPanel implements View {
   /**
      * Creates a new {@link HelpAboutPanel}.
      */
-    public HelpAboutPanel(MultiBitController controller, MultiBitFrame mainFrame) {        
-        //setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0), BorderFactory.createMatteBorder(1, 0, 1, 0,  ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
-        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+    public MessagesPanel(MultiBitController controller, MultiBitFrame mainFrame) {        
+         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         this.controller = controller;
 
         String versionNumber = controller.getLocaliser().getVersionNumber();
@@ -144,21 +143,21 @@ public class HelpAboutPanel extends JPanel implements View {
        
     @Override
     public Icon getViewIcon() {
-        return ImageLoader.createImageIcon(ImageLoader.MULTIBIT_SMALL_ICON_FILE);
+        return ImageLoader.createImageIcon(ImageLoader.MESSAGES_ICON_FILE);
     }
 
     @Override
     public String getViewTitle() {
-        return controller.getLocaliser().getString("helpAboutAction.tooltip");
+        return controller.getLocaliser().getString("messagesPanel.text");
     }
     
     @Override
     public String getViewTooltip() {
-        return controller.getLocaliser().getString("helpAboutAction.tooltip");
+        return controller.getLocaliser().getString("messagesPanel.tooltip");
     }
 
     @Override
     public int getViewId() {
-        return View.HELP_ABOUT_VIEW;
+        return View.MESSAGES_VIEW;
     }
 }

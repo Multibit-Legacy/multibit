@@ -124,6 +124,11 @@ public class ViewFactory {
             break;
         }
 
+        case View.MESSAGES_VIEW: {
+            viewToReturn = new MessagesPanel(controller, mainFrame);
+            break;
+        }
+
         default: {
         }
         }
