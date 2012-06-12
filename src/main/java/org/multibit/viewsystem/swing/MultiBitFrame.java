@@ -53,6 +53,7 @@ import javax.swing.UIManager;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.TickerTimerTask;
+import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.platform.GenericApplication;
@@ -353,6 +354,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         statusBar = new StatusBar(controller, this);
         statusBar.updateOnlineStatusText(online);
+        MessageManager.INSTANCE.addMessageListener(statusBar);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;

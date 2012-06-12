@@ -33,6 +33,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.network.MultiBitService;
@@ -220,8 +222,11 @@ public class MultiBit {
                         // load up ith wallet filename
                         String loopWalletFilename = userPreferences.getProperty(MultiBitModel.WALLET_FILENAME_PREFIX + i);
                         log.debug("Loading wallet from '{}'", loopWalletFilename);
-                        controller.updateStatusLabel(controller.getLocaliser().getString("multiBit.openingWallet",
+                        Message message = new Message(controller.getLocaliser().getString("multiBit.openingWallet",
                                 new Object[] { loopWalletFilename }));
+                        MessageManager.INSTANCE.addMessage(message);
+                        // controller.updateStatusLabel(controller.getLocaliser().getString("multiBit.openingWallet",
+                        //         new Object[] { loopWalletFilename }));
                         try {
                             if (activeWalletFilename != null && activeWalletFilename.equals(loopWalletFilename)) {
                                 controller.addWalletFromFilename(loopWalletFilename);
@@ -232,15 +237,22 @@ public class MultiBit {
                             controller.updateStatusLabel(controller.getLocaliser().getString("multiBit.openingWalletIsDone",
                                     new Object[] { loopWalletFilename }));
                         } catch (NullPointerException e) {
-                            String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                                    new Object[] { activeWalletFilename, e.getMessage() });
-                            controller.updateStatusLabel(message);
-                            log.error(message);
+                            message = new Message( controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                                    new Object[] { activeWalletFilename, e.getMessage() }));
+                            MessageManager.INSTANCE.addMessage(message);
+
+                            //String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                            //        new Object[] { activeWalletFilename, e.getMessage() });
+                            //controller.updateStatusLabel(message);
+                            log.error(message.getText());
                         } catch (IOException e) {
-                            String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                                    new Object[] { activeWalletFilename, e.getMessage() });
-                            controller.updateStatusLabel(message);
-                            log.error(message);
+                            message = new Message( controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                                    new Object[] { activeWalletFilename, e.getMessage() }));
+                            MessageManager.INSTANCE.addMessage(message);
+                            //String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                            //        new Object[] { activeWalletFilename, e.getMessage() });
+                            //controller.updateStatusLabel(message);
+                            log.error(message.getText());
                         }
                     }
                 }

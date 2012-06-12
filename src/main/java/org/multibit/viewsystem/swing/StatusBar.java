@@ -70,6 +70,8 @@ import javax.swing.text.View;
 import javax.swing.text.html.HTMLDocument;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.message.Message;
+import org.multibit.message.MessageListener;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
@@ -86,7 +88,7 @@ import org.slf4j.LoggerFactory;
  * 2) Status messages - these are cleared after a period of time
  * 3) Synchronisatin progress bar
  */
-public class StatusBar extends JPanel {
+public class StatusBar extends JPanel implements MessageListener {
 
     private static final long serialVersionUID = 7824115980324911080L;
 
@@ -246,12 +248,25 @@ public class StatusBar extends JPanel {
         syncProgressBar.setVisible(false);
     }
     
-    synchronized public void updateSync(int percent, String syncMessage) {
-        syncProgressBar.setValue(percent);
-        syncProgressBar.setToolTipText(syncMessage);
+    synchronized public void updateSync(final int percent, final String syncMessage) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                syncProgressBar.setValue(percent);
+                syncProgressBar.setToolTipText(syncMessage);
         
-        // when a language changes the progress bar needs to be made visible
-        syncProgressBar.setVisible(true);
+                // when a language changes the progress bar needs to be made visible
+                syncProgressBar.setVisible(true);
+            }
+        });
+    }
+    
+    @Override
+    public void newMessageReceived(final Message newMessage) {
+        if (newMessage.getPercentComplete() == Message.NOT_RELEVANT_PERCENTAGE_COMPLETE) {
+            updateStatusLabel(newMessage.getText(), newMessage.isClearAutomatically());
+        } else {
+            updateSync((int)newMessage.getPercentComplete(), newMessage.getText());
+        }
     }
     
     public void updateStatusLabel(String newStatusLabel) {
@@ -351,7 +366,6 @@ public class StatusBar extends JPanel {
             addZone(ids[i], zones[i], constraints[i], "");
         }
     }
-
 }
 
 /**
@@ -727,12 +741,16 @@ class StatusClearTask extends TimerTask {
             if (currentStatusLabelText != null && !"".equals(currentStatusLabelText)
                     && currentStatusLabelText.equals(previousStatusLabelText)) {
                 if (StatusBar.clearAutomatically) {
-                    // clear label
-                    statusLabel.setText("");
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            // clear label
+                            statusLabel.setText("");
+                          }
+                    });
                     previousStatusLabelText = "";
                     previousLabelRepeats = 0;
                     hasReset = true;
-                }
+               }
             }
         }
         if (currentStatusLabelText != null && !currentStatusLabelText.equals(previousStatusLabelText)) {
