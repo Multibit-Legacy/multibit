@@ -36,6 +36,8 @@ import com.google.bitcoin.core.Wallet;
 public class FileHandlerTest extends TestCase {
     public static final String WALLET_TESTDATA_DIRECTORY = "wallets";
 
+    public static final String WALLET_PROTOBUF1 = "protobuf1.wallet";
+
     public static final String WALLET_TEST1 = "test1.wallet";
     public static final BigInteger WALLET_TEST1_BALANCE = new BigInteger("6700000");;
 
@@ -255,5 +257,31 @@ public class FileHandlerTest extends TestCase {
         fileHandler.deleteWalletAndWalletInfo(perWalletModelDataReborn);
         assertTrue(!newWalletFile.exists());
         assertTrue(!walletInfoFile.exists());
+    }
+    
+    public void testIsSerialisdWallet() throws Exception {
+        MultiBitController controller = new MultiBitController();
+        Localiser localiser = new Localiser();
+        MultiBitModel model = new MultiBitModel(controller);
+
+        controller.setLocaliser(localiser);
+        controller.setModel(model);
+
+        File directory = new File(".");
+        String currentPath = directory.getAbsolutePath();
+
+        String serialisedWalletName = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator
+        + WALLET_TESTDATA_DIRECTORY + File.separator + WALLET_TEST1;
+
+        File serialisedWalletFile = new File(serialisedWalletName);;
+
+        FileHandler fileHandler = new FileHandler(controller);
+        assertTrue(fileHandler.isWalletSerialised(serialisedWalletFile));
+
+        String protobufWalletName = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator
+        + WALLET_TESTDATA_DIRECTORY + File.separator + WALLET_PROTOBUF1;
+
+        File protobufWalletFile = new File(protobufWalletName);;
+        assertTrue(!fileHandler.isWalletSerialised(protobufWalletFile));
     }
 }
