@@ -34,6 +34,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
+import org.multibit.model.WalletVersion;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.WalletFileFilter;
 import org.slf4j.Logger;
@@ -146,7 +147,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
                 ECKey newKey = new ECKey();
                 newWallet.keychain.add(newKey);
                 PerWalletModelData perWalletModelData = new PerWalletModelData();
-                perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename, WalletInfo.WALLET_VERSION_PROTOBUF_TEXT));
+                perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename, WalletVersion.PROTOBUF));
                 perWalletModelData.setWallet(newWallet);
                 perWalletModelData.setWalletFilename(newWalletFilename);
                 perWalletModelData.setWalletDescription(controller.getLocaliser().getString(

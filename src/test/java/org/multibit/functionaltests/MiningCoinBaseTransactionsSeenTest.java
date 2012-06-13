@@ -32,6 +32,7 @@ import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
+import org.multibit.model.WalletVersion;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.slf4j.Logger;
@@ -111,7 +112,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
 
             miningWallet.keychain.add(miningPrivateKey.getKey());
             PerWalletModelData perWalletModelData = new PerWalletModelData();
-            perWalletModelData.setWalletInfo(new WalletInfo(miningWalletPath, WalletInfo.WALLET_VERSION_SERIALISED_TEXT));
+            perWalletModelData.setWalletInfo(new WalletInfo(miningWalletPath, WalletVersion.SERIALIZED));
             perWalletModelData.setWallet(miningWallet);
             perWalletModelData.setWalletFilename(miningWalletPath);
             perWalletModelData.setWalletDescription("testReplayMiningTransaction test");

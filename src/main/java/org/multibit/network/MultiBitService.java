@@ -38,6 +38,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
+import org.multibit.model.WalletVersion;
 import org.multibit.store.ReplayableBlockStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -271,7 +272,7 @@ public class MultiBitService {
                 perWalletModelDataToReturn = controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
 
                 // create a wallet info
-                WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath(), WalletInfo.WALLET_VERSION_PROTOBUF_TEXT);
+                WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath(), WalletVersion.PROTOBUF);
                 perWalletModelDataToReturn.setWalletInfo(walletInfo);
 
                 // set a default description

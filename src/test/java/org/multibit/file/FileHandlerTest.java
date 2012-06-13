@@ -28,6 +28,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
+import org.multibit.model.WalletVersion;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
@@ -128,7 +129,7 @@ public class FileHandlerTest extends TestCase {
         ECKey newKey = new ECKey();
         newWallet.keychain.add(newKey);
         PerWalletModelData perWalletModelData = new PerWalletModelData();
-        perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename, WalletInfo.WALLET_VERSION_SERIALISED_TEXT));
+        perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename, WalletVersion.SERIALIZED));
         perWalletModelData.setWallet(newWallet);
         perWalletModelData.setWalletFilename(newWalletFilename);
         perWalletModelData.setWalletDescription(TEST_CREATE_AND_DELETE1_WALLET_PREFIX);
@@ -174,7 +175,7 @@ public class FileHandlerTest extends TestCase {
         newKey = new ECKey();
         newWallet.keychain.add(newKey);
         PerWalletModelData perWalletModelData = new PerWalletModelData();
-        WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletInfo.WALLET_VERSION_SERIALISED_TEXT);
+        WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletVersion.SERIALIZED);
         
         perWalletModelData.setWalletInfo(walletInfo);
        
@@ -199,7 +200,7 @@ public class FileHandlerTest extends TestCase {
         assertEquals(TEST_CREATE_SERIALISED_PREFIX, perWalletModelDataReborn.getWalletDescription());
         assertEquals(2, perWalletModelDataReborn.getWallet().keychain.size());
 
-        assertEquals(WalletInfo.WALLET_VERSION_SERIALISED_TEXT, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
+        assertEquals(WalletVersion.SERIALIZED, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
         
         // Delete wallet.
         fileHandler.deleteWalletAndWalletInfo(perWalletModelDataReborn);
@@ -226,7 +227,7 @@ public class FileHandlerTest extends TestCase {
         newKey = new ECKey();
         newWallet.keychain.add(newKey);
         PerWalletModelData perWalletModelData = new PerWalletModelData();
-        WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletInfo.WALLET_VERSION_PROTOBUF_TEXT);
+        WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletVersion.PROTOBUF);
         
         perWalletModelData.setWalletInfo(walletInfo);
        
@@ -251,7 +252,7 @@ public class FileHandlerTest extends TestCase {
         assertEquals(TEST_CREATE_PROTOBUF_PREFIX, perWalletModelDataReborn.getWalletDescription());
         assertEquals(2, perWalletModelDataReborn.getWallet().keychain.size());
 
-        assertEquals(WalletInfo.WALLET_VERSION_PROTOBUF_TEXT, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
+        assertEquals(WalletVersion.PROTOBUF, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
         
         // Delete wallet.
         fileHandler.deleteWalletAndWalletInfo(perWalletModelDataReborn);

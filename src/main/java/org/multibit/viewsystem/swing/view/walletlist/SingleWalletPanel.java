@@ -42,6 +42,7 @@ import javax.swing.border.Border;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.model.WalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -569,9 +570,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         innerDetailPanel.add(filler3, constraints);
 
         MultiBitLabel sendLabelText2 = new MultiBitLabel("");
-        String walletVersion = WhitespaceTrimmer.trim(perWalletModelData.getWalletInfo().getWalletVersion());
-        String walletVersionDescriptionKey = "walletVersion." + walletVersion;
-        sendLabelText2.setText(walletVersion + " (" + controller.getLocaliser().getString(walletVersionDescriptionKey) + ")");
+        WalletVersion walletVersion = perWalletModelData.getWalletInfo().getWalletVersion();
+        sendLabelText2.setText(walletVersion + " (" + controller.getLocaliser().getString(walletVersion.getLocalisationKey()) + ")");
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;

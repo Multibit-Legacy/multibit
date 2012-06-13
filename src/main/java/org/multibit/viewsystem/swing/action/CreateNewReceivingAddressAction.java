@@ -29,6 +29,7 @@ import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
+import org.multibit.model.WalletVersion;
 import org.multibit.viewsystem.swing.view.AbstractTradePanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +80,7 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
             String addressString = newKey.toAddress(controller.getMultiBitService().getNetworkParameters()).toString();
             WalletInfo walletInfo = perWalletModelData.getWalletInfo();
             if (walletInfo == null) {
-                walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletInfo.WALLET_VERSION_PROTOBUF_TEXT);
+                walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletVersion.PROTOBUF);
                 perWalletModelData.setWalletInfo(walletInfo);
             }
             walletInfo.addReceivingAddress(new AddressBookData("", addressString), false);

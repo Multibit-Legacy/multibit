@@ -39,6 +39,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
+import org.multibit.model.WalletVersion;
 import org.multibit.network.MultiBitService;
 import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;
@@ -83,14 +84,13 @@ public class FileHandler {
             // Add the new wallet into the model.
             PerWalletModelData perWalletModelData = controller.getModel().addWallet(wallet, walletFilename);
 
-            // See if the wallet is serialised or protobuf
-            String walletVersion;
+            // See if the wallet is serialized or protobuf.
+            WalletInfo walletInfo;
             if (isWalletSerialised(walletFile)) {
-                walletVersion = WalletInfo.WALLET_VERSION_SERIALISED_TEXT;
+                walletInfo = new WalletInfo(walletFilename, WalletVersion.SERIALIZED);
             } else {
-                walletVersion = WalletInfo.WALLET_VERSION_PROTOBUF_TEXT;
+                walletInfo = new WalletInfo(walletFilename, WalletVersion.PROTOBUF);
             }
-            WalletInfo walletInfo = new WalletInfo(walletFilename, walletVersion);
             perWalletModelData.setWalletInfo(walletInfo);
 
             synchronized (walletInfo) {
@@ -212,20 +212,19 @@ public class FileHandler {
     private void saveWalletAndWalletInfo(PerWalletModelData perWalletModelData, String walletFilename, String walletInfoFilename) {
         File walletFile = new File(walletFilename);
         WalletInfo walletInfo = perWalletModelData.getWalletInfo();
-        String walletVersion = walletInfo.getWalletVersion();
 
         // Save the companion wallet info.
-        walletInfo.writeToFile(walletInfoFilename, walletVersion);
+        walletInfo.writeToFile(walletInfoFilename, walletInfo.getWalletVersion());
 
         // Save the wallet file
         try {
         if (perWalletModelData.getWallet() != null) {
-            if (WalletInfo.WALLET_VERSION_SERIALISED_TEXT.equals(walletVersion)) {
+            if (WalletVersion.SERIALIZED == walletInfo.getWalletVersion()) {
                 saveToFileAsSerialised(perWalletModelData.getWallet(), walletFile);
-            } else if (WalletInfo.WALLET_VERSION_PROTOBUF_TEXT.equals(walletVersion)) {
+            } else if (WalletVersion.PROTOBUF == walletInfo.getWalletVersion()) {
                 perWalletModelData.getWallet().saveToFile(walletFile);
             } else {
-                throw new WalletSaveException("Cannot save wallet '" + perWalletModelData.getWalletFilename() + "'. Its wallet version is '" + walletVersion + "' but this version of MultiBit does not understand that format.");
+                throw new WalletSaveException("Cannot save wallet '" + perWalletModelData.getWalletFilename() + "'. Its wallet version is '" + walletInfo.getWalletVersion().toString() + "' but this version of MultiBit does not understand that format.");
             }
         }
         } catch (IOException ioe) {

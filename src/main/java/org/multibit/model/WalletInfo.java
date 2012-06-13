@@ -78,15 +78,13 @@ public class WalletInfo {
     private static final String INFO_VERSION_TEXT = "1";
 
     private static final String WALLET_VERSION_MARKER = "walletVersion";
-    public static final String WALLET_VERSION_SERIALISED_TEXT = "1";
-    public static final String WALLET_VERSION_PROTOBUF_TEXT = "2";
 
     public static final String DESCRIPTION_PROPERTY = "walletDescription";
     public static final String SIZE_PROPERTY = "walletSize";
     public static final String DATE_LAST_MODIFED_PROPERTY = "walletLastModified";
 
     private String walletFilename;
-    private String walletVersion;
+    private WalletVersion walletVersion;
 
     private Properties walletPreferences;
     
@@ -101,7 +99,7 @@ public class WalletInfo {
      * @param walletFilename
      *            the filename for the wallet this is the info for
      */
-    public WalletInfo(String walletFilename, String walletVersion) {
+    public WalletInfo(String walletFilename, WalletVersion walletVersion) {
         this.walletFilename = walletFilename;
         this.walletVersion = walletVersion;
 
@@ -278,11 +276,11 @@ public class WalletInfo {
      * 
      * @param walletInfoFilename
      *            The full path of the wallet info file to write
-     * @param walletVersion The wallet version -one of WalletInfo.WALLET_VERSION_SERIALISED_TEXT or WalletInfo.WALLET_VERSION_PROTOBUF_TEXT
+     * @param walletVersion The wallet version.
      * @throws WalletSaveException
      *             Exception if write is unsuccessful
      */
-    public void writeToFile(String walletInfoFilename, String walletVersion) throws WalletSaveException {
+    public void writeToFile(String walletInfoFilename, WalletVersion walletVersion) throws WalletSaveException {
         BufferedWriter out = null;
         try {
             // We write out the union of the candidate and actual receiving addresses.
@@ -305,7 +303,7 @@ public class WalletInfo {
             out.write(INFO_MAGIC_TEXT + SEPARATOR + INFO_VERSION_TEXT + "\n");
 
             // Write out the wallet version.
-            out.write(WALLET_VERSION_MARKER + SEPARATOR + walletVersion + "\n");
+            out.write(WALLET_VERSION_MARKER + SEPARATOR + walletVersion.getWalletVersionString() + "\n");
 
             Collection<AddressBookData> receiveAddressValues = allReceivingAddresses.values();
             for (AddressBookData addressBookData : receiveAddressValues) {
@@ -399,9 +397,9 @@ public class WalletInfo {
                 String walletVersionMarker = walletVersionTokenizer.nextToken();
                 String walletVersionString = walletVersionTokenizer.nextToken();
                 if (!WALLET_VERSION_MARKER.equals(walletVersionMarker) 
-                        || !(WALLET_VERSION_SERIALISED_TEXT.equals(walletVersionString) || WALLET_VERSION_PROTOBUF_TEXT.equals(walletVersionString))) {
+                                || !(WalletVersion.SERIALIZED.getWalletVersionString().equals(walletVersionString) 
+                                || WalletVersion.PROTOBUF.getWalletVersionString().equals(walletVersionString))) {
                     // This refers to a version of the wallet we do not know about.
-
                     throw new WalletLoadException("Cannot understand wallet version of '" + walletVersionMarker + "', '" + walletVersionString + "'" );
                 } else {
                     // The wallet version passed in the constructor is used rather than the value in the file
@@ -616,7 +614,7 @@ public class WalletInfo {
         return walletFilename;
     }
 
-    public String getWalletVersion() {
+    public WalletVersion getWalletVersion() {
         return walletVersion;
     }
 }

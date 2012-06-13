@@ -57,7 +57,7 @@ public class WalletInfoTest extends TestCase {
                 + WALLET_TESTDATA_DIRECTORY + File.separator + WALLET_TEST1;
 
         // create wallet info
-        WalletInfo walletInfo = new WalletInfo(walletName, WalletInfo.WALLET_VERSION_SERIALISED_TEXT);
+        WalletInfo walletInfo = new WalletInfo(walletName, WalletVersion.SERIALIZED);
         assertNotNull(walletInfo);
 
         walletInfo.put(WalletInfo.DESCRIPTION_PROPERTY, DESCRIPTION_TEST1);
@@ -69,14 +69,14 @@ public class WalletInfoTest extends TestCase {
         walletInfo.addSendingAddress(sendingAddress);
 
         // write to file
-        walletInfo.writeToFile(WalletInfo.createWalletInfoFilename(walletName), WalletInfo.WALLET_VERSION_SERIALISED_TEXT);
+        walletInfo.writeToFile(WalletInfo.createWalletInfoFilename(walletName), WalletVersion.SERIALIZED);
 
         String createdWalletInfoFile = WalletInfo.createWalletInfoFilename(walletName);
 
         assertTrue((new File(createdWalletInfoFile)).exists());
 
         // create new wallet info and reload
-        WalletInfo rebornWalletInfo = new WalletInfo(walletName, WalletInfo.WALLET_VERSION_SERIALISED_TEXT);
+        WalletInfo rebornWalletInfo = new WalletInfo(walletName, WalletVersion.SERIALIZED);
         assertNotNull(rebornWalletInfo);
 
         // check description
@@ -99,7 +99,7 @@ public class WalletInfoTest extends TestCase {
 
     @Test
     public void testloadNonExistentInfoFile() throws Exception {
-        // set up core objects
+        // Set up core objects.
         MultiBitController controller = new MultiBitController();
         Localiser localiser = new Localiser();
         MultiBitModel model = new MultiBitModel(controller);
@@ -107,15 +107,15 @@ public class WalletInfoTest extends TestCase {
         controller.setLocaliser(localiser);
         controller.setModel(model);
 
-        // get test directory and wallet
+        // Get test directory and wallet.
         File directory = new File(".");
         String currentPath = directory.getAbsolutePath();
 
         String walletName = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator
                 + WALLET_TESTDATA_DIRECTORY + File.separator + NON_EXISTENT_WALLET;
 
-        // create wallet info - should not through exception
-        WalletInfo walletInfo = new WalletInfo(walletName, WalletInfo.WALLET_VERSION_SERIALISED_TEXT);
+        // Create wallet info - should not throw exception.
+        WalletInfo walletInfo = new WalletInfo(walletName, WalletVersion.PROTOBUF);
         assertNotNull(walletInfo);
     }
     
