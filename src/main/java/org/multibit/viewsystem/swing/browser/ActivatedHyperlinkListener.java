@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.browser;
 
+import java.awt.Cursor;
 import java.net.URL;
 
 import javax.swing.JOptionPane;
@@ -32,7 +33,7 @@ public class ActivatedHyperlinkListener implements HyperlinkListener {
 
     private static final String HTTP_PROTOCOL = "http";
 
-    private static final String SPACER = "   "; // 3 spaces
+    private static final String SPACER = " "; // 3 spaces
 
     MultiBitFrame mainFrame;
 
@@ -43,24 +44,48 @@ public class ActivatedHyperlinkListener implements HyperlinkListener {
     public ActivatedHyperlinkListener(MultiBitFrame frame, Browser browser, String currentUrl) {
         this.mainFrame = frame;
         this.browser = browser;
-        this.currentUrl = currentUrl;
     }
 
     public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
         HyperlinkEvent.EventType type = hyperlinkEvent.getEventType();
         final URL url = hyperlinkEvent.getURL();
         if (type == HyperlinkEvent.EventType.ENTERED) {
-            Message message = new Message(SPACER + url.toString(), true);
+            Message message = new Message(url.toString(), true);
             MessageManager.INSTANCE.addMessage(message);
+            if (browser.isLoading()) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        browser.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                    }});      
+            } else {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        browser.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    }});      
+            }
         } else if (type == HyperlinkEvent.EventType.EXITED) {
-            Message message = new Message(SPACER + currentUrl, true);
+            Message message = new Message(SPACER, true);
             MessageManager.INSTANCE.addMessage(message);
+            if (browser.isLoading()) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        browser.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                    }});      
+            } else {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        browser.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    }});      
+            }
         } else if (type == HyperlinkEvent.EventType.ACTIVATED) {
             Runnable runner = new Runnable() {
                 public void run() {
                     if (HTTP_PROTOCOL.equals(url.getProtocol()) && MULTIBIT_HOST_NAME.equals(url.getHost())) {
                         browser.visit(url.toString());
-                        currentUrl = url.toString();
                     } else {
                         JOptionPane.showMessageDialog(mainFrame, "The help contents can only show HTTP content from "
                                 + MULTIBIT_HOST_NAME + "\nPlease use your main browser to view the URL:\n" + url.toString(),

@@ -80,8 +80,6 @@ public class HelpContentsPanel extends JPanel implements View {
                 
                 JScrollPane scrollPane = new JScrollPane(browser);
                 scrollPane.setPreferredSize(new Dimension(800, 400));
-                //scrollPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0), 
-                //        BorderFactory.createMatteBorder(1, 0, 1, 0,  ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
                 scrollPane.setBorder(BorderFactory.createEmptyBorder());
                 add(scrollPane, BorderLayout.CENTER);          
             }
@@ -114,14 +112,13 @@ public class HelpContentsPanel extends JPanel implements View {
 
     @Override
     public void displayView() {
-        String newHelpContext = mainFrame.getHelpContext();
+        helpContext = mainFrame.getHelpContext();
         
-        if (newHelpContext != null && !newHelpContext.equals("")) {
-            helpContext = newHelpContext;
-        }
         if (!firstTimeLoaded) {
             if (browser != null) {
-                browser.visit(HELP_BASE_URL + helpContext);
+                if (helpContext != null && !helpContext.equals("")) {
+                     browser.visit(HELP_BASE_URL + helpContext);
+                }
             }
         }
         firstTimeLoaded = false;
