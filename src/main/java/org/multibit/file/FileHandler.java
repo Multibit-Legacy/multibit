@@ -417,10 +417,6 @@ public class FileHandler {
         }
     }
 
-    public void writeUserPreferences() {
-        writeUserPreferences(controller);
-    }
-
     public static Properties loadUserPreferences(ApplicationDataDirectoryLocator applicationDataDirectoryLocator) {
         Properties userPreferences = new Properties();
         try {

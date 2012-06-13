@@ -25,6 +25,7 @@ import javax.swing.SwingWorker;
 
 import org.multibit.ApplicationInstanceManager;
 import org.multibit.controller.MultiBitController;
+import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -88,7 +89,7 @@ public class ExitAction extends AbstractAction {
         // write the user properties
         log.debug("Saving user preferences ...");
         // controller.updateStatusLabel("Saving user preferences ...");
-        controller.getFileHandler().writeUserPreferences();
+        FileHandler.writeUserPreferences(controller);
 
         log.debug("Shutting down Bitcoin URI checker ...");
         ApplicationInstanceManager.shutdownSocket();
