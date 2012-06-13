@@ -33,6 +33,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.multibit.file.WalletLoadException;
+import org.multibit.file.WalletSaveException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,12 +113,12 @@ public class WalletInfo {
 
         try {
             loadFromFile();
-        } catch (WalletInfoException wie) {
+        } catch (WalletLoadException wle) {
             // load may fail on first construct if no backing file written -
             // just log it
-            log.debug(wie.getMessage());
-            if (wie.getCause() != null) {
-                log.debug("Cause : " + wie.getCause().getMessage());
+            log.debug(wle.getMessage());
+            if (wle.getCause() != null) {
+                log.debug("Cause : " + wle.getCause().getMessage());
             }
         }
     }
@@ -277,10 +279,10 @@ public class WalletInfo {
      * @param walletInfoFilename
      *            The full path of the wallet info file to write
      * @param walletVersion The wallet version -one of WalletInfo.WALLET_VERSION_SERIALISED_TEXT or WalletInfo.WALLET_VERSION_PROTOBUF_TEXT
-     * @throws WalletInfoException
+     * @throws WalletSaveException
      *             Exception if write is unsuccessful
      */
-    public void writeToFile(String walletInfoFilename, String walletVersion) throws WalletInfoException {
+    public void writeToFile(String walletInfoFilename, String walletVersion) throws WalletSaveException {
         BufferedWriter out = null;
         try {
             // We write out the union of the candidate and actual receiving addresses.
@@ -336,14 +338,14 @@ public class WalletInfo {
                 out.write(columnOne + SEPARATOR + columnTwo + SEPARATOR + encodedColumnThree + "\n");
             }
         } catch (IOException ioe) {
-            throw new WalletInfoException("Could not write walletinfo file for wallet '" + walletInfoFilename + "'", ioe);
+            throw new WalletSaveException("Could not write walletinfo file for wallet '" + walletInfoFilename + "'", ioe);
         } finally {
             // Close the output stream.
             if (out != null) {
                 try {
                     out.close();
                 } catch (IOException e) {
-                    throw new WalletInfoException("Could not close walletinfo file for wallet '" + walletInfoFilename + "'", e);
+                    throw new WalletSaveException("Could not close walletinfo file for wallet '" + walletInfoFilename + "'", e);
                 }
             }
         }
@@ -355,7 +357,7 @@ public class WalletInfo {
      * @throws WalletInfoException
      *             Exception if read is unsuccessful
      */
-    public void loadFromFile() throws WalletInfoException {
+    public void loadFromFile() {
         String walletInfoFilename = null;
         InputStream inputStream = null;
         try {
@@ -373,7 +375,7 @@ public class WalletInfo {
             String firstLine = bufferedReader.readLine();
             if (firstLine == null) {
                 // This is not an multibit address book.
-                throw new WalletInfoException("The file '" + walletInfoFilename + "' is not a valid wallet info file (empty line 1)");
+                throw new WalletLoadException("The file '" + walletInfoFilename + "' is not a valid wallet info file (empty line 1)");
             }
             StringTokenizer tokenizer = new StringTokenizer(firstLine, SEPARATOR);
             int numberOfTokens = tokenizer.countTokens();
@@ -382,11 +384,11 @@ public class WalletInfo {
                 String versionNumber = tokenizer.nextToken();
                 if (!INFO_MAGIC_TEXT.equals(magicText) || !INFO_VERSION_TEXT.equals(versionNumber)) {
                     // This is not an multibit address book.
-                    throw new WalletInfoException("The file '" + walletInfoFilename + "' is not a valid wallet info file (wrong magic number on line 1)");
+                    throw new WalletLoadException("The file '" + walletInfoFilename + "' is not a valid wallet info file (wrong magic number on line 1)");
                 }
             } else {
                 // This is not an multibit address book.
-                throw new WalletInfoException("The file '" + walletInfoFilename + "' is not a valid wallet info file (wrong number of tokens on line 1)");
+                throw new WalletLoadException("The file '" + walletInfoFilename + "' is not a valid wallet info file (wrong number of tokens on line 1)");
             }
 
             // Read the wallet version.
@@ -400,7 +402,7 @@ public class WalletInfo {
                         || !(WALLET_VERSION_SERIALISED_TEXT.equals(walletVersionString) || WALLET_VERSION_PROTOBUF_TEXT.equals(walletVersionString))) {
                     // This refers to a version of the wallet we do not know about.
 
-                    throw new WalletInfoException("Cannot understand wallet version of '" + walletVersionMarker + "', '" + walletVersionString + "'" );
+                    throw new WalletLoadException("Cannot understand wallet version of '" + walletVersionMarker + "', '" + walletVersionString + "'" );
                 } else {
                     // The wallet version passed in the constructor is used rather than the value in the file
                     if (!walletVersion.equals(walletVersionString)) {
@@ -409,7 +411,7 @@ public class WalletInfo {
                 }
             } else {
                 // The format of the info format is wrong.
-                throw new WalletInfoException("Cannot understand wallet version text of '" + secondLine + "'");
+                throw new WalletLoadException("Cannot understand wallet version text of '" + secondLine + "'");
             }
 
             // Read the addresses and general properties.
@@ -501,16 +503,16 @@ public class WalletInfo {
                 isMultilineColumnThree = false;
             }
         } catch (IllegalArgumentException iae) {
-            throw new WalletInfoException("Could not load walletinfo file '" + walletInfoFilename + "'", iae);
+            throw new WalletLoadException("Could not load walletinfo file '" + walletInfoFilename + "'", iae);
         } catch (IOException ioe) {
-            throw new WalletInfoException("Could not load walletinfo file '" + walletInfoFilename + "'", ioe);
+            throw new WalletLoadException("Could not load walletinfo file '" + walletInfoFilename + "'", ioe);
         } finally {
             // Close the input stream
             if (inputStream != null) {
                 try {
                     inputStream.close();
                 } catch (IOException e) {
-                    throw new WalletInfoException("Could not close walletinfo file '" + walletInfoFilename + "'", e);
+                    throw new WalletLoadException("Could not close walletinfo file '" + walletInfoFilename + "'", e);
                 }
             }
         }
@@ -551,7 +553,7 @@ public class WalletInfo {
             return java.net.URLEncoder.encode(stringToEncode, "UTF-8").replace("+", ENCODED_SPACE_CHARACTER);
         } catch (UnsupportedEncodingException e) {
             // Should not happen - UTF-8 is a valid encoding.
-            throw new  WalletInfoException("Could not encode string '" + stringToEncode + "'", e);
+            throw new  WalletSaveException("Could not encode string '" + stringToEncode + "'", e);
         }
     }
     
@@ -598,7 +600,7 @@ public class WalletInfo {
             return decodedText;
         } catch (UnsupportedEncodingException e) {
             // Should not happen - UTF-8 is a valid encoding.
-            throw new  WalletInfoException("Could not decode string '" + stringToDecode + "'", e);
+            throw new  WalletLoadException("Could not decode string '" + stringToDecode + "'", e);
          }
     }
 

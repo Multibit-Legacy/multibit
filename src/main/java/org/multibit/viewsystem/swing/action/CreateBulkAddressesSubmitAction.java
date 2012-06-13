@@ -27,6 +27,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.file.WalletSaveException;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
@@ -107,6 +108,8 @@ public class CreateBulkAddressesSubmitAction extends AbstractAction {
                         controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
                     } catch (FileNotFoundException fnfe) {
                         fnfe.printStackTrace();
+                    } catch (WalletSaveException wse) {
+                        wse.printStackTrace();
                     } catch (IOException ioe) {
                         ioe.printStackTrace();
                     } finally {

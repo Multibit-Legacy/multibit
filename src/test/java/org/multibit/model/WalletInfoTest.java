@@ -40,7 +40,7 @@ public class WalletInfoTest extends TestCase {
     public static final String EXAMPLE_SENDING_ADDRESS_LABEL = "mySendingAddress label, text after comma\n text after return";
 
     @Test
-    public void testRoundTrip() throws WalletInfoException {
+    public void testRoundTrip() throws Exception {
         // set up core objects
         MultiBitController controller = new MultiBitController();
         Localiser localiser = new Localiser();
@@ -98,7 +98,7 @@ public class WalletInfoTest extends TestCase {
     }
 
     @Test
-    public void testloadNonExistentInfoFile() throws WalletInfoException {
+    public void testloadNonExistentInfoFile() throws Exception {
         // set up core objects
         MultiBitController controller = new MultiBitController();
         Localiser localiser = new Localiser();

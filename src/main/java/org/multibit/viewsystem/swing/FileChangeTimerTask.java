@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.TimerTask;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.file.WalletSaveException;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
@@ -74,7 +77,14 @@ public class FileChangeTimerTask extends TimerTask {
                     // see if they are dirty - write out if so
                     if (loopModelData.isDirty()) {
                         log.debug("Saving dirty wallet '" + loopModelData.getWalletFilename() + "'");
-                        controller.getFileHandler().savePerWalletModelData(loopModelData, false);
+                        try {
+                            controller.getFileHandler().savePerWalletModelData(loopModelData, false);
+                        } catch (WalletSaveException e) {
+                            String message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
+                                    new Object[] { loopModelData.getWalletFilename(), e.getMessage() });
+                            log.error(message);
+                            MessageManager.INSTANCE.addMessage(new Message(message));
+                        } 
                     }
                 }
             }

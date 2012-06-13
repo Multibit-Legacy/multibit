@@ -25,6 +25,9 @@ import javax.swing.SwingWorker;
 
 import org.multibit.ApplicationInstanceManager;
 import org.multibit.controller.MultiBitController;
+import org.multibit.file.WalletSaveException;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
@@ -71,7 +74,15 @@ public class ExitAction extends AbstractAction {
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
-                controller.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
+                try {
+                    controller.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
+                } catch (WalletSaveException wse) {
+                    log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
+                    MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
+                    
+                    // Save to backup.
+                    controller.getFileHandler().backupPerWalletModelData(loopPerWalletModelData);
+                }
             }
         }
         // write the user properties

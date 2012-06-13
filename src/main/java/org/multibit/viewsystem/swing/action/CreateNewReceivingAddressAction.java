@@ -21,11 +21,17 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.file.FileHandler;
+import org.multibit.file.WalletSaveException;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.viewsystem.swing.view.AbstractTradePanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.ECKey;
 
@@ -33,7 +39,8 @@ import com.google.bitcoin.core.ECKey;
  * This {@link Action} represents an action to create a receiving address.
  */
 public class CreateNewReceivingAddressAction extends AbstractAction {
-
+    private static Logger log = LoggerFactory.getLogger(CreateNewReceivingAddressAction.class);
+    
     private static final long serialVersionUID = 200152235465875405L;
 
     private MultiBitController controller;
@@ -82,8 +89,12 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
             controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, addressString);
             controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
             
-            controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
-
+            try {
+                controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+            } catch (WalletSaveException wse) {
+                log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
+                MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
+            }
             controller.displayView(controller.getCurrentView());
 
             if (receiveBitcoinPanel != null && receiveBitcoinPanel.getLabelTextArea() != null) {

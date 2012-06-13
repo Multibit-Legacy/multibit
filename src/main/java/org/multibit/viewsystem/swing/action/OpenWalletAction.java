@@ -29,9 +29,9 @@ import javax.swing.SwingWorker;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
+import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.WalletInfoException;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.WalletFileFilter;
 import org.slf4j.Logger;
@@ -143,7 +143,7 @@ public class OpenWalletAction extends AbstractAction {
                 } catch (IOException e) {
                     message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
                     return Boolean.FALSE;
-                }  catch (WalletInfoException e) {
+                }  catch (WalletSaveException e) {
                     message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
                     return Boolean.FALSE;
                 }

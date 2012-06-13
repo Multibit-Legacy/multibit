@@ -32,6 +32,7 @@ import java.util.SimpleTimeZone;
 import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
@@ -277,9 +278,14 @@ public class MultiBitService {
                 String defaultDescription = controller.getLocaliser().getString("createNewWalletSubmitAction.defaultDescription");
                 perWalletModelDataToReturn.setWalletDescription(defaultDescription);
 
-                controller.getFileHandler().savePerWalletModelData(perWalletModelDataToReturn, true);
+                try {
+                    controller.getFileHandler().savePerWalletModelData(perWalletModelDataToReturn, true);
 
-                newWalletCreated = true;
+                    newWalletCreated = true;
+                } catch (WalletSaveException wse) {
+                    log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
+                    MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
+                }
             }
         }
 
@@ -489,8 +495,13 @@ public class MultiBitService {
         if (sendTransaction != null) {
             log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is {}", sendTransaction.getHashAsString());
 
-            controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
-
+            try {
+                controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+            } catch (WalletSaveException wse) {
+                log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
+                MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
+            }
+            
             // clone the sent transaction
             try {
                 Transaction clonedSentTransaction = new Transaction(networkParameters, sendTransaction.bitcoinSerialize());

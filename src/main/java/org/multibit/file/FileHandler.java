@@ -151,58 +151,64 @@ public class FileHandler {
         WalletInfo walletInfo = perWalletModelData.getWalletInfo();
                
         synchronized (walletInfo) {
-            try {
-                // Save the perWalletModelData if it is dirty or if forceWrite is true.
-                if (perWalletModelData.isDirty() || forceWrite) {
-                    // Check dates and sizes of files.
-                    boolean filesHaveChanged = haveFilesChanged(perWalletModelData);
+            // Save the perWalletModelData if it is dirty or if forceWrite is true.
+            if (perWalletModelData.isDirty() || forceWrite) {
+                // Check dates and sizes of files.
+                boolean filesHaveChanged = haveFilesChanged(perWalletModelData);
+                
+                if (!filesHaveChanged || forceWrite) {
+                    // Normal write of data.
+                    String walletInfoFilename = WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename());
+                    saveWalletAndWalletInfo(perWalletModelData, perWalletModelData.getWalletFilename(), walletInfoFilename);
 
-                    if (!filesHaveChanged || forceWrite) {
-                        // Normal write of data.
-                        String walletInfoFilename = WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename());
-                        saveWalletAndWalletInfo(perWalletModelData, perWalletModelData.getWalletFilename(), walletInfoFilename);
+                    rememberFileSizesAndLastModified(walletFile, walletInfo);
 
-                        rememberFileSizesAndLastModified(walletFile, walletInfo);
-
-                        // The perWalletModelData is no longer dirty.
-                        perWalletModelData.setDirty(false);
-                    } else {
-                        // Write to backup files.
-                        // Work out / reuse the backup file names.
-                        String walletInfoBackupFilename = null;
-                        String walletBackupFilename = null;
-
-                        if (perWalletModelData.getWalletBackupFilename() != null) {
-                            walletBackupFilename = perWalletModelData.getWalletBackupFilename();
-                        }
-                        if (perWalletModelData.getWalletInfoBackupFilename() != null) {
-                            walletInfoBackupFilename = perWalletModelData.getWalletInfoBackupFilename();
-                        }
-
-                        if (walletBackupFilename == null) {
-                            walletBackupFilename = createBackupFilename(walletFile, false);
-                            perWalletModelData.setWalletBackupFilename(walletBackupFilename);
-
-                            walletInfoBackupFilename = createBackupFilename(
-                                    new File(WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename())), true);
-                            perWalletModelData.setWalletInfoBackupFilename(walletInfoBackupFilename);
-                        }
-
-                        saveWalletAndWalletInfo(perWalletModelData, walletBackupFilename, walletInfoBackupFilename);
-
-                        // The perWalletModelData is no longer dirty.
-                        perWalletModelData.setDirty(false);
-                    }
-
+                    // The perWalletModelData is no longer dirty.
+                    perWalletModelData.setDirty(false);
+                } else {
+                    // Write to backup files.
+                    backupPerWalletModelData(perWalletModelData);
                 }
-            } catch (IOException ioe) {
-                log.error(ioe.getClass().getCanonicalName() + " "  + ioe.getMessage());
-                throw new WalletSaveException("Cannot save wallet '" + perWalletModelData.getWalletFilename(), ioe);
-           }
+            }
         }
         return;
     }
 
+    public void backupPerWalletModelData(PerWalletModelData perWalletModelData) {
+        // Write to backup files.
+        // Work out / reuse the backup file names.
+        String walletInfoBackupFilename = null;
+        String walletBackupFilename = null;
+
+        try {
+            if (perWalletModelData.getWalletBackupFilename() != null) {
+                walletBackupFilename = perWalletModelData.getWalletBackupFilename();
+            }
+            if (perWalletModelData.getWalletInfoBackupFilename() != null) {
+                walletInfoBackupFilename = perWalletModelData.getWalletInfoBackupFilename();
+            }
+
+            if (walletBackupFilename == null) {
+                walletBackupFilename = createBackupFilename(new File(perWalletModelData.getWalletFilename()), false);
+                perWalletModelData.setWalletBackupFilename(walletBackupFilename);
+
+                walletInfoBackupFilename = createBackupFilename(
+                        new File(WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename())), true);
+                perWalletModelData.setWalletInfoBackupFilename(walletInfoBackupFilename);
+            }
+            
+            saveWalletAndWalletInfo(perWalletModelData, walletBackupFilename, walletInfoBackupFilename);
+
+            // The perWalletModelData is no longer dirty.
+            perWalletModelData.setDirty(false);
+            
+            log.info("Written backup wallet files to '" + walletBackupFilename + "'");
+        } catch (IOException ioe) {
+            log.error(ioe.getClass().getCanonicalName() + " "  + ioe.getMessage());
+            throw new WalletSaveException("Cannot backup wallet '" + perWalletModelData.getWalletFilename(), ioe);            
+        }
+    }
+    
     private void saveWalletAndWalletInfo(PerWalletModelData perWalletModelData, String walletFilename, String walletInfoFilename) {
         File walletFile = new File(walletFilename);
         WalletInfo walletInfo = perWalletModelData.getWalletInfo();
@@ -442,7 +448,7 @@ public class FileHandler {
     /**
      * Uses Java serialization to save the wallet to the given file.
      */
-    public synchronized void saveToFileAsSerialised(Wallet wallet, File f) throws IOException {
+    private synchronized void saveToFileAsSerialised(Wallet wallet, File f) throws IOException {
         log.debug("Saving wallet to file " + f.getAbsolutePath() + " in version 1 (serialised) format.");
         FileOutputStream stream = null;
         try {
@@ -457,7 +463,7 @@ public class FileHandler {
     /**
      * Uses Java serialization to save the wallet to the given file stream.
      */
-    public synchronized void saveToFileStreamAsSerialised(Wallet wallet, OutputStream f) throws IOException {
+    private synchronized void saveToFileStreamAsSerialised(Wallet wallet, OutputStream f) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(f);
         oos.writeObject(wallet);
         oos.close();

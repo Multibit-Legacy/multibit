@@ -36,6 +36,7 @@ import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.PrivateKeysHandlerException;
+import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
@@ -253,6 +254,10 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                     controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
                     successMeasure = Boolean.TRUE;
                     statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
+                } catch (WalletSaveException wse) {
+                    log.error(wse.getClass().getName() + " " + wse.getMessage());
+                    uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
+                            new Object[] { wse.getMessage() });
                 } catch (EncrypterDecrypterException ede) {
                     log.error(ede.getClass().getName() + " " + ede.getMessage());
                     uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",

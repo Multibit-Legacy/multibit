@@ -27,6 +27,7 @@ import javax.swing.Icon;
 import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
@@ -128,9 +129,14 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
             activePerWalletModelData.getWallet().clearTransactions(actualResetDate);
 
             // save the wallet without the transactions
-            controller.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
-            controller.getModel().createWalletData(controller.getModel().getActiveWalletFilename());
-            controller.fireRecreateAllViews(false);
+            try {
+                controller.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
+                controller.getModel().createWalletData(controller.getModel().getActiveWalletFilename());
+                controller.fireRecreateAllViews(false);
+            } catch (WalletSaveException wse) {
+                log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
+                MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
+            }
 
             resetTransactionsInBackground(resetFromFirstTransaction, actualResetDate);
             Timer timer = new Timer();
