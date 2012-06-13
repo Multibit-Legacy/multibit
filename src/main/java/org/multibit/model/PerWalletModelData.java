@@ -54,11 +54,6 @@ public class PerWalletModelData {
      */
     private boolean isDirty;
     
-//    /**
-//     * the PerWalletModelData has received incoming receipts since last been written to disk
-//     */
-//    private boolean isTransactionDirty;
-
     public PerWalletModelData() {
         isDirty = false;
     }

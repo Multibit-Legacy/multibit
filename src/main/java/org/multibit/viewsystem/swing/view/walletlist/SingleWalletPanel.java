@@ -456,7 +456,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         filenameLabel.setOpaque(false);
         filenameLabel.setBorder(underlineBorder);
 
-        filenameLabel.setText(controller.getLocaliser().getString("resetTransactionsPanel.walletFilenameLabel"));
+        String filenameString = controller.getLocaliser().getString("resetTransactionsPanel.walletFilenameLabel");
+        filenameString = WhitespaceTrimmer.trim(filenameString.replaceAll(":", "")) + " :";
+        filenameLabel.setText(filenameString);
         filenameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -542,8 +544,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         innerDetailPanel.add(sendLabelText, constraints);
 
         MultiBitLabel sendLabelLabel2 = new MultiBitLabel("");
-        String versionString = controller.getLocaliser().getString("helpAboutAction.versionText", new Object[]{""});
-        versionString = WhitespaceTrimmer.trim(versionString.replaceAll(":", ""));
+        String versionString = WhitespaceTrimmer.trim(controller.getLocaliser().getString("helpAboutAction.versionText", new Object[]{""}));
         sendLabelLabel2.setText(versionString);
 
         constraints.fill = GridBagConstraints.NONE;

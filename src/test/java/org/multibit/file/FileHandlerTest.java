@@ -43,6 +43,10 @@ public class FileHandlerTest extends TestCase {
     public static final BigInteger WALLET_TEST2_BALANCE = new BigInteger("2000000");;
 
     public static final String TEST_CREATE_AND_DELETE1_WALLET_PREFIX = "testCreateAndDelete1";
+    
+    public static final String TEST_CREATE_SERIALISED_PREFIX = "testCreateSerialised";
+
+    public static final String TEST_CREATE_PROTOBUF_PREFIX = "testCreateProtobuf";
 
     public static final String WALLET_TEST033B = "test033b.wallet";
 
@@ -117,18 +121,18 @@ public class FileHandlerTest extends TestCase {
 
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
-        // create a new wallet
+        // Create a new wallet.
         Wallet newWallet = new Wallet(NetworkParameters.prodNet());
         ECKey newKey = new ECKey();
         newWallet.keychain.add(newKey);
         PerWalletModelData perWalletModelData = new PerWalletModelData();
-        perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename));
+        perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename, WalletInfo.WALLET_VERSION_SERIALISED_TEXT));
         perWalletModelData.setWallet(newWallet);
         perWalletModelData.setWalletFilename(newWalletFilename);
         perWalletModelData.setWalletDescription(TEST_CREATE_AND_DELETE1_WALLET_PREFIX);
         controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
 
-        // check the wallet and wallet info file exists
+        // Check the wallet and wallet info file exists.
         File newWalletFile = new File(newWalletFilename);
         assertTrue(newWalletFile.exists());
 
@@ -137,13 +141,117 @@ public class FileHandlerTest extends TestCase {
         File walletInfoFile = new File(walletInfoFileAsString);
         assertTrue(walletInfoFile.exists());
 
-        // check wallet can be loaded
+        // Check wallet can be loaded.
         PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
         assertNotNull(perWalletModelDataReborn);
         assertEquals(BigInteger.ZERO, perWalletModelDataReborn.getWallet().getBalance());
         assertEquals(TEST_CREATE_AND_DELETE1_WALLET_PREFIX, perWalletModelDataReborn.getWalletDescription());
 
-        // delete wallet
+        // Delete wallet.
+        fileHandler.deleteWalletAndWalletInfo(perWalletModelDataReborn);
+        assertTrue(!newWalletFile.exists());
+        assertTrue(!walletInfoFile.exists());
+    }
+    
+    @Test
+    public void testCreateSerialisedWallet() throws IOException {
+        MultiBitController controller = new MultiBitController();
+        @SuppressWarnings("unused")
+        MultiBitModel model = new MultiBitModel(controller);
+        FileHandler fileHandler = new FileHandler(controller);
+
+        File temporaryWallet = File.createTempFile(TEST_CREATE_SERIALISED_PREFIX, ".wallet");
+        temporaryWallet.deleteOnExit();
+
+        String newWalletFilename = temporaryWallet.getAbsolutePath();
+
+        // Create a new serialised wallet.
+        Wallet newWallet = new Wallet(NetworkParameters.prodNet());
+        ECKey newKey = new ECKey();
+        newWallet.keychain.add(newKey);
+        newKey = new ECKey();
+        newWallet.keychain.add(newKey);
+        PerWalletModelData perWalletModelData = new PerWalletModelData();
+        WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletInfo.WALLET_VERSION_SERIALISED_TEXT);
+        
+        perWalletModelData.setWalletInfo(walletInfo);
+       
+        perWalletModelData.setWallet(newWallet);
+        perWalletModelData.setWalletFilename(newWalletFilename);
+        perWalletModelData.setWalletDescription(TEST_CREATE_SERIALISED_PREFIX);
+        controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
+
+        // Check the wallet and wallet info file exists.
+        File newWalletFile = new File(newWalletFilename);
+        assertTrue(newWalletFile.exists());
+
+        String walletInfoFileAsString = WalletInfo.createWalletInfoFilename(newWalletFilename);
+
+        File walletInfoFile = new File(walletInfoFileAsString);
+        assertTrue(walletInfoFile.exists());
+
+        // Check wallet can be loaded and is still serialised.
+        PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
+        assertNotNull(perWalletModelDataReborn);
+        assertEquals(BigInteger.ZERO, perWalletModelDataReborn.getWallet().getBalance());
+        assertEquals(TEST_CREATE_SERIALISED_PREFIX, perWalletModelDataReborn.getWalletDescription());
+        assertEquals(2, perWalletModelDataReborn.getWallet().keychain.size());
+
+        assertEquals(WalletInfo.WALLET_VERSION_SERIALISED_TEXT, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
+        
+        // Delete wallet.
+        fileHandler.deleteWalletAndWalletInfo(perWalletModelDataReborn);
+        assertTrue(!newWalletFile.exists());
+        assertTrue(!walletInfoFile.exists());
+    }
+    
+    @Test
+    public void testCreateProtobufWallet() throws IOException {
+        MultiBitController controller = new MultiBitController();
+        @SuppressWarnings("unused")
+        MultiBitModel model = new MultiBitModel(controller);
+        FileHandler fileHandler = new FileHandler(controller);
+
+        File temporaryWallet = File.createTempFile(TEST_CREATE_PROTOBUF_PREFIX, ".wallet");
+        temporaryWallet.deleteOnExit();
+
+        String newWalletFilename = temporaryWallet.getAbsolutePath();
+
+        // Create a new protobuf wallet.
+        Wallet newWallet = new Wallet(NetworkParameters.prodNet());
+        ECKey newKey = new ECKey();
+        newWallet.keychain.add(newKey);
+        newKey = new ECKey();
+        newWallet.keychain.add(newKey);
+        PerWalletModelData perWalletModelData = new PerWalletModelData();
+        WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletInfo.WALLET_VERSION_PROTOBUF_TEXT);
+        
+        perWalletModelData.setWalletInfo(walletInfo);
+       
+        perWalletModelData.setWallet(newWallet);
+        perWalletModelData.setWalletFilename(newWalletFilename);
+        perWalletModelData.setWalletDescription(TEST_CREATE_PROTOBUF_PREFIX);
+        controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
+
+        // Check the wallet and wallet info file exists.
+        File newWalletFile = new File(newWalletFilename);
+        assertTrue(newWalletFile.exists());
+
+        String walletInfoFileAsString = WalletInfo.createWalletInfoFilename(newWalletFilename);
+
+        File walletInfoFile = new File(walletInfoFileAsString);
+        assertTrue(walletInfoFile.exists());
+
+        // Check wallet can be loaded and is still protobuf.
+        PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
+        assertNotNull(perWalletModelDataReborn);
+        assertEquals(BigInteger.ZERO, perWalletModelDataReborn.getWallet().getBalance());
+        assertEquals(TEST_CREATE_PROTOBUF_PREFIX, perWalletModelDataReborn.getWalletDescription());
+        assertEquals(2, perWalletModelDataReborn.getWallet().keychain.size());
+
+        assertEquals(WalletInfo.WALLET_VERSION_PROTOBUF_TEXT, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
+        
+        // Delete wallet.
         fileHandler.deleteWalletAndWalletInfo(perWalletModelDataReborn);
         assertTrue(!newWalletFile.exists());
         assertTrue(!walletInfoFile.exists());

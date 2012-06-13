@@ -28,6 +28,7 @@ import javax.swing.JFileChooser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
+import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
@@ -43,7 +44,7 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Wallet;
 
 /**
- * This {@link Action} creates a new wallet
+ * This {@link Action} creates a new wallet.
  */
 public class CreateWalletSubmitAction extends AbstractAction {
 
@@ -68,7 +69,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
     }
 
     /**
-     * create new wallet
+     * Create new wallet.
      */
     public void actionPerformed(ActionEvent e) {
         if (mainFrame != null) {
@@ -77,7 +78,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
         setEnabled(false);
 
         try {
-            // create a file save dialog
+            // Create a file save dialog.
 
             JFileChooser.setDefaultLocale(controller.getLocaliser().getLocale());
             JFileChooser fileChooser = new JFileChooser();
@@ -120,17 +121,16 @@ public class CreateWalletSubmitAction extends AbstractAction {
             return;
         }
 
-        // if the filename has no extension, put on the wallet
-        // extension
+        // If the filename has no extension, put on the wallet
+        // extension.
         if (!newWalletFilename.contains(".")) {
-            // add wallet file extension
-            newWalletFilename = newWalletFilename + "." + MultiBitModel.WALLET_FILE_EXTENSION;
+             newWalletFilename = newWalletFilename + "." + MultiBitModel.WALLET_FILE_EXTENSION;
         }
 
         File newWalletFile = new File(newWalletFilename);
 
         try {
-            // if file exists, load the existing wallet
+            // If file exists, load the existing wallet.
             if (newWalletFile.exists()) {
                 PerWalletModelData perWalletModelData = controller.getFileHandler().loadFromFile(newWalletFile);
                 if (perWalletModelData != null) {
@@ -142,24 +142,24 @@ public class CreateWalletSubmitAction extends AbstractAction {
                     controller.fireDataChanged();
                 }
             } else {
-                // create a new wallet
+                // Create a new wallet.
                 Wallet newWallet = new Wallet(controller.getMultiBitService().getNetworkParameters());
                 ECKey newKey = new ECKey();
                 newWallet.keychain.add(newKey);
                 PerWalletModelData perWalletModelData = new PerWalletModelData();
-                perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename));
+                perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename, WalletInfo.WALLET_VERSION_PROTOBUF_TEXT));
                 perWalletModelData.setWallet(newWallet);
                 perWalletModelData.setWalletFilename(newWalletFilename);
                 perWalletModelData.setWalletDescription(controller.getLocaliser().getString(
                         "createNewWalletSubmitAction.defaultDescription"));
                 controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
 
-                // start using the new file as the wallet
+                // Start using the new file as the wallet.
                 controller.addWalletFromFilename(newWalletFile.getAbsolutePath());
                 controller.getModel().setActiveWalletByFilename(newWalletFilename);
                 controller.getModel().setUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "true");
 
-                // save the user properties to disk
+                // Save the user properties to disk.
                 FileHandler.writeUserPreferences(controller);
                 log.debug("User preferences with new wallet written successfully");
 
@@ -167,6 +167,11 @@ public class CreateWalletSubmitAction extends AbstractAction {
                 controller.fireDataChanged();
             }
         } catch (WalletLoadException e) {
+            message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
+                    new Object[] { newWalletFilename, e.getMessage() });
+            log.error(message);
+            MessageManager.INSTANCE.addMessage(new Message(message));
+        } catch (WalletSaveException e) {
             message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
                     new Object[] { newWalletFilename, e.getMessage() });
             log.error(message);

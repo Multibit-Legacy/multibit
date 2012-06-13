@@ -89,7 +89,6 @@ public class ExitAction extends AbstractAction {
 
         if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
             log.debug("Closing Bitcoin network connection...");
-            // controller.updateStatusLabel("Closing Bitcoin network connection...");
             @SuppressWarnings("rawtypes")
             SwingWorker worker = new SwingWorker() {
                 @Override

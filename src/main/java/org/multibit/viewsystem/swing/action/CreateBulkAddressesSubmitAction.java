@@ -78,25 +78,7 @@ public class CreateBulkAddressesSubmitAction extends AbstractAction {
                 String outputFilename = dataProvider.getOutputFilename();
                 int numberOfAddresses = dataProvider.getNumberOfAddresses();
 
-//                Item outputFilenameItem = data.getItem(MultiBitModel.MERCHANT_BULK_ADDRESSES_OUTPUT_FILENAME);
-//                if (outputFilenameItem != null && outputFilenameItem.getNewValue() != null) {
-//                    outputFilename = (String) outputFilenameItem.getNewValue();
-//                }
-//
-//                Item numberOfAddressesItem = data.getItem(MultiBitModel.MERCHANT_BULK_ADDRESSES_NUMBER_OF_ADDRESSES);
-//                if (numberOfAddressesItem != null && numberOfAddressesItem.getNewValue() != null) {
-//                    try {
-//                        numberOfAddresses = Integer.parseInt((String) numberOfAddressesItem.getNewValue());
-//                    } catch (NumberFormatException nfe) {
-//                        nfe.printStackTrace();
-//                    }
-//                }
-
                 WalletInfo walletInfo = perWalletModelData.getWalletInfo();
-                if (walletInfo == null) {
-                    walletInfo = new WalletInfo(perWalletModelData.getWalletFilename());
-                    perWalletModelData.setWalletInfo(walletInfo);
-                }
 
                 if (outputFilename != null && numberOfAddresses > 0) {
                     // write the bulk addresses

@@ -111,7 +111,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
 
             miningWallet.keychain.add(miningPrivateKey.getKey());
             PerWalletModelData perWalletModelData = new PerWalletModelData();
-            perWalletModelData.setWalletInfo(new WalletInfo(miningWalletPath));
+            perWalletModelData.setWalletInfo(new WalletInfo(miningWalletPath, WalletInfo.WALLET_VERSION_SERIALISED_TEXT));
             perWalletModelData.setWallet(miningWallet);
             perWalletModelData.setWalletFilename(miningWalletPath);
             perWalletModelData.setWalletDescription("testReplayMiningTransaction test");

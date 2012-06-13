@@ -28,7 +28,7 @@ import org.multibit.model.WalletInfo;
 import org.multibit.viewsystem.swing.view.AbstractTradePanel;
 
 /**
- * This {@link Action} represents an action to create a sending address
+ * This {@link Action} represents an action to create a sending address.
  */
 public class CreateNewSendingAddressAction extends AbstractAction {
 
@@ -52,22 +52,22 @@ public class CreateNewSendingAddressAction extends AbstractAction {
     }
 
     /**
-     * create new send address
+     * Create new send address.
      */
     public void actionPerformed(ActionEvent e) {
-        // check to see if the wallet files have changed
+        // Check to see if the wallet files have changed.
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
-            // set on the perWalletModelData that files have changed and fire
-            // data changed
+            // Set on the perWalletModelData that files have changed and fire
+            // data changed.
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
             controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
             WalletInfo walletInfo = perWalletModelData.getWalletInfo();
             if (walletInfo == null) {
-                walletInfo = new WalletInfo(perWalletModelData.getWalletFilename());
+                walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletInfo.WALLET_VERSION_PROTOBUF_TEXT);
                 perWalletModelData.setWalletInfo(walletInfo);
             }
 

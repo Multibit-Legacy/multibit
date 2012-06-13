@@ -1223,7 +1223,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
             WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
             if (walletInfo == null) {
-                walletInfo = new WalletInfo(controller.getModel().getActiveWalletFilename());
+                walletInfo = new WalletInfo(controller.getModel().getActiveWalletFilename(), WalletInfo.WALLET_VERSION_PROTOBUF_TEXT);
                 controller.getModel().setActiveWalletInfo(walletInfo);
             }
             address = WhitespaceTrimmer.trim(address);

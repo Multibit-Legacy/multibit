@@ -262,7 +262,7 @@ public class MultiBitService {
 
                 newWalletCreated = true;
             } else {
-                // create a brand new wallet
+                // create a brand new wallet - by default protobuf
                 wallet = new Wallet(networkParameters);
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
@@ -270,7 +270,7 @@ public class MultiBitService {
                 perWalletModelDataToReturn = controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
 
                 // create a wallet info
-                WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath());
+                WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath(), WalletInfo.WALLET_VERSION_PROTOBUF_TEXT);
                 perWalletModelDataToReturn.setWalletInfo(walletInfo);
 
                 // set a default description

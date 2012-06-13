@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2012 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,10 +39,10 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.Address;
 
 /**
- * wallet info is the companion info to the bitcoinj that multibit uses it
- * contains the sending and receiving addresses and the wallet version
+ * Wallet info is the companion info to the bitcoinj that multibit uses it
+ * contains the sending and receiving addresses and the wallet version.
  * 
- * it is stored in the same directory as the wallet and has the suffix ".info"
+ * It is stored in the same directory as the wallet and has the suffix ".info".
  * 
  * @author jim
  * 
@@ -54,14 +54,14 @@ public class WalletInfo {
     private static final String VALID_HEX_CHARACTERS = "01234567890abcdef";
 
     /**
-     * the total receiving addresses known - from the address book (will include
-     * keys that are in other wallets)
+     * The total receiving addresses known - from the address book (will include
+     * keys that are in other wallets).
      */
     private Set<AddressBookData> candidateReceivingAddresses;
 
     /**
-     * the actual receiving addresses exposed for this address book (only keys
-     * that occur in this wallet)
+     * The actual receiving addresses exposed for this address book (only keys
+     * that occur in this wallet).
      */
     private ArrayList<AddressBookData> receivingAddresses;
     private ArrayList<AddressBookData> sendingAddresses;
@@ -76,8 +76,8 @@ public class WalletInfo {
     private static final String INFO_VERSION_TEXT = "1";
 
     private static final String WALLET_VERSION_MARKER = "walletVersion";
-    private static final String WALLET_VERSION_SERIALISED_WALLET_TEXT = "1";
-    private static final String WALLET_VERSION_PROTOBUF_WALLET_TEXT = "2";
+    public static final String WALLET_VERSION_SERIALISED_TEXT = "1";
+    public static final String WALLET_VERSION_PROTOBUF_TEXT = "2";
 
     public static final String DESCRIPTION_PROPERTY = "walletDescription";
     public static final String SIZE_PROPERTY = "walletSize";
@@ -89,7 +89,7 @@ public class WalletInfo {
     private Properties walletPreferences;
     
     /**
-     * flag indicated that the wallet has been deleted and should not be used
+     * Flag indicated that the wallet has been deleted and should not be used.
      */
     private boolean deleted = false;
     
@@ -99,8 +99,9 @@ public class WalletInfo {
      * @param walletFilename
      *            the filename for the wallet this is the info for
      */
-    public WalletInfo(String walletFilename) {
+    public WalletInfo(String walletFilename, String walletVersion) {
         this.walletFilename = walletFilename;
+        this.walletVersion = walletVersion;
 
         candidateReceivingAddresses = new HashSet<AddressBookData>();
         receivingAddresses = new ArrayList<AddressBookData>();
@@ -121,7 +122,7 @@ public class WalletInfo {
     }
 
     /**
-     * put a String property into the walletinfo
+     * Put a String property into the walletinfo.
      * 
      * @param key
      * @param value
@@ -131,7 +132,7 @@ public class WalletInfo {
     }
 
     /**
-     * get a String property from the wallet info
+     * Get a String property from the wallet info.
      * 
      * @param key
      * @return
@@ -153,8 +154,8 @@ public class WalletInfo {
     }
 
     /**
-     * add a receiving address in the form of an AddressBookData, replacing the
-     * label of any existing address
+     * Add a receiving address in the form of an AddressBookData, replacing the
+     * label of any existing address.
      * 
      * @param receivingAddress
      * @param addToCandidates
@@ -189,9 +190,9 @@ public class WalletInfo {
     }
 
     /**
-     * add a receiving address that belongs to a key of the current wallet this
+     * Add a receiving address that belongs to a key of the current wallet this
      * will always be added and will take the label of any matching address in
-     * the list of candidate addresses from the address book
+     * the list of candidate addresses from the address book.
      * 
      * @param receivingAddress
      */
@@ -270,25 +271,19 @@ public class WalletInfo {
     }
 
     /**
-     * write out the wallet info to the file specified internally
-     */
-    public void writeToFile() {
-        writeToFile(createWalletInfoFilename(walletFilename));
-    }
-
-    /**
-     * write out the wallet info to the file specified as a parameter - a comma
-     * separated file format is used
+     * Write out the wallet info to the file specified as a parameter - a comma
+     * separated file format is used.
      * 
      * @param walletInfoFilename
      *            The full path of the wallet info file to write
+     * @param walletVersion The wallet version -one of WalletInfo.WALLET_VERSION_SERIALISED_TEXT or WalletInfo.WALLET_VERSION_PROTOBUF_TEXT
      * @throws WalletInfoException
      *             Exception if write is unsuccessful
      */
-    public void writeToFile(String walletInfoFilename) throws WalletInfoException {
+    public void writeToFile(String walletInfoFilename, String walletVersion) throws WalletInfoException {
+        BufferedWriter out = null;
         try {
-            // we write out the union of the candidate and actual receiving
-            // addresses
+            // We write out the union of the candidate and actual receiving addresses.
             HashMap<String, AddressBookData> allReceivingAddresses = new HashMap<String, AddressBookData>();
             if (candidateReceivingAddresses != null) {
                 for (AddressBookData addressBookData : candidateReceivingAddresses) {
@@ -301,14 +296,14 @@ public class WalletInfo {
                 }
             }
 
-            // Create file
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(walletInfoFilename), "UTF8"));
+            // Create file.
+            out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(walletInfoFilename), "UTF8"));
 
-            // write out the multibit addressbook identifier
+            // Write out the multibit addressbook identifier.
             out.write(INFO_MAGIC_TEXT + SEPARATOR + INFO_VERSION_TEXT + "\n");
 
-            // write out the wallet version
-            out.write(WALLET_VERSION_MARKER + SEPARATOR + WALLET_VERSION_SERIALISED_WALLET_TEXT + "\n");
+            // Write out the wallet version.
+            out.write(WALLET_VERSION_MARKER + SEPARATOR + walletVersion + "\n");
 
             Collection<AddressBookData> receiveAddressValues = allReceivingAddresses.values();
             for (AddressBookData addressBookData : receiveAddressValues) {
@@ -340,37 +335,44 @@ public class WalletInfo {
                 }
                 out.write(columnOne + SEPARATOR + columnTwo + SEPARATOR + encodedColumnThree + "\n");
             }
-
-            // Close the output stream
-            out.close();
         } catch (IOException ioe) {
             throw new WalletInfoException("Could not write walletinfo file for wallet '" + walletInfoFilename + "'", ioe);
+        } finally {
+            // Close the output stream.
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    throw new WalletInfoException("Could not close walletinfo file for wallet '" + walletInfoFilename + "'", e);
+                }
+            }
         }
     }
 
     /**
-     * Load the internally referenced wallet info file
+     * Load the internally referenced wallet info file.
      * 
      * @throws WalletInfoException
      *             Exception if read is unsuccessful
      */
     public void loadFromFile() throws WalletInfoException {
         String walletInfoFilename = null;
+        InputStream inputStream = null;
         try {
             walletPreferences = new Properties();
 
-            // Read in the wallet info data
+            // Read in the wallet info data.
             walletInfoFilename = createWalletInfoFilename(walletFilename);
             FileInputStream fileInputStream = new FileInputStream(walletInfoFilename);
-            // Get the object of DataInputStream
-            InputStream inputStream = new DataInputStream(fileInputStream);
+            // Get the object of DataInputStream.
+            inputStream = new DataInputStream(fileInputStream);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF8"));
             String inputLine;
 
-            // check the first line is what we expect
+            // Check the first line is what we expect.
             String firstLine = bufferedReader.readLine();
             if (firstLine == null) {
-                // this is not an multibit address book
+                // This is not an multibit address book.
                 throw new WalletInfoException("The file '" + walletInfoFilename + "' is not a valid wallet info file (empty line 1)");
             }
             StringTokenizer tokenizer = new StringTokenizer(firstLine, SEPARATOR);
@@ -379,35 +381,38 @@ public class WalletInfo {
                 String magicText = tokenizer.nextToken();
                 String versionNumber = tokenizer.nextToken();
                 if (!INFO_MAGIC_TEXT.equals(magicText) || !INFO_VERSION_TEXT.equals(versionNumber)) {
-                    // this is not an multibit address book
+                    // This is not an multibit address book.
                     throw new WalletInfoException("The file '" + walletInfoFilename + "' is not a valid wallet info file (wrong magic number on line 1)");
                 }
             } else {
-                // this is not an multibit address book
+                // This is not an multibit address book.
                 throw new WalletInfoException("The file '" + walletInfoFilename + "' is not a valid wallet info file (wrong number of tokens on line 1)");
             }
 
-            // read the wallet version
+            // Read the wallet version.
             String secondLine = bufferedReader.readLine();
             StringTokenizer walletVersionTokenizer = new StringTokenizer(secondLine, SEPARATOR);
             int walletVersionTokenNumber = walletVersionTokenizer.countTokens();
             if (walletVersionTokenNumber == 2) {
                 String walletVersionMarker = walletVersionTokenizer.nextToken();
                 String walletVersionString = walletVersionTokenizer.nextToken();
-                if (!WALLET_VERSION_MARKER.equals(walletVersionMarker) || !WALLET_VERSION_SERIALISED_WALLET_TEXT.equals(walletVersionString)) {
-                    // this refers to a version of the wallet we do not know
-                    // about
+                if (!WALLET_VERSION_MARKER.equals(walletVersionMarker) 
+                        || !(WALLET_VERSION_SERIALISED_TEXT.equals(walletVersionString) || WALLET_VERSION_PROTOBUF_TEXT.equals(walletVersionString))) {
+                    // This refers to a version of the wallet we do not know about.
 
                     throw new WalletInfoException("Cannot understand wallet version of '" + walletVersionMarker + "', '" + walletVersionString + "'" );
                 } else {
-                    walletVersion = walletVersionString;
+                    // The wallet version passed in the constructor is used rather than the value in the file
+                    if (!walletVersion.equals(walletVersionString)) {
+                        log.debug("The wallet version in the constructor was '" + walletVersion + "'. In the wallet info file it was '" + walletVersionString + "'. Using the former.");
+                    }
                 }
             } else {
-                // the format of the info format is wrong
+                // The format of the info format is wrong.
                 throw new WalletInfoException("Cannot understand wallet version text of '" + secondLine + "'");
             }
 
-            // read the addresses and general properties
+            // Read the addresses and general properties.
             boolean isMultilineColumnThree = false;
             String previousColumnOne = null;
             String previousColumnTwo = null;
@@ -418,7 +423,7 @@ public class WalletInfo {
                         || inputLine.startsWith(SEND_ADDRESS_MARKER + SEPARATOR)
                         || inputLine.startsWith(PROPERTY_MARKER + SEPARATOR)) {
                     if (isMultilineColumnThree) {
-                        // add previous multiline column three to model
+                        // Add previous multiline column three to model.
                         String decodedMultiLineColumnThreeValue = decodeURLString(multilineColumnThreeValue);
 
                         if (RECEIVE_ADDRESS_MARKER.equals(previousColumnOne)) {
@@ -470,15 +475,13 @@ public class WalletInfo {
                     previousColumnTwo = columnTwo;
                     multilineColumnThreeValue = columnThree;
                 } else {
-                    // this is a multiline column 3 (typically a multiline
-                    // label)
+                    // This is a multiline column 3 (typically a multiline label).
                     isMultilineColumnThree = true;
                     multilineColumnThreeValue = multilineColumnThreeValue + "\n" + inputLine;
                 }
             }
             if (isMultilineColumnThree) {
-                // add it to the model
-                // add previous multiline column three to model
+                // Add previous multiline column three to model.
                 String decodedMultiLineColumnThreeValue = decodeURLString(multilineColumnThreeValue);
                 if (RECEIVE_ADDRESS_MARKER.equals(previousColumnOne)) {
                     addReceivingAddress(new AddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo), false);
@@ -497,18 +500,24 @@ public class WalletInfo {
 
                 isMultilineColumnThree = false;
             }
-
-            // Close the input stream
-            inputStream.close();
         } catch (IllegalArgumentException iae) {
             throw new WalletInfoException("Could not load walletinfo file '" + walletInfoFilename + "'", iae);
         } catch (IOException ioe) {
             throw new WalletInfoException("Could not load walletinfo file '" + walletInfoFilename + "'", ioe);
+        } finally {
+            // Close the input stream
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    throw new WalletInfoException("Could not close walletinfo file '" + walletInfoFilename + "'", e);
+                }
+            }
         }
     }
 
     /**
-     * create wallet info filename
+     * Create wallet info filename.
      * 
      * @param walletFilename
      */
@@ -528,18 +537,8 @@ public class WalletInfo {
         return walletInfoFilename;
     }
 
-    public String getWalletVersion() {
-        return walletVersion;
-    }
-
-    public String getWalletFilename() {
-        return walletFilename;
-    }
-
     /**
-     * <p>
-     * Encode a string using URL encoding
-     * </p>
+     * Encode a string using URL encoding.
      * 
      * @param stringToEncode
      *            The string to URL encode
@@ -551,30 +550,26 @@ public class WalletInfo {
         try {
             return java.net.URLEncoder.encode(stringToEncode, "UTF-8").replace("+", ENCODED_SPACE_CHARACTER);
         } catch (UnsupportedEncodingException e) {
-            // should not happen - UTF-8 is a valid encoding
-            throw new RuntimeException(e);
+            // Should not happen - UTF-8 is a valid encoding.
+            throw new  WalletInfoException("Could not encode string '" + stringToEncode + "'", e);
         }
     }
     
     /**
-     * <p>
-     * Decode a string using URL encoding
-     * </p>
+     * Decode a string using URL encoding.
      * 
      * @param stringToDecode
      *            The string to URL decode
      */
     public static String decodeURLString(String stringToDecode) {
         try {
-            //System.out.println("decoding '" + stringToDecode + "'");
-            // earlier multibits did not encode the info file - check if encoded
+            // Earlier multibits did not encode the info file - check if encoded.
             boolean isEncoded = true;
             if (!stringToDecode.contains("%")) {
-                // not encoded
+                // Not encoded.
                 isEncoded = false;
             } else {
-               
-                // see if there is a % followed by non hex - not encoded
+                // See if there is a % followed by non hex - not encoded.
                 int percentPosition = stringToDecode.indexOf("%");
                 if (percentPosition > -1 ) {
                     int nextCharacterPosition = percentPosition + 1;
@@ -596,17 +591,15 @@ public class WalletInfo {
                 return stringToDecode;
             }
     
-            // if there are any spaces convert them to %20s
+            // If there are any spaces convert them to %20s.
             stringToDecode = stringToDecode.replace(ENCODED_SPACE_CHARACTER, "+");
             
             String decodedText = java.net.URLDecoder.decode(stringToDecode, "UTF-8");
-            
-            // remove initial prefix character
             return decodedText;
         } catch (UnsupportedEncodingException e) {
-            // should not happen - UTF-8 is a valid encoding
-            throw new RuntimeException(e);
-        }
+            // Should not happen - UTF-8 is a valid encoding.
+            throw new  WalletInfoException("Could not decode string '" + stringToDecode + "'", e);
+         }
     }
 
     public boolean isDeleted() {
@@ -615,5 +608,13 @@ public class WalletInfo {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public String getWalletFilename() {
+        return walletFilename;
+    }
+
+    public String getWalletVersion() {
+        return walletVersion;
     }
 }

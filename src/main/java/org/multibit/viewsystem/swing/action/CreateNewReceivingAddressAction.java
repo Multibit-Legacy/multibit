@@ -30,7 +30,7 @@ import org.multibit.viewsystem.swing.view.AbstractTradePanel;
 import com.google.bitcoin.core.ECKey;
 
 /**
- * This {@link Action} represents an action to create a receiving address
+ * This {@link Action} represents an action to create a receiving address.
  */
 public class CreateNewReceivingAddressAction extends AbstractAction {
 
@@ -54,10 +54,10 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
     }
 
     /**
-     * create new receiving address
+     * Create new receiving address.
      */
     public void actionPerformed(ActionEvent e) {
-        // check to see if the wallet files have changed
+        // Check to see if the wallet files have changed.
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
@@ -72,7 +72,7 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
             String addressString = newKey.toAddress(controller.getMultiBitService().getNetworkParameters()).toString();
             WalletInfo walletInfo = perWalletModelData.getWalletInfo();
             if (walletInfo == null) {
-                walletInfo = new WalletInfo(perWalletModelData.getWalletFilename());
+                walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletInfo.WALLET_VERSION_PROTOBUF_TEXT);
                 perWalletModelData.setWalletInfo(walletInfo);
             }
             walletInfo.addReceivingAddress(new AddressBookData("", addressString), false);
