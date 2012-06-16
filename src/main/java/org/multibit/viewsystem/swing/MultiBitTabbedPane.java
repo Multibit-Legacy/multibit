@@ -46,6 +46,24 @@ public class MultiBitTabbedPane extends JTabbedPane {
         closeButtonSize = new Dimension(closeTabIcon.getIconWidth() + 2, closeTabIcon.getIconHeight() + 2);
 
     }
+    
+// This code might get rid of the 'tab flicker' but it does not work yet.
+//    public void setSelectedIndex(int index) {
+//        super.setSelectedIndex(index);
+//        
+//        // Get current tab
+//        JPanel tabComponent = (JPanel) getComponentAt(index);
+//        if (tabComponent != null) {
+//            Component[] childComponents = tabComponent.getComponents();
+//            View selectedView = null;
+//            if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
+//                selectedView = ((View) childComponents[0]);
+//                controller.setCurrentView(selectedView.getViewId());
+//                controller.displayView(selectedView.getViewId());
+//                controller.fireDataChanged();
+//            }
+//        }
+//    }
 
     public void addChangeListener() {
         // Register a change listener

@@ -61,7 +61,10 @@ public class HelpContentsPanel extends JPanel implements View {
     public HelpContentsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
-        this.helpContext = "help_contents.html";
+        helpContext = mainFrame.getHelpContext();
+        if (helpContext == null || "".equals(helpContext)) {
+            helpContext = "help_contents.html";
+        }
         
         setLayout(new BorderLayout());
         firstTimeLoaded = true;

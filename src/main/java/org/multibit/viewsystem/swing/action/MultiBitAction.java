@@ -43,7 +43,7 @@ public class MultiBitAction extends AbstractAction {
      * @param viewToDisplay The view to display on action activation.  One of the View constants
      */
     public MultiBitAction(MultiBitController controller, String imagePath, String textKey, String tooltipKey, String mnemonicKey, int viewToDisplay) {
-        super(controller.getLocaliser().getString(textKey), ImageLoader.createImageIcon(imagePath));
+        super(textKey == null ? "" : controller.getLocaliser().getString(textKey), ImageLoader.createImageIcon(imagePath));
         this.controller = controller;
         this.viewToDisplay = viewToDisplay;
 

@@ -173,7 +173,7 @@ public class StatusBar extends JPanel implements MessageListener {
         statusLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         statusLabel.setOpaque(true);
         // show messages action
-        MultiBitAction showMessagesAction = new MultiBitAction(controller, null, "messagesPanel.text",
+        MultiBitAction showMessagesAction = new MultiBitAction(controller, null, null,
                 "messagesPanel.title", "messagesPanel.mnemonic", org.multibit.viewsystem.View.MESSAGES_VIEW);
         statusLabel.setAction(showMessagesAction);
         statusLabel.setHorizontalAlignment(JButton.LEADING);
@@ -299,13 +299,16 @@ public class StatusBar extends JPanel implements MessageListener {
         }
     }
 
-    private void updateStatusLabel(String newStatusLabel, Boolean clearAutomatically) {
+    private void updateStatusLabel(final String newStatusLabel, Boolean clearAutomatically) {
+        if ("Messages".equals(newStatusLabel)) {
+            boolean ping1 = false;
+            ping1 = !ping1;
+        }
         StatusBar.clearAutomatically = clearAutomatically;
-        final String finalNewStatusLabel = newStatusLabel;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 if (statusLabel != null) {
-                    statusLabel.setText(finalNewStatusLabel);
+                    statusLabel.setText(newStatusLabel);
                 }
             }
         });
