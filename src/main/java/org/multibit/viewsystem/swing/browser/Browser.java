@@ -111,10 +111,11 @@ public class Browser extends javax.swing.JEditorPane {
             }
            return true; // Return success.
         } catch (IOException ex) { 
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             Message message = new Message("Cannot load page: " + ex.getMessage(), true);
             MessageManager.INSTANCE.addMessage(message);
             return false; // Return failure.
+        } finally {
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));            
         }
     }
     
@@ -158,23 +159,25 @@ public class Browser extends javax.swing.JEditorPane {
                 Boolean wasSuccessful = false;
                 try {
                     wasSuccessful = get();
+                    
+                    if (wasSuccessful) {
+                        browser.setText(sb.toString());
+                        // Scroll to top.
+                        browser.setCaretPosition(0);
+                        MessageManager.INSTANCE.addMessage(new Message(" "));
+                    } else {
+                        MessageManager.INSTANCE.addMessage(new Message(message));
+                    } 
+                    
                 } catch (InterruptedException e) {
                     message = e.getClass().getCanonicalName() + " " + e.getMessage();
                     e.printStackTrace();
                 } catch (ExecutionException e) {
                     message = e.getClass().getCanonicalName() + " " + e.getMessage();
                                                e.printStackTrace();
+                } finally {
+                    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 }
-                    
-                if (wasSuccessful) {
-                    browser.setText(sb.toString());
-                    // Scroll to top.
-                    browser.setCaretPosition(0);
-                    MessageManager.INSTANCE.addMessage(new Message(" "));
-                } else {
-                    MessageManager.INSTANCE.addMessage(new Message(message));
-                } 
-                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         };
         worker.execute();

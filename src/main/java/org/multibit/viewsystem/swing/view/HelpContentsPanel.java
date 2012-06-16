@@ -116,12 +116,13 @@ public class HelpContentsPanel extends JPanel implements View {
     @Override
     public void displayView() {
         helpContext = mainFrame.getHelpContext();
+        if (helpContext == null || "".equals(helpContext)) {
+            helpContext = "help_contents.html";
+        }
         
         if (!firstTimeLoaded) {
             if (browser != null) {
-                if (helpContext != null && !helpContext.equals("")) {
-                     browser.visit(HELP_BASE_URL + helpContext);
-                }
+                 browser.visit(HELP_BASE_URL + helpContext);
             }
         }
         firstTimeLoaded = false;

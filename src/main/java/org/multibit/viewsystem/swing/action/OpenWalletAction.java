@@ -154,21 +154,22 @@ public class OpenWalletAction extends AbstractAction {
                     Boolean wasSuccessful = get();
                     if (wasSuccessful) {
                         log.debug(message);
-                        System.out.println("OpenWalletAction#ping 1");
                         MessageManager.INSTANCE.addMessage(new Message(message));  
-                        System.out.println("OpenWalletAction#ping 2");
                         controller.fireRecreateAllViews(false);
-                        System.out.println("OpenWalletAction#ping 3");
                         controller.fireDataChanged();
                     } else {
                         log.error(message);
-                        System.out.println("OpenWalletAction#ping 4");
                         MessageManager.INSTANCE.addMessage(new Message(message));
                     }
                 } catch (Exception e) {
                     // not really used but caught so that SwingWorker shuts down cleanly
                     log.error(e.getClass() + " " + e.getMessage());
-                }         
+                } finally {
+                    setEnabled(true);
+                    if (mainFrame != null) {
+                        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    }
+                }
             }
         };
         log.debug("Executing open of wallet '" + selectedWalletFilenameFinal + "' in background swing worker");
