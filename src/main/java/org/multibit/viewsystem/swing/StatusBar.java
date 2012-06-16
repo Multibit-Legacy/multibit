@@ -172,6 +172,9 @@ public class StatusBar extends JPanel implements MessageListener {
         statusLabel = new MultiBitButton("");
         statusLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         statusLabel.setOpaque(true);
+        statusLabel.setBorderPainted(false);
+        statusLabel.setContentAreaFilled(false);
+
         // show messages action
         MultiBitAction showMessagesAction = new MultiBitAction(controller, null, null,
                 "messagesPanel.title", "messagesPanel.mnemonic", org.multibit.viewsystem.View.MESSAGES_VIEW);

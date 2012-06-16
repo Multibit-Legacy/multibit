@@ -43,6 +43,8 @@ public class Browser extends javax.swing.JEditorPane {
     
     private boolean loading = false;
     
+    private boolean loadedOkAtConstruction;
+    
     private MultiBitFrame mainFrame;
     
     public Browser(MultiBitController controller, MultiBitFrame mainFrame, String currentHref) {
@@ -51,6 +53,8 @@ public class Browser extends javax.swing.JEditorPane {
         this.currentHref = currentHref;
         this.mainFrame = mainFrame;
 
+        loadedOkAtConstruction = false;
+        
         addHyperlinkListener(new ActivatedHyperlinkListener(mainFrame, this, currentHref));
 
         loadingMessage = controller.getLocaliser().getString("browser.loadingMessage");
@@ -82,11 +86,15 @@ public class Browser extends javax.swing.JEditorPane {
         setDocument(doc);
         try {
             setPage(new URL(currentHref));
+            loadedOkAtConstruction = true;
         } catch (MalformedURLException e) {
             MessageManager.INSTANCE.addMessage(new Message(e.getClass().getCanonicalName() + " " + e.getMessage()));         
         } catch (IOException e) {
             MessageManager.INSTANCE.addMessage(new Message(e.getClass().getCanonicalName() + " " + e.getMessage()));         
-        }
+        } catch (Exception ex) { 
+            Message message = new Message("Cannot load page: " + currentHref + " " + ex.getMessage(), true);
+            MessageManager.INSTANCE.addMessage(message);
+        } 
     }
 
     public static String getLoadingMessage(String href, String loadingMessage) {
@@ -106,8 +114,12 @@ public class Browser extends javax.swing.JEditorPane {
                 getUrlContentInBackground(this, new URL(newHref));
                 currentHref = newHref;
                 
-                // Clear any mainFrame helpContext.
-                mainFrame.setHelpContext("");
+                // Remember the new helpContext.
+                int index = newHref.indexOf(HelpContentsPanel.HELP_BASE_URL);
+                if (index > -1) {
+                    String helpContext = newHref.substring(index + HelpContentsPanel.HELP_BASE_URL.length());
+                    mainFrame.setHelpContext(helpContext);
+                }
             }
            return true; // Return success.
         } catch (IOException ex) { 
@@ -146,12 +158,12 @@ public class Browser extends javax.swing.JEditorPane {
                             sb.append((char)buffer[i]);
                         }
                     }
-                    browser.setLoading(false);
                     return true;
                 } catch (IOException ioe) {
                     message = ioe.getClass().getCanonicalName() + " " + ioe.getMessage();
-                    browser.setLoading(false);
                     return false;
+                } finally {
+                    browser.setLoading(false);                    
                 }
             }
             
@@ -189,5 +201,9 @@ public class Browser extends javax.swing.JEditorPane {
 
     public boolean isLoading() {
         return loading;
+    }
+
+    public boolean wasLoadedOkAtConstruction() {
+        return loadedOkAtConstruction;
     }
 }

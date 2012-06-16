@@ -120,9 +120,9 @@ public class HelpContentsPanel extends JPanel implements View {
             helpContext = "help_contents.html";
         }
         
-        if (!firstTimeLoaded) {
-            if (browser != null) {
-                 browser.visit(HELP_BASE_URL + helpContext);
+        if (browser != null) {
+            if (!firstTimeLoaded || (firstTimeLoaded && !browser.wasLoadedOkAtConstruction())) {
+                  browser.visit(HELP_BASE_URL + helpContext);
             }
         }
         firstTimeLoaded = false;

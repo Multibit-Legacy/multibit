@@ -225,8 +225,6 @@ public class MultiBit {
                         Message message = new Message(controller.getLocaliser().getString("multiBit.openingWallet",
                                 new Object[] { loopWalletFilename }));
                         MessageManager.INSTANCE.addMessage(message);
-                        // controller.updateStatusLabel(controller.getLocaliser().getString("multiBit.openingWallet",
-                        //         new Object[] { loopWalletFilename }));
                         try {
                             if (activeWalletFilename != null && activeWalletFilename.equals(loopWalletFilename)) {
                                 controller.addWalletFromFilename(loopWalletFilename);
@@ -238,20 +236,13 @@ public class MultiBit {
                                     new Object[] { loopWalletFilename })));
                         } catch (WalletLoadException e) {
                             message = new Message( controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                                    new Object[] { activeWalletFilename, e.getMessage() }));
+                                    new Object[] { loopWalletFilename, e.getMessage() }));
                             MessageManager.INSTANCE.addMessage(message);
-
-                            //String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                            //        new Object[] { activeWalletFilename, e.getMessage() });
-                            //controller.updateStatusLabel(message);
                             log.error(message.getText());
                         } catch (IOException e) {
                             message = new Message( controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                                    new Object[] { activeWalletFilename, e.getMessage() }));
+                                    new Object[] { loopWalletFilename, e.getMessage() }));
                             MessageManager.INSTANCE.addMessage(message);
-                            //String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                            //        new Object[] { activeWalletFilename, e.getMessage() });
-                            //controller.updateStatusLabel(message);
                             log.error(message.getText());
                         }
                     }
