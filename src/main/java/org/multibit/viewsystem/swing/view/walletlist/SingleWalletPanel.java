@@ -31,8 +31,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -47,8 +49,12 @@ import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.action.HelpContextAction;
+import org.multibit.viewsystem.swing.view.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.HelpButton;
+import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 
@@ -75,6 +81,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private static Color inactiveBackGroundColor;
     private Border underlineBorder;
+    private Border overlineBorder;
     private MultiBitTextField walletDescriptionTextField;
     private Border walletDescriptionTextFieldBorder;
 
@@ -440,6 +447,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
      */
     private JPanel createWalletDetailPanel() {
         underlineBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.WHITE);
+        overlineBorder = BorderFactory.createMatteBorder(1, 0, 0, 0, Color.WHITE);
 
         roundedBottomPanel = new RoundedBottomPanel(controller.getLocaliser().getLocale());
         roundedBottomPanel.setOpaque(true);
@@ -493,6 +501,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             String walletFilenameShort = walletFilenameFull.replaceAll("\\.wallet", "");
             walletFilenameLabel.setText(walletFilenameShort);
             walletFilenameLabel.setToolTipText(walletFilename);
+            filenameSeparator.setToolTipText(walletFilename);
+            filenameLabel.setToolTipText(walletFilename);
         }
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -504,83 +514,106 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.LINE_START;
         innerDetailPanel.add(walletFilenameLabel, constraints);
 
-        MultiBitLabel sendLabelLabel = new MultiBitLabel("");
-        sendLabelLabel.setText(controller.getLocaliser().getString("singleWalletPanel.type"));
-        sendLabelLabel.setBorder(underlineBorder);
-        sendLabelLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        innerDetailPanel.add(sendLabelLabel, constraints);
-
-        JLabel filler2 = new JLabel();
-        filler2.setOpaque(false);
-        filler2.setBorder(underlineBorder);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 1;
-        constraints.weightx = 0.1;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        innerDetailPanel.add(filler2, constraints);
-
-        MultiBitLabel sendLabelText = new MultiBitLabel("");
-        sendLabelText.setText(controller.getLocaliser().getString("singleWalletPanel.unencrypted"));
-        sendLabelText.setBorder(underlineBorder);
-
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 2;
-        constraints.gridy = 1;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        innerDetailPanel.add(sendLabelText, constraints);
-
-        MultiBitLabel sendLabelLabel2 = new MultiBitLabel("");
-        String versionString = WhitespaceTrimmer.trim(controller.getLocaliser().getString("helpAboutAction.versionText", new Object[]{""}));
-        sendLabelLabel2.setText(versionString);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        innerDetailPanel.add(sendLabelLabel2, constraints);
-
-        JLabel filler3 = new JLabel();
-        filler3.setOpaque(false);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 2;
-        constraints.weightx = 0.1;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        innerDetailPanel.add(filler3, constraints);
-
-        MultiBitLabel sendLabelText2 = new MultiBitLabel("");
         WalletVersion walletVersion = perWalletModelData.getWalletInfo().getWalletVersion();
-        sendLabelText2.setText(walletVersion + " (" + controller.getLocaliser().getString(walletVersion.getLocalisationKey()) + ")");
+        
+        Action walletFormatHelpAction = new HelpContextAction(controller, null, walletVersion.getLocalisationKey(),
+                walletVersion.getLocalisationKey(), walletVersion.getLocalisationKey(), HelpContentsPanel.HELP_WALLET_FORMATS_URL);
+
+        MultiBitButton walletFormatLabel = new HelpButton(walletFormatHelpAction, controller);
+        walletFormatLabel.setText(controller.getLocaliser().getString("singleWalletPanel.walletFormat.text"));
+        walletFormatLabel.setBorder(BorderFactory.createEmptyBorder());
+        walletFormatLabel.setContentAreaFilled(false);
+        walletFormatLabel.setHorizontalAlignment(SwingConstants.LEADING);
+        walletFormatLabel.setHorizontalTextPosition(SwingConstants.LEADING);
 
         constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        innerDetailPanel.add(walletFormatLabel, constraints);
+
+        MultiBitButton walletFormatFiller = new HelpButton(walletFormatHelpAction, controller);
+        walletFormatFiller.setText("");
+        walletFormatFiller.setBorder(BorderFactory.createEmptyBorder());
+        walletFormatFiller.setContentAreaFilled(false);
+        walletFormatFiller.setHorizontalAlignment(SwingConstants.LEADING);
+        walletFormatFiller.setHorizontalTextPosition(SwingConstants.LEADING);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        innerDetailPanel.add(walletFormatFiller, constraints);
+
+        MultiBitButton walletFormatButton = new HelpButton(walletFormatHelpAction, controller);
+        walletFormatButton.setText(controller.getLocaliser().getString(walletVersion.getLocalisationKey()));
+        walletFormatButton.setBorder(BorderFactory.createEmptyBorder());
+        walletFormatButton.setContentAreaFilled(false);
+        walletFormatButton.setHorizontalAlignment(SwingConstants.LEADING);
+        walletFormatButton.setHorizontalTextPosition(SwingConstants.LEADING);
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 2;
+        constraints.gridy = 1;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        innerDetailPanel.add(walletFormatButton, constraints);
+
+        String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] {
+                controller.getLocaliser().getString("singleWalletPanel.walletFormat.tooltip"), "\n",
+                controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip") });
+        walletFormatButton.setToolTipText(tooltipText);
+        walletFormatFiller.setToolTipText(tooltipText);
+        walletFormatLabel.setToolTipText(tooltipText);
+
+        MultiBitLabel walletTypeLabel = new MultiBitLabel("");
+        walletTypeLabel.setText(controller.getLocaliser().getString("singleWalletPanel.type"));
+        walletTypeLabel.setBorder(overlineBorder);
+        walletTypeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        innerDetailPanel.add(walletTypeLabel, constraints);
+
+        JLabel walletTypeFiller = new JLabel("");
+        walletTypeFiller.setOpaque(false);
+        walletTypeFiller.setText("");
+        walletTypeFiller.setBorder(overlineBorder);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 2;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        innerDetailPanel.add(walletTypeFiller, constraints);
+
+        MultiBitLabel walletTypeText = new MultiBitLabel("");
+        walletTypeText.setText(controller.getLocaliser().getString("singleWalletPanel.unencrypted"));
+        walletTypeText.setBorder(overlineBorder);
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
         constraints.gridy = 2;
         constraints.weightx = 0.3;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        innerDetailPanel.add(sendLabelText2, constraints);
+        innerDetailPanel.add(walletTypeText, constraints);
 
         JLabel filler4 = new JLabel();
         filler4.setOpaque(false);

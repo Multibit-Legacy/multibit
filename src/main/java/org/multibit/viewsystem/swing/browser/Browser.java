@@ -54,7 +54,8 @@ public class Browser extends javax.swing.JEditorPane {
         this.mainFrame = mainFrame;
 
         loadedOkAtConstruction = false;
-        
+
+        try {
         addHyperlinkListener(new ActivatedHyperlinkListener(mainFrame, this, currentHref));
 
         loadingMessage = controller.getLocaliser().getString("browser.loadingMessage");
@@ -84,7 +85,7 @@ public class Browser extends javax.swing.JEditorPane {
         styleSheet.addRule("body {font-size:" + fontSize + "pt; font-family:" + fontName + ";}");
         Document doc = kit.createDefaultDocument();
         setDocument(doc);
-        try {
+
             setPage(new URL(currentHref));
             loadedOkAtConstruction = true;
         } catch (MalformedURLException e) {
@@ -94,7 +95,9 @@ public class Browser extends javax.swing.JEditorPane {
         } catch (Exception ex) { 
             Message message = new Message("Cannot load page: " + currentHref + " " + ex.getMessage(), true);
             MessageManager.INSTANCE.addMessage(message);
-        } 
+        } finally {
+            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        }
     }
 
     public static String getLoadingMessage(String href, String loadingMessage) {
