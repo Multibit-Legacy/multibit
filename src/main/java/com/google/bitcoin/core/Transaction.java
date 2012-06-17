@@ -111,6 +111,10 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      */
     public Transaction(NetworkParameters params, byte[] payloadBytes) throws ProtocolException {
         super(params, payloadBytes, 0);
+        
+        if (updatedAt == null || updatedAt.getTime() == 0) {
+            updatedAt = new Date();
+        }
     }
 
     /**
@@ -119,6 +123,10 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     public Transaction(NetworkParameters params, byte[] payload, int offset) throws ProtocolException {
         super(params, payload, offset);
         // inputs/outputs will be created in parse()
+        
+        if (updatedAt == null || updatedAt.getTime() == 0) {
+            updatedAt = new Date();
+        }
     }
 
     /**
@@ -137,6 +145,10 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     public Transaction(NetworkParameters params, byte[] msg, int offset, Message parent, boolean parseLazy, boolean parseRetain, int length)
             throws ProtocolException {
         super(params, msg, offset, parent, parseLazy, parseRetain, length);
+        
+        if (updatedAt == null || updatedAt.getTime() == 0) {
+            updatedAt = new Date();
+        }
     }
 
     /**
@@ -145,6 +157,10 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     public Transaction(NetworkParameters params, byte[] msg, Message parent, boolean parseLazy, boolean parseRetain, int length)
             throws ProtocolException {
         super(params, msg, 0, parent, parseLazy, parseRetain, length);
+        
+        if (updatedAt == null || updatedAt.getTime() == 0) {
+            updatedAt = new Date();
+        }
     }
 
     /**

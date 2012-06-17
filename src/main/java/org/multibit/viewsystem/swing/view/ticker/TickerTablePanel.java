@@ -95,7 +95,7 @@ public class TickerTablePanel extends JPanel {
         setFocusable(false);
 
         setToolTipText(HelpContentsPanel.createMultilineTooltipText(new String[] {
-                controller.getLocaliser().getString("tickerTablePanel.tooltip"),
+                controller.getLocaliser().getString("tickerTablePanel.tooltip"), "\n ",
                 controller.getLocaliser().getString("tickerTablePanel.tooltip.clickToConfigure") }));
 
         // on mouse click - view the exchanges tab
@@ -107,7 +107,7 @@ public class TickerTablePanel extends JPanel {
         };
 
         String tickerTooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] {
-                controller.getLocaliser().getString("tickerTablePanel.tooltip"),
+                controller.getLocaliser().getString("tickerTablePanel.tooltip"), "\n ",
                 controller.getLocaliser().getString("tickerTablePanel.tooltip.clickToConfigure") });
 
         addMouseListener(viewPreferencesMouseListener);
