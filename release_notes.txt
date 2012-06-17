@@ -1,11 +1,12 @@
 MultiBit release notes.
 
-18 Jun 2012 Version 0.4
+18 Jun 2012 Version 0.4.0
 Enhancements:
 +  Introduction of protobuf format for new wallets
 +  Upgrade to bitcoinj v0.5.1 library
 +  Upgrade to XChange v1.01 library
 +  Added Message window
++  Minor UI improvements to help browser
 
 
 26 Apr 2012 Version 0.3.4
