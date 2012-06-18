@@ -629,20 +629,24 @@ public class Wallet implements Serializable, IsMultiBitClass {
         if (!tx.getValueSentToMe(this).equals(BigInteger.ZERO)) {
             // It's sending us coins.
             log.info("  new tx ->unspent");
-            boolean alreadyPresent = unspent.put(tx.getHash(), tx) != null;
-            checkState(!alreadyPresent, "TX was received twice");
+            unspent.put(tx.getHash(), tx);
+            
+            // You can receive a tx twice in a replay so commented out this check.
+            //checkState(!alreadyPresent, "TX was received twice");
         } else if (!tx.getValueSentFromMe(this).equals(BigInteger.ZERO)) {
             // It spent some of our coins and did not send us any.
             log.info("  new tx ->spent");
-            boolean alreadyPresent = spent.put(tx.getHash(), tx) != null;
-            checkState(!alreadyPresent, "TX was received twice");
+            spent.put(tx.getHash(), tx);
+            // You can receive a tx twice in a replay so commented out this check.
+            //checkState(!alreadyPresent, "TX was received twice");
         } else if (tx.isMine(this)) {
-            // a transaction that does not spend or send us coins but is ours none the less
+            // A transaction that does not spend or send us coins but is ours none the less
             // this can occur when a transaction is sent from outputs in our wallet to
-            // an address in the wallet - it burns a fee but is valid
+            // an address in the wallet - it burns a fee but is valid.
             log.info(" new tx -> spent (transfer within wallet - simply burns fee)");
-            boolean alreadyPresent = spent.put(tx.getHash(), tx) != null;
-            assert !alreadyPresent : "TX was received twice (transfer within wallet - simply burns fee";
+            spent.put(tx.getHash(), tx);
+            // You can receive a tx twice in a replay so commented out this check.
+            //assert !alreadyPresent : "TX was received twice (transfer within wallet - simply burns fee";
             invokeOnTransactionConfidenceChanged(tx);
         } else {
             // It didn't send us coins nor spend any of our coins. If we're processing it, that must be because it
