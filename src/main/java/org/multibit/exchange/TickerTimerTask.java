@@ -38,7 +38,7 @@ import com.xeiam.xchange.service.marketdata.polling.PollingMarketDataService;
  */
 public class TickerTimerTask extends TimerTask {
 
-    public static final int DEFAULT_REPEAT_RATE = 20000; // milliseconds
+    public static final int DEFAULT_REPEAT_RATE = 60000; // milliseconds
 
     private static Logger log = LoggerFactory.getLogger(TickerTimerTask.class);
 
@@ -142,6 +142,9 @@ public class TickerTimerTask extends TimerTask {
         } catch (Exception e) {
             // stop any xchange errors percolating out
             log.error(e.getClass().getName() + " " + e.getMessage());
+            if (e.getCause() != null)  {
+                log.error(e.getCause().getClass().getName() + " " + e.getCause().getMessage());                
+            }
         }
     }
 }
