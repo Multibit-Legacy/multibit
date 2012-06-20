@@ -29,7 +29,7 @@ import javax.swing.JFrame;
  * @author jim
  *
  */
-abstract public class MultiBitDialog extends JDialog {
+public class MultiBitDialog extends JDialog {
     private static final long serialVersionUID = -917160539607329862L;
 
     protected JFrame mainFrame;
@@ -50,7 +50,7 @@ abstract public class MultiBitDialog extends JDialog {
      * @param verticalPercent
      *            the relative location.
      */
-    protected void positionDialogRelativeToParent(final JDialog dialog,
+    public void positionDialogRelativeToParent(final JDialog dialog,
             final double horizontalPercent, final double verticalPercent) {
         final Dimension d = dialog.getSize();
         final Dimension p = mainFrame.getSize();

@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OpenWalletAction extends AbstractAction {
 
-    public Logger log = LoggerFactory.getLogger(MultiBitFrame.class.getName());
+    public Logger log = LoggerFactory.getLogger(OpenWalletAction.class.getName());
 
     private static final long serialVersionUID = 1913592460523457705L;
 

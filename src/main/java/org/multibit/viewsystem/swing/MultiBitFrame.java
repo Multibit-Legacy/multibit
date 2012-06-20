@@ -65,6 +65,7 @@ import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
+import org.multibit.viewsystem.swing.action.MigrateWalletsAction;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
@@ -734,6 +735,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 "resetTransactionsAction.text", "resetTransactionsAction.tooltip", "resetTransactionsAction.mnemonic",
                 View.RESET_TRANSACTIONS_VIEW);
         menuItem = new JMenuItem(resetTransactionsAction);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        toolsMenu.add(menuItem);
+
+
+        MigrateWalletsAction migrateWalletsAction = new MigrateWalletsAction(controller, thisFrame);
+        menuItem = new JMenuItem(migrateWalletsAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
         toolsMenu.add(menuItem);
