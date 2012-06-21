@@ -25,19 +25,14 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
@@ -45,23 +40,16 @@ import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.HelpContentsPanel;
-import org.multibit.viewsystem.swing.view.WalletFileFilter;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Wallet;
 
 /**
  * This {@link Action} migrates wallets from serialised to protobuf formats
@@ -116,6 +104,8 @@ public class MigrateWalletsAction extends AbstractAction {
             if ((new Integer(JOptionPane.CANCEL_OPTION)).equals(value)) {
                 controller.displayHelpContext(HelpContentsPanel.HELP_WALLET_FORMATS_URL);
                 return;
+            } else if ((new Integer(JOptionPane.CLOSED_OPTION)).equals(value)) {
+                return;
             } else {
                 boolean thereWereFailures = false;
                 
@@ -130,7 +120,7 @@ public class MigrateWalletsAction extends AbstractAction {
                 for (String walletFilename : walletFilenamesToMigrate) {
                     PerWalletModelData loopPerWalletModelData = controller.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
                     
-                    if (WalletVersion.SERIALIZED == loopPerWalletModelData.getWalletInfo().getWalletVersion()) {
+                    if (loopPerWalletModelData != null && WalletVersion.SERIALIZED == loopPerWalletModelData.getWalletInfo().getWalletVersion()) {
                         MessageManager.INSTANCE.addMessage(new Message(" "));
                         MessageManager.INSTANCE.addMessage(new Message("Wallet '"+ loopPerWalletModelData.getWalletDescription() + "' is serialised - needs migrating."));
 
@@ -146,45 +136,33 @@ public class MigrateWalletsAction extends AbstractAction {
                             // Copy the serialised wallet to the new test wallet location.
                             FileHandler.copyFile(new File(loopPerWalletModelData.getWalletFilename()), testWalletFile);
 
-                            // Load the newly copied test serialised file.
-                            testPerWalletModelData = fileHandler.loadFromFile(testWalletFile);
+                            // Load serialised, change to protobuf, save, reload, check.
+                            walletOkToMigrate = convertToProtobufAndCheck(testWalletFile, fileHandler);
                             
-                            // Change test wallet to protobuf.
-                            testPerWalletModelData.getWalletInfo().setWalletVersion(WalletVersion.PROTOBUF);
-                            
-                            // Try to save it. This should save it in protobuf format
-                            fileHandler.savePerWalletModelData(testPerWalletModelData, true);
-                            
-                            // Load the newly saved test protobuf wallet.
-                            PerWalletModelData newTestProtobuf = fileHandler.loadFromFile(testWalletFile);
-                            
-                            // Check the original and test new wallets are the same
-                            if (WalletVersion.PROTOBUF != newTestProtobuf.getWalletInfo().getWalletVersion()) {
-                                // Did not save/ load as protobuf.
-                                MessageManager.INSTANCE.addMessage(new Message("Test wallet migration was not successful. Leaving wallet as 'serialised'."));
+                            // Did not save/ load as protobuf.
+                            if (!walletOkToMigrate) {
                                 thereWereFailures = true;
-                            } else {
-                                walletOkToMigrate = false;
+                                MessageManager.INSTANCE.addMessage(new Message("Test wallet migration was not successful. Leaving wallet as 'serialised'."));
                             }
                         } catch (IOException e1) {
                             e1.printStackTrace();
-                            MessageManager.INSTANCE.addMessage(new Message("Test wallet migration was not successful. Leaving wallet as 'serialised'. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
+                            MessageManager.INSTANCE.addMessage(new Message("Test wallet migration was not successful. Leaving wallet as serialised. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
                             thereWereFailures = true;
                         } catch (WalletLoadException e1) {
                             e1.printStackTrace();
-                            MessageManager.INSTANCE.addMessage(new Message("Test wallet migration was not successful. Leaving wallet as 'serialised'. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
+                            MessageManager.INSTANCE.addMessage(new Message("Test wallet migration was not successful. Leaving wallet as serialised. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
                             thereWereFailures = true;
                         } catch (WalletSaveException e1) {
                             e1.printStackTrace();
-                            MessageManager.INSTANCE.addMessage(new Message("Test wallet migration was not successful. Leaving wallet as 'serialised'. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
+                            MessageManager.INSTANCE.addMessage(new Message("Test wallet migration was not successful. Leaving wallet as serialised. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
                             thereWereFailures = true;
                         } catch (IllegalStateException e1) {
                             e1.printStackTrace();
-                            MessageManager.INSTANCE.addMessage(new Message("Test wallet migration was not successful. Leaving wallet as 'serialised'. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
+                            MessageManager.INSTANCE.addMessage(new Message("Test wallet migration was not successful. Leaving wallet as serialised. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
                             thereWereFailures = true;
                         } catch (Exception e1) {
                             e1.printStackTrace();
-                            MessageManager.INSTANCE.addMessage(new Message("Test wallet migration was not successful. Leaving wallet as 'serialised'. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
+                            MessageManager.INSTANCE.addMessage(new Message("Test wallet migration was not successful. Leaving wallet as serialised. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
                             thereWereFailures = true;
                         } finally {
                             // Delete test wallet.
@@ -198,42 +176,32 @@ public class MigrateWalletsAction extends AbstractAction {
                                 // Backup serialised wallet.
                                 fileHandler.backupPerWalletModelData(loopPerWalletModelData);
                                 MessageManager.INSTANCE.addMessage(new Message("Backing up serialised wallet to '" + loopPerWalletModelData.getWalletBackupFilename() + "'"));
-                                                           
-                                // Convert to protobuf for real.
-                                loopPerWalletModelData.getWalletInfo().setWalletVersion(WalletVersion.PROTOBUF);
+                                           
+                                // Load serialised, change to protobuf, save, reload, check.
+                                boolean walletMigratedOk = convertToProtobufAndCheck(new File(loopPerWalletModelData.getWalletFilename()), fileHandler);
                                 
-                                // Try to save it. This should save it in protobuf format
-                                fileHandler.savePerWalletModelData(loopPerWalletModelData, true);
-                                
-                                // Recheck converted protobuf wallet.
-                                
-                                // Load the newly saved protobuf wallet.
-                                PerWalletModelData newRealProtobuf = fileHandler.loadFromFile(new File(loopPerWalletModelData.getWalletFilename()));
-                                
-                                // Check the old and real new wallets are the same
-                                if (WalletVersion.PROTOBUF != newRealProtobuf.getWalletInfo().getWalletVersion()) {
-                                    // Did not save/ load as protobuf.
+                                if (walletMigratedOk) {
+                                    MessageManager.INSTANCE.addMessage(new Message("Migration of wallet '" + loopPerWalletModelData.getWalletDescription() + "' to protobuf was successful."));
+                                } else {                        
                                     MessageManager.INSTANCE.addMessage(new Message("Real wallet migration was not successful. Please reuse the backup."));
                                     thereWereFailures = true;
-                                } else {                        
-                                    MessageManager.INSTANCE.addMessage(new Message("Migration of wallet '" + loopPerWalletModelData.getWalletDescription() + "' to protobuf was successful."));
                                 }
                             }
                         } catch (WalletSaveException e1) {
                             e1.printStackTrace();
-                            MessageManager.INSTANCE.addMessage(new Message("Wallet migration was not successful. PLease reuse the backup. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
+                            MessageManager.INSTANCE.addMessage(new Message("Wallet migration was not successful. Please reuse the backup. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
                             thereWereFailures = true;
                         } catch (WalletLoadException e1) {
                             e1.printStackTrace();
-                            MessageManager.INSTANCE.addMessage(new Message("Wallet migration was not successful. PLease reuse the backup. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
+                            MessageManager.INSTANCE.addMessage(new Message("Wallet migration was not successful. Please reuse the backup. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
                             thereWereFailures = true;
                         } catch (IllegalStateException e1) {
                             e1.printStackTrace();
-                            MessageManager.INSTANCE.addMessage(new Message("Wallet migration was not successful. PLease reuse the backup. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
+                            MessageManager.INSTANCE.addMessage(new Message("Wallet migration was not successful. Please reuse the backup. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
                             thereWereFailures = true;
                         } catch (Exception e1) {
                             e1.printStackTrace();
-                            MessageManager.INSTANCE.addMessage(new Message("Wallet migration was not successful. PLease reuse the backup. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
+                            MessageManager.INSTANCE.addMessage(new Message("Wallet migration was not successful. Please reuse the backup. \nThe error was '" + e1.getClass().getCanonicalName() + " " + e1.getMessage() + "'"));
                             thereWereFailures = true;
                         }
                     } 
@@ -241,11 +209,12 @@ public class MigrateWalletsAction extends AbstractAction {
             
                 MessageManager.INSTANCE.addMessage(new Message(" "));
                 if (thereWereFailures) {
-                    MessageManager.INSTANCE.addMessage(new Message("To help improve the wallet migration code, please copy your error message text and mail it to jim@multibit.org . Thanks."));
+                    MessageManager.INSTANCE.addMessage(new Message("To help improve the wallet migration code, please copy any error messages above and mail them to jim@multibit.org . Thanks."));
                 }
                 MessageManager.INSTANCE.addMessage(new Message("End: " + controller.getLocaliser().getString("migrateWalletsAction.text")));
                 MessageManager.INSTANCE.addMessage(new Message(" "));
-                controller.fireRecreateAllViews(true);
+                controller.fireRecreateAllViews(false);
+                controller.displayView(View.MESSAGES_VIEW);
             }
                        
         } finally {
@@ -254,6 +223,41 @@ public class MigrateWalletsAction extends AbstractAction {
         }
     }
 
+    private boolean convertToProtobufAndCheck(File walletFile, FileHandler fileHandler) {
+        // Load the newly copied test serialised file.
+        PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
+        
+        // Change wallet to protobuf.
+        perWalletModelData.getWalletInfo().setWalletVersion(WalletVersion.PROTOBUF);
+        
+        // Try to save it. This should save it in protobuf format
+        fileHandler.savePerWalletModelData(perWalletModelData, true);
+        
+        // Load the newly saved test protobuf wallet.
+        PerWalletModelData protobuf = fileHandler.loadFromFile(walletFile);
+        
+        if (protobuf == null) {
+            return false;
+        }
+        // Check the original and test new wallets are the same
+        if (WalletVersion.PROTOBUF != protobuf.getWalletInfo().getWalletVersion()) {
+            return false;
+        } 
+        
+        // Check the number of private keys are the same.
+        if (protobuf.getWallet().getKeychain().size() != perWalletModelData.getWallet().getKeychain().size()) {
+            return false;
+        }
+        
+        // Check the number of transactions are the same.
+        if (protobuf.getWallet().getTransactions(true, true).size() != perWalletModelData.getWallet().getTransactions(true, true).size()) {
+            return false;
+        }
+        
+        // The conversion was ok.
+        return true;
+    }
+    
     private List<String> getWalletFilenamesToMigrate() {
         List<String> walletFilenamesToMigrate = new ArrayList<String>();
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
@@ -263,71 +267,6 @@ public class MigrateWalletsAction extends AbstractAction {
             }
         }
         return walletFilenamesToMigrate;
-    }
-    
-    /**
-     * open a wallet in a background Swing worker thread
-     * @param selectedWalletFilename Filename of wallet to open
-     */
-    private void openWalletInBackground(String selectedWalletFilename) {
-        final String selectedWalletFilenameFinal = selectedWalletFilename;
-
-        SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
-            
-            private String message = null;
-            
-            @Override
-            protected Boolean doInBackground() throws Exception {
-                try {
-                    log.debug("Opening wallet '" + selectedWalletFilenameFinal + "' in background swing worker");
-
-                    controller.addWalletFromFilename(selectedWalletFilenameFinal);
-                    controller.getModel().setActiveWalletByFilename(selectedWalletFilenameFinal);
-
-                    // save the user properties to disk
-                    FileHandler.writeUserPreferences(controller);
-                    log.debug("User preferences with new wallet written successfully");
- 
-                    message = controller.getLocaliser().getString("multiBit.openingWalletIsDone", new Object[]{selectedWalletFilenameFinal});
-                    
-                    return Boolean.TRUE;
-                } catch (WalletLoadException e) {
-                    message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
-                    return Boolean.FALSE;
-                } catch (IOException e) {
-                    message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
-                    return Boolean.FALSE;
-                }  catch (WalletSaveException e) {
-                    message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded", new Object[]{selectedWalletFilenameFinal, e.getMessage()});
-                    return Boolean.FALSE;
-                }
-            }
-            
-            protected void done() {
-                try {
-                    Boolean wasSuccessful = get();
-                    if (wasSuccessful) {
-                        log.debug(message);
-                        MessageManager.INSTANCE.addMessage(new Message(message));  
-                        controller.fireRecreateAllViews(false);
-                        controller.fireDataChanged();
-                    } else {
-                        log.error(message);
-                        MessageManager.INSTANCE.addMessage(new Message(message));
-                    }
-                } catch (Exception e) {
-                    // not really used but caught so that SwingWorker shuts down cleanly
-                    log.error(e.getClass() + " " + e.getMessage());
-                } finally {
-                    setEnabled(true);
-                    if (mainFrame != null) {
-                        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                    }
-                }
-            }
-        };
-        log.debug("Executing open of wallet '" + selectedWalletFilenameFinal + "' in background swing worker");
-        worker.execute();
     }
     
     private MultiBitDialog createDialog(MultiBitFrame mainFrame, int numberOfWalletsToMigrate) {
@@ -409,8 +348,9 @@ public class MigrateWalletsAction extends AbstractAction {
                  * we're going to change the JOptionPane's
                  * value property.
                  */
-                    optionPane.setValue(new Integer(
+                 optionPane.setValue(new Integer(
                                         JOptionPane.CLOSED_OPTION));
+                 optionPane.getTopLevelAncestor().setVisible(false);
             }
         });
         

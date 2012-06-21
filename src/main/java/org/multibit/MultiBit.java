@@ -44,6 +44,7 @@ import org.multibit.platform.GenericApplicationSpecification;
 import org.multibit.platform.listener.GenericOpenURIEvent;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.action.MigrateWalletsAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -270,12 +271,16 @@ public class MultiBit {
             log.debug("No Bitcoin URI provided as an argument");
         }
 
-        // Indicate to the application that startup has completed
+        // Indicate to the application that startup has completed.
         controller.setApplicationStarting(false);
 
-        // Check for any pending URI operations
+        // Check for any pending URI operations.
         controller.handleOpenURI();
 
+        // Check if any wallets need migrating from serialised to protobuf.
+        MigrateWalletsAction migrateWalletsAction = new MigrateWalletsAction(controller, (MultiBitFrame) swingViewSystem);
+        migrateWalletsAction.actionPerformed(null);
+        
         log.debug("Downloading blockchain");
         if (useFastCatchup) {
             long earliestTimeSecs = controller.getModel().getActiveWallet().getEarliestKeyCreationTime();

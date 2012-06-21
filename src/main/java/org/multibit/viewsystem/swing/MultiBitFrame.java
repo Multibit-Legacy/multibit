@@ -739,12 +739,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setComponentOrientation(componentOrientation);
         toolsMenu.add(menuItem);
 
-
-        MigrateWalletsAction migrateWalletsAction = new MigrateWalletsAction(controller, thisFrame);
-        menuItem = new JMenuItem(migrateWalletsAction);
-        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        menuItem.setComponentOrientation(componentOrientation);
-        toolsMenu.add(menuItem);
+//        MigrateWalletsAction migrateWalletsAction = new MigrateWalletsAction(controller, thisFrame);
+//        menuItem = new JMenuItem(migrateWalletsAction);
+//        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+//        menuItem.setComponentOrientation(componentOrientation);
+//        toolsMenu.add(menuItem);
 
         if (showMerchantMenu) {
             // create bulk addresses action
