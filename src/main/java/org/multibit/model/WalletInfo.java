@@ -617,4 +617,8 @@ public class WalletInfo {
     public WalletVersion getWalletVersion() {
         return walletVersion;
     }
+
+    public void setWalletVersion(WalletVersion walletVersion) {
+        this.walletVersion = walletVersion;
+    }
 }

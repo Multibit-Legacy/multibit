@@ -87,7 +87,7 @@ public class MessagesPanel extends JPanel implements View, MessageListener {
         
         for (Message message : messages) {
             if (textArea != null) {
-                if (message.getText() != null && !WhitespaceTrimmer.trim(message.getText()).equals("") && !message.getText().equals(lastMessageAdded)) {
+                if (message.getText() != null && !message.getText().equals(lastMessageAdded)) {
                     textArea.append(message.getText() + "\n");
                     lastMessageAdded = message.getText();
                 }

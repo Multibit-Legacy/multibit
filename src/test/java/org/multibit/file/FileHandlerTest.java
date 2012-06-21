@@ -129,7 +129,7 @@ public class FileHandlerTest extends TestCase {
         ECKey newKey = new ECKey();
         newWallet.keychain.add(newKey);
         PerWalletModelData perWalletModelData = new PerWalletModelData();
-        perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename, WalletVersion.SERIALIZED));
+        perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename, WalletVersion.PROTOBUF));
         perWalletModelData.setWallet(newWallet);
         perWalletModelData.setWalletFilename(newWalletFilename);
         perWalletModelData.setWalletDescription(TEST_CREATE_AND_DELETE1_WALLET_PREFIX);
