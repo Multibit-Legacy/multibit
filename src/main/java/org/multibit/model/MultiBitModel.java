@@ -48,9 +48,9 @@ import com.google.bitcoin.core.WalletEventListener;
 import com.google.bitcoin.store.BlockStoreException;
 
 /**
- * model containing the MultiBit data
+ * Model containing the MultiBit data.
  * 
- * most of the methods act on the single, active wallet in the model
+ * Most of the methods act on the single, active wallet in the model.
  * 
  * @author jim
  * 
@@ -59,22 +59,22 @@ public class MultiBitModel {
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitModel.class);
 
-    // constants used in the multibit.properties
+    // Constants used in the multibit.properties.
 
-    // MultiBit start up
+    // MultiBit start up.
     public static final String TEST_OR_PRODUCTION_NETWORK = "testOrProductionNetwork";
     public static final String TEST_NETWORK_VALUE = "test";
     public static final String PRODUCTION_NETWORK_VALUE = "production";
     public static final String WALLET_FILENAME = "walletFilename";
 
-    // user preferences
+    // User preferences.
     public static final String SELECTED_VIEW = "selectedView";
     public static final String PREVIOUSLY_SELECTED_VIEW = "previousView";
 
     public static final String USER_LANGUAGE_CODE = "languageCode";
     public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
     
-    // ticker
+    // Currency ticker.
     public static final String TICKER_SHOW = "tickerShow";
     public static final String TICKER_COLUMNS_TO_SHOW = "tickerColumnsToShow";
     public static final String TICKER_FIRST_ROW_EXCHANGE = "tickerFirstRowExchange";
@@ -83,14 +83,14 @@ public class MultiBitModel {
     public static final String TICKER_SECOND_ROW_EXCHANGE = "tickerSecondRowExchange";
     public static final String TICKER_SECOND_ROW_CURRENCY = "tickerSecondRowCurrency";
     
-    // wallets, open wallet and save wallet as dialog
+    // Wallets, open wallet and save wallet as dialog.
     public static final String ACTIVE_WALLET_FILENAME = "selectedWalletFilename";
     public static final String WALLET_FILENAME_PREFIX = "walletFilename.";
     public static final String WALLET_DESCRIPTION_PREFIX = "walletDescription.";
     public static final String NUMBER_OF_WALLETS = "numberOfWallets";
     public static final String GRAB_FOCUS_FOR_ACTIVE_WALLET = "grabFocusForActiveWallet";
 
-    // send bitcoin and send bitcoin confirm
+    // Send bitcoin and send bitcoin confirm.
     public static final String SEND_ADDRESS = "sendAddress";
     public static final String SEND_LABEL = "sendLabel";
     public static final String SEND_AMOUNT = "sendAmount";
@@ -100,7 +100,7 @@ public class MultiBitModel {
     public static final String DISPLAY_AS_SWATCH = "displayAsSwatch";
     public static final String DISPLAY_AS_QR_CODE = "displayAsQRcode";
 
-    // open uri
+    // Open bitcoin URI.
     public static final String OPEN_URI_SHOW_DIALOG = "openUriShowDialog";
     public static final String OPEN_URI_USE_URI = "openUriUseUri";
     public static final String OPEN_URI_ADDRESS = "openUriAddress";
@@ -108,22 +108,22 @@ public class MultiBitModel {
     public static final String OPEN_URI_AMOUNT = "openUriAmount";
     public static final String BRING_TO_FRONT = "bringToFront";
 
-    // default is min fee of 0.0001 BTC
+    // Default fee.
     public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("50000");
-    // min fee of 0.0001 BTC
+    //Minimum fee.
     public static final BigInteger SEND_MINIMUM_FEE = new BigInteger("10000");
 
     public static final String SEND_WAS_SUCCESSFUL = "sendWasSuccessful";
     public static final String SEND_ERROR_MESSAGE = "sendErrorMessage";
 
-    // receive bitcoin
+    // Receive bitcoin.
     public static final String IS_RECEIVE_BITCOIN = "isReceiveBitcoin";
     public static final String RECEIVE_ADDRESS = "receiveAddress";
     public static final String RECEIVE_LABEL = "receiveLabel";
     public static final String RECEIVE_AMOUNT = "receiveAmount";
     public static final String RECEIVE_NEW_KEY = "receiveNewKey"; // to delete
 
-    // validation
+    // Validation.
     public static final String VALIDATION_ADDRESS_IS_INVALID = "validationAddressIsInvalid";
     public static final String VALIDATION_AMOUNT_IS_INVALID = "validationAmountIsInvalid";
     public static final String VALIDATION_AMOUNT_IS_MISSING = "validationAmountIsMissing";
@@ -134,28 +134,28 @@ public class MultiBitModel {
 
     public static final String WALLET_FILE_EXTENSION = "wallet";
 
-    // private key import and export
+    // Private key import and export.
     public static final String PRIVATE_KEY_FILE_EXTENSION = "key";
     public static final String PRIVATE_KEY_FILENAME = "privateKeyFilename";
 
-    //Blockchain.info
+    // Blockchain.info support.
     public static final String BLOCKCHAIN_WALLET_ENCRYPTED_SUFFIX = "aes.json";
     public static final String BLOCKCHAIN_WALLET_PLAIN_SUFFIX = "json";
 
-    // connect to single node
+    // Connect to single node.
     public static final String SINGLE_NODE_CONNECTION = "singleNodeConnection";
 
-    // sizes and last modified dates of files
+    // Sizes and last modified dates of files.
     public static final String WALLET_FILE_SIZE = "walletFileSize";
     public static final String WALLET_FILE_LAST_MODIFIED = "walletFileLastModified";
 
     public static final String WALLET_INFO_FILE_SIZE = "walletInfoFileSize";
     public static final String WALLET_INFO_FILE_LAST_MODIFIED = "walletInfoFileLastModified";
 
-    // merchant menu
+    // Merchant menu.
     public static final String SHOW_MERCHANT_MENU = "showMerchantMenu";
 
-    // user preference font
+    // User preference font.
     public static final String FONT = "font";
     public static final String FONT_NAME = "fontName";
     public static final String FONT_STYLE = "fontStyle";
@@ -165,7 +165,7 @@ public class MultiBitModel {
     public static final String PREVIOUS_FONT_STYLE = "previousFontStyle";
     public static final String PREVIOUS_FONT_SIZE = "previousFontSize";
 
-    // user preferences undo
+    // User preferences undo.
     public static final String PREVIOUS_OPEN_URI_SHOW_DIALOG = "previousOpenUriShowDialog";
     public static final String PREVIOUS_OPEN_URI_USE_URI = "previousOpenUriUseUri";
     public static final String PREVIOUS_SEND_FEE = "previousSendFee";
@@ -173,19 +173,22 @@ public class MultiBitModel {
     public static final String PREVIOUS_UNDO_CHANGES_TEXT = "previousUndoChangesText";
     public static final String CAN_UNDO_PREFERENCES_CHANGES = "canUndoPreferencesChanges";
 
-    // main controller class
+    // Wallet migration.
+    public static final String LAST_FAILED_MIGRATE_VERSION = "lastFailedMigrateVersion";
+    
+    // Main controller class.
     private final MultiBitController controller;
 
-    // user preferences
+    // User preferences.
     private Properties userPreferences;
 
     /**
-     * List of each wallet's total model data
+     * List of each wallet's total model data.
      */
     private List<PerWalletModelData> perWalletModelDataList;
 
     /**
-     * The current active wallet
+     * The current active wallet.
      */
     private PerWalletModelData activeWalletModelData;
     
@@ -195,7 +198,7 @@ public class MultiBitModel {
     private int currentView;
     
     /**
-     * Holds exchange Data
+     * Holds exchange Data.
      */
     private ExchangeData exchangeData = new ExchangeData(); // new up an empty ExchangeData object
   

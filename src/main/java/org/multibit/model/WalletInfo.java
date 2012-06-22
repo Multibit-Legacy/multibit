@@ -141,6 +141,15 @@ public class WalletInfo {
         return (String) walletPreferences.getProperty(key);
     }
 
+    /**
+     * Removes a property from the wallet info.
+     * 
+     * @param key
+     */
+    public void remove(String key) {
+        walletPreferences.remove(key);
+    }
+    
     public ArrayList<AddressBookData> getReceivingAddresses() {
         return receivingAddresses;
     }
