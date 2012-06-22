@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2012 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,9 +99,7 @@ public class MigrateWalletsAction extends AbstractAction {
             
             infoDialog.setVisible(true);
             
-            Object value = optionPane.getValue();
-            System.out.println("MigrateWalletsAction value = " + value.toString());
-            
+            Object value = optionPane.getValue();            
             if ((new Integer(JOptionPane.CANCEL_OPTION)).equals(value)) {
                 controller.displayHelpContext(HelpContentsPanel.HELP_WALLET_FORMATS_URL);
                 return;
@@ -113,7 +111,7 @@ public class MigrateWalletsAction extends AbstractAction {
                 // Put a modal dialog up, or tweak existing one, so that user can not do anything else to the wallets. Needs to be able to abort.
                 controller.displayView(View.MESSAGES_VIEW);
                 MessageManager.INSTANCE.addMessage(new Message(" "));
-                MessageManager.INSTANCE.addMessage(new Message("Start: " + controller.getLocaliser().getString("migrateWalletsAction.text") + "."));
+                MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.start") + " " + controller.getLocaliser().getString("migrateWalletsAction.text") + "."));
                        
                 FileHandler fileHandler = new FileHandler(controller);
                 
@@ -122,7 +120,8 @@ public class MigrateWalletsAction extends AbstractAction {
                     
                     if (loopPerWalletModelData != null && WalletVersion.SERIALIZED == loopPerWalletModelData.getWalletInfo().getWalletVersion()) {
                         MessageManager.INSTANCE.addMessage(new Message(" "));
-                        MessageManager.INSTANCE.addMessage(new Message("Wallet '"+ loopPerWalletModelData.getWalletDescription() + "' is serialised and needs migrating."));
+                        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.isSerialisedAndNeedsMigrating", 
+                                new Object[] {loopPerWalletModelData.getWalletDescription()})));
 
                         File testWallet = null;
                         boolean walletOkToMigrate = false;
@@ -142,7 +141,7 @@ public class MigrateWalletsAction extends AbstractAction {
                             // Did not save/ load as protobuf.
                             if (!walletOkToMigrate) {
                                 thereWereFailures = true;
-                                MessageManager.INSTANCE.addMessage(new Message("Test wallet migration was not successful.Leaving wallet as serialised."));
+                                MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.testMigrationUnsuccessful")));
  
                                 // Save the MultiBit version so that we do not keep trying to run the migrate utility (until the next version).
                                 loopPerWalletModelData.getWalletInfo().put(MultiBitModel.LAST_FAILED_MIGRATE_VERSION, controller.getLocaliser().getVersionNumber());
@@ -176,19 +175,21 @@ public class MigrateWalletsAction extends AbstractAction {
                             if (walletOkToMigrate) {
                                 // Backup serialised wallet.
                                 fileHandler.backupPerWalletModelData(loopPerWalletModelData);
-                                MessageManager.INSTANCE.addMessage(new Message("Backing up serialised wallet to '" + loopPerWalletModelData.getWalletBackupFilename() + "'"));
+                                MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.backingUpFile", 
+                                        new Object[] {loopPerWalletModelData.getWalletBackupFilename()})));
                                            
                                 // Load serialised, change to protobuf, save, reload, check.
                                 boolean walletMigratedOk = convertToProtobufAndCheck(new File(loopPerWalletModelData.getWalletFilename()), fileHandler);
                                 
                                 if (walletMigratedOk) {
-                                    MessageManager.INSTANCE.addMessage(new Message("Migration of wallet '" + loopPerWalletModelData.getWalletDescription() + "' to protobuf was successful."));
+                                    MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.success", 
+                                            new Object[]{ loopPerWalletModelData.getWalletDescription()})));
                                     
                                     // Clear any 'lastMigrateFailed' properties.
                                     loopPerWalletModelData.getWalletInfo().remove(MultiBitModel.LAST_FAILED_MIGRATE_VERSION);
                                     loopPerWalletModelData.setDirty(true);
                                 } else {                        
-                                    MessageManager.INSTANCE.addMessage(new Message("Real wallet migration was not successful. Please reuse the backup."));
+                                    MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.realMigrationUnsuccessful)")));
                                     thereWereFailures = true;
                                 }
                             }
@@ -210,9 +211,9 @@ public class MigrateWalletsAction extends AbstractAction {
             
                 MessageManager.INSTANCE.addMessage(new Message(" "));
                 if (thereWereFailures) {
-                    MessageManager.INSTANCE.addMessage(new Message("To help improve the wallet migration code, please copy any error messages above and mail them to jim@multibit.org . Thanks."));
+                    MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.mailJimErrors")));
                 }
-                MessageManager.INSTANCE.addMessage(new Message("End: " + controller.getLocaliser().getString("migrateWalletsAction.text") + "."));
+                MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.end") + " " + controller.getLocaliser().getString("migrateWalletsAction.text") + "."));
                 MessageManager.INSTANCE.addMessage(new Message(" "));
                 controller.fireRecreateAllViews(false);
                 controller.displayView(View.MESSAGES_VIEW);
@@ -230,7 +231,7 @@ public class MigrateWalletsAction extends AbstractAction {
         perWalletModelData.setDirty(true);
 
         e.printStackTrace();
-        MessageManager.INSTANCE.addMessage(new Message("The test of the wallet migration was not successful.\nLeaving wallet as serialised. \nThe error was '" + e.getClass().getCanonicalName() + " " + e.getMessage() + "'"));
+        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.testMigrationUnsuccessful") + "\n" + localiseError(e)));
     }
     
     private void migrationWasNotSuccessfulUseBackup(PerWalletModelData perWalletModelData, Exception e) {
@@ -238,7 +239,11 @@ public class MigrateWalletsAction extends AbstractAction {
         perWalletModelData.setDirty(true);
 
         e.printStackTrace();
-        MessageManager.INSTANCE.addMessage(new Message("The wallet migration was not successful.\nPlease use the backup. \nThe error was '" + e.getClass().getCanonicalName() + " " + e.getMessage() + "'"));
+        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.realMigrationUnsuccessful") +  "\n" + localiseError(e)));
+    }
+    
+    private String localiseError(Exception e) {
+        return controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new Object[]{e.getClass().getCanonicalName() + " " + e.getMessage() });
     }
 
     private boolean convertToProtobufAndCheck(File walletFile, FileHandler fileHandler) {
@@ -302,19 +307,17 @@ public class MigrateWalletsAction extends AbstractAction {
                 Object source = arg0.getSource();
                 
                 Object optionPaneObject = ((JButton)source).getParent().getParent();
-                System.out.println("MigrateWalletsAction#createDialog - optionPaneObject = " + optionPaneObject);
                 if (optionPaneObject instanceof JOptionPane) {
                     JOptionPane optionPane = (JOptionPane)optionPaneObject;
                     optionPane.setValue(JOptionPane.OK_OPTION);
                 }                
                 Object dialogObject = ((JButton)source).getTopLevelAncestor();
-                System.out.println("MigrateWalletsAction#createDialog - dialogObject = " + dialogObject);
-                if (dialogObject instanceof JDialog) {
+                 if (dialogObject instanceof JDialog) {
                     JDialog dialog = (JDialog)dialogObject;
                     dialog.setVisible(false);
                 }
             }});
-        JButton cancelButton = new JButton(controller.getLocaliser().getString("cancelBackToParentAction.text") + " and show help");
+        JButton cancelButton = new JButton(controller.getLocaliser().getString("migrateWalletsAction.cancelAndShowHelp"));
         cancelButton.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent arg0) {
@@ -332,10 +335,10 @@ public class MigrateWalletsAction extends AbstractAction {
                 }
         }}); 
         // Create an array of the text and components to be displayed.
-        String information1 = "MultiBit wants to update " + numberOfWalletsToMigrate + " wallet(s) from";
-        String information2 = "the serialised to protobuf format.";
+        String information1 = controller.getLocaliser().getString("migrateWalletsAction.information1", new Object[]{numberOfWalletsToMigrate});
+        String information2 = controller.getLocaliser().getString("migrateWalletsAction.information2");
         String information3 = " ";
-        String information4 = "Do it now ?";
+        String information4 = controller.getLocaliser().getString("migrateWalletsAction.information3");
         Object[] array = {information1, information2, information3, information4};
  
         //Create an array specifying the number of dialog buttons
@@ -358,7 +361,7 @@ public class MigrateWalletsAction extends AbstractAction {
         FontMetrics fontMetrics = dialog.getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         
         int minimumHeight = fontMetrics.getHeight() * 8 + 40 ;
-        int minimumWidth = Math.max(fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT), fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinConfirmView.message"))) + 60;
+        int minimumWidth = Math.max(fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT), fontMetrics.stringWidth(information1)) + 60;
         dialog.setMinimumSize(new Dimension(minimumWidth, minimumHeight));
         dialog.positionDialogRelativeToParent(dialog, 0.5D, 0.47D);
 

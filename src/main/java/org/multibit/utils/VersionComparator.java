@@ -16,9 +16,9 @@ public class VersionComparator implements Comparator<String> {
     @Override
     public int compare(String first, String second) {
         Integer firstOrdinal = calculateOrdinal(first);
-        System.out.println("VersionComparator#compare first = " + firstOrdinal);
+        //System.out.println("VersionComparator#compare first = " + firstOrdinal);
         Integer secondOrdinal = calculateOrdinal(second);
-        System.out.println("VersionComparator#compare second = " + secondOrdinal);
+        //System.out.println("VersionComparator#compare second = " + secondOrdinal);
                
         return firstOrdinal.compareTo(secondOrdinal);
     }
