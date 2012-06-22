@@ -56,35 +56,38 @@ public class Browser extends javax.swing.JEditorPane {
         loadedOkAtConstruction = false;
 
         try {
-        addHyperlinkListener(new ActivatedHyperlinkListener(mainFrame, this, currentHref));
-
-        loadingMessage = controller.getLocaliser().getString("browser.loadingMessage");
-        setEditable(false);
-        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-
-        String fontName = controller.getModel().getUserPreference(MultiBitModel.FONT_NAME);
-        if (fontName == null || "".equals(fontName)) {
-            fontName = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_NAME;
-        }
-        // Add in san-serif as a fallback.
-        fontName = fontName + ", san-serif";
-
-        int fontSize = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
-        String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
-        if (fontSizeString != null && !"".equals(fontSizeString)) {
-            try {
-                fontSize = Integer.parseInt(fontSizeString);
-            } catch (NumberFormatException nfe) {
-                // Use default.
+            if (mainFrame != null) {
+                mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             }
-        }
+            addHyperlinkListener(new ActivatedHyperlinkListener(mainFrame, this, currentHref));
+
+            loadingMessage = controller.getLocaliser().getString("browser.loadingMessage");
+            setEditable(false);
+            setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+
+            String fontName = controller.getModel().getUserPreference(MultiBitModel.FONT_NAME);
+            if (fontName == null || "".equals(fontName)) {
+                fontName = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_NAME;
+            }
+            // Add in san-serif as a fallback.
+            fontName = fontName + ", san-serif";
+
+            int fontSize = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
+            String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
+            if (fontSizeString != null && !"".equals(fontSizeString)) {
+                try {
+                    fontSize = Integer.parseInt(fontSizeString);
+                } catch (NumberFormatException nfe) {
+                // Use default.
+                }
+            }
         
-        HTMLEditorKit kit = new HTMLEditorKit();
-        setEditorKit(kit);
-        javax.swing.text.html.StyleSheet styleSheet = kit.getStyleSheet();
-        styleSheet.addRule("body {font-size:" + fontSize + "pt; font-family:" + fontName + ";}");
-        Document doc = kit.createDefaultDocument();
-        setDocument(doc);
+            HTMLEditorKit kit = new HTMLEditorKit();
+            setEditorKit(kit);
+            javax.swing.text.html.StyleSheet styleSheet = kit.getStyleSheet();
+            styleSheet.addRule("body {font-size:" + fontSize + "pt; font-family:" + fontName + ";}");
+            Document doc = kit.createDefaultDocument();
+            setDocument(doc);
 
             setPage(new URL(currentHref));
             loadedOkAtConstruction = true;
@@ -96,7 +99,9 @@ public class Browser extends javax.swing.JEditorPane {
             Message message = new Message("Cannot load page: " + currentHref + " " + ex.getMessage(), true);
             MessageManager.INSTANCE.addMessage(message);
         } finally {
-            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            if (mainFrame != null) {
+                mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
         }
     }
 

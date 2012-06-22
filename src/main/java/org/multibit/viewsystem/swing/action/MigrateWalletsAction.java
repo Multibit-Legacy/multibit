@@ -26,7 +26,9 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -51,6 +53,10 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Transaction;
 
 /**
  * This {@link Action} migrates wallets from serialised to protobuf formats
@@ -124,7 +130,7 @@ public class MigrateWalletsAction extends AbstractAction {
                                 new Object[] {loopPerWalletModelData.getWalletDescription()})));
 
                         File testWallet = null;
-                        boolean walletOkToMigrate = false;
+                        String walletMigrationErrorText = "Unknown";
                         try {
                             testWallet = File.createTempFile("migrateWallet", ".wallet");
                             testWallet.deleteOnExit();
@@ -136,13 +142,14 @@ public class MigrateWalletsAction extends AbstractAction {
                             FileHandler.copyFile(new File(loopPerWalletModelData.getWalletFilename()), testWalletFile);
 
                             // Load serialised, change to protobuf, save, reload, check.
-                            walletOkToMigrate = convertToProtobufAndCheck(testWalletFile, fileHandler);
+                            walletMigrationErrorText = convertToProtobufAndCheck(testWalletFile, fileHandler);
                             
                             // Did not save/ load as protobuf.
-                            if (!walletOkToMigrate) {
+                            if (walletMigrationErrorText != null) {
                                 thereWereFailures = true;
                                 MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.testMigrationUnsuccessful")));
- 
+                                MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new Object[]{walletMigrationErrorText})));
+                                
                                 // Save the MultiBit version so that we do not keep trying to run the migrate utility (until the next version).
                                 loopPerWalletModelData.getWalletInfo().put(MultiBitModel.LAST_FAILED_MIGRATE_VERSION, controller.getLocaliser().getVersionNumber());
                                 loopPerWalletModelData.setDirty(true);
@@ -172,16 +179,16 @@ public class MigrateWalletsAction extends AbstractAction {
                         }
 
                         try {
-                            if (walletOkToMigrate) {
+                            if (walletMigrationErrorText == null) {
                                 // Backup serialised wallet.
                                 fileHandler.backupPerWalletModelData(loopPerWalletModelData);
                                 MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.backingUpFile", 
                                         new Object[] {loopPerWalletModelData.getWalletBackupFilename()})));
                                            
                                 // Load serialised, change to protobuf, save, reload, check.
-                                boolean walletMigratedOk = convertToProtobufAndCheck(new File(loopPerWalletModelData.getWalletFilename()), fileHandler);
+                                walletMigrationErrorText = convertToProtobufAndCheck(new File(loopPerWalletModelData.getWalletFilename()), fileHandler);
                                 
-                                if (walletMigratedOk) {
+                                if (walletMigrationErrorText == null) {
                                     MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.success", 
                                             new Object[]{ loopPerWalletModelData.getWalletDescription()})));
                                     
@@ -190,6 +197,7 @@ public class MigrateWalletsAction extends AbstractAction {
                                     loopPerWalletModelData.setDirty(true);
                                 } else {                        
                                     MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.realMigrationUnsuccessful)")));
+                                    MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new Object[]{walletMigrationErrorText})));
                                     thereWereFailures = true;
                                 }
                             }
@@ -243,10 +251,19 @@ public class MigrateWalletsAction extends AbstractAction {
     }
     
     private String localiseError(Exception e) {
+        String errorString = e.getClass().getCanonicalName() + " " + e.getMessage();
+        if (e.getCause() != null) {
+            errorString = errorString + ", (" + e.getCause().getClass().getCanonicalName() + " " + e.getCause().getMessage() + ")";
+        }
         return controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new Object[]{e.getClass().getCanonicalName() + " " + e.getMessage() });
     }
 
-    private boolean convertToProtobufAndCheck(File walletFile, FileHandler fileHandler) {
+    /**
+     * @param walletFile
+     * @param fileHandler
+     * @return null if successful, lcalised error message describing problem if not
+     */
+    private String convertToProtobufAndCheck(File walletFile, FileHandler fileHandler) {
         // Load the newly copied test serialised file.
         PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
         
@@ -260,25 +277,78 @@ public class MigrateWalletsAction extends AbstractAction {
         PerWalletModelData protobuf = fileHandler.loadFromFile(walletFile);
         
         if (protobuf == null) {
-            return false;
+            return controller.getLocaliser().getString("migrateWalletsAction.theProtobufWalletWouldNotLoad");
         }
-        // Check the original and test new wallets are the same
-        if (WalletVersion.PROTOBUF != protobuf.getWalletInfo().getWalletVersion()) {
-            return false;
-        } 
         
-        // Check the number of private keys are the same.
-        if (protobuf.getWallet().getKeychain().size() != perWalletModelData.getWallet().getKeychain().size()) {
-            return false;
+        // The new wallet should be protobuf.
+        if (WalletVersion.PROTOBUF != protobuf.getWalletInfo().getWalletVersion()) {
+            return controller.getLocaliser().getString("migrateWalletsAction.theWalletWasStillSerialised");
+        }
+        
+        // Check the number of private keys have the same keys and transactions.
+        String compareResult = compareWallets(perWalletModelData, protobuf);
+        if ( compareResult != null) {
+            return compareResult;
+        } 
+
+        // The conversion was ok.
+        return null;
+    }
+    
+    /**
+     * Compare wallet data and return a null if no problems were encountered, or a localised error string if there were.
+     * @param serialised
+     * @param protobuf
+     * @return String described error, or null if successful
+     */
+    private String compareWallets(PerWalletModelData serialised, PerWalletModelData protobuf) {       
+        // Check the number of keys are the same.
+        if (protobuf.getWallet().getKeychain().size() != serialised.getWallet().getKeychain().size()) {
+            return controller.getLocaliser().getString("migrateWalletsAction.numberOfPrivateKeysAreDifferent", 
+                    new Object[] {serialised.getWallet().getKeychain().size(), protobuf.getWallet().getKeychain().size()});
+        }
+        
+        Set<String> protobufPrivateKeysAsStrings = new HashSet<String>();    
+        ArrayList<ECKey> protobufKeys = protobuf.getWallet().keychain;
+        for (ECKey ecKey : protobufKeys) {
+            protobufPrivateKeysAsStrings.add(ecKey.toStringWithPrivate());
+        }
+        System.out.println("MigrateWalletsAction#compareWallets - protobufPrivateKeysAsStrings = " + protobufPrivateKeysAsStrings.toString());
+        
+        // Every serialised private key should be in the protobuf.
+        // (We do not care if the order is different).
+        ArrayList<ECKey> serialisedKeys = serialised.getWallet().keychain;
+        for (ECKey ecKey : serialisedKeys) {
+            if (!protobufPrivateKeysAsStrings.contains(ecKey.toStringWithPrivate())) {
+                return controller.getLocaliser().getString("migrateWalletsAction.privateKeyWasMissing", 
+                        new Object[] {ecKey.toAddress(controller.getMultiBitService().getNetworkParameters()) 
+                        + ", serialised:'" + ecKey.toStringWithPrivate() + "'"});
+            }
         }
         
         // Check the number of transactions are the same.
-        if (protobuf.getWallet().getTransactions(true, true).size() != perWalletModelData.getWallet().getTransactions(true, true).size()) {
-            return false;
+        Set<Transaction> protobufTransactions = protobuf.getWallet().getTransactions(true, true);
+        Set<Transaction> serialisedTransactions = serialised.getWallet().getTransactions(true, true);
+        if (protobufTransactions.size() != serialisedTransactions.size()) {
+            return  controller.getLocaliser().getString("migrateWalletsAction.numberOfTransactionsAreDifferent", 
+                    new Object[] {serialisedTransactions.size(), protobufTransactions.size()});
         }
         
-        // The conversion was ok.
-        return true;
+        // Check every transaction id in the serialised is in the protobuf.
+        Set<String> protobufTransactionIds = new HashSet<String>();    
+        for (Transaction protobufTx : protobufTransactions) {
+            protobufTransactionIds.add(protobufTx.getHashAsString());
+        }
+        
+        // Every serialised transaction should be in the protobuf.
+        // (We do not care if the order is different).
+       for (Transaction serialisedTx : serialisedTransactions) {
+            if (!protobufTransactionIds.contains(serialisedTx.getHashAsString())) {
+                return controller.getLocaliser().getString("migrateWalletsAction.transactionWasMissing", new Object[] {serialisedTx.getHashAsString()});
+            }
+        }
+        
+        return null;       
     }
     
     private List<String> getWalletFilenamesToMigrate() {
