@@ -100,6 +100,7 @@ public class FileHandler {
 
             return perWalletModelData;
         } catch (Exception e) {
+            e.printStackTrace();
             log.error(e.getClass().getCanonicalName() + " "  + e.getMessage());
             throw new WalletLoadException(e.getClass().getCanonicalName() + " "  + e.getMessage(), e);
         } 

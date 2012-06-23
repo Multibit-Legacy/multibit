@@ -118,7 +118,8 @@
                   <excludes> **/BlockChain.class, **/Sha256Hash.class,
                     **/Transaction.class, **/Transaction$*.class,
                     **/TransactionInput.class, **/TransactionInput$*.class,
-                    **/Wallet.class, **/Wallet$*.class
+                    **/Wallet.class, **/Wallet$*.class,
+                    **/WalletProtobufSerializer.class
                   </excludes>
                 </artifactItem>
               </artifactItems>
