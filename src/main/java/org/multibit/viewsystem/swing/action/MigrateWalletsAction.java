@@ -57,6 +57,7 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.Wallet.BalanceType;
 
 /**
  * This {@link Action} migrates wallets from serialised to protobuf formats
@@ -261,7 +262,7 @@ public class MigrateWalletsAction extends AbstractAction {
     /**
      * @param walletFile
      * @param fileHandler
-     * @return null if successful, lcalised error message describing problem if not
+     * @return null if successful, localised error message describing problem if not
      */
     private String convertToProtobufAndCheck(File walletFile, FileHandler fileHandler) {
         // Load the newly copied test serialised file.
@@ -286,13 +287,7 @@ public class MigrateWalletsAction extends AbstractAction {
         }
         
         // Check the number of private keys have the same keys and transactions.
-        String compareResult = compareWallets(perWalletModelData, protobuf);
-        if ( compareResult != null) {
-            return compareResult;
-        } 
-
-        // The conversion was ok.
-        return null;
+        return compareWallets(perWalletModelData, protobuf);
     }
     
     /**
@@ -315,14 +310,23 @@ public class MigrateWalletsAction extends AbstractAction {
         }
         System.out.println("MigrateWalletsAction#compareWallets - protobufPrivateKeysAsStrings = " + protobufPrivateKeysAsStrings.toString());
         
+        // The balances should match.
+        if (!serialised.getWallet().getBalance().equals(protobuf.getWallet().getBalance())) {
+            return controller.getLocaliser().getString("migrateWalletsAction.balancesWereDifferent", 
+                    new Object[]{serialised.getWallet().getBalance(), protobuf.getWallet().getBalance()});
+        }
+        if (!serialised.getWallet().getBalance(BalanceType.AVAILABLE).equals(protobuf.getWallet().getBalance(BalanceType.AVAILABLE))) {
+            return controller.getLocaliser().getString("migrateWalletsAction.availableToSpendWereDifferent", 
+                    new Object[]{serialised.getWallet().getBalance(BalanceType.AVAILABLE), protobuf.getWallet().getBalance(BalanceType.AVAILABLE)});
+        }
+        
         // Every serialised private key should be in the protobuf.
         // (We do not care if the order is different).
         ArrayList<ECKey> serialisedKeys = serialised.getWallet().keychain;
         for (ECKey ecKey : serialisedKeys) {
             if (!protobufPrivateKeysAsStrings.contains(ecKey.toStringWithPrivate())) {
                 return controller.getLocaliser().getString("migrateWalletsAction.privateKeyWasMissing", 
-                        new Object[] {ecKey.toAddress(controller.getMultiBitService().getNetworkParameters()) 
-                        + ", serialised:'" + ecKey.toStringWithPrivate() + "'"});
+                        new Object[] {ecKey.toAddress(controller.getMultiBitService().getNetworkParameters())});
             }
         }
         
