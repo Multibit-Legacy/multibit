@@ -27,7 +27,9 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
+import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -61,7 +63,7 @@ public class FileHandler {
     public static final String USER_PROPERTIES_HEADER_TEXT = "multibit";
 
     private static final String SEPARATOR = "-";
-    private static final String BACKUP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
+    public static final String BACKUP_SUFFIX_FORMAT = "yyyyMMddHHmmss";
 
     private MultiBitController controller;
 
@@ -234,7 +236,7 @@ public class FileHandler {
     }
 
     /**
-     * Delete the wallet and the wallet info file.
+     * Secure delete the wallet and the wallet info file.
      * 
      * @param perWalletModelData
      */
@@ -255,19 +257,14 @@ public class FileHandler {
             }
             
             // Delete the wallet info file first, then the wallet.
-            boolean success = walletInfoFile.delete();
-            if (success) {
-                success = walletFile.delete();
-                if (success) {
-                    // Wallet file deleted ok.
-                    walletInfo.setDeleted(true);
-                } else {
-                    throw new DeleteWalletException(controller.getLocaliser().getString("deleteWalletException.genericCouldNotDelete",
+            try {
+                FileHandler.secureDelete(walletInfoFile);
+                FileHandler.secureDelete(walletFile);
+                walletInfo.setDeleted(true);
+            } catch (IOException ioe) {
+                log.error(ioe.getClass().getCanonicalName() + " " + ioe.getMessage());
+                throw new DeleteWalletException(controller.getLocaliser().getString("deleteWalletException.genericCouldNotDelete",
                             new String[]{perWalletModelData.getWalletFilename()}));                        
-                }
-            } else {
-                throw new DeleteWalletException(controller.getLocaliser().getString("deleteWalletException.couldNotDeleteWalletInfo",
-                        new String[] {perWalletModelData.getWalletFilename()}));    
             }
         }
         
@@ -598,5 +595,24 @@ public class FileHandler {
         temp.deleteOnExit();
 
         return temp;
+    }
+    
+    public static void secureDelete(File file) throws IOException {
+        if (file.exists()) {
+            long length = file.length();
+            SecureRandom random = new SecureRandom();
+            RandomAccessFile raf = new RandomAccessFile(file, "rws");
+            raf.seek(0);
+            raf.getFilePointer();
+            byte[] data = new byte[64];
+            int pos = 0;
+            while (pos < length) {
+                random.nextBytes(data);
+                raf.write(data);
+                pos += data.length;
+            }
+            raf.close();
+            file.delete();
+        }
     }
 }

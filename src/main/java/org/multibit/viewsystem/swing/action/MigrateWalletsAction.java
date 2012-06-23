@@ -25,7 +25,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -54,7 +57,6 @@ import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet.BalanceType;
@@ -115,7 +117,6 @@ public class MigrateWalletsAction extends AbstractAction {
             } else {
                 boolean thereWereFailures = false;
                 
-                // Put a modal dialog up, or tweak existing one, so that user can not do anything else to the wallets. Needs to be able to abort.
                 controller.displayView(View.MESSAGES_VIEW);
                 MessageManager.INSTANCE.addMessage(new Message(" "));
                 MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.start") + " " + controller.getLocaliser().getString("migrateWalletsAction.text") + "."));
@@ -125,15 +126,17 @@ public class MigrateWalletsAction extends AbstractAction {
                 for (String walletFilename : walletFilenamesToMigrate) {
                     PerWalletModelData loopPerWalletModelData = controller.getModel().getPerWalletModelDataByWalletFilename(walletFilename);
                     
-                    if (loopPerWalletModelData != null && WalletVersion.SERIALIZED == loopPerWalletModelData.getWalletInfo().getWalletVersion()) {
+                    if (loopPerWalletModelData != null) {
                         MessageManager.INSTANCE.addMessage(new Message(" "));
                         MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.isSerialisedAndNeedsMigrating", 
                                 new Object[] {loopPerWalletModelData.getWalletDescription()})));
 
+                        File tempDirectory = null;
                         File testWallet = null;
                         String walletMigrationErrorText = "Unknown";
                         try {
-                            testWallet = File.createTempFile("migrateWallet", ".wallet");
+                            tempDirectory = createTempDirectory(new File(loopPerWalletModelData.getWalletFilename()));
+                            testWallet = File.createTempFile("migrate", ".wallet", tempDirectory);
                             testWallet.deleteOnExit();
 
                             String testWalletFilename = testWallet.getAbsolutePath();
@@ -176,11 +179,13 @@ public class MigrateWalletsAction extends AbstractAction {
                                 PerWalletModelData testPerWalletModelData = controller.getModel().getPerWalletModelDataByWalletFilename(testWallet.getAbsolutePath());
                                 controller.getModel().remove(testPerWalletModelData);
                                 fileHandler.deleteWalletAndWalletInfo(testPerWalletModelData);
+                                tempDirectory.delete();
                             }
                         }
 
                         try {
                             if (walletMigrationErrorText == null) {
+                                // Test migrate was successful - now do it for real.
                                 // Backup serialised wallet.
                                 fileHandler.backupPerWalletModelData(loopPerWalletModelData);
                                 MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.backingUpFile", 
@@ -286,7 +291,7 @@ public class MigrateWalletsAction extends AbstractAction {
             return controller.getLocaliser().getString("migrateWalletsAction.theWalletWasStillSerialised");
         }
         
-        // Check the number of private keys have the same keys and transactions.
+        // Check the original and protobuf wallets are the same.
         return compareWallets(perWalletModelData, protobuf);
     }
     
@@ -308,17 +313,6 @@ public class MigrateWalletsAction extends AbstractAction {
         for (ECKey ecKey : protobufKeys) {
             protobufPrivateKeysAsStrings.add(ecKey.toStringWithPrivate());
         }
-        System.out.println("MigrateWalletsAction#compareWallets - protobufPrivateKeysAsStrings = " + protobufPrivateKeysAsStrings.toString());
-        
-        // The balances should match.
-        if (!serialised.getWallet().getBalance().equals(protobuf.getWallet().getBalance())) {
-            return controller.getLocaliser().getString("migrateWalletsAction.balancesWereDifferent", 
-                    new Object[]{serialised.getWallet().getBalance(), protobuf.getWallet().getBalance()});
-        }
-        if (!serialised.getWallet().getBalance(BalanceType.AVAILABLE).equals(protobuf.getWallet().getBalance(BalanceType.AVAILABLE))) {
-            return controller.getLocaliser().getString("migrateWalletsAction.availableToSpendWereDifferent", 
-                    new Object[]{serialised.getWallet().getBalance(BalanceType.AVAILABLE), protobuf.getWallet().getBalance(BalanceType.AVAILABLE)});
-        }
         
         // Every serialised private key should be in the protobuf.
         // (We do not care if the order is different).
@@ -328,6 +322,16 @@ public class MigrateWalletsAction extends AbstractAction {
                 return controller.getLocaliser().getString("migrateWalletsAction.privateKeyWasMissing", 
                         new Object[] {ecKey.toAddress(controller.getMultiBitService().getNetworkParameters())});
             }
+        }
+       
+        // The balances should match.
+        if (!serialised.getWallet().getBalance().equals(protobuf.getWallet().getBalance())) {
+            return controller.getLocaliser().getString("migrateWalletsAction.balancesWereDifferent", 
+                    new Object[]{serialised.getWallet().getBalance(), protobuf.getWallet().getBalance()});
+        }
+        if (!serialised.getWallet().getBalance(BalanceType.AVAILABLE).equals(protobuf.getWallet().getBalance(BalanceType.AVAILABLE))) {
+            return controller.getLocaliser().getString("migrateWalletsAction.availableToSpendWereDifferent", 
+                    new Object[]{serialised.getWallet().getBalance(BalanceType.AVAILABLE), protobuf.getWallet().getBalance(BalanceType.AVAILABLE)});
         }
         
         // Check the number of transactions are the same.
@@ -352,6 +356,7 @@ public class MigrateWalletsAction extends AbstractAction {
             }
         }
         
+        // Th two wallets are equal.
         return null;       
     }
     
@@ -407,7 +412,8 @@ public class MigrateWalletsAction extends AbstractAction {
                     JDialog dialog = (JDialog)dialogObject;
                     dialog.setVisible(false);
                 }
-        }}); 
+        }});
+        
         // Create an array of the text and components to be displayed.
         String information1 = controller.getLocaliser().getString("migrateWalletsAction.information1", new Object[]{numberOfWalletsToMigrate});
         String information2 = controller.getLocaliser().getString("migrateWalletsAction.information2");
@@ -456,5 +462,27 @@ public class MigrateWalletsAction extends AbstractAction {
         });
         
         return dialog;
+    }
+    
+    /**
+     * Create a temporary a temporary subdirectory whereever the baseFile is.
+     * @param baseFile
+     * @return
+     * @throws IOException 
+     */
+    private File createTempDirectory(File baseFile) throws IOException {
+        String currentDirectoryString = baseFile.getParent();
+        
+        String temporaryDirectoryString = currentDirectoryString + File.separator + "temp" + System.nanoTime();
+        File tempDirectory = new File(temporaryDirectoryString);
+        boolean dirWasMade = tempDirectory.mkdir();
+
+        if (!dirWasMade) {
+            throw new IllegalStateException("Could not create temporary directory");
+        }
+        
+        tempDirectory.deleteOnExit();
+            
+        return tempDirectory;
     }
 }
