@@ -442,7 +442,7 @@ public class MigrateWalletsAction extends AbstractAction {
         
         int minimumHeight = fontMetrics.getHeight() * 8 + 40 ;
         int minimumWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("migrateWalletsAction.cancelAndShowHelp")) * 2, 
-                fontMetrics.stringWidth(information1)) + 100;
+                fontMetrics.stringWidth(information1)) + 120;
         dialog.setMinimumSize(new Dimension(minimumWidth, minimumHeight));
         dialog.positionDialogRelativeToParent(dialog, 0.5D, 0.47D);
 
