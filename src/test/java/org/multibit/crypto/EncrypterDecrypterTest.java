@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.UUID;
 
 import junit.framework.TestCase;
 
@@ -80,6 +81,32 @@ public class EncrypterDecrypterTest extends TestCase {
 
         String reconstructedPlainText = encrypterDecrypter.decrypt(cipherText, PASSWORD2);
         assertEquals(stringBuffer.toString(), reconstructedPlainText);
+    }
+
+    /**
+     * Test with random plain text strings and random passwords.
+     * UUIDs are used and hence will only cover hex characters (and te separator hyphen).
+     * @throws EncrypterDecrypterException
+     */
+    public void testEncryptDecryptGood3() throws EncrypterDecrypterException {
+        EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter();
+
+        int numberOfTests = 100;
+        System.out.print("EncrypterDecrypterTest: Trying random UUIDs for plainText and passwords :");
+        for (int i = 0; i < numberOfTests; i++) {
+            // Create a UUID as the plaintext and use another for the password.
+            String plainText = UUID.randomUUID().toString();
+            String password = UUID.randomUUID().toString();
+
+            String cipherText = encrypterDecrypter.encrypt(plainText, password.toCharArray());
+
+            assertNotNull(cipherText);
+
+            String reconstructedPlainText = encrypterDecrypter.decrypt(cipherText, password.toCharArray());
+            assertEquals(plainText, reconstructedPlainText);
+            System.out.print('.');
+        }
+        System.out.println(" Done.");
     }
 
     public void testEncryptDecryptWrongPassword() throws EncrypterDecrypterException {
