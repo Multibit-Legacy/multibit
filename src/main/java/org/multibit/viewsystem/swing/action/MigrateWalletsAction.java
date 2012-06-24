@@ -49,6 +49,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletVersion;
 import org.multibit.utils.ImageLoader;
+import org.multibit.utils.VersionComparator;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.HelpContentsPanel;
@@ -132,15 +133,14 @@ public class MigrateWalletsAction extends AbstractAction {
                                 new Object[] {loopPerWalletModelData.getWalletDescription()})));
 
                         File tempDirectory = null;
-                        File testWallet = null;
+                        File testWalletFile = null;
                         String walletMigrationErrorText = "Unknown";
                         try {
                             tempDirectory = createTempDirectory(new File(loopPerWalletModelData.getWalletFilename()));
-                            testWallet = File.createTempFile("migrate", ".wallet", tempDirectory);
-                            testWallet.deleteOnExit();
+                            testWalletFile = File.createTempFile("migrate", ".wallet", tempDirectory);
+                            testWalletFile.deleteOnExit();
 
-                            String testWalletFilename = testWallet.getAbsolutePath();
-                            File testWalletFile = new File(testWalletFilename);
+                            String testWalletFilename = testWalletFile.getAbsolutePath();
                             
                             // Copy the serialised wallet to the new test wallet location.
                             FileHandler.copyFile(new File(loopPerWalletModelData.getWalletFilename()), testWalletFile);
@@ -175,8 +175,8 @@ public class MigrateWalletsAction extends AbstractAction {
                             thereWereFailures = true;
                         } finally {
                             // Delete test wallet data.
-                            if (testWallet != null) {
-                                PerWalletModelData testPerWalletModelData = controller.getModel().getPerWalletModelDataByWalletFilename(testWallet.getAbsolutePath());
+                            if (testWalletFile != null) {
+                                PerWalletModelData testPerWalletModelData = controller.getModel().getPerWalletModelDataByWalletFilename(testWalletFile.getAbsolutePath());
                                 controller.getModel().remove(testPerWalletModelData);
                                 fileHandler.deleteWalletAndWalletInfo(testPerWalletModelData);
                                 tempDirectory.delete();
@@ -368,7 +368,8 @@ public class MigrateWalletsAction extends AbstractAction {
             if (WalletVersion.SERIALIZED == loopPerWalletModelData.getWalletInfo().getWalletVersion()) {
                 // Have we already tried to migrate it with this version of MultiBit and failed ?
                 String lastMigrateVersion = loopPerWalletModelData.getWalletInfo().getProperty(MultiBitModel.LAST_FAILED_MIGRATE_VERSION);
-                if (lastMigrateVersion == null || controller.getLocaliser().getVersionNumber().compareTo(lastMigrateVersion) > 0) {
+                VersionComparator versionComparator = new VersionComparator();
+                if (lastMigrateVersion == null || versionComparator.compare(controller.getLocaliser().getVersionNumber(), lastMigrateVersion) > 0) {
                     walletFilenamesToMigrate.add(loopPerWalletModelData.getWalletFilename());
                 }
             }
