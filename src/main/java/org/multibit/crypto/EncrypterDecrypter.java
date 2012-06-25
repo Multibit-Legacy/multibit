@@ -54,33 +54,33 @@ public class EncrypterDecrypter {
     public static final String STRING_ENCODING = "UTF-8";
 
     /**
-     * number of times the password & salt are hashed during key creation
+     * number of times the password & salt are hashed during key creation.
      */
     private static final int NUMBER_OF_ITERATIONS = 1024;
 
     /**
-     * key length
+     * Key length.
      */
     private static final int KEY_LENGTH = 256;
 
     /**
-     * initialization vector length
+     * Initialization vector length.
      */
     private static final int IV_LENGTH = 128;
 
     /**
-     * the length of the salt
+     * The length of the salt.
      */
     private static final int SALT_LENGTH = 8;
 
     /**
-     * OpenSSL salted prefix text
+     * OpenSSL salted prefix text.
      */
     public static final String OPENSSL_SALTED_TEXT = "Salted__";
 
     /**
      * OpenSSL salted prefix bytes - also used as magic number for encrypted
-     * key file
+     * key file.
      */
     public byte[] openSSLSaltedBytes;
 
@@ -108,7 +108,7 @@ public class EncrypterDecrypter {
     }
 
     /**
-     * Get password and generate key and iv
+     * Get password and generate key and iv.
      * 
      * @param password
      *            The password to use in key generation
@@ -132,7 +132,7 @@ public class EncrypterDecrypter {
     }
 
     /**
-     * Password based encryption using AES - CBC 256 bits
+     * Password based encryption using AES - CBC 256 bits.
      * 
      * @param plainText
      *            The text to encrypt
@@ -143,20 +143,43 @@ public class EncrypterDecrypter {
      */
     public String encrypt(String plainText, char[] password) throws EncrypterDecrypterException {
         try {
-            // generate salt - each encryption call has a different salt
-            byte[] salt = new byte[SALT_LENGTH];
-            secureRandom.nextBytes(salt);
-
             byte[] plainTextAsBytes;
             if (plainText == null) {
                 plainTextAsBytes = new byte[0];
             } else {
                 plainTextAsBytes = plainText.getBytes(STRING_ENCODING);
             }
+            
+            byte[] encryptedBytes = encrypt(plainTextAsBytes, password);     
+            
+            // OpenSSL prefixes the salt bytes + encryptedBytes with Salted___ and then base64 encodes it
+            byte[] encryptedBytesPlusSaltedText = concat(openSSLSaltedBytes, encryptedBytes);
+            
+            return Base64.encodeBase64String(encryptedBytesPlusSaltedText);
+        } catch (Exception e) {
+            throw new EncrypterDecrypterException("Could not encrypt string '" + plainText + "'", e);
+        }
+    }
 
+    /**
+     * Password based encryption using AES - CBC 256 bits.
+     * 
+     * @param plainBytes
+     *            The bytes to encrypt
+     * @param password
+     *            The password to use for encryption
+     * @return SALT_LENGTH bytes of salt followed by the encrypted bytes.
+     * @throws EncrypterDecrypterException
+     */
+    public byte[] encrypt(byte[] plainTextAsBytes, char[] password) throws EncrypterDecrypterException {
+        try {
+            // Generate salt - each encryption call has a different salt.
+            byte[] salt = new byte[SALT_LENGTH];
+            secureRandom.nextBytes(salt);
+ 
             ParametersWithIV key = (ParametersWithIV) getAESPasswordKey(password, salt);
 
-            // The following code uses an AES cipher to encrypt the message
+            // The following code uses an AES cipher to encrypt the message.
             BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESFastEngine()));
             cipher.init(true, key);
             byte[] encryptedBytes = new byte[cipher.getOutputSize(plainTextAsBytes.length)];
@@ -164,20 +187,15 @@ public class EncrypterDecrypter {
 
             cipher.doFinal(encryptedBytes, length);
 
-            // OpenSSL adds the salt to the encrypted result as "Salted___" +
-            // salt in hex.
-            // Do the same
-
-            byte result[] = concat(concat(openSSLSaltedBytes, salt), encryptedBytes);
-
-            return Base64.encodeBase64String(result);
+            // The result bytes are the SALT_LENGTH bytes followed by the encrypted bytes.
+            return concat(salt, encryptedBytes);
         } catch (Exception e) {
-            throw new EncrypterDecrypterException("Could not encrypt string '" + plainText + "'", e);
+            throw new EncrypterDecrypterException("Could not encrypt bytes '" + Utils.bytesToHexString(plainTextAsBytes) + "'", e);
         }
     }
 
     /**
-     * Decrypt text previously encrypted with this class
+     * Decrypt text previously encrypted with this class.
      * 
      * @param textToDecode
      *            The code to decrypt
@@ -189,21 +207,41 @@ public class EncrypterDecrypter {
     public String decrypt(String textToDecode, char[] password) throws EncrypterDecrypterException {
         try {
             final byte[] decodeTextAsBytes = Base64.decodeBase64(textToDecode.getBytes(STRING_ENCODING));
-
-            // extract the salt and bytes to decrypt
-            int saltPrefixTextLength = openSSLSaltedBytes.length + SALT_LENGTH;
-
-            byte[] prefixedSalt = new byte[saltPrefixTextLength];
-
-            System.arraycopy(decodeTextAsBytes, 0, prefixedSalt, 0, saltPrefixTextLength);
-
-            byte[] salt = new byte[SALT_LENGTH];
-
-            System.arraycopy(prefixedSalt, openSSLSaltedBytes.length, salt, 0, SALT_LENGTH);
-
+            
+            // Strip off the bytes due to the OPENSSL_SALTED_TEXT prefix text.
+            int saltPrefixTextLength = openSSLSaltedBytes.length;
+            
             byte[] cipherBytes = new byte[decodeTextAsBytes.length - saltPrefixTextLength];
             System.arraycopy(decodeTextAsBytes, saltPrefixTextLength, cipherBytes, 0, decodeTextAsBytes.length
                     - saltPrefixTextLength);
+
+            byte[] decryptedBytes = decrypt(cipherBytes, password);
+            
+            return new String(decryptedBytes, STRING_ENCODING).trim();
+        } catch (Exception e) {
+            throw new EncrypterDecrypterException("Could not decrypt input string", e); 
+        }
+    }
+
+    /**
+     * Decrypt bytes previously encrypted with this class.
+     * 
+     * @param bytesToDecode
+     *            The bytes to decrypt
+     * @param passwordbThe
+     *            password to use for decryption
+     * @return The decrypted bytes
+     * @throws EncrypterDecrypterException
+     */
+    public byte[] decrypt(byte[] bytesToDecode, char[] password) throws EncrypterDecrypterException {
+        try {
+            // separate the salt and bytes to decrypt
+            byte[] salt = new byte[SALT_LENGTH];
+
+            System.arraycopy(bytesToDecode, 0, salt, 0, SALT_LENGTH);
+
+            byte[] cipherBytes = new byte[bytesToDecode.length - SALT_LENGTH];
+            System.arraycopy(bytesToDecode, SALT_LENGTH, cipherBytes, 0, bytesToDecode.length - SALT_LENGTH);
 
             ParametersWithIV key = (ParametersWithIV) getAESPasswordKey(password, salt);
 
@@ -216,17 +254,14 @@ public class EncrypterDecrypter {
 
             cipher.doFinal(decryptedBytes, length);
 
-            // reconstruct the original string, trimming off any whitespace
-            // added by block padding
-            String decryptedText = new String(decryptedBytes, STRING_ENCODING).trim();
-            return decryptedText;
+            return decryptedBytes;
         } catch (Exception e) {
             throw new EncrypterDecrypterException("Could not decrypt input string", e);
         }
     }
 
     /**
-     * Concatenate two byte arrays
+     * Concatenate two byte arrays.
      */
     private byte[] concat(byte[] arrayA, byte[] arrayB) {
         byte[] result = new byte[arrayA.length + arrayB.length];
@@ -237,7 +272,7 @@ public class EncrypterDecrypter {
     }
 
     /**
-     * get the OpenSSL "Salted__" prefix text as bytes
+     * Get the OpenSSL OPENSSL_SALTED_TEXT prefix text as bytes.
      * 
      * @return The openSSL salted prefix bytes
      */
@@ -246,9 +281,9 @@ public class EncrypterDecrypter {
     }
 
     /**
-     * Get the magic text that starts every OpenSSL encrypted key file
+     * Get the magic text that starts every OpenSSL encrypted String.
      * 
-     * @return
+     * @return The magic text that starts every OpenSSL encrypted String
      */
     public String getOpenSSLMagicText() {
         return openSSLMagicText;

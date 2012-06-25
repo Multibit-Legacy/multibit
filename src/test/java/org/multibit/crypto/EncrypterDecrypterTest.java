@@ -40,24 +40,27 @@ public class EncrypterDecrypterTest extends TestCase {
     // Chinese translation for 'The fee cannot be smaller than the minimum fee
     private static final String TEST_STRING2 = "\u4ea4\u6613\u8d39\u7528\u5fc5\u987b\u81f3\u5c11 0.0001 BTC\u3002\u4fdd\u6301\u539f\u6709\u8d39\u7528\u8bbe\u7f6e\u3002";
     
+    // Nonsense bytes for encryption test.
+    private static final byte[] TEST_BYTES1= new byte[]{0, -101, 2, 103, -4, 105, 6, 107, 8, -109, 10, 111, -12, 113, 14, -115, 16, 117, -18, 119, 20, 121, 22, 123, -24, 125, 26, 127, -28, 29, -30, 31};
+
     private static final char[] PASSWORD1 = "aTestPassword".toCharArray();
     private static final char[] PASSWORD2 = "0123456789".toCharArray();
 
     private static final char[] WRONG_PASSWORD = "thisIsTheWrongPassword".toCharArray();
 
-    // Moscow in Russian in Cyrillic
+    // Moscow in Russian in Cyrillic.
     private static final char[] PASSWORD3 = "\u041c\u043e\u0441\u043a\u0432\u0430".toCharArray();
 
     @Test
     public void testEncryptDecryptGood1() throws EncrypterDecrypterException {
         EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter();
 
-        // encrypt
+        // Encrypt.
         String cipherText = encrypterDecrypter.encrypt(TEST_STRING1, PASSWORD1);
         assertNotNull(cipherText);
         log.debug("\nEncrypterDecrypterTest: cipherText = \n---------------\n" + cipherText + "\n---------------\n");
 
-        // decrypt
+        // Decrypt.
         String rebornPlainText = encrypterDecrypter.decrypt(cipherText, PASSWORD1);
         log.debug("Original: " + Utils.bytesToHexString(TEST_STRING1.getBytes()));
         log.debug("Reborn  : " + Utils.bytesToHexString(rebornPlainText.getBytes()));
@@ -67,7 +70,7 @@ public class EncrypterDecrypterTest extends TestCase {
     public void testEncryptDecryptGood2() throws EncrypterDecrypterException {
         EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter();
 
-        // create a longer encryption string
+        // Create a longer encryption string.
         StringBuffer stringBuffer = new StringBuffer();
         for (int i = 0; i < 100; i++) {
             stringBuffer.append(i + " ").append(TEST_STRING1);
@@ -236,19 +239,19 @@ public class EncrypterDecrypterTest extends TestCase {
     public void testEncryptDecryptNullAndBlank() throws EncrypterDecrypterException {
         EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter();
 
-        // encrypt null string
-        String cipherText = encrypterDecrypter.encrypt(null, PASSWORD1);
+        // Encrypt a null string - it gets treated as an empty string.
+        String cipherText = encrypterDecrypter.encrypt((String)null, PASSWORD1);
         assertNotNull(cipherText);
 
-        // decrypt
+        // Decrypt.
         String rebornPlainText = encrypterDecrypter.decrypt(cipherText, PASSWORD1);
         assertEquals("", rebornPlainText);
         
-        // encrypt empty string
+        // Encrypt empty string.
         cipherText = encrypterDecrypter.encrypt("", PASSWORD1);
         assertNotNull(cipherText);
 
-        // decrypt
+        // Decrypt.
         rebornPlainText = encrypterDecrypter.decrypt(cipherText, PASSWORD1);
         assertEquals("", rebornPlainText);
     }
@@ -257,18 +260,38 @@ public class EncrypterDecrypterTest extends TestCase {
     public void testEncryptDecryptInternational() throws EncrypterDecrypterException {
         EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter();
 
-        // encrypt
+        // Encrypt.
         String cipherText = encrypterDecrypter.encrypt(TEST_STRING2, PASSWORD3);
         assertNotNull(cipherText);
         log.debug("\nEncrypterDecrypterTest: cipherText = \n---------------\n" + cipherText + "\n---------------\n");
 
-        // decrypt
+        // Decrypt.
         String rebornPlainText = encrypterDecrypter.decrypt(cipherText, PASSWORD3);
         log.debug("Original: " + Utils.bytesToHexString(TEST_STRING2.getBytes()));
         log.debug("Reborn  : " + Utils.bytesToHexString(rebornPlainText.getBytes()));
         assertEquals(TEST_STRING2, rebornPlainText);
     }
- 
+    
+    @Test
+    public void testEncryptDecryptBytes1() throws EncrypterDecrypterException {
+        EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter();
+
+        // Encrypt bytes.
+        byte[] cipherBytes = encrypterDecrypter.encrypt(TEST_BYTES1, PASSWORD1);
+        assertNotNull(cipherBytes);
+        log.debug("\nEncrypterDecrypterTest: cipherBytes = \nlength = " + cipherBytes.length + "\n---------------\n" + Utils.bytesToHexString(cipherBytes) + "\n---------------\n");
+
+        // Decrypt bytes. Note the result is zero padded to a cipher block length so you have to truncate it to your expected length.
+        byte[] rebornPlainBytes = encrypterDecrypter.decrypt(cipherBytes, PASSWORD1);
+        
+        byte[] truncatedRebornBytes = new byte[TEST_BYTES1.length];
+        System.arraycopy(rebornPlainBytes, 0, truncatedRebornBytes, 0, TEST_BYTES1.length);
+
+        log.debug("Original: " + Utils.bytesToHexString(TEST_BYTES1));
+        log.debug("Reborn  : " + Utils.bytesToHexString(truncatedRebornBytes));
+        assertEquals( Utils.bytesToHexString(TEST_BYTES1),  Utils.bytesToHexString(truncatedRebornBytes));
+    }
+
     private void writeToFile(String textToWrite, File destinationFile) throws IOException {
         if (!destinationFile.exists()) {
             destinationFile.createNewFile();
