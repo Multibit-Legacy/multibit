@@ -44,7 +44,6 @@ import org.multibit.platform.GenericApplicationSpecification;
 import org.multibit.platform.listener.GenericOpenURIEvent;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.action.MigrateWalletsAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -278,8 +277,8 @@ public class MultiBit {
         controller.handleOpenURI();
 
         // Check if any wallets need migrating from serialised to protobuf.
-        MigrateWalletsAction migrateWalletsAction = new MigrateWalletsAction(controller, (MultiBitFrame) swingViewSystem);
-        migrateWalletsAction.actionPerformed(null);
+        //MigrateWalletsAction migrateWalletsAction = new MigrateWalletsAction(controller, (MultiBitFrame) swingViewSystem);
+        //migrateWalletsAction.actionPerformed(null);
         
         log.debug("Downloading blockchain");
         if (useFastCatchup) {
