@@ -497,7 +497,7 @@ public class FileHandler {
      * 
      * Thus each user has their own copy of the blockchain.
      */
-    public void copyBlockChainFromInstallationDirectory(MultiBitService multiBitService, String destinationBlockChainFilename) {
+    public void copyBlockChainFromInstallationDirectory(MultiBitService multiBitService, String destinationBlockChainFilename) throws IOException {
         if (destinationBlockChainFilename == null) {
             return;
         }
@@ -509,39 +509,37 @@ public class FileHandler {
             // Work out the source blockchain (put into the program installation
             // directory by the installer).
             File directory = new File(".");
-            try {
-                String currentWorkingDirectory = directory.getCanonicalPath();
 
-                String filePrefix = multiBitService.getFilePrefix();
-                String blockchainFilename = filePrefix + MultiBitService.BLOCKCHAIN_SUFFIX;
-                String sourceBlockchainFilename = currentWorkingDirectory + File.separator + blockchainFilename;
-                File sourceBlockchain = new File(sourceBlockchainFilename);
-                if (sourceBlockchain.exists()) {
-                    // It should exist since installer puts them in.
-                    log.info("Copying blockchain from '" + sourceBlockchainFilename + "' to '" + destinationBlockChainFilename
-                            + "'");
-                    long startTime = (DateUtils.nowUtc()).getMillis();
-                    copyFile(sourceBlockchain, destinationBlockchain);
-                    long stopTime = (DateUtils.nowUtc()).getMillis();
-                    log.info("Time taken to copy blockchain was " + (stopTime - startTime) + " ms.");
+            String currentWorkingDirectory = directory.getCanonicalPath();
 
-                    // Check all the data was copied.
-                    long sourceLength = sourceBlockchain.length();
-                    long destinationLength = destinationBlockchain.length();
-                    if (sourceLength != destinationLength) {
-                        log.error("Blockchain was not copied to user's application data directory correctly.\nThe source blockchain '"
-                                + sourceBlockchainFilename
-                                + "' is of length "
-                                + sourceLength
-                                + "\nbut the destination blockchain '"
-                                + destinationBlockChainFilename
-                                + "' is of length "
-                                + destinationLength);
-                    }
+            String filePrefix = multiBitService.getFilePrefix();
+            String blockchainFilename = filePrefix + MultiBitService.BLOCKCHAIN_SUFFIX;
+            String sourceBlockchainFilename = currentWorkingDirectory + File.separator + blockchainFilename;
+            File sourceBlockchain = new File(sourceBlockchainFilename);
+            if (sourceBlockchain.exists()) {
+                // It should exist since installer puts them in.
+                log.info("Copying blockchain from '" + sourceBlockchainFilename + "' to '" + destinationBlockChainFilename
+                        + "'");
+                long startTime = (DateUtils.nowUtc()).getMillis();
+                copyFile(sourceBlockchain, destinationBlockchain);
+                long stopTime = (DateUtils.nowUtc()).getMillis();
+                log.info("Time taken to copy blockchain was " + (stopTime - startTime) + " ms.");
+
+                // Check all the data was copied.
+                long sourceLength = sourceBlockchain.length();
+                long destinationLength = destinationBlockchain.length();
+                if (sourceLength != destinationLength) {
+                    String errorText = "Blockchain was not copied to user's application data directory correctly.\nThe source blockchain '"
+                            + sourceBlockchainFilename
+                            + "' is of length "
+                            + sourceLength
+                            + "\nbut the destination blockchain '"
+                            + destinationBlockChainFilename
+                            + "' is of length "
+                            + destinationLength;
+                    log.error(errorText);
+                    throw new FileHandlerException(errorText);
                 }
-
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }
