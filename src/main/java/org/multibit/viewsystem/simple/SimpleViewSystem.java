@@ -3,6 +3,7 @@ package org.multibit.viewsystem.simple;
 import java.math.BigInteger;
 
 import org.multibit.model.PerWalletModelData;
+import org.multibit.model.StatusEnum;
 import org.multibit.viewsystem.ViewSystem;
 
 import com.google.bitcoin.core.Transaction;
@@ -68,15 +69,9 @@ public class SimpleViewSystem implements ViewSystem {
     }
 
     @Override
-    public void nowOnline() {
+    public void setOnlineStatus(StatusEnum statusEnum) {
         online = true;
-        System.out.println("SIMPLE. Now online");
-    }
-
-    @Override
-    public void nowOffline() {
-        online = false;
-        System.out.println("SIMPLE. Now offline");
+        System.out.println("SIMPLE. online status = " + statusEnum.getLocalisationKey());
     }
 
     @Override

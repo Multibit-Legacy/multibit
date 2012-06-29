@@ -16,6 +16,7 @@
 package org.multibit.viewsystem;
 
 import org.multibit.model.PerWalletModelData;
+import org.multibit.model.StatusEnum;
 
 import com.google.bitcoin.core.WalletEventListener;
 
@@ -54,15 +55,10 @@ public interface ViewSystem extends WalletEventListener {
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData);
 
     /**
-     * a method called when MultiBit is now online i.e. now has a peer when it did not before
+     * a method called when MultiBit online status changes between online, connecting. error
      */
-    public void nowOnline();
+    public void setOnlineStatus(StatusEnum statusEnum);
 
-    /**
-     * a method called when MultiBit is now offline i.e. the last peer has disconnecte
-     */
-    public void nowOffline();
-   
     /**
      * notification that a block has been downloaded
      * (this is typically called from a peer thread)

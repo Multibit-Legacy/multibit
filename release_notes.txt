@@ -1,5 +1,16 @@
 MultiBit release notes.
 
+Version 0.4.2
+Enhancements:
++  Added utility to migrate from serialised to protobuf wallets.
++  Improved error handling on startup if blockchain cannot be loaded.
+
+
+26 Jun 2012 Version 0.4.1
+Bug fix:
++  Fix for wallet load error "Illegal state exception - duplicate transaction"
+
+
 18 Jun 2012 Version 0.4.0
 Enhancements:
 +  Introduction of protobuf format for new wallets

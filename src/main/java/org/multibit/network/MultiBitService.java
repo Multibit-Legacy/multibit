@@ -37,6 +37,7 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.model.StatusEnum;
 import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletVersion;
 import org.multibit.store.ReplayableBlockStore;
@@ -120,7 +121,7 @@ public class MultiBitService {
             format.setCalendar(cal);
             genesisBlockCreationDate = format.parse("2009-01-03 18:15:05");
         } catch (ParseException e) {
-            // will never happen
+            // Will never happen.
             e.printStackTrace();
         }
     }
@@ -181,8 +182,14 @@ public class MultiBitService {
             peerGroup.start();
             log.debug("Started peergroup.");
         } catch (BlockStoreException e) {
+            controller.setOnlineStatus(StatusEnum.ERROR);
+            MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("multiBitService.couldNotLoadBlockchain", 
+                    new Object[]{blockchainFilename, e.getClass().getName() + " " + e.getMessage()})));
             log.error("Error creating MultiBitService.1 " + e.getClass().getName() + " " + e.getMessage());
         } catch (Exception e) {
+            controller.setOnlineStatus(StatusEnum.ERROR);
+            MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("multiBitService.couldNotLoadBlockchain", 
+                    new Object[]{blockchainFilename, e.getClass().getName() + " " + e.getMessage()})));
             log.error("Error creating MultiBitService.2 " + e.getClass().getName() + " " + e.getMessage());
         }
     }
