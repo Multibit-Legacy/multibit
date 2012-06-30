@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.multibit</groupId>
   <artifactId>multibit</artifactId>
-  <version>0.4.2</version>
+  <version>0.4.3alpha</version>
   <name>MultiBit</name>
   <description>A Java Swing client for Bitcoin</description>
   <url>http://www.multibit.org</url>
@@ -115,7 +115,8 @@
                   <outputDirectory>${basedir}/target/bitcoinj</outputDirectory>
                   <includes>**/*.*</includes>
                   <!-- excludes classes that are duplicated in multibit -->
-                  <excludes> **/BlockChain.class, **/Sha256Hash.class,
+                  <excludes> **/BlockChain.class, **/Peer.class,
+                    **/Sha256Hash.class,
                     **/Transaction.class, **/Transaction$*.class,
                     **/TransactionInput.class, **/TransactionInput$*.class,
                     **/Wallet.class, **/Wallet$*.class,
