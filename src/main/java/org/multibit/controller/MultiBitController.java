@@ -52,11 +52,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Block;
+import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.GetDataMessage;
 import com.google.bitcoin.core.Message;
 import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
 import com.google.bitcoin.core.ScriptException;
+import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
@@ -573,6 +575,45 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             } catch (VerificationException e) {
                 log.error(e.getMessage(), e);
             }
+        }
+    }
+
+    /**
+     * Called from replay when a block is replayed from cache.
+     * @param block
+     */
+    public void onBlock(StoredBlock storedBlock, Block block) {
+        // Loop through the transactions in the block.
+        List<Transaction> transactions = block.getTransactions();
+        if (transactions != null) {
+            for (Transaction transaction : transactions) {
+                // loop through all the wallets, seeing if the transaction is relevant
+                if (transaction != null) {
+                    try {
+                        java.util.List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
+
+                        if (perWalletModelDataList != null) {
+                            for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                                Wallet loopWallet = perWalletModelData.getWallet();
+                                if (loopWallet != null) {
+                                    if (loopWallet.isTransactionRelevant(transaction, true)) {
+                                        // the perWalletModelData is marked as dirty
+                                        perWalletModelData.setDirty(true);
+                                        if (loopWallet.getTransaction(transaction.getHash()) == null) {
+                                            log.debug("MultiBit adding a new transaction from a block for the wallet '"
+                                                    + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());
+                                            loopWallet.receiveFromBlock(transaction, storedBlock, BlockChain.NewBlockType.BEST_CHAIN);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch (ScriptException e) {
+                        log.error(e.getMessage(), e);
+                    } catch (VerificationException e) {
+                        log.error(e.getMessage(), e);
+                    }
+                }            }
         }
     }
 

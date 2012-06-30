@@ -15,8 +15,12 @@
  */
 package org.multibit.network;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -28,6 +32,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.SimpleTimeZone;
+import java.util.Stack;
 
 import javax.swing.SwingWorker;
 
@@ -54,6 +59,7 @@ import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.ProtocolException;
+import com.google.bitcoin.core.Sha256Hash;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
@@ -354,6 +360,9 @@ public class MultiBitService {
         // time to go.
         log.debug("Starting replay of blockchain from date = '" + dateToReplayFrom + "'");
 
+        StoredBlock storedBlock = null;
+        
+        Stack<StoredBlock> blockStack = new Stack<StoredBlock>();
         if (dateToReplayFrom == null || genesisBlockCreationDate.after(dateToReplayFrom)) {
             // create empty new block store
             if (blockStore != null) {
@@ -365,12 +374,13 @@ public class MultiBitService {
             blockChain = new MultiBitBlockChain(networkParameters, (BlockStore) blockStore);
             log.debug("Created new blockStore.2 '" + blockChain + "'");
         } else {
-            StoredBlock storedBlock = blockStore.getChainHead();
+            storedBlock = blockStore.getChainHead();
 
             assert storedBlock != null;
 
             boolean haveGoneBackInTimeEnough = false;
             int numberOfBlocksGoneBackward = 0;
+            blockStack.push(storedBlock);
 
             while (!haveGoneBackInTimeEnough) {
                 if (storedBlock == null) {
@@ -395,6 +405,7 @@ public class MultiBitService {
                             break;
                         } else {
                             storedBlock = previousBlock;
+                            blockStack.push(storedBlock);
                         }
                         numberOfBlocksGoneBackward++;
                     } catch (BlockStoreException e) {
@@ -415,6 +426,7 @@ public class MultiBitService {
                         break;
                     } else {
                         storedBlock = previousBlock;
+                        blockStack.push(storedBlock);
                     }
                     numberOfBlocksGoneBackward++;
                 } catch (BlockStoreException e) {
@@ -423,8 +435,24 @@ public class MultiBitService {
                     break;
                 }
             }
-
-            assert storedBlock != null;
+          
+            // If we have the blocks cached then we do not need to redownload them
+            String applicationDataDirectory = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory();
+            String cacheDirectoryString = applicationDataDirectory + File.separator + MultiBitController.CACHE_DIRECTORY;
+            File cacheDirectory = new File(cacheDirectoryString);
+            if (!cacheDirectory.exists()) {
+                cacheDirectory.mkdir();
+            }
+            
+            // See if block is already cached.
+            String blockFilename = cacheDirectory + File.separator + storedBlock.getHeader().getHashAsString() + MultiBitController.BLOCK_SUFFIX;
+            File blockFile = new File(blockFilename);
+                
+            if (blockFile.exists()) {
+                log.debug("Can replay blocks from the cache from storedBlock height = " + storedBlock.getHeight());
+                storedBlock = replayFromBlockCache(blockStack);
+            }   
+            
 
             // Set the block chain head to the block just before the
             // earliest transaction in the wallet.
@@ -439,11 +467,11 @@ public class MultiBitService {
         // Reset UI to zero peers.
         controller.onPeerDisconnected(null, 0);
 
-        if (dateToReplayFrom != null) {
+        if (dateToReplayFrom != null && storedBlock != null) {
             message = new Message(controller.getLocaliser().getString(
                     "resetTransactionSubmitAction.replayingBlockchain",
                     new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
-                            dateToReplayFrom) }), false);
+                            storedBlock.getHeader().getTime()) }), false);
         } else {
             message = new Message(controller.getLocaliser().getString(
                     "resetTransactionSubmitAction.replayingBlockchain",
@@ -456,6 +484,54 @@ public class MultiBitService {
         peerGroup.start();
  
         downloadBlockChain();
+    }
+    
+    /**
+     * Replay from block cache.
+     * Replay the blocks in the stack given from the block cache.
+     * If any blocks are not cached then return that block as the new block hash to be the truncated block chain head
+     */
+    private StoredBlock replayFromBlockCache(Stack<StoredBlock> blockStack) {
+        log.debug("Replaying a stack of " + blockStack.size() + " from the block cache.");
+        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("multiBitService.replayingFromBlockCache")));
+        StoredBlock newChainHead = blockStack.peek();
+        
+        String applicationDataDirectory = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory();
+        String cacheDirectoryString = applicationDataDirectory + File.separator + MultiBitController.CACHE_DIRECTORY;
+        File cacheDirectory = new File(cacheDirectoryString);
+        if (!cacheDirectory.exists()) {
+            cacheDirectory.mkdir();
+        }
+        
+        while (!blockStack.isEmpty()) {
+            newChainHead = blockStack.pop();
+              
+            // See if block is already cached.
+            String blockFilename = cacheDirectory + File.separator + newChainHead.getHeader().getHashAsString() + MultiBitController.BLOCK_SUFFIX;
+            File blockFile = new File(blockFilename);
+            
+            if (blockFile.exists()) {
+                byte[] blockBytes;
+                try {
+                    blockBytes = getBytesFromFile(blockFile);
+                    Block replayBlock = new Block(networkParameters, blockBytes);
+                    // Replay the block.
+                    controller.onBlock(newChainHead, replayBlock);
+                    controller.onBlocksDownloaded(null, replayBlock, -1);
+                } catch (IOException e) {
+                    // We did not successfully read the block so start downloading from here.
+                    return newChainHead;
+                } catch (ProtocolException e) {
+                    // We did not successfully read the block so start downloading from here.
+                    return newChainHead;
+                }
+            } else {
+                // The block is not cached so start downloading.
+                return newChainHead;
+            }
+        }
+        
+        return newChainHead;
     }
 
     /**
@@ -548,5 +624,40 @@ public class MultiBitService {
 
     public ReplayableBlockStore getBlockStore() {
         return blockStore;
+    }
+    
+    private byte[] getBytesFromFile(File file) throws IOException {
+        InputStream is = new FileInputStream(file);
+
+        // Get the size of the file
+        long length = file.length();
+
+        // You cannot create an array using a long type.
+        // It needs to be an int type.
+        // Before converting to an int type, check
+        // to ensure that file is not larger than Integer.MAX_VALUE.
+        if (length > Integer.MAX_VALUE) {
+            // File is too large
+        }
+
+        // Create the byte array to hold the data
+        byte[] bytes = new byte[(int)length];
+
+        // Read in the bytes
+        int offset = 0;
+        int numRead = 0;
+        while (offset < bytes.length
+               && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
+            offset += numRead;
+        }
+
+        // Ensure all the bytes have been read in
+        if (offset < bytes.length) {
+            throw new IOException("Could not completely read file "+file.getName());
+        }
+
+        // Close the input stream and return bytes
+        is.close();
+        return bytes;
     }
 }
