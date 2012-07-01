@@ -35,6 +35,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
+import org.multibit.network.CacheManager;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.listener.GenericAboutEvent;
 import org.multibit.platform.listener.GenericAboutEventListener;
@@ -114,9 +115,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     private volatile URI rawBitcoinURI = null;
 
     private volatile boolean applicationStarting = true;
-
-    public static final String CACHE_DIRECTORY = "blockCache";
-    public static final String BLOCK_SUFFIX = ".block";
 
     /**
      * used for testing only
@@ -280,17 +278,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 //            System.out.println("Block data =\nSTART\n" + Utils.bytesToHexString(block.bitcoinSerialize()) + "\nEND");
 //        }
         
-        
-        // Cache the block received into the CACHE_DIRECTORY
-        String applicationDataDirectory = getApplicationDataDirectoryLocator().getApplicationDataDirectory();
-        String cacheDirectoryString = applicationDataDirectory + File.separator + CACHE_DIRECTORY;
-        File cacheDirectory = new File(cacheDirectoryString);
-        if (!cacheDirectory.exists()) {
-            cacheDirectory.mkdir();
-        }
-        // Write block data to cache directory.
-        String blockFilename = cacheDirectory + File.separator + block.getHashAsString() + BLOCK_SUFFIX;
-        File blockFile = new File(blockFilename);
+        CacheManager.INSTANCE.setController(this);
+        File blockFile = CacheManager.INSTANCE.getBlockCacheFile(block);
             
         if (!blockFile.exists()) {
             try {

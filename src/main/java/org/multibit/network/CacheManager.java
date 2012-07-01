@@ -15,11 +15,20 @@
  */
 package org.multibit.network;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.Stack;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
@@ -45,24 +54,15 @@ public enum CacheManager {
     public static final String CACHE_DIRECTORY = "cache";
     public static final String BLOCK_CACHE_DIRECTORY = "block";
     public static final String BLOCK_SUFFIX = ".block";
+    
+    private final int BUFFER = 2048;
 
-    private String cacheDirectory;
-    private String blockCacheDirectory;
-    private MultiBitController controller;
+    private String applicationDataDirectory = null;
+    private String cacheDirectory = null;
+    private String blockCacheDirectory = null;
+    private MultiBitController controller = null;
       
-    CacheManager() {
-        String applicationDataDirectory = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory();
-        cacheDirectory = applicationDataDirectory + File.separator + CACHE_DIRECTORY;
-        File cacheDirectoryFile = new File(cacheDirectory);
-        if (!cacheDirectoryFile.exists()) {
-            cacheDirectoryFile.mkdir();
-        }   
-        
-        blockCacheDirectory = cacheDirectory + File.separator + BLOCK_CACHE_DIRECTORY;
-        File blockCacheDirectoryFile = new File(blockCacheDirectory);
-        if (!blockCacheDirectoryFile.exists()) {
-            blockCacheDirectoryFile.mkdir();
-        }   
+    CacheManager() {  
     }
     
     
@@ -73,18 +73,20 @@ public enum CacheManager {
      * @return StoredBlock The block from which conventional download replay must start.
      */
     public StoredBlock replayFromBlockCache(Stack<StoredBlock> blockStack) {
-        log.debug("Replaying a stack of " + blockStack.size() + " from the block cache.");
-        
         assert(CacheManager.INSTANCE.getController() != null);
         
-        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("multiBitService.replayingFromBlockCache")));
+        initialise();
+
+        log.debug("Replaying a stack of " + blockStack.size() + " from the block cache.");
+        
+        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("multiBitService.replayingFromBlockCache"), false));
         StoredBlock newChainHead = blockStack.peek();
               
         while (!blockStack.isEmpty()) {
             newChainHead = blockStack.pop();
               
             // See if block is already cached.
-            String blockFilename = blockCacheDirectory + File.separator + newChainHead.getHeader().getHashAsString() + MultiBitController.BLOCK_SUFFIX;
+            String blockFilename = blockCacheDirectory + File.separator + newChainHead.getHeader().getHashAsString() + BLOCK_SUFFIX;
             File blockFile = new File(blockFilename);
             
             if (blockFile.exists()) {
@@ -97,18 +99,49 @@ public enum CacheManager {
                     controller.onBlocksDownloaded(null, replayBlock, -1);
                 } catch (IOException e) {
                     // We did not successfully read the block so start downloading from here.
+                    String messageText = e.getClass().getCanonicalName() + " " +e.getMessage();
+                    log.error(messageText);
+                    MessageManager.INSTANCE.addMessage(new Message(messageText));
+
                     return newChainHead;
                 } catch (ProtocolException e) {
                     // We did not successfully read the block so start downloading from here.
+                    String messageText = e.getClass().getCanonicalName() + " " +e.getMessage();
+                    log.error(messageText);
+                    MessageManager.INSTANCE.addMessage(new Message(messageText));
                     return newChainHead;
                 }
             } else {
                 // The block is not cached so start downloading.
+                MessageManager.INSTANCE.addMessage(new Message(" "));
                 return newChainHead;
             }
         }
         
+        MessageManager.INSTANCE.addMessage(new Message(" "));
         return newChainHead;
+    }
+    
+    private void initialise() {
+        if (applicationDataDirectory == null) {
+            applicationDataDirectory = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory();
+        }
+        
+        if (cacheDirectory == null) {
+            cacheDirectory = applicationDataDirectory + File.separator + CACHE_DIRECTORY;
+            File cacheDirectoryFile = new File(cacheDirectory);
+            if (!cacheDirectoryFile.exists()) {
+                cacheDirectoryFile.mkdir();
+            }   
+        }
+        
+        if (blockCacheDirectory == null) {
+            blockCacheDirectory = cacheDirectory + File.separator + BLOCK_CACHE_DIRECTORY;
+            File blockCacheDirectoryFile = new File(blockCacheDirectory);
+            if (!blockCacheDirectoryFile.exists()) {
+                blockCacheDirectoryFile.mkdir();
+            }   
+        }
     }
       
     private byte[] getBytesFromFile(File file) throws IOException {
@@ -145,6 +178,60 @@ public enum CacheManager {
         is.close();
         return bytes;
     }
+    
+    private void writeZipFile(String zipEntryName, byte[] bytes, File outputZipFile) {
+        try {
+            ByteArrayInputStream origin = null;
+            FileOutputStream dest = new FileOutputStream(outputZipFile);
+            ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
+            out.setMethod(ZipOutputStream.DEFLATED);
+            byte data[] = new byte[BUFFER];
+            origin = new ByteArrayInputStream(bytes);
+            ZipEntry entry = new ZipEntry(zipEntryName);
+            out.putNextEntry(entry);
+            int count;
+            while ((count = origin.read(data, 0, BUFFER)) != -1) {
+                out.write(data, 0, count);
+            }
+            origin.close();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private byte[] readZipFile(String zipEntryName, File inZipFile) {
+        ByteArrayOutputStream dest = null;
+        try {
+            BufferedInputStream is = null;
+            ZipEntry entry;
+            ZipFile zipfile = new ZipFile(inZipFile);
+            Enumeration<? extends ZipEntry> e = zipfile.entries();
+
+            // Assume only one entry per zip.
+            entry = (ZipEntry) e.nextElement();
+            dest = new ByteArrayOutputStream();
+
+            is = new BufferedInputStream(zipfile.getInputStream(entry));
+            int count;
+            byte data[] = new byte[BUFFER];
+
+            while ((count = is.read(data, 0, BUFFER)) != -1) {
+                dest.write(data, 0, count);
+            }
+            dest.flush();
+            dest.close();
+            is.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (dest != null) {
+            return dest.toByteArray();
+        } else {
+            return null;
+        }
+    }
 
     public MultiBitController getController() {
         return controller;
@@ -155,15 +242,22 @@ public enum CacheManager {
     }
 
     public String getCacheDirectory() {
+        initialise();
         return cacheDirectory;
     }
 
     public String getBlockCacheDirectory() {
+        initialise();
         return blockCacheDirectory;
     }
     
     public File getBlockCacheFile(StoredBlock storedBlock) {
-        String blockFilename = blockCacheDirectory + File.separator + storedBlock.getHeader().getHashAsString() + MultiBitController.BLOCK_SUFFIX;
+        return getBlockCacheFile(storedBlock.getHeader());
+    }    
+    
+    public File getBlockCacheFile(Block block) {
+        initialise();
+        String blockFilename = blockCacheDirectory + File.separator +  block.getHashAsString() + BLOCK_SUFFIX;
         return new File(blockFilename);
     }
 }

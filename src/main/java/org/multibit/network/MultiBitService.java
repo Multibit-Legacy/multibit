@@ -15,12 +15,8 @@
  */
 package org.multibit.network;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -59,7 +55,6 @@ import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.ProtocolException;
-import com.google.bitcoin.core.Sha256Hash;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
@@ -72,7 +67,7 @@ import com.google.bitcoin.store.BlockStoreException;
 /**
  * <p>
  * MultiBitService encapsulates the interaction with the bitcoin netork
- * including: o Peers o Block chain download o sending / receiving bitcoins
+ * including: o Peers o Block chain download o sending / receiving bitcoins.
  * 
  * It is based on the bitcoinj PingService code
  * 
@@ -476,7 +471,7 @@ public class MultiBitService {
     }
 
     /**
-     * download the block chain
+     * Download the block chain.
      */
     public void downloadBlockChain() {
         @SuppressWarnings("rawtypes")
@@ -492,7 +487,7 @@ public class MultiBitService {
     }
 
     /**
-     * send bitcoins from the active wallet
+     * Send bitcoins from the active wallet.
      * 
      * @param sendAddressString
      *            the address to send to, as a String
@@ -527,7 +522,7 @@ public class MultiBitService {
                 MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
             }
             
-            // clone the sent transaction
+            // Clone the sent transaction.
             try {
                 Transaction clonedSentTransaction = new Transaction(networkParameters, sendTransaction.bitcoinSerialize());
                 // Modify the transaction so that its TransactionOutputs are unspent.
