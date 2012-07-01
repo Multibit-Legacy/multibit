@@ -37,6 +37,7 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.network.CacheManager;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
@@ -74,7 +75,8 @@ public class MultiBit {
 
         // Create the controller.
         final MultiBitController controller = new MultiBitController(applicationDataDirectoryLocator);
-
+        CacheManager.INSTANCE.setController(controller);
+        
         log.info("Configuring native event handling");
         GenericApplicationSpecification specification = new GenericApplicationSpecification();
         specification.getOpenURIEventListeners().add(controller);

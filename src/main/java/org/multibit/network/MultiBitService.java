@@ -435,27 +435,16 @@ public class MultiBitService {
                     break;
                 }
             }
-          
-            // If we have the blocks cached then we do not need to redownload them
-            String applicationDataDirectory = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory();
-            String cacheDirectoryString = applicationDataDirectory + File.separator + MultiBitController.CACHE_DIRECTORY;
-            File cacheDirectory = new File(cacheDirectoryString);
-            if (!cacheDirectory.exists()) {
-                cacheDirectory.mkdir();
-            }
             
-            // See if block is already cached.
-            String blockFilename = cacheDirectory + File.separator + storedBlock.getHeader().getHashAsString() + MultiBitController.BLOCK_SUFFIX;
-            File blockFile = new File(blockFilename);
+            // See if block is already cached. If it is, replay the cached blocks.
+            File blockFile = CacheManager.INSTANCE.getBlockCacheFile(storedBlock);
                 
             if (blockFile.exists()) {
                 log.debug("Can replay blocks from the cache from storedBlock height = " + storedBlock.getHeight());
-                storedBlock = replayFromBlockCache(blockStack);
-            }   
-            
+                storedBlock = CacheManager.INSTANCE.replayFromBlockCache(blockStack);
+            }             
 
-            // Set the block chain head to the block just before the
-            // earliest transaction in the wallet.
+            // Set the block chain head to the earliest block that we need to download.
             blockChain.setChainHeadClearCachesAndTruncateBlockStore(storedBlock);
         }
 
@@ -484,54 +473,6 @@ public class MultiBitService {
         peerGroup.start();
  
         downloadBlockChain();
-    }
-    
-    /**
-     * Replay from block cache.
-     * Replay the blocks in the stack given from the block cache.
-     * If any blocks are not cached then return that block as the new block hash to be the truncated block chain head
-     */
-    private StoredBlock replayFromBlockCache(Stack<StoredBlock> blockStack) {
-        log.debug("Replaying a stack of " + blockStack.size() + " from the block cache.");
-        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("multiBitService.replayingFromBlockCache")));
-        StoredBlock newChainHead = blockStack.peek();
-        
-        String applicationDataDirectory = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory();
-        String cacheDirectoryString = applicationDataDirectory + File.separator + MultiBitController.CACHE_DIRECTORY;
-        File cacheDirectory = new File(cacheDirectoryString);
-        if (!cacheDirectory.exists()) {
-            cacheDirectory.mkdir();
-        }
-        
-        while (!blockStack.isEmpty()) {
-            newChainHead = blockStack.pop();
-              
-            // See if block is already cached.
-            String blockFilename = cacheDirectory + File.separator + newChainHead.getHeader().getHashAsString() + MultiBitController.BLOCK_SUFFIX;
-            File blockFile = new File(blockFilename);
-            
-            if (blockFile.exists()) {
-                byte[] blockBytes;
-                try {
-                    blockBytes = getBytesFromFile(blockFile);
-                    Block replayBlock = new Block(networkParameters, blockBytes);
-                    // Replay the block.
-                    controller.onBlock(newChainHead, replayBlock);
-                    controller.onBlocksDownloaded(null, replayBlock, -1);
-                } catch (IOException e) {
-                    // We did not successfully read the block so start downloading from here.
-                    return newChainHead;
-                } catch (ProtocolException e) {
-                    // We did not successfully read the block so start downloading from here.
-                    return newChainHead;
-                }
-            } else {
-                // The block is not cached so start downloading.
-                return newChainHead;
-            }
-        }
-        
-        return newChainHead;
     }
 
     /**
@@ -624,40 +565,5 @@ public class MultiBitService {
 
     public ReplayableBlockStore getBlockStore() {
         return blockStore;
-    }
-    
-    private byte[] getBytesFromFile(File file) throws IOException {
-        InputStream is = new FileInputStream(file);
-
-        // Get the size of the file
-        long length = file.length();
-
-        // You cannot create an array using a long type.
-        // It needs to be an int type.
-        // Before converting to an int type, check
-        // to ensure that file is not larger than Integer.MAX_VALUE.
-        if (length > Integer.MAX_VALUE) {
-            // File is too large
-        }
-
-        // Create the byte array to hold the data
-        byte[] bytes = new byte[(int)length];
-
-        // Read in the bytes
-        int offset = 0;
-        int numRead = 0;
-        while (offset < bytes.length
-               && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
-            offset += numRead;
-        }
-
-        // Ensure all the bytes have been read in
-        if (offset < bytes.length) {
-            throw new IOException("Could not completely read file "+file.getName());
-        }
-
-        // Close the input stream and return bytes
-        is.close();
-        return bytes;
     }
 }
