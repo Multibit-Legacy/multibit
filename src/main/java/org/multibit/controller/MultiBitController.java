@@ -279,17 +279,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 //        }
         
         CacheManager.INSTANCE.setController(this);
-        File blockFile = CacheManager.INSTANCE.getBlockCacheFile(block);
-            
-        if (!blockFile.exists()) {
-            try {
-                block.bitcoinSerialize(new FileOutputStream(blockFile));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }   
+        CacheManager.INSTANCE.writeFile(block);
+ 
         fireBlockDownloaded();
     }
 

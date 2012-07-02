@@ -359,15 +359,67 @@ public class MultiBitService {
         
         Stack<StoredBlock> blockStack = new Stack<StoredBlock>();
         if (dateToReplayFrom == null || genesisBlockCreationDate.after(dateToReplayFrom)) {
-            // create empty new block store
-            if (blockStore != null) {
-                blockStore.close();
-            }
-            blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), true);
+            // Make sure the genesis block is cached.
+            CacheManager.INSTANCE.writeFile(networkParameters.genesisBlock);
+            File blockFile = CacheManager.INSTANCE.getBlockCacheFile(networkParameters.genesisBlock);
+                
+            log.debug("Actual Satoshi genesis exists = " + (new File(CacheManager.INSTANCE.getBlockCacheDirectory() + File.separator + "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f.block")).exists());
+ 
+            if (blockFile.exists()) {
+                log.debug("Can replay blocks from the cache from  the genesis block");
+                
+                // Put the whole chain on the stack.
+                storedBlock = blockStore.getChainHead();
 
-            log.debug("Creating new blockStore.2 - need to redownload from Genesis block");
-            blockChain = new MultiBitBlockChain(networkParameters, (BlockStore) blockStore);
-            log.debug("Created new blockStore.2 '" + blockChain + "'");
+                assert storedBlock != null;
+
+                blockStack.push(storedBlock);
+
+                while (true) {
+                    if (storedBlock == null) {
+                        // Null result of previous get previous - have reached genesis block.
+                        break;
+                    }
+                    Block header = storedBlock.getHeader();
+                    if (header == null) {
+                        log.debug("No header for stored block " + storedBlock.getHeight());
+                        break;
+                    }
+
+                    try {
+                        StoredBlock previousBlock = storedBlock.getPrev(blockStore);
+                        if (previousBlock == null) {
+                           log.debug("Could not navigate backwards form storedBlock " + storedBlock.getHeight());
+                            break;
+                        } else {
+                            storedBlock = previousBlock;
+                            blockStack.push(storedBlock);
+                        }     
+                    } catch (BlockStoreException e) {
+                        e.printStackTrace();
+                        // we have to stop navigating backwards
+                       break;
+                    }
+                }
+
+                storedBlock = CacheManager.INSTANCE.replayFromBlockCache(blockStack);
+            } else {   
+                try {
+                    log.debug("There is no cache for the genesis block - " + blockFile.getCanonicalPath() + ", for prodnet should be 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f.block");
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                // create empty new block store
+                if (blockStore != null) {
+                    blockStore.close();
+                }
+                blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), true);
+
+                log.debug("Creating new blockStore.2 - need to redownload from Genesis block");
+                blockChain = new MultiBitBlockChain(networkParameters, (BlockStore) blockStore);
+                log.debug("Created new blockStore.2 '" + blockChain + "'");
+            }
         } else {
             storedBlock = blockStore.getChainHead();
 

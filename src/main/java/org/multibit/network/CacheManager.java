@@ -85,6 +85,10 @@ public enum CacheManager {
         while (!blockStack.isEmpty()) {
             newChainHead = blockStack.pop();
               
+            if (blockStack.size() % 10000 == 0) {
+                log.debug("The block stack is of size " + blockStack.size());
+            }
+            
             // See if block is already cached.
             String blockFilename = blockCacheDirectory + File.separator + newChainHead.getHeader().getHashAsString() + BLOCK_SUFFIX;
             File blockFile = new File(blockFilename);
@@ -144,6 +148,19 @@ public enum CacheManager {
         }
     }
       
+    public void writeFile(Block block) {
+        initialise();
+        File blockFile = CacheManager.INSTANCE.getBlockCacheFile(block);
+        
+        if (!blockFile.exists()) {
+            try {
+                block.bitcoinSerialize(new FileOutputStream(blockFile));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }       
+    }
+    
     private byte[] getBytesFromFile(File file) throws IOException {
         InputStream is = new FileInputStream(file);
 
@@ -171,7 +188,7 @@ public enum CacheManager {
 
         // Ensure all the bytes have been read in
         if (offset < bytes.length) {
-            throw new IOException("Could not completely read file "+file.getName());
+            throw new IOException("Could not completely read file " + file.getName());
         }
 
         // Close the input stream and return bytes
