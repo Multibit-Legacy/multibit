@@ -4,6 +4,7 @@ Version 0.4.2
 Enhancements:
 +  Added utility to migrate from serialised to protobuf wallets.
 +  Improved error handling on startup if blockchain cannot be loaded.
++  Installer now works on Win7 x64.
 
 
 26 Jun 2012 Version 0.4.1
