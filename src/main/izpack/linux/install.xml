@@ -25,6 +25,7 @@
     </info>
 
 <variables>
+  <variable name="InstallerFrame.logfilePath" value="Default"/>
   <variable name="ShowCreateDirectoryMessage" value="false"/>
   <variable name="DesktopShortcutCheckboxEnabled" value="true"/>
 </variables>
