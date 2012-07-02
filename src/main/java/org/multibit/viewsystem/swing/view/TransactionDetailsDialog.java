@@ -205,7 +205,9 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailPanel.add(dateLabel, constraints);
 
         dateText = new MultiBitLabel("");
-        dateText.setText(dateFormatter.format(rowTableData.getDate()));
+        if (rowTableData.getDate().getTime() > 0) {
+            dateText.setText(dateFormatter.format(rowTableData.getDate()));
+        }
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 1;
