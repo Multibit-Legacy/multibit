@@ -3,7 +3,7 @@ MultiBit release notes.
 03 Jul 2012 Version 0.4.2
 Enhancements:
 +  Added utility to migrate wallets from serialised to protobuf format.
-+  'Delete wallet' now overwrites wallet file with random data before deletion (improved security).
++  'Delete wallet' now overwrites wallet file with random data before deletion (secure delete).
 +  Improved error handling on startup if blockchain cannot be loaded.
 
 Bug fix:
