@@ -170,14 +170,22 @@ public class FileHandler {
                     perWalletModelData.setDirty(false);
                 } else {
                     // Write to backup files.
-                    backupPerWalletModelData(perWalletModelData);
+                    backupPerWalletModelData(perWalletModelData, null);
                 }
             }
         }
         return;
     }
 
-    public void backupPerWalletModelData(PerWalletModelData perWalletModelData) {
+    /**
+     * Backup the perWalletModelData.
+     * The lastFailedMigrateVersion parameter can be used so that wallet migration is delayed for the backup
+     * should it ever need to be opened in MultiBit (to stop the wallet migrate trying to re-migrate it).
+     * 
+     * @param perWalletModelData
+     * @param lastFailedMigrateVersion
+     */
+    public void backupPerWalletModelData(PerWalletModelData perWalletModelData, String lastFailedMigrateVersion) {
         // Write to backup files.
         // Work out / reuse the backup file names.
         String walletInfoBackupFilename = null;
@@ -200,7 +208,20 @@ public class FileHandler {
                 perWalletModelData.setWalletInfoBackupFilename(walletInfoBackupFilename);
             }
             
+            String previousLastFailedMigrateVersion = perWalletModelData.getWalletInfo().getProperty(MultiBitModel.LAST_FAILED_MIGRATE_VERSION);
+            if (lastFailedMigrateVersion != null) {
+                perWalletModelData.getWalletInfo().put(MultiBitModel.LAST_FAILED_MIGRATE_VERSION, lastFailedMigrateVersion);
+            }
             saveWalletAndWalletInfo(perWalletModelData, walletBackupFilename, walletInfoBackupFilename);
+            
+            // Put the previous lastFailedMigrateVersion back.
+            if (lastFailedMigrateVersion != null) {
+                if (previousLastFailedMigrateVersion == null) {
+                    perWalletModelData.getWalletInfo().remove(lastFailedMigrateVersion);
+                } else {
+                    perWalletModelData.getWalletInfo().put(MultiBitModel.LAST_FAILED_MIGRATE_VERSION, previousLastFailedMigrateVersion);
+                }
+            }
 
             // The perWalletModelData is no longer dirty.
             perWalletModelData.setDirty(false);

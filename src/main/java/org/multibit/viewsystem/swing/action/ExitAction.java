@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * exit the application
+ * Exit the application.
  * 
  * @author jim
  * 
@@ -71,7 +71,7 @@ public class ExitAction extends AbstractAction {
            
         }
         
-        // save all the wallets and put their filenames in the user preferences
+        // Save all the wallets and put their filenames in the user preferences.
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
@@ -82,19 +82,18 @@ public class ExitAction extends AbstractAction {
                     MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
                     
                     // Save to backup.
-                    controller.getFileHandler().backupPerWalletModelData(loopPerWalletModelData);
+                    controller.getFileHandler().backupPerWalletModelData(loopPerWalletModelData, null);
                 }
             }
         }
-        // write the user properties
+        // Write the user properties.
         log.debug("Saving user preferences ...");
-        // controller.updateStatusLabel("Saving user preferences ...");
         FileHandler.writeUserPreferences(controller);
 
         log.debug("Shutting down Bitcoin URI checker ...");
         ApplicationInstanceManager.shutdownSocket();
 
-        // get rid of main display
+        // Get rid of main display.
         if (mainFrame != null) {
             mainFrame.setVisible(false);
         }
@@ -106,7 +105,7 @@ public class ExitAction extends AbstractAction {
                 @Override
                 protected Object doInBackground() throws Exception {
                     controller.getMultiBitService().getPeerGroup().stop();
-                    return null; // return not used
+                    return null; // Return not used.
                 }
             };
             worker.execute();

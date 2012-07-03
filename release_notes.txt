@@ -1,9 +1,12 @@
 MultiBit release notes.
 
-Version 0.4.2
+03 Jul 2012 Version 0.4.2
 Enhancements:
-+  Added utility to migrate from serialised to protobuf wallets.
++  Added utility to migrate wallets from serialised to protobuf format.
++  'Delete wallet' now overwrites wallet file with random data before deletion (improved security).
 +  Improved error handling on startup if blockchain cannot be loaded.
+
+Bug fix:
 +  Installer now works on Win7 x64.
 
 
@@ -206,12 +209,12 @@ Bug fixes
 +  Not connecting to testnet when multibit.properties setting testOrProductionNetwork = test fixed.
 
 	
-4 Aug 2011.  Version 0.1.1
+04 Aug 2011.  Version 0.1.1
 Initial working version with:
 +  Send and receive bitcoins.
 +  Address book.  
 +  English and Spanish translation with ability to switch languages in a preferences setting.
 
 
-1 Jul 2011.  Version 0.1.1alpha
+01 Jul 2011.  Version 0.1.1alpha
 Non functional version illustrating user interface for review by bitcoinj group.

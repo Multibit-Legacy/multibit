@@ -181,8 +181,9 @@ public class MigrateWalletsAction extends AbstractAction {
                         try {
                             if (walletMigrationErrorText == null) {
                                 // Test migrate was successful - now do it for real.
-                                // Backup serialised wallet.
-                                fileHandler.backupPerWalletModelData(loopPerWalletModelData);
+                                // Backup serialised wallet, specifying that it should not be migrated for this version of MultiBit.
+                                // (It will likely ony be opened if the real migrate fails).
+                                fileHandler.backupPerWalletModelData(loopPerWalletModelData, controller.getLocaliser().getVersionNumber());
                                 MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.backingUpFile", 
                                         new Object[] {loopPerWalletModelData.getWalletBackupFilename()})));
                                            
@@ -226,8 +227,7 @@ public class MigrateWalletsAction extends AbstractAction {
                 MessageManager.INSTANCE.addMessage(new Message(" "));
                 controller.fireRecreateAllViews(false);
                 controller.displayView(View.MESSAGES_VIEW);
-            }
-                       
+            }                
         } finally {
             setEnabled(true);
             mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -337,7 +337,7 @@ public class MigrateWalletsAction extends AbstractAction {
         Set<Transaction> protobufTransactions = protobuf.getWallet().getTransactions(true, true);
         Set<Transaction> serialisedTransactions = serialised.getWallet().getTransactions(true, true);
         if (protobufTransactions.size() != serialisedTransactions.size()) {
-            return  controller.getLocaliser().getString("migrateWalletsAction.numberOfTransactionsAreDifferent", 
+            return controller.getLocaliser().getString("migrateWalletsAction.numberOfTransactionsAreDifferent", 
                     new Object[] {serialisedTransactions.size(), protobufTransactions.size()});
         }
         
