@@ -62,7 +62,7 @@ import com.google.bitcoin.store.BlockStoreException;
 public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
     private static final Logger log = LoggerFactory.getLogger(ReplayableBlockStore.class);
     private static final byte FILE_FORMAT_VERSION = 1;
-    private static NamedSemaphores semaphores = new NamedSemaphores();
+    private NamedSemaphores semaphores = new NamedSemaphores();
 
     private RandomAccessFile file;
     // We keep some recently found blocks in the blockCache. It can help to optimize some cases where we are

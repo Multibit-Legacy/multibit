@@ -1,5 +1,13 @@
 MultiBit release notes.
 
+Version 0.4.3
+Enhancements
++  Danish added
+
+Bug fixes
++  Replay from genesis block fixed
+
+
 03 Jul 2012 Version 0.4.2
 Enhancements:
 +  Added utility to migrate wallets from serialised to protobuf format.

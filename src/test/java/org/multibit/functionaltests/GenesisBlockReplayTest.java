@@ -55,7 +55,6 @@ public class GenesisBlockReplayTest extends TestCase {
 
     @Test
     public void testReplayFromGenesisBlock() throws Exception {
-
         // get the system property runFunctionalTest to see if the functional tests need running
         String runFunctionalTests = System.getProperty(Constants.RUN_FUNCTIONAL_TESTS_PARAMETER);
         if (Boolean.TRUE.toString().equalsIgnoreCase(runFunctionalTests)) {
