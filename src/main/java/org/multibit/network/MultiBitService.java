@@ -57,10 +57,10 @@ import com.google.bitcoin.core.ProtocolException;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.discovery.DnsDiscovery;
 import com.google.bitcoin.discovery.IrcDiscovery;
-import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
 
 /**
@@ -355,15 +355,12 @@ public class MultiBitService {
         log.debug("Starting replay of blockchain from date = '" + dateToReplayFrom + "'");
 
         if (dateToReplayFrom == null || genesisBlockCreationDate.after(dateToReplayFrom)) {
-            // create empty new block store
-            if (blockStore != null) {
-                blockStore.close();
+            // Go back to the genesis block
+            try {
+                blockChain.setChainHeadClearCachesAndTruncateBlockStore(new StoredBlock(networkParameters.genesisBlock, networkParameters.genesisBlock.getWork(), 0));
+            } catch (VerificationException e) {
+                throw new BlockStoreException(e);
             }
-            blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), true);
-
-            log.debug("Creating new blockStore.2 - need to redownload from Genesis block");
-            blockChain = new MultiBitBlockChain(networkParameters, (BlockStore) blockStore);
-            log.debug("Created new blockStore.2 '" + blockChain + "'");
         } else {
             StoredBlock storedBlock = blockStore.getChainHead();
 
