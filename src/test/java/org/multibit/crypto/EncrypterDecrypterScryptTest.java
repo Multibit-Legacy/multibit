@@ -16,6 +16,7 @@
 package org.multibit.crypto;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Random;
 import java.util.UUID;
 
 import junit.framework.TestCase;
@@ -168,15 +169,33 @@ public class EncrypterDecrypterScryptTest extends TestCase {
         assertNotNull(cipherBytes);
         log.debug("\nEncrypterDecrypterTest: cipherBytes = \nlength = " + cipherBytes.length + "\n---------------\n" + Utils.bytesToHexString(cipherBytes) + "\n---------------\n");
 
-        // Decrypt bytes. Note the result is zero padded to a cipher block length so you have to truncate it to your expected length.
         byte[] rebornPlainBytes = encrypterDecrypter.decrypt(cipherBytes, PASSWORD1);
         
-        byte[] truncatedRebornBytes = new byte[TEST_BYTES1.length];
-        System.arraycopy(rebornPlainBytes, 0, truncatedRebornBytes, 0, TEST_BYTES1.length);
-
         log.debug("Original: " + Utils.bytesToHexString(TEST_BYTES1));
         log.debug("Reborn1 : " + Utils.bytesToHexString(rebornPlainBytes));
-        log.debug("Reborn2 : " + Utils.bytesToHexString(truncatedRebornBytes));
-        assertEquals( Utils.bytesToHexString(TEST_BYTES1),  Utils.bytesToHexString(truncatedRebornBytes));
+        assertEquals( Utils.bytesToHexString(TEST_BYTES1),  Utils.bytesToHexString(rebornPlainBytes));
+    }
+    
+    @Test
+    public void testEncryptDecryptBytes2() throws EncrypterDecrypterException {
+        EncrypterDecrypterScrypt encrypterDecrypter = new EncrypterDecrypterScrypt();
+
+        // Encrypt random bytes of various lengths up to length 50.
+        Random random = new Random();
+        
+        for (int i = 0; i < 50; i++) {
+            byte[] plainBytes = new byte[i];
+            random.nextBytes(plainBytes);
+            
+            byte[] cipherBytes = encrypterDecrypter.encrypt(plainBytes, PASSWORD1);
+            assertNotNull(cipherBytes);
+            //log.debug("\nEncrypterDecrypterTest: cipherBytes = \nlength = " + cipherBytes.length + "\n---------------\n" + Utils.bytesToHexString(cipherBytes) + "\n---------------\n");
+
+            byte[] rebornPlainBytes = encrypterDecrypter.decrypt(cipherBytes, PASSWORD1);
+            
+            log.debug("Original: (" + i + ") " + Utils.bytesToHexString(plainBytes));
+            log.debug("Reborn1 : (" + i + ") " + Utils.bytesToHexString(rebornPlainBytes));
+            assertEquals( Utils.bytesToHexString(plainBytes),  Utils.bytesToHexString(rebornPlainBytes));
+        }
     }
 }
