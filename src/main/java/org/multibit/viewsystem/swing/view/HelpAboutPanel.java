@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.view;
 import java.awt.ComponentOrientation;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.HeadlessException;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -133,7 +134,7 @@ public class HelpAboutPanel extends JPanel implements View {
     }
 
     @Override
-    public void displayView() {        
+    public void displayView() {    
     }
        
     @Override

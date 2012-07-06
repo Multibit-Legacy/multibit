@@ -29,11 +29,13 @@ public class ApplicationDataDirectoryLocator {
     public ApplicationDataDirectoryLocator() {
         this.applicationDataDirectory = getApplicationDataDirectory();
         log.info("Application data directory.1 = '{}'",applicationDataDirectory);
+        log.info("Application data directory.1 - Log files are '{}' and '{}'.", applicationDataDirectory + File.separator + "multibit_console.log",  applicationDataDirectory + File.separator + "multibit_debug.log");
     }
     
     public ApplicationDataDirectoryLocator(File applicationDataDirectory) {
         this.applicationDataDirectory = applicationDataDirectory.getAbsolutePath();
         log.info("Application data directory.2 = '{}'",applicationDataDirectory);
+        log.info("Application data directory.2 - Log files are '{}' and '{}'.", applicationDataDirectory + File.separator + "multibit_console.log",  applicationDataDirectory + File.separator + "multibit_debug.log");
     }
     
     /**
