@@ -128,6 +128,11 @@ public class ViewFactory {
             viewToReturn = new MessagesPanel(controller, mainFrame);
             break;
         }
+        
+        case View.ADD_PASSWORD_VIEW: {
+            viewToReturn = new AddPasswordPanel(controller, mainFrame);
+            break;
+        }
 
         default: {
         }

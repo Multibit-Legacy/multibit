@@ -25,9 +25,11 @@ public class ImageLoader {
     private static final Logger log = LoggerFactory.getLogger(ImageLoader.class);
 
     public static final String ACCEPT_ICON_FILE = "/images/accept.png";
+    public static final String ADD_PASSWORD_ICON_FILE = "/images/lockAdd.png";
     public static final String ARROW_LEFT_ICON_FILE = "/images/arrowLeft.png";
     public static final String ARROW_RIGHT_ICON_FILE = "/images/arrowRight.png";   
     public static final String CANCEL_ICON_FILE = "/images/cancel.png";
+    public static final String CHANGE_PASSWORD_ICON_FILE = "/images/lockChange.png";
     public static final String CLOSE_TAB_ICON_FILE = "/images/closeTab.png";
     public static final String COPY_ICON_FILE = "/images/copy.png";
     public static final String CREATE_NEW_ICON_FILE = "/images/createNew.png";
@@ -49,6 +51,7 @@ public class ImageLoader {
     public static final String PREFERENCES_ICON_FILE = "/images/preferences.png";
     public static final String QUESTION_MARK_ICON_FILE = "/images/questionMark.png";
     public static final String RECEIVE_BITCOIN_ICON_FILE = "/images/receiveIn.png";
+    public static final String REMOVE_PASSWORD_ICON_FILE = "/images/lockRemove.png";
     public static final String RESET_TRANSACTIONS_ICON_FILE = "/images/resetTransactions.png";
     public static final String RTL_WALLET_ICON_FILE = "/images/rtl_wallet.png";
     public static final String SEND_BITCOIN_ICON_FILE = "/images/sendOut.png";

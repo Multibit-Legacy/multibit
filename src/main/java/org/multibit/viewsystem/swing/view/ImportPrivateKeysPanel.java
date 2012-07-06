@@ -896,12 +896,12 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
 
     @Override
     public String getViewTitle() {
-        return controller.getLocaliser().getString("importPrivateKeysSubmitAction.text");
+        return controller.getLocaliser().getString("showImportPrivateKeysAction.text");
     }
 
     @Override
     public String getViewTooltip() {
-        return controller.getLocaliser().getString("importPrivateKeysSubmitAction.tooltip");
+        return controller.getLocaliser().getString("showImportPrivateKeysAction.tooltip");
     }
 
     @Override

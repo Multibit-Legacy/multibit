@@ -46,6 +46,9 @@ public interface View {
     public static final int SHOW_EXPORT_PRIVATE_KEYS_VIEW = 16;
     public static final int WELCOME_VIEW = 17;
     public static final int MESSAGES_VIEW = 18;
+    public static final int ADD_PASSWORD_VIEW = 19;
+    public static final int CHANGE_PASSWORD_VIEW = 20;
+    public static final int REMOVE_PASSWORD_VIEW = 21;
     
     public static final int DEFAULT_VIEW = WELCOME_VIEW;
    

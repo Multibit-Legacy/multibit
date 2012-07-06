@@ -499,12 +499,12 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
     @Override
     public String getViewTitle() {
-        return controller.getLocaliser().getString("resetTransactionsSubmitAction.text");
+        return controller.getLocaliser().getString("resetTransactionsAction.text");
     }
 
     @Override
     public String getViewTooltip() {
-        return controller.getLocaliser().getString("resetTransactionsSubmitAction.tooltip");
+        return controller.getLocaliser().getString("resetTransactionsAction.tooltip");
     }
 
     @Override

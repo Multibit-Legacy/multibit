@@ -31,21 +31,22 @@ import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.Verification;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.AddPasswordPanel;
 import org.multibit.viewsystem.swing.view.ExportPrivateKeysPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This {@link Action} exports the active wallets private keys
+ * This {@link Action} action encrypts the private keys with the password.
  */
-public class ExportPrivateKeysSubmitAction extends AbstractAction {
+public class AddPasswordSubmitAction extends AbstractAction {
     private static final Logger log = LoggerFactory.getLogger(ExportPrivateKeysSubmitAction.class);
 
     private static final long serialVersionUID = 1923492460598757765L;
 
     private MultiBitController controller;
 
-    private ExportPrivateKeysPanel exportPrivateKeysPanel;
+    private AddPasswordPanel addPasswordPanel;
     private MultiBitFrame mainFrame;
 
     private PrivateKeysHandler privateKeysHandler;
@@ -55,13 +56,13 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
     private JPasswordField password2;
 
     /**
-     * Creates a new {@link ExportPrivateKeysSubmitAction}.
+     * Creates a new {@link AddPasswordSubmitAction}.
      */
-    public ExportPrivateKeysSubmitAction(MultiBitController controller, ExportPrivateKeysPanel exportPrivateKeysPanel,
+    public AddPasswordSubmitAction(MultiBitController controller, AddPasswordPanel AddPasswordPanel,
             ImageIcon icon, JPasswordField password1, JPasswordField password2, MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("showExportPrivateKeysAction.text.camel"), icon);
+        super(controller.getLocaliser().getString("showExportPrivateKeysAction.text"), icon);
         this.controller = controller;
-        this.exportPrivateKeysPanel = exportPrivateKeysPanel;
+        this.addPasswordPanel = addPasswordPanel;
         this.password1 = password1;
         this.password2 = password2;
         this.mainFrame = mainFrame;
@@ -75,14 +76,14 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
      * Export the private keys to a file
      */
     public void actionPerformed(ActionEvent e) {
-        exportPrivateKeysPanel.clearMessages();
+        addPasswordPanel.clearMessages();
 
         // get the required output file
-        String exportPrivateKeysFilename = exportPrivateKeysPanel.getOutputFilename();
+        String exportPrivateKeysFilename = addPasswordPanel.getOutputFilename();
 
         // check an output file was selected
         if (exportPrivateKeysFilename == null || "".equals(exportPrivateKeysFilename)) {
-            exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
+            addPasswordPanel.setMessage1(controller.getLocaliser().getString(
                     "showExportPrivateKeysAction.youMustSelectAnOutputFile"));
             return;
         }
@@ -96,17 +97,17 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
 
         char[] passwordToUse = null;
 
-        if (exportPrivateKeysPanel.requiresEncryption()) {
+        if (addPasswordPanel.requiresEncryption()) {
             // get the passwords on the password fields
             if (password1.getPassword() == null || password1.getPassword().length == 0) {
                 // notify must enter a password
-                exportPrivateKeysPanel.setMessage1(controller.getLocaliser()
+                addPasswordPanel.setMessage1(controller.getLocaliser()
                         .getString("showExportPrivateKeysAction.enterPasswords"));
                 return;
             } else {
                 if (!Arrays.areEqual(password1.getPassword(), password2.getPassword())) {
                     // notify user passwords are different
-                    exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
+                    addPasswordPanel.setMessage1(controller.getLocaliser().getString(
                             "showExportPrivateKeysAction.passwordsAreDifferent"));
                     return;
                 } else {
@@ -137,14 +138,14 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
                     .getWallet(), controller.getMultiBitService().getChain(), performEncryption, passwordToUse);
 
             // success
-            exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
+            addPasswordPanel.setMessage1(controller.getLocaliser().getString(
                     "showExportPrivateKeysAction.privateKeysExportSuccess"));
             performVerification = true;
         } catch (IOException ioe) {
             log.error(ioe.getClass().getName() + " " + ioe.getMessage());
 
             // IO failure of some sort
-            exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
+            addPasswordPanel.setMessage1(controller.getLocaliser().getString(
                     "showExportPrivateKeysAction.privateKeysExportFailure",
                     new Object[] { ioe.getClass().getName() + " " + ioe.getMessage() }));
         }
@@ -155,7 +156,7 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
                     .getActivePerWalletModelData().getWallet(), controller.getMultiBitService().getChain(), performEncryption,
                     passwordToUse);
             String verifyMessage = controller.getLocaliser().getString(verification.getMessageKey(), verification.getMessageData());
-            exportPrivateKeysPanel.setMessage2(verifyMessage);
+            addPasswordPanel.setMessage2(verifyMessage);
         }
     }
 }

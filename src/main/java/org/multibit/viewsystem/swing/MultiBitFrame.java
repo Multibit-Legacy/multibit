@@ -584,6 +584,34 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setComponentOrientation(componentOrientation);
         fileMenu.add(menuItem);
 
+        fileMenu.addSeparator();
+        
+        // Add password action.
+        MultiBitAction addPasswordAction = new MultiBitAction(controller, ImageLoader.ADD_PASSWORD_ICON_FILE, "addPasswordAction.text",
+                "addPasswordAction.tooltip", "addPasswordAction.mnemonic", View.ADD_PASSWORD_VIEW);
+        menuItem = new JMenuItem(addPasswordAction);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        fileMenu.add(menuItem);
+
+        // Change password action.
+        MultiBitAction changePasswordAction = new MultiBitAction(controller, ImageLoader.CHANGE_PASSWORD_ICON_FILE, "changePasswordAction.text",
+                "changePasswordAction.tooltip", "changePasswordAction.mnemonic", View.ADD_PASSWORD_VIEW);
+        changePasswordAction.setEnabled(false);
+        menuItem = new JMenuItem(changePasswordAction);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        fileMenu.add(menuItem);
+
+        // Remove password action.
+        MultiBitAction removePasswordAction = new MultiBitAction(controller, ImageLoader.REMOVE_PASSWORD_ICON_FILE, "removePasswordAction.text",
+                "removePasswordAction.tooltip", "removePasswordAction.mnemonic", View.ADD_PASSWORD_VIEW);
+        removePasswordAction.setEnabled(false);
+        menuItem = new JMenuItem(removePasswordAction);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        fileMenu.add(menuItem);
+
         // exit action
         if (application != null && !application.isMac()) {
             // non Macs have an Exit Menu item
