@@ -457,7 +457,7 @@ public class RemovePasswordPanel extends JPanel implements View {
          * avoids having any public accessors on the panel
          */
         RemovePasswordSubmitAction submitAction = new RemovePasswordSubmitAction(controller, this,
-                ImageLoader.createImageIcon(ImageLoader.ADD_PASSWORD_ICON_FILE), passwordField, mainFrame);
+                ImageLoader.createImageIcon(ImageLoader.REMOVE_PASSWORD_ICON_FILE), passwordField, mainFrame);
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
