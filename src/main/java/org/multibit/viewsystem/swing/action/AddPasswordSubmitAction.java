@@ -33,7 +33,7 @@ import org.spongycastle.util.Arrays;
  * This {@link Action} action encrypts the private keys with the password.
  */
 public class AddPasswordSubmitAction extends AbstractAction {
-    private static final Logger log = LoggerFactory.getLogger(ExportPrivateKeysSubmitAction.class);
+    private static final Logger log = LoggerFactory.getLogger(AddPasswordSubmitAction.class);
 
     private static final long serialVersionUID = 1923492460598757765L;
 
@@ -64,7 +64,7 @@ public class AddPasswordSubmitAction extends AbstractAction {
     }
 
     /**
-     * Export the private keys to a file
+     * Add a password to a wallet.
      */
     public void actionPerformed(ActionEvent e) {
         addPasswordPanel.clearMessages();
@@ -72,15 +72,15 @@ public class AddPasswordSubmitAction extends AbstractAction {
 
         char[] passwordToUse = null;
 
-            // get the passwords on the password fields
+            // Get the passwords on the password fields.
             if (password1.getPassword() == null || password1.getPassword().length == 0) {
-                // notify must enter a password
+                // Notify must enter a password.
                 addPasswordPanel.setMessage1(controller.getLocaliser()
                         .getString("addPasswordPanel.enterPasswords"));
                 return;
             } else {
                 if (!Arrays.areEqual(password1.getPassword(), password2.getPassword())) {
-                    // notify user passwords are different
+                    // Notify user passwords are different.
                     addPasswordPanel.setMessage1(controller.getLocaliser().getString(
                             "showExportPrivateKeysAction.passwordsAreDifferent"));
                     return;

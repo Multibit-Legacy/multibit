@@ -597,7 +597,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // Change password action.
         MultiBitAction changePasswordAction = new MultiBitAction(controller, ImageLoader.CHANGE_PASSWORD_ICON_FILE, "changePasswordAction.text",
                 "changePasswordAction.tooltip", "changePasswordAction.mnemonic", View.ADD_PASSWORD_VIEW);
-        changePasswordAction.setEnabled(false);
         menuItem = new JMenuItem(changePasswordAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -605,8 +604,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Remove password action.
         MultiBitAction removePasswordAction = new MultiBitAction(controller, ImageLoader.REMOVE_PASSWORD_ICON_FILE, "removePasswordAction.text",
-                "removePasswordAction.tooltip", "removePasswordAction.mnemonic", View.ADD_PASSWORD_VIEW);
-        removePasswordAction.setEnabled(false);
+                "removePasswordAction.tooltip", "removePasswordAction.mnemonic", View.REMOVE_PASSWORD_VIEW);
         menuItem = new JMenuItem(removePasswordAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);

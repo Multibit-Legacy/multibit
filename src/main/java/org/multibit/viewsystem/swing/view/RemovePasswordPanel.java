@@ -43,15 +43,16 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.AddPasswordSubmitAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
+import org.multibit.viewsystem.swing.action.RemovePasswordSubmitAction;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
 /**
- * The add password view.
+ * The remove password view.
  */
-public class AddPasswordPanel extends JPanel implements View {
+public class RemovePasswordPanel extends JPanel implements View {
 
     private static final long serialVersionUID = 444992298432957705L;
 
@@ -71,17 +72,14 @@ public class AddPasswordPanel extends JPanel implements View {
     private MultiBitLabel reminderLabel3;
 
     private JPasswordField passwordField;
-    private JPasswordField repeatPasswordField;
-
-    private JLabel tickLabel;
 
     public static final int STENT_HEIGHT = 12;
     public static final int STENT_DELTA = 20;
 
     /**
-     * Creates a new {@link AddPasswordPanel}.
+     * Creates a new {@link RemovePasswordPanel}.
      */
-    public AddPasswordPanel(MultiBitController controller, MultiBitFrame mainFrame) {
+    public RemovePasswordPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
 
@@ -224,7 +222,7 @@ public class AddPasswordPanel extends JPanel implements View {
         GridBagConstraints constraints = new GridBagConstraints();
 
         MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
-                controller.getLocaliser().getString("addPasswordPanel.text"), 3, inputWalletPanel);
+                controller.getLocaliser().getString("removePasswordPanel.text"), 3, inputWalletPanel);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
@@ -329,6 +327,9 @@ public class AddPasswordPanel extends JPanel implements View {
 
         GridBagConstraints constraints = new GridBagConstraints();
 
+        MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
+                controller.getLocaliser().getString("removePasswordPanel.enterPassword.text"), 3, passwordProtectPanel);
+
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 3;
@@ -409,44 +410,6 @@ public class AddPasswordPanel extends JPanel implements View {
         constraints.anchor = GridBagConstraints.CENTER;
         passwordProtectPanel.add(filler3, constraints);
 
-        MultiBitLabel repeatPasswordPromptLabel = new MultiBitLabel("");
-        repeatPasswordPromptLabel.setText(controller.getLocaliser().getString("showExportPrivateKeysPanel.repeatPasswordPrompt"));
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 6;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        passwordProtectPanel.add(repeatPasswordPromptLabel, constraints);
-
-        repeatPasswordField = new JPasswordField(24);
-        repeatPasswordField.setMinimumSize(new Dimension(200, 20));
-        repeatPasswordField.addKeyListener(new PasswordListener());
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
-        constraints.gridy = 6;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.25;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        passwordProtectPanel.add(repeatPasswordField, constraints);
-
-        ImageIcon tickIcon = ImageLoader.createImageIcon(ImageLoader.TICK_ICON_FILE);
-        tickLabel = new JLabel(tickIcon);
-        tickLabel.setToolTipText(controller.getLocaliser().getString("showExportPrivateKeysPanel.theTwoPasswordsMatch"));
-
-        tickLabel.setVisible(false);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 4;
-        constraints.gridy = 4;
-        constraints.weightx = 0.1;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 3;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        passwordProtectPanel.add(tickLabel, constraints);
-
         JLabel filler4 = new JLabel();
         filler4.setMinimumSize(new Dimension(3, 12));
         filler4.setMaximumSize(new Dimension(3, 12));
@@ -463,40 +426,6 @@ public class AddPasswordPanel extends JPanel implements View {
         constraints.anchor = GridBagConstraints.CENTER;
         passwordProtectPanel.add(filler4, constraints);
 
-        reminderLabel1 = new MultiBitLabel(controller.getLocaliser().getString("addPasswordPanel.reminder1"));
-        reminderLabel1.setFont(reminderLabel1.getFont().deriveFont(Font.BOLD));
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
-        constraints.gridy = 8;
-        constraints.weightx = 0.2;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 3;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        passwordProtectPanel.add(reminderLabel1, constraints);
-
-        reminderLabel2 = new MultiBitLabel(controller.getLocaliser().getString("addPasswordPanel.reminder2"));
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
-        constraints.gridy = 9;
-        constraints.weightx = 0.2;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 3;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        passwordProtectPanel.add(reminderLabel2, constraints);
-
-        reminderLabel3 = new MultiBitLabel(controller.getLocaliser().getString("addPasswordPanel.reminder3"));
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
-        constraints.gridy = 10;
-        constraints.weightx = 0.2;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 3;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        passwordProtectPanel.add(reminderLabel3, constraints);
-
         JLabel filler5 = new JLabel();
         filler5.setMinimumSize(new Dimension(3, 8));
         filler5.setMaximumSize(new Dimension(3, 8));
@@ -505,7 +434,7 @@ public class AddPasswordPanel extends JPanel implements View {
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
-        constraints.gridy = 11;
+        constraints.gridy = 8;
         constraints.weightx = 0.1;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -527,8 +456,8 @@ public class AddPasswordPanel extends JPanel implements View {
          * Create submit action with references to the password fields - this
          * avoids having any public accessors on the panel
          */
-        AddPasswordSubmitAction submitAction = new AddPasswordSubmitAction(controller, this,
-                ImageLoader.createImageIcon(ImageLoader.ADD_PASSWORD_ICON_FILE), passwordField, repeatPasswordField, mainFrame);
+        RemovePasswordSubmitAction submitAction = new RemovePasswordSubmitAction(controller, this,
+                ImageLoader.createImageIcon(ImageLoader.ADD_PASSWORD_ICON_FILE), passwordField, mainFrame);
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
@@ -572,54 +501,27 @@ public class AddPasswordPanel extends JPanel implements View {
 
         /** Handle the key-released event from the text field. */
         public void keyReleased(KeyEvent e) {
-            char[] password1 = null;
-            char[] password2 = null;
-
-            if (passwordField != null) {
-                password1 = passwordField.getPassword();
-            }
-            if (repeatPasswordField != null) {
-                password2 = repeatPasswordField.getPassword();
-            }
-
-            boolean tickLabelVisible = false;
-            if (password1 != null && password2 != null) {
-                if (Arrays.equals(password1, password2)) {
-                    tickLabelVisible = true;
-                }
-            }
-            tickLabel.setVisible(tickLabelVisible);
-
             clearMessages();
-
-            // clear the password arrays
-            for (int i = 0; i < password1.length; i++) {
-                password1[i] = 0;
-            }
-
-            for (int i = 0; i < password2.length; i++) {
-                password2[i] = 0;
-            }
         }
     }
 
     @Override
     public Icon getViewIcon() {
-        return ImageLoader.createImageIcon(ImageLoader.ADD_PASSWORD_ICON_FILE);
+        return ImageLoader.createImageIcon(ImageLoader.REMOVE_PASSWORD_ICON_FILE);
     }
 
     @Override
     public String getViewTitle() {
-        return controller.getLocaliser().getString("addPasswordAction.text");
+        return controller.getLocaliser().getString("removePasswordAction.text");
     }
 
     @Override
     public String getViewTooltip() {
-        return controller.getLocaliser().getString("addPasswordAction.tooltip");
+        return controller.getLocaliser().getString("removePasswordAction.tooltip");
     }
 
     @Override
     public int getViewId() {
-        return View.ADD_PASSWORD_VIEW;
+        return View.REMOVE_PASSWORD_VIEW;
     }
 }

@@ -133,6 +133,11 @@ public class ViewFactory {
             viewToReturn = new AddPasswordPanel(controller, mainFrame);
             break;
         }
+        
+        case View.REMOVE_PASSWORD_VIEW: {
+            viewToReturn = new RemovePasswordPanel(controller, mainFrame);
+            break;
+        }
 
         default: {
         }
