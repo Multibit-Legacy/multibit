@@ -19,39 +19,30 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
 import java.util.Arrays;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.AddPasswordSubmitAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
@@ -72,18 +63,12 @@ public class AddPasswordPanel extends JPanel implements View {
 
     private MultiBitLabel walletDescriptionLabel;
 
-    private JFileChooser fileChooser;
-
-    private MultiBitLabel outputFilenameLabel;
-
     private MultiBitLabel messageLabel1;
     private MultiBitLabel messageLabel2;
 
-    private String outputFilename;
-
-    private JRadioButton passwordProtect;
-    private JRadioButton doNotPasswordProtect;
-    private MultiBitLabel doNotPasswordProtectWarningLabel;
+    private MultiBitLabel reminderLabel1;
+    private MultiBitLabel reminderLabel2;
+    private MultiBitLabel reminderLabel3;
 
     private JPasswordField passwordField;
     private JPasswordField repeatPasswordField;
@@ -103,8 +88,6 @@ public class AddPasswordPanel extends JPanel implements View {
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         this.controller = controller;
-
-        outputFilename = "";
 
         initUI();
     }
@@ -241,7 +224,7 @@ public class AddPasswordPanel extends JPanel implements View {
         GridBagConstraints constraints = new GridBagConstraints();
 
         MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
-                controller.getLocaliser().getString("showExportPrivateKeysPanel.wallet.text"), 3, inputWalletPanel);
+                controller.getLocaliser().getString("addPasswordPanel.text"), 3, inputWalletPanel);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
@@ -341,7 +324,6 @@ public class AddPasswordPanel extends JPanel implements View {
     }
 
     private JPanel createPasswordPanel(int stentWidth) {
-        // do/do not password protect radios
         MultiBitTitledPanel passwordProtectPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
                 "showExportPrivateKeysPanel.password.title"));
 
@@ -388,37 +370,11 @@ public class AddPasswordPanel extends JPanel implements View {
         constraints.anchor = GridBagConstraints.LINE_END;
         passwordProtectPanel.add(filler0, constraints);
 
-        ButtonGroup usePasswordGroup = new ButtonGroup();
-        passwordProtect = new JRadioButton(controller.getLocaliser().getString("showExportPrivateKeysPanel.passwordProtect"));
-        passwordProtect.setOpaque(false);
-        passwordProtect.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-
-        doNotPasswordProtect = new JRadioButton(controller.getLocaliser().getString(
-                "showExportPrivateKeysPanel.doNotPasswordProtect"));
-        doNotPasswordProtect.setOpaque(false);
-        doNotPasswordProtect.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-
-        ItemListener itemListener = new ChangePasswordProtectListener();
-        passwordProtect.addItemListener(itemListener);
-        doNotPasswordProtect.addItemListener(itemListener);
-        usePasswordGroup.add(passwordProtect);
-        usePasswordGroup.add(doNotPasswordProtect);
-        passwordProtect.setSelected(true);
-
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 4;
-        constraints.weightx = 0.2;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 3;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        passwordProtectPanel.add(passwordProtect, constraints);
-
         MultiBitLabel passwordPromptLabel = new MultiBitLabel("");
         passwordPromptLabel.setText(controller.getLocaliser().getString("showExportPrivateKeysPanel.passwordPrompt"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
-        constraints.gridy = 5;
+        constraints.gridy = 4;
         constraints.weightx = 0.3;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -430,7 +386,7 @@ public class AddPasswordPanel extends JPanel implements View {
         passwordField.addKeyListener(new PasswordListener());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
-        constraints.gridy = 5;
+        constraints.gridy = 4;
         constraints.weightx = 0.3;
         constraints.weighty = 0.25;
         constraints.gridwidth = 1;
@@ -445,7 +401,7 @@ public class AddPasswordPanel extends JPanel implements View {
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
-        constraints.gridy = 6;
+        constraints.gridy = 5;
         constraints.weightx = 0.1;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -457,7 +413,7 @@ public class AddPasswordPanel extends JPanel implements View {
         repeatPasswordPromptLabel.setText(controller.getLocaliser().getString("showExportPrivateKeysPanel.repeatPasswordPrompt"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
-        constraints.gridy = 7;
+        constraints.gridy = 6;
         constraints.weightx = 0.3;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -469,7 +425,7 @@ public class AddPasswordPanel extends JPanel implements View {
         repeatPasswordField.addKeyListener(new PasswordListener());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
-        constraints.gridy = 7;
+        constraints.gridy = 6;
         constraints.weightx = 0.3;
         constraints.weighty = 0.25;
         constraints.gridwidth = 1;
@@ -483,7 +439,7 @@ public class AddPasswordPanel extends JPanel implements View {
         tickLabel.setVisible(false);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 4;
-        constraints.gridy = 5;
+        constraints.gridy = 4;
         constraints.weightx = 0.1;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -491,26 +447,39 @@ public class AddPasswordPanel extends JPanel implements View {
         constraints.anchor = GridBagConstraints.LINE_START;
         passwordProtectPanel.add(tickLabel, constraints);
 
+        reminderLabel1 = new MultiBitLabel(controller.getLocaliser().getString("addPasswordPanel.reminder1"));
+        reminderLabel1.setFont(reminderLabel1.getFont().deriveFont(Font.BOLD));
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
+        constraints.gridx = 3;
         constraints.gridy = 8;
         constraints.weightx = 0.2;
         constraints.weighty = 0.3;
         constraints.gridwidth = 3;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        passwordProtectPanel.add(doNotPasswordProtect, constraints);
+        passwordProtectPanel.add(reminderLabel1, constraints);
 
-        doNotPasswordProtectWarningLabel = new MultiBitLabel(" ");
-        doNotPasswordProtectWarningLabel.setForeground(Color.RED);
+        reminderLabel2 = new MultiBitLabel(controller.getLocaliser().getString("addPasswordPanel.reminder2"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 9;
         constraints.weightx = 0.2;
         constraints.weighty = 0.3;
         constraints.gridwidth = 3;
+        constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        passwordProtectPanel.add(doNotPasswordProtectWarningLabel, constraints);
+        passwordProtectPanel.add(reminderLabel2, constraints);
+
+        reminderLabel3 = new MultiBitLabel(controller.getLocaliser().getString("addPasswordPanel.reminder3"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 10;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 3;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        passwordProtectPanel.add(reminderLabel3, constraints);
 
         return passwordProtectPanel;
     }
@@ -527,7 +496,7 @@ public class AddPasswordPanel extends JPanel implements View {
          * avoids having any public accessors on the panel
          */
         AddPasswordSubmitAction submitAction = new AddPasswordSubmitAction(controller, this,
-                ImageLoader.createImageIcon(ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE), passwordField, repeatPasswordField, mainFrame);
+                ImageLoader.createImageIcon(ImageLoader.ADD_PASSWORD_ICON_FILE), passwordField, repeatPasswordField, mainFrame);
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
@@ -539,61 +508,7 @@ public class AddPasswordPanel extends JPanel implements View {
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
 
-        if (outputFilename == null || "".equals(outputFilename)) {
-            outputFilename = createDefaultKeyFilename(controller.getModel().getActiveWalletFilename());
-            outputFilenameLabel.setText(outputFilename);
-        }
-
         clearMessages();
-    }
-
-    public boolean requiresEncryption() {
-        boolean requiresEncryption = false;
-        if (passwordProtect != null && passwordProtect.isSelected()) {
-            requiresEncryption = true;
-        }
-        return requiresEncryption;
-    }
-
-    private void chooseFile() {
-        JFileChooser.setDefaultLocale(controller.getLocaliser().getLocale());
-        fileChooser = new JFileChooser();
-        fileChooser.setLocale(controller.getLocaliser().getLocale());
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setFileFilter(new PrivateKeyFileFilter(controller));
-
-        if (outputFilename != null && !"".equals(outputFilename)) {
-            fileChooser.setCurrentDirectory(new File(outputFilename));
-            fileChooser.setSelectedFile(new File(outputFilename));
-        } else {
-            if (controller.getModel().getActiveWalletFilename() != null) {
-                fileChooser.setCurrentDirectory(new File(controller.getModel().getActiveWalletFilename()));
-            }
-            String defaultFileName = fileChooser.getCurrentDirectory().getAbsoluteFile() + File.separator
-                    + controller.getLocaliser().getString("saveWalletAsView.untitled") + "."
-                    + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION;
-            fileChooser.setSelectedFile(new File(defaultFileName));
-        }
-
-        int returnVal = fileChooser.showSaveDialog(mainFrame);
-
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            if (file != null) {
-                outputFilename = file.getAbsolutePath();
-
-                // add a key suffix if not present
-                if (!outputFilename.endsWith("." + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION)) {
-                    outputFilename = outputFilename + "." + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION;
-                }
-                outputFilenameLabel.setText(outputFilename);
-                clearMessages();
-            }
-        }
-    }
-
-    public String getOutputFilename() {
-        return outputFilename;
     }
 
     public void clearMessages() {
@@ -610,40 +525,6 @@ public class AddPasswordPanel extends JPanel implements View {
     public void setMessage2(String message2) {
         if (messageLabel2 != null) {
             messageLabel2.setText(message2);
-        }
-    }
-
-    private String createDefaultKeyFilename(String walletFilename) {
-        // find suffix
-        int suffixSeparator = walletFilename.lastIndexOf(".");
-        String stem = walletFilename.substring(0, suffixSeparator + 1);
-        String defaultKeyFilename = stem + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION;
-        return defaultKeyFilename;
-    }
-
-    class ChangePasswordProtectListener implements ItemListener {
-        public ChangePasswordProtectListener() {
-
-        }
-
-        public void itemStateChanged(ItemEvent e) {
-            if (doNotPasswordProtectWarningLabel != null) {
-                if (e.getSource().equals(passwordProtect)) {
-                    doNotPasswordProtectWarningLabel.setText(" ");
-                    passwordField.setEnabled(true);
-                    repeatPasswordField.setEnabled(true);
-                    tickLabel.setEnabled(true);
-                    passwordField.requestFocusInWindow();
-                    clearMessages();
-                } else {
-                    doNotPasswordProtectWarningLabel.setText(controller.getLocaliser().getString(
-                            "showExportPrivateKeysPanel.doNotPasswordProtectWarningLabel"));
-                    passwordField.setEnabled(false);
-                    repeatPasswordField.setEnabled(false);
-                    tickLabel.setEnabled(false);
-                    clearMessages();
-                }
-            }
         }
     }
 
