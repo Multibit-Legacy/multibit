@@ -13,6 +13,7 @@ Internationalisation:
 Arvis Lacis         - Latvian
 Azrael_PT           - Portuguese
 bitcoin.hu          - Hungarian
+D4CH                - Danish
 damnek              - Dutch
 Emin Gun Sirer      - Turkish
 ffe                 - Arabic

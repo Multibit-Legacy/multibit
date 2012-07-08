@@ -1,10 +1,7 @@
 MultiBit release notes.
 
 Version 0.4.3
-Enhancements
-+  Danish added
-
-Bug fixes
+Bug fix
 +  Replay from genesis block fixed
 
 
