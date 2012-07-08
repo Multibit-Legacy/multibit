@@ -59,7 +59,7 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
      */
     public ExportPrivateKeysSubmitAction(MultiBitController controller, ExportPrivateKeysPanel exportPrivateKeysPanel,
             ImageIcon icon, JPasswordField password1, JPasswordField password2, MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("showExportPrivateKeysAction.text"), icon);
+        super(controller.getLocaliser().getString("showExportPrivateKeysAction.text.camel"), icon);
         this.controller = controller;
         this.exportPrivateKeysPanel = exportPrivateKeysPanel;
         this.password1 = password1;

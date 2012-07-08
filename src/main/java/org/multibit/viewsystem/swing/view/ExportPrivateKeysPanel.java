@@ -763,6 +763,10 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
     }
 
     private String createDefaultKeyFilename(String walletFilename) {
+        if (walletFilename == null) {
+            return null;
+        }
+        
         // find suffix
         int suffixSeparator = walletFilename.lastIndexOf(".");
         String stem = walletFilename.substring(0, suffixSeparator + 1);
@@ -857,21 +861,5 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
     @Override
     public int getViewId() {
         return View.SHOW_EXPORT_PRIVATE_KEYS_VIEW;
-    }
-
-    public String getPreviousCurrency2() {
-        return null;
-    }
-
-    public String getPreviousExchange2() {
-        return null;
-    }
-
-    public boolean getPreviousShowSecondRow() {
-        return false;
-    }
-
-    public String getPreviousCurrency1() {
-        return null;
     }
 }
