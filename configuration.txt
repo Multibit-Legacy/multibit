@@ -1,26 +1,61 @@
-MultiBit Configuration Options:
+MultiBit configuration options
+==============================
 
 All these options are set in the main control file:
-multibit.properties
+multibit.properties. Multibit looks in a few places for this file:
 
+1. Current working directory when launched. This is for backwards compatibility and for running from a USB drive.
 
-+ Connect to single node
-If you want to connect to a single node set the following 
+2. (Mac OS X only) Four directory levels up. This is for running from a USB drive, but outside the OSX .app directory.
+ 
+3. The operating system's standard application data directory. 
+   - Windows
+     * `System.getenv("APPDATA")/MultiBit`
+     * e.g. `C:/Documents and Settings/Administrator/Application Data/MultiBit`
+
+   - Mac OS X
+     * `System.getProperty("user.home")/Library/Application Support/MultiBit`
+     * e.g. `/Users/jim/Library/Application Support/MultiBit`
+
+   - Linux:
+     * `System.getProperty("user.home")/MultiBit`
+     * e.g. `/Users/jim/MultiBit`
+
+Wherever this file is found, that directory is used as the application data directory for Multibit.
+
+Connect to single node
+----------------------
+
+If you want to connect to a single node, set the following 
 property:
+
+```
 singleNodeConnection=<node to connect to>
+```
 
-The node can be specified as either a domain name (www.myNode.com) 
-or an IP address e.g if your node was 12.34.56.78 you would put:
+The node can be specified as either a domain name (`www.myNode.com`) 
+or an IP address. E.g, if your node is `12.34.56.78` you would put:
 
+```
 singleNodeConnection=12.34.56.78
+```
 
+Using Testnet
+-------------
 
-+ Testnet
-To use the testnet set the property "testOrProductionNetwork" 
+To use the testnet, set the property "testOrProductionNetwork" 
 to be "test".
 
+```
+testOrProductionNetwork=test
+```
 
-+ Show the merchant menu
-To show the merchant menu set the property "showMerchantMenu" 
+Show the merchant menu
+----------------------
+
+To show the merchant menu, set the property "showMerchantMenu" 
 to be "true".
 
+```
+showMerchantMenu=true
+```
