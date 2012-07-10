@@ -134,6 +134,11 @@ public class ViewFactory {
             break;
         }
         
+        case View.CHANGE_PASSWORD_VIEW: {
+            viewToReturn = new ChangePasswordPanel(controller, mainFrame);
+            break;
+        }
+        
         case View.REMOVE_PASSWORD_VIEW: {
             viewToReturn = new RemovePasswordPanel(controller, mainFrame);
             break;

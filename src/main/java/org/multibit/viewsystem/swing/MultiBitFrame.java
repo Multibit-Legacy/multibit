@@ -596,7 +596,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Change password action.
         MultiBitAction changePasswordAction = new MultiBitAction(controller, ImageLoader.CHANGE_PASSWORD_ICON_FILE, "changePasswordAction.text",
-                "changePasswordAction.tooltip", "changePasswordAction.mnemonic", View.ADD_PASSWORD_VIEW);
+                "changePasswordAction.tooltip", "changePasswordAction.mnemonic", View.CHANGE_PASSWORD_VIEW);
         menuItem = new JMenuItem(changePasswordAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);

@@ -25,72 +25,85 @@ import javax.swing.JPasswordField;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.AddPasswordPanel;
+import org.multibit.viewsystem.swing.view.ChangePasswordPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
 /**
- * This {@link Action} action encrypts the private keys with the password.
+ * This {@link Action} action decrypts private keys with the old password and then encrypts the private keys with the new password.
  */
-public class AddPasswordSubmitAction extends AbstractAction {
-    private static final Logger log = LoggerFactory.getLogger(AddPasswordSubmitAction.class);
+public class ChangePasswordSubmitAction extends AbstractAction {
+    private static final Logger log = LoggerFactory.getLogger(ChangePasswordSubmitAction.class);
 
     private static final long serialVersionUID = 1923492460598757765L;
 
     private MultiBitController controller;
 
-    private AddPasswordPanel addPasswordPanel;
+    private ChangePasswordPanel changePasswordPanel;
     private MultiBitFrame mainFrame;
 
-    private JPasswordField password1;
+    private JPasswordField currentPassword;
+    
+    private JPasswordField newPassword;
 
-    private JPasswordField password2;
+    private JPasswordField repeatNewPassword;
 
     /**
-     * Creates a new {@link AddPasswordSubmitAction}.
+     * Creates a new {@link ChangePasswordSubmitAction}.
      */
-    public AddPasswordSubmitAction(MultiBitController controller, AddPasswordPanel addPasswordPanel,
-            ImageIcon icon, JPasswordField password1, JPasswordField password2, MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("addPasswordSubmitAction.text"), icon);
+    public ChangePasswordSubmitAction(MultiBitController controller, ChangePasswordPanel changePasswordPanel,
+            ImageIcon icon, JPasswordField currentPassword, JPasswordField newPassword, JPasswordField repeatNewPassword, MultiBitFrame mainFrame) {
+        super(controller.getLocaliser().getString("changePasswordSubmitAction.text"), icon);
         this.controller = controller;
-        this.addPasswordPanel = addPasswordPanel;
-        this.password1 = password1;
-        this.password2 = password2;
+        this.changePasswordPanel = changePasswordPanel;
+        this.currentPassword = currentPassword;
+        this.newPassword = newPassword;
+        this.repeatNewPassword = repeatNewPassword;
         this.mainFrame = mainFrame;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("addPasswordSubmitAction.tooltip"));
-        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("addPasswordSubmitAction.mnemonicKey"));
+        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("changePasswordSubmitAction.tooltip"));
+        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("changePasswordSubmitAction.mnemonicKey"));
     }
 
     /**
-     * Add a password to a wallet.
+     * Change the wallet password
      */
     public void actionPerformed(ActionEvent e) {
-        addPasswordPanel.clearMessages();
+        changePasswordPanel.clearMessages();
 
+        char[] newPasswordToUse = null;
+        char[] currentPasswordToUse = null;
 
-        char[] passwordToUse = null;
+        if (currentPassword.getPassword() == null || currentPassword.getPassword().length == 0) {
+            // Notify must enter the current password.
+            changePasswordPanel.setMessage1(controller.getLocaliser()
+                    .getString("changePasswordPanel.enterCurrentPassword"));
+            return;
+        } 
+        currentPasswordToUse = currentPassword.getPassword();
 
-        // Get the passwords on the password fields.
-        if (password1.getPassword() == null || password1.getPassword().length == 0) {
-            // Notify must enter a password.
-            addPasswordPanel.setMessage1(controller.getLocaliser()
-                    .getString("addPasswordPanel.enterPasswords"));
+        // Get the new passwords on the password fields.
+        if (newPassword.getPassword() == null || newPassword.getPassword().length == 0) {
+            // Notify must enter a new password.
+            changePasswordPanel.setMessage1(controller.getLocaliser()
+                    .getString("changePasswordPanel.enterPasswords"));
             return;
         } else {
-            if (!Arrays.areEqual(password1.getPassword(), password2.getPassword())) {
+            if (!Arrays.areEqual(newPassword.getPassword(), repeatNewPassword.getPassword())) {
                 // Notify user passwords are different.
-                addPasswordPanel.setMessage1(controller.getLocaliser().getString(
-                        "showExportPrivateKeysAction.passwordsAreDifferent"));
+                changePasswordPanel.setMessage1(controller.getLocaliser().getString(
+                            "showExportPrivateKeysAction.passwordsAreDifferent"));
                 return;
             } else {
-                passwordToUse = password1.getPassword();
+                newPasswordToUse = newPassword.getPassword();
             }
         }
 
 
-        log.debug("Password is : " + new String(passwordToUse));
+        log.debug("Current password is : " + new String(currentPasswordToUse));
+        log.debug("New password is : " + new String(newPasswordToUse));
             
 //        try {
 //            // check on file overwrite
