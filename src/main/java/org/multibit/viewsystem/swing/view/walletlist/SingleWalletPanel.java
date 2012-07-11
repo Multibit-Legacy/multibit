@@ -110,7 +110,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private boolean selected = false;
 
-    private static final int DETAILS_LEFT_BORDER = 2;
+    private static final int DETAILS_LEFT_BORDER = 12;
     private static final int DETAILS_TOP_BORDER = 3;
 
     private static final int LOCK_LEFT_BORDER = 6;
@@ -271,7 +271,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 2;
-        constraints.weightx = 0.92;
+        constraints.weightx = 100;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
