@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -48,6 +47,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
+import com.google.bitcoin.core.WalletType;
+
 /**
  * The add password view.
  */
@@ -72,6 +73,8 @@ public class AddPasswordPanel extends JPanel implements View {
 
     private JPasswordField passwordField;
     private JPasswordField repeatPasswordField;
+    
+    private AddPasswordSubmitAction addPasswordSubmitAction;
 
     private JLabel tickLabel;
 
@@ -527,9 +530,9 @@ public class AddPasswordPanel extends JPanel implements View {
          * Create submit action with references to the password fields - this
          * avoids having any public accessors on the panel
          */
-        AddPasswordSubmitAction submitAction = new AddPasswordSubmitAction(controller, this,
+        addPasswordSubmitAction = new AddPasswordSubmitAction(controller, this,
                 ImageLoader.createImageIcon(ImageLoader.ADD_PASSWORD_ICON_FILE), passwordField, repeatPasswordField, mainFrame);
-        MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
+        MultiBitButton submitButton = new MultiBitButton(addPasswordSubmitAction, controller);
         buttonPanel.add(submitButton);
 
         return buttonPanel;
@@ -540,8 +543,15 @@ public class AddPasswordPanel extends JPanel implements View {
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
 
+        updatePasswordAction();
         clearMessages();
     }
+    
+    public void updatePasswordAction() {
+        boolean enableAction = controller.getModel().getActiveWallet() == null ? false : controller.getModel().getActiveWallet().getWalletType() == WalletType.UNENCRYPTED;
+        addPasswordSubmitAction.setEnabled(enableAction);        
+    }
+
 
     public void clearMessages() {
         setMessage1(" ");

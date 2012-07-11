@@ -154,6 +154,11 @@ public class Wallet implements Serializable, IsMultiBitClass {
     transient private ArrayList<WalletEventListener> eventListeners;
 
     /**
+     * The type of the wallet.
+     */
+    private WalletType walletType;
+    
+    /**
      * Creates a new, empty wallet with no keys and no transactions. If you want to restore a wallet from disk instead,
      * see loadFromFile.
      */
@@ -1763,6 +1768,19 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
     public ArrayList<ECKey> getKeychain() {
         return keychain;
+    }
+
+    public WalletType getWalletType() {
+        if (walletType == null) {
+            // By default, wallets are unencrypted
+            return WalletType.UNENCRYPTED;
+        }
+        
+        return walletType;
+    }
+
+    public void setWalletType(WalletType walletType) {
+        this.walletType = walletType;
     }
 
 }

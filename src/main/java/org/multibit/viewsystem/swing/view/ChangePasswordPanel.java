@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -41,14 +40,14 @@ import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.action.AddPasswordSubmitAction;
 import org.multibit.viewsystem.swing.action.ChangePasswordSubmitAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
-import org.multibit.viewsystem.swing.view.RemovePasswordPanel.PasswordListener;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+
+import com.google.bitcoin.core.WalletType;
 
 /**
  * The change password view.
@@ -76,6 +75,8 @@ public class ChangePasswordPanel extends JPanel implements View {
 
     private JPasswordField newPasswordField;
     private JPasswordField repeatNewPasswordField;
+    
+    private ChangePasswordSubmitAction changePasswordSubmitAction ;
 
     private JLabel tickLabel;
 
@@ -662,9 +663,9 @@ public class ChangePasswordPanel extends JPanel implements View {
          * Create submit action with references to the password fields - this
          * avoids having any public accessors on the panel
          */
-        ChangePasswordSubmitAction submitAction = new ChangePasswordSubmitAction(controller, this,
+        changePasswordSubmitAction = new ChangePasswordSubmitAction(controller, this,
                 ImageLoader.createImageIcon(ImageLoader.CHANGE_PASSWORD_ICON_FILE), currentPasswordField, newPasswordField, repeatNewPasswordField, mainFrame);
-        MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
+        MultiBitButton submitButton = new MultiBitButton(changePasswordSubmitAction, controller);
         buttonPanel.add(submitButton);
 
         return buttonPanel;
@@ -675,7 +676,13 @@ public class ChangePasswordPanel extends JPanel implements View {
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
 
+        updatePasswordAction();
         clearMessages();
+    }
+    
+    public void updatePasswordAction() {
+        boolean enableAction = controller.getModel().getActiveWallet() == null ? false : controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED;
+        changePasswordSubmitAction.setEnabled(enableAction);
     }
 
     public void clearMessages() {

@@ -49,6 +49,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
+import com.google.bitcoin.core.WalletType;
+
 /**
  * The remove password view.
  */
@@ -68,6 +70,8 @@ public class RemovePasswordPanel extends JPanel implements View {
     private MultiBitLabel messageLabel2;
 
     private JPasswordField passwordField;
+    
+    private RemovePasswordSubmitAction removePasswordSubmitAction;
 
     public static final int STENT_HEIGHT = 12;
     public static final int STENT_DELTA = 20;
@@ -452,9 +456,9 @@ public class RemovePasswordPanel extends JPanel implements View {
          * Create submit action with references to the password fields - this
          * avoids having any public accessors on the panel
          */
-        RemovePasswordSubmitAction submitAction = new RemovePasswordSubmitAction(controller, this,
+        removePasswordSubmitAction = new RemovePasswordSubmitAction(controller, this,
                 ImageLoader.createImageIcon(ImageLoader.REMOVE_PASSWORD_ICON_FILE), passwordField, mainFrame);
-        MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
+        MultiBitButton submitButton = new MultiBitButton(removePasswordSubmitAction, controller);
         buttonPanel.add(submitButton);
 
         return buttonPanel;
@@ -465,7 +469,13 @@ public class RemovePasswordPanel extends JPanel implements View {
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
 
+        updatePasswordAction();
         clearMessages();
+    }
+    
+    public void updatePasswordAction() {
+        boolean enableAction = controller.getModel().getActiveWallet() == null ? false : controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED;
+        removePasswordSubmitAction.setEnabled(enableAction);
     }
 
     public void clearMessages() {

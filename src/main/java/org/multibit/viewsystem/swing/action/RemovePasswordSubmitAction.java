@@ -28,6 +28,8 @@ import org.multibit.viewsystem.swing.view.RemovePasswordPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.WalletType;
+
 /**
  * This {@link Action} action removes the encryption of private keys in a wallet.
  */
@@ -77,5 +79,13 @@ public class RemovePasswordSubmitAction extends AbstractAction {
         }
 
         log.debug("Password is : " + new String(passwordToUse));
+        
+        if (controller.getModel().getActiveWallet() != null) {
+            controller.getModel().getActiveWallet() .setWalletType(WalletType.UNENCRYPTED);
+            if (mainFrame != null) {
+                mainFrame.updatePasswordMenuItems();
+            }
+        }
+        removePasswordPanel.updatePasswordAction();
     }
 }

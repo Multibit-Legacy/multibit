@@ -29,6 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
+import com.google.bitcoin.core.WalletType;
+
 /**
  * This {@link Action} action encrypts the private keys with the password.
  */
@@ -89,48 +91,13 @@ public class AddPasswordSubmitAction extends AbstractAction {
             }
         }
 
-
         log.debug("Password is : " + new String(passwordToUse));
-            
-//        try {
-//            // check on file overwrite
-//
-//            if (exportPrivateKeysFile.exists()) {
-//                String yesText = controller.getLocaliser().getString("showOpenUriView.yesText");
-//                String noText = controller.getLocaliser().getString("showOpenUriView.noText");
-//                String questionText = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwrite", new Object[] {exportPrivateKeysFile.getName()});
-//                String questionTitle = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwriteTitle");
-//                int selection = JOptionPane.showOptionDialog(mainFrame, questionText, questionTitle,
-//                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-//                        ImageLoader.createImageIcon(ImageLoader.QUESTION_MARK_ICON_FILE), new String[] { yesText, noText }, noText);
-//                if (selection != JOptionPane.YES_OPTION) {
-//                    return;
-//                }
-//            }
-//
-//            privateKeysHandler.exportPrivateKeys(exportPrivateKeysFile, controller.getModel().getActivePerWalletModelData()
-//                    .getWallet(), controller.getMultiBitService().getChain(), performEncryption, passwordToUse);
-//
-//            // success
-//            addPasswordPanel.setMessage1(controller.getLocaliser().getString(
-//                    "showExportPrivateKeysAction.privateKeysExportSuccess"));
-//            performVerification = true;
-//        } catch (IOException ioe) {
-//            log.error(ioe.getClass().getName() + " " + ioe.getMessage());
-//
-//            // IO failure of some sort
-//            addPasswordPanel.setMessage1(controller.getLocaliser().getString(
-//                    "showExportPrivateKeysAction.privateKeysExportFailure",
-//                    new Object[] { ioe.getClass().getName() + " " + ioe.getMessage() }));
-//        }
-//
-//        if (performVerification) {
-//            // perform a verification on the exported file to see if it is correct
-//            Verification verification = privateKeysHandler.verifyExportFile(exportPrivateKeysFile, controller.getModel()
-//                    .getActivePerWalletModelData().getWallet(), controller.getMultiBitService().getChain(), performEncryption,
-//                    passwordToUse);
-//            String verifyMessage = controller.getLocaliser().getString(verification.getMessageKey(), verification.getMessageData());
-//            addPasswordPanel.setMessage2(verifyMessage);
-//        }
+        if (controller.getModel().getActiveWallet() != null) {
+            controller.getModel().getActiveWallet() .setWalletType(WalletType.ENCRYPTED);
+            if (mainFrame != null) {
+                mainFrame.updatePasswordMenuItems();
+            }
+        }
+        addPasswordPanel.updatePasswordAction();
     }
 }
