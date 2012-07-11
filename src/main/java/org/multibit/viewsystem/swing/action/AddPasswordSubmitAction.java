@@ -76,7 +76,7 @@ public class AddPasswordSubmitAction extends AbstractAction {
 
         // Get the passwords on the password fields.
         if (password1.getPassword() == null || password1.getPassword().length == 0) {
-            // Notify must enter a password.
+            // Notify the user must enter a password.
             addPasswordPanel.setMessage1(controller.getLocaliser()
                     .getString("addPasswordPanel.enterPasswords"));
             return;
@@ -92,12 +92,11 @@ public class AddPasswordSubmitAction extends AbstractAction {
         }
 
         log.debug("Password is : " + new String(passwordToUse));
+        
         if (controller.getModel().getActiveWallet() != null) {
-            controller.getModel().getActiveWallet() .setWalletType(WalletType.ENCRYPTED);
-            if (mainFrame != null) {
-                mainFrame.updatePasswordMenuItems();
-            }
+            controller.getModel().getActiveWallet().setWalletType(WalletType.ENCRYPTED);
         }
+        controller.fireDataChanged();
         addPasswordPanel.updatePasswordAction();
     }
 }

@@ -88,7 +88,7 @@ public class ChangePasswordSubmitAction extends AbstractAction {
 
         // Get the new passwords on the password fields.
         if (newPassword.getPassword() == null || newPassword.getPassword().length == 0) {
-            // Notify must enter a new password.
+            // Notify the user must enter a new password.
             changePasswordPanel.setMessage1(controller.getLocaliser()
                     .getString("changePasswordPanel.enterPasswords"));
             return;
@@ -103,8 +103,12 @@ public class ChangePasswordSubmitAction extends AbstractAction {
             }
         }
 
-
         log.debug("Current password is : " + new String(currentPasswordToUse));
         log.debug("New password is : " + new String(newPasswordToUse));
+
+        if (controller.getModel().getActiveWallet() != null) {
+            controller.getModel().getActiveWallet().setWalletType(WalletType.ENCRYPTED);
+        }
+        controller.fireDataChanged();
     }
 }

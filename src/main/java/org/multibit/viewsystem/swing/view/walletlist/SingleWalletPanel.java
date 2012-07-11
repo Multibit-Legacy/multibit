@@ -101,7 +101,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private int detailHeight;
 
     private static int NUMBER_OF_ROWS_IN_SUMMARY_PANEL = 2;
-    private static int NUMBER_OF_ROWS_IN_DETAIL_PANEL = 3;
+    private static int NUMBER_OF_ROWS_IN_DETAIL_PANEL = 2;
 
     private static int DETAIL_PANEL_OUTER_INDENT = 3;
     private static int DETAIL_PANEL_INNER_INDENT = 1;
@@ -110,18 +110,23 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private boolean selected = false;
 
-    private static final int TWISTY_LEFT_BORDER = 8;
-    private static final int TWISTY_TOP_BORDER = 3;
+    private static final int DETAILS_LEFT_BORDER = 2;
+    private static final int DETAILS_TOP_BORDER = 3;
 
-    private static final int LOCK_LEFT_BORDER = 8;
+    private static final int LOCK_LEFT_BORDER = 6;
     private static final int LOCK_TOP_BORDER = 3;
 
     private JLabel twistyLabel;
-    private Icon twistyRightIcon;
-    private Icon twistyDownIcon;
+    private Icon detailsPanelOffIcon;
+    private Icon detailsPanelOnIcon;
     
-    private JLabel lockLabel;
-    private Icon lockIcon;
+    private Icon unencryptedIcon;
+    private Icon encryptedIcon;
+    
+    private String unencryptedTooltip = "";
+    private String encryptedTooltip = "";
+    
+    private JLabel walletTypeLabel;
     
     private MultiBitLabel filenameLabel;
     private JLabel filenameSeparator;
@@ -143,11 +148,15 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         expanded = false;
         selected = false;
 
-        twistyRightIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_RIGHT_ICON_FILE);
-        twistyDownIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_DOWN_ICON_FILE);
-
-        lockIcon = ImageLoader.createImageIcon(ImageLoader.LOCK_ICON_FILE);
+        detailsPanelOffIcon = ImageLoader.createImageIcon(ImageLoader.DETAILS_PANEL_OFF_ICON_FILE);
+        detailsPanelOnIcon = ImageLoader.createImageIcon(ImageLoader.DETAILS_PANEL_ON_ICON_FILE);
         
+        unencryptedIcon = ImageLoader.createImageIcon(ImageLoader.PICTURE_BLANK_ICON_FILE);
+        encryptedIcon = ImageLoader.createImageIcon(ImageLoader.LOCK_ICON_FILE);
+ 
+        unencryptedTooltip = controller.getLocaliser().getString("singleWalletPanel.unencrypted.tooptip");
+        encryptedTooltip = controller.getLocaliser().getString("singleWalletPanel.encrypted.tooptip");
+
         normalHeight = NUMBER_OF_ROWS_IN_SUMMARY_PANEL * fontMetrics.getHeight() + HEIGHT_DELTA;
         normalWidth = calculateNormalWidth(this);
         expandedHeight = (int) ((NUMBER_OF_ROWS_IN_SUMMARY_PANEL + NUMBER_OF_ROWS_IN_DETAIL_PANEL) * fontMetrics.getHeight()
@@ -205,11 +214,11 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.LINE_START;
         myRoundedPanel.add(walletDescriptionTextField, constraints);
 
-        // Twisty is initially invisible.
+        // Show details is initially invisible.
         twistyLabel = new JLabel();
         twistyLabel.setOpaque(false);
-        twistyLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.TWISTY_DOWN_ICON_FILE));
-        twistyLabel.setBorder(BorderFactory.createEmptyBorder(TWISTY_TOP_BORDER, TWISTY_LEFT_BORDER, 0, 0));
+        twistyLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.DETAILS_PANEL_ON_ICON_FILE));
+        twistyLabel.setBorder(BorderFactory.createEmptyBorder(DETAILS_TOP_BORDER, DETAILS_LEFT_BORDER, 0, 0));
         twistyLabel.setVisible(false);
         twistyLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
@@ -230,17 +239,15 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.LINE_START;
         myRoundedPanel.add(twistyLabel, constraints);
 
-        // Lock icon is initially invisible.
-        lockLabel = new JLabel();
-        lockLabel.setOpaque(false);
-        lockLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.LOCK_ICON_FILE));
+        // Walelt type icon.
+        walletTypeLabel = new JLabel();
+        walletTypeLabel.setOpaque(false);
+        walletTypeLabel.setVisible(true);
 
-        lockLabel.setBorder(BorderFactory.createEmptyBorder(LOCK_TOP_BORDER, LOCK_LEFT_BORDER, 0, 0));
-        if (perWalletModelData.getWallet() != null && perWalletModelData.getWallet().getWalletType() == WalletType.ENCRYPTED) {
-            lockLabel.setVisible(true);
-         } else {
-            lockLabel.setVisible(false);
-         }
+        walletTypeLabel.setBorder(BorderFactory.createEmptyBorder(LOCK_TOP_BORDER, LOCK_LEFT_BORDER, 0, 0));
+        if (perWalletModelData.getWallet() != null) {
+            setIconForWalletType(perWalletModelData.getWallet().getWalletType(), walletTypeLabel);
+        }
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
@@ -250,7 +257,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        myRoundedPanel.add(lockLabel, constraints);
+        myRoundedPanel.add(walletTypeLabel, constraints);
 
         amountLabel = new BlinkLabel(controller, false);
         amountLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
@@ -329,6 +336,16 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         setSelected(false);
     }
 
+    public void setIconForWalletType(WalletType walletType, JLabel label) {
+        if (walletType == WalletType.ENCRYPTED) {
+            label.setIcon(ImageLoader.createImageIcon(ImageLoader.LOCK_ICON_FILE));
+            label.setToolTipText(encryptedTooltip);
+         } else {
+            label.setIcon(ImageLoader.createImageIcon(ImageLoader.PICTURE_BLANK_ICON_FILE));
+            label.setToolTipText(unencryptedTooltip);
+         }
+    }
+    
     public static int calculateNormalWidth(JComponent component) {
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
         FontMetrics fontMetrics = component.getFontMetrics(font);
@@ -351,14 +368,14 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         roundedBottomPanel.setSelected(selected);
         if (!perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
             if (expanded) {
-                twistyLabel.setIcon(twistyDownIcon);
+                twistyLabel.setIcon(detailsPanelOnIcon);
                 twistyLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.twistyDownText"));
                 detailPanel.setVisible(true);
                 setPreferredSize(new Dimension(normalWidth, expandedHeight));
                 setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, expandedHeight));
                 setMaximumSize(new Dimension(normalWidth * 2, expandedHeight));
             } else {
-                twistyLabel.setIcon(twistyRightIcon);
+                twistyLabel.setIcon(detailsPanelOffIcon);
                 twistyLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.twistyRightText"));
                 detailPanel.setVisible(false);
                 setPreferredSize(new Dimension(normalWidth, normalHeight));
@@ -366,10 +383,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
             }
 
-            if (perWalletModelData.getWallet() != null && perWalletModelData.getWallet().getWalletType() == WalletType.ENCRYPTED) {
-                lockLabel.setVisible(true);
-            } else {
-                lockLabel.setVisible(false);
+            if (perWalletModelData.getWallet() != null) {
+                setIconForWalletType(perWalletModelData.getWallet().getWalletType(), walletTypeLabel);
             }
             
             if (selected) {
@@ -472,6 +487,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             } else {
                 encryptionText = controller.getLocaliser().getString("singleWalletPanel.unencrypted");
             }
+            this.setIconForWalletType(perWalletModelData.getWallet().getWalletType(), walletTypeLabel);
         }
         
         if (walletTypeText != null) {
@@ -489,7 +505,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             walletDescriptionTextField.setEditable(false);
             amountLabel.setText("");
             amountLabel.setEnabled(false);
-            lockLabel.setEnabled(false);
+            walletTypeLabel.setEnabled(false);
         }
     }
 
@@ -625,54 +641,54 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         walletFormatFiller.setToolTipText(tooltipText);
         walletFormatLabel.setToolTipText(tooltipText);
 
-        MultiBitLabel walletTypeLabel = new MultiBitLabel("");
-        walletTypeLabel.setText(controller.getLocaliser().getString("singleWalletPanel.type"));
-        walletTypeLabel.setBorder(overlineBorder);
-        walletTypeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        innerDetailPanel.add(walletTypeLabel, constraints);
-
-        JLabel walletTypeFiller = new JLabel("");
-        walletTypeFiller.setOpaque(false);
-        walletTypeFiller.setText("");
-        walletTypeFiller.setBorder(overlineBorder);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 2;
-        constraints.weightx = 0.1;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        innerDetailPanel.add(walletTypeFiller, constraints);
-
-        walletTypeText = new MultiBitLabel("");
-        String encryptionText = " ";
-        if (perWalletModelData.getWallet() != null) {
-            if (perWalletModelData.getWallet().getWalletType() == WalletType.ENCRYPTED) {
-                encryptionText = controller.getLocaliser().getString("singleWalletPanel.encrypted");
-            } else {
-                encryptionText = controller.getLocaliser().getString("singleWalletPanel.unencrypted");
-            }
-        }
-        walletTypeText.setText(encryptionText);
-        walletTypeText.setBorder(overlineBorder);
-
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 2;
-        constraints.gridy = 2;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        innerDetailPanel.add(walletTypeText, constraints);
+//        MultiBitLabel walletTypeLabel = new MultiBitLabel("");
+//        walletTypeLabel.setText(controller.getLocaliser().getString("singleWalletPanel.type"));
+//        walletTypeLabel.setBorder(overlineBorder);
+//        walletTypeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+//
+//        constraints.fill = GridBagConstraints.HORIZONTAL;
+//        constraints.gridx = 0;
+//        constraints.gridy = 2;
+//        constraints.weightx = 0.3;
+//        constraints.weighty = 0.1;
+//        constraints.gridwidth = 1;
+//        constraints.anchor = GridBagConstraints.LINE_END;
+//        innerDetailPanel.add(walletTypeLabel, constraints);
+//
+//        JLabel walletTypeFiller = new JLabel("");
+//        walletTypeFiller.setOpaque(false);
+//        walletTypeFiller.setText("");
+//        walletTypeFiller.setBorder(overlineBorder);
+//
+//        constraints.fill = GridBagConstraints.BOTH;
+//        constraints.gridx = 1;
+//        constraints.gridy = 2;
+//        constraints.weightx = 0.1;
+//        constraints.weighty = 0.1;
+//        constraints.gridwidth = 1;
+//        constraints.anchor = GridBagConstraints.LINE_START;
+//        innerDetailPanel.add(walletTypeFiller, constraints);
+//
+//        walletTypeText = new MultiBitLabel("");
+//        String encryptionText = " ";
+//        if (perWalletModelData.getWallet() != null) {
+//            if (perWalletModelData.getWallet().getWalletType() == WalletType.ENCRYPTED) {
+//                encryptionText = controller.getLocaliser().getString("singleWalletPanel.encrypted");
+//            } else {
+//                encryptionText = controller.getLocaliser().getString("singleWalletPanel.unencrypted");
+//            }
+//        }
+//        walletTypeText.setText(encryptionText);
+//        walletTypeText.setBorder(overlineBorder);
+//
+//        constraints.fill = GridBagConstraints.HORIZONTAL;
+//        constraints.gridx = 2;
+//        constraints.gridy = 2;
+//        constraints.weightx = 0.3;
+//        constraints.weighty = 0.1;
+//        constraints.gridwidth = 1;
+//        constraints.anchor = GridBagConstraints.LINE_START;
+//        innerDetailPanel.add(walletTypeText, constraints);
 
         JLabel filler4 = new JLabel();
         filler4.setOpaque(false);

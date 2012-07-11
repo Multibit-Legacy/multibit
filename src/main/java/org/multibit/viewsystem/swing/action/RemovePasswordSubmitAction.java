@@ -72,7 +72,7 @@ public class RemovePasswordSubmitAction extends AbstractAction {
 
         // Get the passwords on the password fields.
         if (password1.getPassword() == null || password1.getPassword().length == 0) {
-            // notify must enter a password
+            // Notify that the user must enter a password.
             removePasswordPanel.setMessage1(controller.getLocaliser()
                     .getString("removePasswordPanel.enterPassword"));
             return;
@@ -81,11 +81,10 @@ public class RemovePasswordSubmitAction extends AbstractAction {
         log.debug("Password is : " + new String(passwordToUse));
         
         if (controller.getModel().getActiveWallet() != null) {
-            controller.getModel().getActiveWallet() .setWalletType(WalletType.UNENCRYPTED);
-            if (mainFrame != null) {
-                mainFrame.updatePasswordMenuItems();
-            }
+            controller.getModel().getActiveWallet().setWalletType(WalletType.UNENCRYPTED);
         }
+        controller.fireDataChanged();
+
         removePasswordPanel.updatePasswordAction();
     }
 }

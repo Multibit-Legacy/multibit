@@ -234,7 +234,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * fire the model data has changed
+     * Fire that the model data has changed.
      */
     public void fireDataChanged() {
         for (ViewSystem viewSystem : viewSystems) {

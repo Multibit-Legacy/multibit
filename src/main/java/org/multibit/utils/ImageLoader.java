@@ -50,6 +50,7 @@ public class ImageLoader {
     public static final String OPEN_LOCK_ICON_FILE = "/images/openLock.png";
     public static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
     public static final String PASTE_ICON_FILE = "/images/paste.png";
+    public static final String PICTURE_BLANK_ICON_FILE = "/images/pictureBlank.png";
     public static final String PREFERENCES_ICON_FILE = "/images/preferences.png";
     public static final String QUESTION_MARK_ICON_FILE = "/images/questionMark.png";
     public static final String RECEIVE_BITCOIN_ICON_FILE = "/images/receiveIn.png";
@@ -59,8 +60,10 @@ public class ImageLoader {
     public static final String SEND_BITCOIN_ICON_FILE = "/images/sendOut.png";
     public static final String TICK_ICON_FILE = "/images/tick.png";
     public static final String TRANSACTIONS_ICON_FILE = "/images/transactions.png";
-    public static final String TWISTY_RIGHT_ICON_FILE = "/images/twistyRight.png";
-    public static final String TWISTY_DOWN_ICON_FILE = "/images/twistyDown.png";
+    //public static final String TWISTY_RIGHT_ICON_FILE = "/images/twistyRight.png";
+    //public static final String TWISTY_DOWN_ICON_FILE = "/images/twistyDown.png";
+    public static final String DETAILS_PANEL_OFF_ICON_FILE = "/images/applicationSplit.png";
+    public static final String DETAILS_PANEL_ON_ICON_FILE = "/images/application.png";
     public static final String UNDO_ICON_FILE = "/images/undo.png";
     public static final String WALLET_ICON_FILE = "/images/wallet.png";
     public static final String WELCOME_ICON_FILE = "/images/welcome.png";
