@@ -116,7 +116,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private static final int LOCK_LEFT_BORDER = 6;
     private static final int LOCK_TOP_BORDER = 3;
 
-    private JLabel twistyLabel;
+    private JLabel showDetailLabel;
     private Icon detailsPanelOffIcon;
     private Icon detailsPanelOnIcon;
     
@@ -148,14 +148,17 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         expanded = false;
         selected = false;
 
-        detailsPanelOffIcon = ImageLoader.createImageIcon(ImageLoader.DETAILS_PANEL_OFF_ICON_FILE);
-        detailsPanelOnIcon = ImageLoader.createImageIcon(ImageLoader.DETAILS_PANEL_ON_ICON_FILE);
+        detailsPanelOffIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_DOWN_ICON_FILE);
+        detailsPanelOnIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_UP_ICON_FILE);
         
         unencryptedIcon = ImageLoader.createImageIcon(ImageLoader.PICTURE_BLANK_ICON_FILE);
         encryptedIcon = ImageLoader.createImageIcon(ImageLoader.LOCK_ICON_FILE);
  
         unencryptedTooltip = controller.getLocaliser().getString("singleWalletPanel.unencrypted.tooptip");
         encryptedTooltip = controller.getLocaliser().getString("singleWalletPanel.encrypted.tooptip");
+
+        underlineBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.WHITE);
+        overlineBorder = BorderFactory.createMatteBorder(1, 0, 0, 0, Color.WHITE);
 
         normalHeight = NUMBER_OF_ROWS_IN_SUMMARY_PANEL * fontMetrics.getHeight() + HEIGHT_DELTA;
         normalWidth = calculateNormalWidth(this);
@@ -215,12 +218,12 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         myRoundedPanel.add(walletDescriptionTextField, constraints);
 
         // Show details is initially invisible.
-        twistyLabel = new JLabel();
-        twistyLabel.setOpaque(false);
-        twistyLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.DETAILS_PANEL_ON_ICON_FILE));
-        twistyLabel.setBorder(BorderFactory.createEmptyBorder(DETAILS_TOP_BORDER, DETAILS_LEFT_BORDER, 0, 0));
-        twistyLabel.setVisible(false);
-        twistyLabel.addMouseListener(new MouseAdapter() {
+        showDetailLabel = new JLabel();
+        showDetailLabel.setOpaque(false);
+        showDetailLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.DETAILS_PANEL_ON_ICON_FILE));
+        showDetailLabel.setBorder(BorderFactory.createEmptyBorder(DETAILS_TOP_BORDER, DETAILS_LEFT_BORDER, 0, 0));
+        showDetailLabel.setVisible(false);
+        showDetailLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
                 expanded = !expanded;
                 setSelected(selected);
@@ -237,9 +240,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        myRoundedPanel.add(twistyLabel, constraints);
+        myRoundedPanel.add(showDetailLabel, constraints);
 
-        // Walelt type icon.
+        // Wallet type icon.
         walletTypeLabel = new JLabel();
         walletTypeLabel.setOpaque(false);
         walletTypeLabel.setVisible(true);
@@ -338,10 +341,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     public void setIconForWalletType(WalletType walletType, JLabel label) {
         if (walletType == WalletType.ENCRYPTED) {
-            label.setIcon(ImageLoader.createImageIcon(ImageLoader.LOCK_ICON_FILE));
+            label.setIcon(encryptedIcon);
             label.setToolTipText(encryptedTooltip);
          } else {
-            label.setIcon(ImageLoader.createImageIcon(ImageLoader.PICTURE_BLANK_ICON_FILE));
+            label.setIcon(unencryptedIcon);
             label.setToolTipText(unencryptedTooltip);
          }
     }
@@ -368,15 +371,15 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         roundedBottomPanel.setSelected(selected);
         if (!perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
             if (expanded) {
-                twistyLabel.setIcon(detailsPanelOnIcon);
-                twistyLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.twistyDownText"));
+                showDetailLabel.setIcon(detailsPanelOnIcon);
+                showDetailLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.twistyDownText"));
                 detailPanel.setVisible(true);
                 setPreferredSize(new Dimension(normalWidth, expandedHeight));
                 setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, expandedHeight));
                 setMaximumSize(new Dimension(normalWidth * 2, expandedHeight));
             } else {
-                twistyLabel.setIcon(detailsPanelOffIcon);
-                twistyLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.twistyRightText"));
+                showDetailLabel.setIcon(detailsPanelOffIcon);
+                showDetailLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.twistyRightText"));
                 detailPanel.setVisible(false);
                 setPreferredSize(new Dimension(normalWidth, normalHeight));
                 setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, normalHeight));
@@ -404,7 +407,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 
                 myRoundedPanel.repaint();
                 roundedBottomPanel.repaint();
-                twistyLabel.setVisible(true);
+                showDetailLabel.setVisible(true); 
             } else {
                 walletDescriptionTextField.setEnabled(false);
                 walletDescriptionTextField.setForeground(Color.BLACK);
@@ -417,7 +420,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
                 myRoundedPanel.repaint();
                 roundedBottomPanel.repaint();
-                twistyLabel.setVisible(false);
+                showDetailLabel.setVisible(false);
             }
         }
     }
@@ -513,9 +516,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
      * Create the wallet details panel.
      */
     private JPanel createWalletDetailPanel() {
-        underlineBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.WHITE);
-        overlineBorder = BorderFactory.createMatteBorder(1, 0, 0, 0, Color.WHITE);
-
         roundedBottomPanel = new RoundedBottomPanel(controller.getLocaliser().getLocale());
         roundedBottomPanel.setOpaque(true);
         roundedBottomPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);

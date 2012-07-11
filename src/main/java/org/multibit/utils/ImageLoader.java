@@ -60,8 +60,9 @@ public class ImageLoader {
     public static final String SEND_BITCOIN_ICON_FILE = "/images/sendOut.png";
     public static final String TICK_ICON_FILE = "/images/tick.png";
     public static final String TRANSACTIONS_ICON_FILE = "/images/transactions.png";
-    //public static final String TWISTY_RIGHT_ICON_FILE = "/images/twistyRight.png";
-    //public static final String TWISTY_DOWN_ICON_FILE = "/images/twistyDown.png";
+    public static final String TWISTY_RIGHT_ICON_FILE = "/images/twistyRight.png";
+    public static final String TWISTY_DOWN_ICON_FILE = "/images/twistyDown.png";
+    public static final String TWISTY_UP_ICON_FILE = "/images/twistyUp.png";
     public static final String DETAILS_PANEL_OFF_ICON_FILE = "/images/applicationSplit.png";
     public static final String DETAILS_PANEL_ON_ICON_FILE = "/images/application.png";
     public static final String UNDO_ICON_FILE = "/images/undo.png";
