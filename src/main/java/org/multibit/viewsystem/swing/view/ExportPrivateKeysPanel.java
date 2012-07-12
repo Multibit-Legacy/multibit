@@ -57,6 +57,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
+import com.google.bitcoin.core.WalletType;
+
 /**
  * The export private keys view
  */
@@ -85,8 +87,8 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
     private JRadioButton doNotPasswordProtect;
     private MultiBitLabel doNotPasswordProtectWarningLabel;
 
-    private JPasswordField passwordField;
-    private JPasswordField repeatPasswordField;
+    private JPasswordField exportFilePasswordField;
+    private JPasswordField repeatExportFilePasswordField;
 
     private JPasswordField walletPasswordField;
     private MultiBitLabel walletPasswordPromptLabel;
@@ -112,6 +114,13 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         outputFilename = "";
 
         initUI();
+        
+        boolean walletPasswordRequired = false;
+        if (controller.getModel().getActiveWallet() != null && controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
+            walletPasswordRequired = true;
+        }
+        enableWalletPassword(walletPasswordRequired);
+
     }
 
     @Override
@@ -619,9 +628,9 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         constraints.anchor = GridBagConstraints.LINE_END;
         passwordProtectPanel.add(passwordPromptLabel, constraints);
 
-        passwordField = new JPasswordField(24);
-        passwordField.setMinimumSize(new Dimension(200, 20));
-        passwordField.addKeyListener(new PasswordListener());
+        exportFilePasswordField = new JPasswordField(24);
+        exportFilePasswordField.setMinimumSize(new Dimension(200, 20));
+        exportFilePasswordField.addKeyListener(new PasswordListener());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 5;
@@ -629,7 +638,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         constraints.weighty = 0.25;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        passwordProtectPanel.add(passwordField, constraints);
+        passwordProtectPanel.add(exportFilePasswordField, constraints);
 
         JLabel filler3 = new JLabel();
         filler3.setMinimumSize(new Dimension(3, 3));
@@ -658,9 +667,9 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         constraints.anchor = GridBagConstraints.LINE_END;
         passwordProtectPanel.add(repeatPasswordPromptLabel, constraints);
 
-        repeatPasswordField = new JPasswordField(24);
-        repeatPasswordField.setMinimumSize(new Dimension(200, 20));
-        repeatPasswordField.addKeyListener(new PasswordListener());
+        repeatExportFilePasswordField = new JPasswordField(24);
+        repeatExportFilePasswordField.setMinimumSize(new Dimension(200, 20));
+        repeatExportFilePasswordField.addKeyListener(new PasswordListener());
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 7;
@@ -668,7 +677,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         constraints.weighty = 0.25;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        passwordProtectPanel.add(repeatPasswordField, constraints);
+        passwordProtectPanel.add(repeatExportFilePasswordField, constraints);
 
         ImageIcon tickIcon = ImageLoader.createImageIcon(ImageLoader.TICK_ICON_FILE);
         tickLabel = new JLabel(tickIcon);
@@ -721,7 +730,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
          * avoids having any public accessors on the panel
          */
         ExportPrivateKeysSubmitAction submitAction = new ExportPrivateKeysSubmitAction(controller, this,
-                ImageLoader.createImageIcon(ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE), passwordField, repeatPasswordField, mainFrame);
+                ImageLoader.createImageIcon(ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE), walletPasswordField, exportFilePasswordField, repeatExportFilePasswordField, mainFrame);
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
@@ -733,12 +742,30 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
 
+        boolean walletPasswordRequired = false;
+        if (controller.getModel().getActiveWallet() != null && controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
+            walletPasswordRequired = true;
+        }
+        enableWalletPassword(walletPasswordRequired);
+
         if (outputFilename == null || "".equals(outputFilename)) {
             outputFilename = createDefaultKeyFilename(controller.getModel().getActiveWalletFilename());
             outputFilenameLabel.setText(outputFilename);
         }
 
         clearMessages();
+    }
+    
+    private void enableWalletPassword(boolean enableWalletPassword) {
+        if (enableWalletPassword) {
+            // Enable the wallet password.
+            walletPasswordField.setEnabled(true);
+            walletPasswordPromptLabel.setEnabled(true);
+        } else {
+            // Disable the wallet password.
+            walletPasswordField.setEnabled(false);
+            walletPasswordPromptLabel.setEnabled(false);
+        }
     }
 
     public boolean requiresEncryption() {
@@ -795,6 +822,12 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         setMessage2(" ");
     }
 
+    public void clearPasswords() {
+        walletPasswordField.setText("");
+        exportFilePasswordField.setText("");
+        repeatExportFilePasswordField.setText("");
+    }
+
     public void setMessage1(String message1) {
         if (messageLabel1 != null) {
             messageLabel1.setText(message1);
@@ -827,16 +860,16 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
             if (doNotPasswordProtectWarningLabel != null) {
                 if (e.getSource().equals(passwordProtect)) {
                     doNotPasswordProtectWarningLabel.setText(" ");
-                    passwordField.setEnabled(true);
-                    repeatPasswordField.setEnabled(true);
+                    exportFilePasswordField.setEnabled(true);
+                    repeatExportFilePasswordField.setEnabled(true);
                     tickLabel.setEnabled(true);
-                    passwordField.requestFocusInWindow();
+                    exportFilePasswordField.requestFocusInWindow();
                     clearMessages();
                 } else {
                     doNotPasswordProtectWarningLabel.setText(controller.getLocaliser().getString(
                             "showExportPrivateKeysPanel.doNotPasswordProtectWarningLabel"));
-                    passwordField.setEnabled(false);
-                    repeatPasswordField.setEnabled(false);
+                    exportFilePasswordField.setEnabled(false);
+                    repeatExportFilePasswordField.setEnabled(false);
                     tickLabel.setEnabled(false);
                     clearMessages();
                 }
@@ -859,11 +892,11 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
             char[] password1 = null;
             char[] password2 = null;
 
-            if (passwordField != null) {
-                password1 = passwordField.getPassword();
+            if (exportFilePasswordField != null) {
+                password1 = exportFilePasswordField.getPassword();
             }
-            if (repeatPasswordField != null) {
-                password2 = repeatPasswordField.getPassword();
+            if (repeatExportFilePasswordField != null) {
+                password2 = repeatExportFilePasswordField.getPassword();
             }
 
             boolean tickLabelVisible = false;

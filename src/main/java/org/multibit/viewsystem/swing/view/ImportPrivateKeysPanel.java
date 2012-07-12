@@ -60,12 +60,13 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
+import com.google.bitcoin.core.WalletType;
 import com.piuk.blockchain.MyWallet;
 import com.piuk.blockchain.MyWalletEncryptedKeyFileFilter;
 import com.piuk.blockchain.MyWalletPlainKeyFileFilter;
 
 /**
- * The import private keys view
+ * The import private keys view.
  */
 public class ImportPrivateKeysPanel extends JPanel implements View {
 
@@ -90,9 +91,8 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
     private String outputFilename;
 
     private MultiBitLabel passwordInfoLabel;
-    private JPasswordField passwordField;
-
-    private MultiBitLabel passwordPromptLabel;
+    private JPasswordField passwordField1;
+    private MultiBitLabel passwordPromptLabel1;
     private MultiBitButton unlockButton;
 
     private JPasswordField passwordField2;
@@ -124,10 +124,16 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
 
         initUI();
 
-        enablePasswordPanel(false);
-        passwordField.setText("");
+        enableImportFilePasswordPanel(false);
+        passwordField1.setText("");
         passwordField2.setText("");
 
+        boolean walletPasswordRequired = false;
+        if (controller.getModel().getActiveWallet() != null && controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
+            walletPasswordRequired = true;
+        }
+        enableWalletPassword(walletPasswordRequired);
+        
         encrypterDecrypter = new EncrypterDecrypter();
         multiBitFileChooser = new PrivateKeyFileFilter(controller);
         myWalletPlainFileChooser = new MyWalletPlainKeyFileFilter();
@@ -565,7 +571,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
     }
 
     private JPanel createPasswordPanel(int stentWidth) {
-        // do/do not password protect radios
+        // Do/do not password protect radios.
         MultiBitTitledPanel passwordProtectPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
                 "showImportPrivateKeysPanel.password.title"));
         GridBagConstraints constraints = new GridBagConstraints();
@@ -582,7 +588,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         constraints.anchor = GridBagConstraints.LINE_START;
         passwordProtectPanel.add(MultiBitTitledPanel.createStent(stentWidth, ExportPrivateKeysPanel.STENT_HEIGHT), constraints);
 
-        passwordPromptLabel = new MultiBitLabel(controller.getLocaliser().getString("showExportPrivateKeysPanel.passwordPrompt"));
+        passwordPromptLabel1 = new MultiBitLabel(controller.getLocaliser().getString("showExportPrivateKeysPanel.passwordPrompt"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 5;
@@ -590,7 +596,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
-        passwordProtectPanel.add(passwordPromptLabel, constraints);
+        passwordProtectPanel.add(passwordPromptLabel1, constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
@@ -602,8 +608,8 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         passwordProtectPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS),
                 constraints);
 
-        passwordField = new JPasswordField(24);
-        passwordField.setMinimumSize(new Dimension(200, 20));
+        passwordField1 = new JPasswordField(24);
+        passwordField1.setMinimumSize(new Dimension(200, 20));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 5;
@@ -611,7 +617,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         constraints.weighty = 0.6;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        passwordProtectPanel.add(passwordField, constraints);
+        passwordProtectPanel.add(passwordField1, constraints);
 
         passwordPromptLabel2 = new MultiBitLabel(controller.getLocaliser().getString("showImportPrivateKeysPanel.secondPassword"));
         passwordPromptLabel2.setVisible(false);
@@ -710,7 +716,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         buttonPanel.setLayout(flowLayout);
 
         ImportPrivateKeysSubmitAction submitAction = new ImportPrivateKeysSubmitAction(controller, this,
-                ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE), passwordField, passwordField2);
+                ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE), walletPasswordField, passwordField1, passwordField2);
         MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
         buttonPanel.add(submitButton);
 
@@ -722,10 +728,16 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
 
+        boolean walletPasswordRequired = false;
+        if (controller.getModel().getActiveWallet() != null && controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
+            walletPasswordRequired = true;
+        }
+        enableWalletPassword(walletPasswordRequired);
+        
         if (outputFilename == null || "".equals(outputFilename)) {
             outputFilenameLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.noFileSelected"));
         }
-
+        
         messageLabel.setText(" ");
     }
 
@@ -770,7 +782,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             numberOfKeysLabel.setText(" ");
             replayDateLabel.setText(" ");
-            passwordField.setText("");
+            passwordField1.setText("");
 
             File file = fileChooser.getSelectedFile();
             if (file != null) {
@@ -782,32 +794,31 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
                         String firstLine = readFirstLineInFile(file);
 
                         if (firstLine != null && firstLine.startsWith(encrypterDecrypter.getOpenSSLMagicText())) {
-                            // file is encrypted
-                            enablePasswordPanel(true);
-                            passwordField.requestFocusInWindow();
+                            // File is encrypted.
+                            enableImportFilePasswordPanel(true);
+                            passwordField1.requestFocusInWindow();
                         } else {
-                            // file is not encrypted
-                            enablePasswordPanel(false);
+                            // File is not encrypted.
+                            enableImportFilePasswordPanel(false);
                             readInImportFileAndUpdateDetails();
                         }
                     } catch (IOException e) {
                         setMessage(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
                                 new Object[] { e.getClass().getName() + " " + e.getMessage() }));
                     } catch (EncrypterDecrypterException e) {
-                        // TODO user may not have entered a password yet so
-                        // password
-                        // incorrect is ok at this stage
-                        // other errors indicate a more general problem with the
-                        // import
+                        // TODO User may not have entered a password yet so
+                        // password incorrect is ok at this stage.
+                        // Other errors indicate a more general problem with the
+                        // import.
                         setMessage(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
                                 new Object[] { e.getClass().getName() + " " + e.getMessage() }));
                     }
                 } else if (myWalletEncryptedFileChooser.accept(file)) {
-                    enablePasswordPanel(true);
-                    passwordField.requestFocusInWindow();
+                    enableImportFilePasswordPanel(true);
+                    passwordField1.requestFocusInWindow();
                 } else if (myWalletPlainFileChooser.accept(file)) {
-                    // file is not encrypted
-                    enablePasswordPanel(false);
+                    // File is not encrypted.
+                    enableImportFilePasswordPanel(false);
                     readInImportFileAndUpdateDetails();
                 }
             }
@@ -821,38 +832,47 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         passwordPromptLabel2.setVisible(enablePanel);
     }
 
-    private void enablePasswordPanel(boolean enablePanel) {
-        if (enablePanel) {
-            // enable the password panel
-            passwordPromptLabel.setEnabled(true);
-            passwordField.setEnabled(true);
+    private void enableImportFilePasswordPanel(boolean enableImportFilePanel) {
+        if (enableImportFilePanel) {
+            // Enable the import file password panel.
+            passwordPromptLabel1.setEnabled(true);
+            passwordField1.setEnabled(true);
             unlockButton.setEnabled(true);
             passwordInfoLabel.setForeground(Color.BLACK);
         } else {
-            // disable the password panel
-            passwordPromptLabel.setEnabled(false);
-            passwordField.setEnabled(false);
+            // Disable the import file password panel.
+            passwordPromptLabel1.setEnabled(false);
+            passwordField1.setEnabled(false);
             unlockButton.setEnabled(false);
             passwordInfoLabel.setForeground(Color.GRAY);
         }
+    }
 
-        //passwordField2.setEnabled(false);
-        //passwordPromptLabel2.setEnabled(false);
+    private void enableWalletPassword(boolean enableWalletPassword) {
+        if (enableWalletPassword) {
+            // Enable the wallet password.
+            walletPasswordField.setEnabled(true);
+            walletPasswordPromptLabel.setEnabled(true);
+        } else {
+            // Disable the wallet password.
+            walletPasswordField.setEnabled(false);
+            walletPasswordPromptLabel.setEnabled(false);
+        }
     }
 
     /**
-     * read in the import file and show the file details
+     * Read in the import file and show the file details.
      */
     private void readInImportFileAndUpdateDetails() {
-        // update number of keys and earliest date
+        // Update number of keys and earliest date.
 
         File file = new File(outputFilename);
 
         if (multiBitFileChooser.accept(file)) {
-            // read in contents of file
+            // Read in contents of file.
             PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService().getNetworkParameters());
             Collection<PrivateKeyAndDate> privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename),
-                    passwordField.getPassword());
+                    passwordField1.getPassword());
             numberOfKeysLabel.setText("" + privateKeyAndDates.size());
 
             Date replayDate = privateKeysHandler.calculateReplayDate(privateKeyAndDates, controller.getModel().getActiveWallet());
@@ -867,7 +887,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
             try {
                 String importFileContents = PrivateKeysHandler.readFile(file);
 
-                String mainPassword = new String(passwordField.getPassword());
+                String mainPassword = new String(passwordField1.getPassword());
                 String secondPassword = new String(passwordField2.getPassword());
 
                 MyWallet wallet = new MyWallet(importFileContents, mainPassword);
@@ -922,6 +942,14 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
 
     public String getOutputFilename() {
         return outputFilename;
+    }
+
+    public void clearPasswords() {
+        walletPasswordField.setText("");
+        passwordField1.setText("");
+        if (passwordField2 != null) {
+            passwordField2.setText("");
+        }
     }
 
     public void setMessage(String message) {
