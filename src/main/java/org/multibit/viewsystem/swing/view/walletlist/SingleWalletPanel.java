@@ -34,6 +34,7 @@ import java.io.File;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -81,7 +82,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private static Color inactiveBackGroundColor;
     private Border underlineBorder;
-    private Border overlineBorder;
+    //private Border overlineBorder;
     private MultiBitTextField walletDescriptionTextField;
     private Border walletDescriptionTextFieldBorder;
 
@@ -113,8 +114,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private static final int DETAILS_LEFT_BORDER = 12;
     private static final int DETAILS_TOP_BORDER = 3;
 
-    private static final int LOCK_LEFT_BORDER = 6;
-    private static final int LOCK_TOP_BORDER = 3;
+    private static final int WALLET_TYPE_LEFT_BORDER = 6;
+    private static final int WALLET_TYPE_TOP_BORDER = 3;
 
     private JLabel showDetailLabel;
     private Icon detailsPanelOffIcon;
@@ -126,7 +127,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private String unencryptedTooltip = "";
     private String encryptedTooltip = "";
     
-    private JLabel walletTypeLabel;
+    private JButton walletTypeButton;
     
     private MultiBitLabel filenameLabel;
     private JLabel filenameSeparator;
@@ -151,15 +152,16 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         detailsPanelOffIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_DOWN_ICON_FILE);
         detailsPanelOnIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_UP_ICON_FILE);
         
-        unencryptedIcon = ImageLoader.createImageIcon(ImageLoader.PICTURE_BLANK_ICON_FILE);
+        unencryptedIcon = ImageLoader.createImageIcon(ImageLoader.SINGLE_WALLET_ICON_FILE);
         encryptedIcon = ImageLoader.createImageIcon(ImageLoader.LOCK_ICON_FILE);
  
-        unencryptedTooltip = HelpContentsPanel.createMultilineTooltipText(new String[] {controller.getLocaliser().getString("singleWalletPanel.unencrypted.tooptip.1"),
-                controller.getLocaliser().getString("singleWalletPanel.unencrypted.tooptip.2")});
-        encryptedTooltip = controller.getLocaliser().getString("singleWalletPanel.encrypted.tooptip");
+        unencryptedTooltip = HelpContentsPanel.createMultilineTooltipText(new String[] {controller.getLocaliser().getString("singleWalletPanel.unencrypted.tooptip"),
+                controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip")});
+        encryptedTooltip = HelpContentsPanel.createMultilineTooltipText(new String[] {controller.getLocaliser().getString("singleWalletPanel.encrypted.tooptip"), 
+                controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip")});
 
         underlineBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.WHITE);
-        overlineBorder = BorderFactory.createMatteBorder(1, 0, 0, 0, Color.WHITE);
+        //overlineBorder = BorderFactory.createMatteBorder(1, 0, 0, 0, Color.WHITE);
 
         normalHeight = NUMBER_OF_ROWS_IN_SUMMARY_PANEL * fontMetrics.getHeight() + HEIGHT_DELTA;
         normalWidth = calculateNormalWidth(this);
@@ -244,13 +246,13 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         myRoundedPanel.add(showDetailLabel, constraints);
 
         // Wallet type icon.
-        walletTypeLabel = new JLabel();
-        walletTypeLabel.setOpaque(false);
-        walletTypeLabel.setVisible(true);
+        walletTypeButton = new JButton();
+        walletTypeButton.setOpaque(false);
+        walletTypeButton.setVisible(true);
 
-        walletTypeLabel.setBorder(BorderFactory.createEmptyBorder(LOCK_TOP_BORDER, LOCK_LEFT_BORDER, 0, 0));
+        walletTypeButton.setBorder(BorderFactory.createEmptyBorder(WALLET_TYPE_TOP_BORDER, WALLET_TYPE_LEFT_BORDER, 0, 0));
         if (perWalletModelData.getWallet() != null) {
-            setIconForWalletType(perWalletModelData.getWallet().getWalletType(), walletTypeLabel);
+            setIconForWalletType(perWalletModelData.getWallet().getWalletType(), walletTypeButton);
         }
 
         constraints.fill = GridBagConstraints.NONE;
@@ -261,7 +263,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        myRoundedPanel.add(walletTypeLabel, constraints);
+        myRoundedPanel.add(walletTypeButton, constraints);
 
         amountLabel = new BlinkLabel(controller, false);
         amountLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
@@ -340,13 +342,24 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         setSelected(false);
     }
 
-    public void setIconForWalletType(WalletType walletType, JLabel label) {
+    public void setIconForWalletType(WalletType walletType, JButton button) {
+        button.setHorizontalAlignment(SwingConstants.LEADING);
+        button.setBorder(BorderFactory.createEmptyBorder(WALLET_TYPE_TOP_BORDER, WALLET_TYPE_LEFT_BORDER, 0, 0));
+        
         if (walletType == WalletType.ENCRYPTED) {
-            label.setIcon(encryptedIcon);
-            label.setToolTipText(encryptedTooltip);
+            Action helpAction = new HelpContextAction(controller, ImageLoader.LOCK_ICON_FILE,
+                    "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
+                    HelpContentsPanel.HELP_EXPORTING_PRIVATE_KEYS_URL);
+            button.setAction(helpAction);
+            button.setText("");
+            button.setToolTipText(encryptedTooltip);
          } else {
-            label.setIcon(unencryptedIcon);
-            label.setToolTipText(unencryptedTooltip);
+             Action helpAction = new HelpContextAction(controller, ImageLoader.SINGLE_WALLET_ICON_FILE,
+                     "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
+                     HelpContentsPanel.HELP_EXPORTING_PRIVATE_KEYS_URL);
+             button.setAction(helpAction);
+             button.setText("");
+             button.setToolTipText(unencryptedTooltip);
          }
     }
     
@@ -388,7 +401,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             }
 
             if (perWalletModelData.getWallet() != null) {
-                setIconForWalletType(perWalletModelData.getWallet().getWalletType(), walletTypeLabel);
+                setIconForWalletType(perWalletModelData.getWallet().getWalletType(), walletTypeButton);
             }
             
             if (selected) {
@@ -491,7 +504,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             } else {
                 encryptionText = controller.getLocaliser().getString("singleWalletPanel.unencrypted");
             }
-            this.setIconForWalletType(perWalletModelData.getWallet().getWalletType(), walletTypeLabel);
+            setIconForWalletType(perWalletModelData.getWallet().getWalletType(), walletTypeButton);
         }
         
         if (walletTypeText != null) {
@@ -509,7 +522,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             walletDescriptionTextField.setEditable(false);
             amountLabel.setText("");
             amountLabel.setEnabled(false);
-            walletTypeLabel.setEnabled(false);
+            walletTypeButton.setEnabled(false);
         }
     }
 

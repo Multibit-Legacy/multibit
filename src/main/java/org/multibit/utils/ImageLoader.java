@@ -58,6 +58,8 @@ public class ImageLoader {
     public static final String RESET_TRANSACTIONS_ICON_FILE = "/images/resetTransactions.png";
     public static final String RTL_WALLET_ICON_FILE = "/images/rtl_wallet.png";
     public static final String SEND_BITCOIN_ICON_FILE = "/images/sendOut.png";
+    public static final String SINGLE_WALLET_ICON_FILE = "/images/singleWallet.png";
+    public static final String SHAPE_SQUARE_ICON_FILE = "/images/shapeSquare.png";
     public static final String TICK_ICON_FILE = "/images/tick.png";
     public static final String TRANSACTIONS_ICON_FILE = "/images/transactions.png";
     public static final String TWISTY_RIGHT_ICON_FILE = "/images/twistyRight.png";
