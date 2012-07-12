@@ -98,5 +98,6 @@ public class AddPasswordSubmitAction extends AbstractAction {
         }
         controller.fireDataChanged();
         addPasswordPanel.updatePasswordAction();
+        addPasswordPanel.clearPasswords();
     }
 }

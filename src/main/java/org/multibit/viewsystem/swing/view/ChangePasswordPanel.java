@@ -689,6 +689,13 @@ public class ChangePasswordPanel extends JPanel implements View {
         setMessage1(" ");
         setMessage2(" ");
     }
+    
+    public void clearPasswords() {
+        currentPasswordField.setText("");
+        newPasswordField.setText("");
+        repeatNewPasswordField.setText("");
+        tickLabel.setVisible(false);
+    }
 
     public void setMessage1(String message1) {
         if (messageLabel1 != null) {

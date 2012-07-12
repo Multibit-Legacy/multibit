@@ -323,7 +323,7 @@ public class RemovePasswordPanel extends JPanel implements View {
 
     private JPanel createCurrentPasswordPanel(int stentWidth) {
         MultiBitTitledPanel currentPasswordPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "showExportPrivateKeysPanel.password.title"));
+                "addPasswordPanel.password.title"));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -482,6 +482,11 @@ public class RemovePasswordPanel extends JPanel implements View {
         setMessage1(" ");
         setMessage2(" ");
     }
+    
+    public void clearPasswords() {
+        passwordField.setText("");
+    }
+
 
     public void setMessage1(String message1) {
         if (messageLabel1 != null) {

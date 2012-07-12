@@ -86,5 +86,7 @@ public class RemovePasswordSubmitAction extends AbstractAction {
         controller.fireDataChanged();
 
         removePasswordPanel.updatePasswordAction();
+        removePasswordPanel.clearMessages();
+        removePasswordPanel.clearPasswords();
     }
 }

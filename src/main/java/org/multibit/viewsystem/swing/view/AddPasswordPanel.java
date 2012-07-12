@@ -328,7 +328,7 @@ public class AddPasswordPanel extends JPanel implements View {
 
     private JPanel createPasswordPanel(int stentWidth) {
         MultiBitTitledPanel passwordProtectPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "showExportPrivateKeysPanel.password.title"));
+                "addPasswordPanel.password.title"));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -556,6 +556,12 @@ public class AddPasswordPanel extends JPanel implements View {
     public void clearMessages() {
         setMessage1(" ");
         setMessage2(" ");
+    }
+
+    public void clearPasswords() {
+        passwordField.setText("");
+        repeatPasswordField.setText("");
+        tickLabel.setVisible(false);
     }
 
     public void setMessage1(String message1) {

@@ -88,6 +88,9 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
     private JPasswordField passwordField;
     private JPasswordField repeatPasswordField;
 
+    private JPasswordField walletPasswordField;
+    private MultiBitLabel walletPasswordPromptLabel;
+
     private JLabel tickLabel;
 
     public static final int STENT_HEIGHT = 12;
@@ -348,6 +351,48 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         inputWalletPanel.add(filler3, constraints);
+
+        walletPasswordPromptLabel = new MultiBitLabel(controller.getLocaliser().getString("showExportPrivateKeysPanel.walletPasswordPrompt"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 8;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        inputWalletPanel.add(walletPasswordPromptLabel, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 8;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        inputWalletPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS),
+                constraints);
+
+        walletPasswordField = new JPasswordField(24);
+        walletPasswordField.setMinimumSize(new Dimension(200, 20));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 8;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.6;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        inputWalletPanel.add(walletPasswordField, constraints);
+
+        JPanel filler4 = new JPanel();
+        filler4.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 9;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        inputWalletPanel.add(filler4, constraints);
 
         return inputWalletPanel;
     }

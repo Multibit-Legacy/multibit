@@ -106,9 +106,9 @@ public class ChangePasswordSubmitAction extends AbstractAction {
         log.debug("Current password is : " + new String(currentPasswordToUse));
         log.debug("New password is : " + new String(newPasswordToUse));
 
-        if (controller.getModel().getActiveWallet() != null) {
-            controller.getModel().getActiveWallet().setWalletType(WalletType.ENCRYPTED);
-        }
+        changePasswordPanel.clearMessages();
+        changePasswordPanel.clearPasswords();
+        
         controller.fireDataChanged();
     }
 }
