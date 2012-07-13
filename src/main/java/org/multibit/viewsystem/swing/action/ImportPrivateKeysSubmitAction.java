@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.WalletType;
 import com.google.bitcoin.store.BlockStoreException;
 import com.piuk.blockchain.MyWallet;
 
@@ -61,6 +62,7 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
 
     private MultiBitController controller;
     private ImportPrivateKeysPanel importPrivateKeysPanel;
+    private JPasswordField walletPasswordField;
     private JPasswordField passwordField;
     private JPasswordField passwordField2;
 
@@ -72,11 +74,12 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
      * Creates a new {@link ImportPrivateKeysSubmitAction}.
      */
     public ImportPrivateKeysSubmitAction(MultiBitController controller, ImportPrivateKeysPanel importPrivateKeysPanel,
-            ImageIcon icon, JPasswordField passwordField, JPasswordField passwordField2) {
+            ImageIcon icon, JPasswordField walletPasswordField, JPasswordField passwordField1, JPasswordField passwordField2) {
         super(controller.getLocaliser().getString("importPrivateKeysSubmitAction.text"), icon);
         this.controller = controller;
         this.importPrivateKeysPanel = importPrivateKeysPanel;
-        this.passwordField = passwordField;
+        this.walletPasswordField = walletPasswordField;
+        this.passwordField = passwordField1;
         this.passwordField2 = passwordField2;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
@@ -105,56 +108,54 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                 // no import file - nothing to do
                 importPrivateKeysPanel.setMessage(controller.getLocaliser().getString(
                         "importPrivateKeysSubmitAction.privateKeysNothingToDo"));
-            } else {
-                setEnabled(false);
-                importPrivateKeysPanel.setMessage(controller.getLocaliser().getString(
-                        "importPrivateKeysSubmitAction.importingPrivateKeys"));
+                return;
+            }
+            
+            // See if a wallet password is required and present.
+            if (controller.getModel().getActiveWallet() != null && controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
+                if (walletPasswordField.getPassword() == null || walletPasswordField.getPassword().length == 0) {
+                    importPrivateKeysPanel.setMessage(controller.getLocaliser().getString(
+                    "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
+                    return;
+                }
+            }
 
-                File importFile = new File(importFilename);
+            setEnabled(false);
+            importPrivateKeysPanel.setMessage(controller.getLocaliser().getString(
+                    "importPrivateKeysSubmitAction.importingPrivateKeys"));
 
-                char[] passwordChar = passwordField.getPassword();
+            File importFile = new File(importFilename);
 
-                try {
-                    if (importPrivateKeysPanel.multiBitFileChooser.accept(importFile)) {
+            char[] passwordChar = passwordField.getPassword();
 
-                        PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService()
-                                .getNetworkParameters());
+            try {
+                if (importPrivateKeysPanel.multiBitFileChooser.accept(importFile)) {
 
-                        Collection<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.readInPrivateKeys(importFile,
-                                passwordChar);
+                    PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService()
+                            .getNetworkParameters());
 
-                        importPrivateKeysInBackground(privateKeyAndDateArray);
-                    } else if (importPrivateKeysPanel.myWalletEncryptedFileChooser.accept(importFile)) {
-                        String importFileContents = PrivateKeysHandler.readFile(importFile);
+                    Collection<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.readInPrivateKeys(importFile,
+                            passwordChar);
 
-                        String mainPassword = new String(passwordField.getPassword());
-                        String secondPassword = new String(passwordField2.getPassword());
+                    importPrivateKeysInBackground(privateKeyAndDateArray);
+                } else if (importPrivateKeysPanel.myWalletEncryptedFileChooser.accept(importFile)) {
+                    String importFileContents = PrivateKeysHandler.readFile(importFile);
 
-                        MyWallet wallet = new MyWallet(importFileContents, mainPassword);
+                    String mainPassword = new String(passwordField.getPassword());
+                    String secondPassword = new String(passwordField2.getPassword());
 
-                        boolean needSecondPassword = false;
-                        if (wallet.isDoubleEncrypted()) {
-                            if ("".equals(secondPassword)) {
-                                needSecondPassword = true;
-                                importPrivateKeysPanel.requestSecondPassword();
-                            }
+                    MyWallet wallet = new MyWallet(importFileContents, mainPassword);
+
+                    boolean needSecondPassword = false;
+                    if (wallet.isDoubleEncrypted()) {
+                        if ("".equals(secondPassword)) {
+                            needSecondPassword = true;
+                            importPrivateKeysPanel.requestSecondPassword();
                         }
+                    }
 
-                        if (!needSecondPassword) {
-                            wallet.setTemporySecondPassword(secondPassword);
-
-                            Wallet bitcoinj = wallet.getBitcoinJWallet();
-                            Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
-                            for (ECKey key : bitcoinj.keychain) {
-                                privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
-                            }
-                            importPrivateKeysInBackground(privateKeyAndDateArray);
-                        }
-
-                    } else if (importPrivateKeysPanel.myWalletPlainFileChooser.accept(importFile)) {
-                        String importFileContents = PrivateKeysHandler.readFile(importFile);
-
-                        MyWallet wallet = new MyWallet(importFileContents);
+                    if (!needSecondPassword) {
+                        wallet.setTemporySecondPassword(secondPassword);
 
                         Wallet bitcoinj = wallet.getBitcoinJWallet();
                         Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
@@ -162,26 +163,38 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                             privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
                         }
                         importPrivateKeysInBackground(privateKeyAndDateArray);
-
                     }
-                } catch (Exception e) {
-                    log.error(e.getClass().getName() + " " + e.getMessage());
-                    setEnabled(true);
 
-                    importPrivateKeysPanel.setMessage(controller.getLocaliser().getString(
-                            "importPrivateKeysSubmitAction.privateKeysUnlockFailure", new Object[] { e.getMessage() }));
+                } else if (importPrivateKeysPanel.myWalletPlainFileChooser.accept(importFile)) {
+                    String importFileContents = PrivateKeysHandler.readFile(importFile);
 
-                    return;
+                    MyWallet wallet = new MyWallet(importFileContents);
+
+                    Wallet bitcoinj = wallet.getBitcoinJWallet();
+                    Collection<PrivateKeyAndDate> privateKeyAndDateArray = new ArrayList<PrivateKeyAndDate>();
+                    for (ECKey key : bitcoinj.keychain) {
+                        privateKeyAndDateArray.add(new PrivateKeyAndDate(key, null));
+                    }
+                    importPrivateKeysInBackground(privateKeyAndDateArray);
+
                 }
+            } catch (Exception e) {
+                log.error(e.getClass().getName() + " " + e.getMessage());
+                setEnabled(true);
 
-                Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        thisAction.setEnabled(true);
-                    }
-                }, BUTTON_DOWNCLICK_TIME);
+                importPrivateKeysPanel.setMessage(controller.getLocaliser().getString(
+                        "importPrivateKeysSubmitAction.privateKeysUnlockFailure", new Object[] { e.getMessage() }));
+
+                return;
             }
+
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    thisAction.setEnabled(true);
+                }
+            }, BUTTON_DOWNCLICK_TIME);
         }
     }
 
@@ -190,7 +203,7 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
      */
     private void importPrivateKeysInBackground(final Collection<PrivateKeyAndDate> privateKeyAndDateArray) {
         final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
-        final ImportPrivateKeysPanel finalThisPanel = importPrivateKeysPanel;
+        final ImportPrivateKeysPanel finalImportPanel = importPrivateKeysPanel;
         final MultiBitController finalController = controller;
 
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
@@ -241,8 +254,8 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                     controller.getModel().createAddressBookReceivingAddresses(finalPerWalletModelData.getWalletFilename());
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            if (finalThisPanel != null) {
-                                finalThisPanel.setMessage(finalController.getLocaliser().getString(
+                            if (finalImportPanel != null) {
+                                finalImportPanel.setMessage(finalController.getLocaliser().getString(
                                         "importPrivateKeysSubmitAction.privateKeysImportSuccess"));
                             }
                         }
@@ -282,14 +295,15 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                 try {
                     Boolean wasSuccessful = get();
 
-                    if (finalThisPanel != null && uiMessage != null) {
-                        finalThisPanel.setMessage(uiMessage);
+                    if (finalImportPanel != null && uiMessage != null) {
+                        finalImportPanel.setMessage(uiMessage);
                     }
 
                     MessageManager.INSTANCE.addMessage(new Message(statusBarMessage));
-                    
+
                     if (wasSuccessful) {
                         log.debug(statusBarMessage);
+                        finalImportPanel.clearPasswords();
                     } else {
                         log.error(statusBarMessage);
                     }

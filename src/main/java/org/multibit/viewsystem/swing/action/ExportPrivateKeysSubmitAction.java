@@ -35,8 +35,10 @@ import org.multibit.viewsystem.swing.view.ExportPrivateKeysPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.WalletType;
+
 /**
- * This {@link Action} exports the active wallets private keys
+ * This {@link Action} exports the active wallets private keys.
  */
 public class ExportPrivateKeysSubmitAction extends AbstractAction {
     private static final Logger log = LoggerFactory.getLogger(ExportPrivateKeysSubmitAction.class);
@@ -50,20 +52,23 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
 
     private PrivateKeysHandler privateKeysHandler;
 
-    private JPasswordField password1;
+    private JPasswordField walletPassword;
 
-    private JPasswordField password2;
+    private JPasswordField exportFilePassword;
+
+    private JPasswordField exportFileRepeatPassword;
 
     /**
      * Creates a new {@link ExportPrivateKeysSubmitAction}.
      */
     public ExportPrivateKeysSubmitAction(MultiBitController controller, ExportPrivateKeysPanel exportPrivateKeysPanel,
-            ImageIcon icon, JPasswordField password1, JPasswordField password2, MultiBitFrame mainFrame) {
+            ImageIcon icon, JPasswordField walletPassword, JPasswordField exportFilePassword, JPasswordField exportFileRepeatPassword, MultiBitFrame mainFrame) {
         super(controller.getLocaliser().getString("showExportPrivateKeysAction.text.camel"), icon);
         this.controller = controller;
         this.exportPrivateKeysPanel = exportPrivateKeysPanel;
-        this.password1 = password1;
-        this.password2 = password2;
+        this.walletPassword = walletPassword;
+        this.exportFilePassword = exportFilePassword;
+        this.exportFileRepeatPassword = exportFileRepeatPassword;
         this.mainFrame = mainFrame;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
@@ -72,18 +77,27 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
     }
 
     /**
-     * Export the private keys to a file
+     * Export the private keys to a file.
      */
     public void actionPerformed(ActionEvent e) {
         exportPrivateKeysPanel.clearMessages();
 
-        // get the required output file
+        // See if a wallet password is required and present.
+        if (controller.getModel().getActiveWallet() != null && controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
+            if (walletPassword.getPassword() == null || walletPassword.getPassword().length == 0) {
+                exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
+                "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
+                return;
+            }
+        }
+        
+        // Get the required output file.
         String exportPrivateKeysFilename = exportPrivateKeysPanel.getOutputFilename();
 
-        // check an output file was selected
+        // Check an output file was selected.
         if (exportPrivateKeysFilename == null || "".equals(exportPrivateKeysFilename)) {
             exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
-                    "showExportPrivateKeysAction.youMustSelectAnOutputFile"));
+            "showExportPrivateKeysAction.youMustSelectAnOutputFile"));
             return;
         }
 
@@ -97,29 +111,28 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
         char[] passwordToUse = null;
 
         if (exportPrivateKeysPanel.requiresEncryption()) {
-            // get the passwords on the password fields
-            if (password1.getPassword() == null || password1.getPassword().length == 0) {
-                // notify must enter a password
+            // Get the passwords on the export file password fields.
+            if (exportFilePassword.getPassword() == null || exportFilePassword.getPassword().length == 0) {
+                // Notify must enter a password.
                 exportPrivateKeysPanel.setMessage1(controller.getLocaliser()
                         .getString("showExportPrivateKeysAction.enterPasswords"));
                 return;
             } else {
-                if (!Arrays.areEqual(password1.getPassword(), password2.getPassword())) {
-                    // notify user passwords are different
+                if (!Arrays.areEqual(exportFilePassword.getPassword(), exportFileRepeatPassword.getPassword())) {
+                    // Notify user passwords are different.
                     exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
                             "showExportPrivateKeysAction.passwordsAreDifferent"));
                     return;
                 } else {
-                    // perform encryption
+                    // Perform encryption.
                     performEncryption = true;
-                    passwordToUse = password1.getPassword();
+                    passwordToUse = exportFilePassword.getPassword();
                 }
             }
         }
 
         try {
-            // check on file overwrite
-
+            // Check on file overwrite.
             if (exportPrivateKeysFile.exists()) {
                 String yesText = controller.getLocaliser().getString("showOpenUriView.yesText");
                 String noText = controller.getLocaliser().getString("showOpenUriView.noText");
@@ -136,21 +149,22 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
             privateKeysHandler.exportPrivateKeys(exportPrivateKeysFile, controller.getModel().getActivePerWalletModelData()
                     .getWallet(), controller.getMultiBitService().getChain(), performEncryption, passwordToUse);
 
-            // success
+            // Success.
             exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
                     "showExportPrivateKeysAction.privateKeysExportSuccess"));
             performVerification = true;
+            exportPrivateKeysPanel.clearPasswords();
         } catch (IOException ioe) {
             log.error(ioe.getClass().getName() + " " + ioe.getMessage());
 
-            // IO failure of some sort
+            // IO failure of some sort.
             exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
                     "showExportPrivateKeysAction.privateKeysExportFailure",
                     new Object[] { ioe.getClass().getName() + " " + ioe.getMessage() }));
         }
 
         if (performVerification) {
-            // perform a verification on the exported file to see if it is correct
+            // Perform a verification on the exported file to see if it is correct.
             Verification verification = privateKeysHandler.verifyExportFile(exportPrivateKeysFile, controller.getModel()
                     .getActivePerWalletModelData().getWallet(), controller.getMultiBitService().getChain(), performEncryption,
                     passwordToUse);

@@ -82,7 +82,7 @@ public class WalletListPanel extends JPanel implements View {
     public void displayView() {
         if (walletPanels != null) {
             for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
-                // make sure the totals displayed are correct
+                // Make sure the totals displayed and encryption status are correct.
                 loopSingleWalletPanel.updateFromModel();
                 loopSingleWalletPanel.invalidate();
                 loopSingleWalletPanel.revalidate();
@@ -90,7 +90,7 @@ public class WalletListPanel extends JPanel implements View {
             }
         }
         
-        // get the wallets from the model
+        // Get the wallets from the model.
         String activeWalletFilename = controller.getModel().getActiveWalletFilename();
         PerWalletModelData activePerModelData = controller.getModel().getPerWalletModelDataByWalletFilename(activeWalletFilename);
 

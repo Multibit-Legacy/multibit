@@ -30,6 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
+import com.google.bitcoin.core.WalletType;
+
 /**
  * This {@link Action} action decrypts private keys with the old password and then encrypts the private keys with the new password.
  */
@@ -86,7 +88,7 @@ public class ChangePasswordSubmitAction extends AbstractAction {
 
         // Get the new passwords on the password fields.
         if (newPassword.getPassword() == null || newPassword.getPassword().length == 0) {
-            // Notify must enter a new password.
+            // Notify the user must enter a new password.
             changePasswordPanel.setMessage1(controller.getLocaliser()
                     .getString("changePasswordPanel.enterPasswords"));
             return;
@@ -101,49 +103,12 @@ public class ChangePasswordSubmitAction extends AbstractAction {
             }
         }
 
-
         log.debug("Current password is : " + new String(currentPasswordToUse));
         log.debug("New password is : " + new String(newPasswordToUse));
-            
-//        try {
-//            // check on file overwrite
-//
-//            if (exportPrivateKeysFile.exists()) {
-//                String yesText = controller.getLocaliser().getString("showOpenUriView.yesText");
-//                String noText = controller.getLocaliser().getString("showOpenUriView.noText");
-//                String questionText = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwrite", new Object[] {exportPrivateKeysFile.getName()});
-//                String questionTitle = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwriteTitle");
-//                int selection = JOptionPane.showOptionDialog(mainFrame, questionText, questionTitle,
-//                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-//                        ImageLoader.createImageIcon(ImageLoader.QUESTION_MARK_ICON_FILE), new String[] { yesText, noText }, noText);
-//                if (selection != JOptionPane.YES_OPTION) {
-//                    return;
-//                }
-//            }
-//
-//            privateKeysHandler.exportPrivateKeys(exportPrivateKeysFile, controller.getModel().getActivePerWalletModelData()
-//                    .getWallet(), controller.getMultiBitService().getChain(), performEncryption, passwordToUse);
-//
-//            // success
-//            addPasswordPanel.setMessage1(controller.getLocaliser().getString(
-//                    "showExportPrivateKeysAction.privateKeysExportSuccess"));
-//            performVerification = true;
-//        } catch (IOException ioe) {
-//            log.error(ioe.getClass().getName() + " " + ioe.getMessage());
-//
-//            // IO failure of some sort
-//            addPasswordPanel.setMessage1(controller.getLocaliser().getString(
-//                    "showExportPrivateKeysAction.privateKeysExportFailure",
-//                    new Object[] { ioe.getClass().getName() + " " + ioe.getMessage() }));
-//        }
-//
-//        if (performVerification) {
-//            // perform a verification on the exported file to see if it is correct
-//            Verification verification = privateKeysHandler.verifyExportFile(exportPrivateKeysFile, controller.getModel()
-//                    .getActivePerWalletModelData().getWallet(), controller.getMultiBitService().getChain(), performEncryption,
-//                    passwordToUse);
-//            String verifyMessage = controller.getLocaliser().getString(verification.getMessageKey(), verification.getMessageData());
-//            addPasswordPanel.setMessage2(verifyMessage);
-//        }
+
+        changePasswordPanel.clearMessages();
+        changePasswordPanel.clearPasswords();
+        
+        controller.fireDataChanged();
     }
 }

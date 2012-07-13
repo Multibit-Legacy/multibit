@@ -22,6 +22,7 @@ import java.math.BigInteger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.JPasswordField;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.WalletSaveException;
@@ -41,7 +42,7 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 
 /**
- * This {@link Action} forwards to the send bitcoin now action
+ * This {@link Action} actually spends bitcoin.
  */
 public class SendBitcoinNowAction extends AbstractAction {
 
@@ -51,6 +52,7 @@ public class SendBitcoinNowAction extends AbstractAction {
 
     private MultiBitController controller;
     private SendBitcoinConfirmDialog sendBitcoinConfirmView;
+    private JPasswordField walletPasswordField;
 
     private final static int MAX_LENGTH_OF_ERROR_MESSAGE = 70;
 
@@ -58,10 +60,11 @@ public class SendBitcoinNowAction extends AbstractAction {
      * Creates a new {@link SendBitcoinNowAction}.
      */
     public SendBitcoinNowAction(MultiBitFrame mainFrame, MultiBitController controller,
-            SendBitcoinConfirmDialog sendBitcoinConfirmView, ImageIcon icon) {
+            SendBitcoinConfirmDialog sendBitcoinConfirmView, JPasswordField walletPasswordField, ImageIcon icon) {
         super(controller.getLocaliser().getString("sendBitcoinConfirmAction.text"), icon);
         this.controller = controller;
         this.sendBitcoinConfirmView = sendBitcoinConfirmView;
+        this.walletPasswordField = walletPasswordField;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
 
@@ -70,7 +73,7 @@ public class SendBitcoinNowAction extends AbstractAction {
     }
 
     /**
-     * actually send the bitcoin
+     * Actually send the bitcoin.
      */
     public void actionPerformed(ActionEvent event) {
         // check to see if the wallet files have changed
@@ -78,12 +81,11 @@ public class SendBitcoinNowAction extends AbstractAction {
         boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
-            // set on the perWalletModelData that files have changed and fire
-            // data changed
+            // Set on the perWalletModelData that files have changed and fire data changed.
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
             controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
-            // get the data out of the wallet preferences
+            // Get the data out of the wallet preferences.
             String sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
             String sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
             String sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
@@ -99,6 +101,9 @@ public class SendBitcoinNowAction extends AbstractAction {
                 WalletInfo addressBook = perWalletModelData.getWalletInfo();
                 addressBook.addSendingAddress(new AddressBookData(sendLabel, sendAddress));
             }
+            
+            char[] walletPassword = walletPasswordField.getPassword();
+            log.debug("Password = " + new String(walletPassword));
 
             sendBitcoinConfirmView.setSendConfirmText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
 

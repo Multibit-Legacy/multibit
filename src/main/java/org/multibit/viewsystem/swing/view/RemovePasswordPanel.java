@@ -16,20 +16,16 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Arrays;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -41,13 +37,14 @@ import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.action.AddPasswordSubmitAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.RemovePasswordSubmitAction;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+
+import com.google.bitcoin.core.WalletType;
 
 /**
  * The remove password view.
@@ -68,6 +65,8 @@ public class RemovePasswordPanel extends JPanel implements View {
     private MultiBitLabel messageLabel2;
 
     private JPasswordField passwordField;
+    
+    private RemovePasswordSubmitAction removePasswordSubmitAction;
 
     public static final int STENT_HEIGHT = 12;
     public static final int STENT_DELTA = 20;
@@ -319,7 +318,7 @@ public class RemovePasswordPanel extends JPanel implements View {
 
     private JPanel createCurrentPasswordPanel(int stentWidth) {
         MultiBitTitledPanel currentPasswordPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "showExportPrivateKeysPanel.password.title"));
+                "addPasswordPanel.password.title"));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -452,9 +451,9 @@ public class RemovePasswordPanel extends JPanel implements View {
          * Create submit action with references to the password fields - this
          * avoids having any public accessors on the panel
          */
-        RemovePasswordSubmitAction submitAction = new RemovePasswordSubmitAction(controller, this,
+        removePasswordSubmitAction = new RemovePasswordSubmitAction(controller, this,
                 ImageLoader.createImageIcon(ImageLoader.REMOVE_PASSWORD_ICON_FILE), passwordField, mainFrame);
-        MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
+        MultiBitButton submitButton = new MultiBitButton(removePasswordSubmitAction, controller);
         buttonPanel.add(submitButton);
 
         return buttonPanel;
@@ -465,13 +464,24 @@ public class RemovePasswordPanel extends JPanel implements View {
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
 
+        updatePasswordAction();
         clearMessages();
+    }
+    
+    public void updatePasswordAction() {
+        boolean enableAction = controller.getModel().getActiveWallet() == null ? false : controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED;
+        removePasswordSubmitAction.setEnabled(enableAction);
     }
 
     public void clearMessages() {
         setMessage1(" ");
         setMessage2(" ");
     }
+    
+    public void clearPasswords() {
+        passwordField.setText("");
+    }
+
 
     public void setMessage1(String message1) {
         if (messageLabel1 != null) {
