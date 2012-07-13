@@ -155,9 +155,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         unencryptedIcon = ImageLoader.createImageIcon(ImageLoader.SINGLE_WALLET_ICON_FILE);
         encryptedIcon = ImageLoader.createImageIcon(ImageLoader.LOCK_ICON_FILE);
  
-        unencryptedTooltip = HelpContentsPanel.createMultilineTooltipText(new String[] {controller.getLocaliser().getString("singleWalletPanel.unencrypted.tooptip"),
+        unencryptedTooltip = HelpContentsPanel.createMultilineTooltipText(new String[] {controller.getLocaliser().getString("singleWalletPanel.unencrypted.tooltip"),
                 controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip")});
-        encryptedTooltip = HelpContentsPanel.createMultilineTooltipText(new String[] {controller.getLocaliser().getString("singleWalletPanel.encrypted.tooptip"), 
+        encryptedTooltip = HelpContentsPanel.createMultilineTooltipText(new String[] {controller.getLocaliser().getString("singleWalletPanel.encrypted.tooltip"), 
                 controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip")});
 
         underlineBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.WHITE);
