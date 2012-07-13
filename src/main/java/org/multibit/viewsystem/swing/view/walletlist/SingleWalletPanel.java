@@ -349,14 +349,14 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         if (walletType == WalletType.ENCRYPTED) {
             Action helpAction = new HelpContextAction(controller, ImageLoader.LOCK_ICON_FILE,
                     "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
-                    HelpContentsPanel.HELP_EXPORTING_PRIVATE_KEYS_URL);
+                    HelpContentsPanel.HELP_WALLET_TYPES_URL);
             button.setAction(helpAction);
             button.setText("");
             button.setToolTipText(encryptedTooltip);
          } else {
              Action helpAction = new HelpContextAction(controller, ImageLoader.SINGLE_WALLET_ICON_FILE,
                      "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
-                     HelpContentsPanel.HELP_EXPORTING_PRIVATE_KEYS_URL);
+                     HelpContentsPanel.HELP_WALLET_TYPES_URL);
              button.setAction(helpAction);
              button.setText("");
              button.setToolTipText(unencryptedTooltip);
