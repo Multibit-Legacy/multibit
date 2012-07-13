@@ -15,7 +15,7 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 
 /**
  * Panel that has a title bar at the top. The panel always uses GridBagLayout
- * with the title in row 0
+ * with the title in row 0.
  * 
  * @author jim
  * 
@@ -33,12 +33,9 @@ public class MultiBitTitledPanel extends JPanel {
     public static final int MAXIMUM_NUMBER_OF_COLUMNS = 10;
 
     public MultiBitTitledPanel(String title) {
-        // always use GridBagLayout
         setLayout(new GridBagLayout());
         setOpaque(false);
-        //setBackground(Color.WHITE);
 
-        // setBorder(BorderFactory.createLineBorder(Color.CYAN));
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
         setFont(font);
 
@@ -91,7 +88,7 @@ public class MultiBitTitledPanel extends JPanel {
 
         GridBagConstraints constraints2 = new GridBagConstraints();
         
-        // put a half height space above the title
+        // Put a half height space above the title.
         JPanel spacer = new JPanel();
         spacer.setOpaque(false);
         spacer.setMinimumSize(new Dimension(1, spacerHeight));
@@ -115,10 +112,10 @@ public class MultiBitTitledPanel extends JPanel {
         constraints2.weightx = 1;
         constraints2.weighty = 0.1;
         constraints2.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
-        // put the title in the second row
+        // Put the title in the second row.
         add(titlePanel, constraints2);
 
-        // put a half height space under the title
+        // Put a half height space under the title.
         JPanel spacer2 = new JPanel();
         spacer2.setOpaque(false);
         spacer2.setMinimumSize(new Dimension(1, spacerHeight));

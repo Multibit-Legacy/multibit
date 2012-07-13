@@ -16,15 +16,18 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
@@ -38,6 +41,7 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
 /**
  * The send bitcoin confirm dialog
@@ -46,8 +50,10 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
 
     private static final long serialVersionUID = 191435612345057705L;
 
-    private static final int HEIGHT_DELTA = 125;
+    private static final int HEIGHT_DELTA = 150;
     private static final int WIDTH_DELTA = 250;
+    
+    private static final int STENT_WIDTH = 10;
     
     private MultiBitFrame mainFrame;
 
@@ -67,6 +73,9 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
     
     private MultiBitButton sendButton;
     private MultiBitButton cancelButton;
+    
+    private JPasswordField walletPasswordField;
+    private MultiBitLabel walletPasswordPromptLabel;
 
     /**
      * Creates a new {@link SendBitcoinConfirmDialog}.
@@ -93,7 +102,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
     public void initUI() {
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         
-        int minimumHeight = fontMetrics.getHeight() * 8 + HEIGHT_DELTA;
+        int minimumHeight = fontMetrics.getHeight() * 11 + HEIGHT_DELTA;
         int minimumWidth = Math.max(fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT), fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinConfirmView.message"))) + WIDTH_DELTA;
         setMinimumSize(new Dimension(minimumWidth, minimumHeight));
         positionDialogRelativeToParent(this, 0.5D, 0.47D);
@@ -106,6 +115,14 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         
         mainPanel.setLayout(new GridBagLayout());
         
+        String[] keys = new String[] { "sendBitcoinPanel.addressLabel",
+                "sendBitcoinPanel.labelLabel", "sendBitcoinPanel.amountLabel",
+                "showPreferencesPanel.feeLabel.text", "showExportPrivateKeysPanel.walletPasswordPrompt"};
+
+        int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, mainPanel)
+                + ExportPrivateKeysPanel.STENT_DELTA;
+
+
         // get the data out of the wallet preferences
         sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
         sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
@@ -118,31 +135,19 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
     
         GridBagConstraints constraints = new GridBagConstraints();
 
-        JLabel filler00 = new JLabel();
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 0.3;
-        constraints.weighty = 0.2;
+        constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        mainPanel.add(filler00, constraints);
+        mainPanel.add(MultiBitTitledPanel.createStent(STENT_WIDTH), constraints);
 
-        JLabel filler01 = new JLabel();
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 5;
-        constraints.gridy = 1;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.2;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        mainPanel.add(filler01, constraints);
-       
         ImageIcon bigIcon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_128_ICON_FILE);
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
+        constraints.gridx = 1;
         constraints.gridy = 2;
         constraints.weightx = 0.5;
         constraints.weighty = 0.2;
@@ -152,13 +157,33 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         JLabel bigIconLabel = new JLabel(bigIcon);
         mainPanel.add(bigIconLabel, constraints);
 
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 0;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(MultiBitTitledPanel.createStent(STENT_WIDTH), constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 7;
+        constraints.gridy = 1;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(MultiBitTitledPanel.createStent(STENT_WIDTH), constraints);
+       
         MultiBitLabel explainLabel = new MultiBitLabel("");
         explainLabel.setText(controller.getLocaliser().getString("sendBitcoinConfirmView.message"));
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
+        constraints.gridx = 3;
         constraints.gridy = 1;
         constraints.weightx = 0.8;
-        constraints.weighty = 0.3;
+        constraints.weighty = 1.0;
         constraints.gridwidth = 5;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -167,7 +192,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         JPanel detailPanel = new JPanel(new GridBagLayout());
         detailPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
+        constraints.gridx = 3;
         constraints.gridy = 2;
         constraints.weightx = 0.6;
         constraints.weighty = 0.8;
@@ -177,33 +202,55 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         mainPanel.add(detailPanel, constraints);
         
         GridBagConstraints constraints2 = new GridBagConstraints();
+       
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        detailPanel.add(MultiBitTitledPanel.createStent(stentWidth), constraints2);
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        detailPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS),
+                constraints2);
         
+        JLabel forcer1 = new JLabel();
+        forcer1.setOpaque(false);
+        constraints2.fill = GridBagConstraints.BOTH;
+        constraints2.gridx = 2;
+        constraints2.gridy = 0;
+        constraints2.weightx = 10;
+        constraints2.weighty = 0.05;
+        constraints2.gridwidth = 1;
+        constraints2.gridheight = 1;
+        constraints2.anchor = GridBagConstraints.LINE_END;
+        detailPanel.add(forcer1, constraints2);
+
         MultiBitLabel sendAddressLabel = new MultiBitLabel("");
         sendAddressLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel"));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 0;
-        constraints2.gridy = 0;
+        constraints2.gridy = 1;
         constraints2.weightx = 0.3;
         constraints2.weighty = 0.1;
         constraints2.gridwidth = 1;
         constraints2.anchor = GridBagConstraints.LINE_END;
         detailPanel.add(sendAddressLabel, constraints2);
 
-        JLabel filler1 = new JLabel();
-        constraints2.fill = GridBagConstraints.HORIZONTAL;
-        constraints2.gridx = 1;
-        constraints2.gridy = 0;
-        constraints2.weightx = 0.1;
-        constraints2.weighty = 0.1;
-        constraints2.gridwidth = 1;
-        constraints2.anchor = GridBagConstraints.LINE_START;
-        detailPanel.add(filler1, constraints2);
-
         sendAddressText = new MultiBitLabel("");
         sendAddressText.setText(sendAddress);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
-        constraints2.gridy = 0;
+        constraints2.gridy = 1;
         constraints2.weightx = 0.3;
         constraints2.weighty = 0.1;
         constraints2.gridwidth = 1;
@@ -214,7 +261,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         sendLabelLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel"));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 0;
-        constraints2.gridy = 1;
+        constraints2.gridy = 2;
         constraints2.weightx = 0.3;
         constraints2.weighty = 0.1;
         constraints2.gridwidth = 1;
@@ -225,7 +272,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         sendLabelText.setText(sendLabel);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
-        constraints2.gridy = 1;
+        constraints2.gridy = 2;
         constraints2.weightx = 0.3;
         constraints2.weighty = 0.1;
         constraints2.gridwidth = 1;
@@ -236,7 +283,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         sendAmountLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel"));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 0;
-        constraints2.gridy = 2;
+        constraints2.gridy = 3;
         constraints2.weightx = 0.3;
         constraints2.weighty = 0.1;
         constraints2.gridwidth = 1;
@@ -247,7 +294,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         sendAmountText.setText(sendAmount);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
-        constraints2.gridy = 2;
+        constraints2.gridy = 3;
         constraints2.weightx = 0.3;
         constraints2.weighty = 0.1;
         constraints2.gridwidth = 1;
@@ -257,7 +304,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         JLabel filler2 = new JLabel();
         constraints2.fill = GridBagConstraints.HORIZONTAL;
         constraints2.gridx = 0;
-        constraints2.gridy = 3;
+        constraints2.gridy = 4;
         constraints2.weightx = 0.05;
         constraints2.weighty = 0.05;
         constraints2.gridwidth = 1;
@@ -268,7 +315,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         sendFeeLabel.setText(controller.getLocaliser().getString("showPreferencesPanel.feeLabel.text"));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 0;
-        constraints2.gridy = 4;
+        constraints2.gridy = 5;
         constraints2.weightx = 0.3;
         constraints2.weighty = 0.1;
         constraints2.gridwidth = 1;
@@ -279,21 +326,102 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         sendFeeText.setText(sendFee);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
-        constraints2.gridy = 4;
+        constraints2.gridy = 5;
         constraints2.weightx = 0.3;
         constraints2.weighty = 0.1;
         constraints2.gridwidth = 1;
         constraints2.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(sendFeeText, constraints2);
      
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 3;
+        constraints.gridy = 7;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridheight = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(MultiBitTitledPanel.createStent(stentWidth), constraints);
+
+        // Add wallet password field.
+        walletPasswordPromptLabel = new MultiBitLabel(controller.getLocaliser().getString("showExportPrivateKeysPanel.walletPasswordPrompt"));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 8;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridheight = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        mainPanel.add(walletPasswordPromptLabel, constraints);
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 4;
+        constraints.gridy = 7;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        mainPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS),
+                constraints);
+
+        JLabel forcer2 = new JLabel();
+        forcer2.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 5;
+        constraints.gridy = 7;
+        constraints.weightx = 10;
+        constraints.weighty = 0.05;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        mainPanel.add(forcer2, constraints);
+
+        JPanel filler4 = new JPanel();
+        filler4.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 3;
+        constraints.gridy = 7;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.01;
+        constraints.gridheight = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(filler4, constraints);
+
+        walletPasswordField = new JPasswordField(24);
+        walletPasswordField.setMinimumSize(new Dimension(200, 20));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 5;
+        constraints.gridy = 8;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridheight = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(walletPasswordField, constraints);
+
+        JPanel filler5 = new JPanel();
+        filler4.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 3;
+        constraints.gridy = 9;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.01;
+        constraints.gridheight = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(filler5, constraints);
+
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 7;
+        constraints.gridx = 3;
+        constraints.gridy = 10;
         constraints.weightx = 0.8;
         constraints.weighty = 0.1;
         constraints.gridwidth = 4;
+        constraints.gridheight = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         mainPanel.add(buttonPanel, constraints);
@@ -310,7 +438,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         confirmText1.setText(" ");
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 8;
+        constraints.gridy = 11;
         constraints.weightx = 0.8;
         constraints.weighty = 0.15;
         constraints.gridwidth = 4;
@@ -319,8 +447,8 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         
         JLabel filler3 = new JLabel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 5;
-        constraints.gridy = 8;
+        constraints.gridx = 7;
+        constraints.gridy = 11;
         constraints.weightx = 0.05;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -330,22 +458,22 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         confirmText2 = new MultiBitLabel(" ");
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 9;
+        constraints.gridy = 12;
         constraints.weightx = 0.8;
         constraints.weighty = 0.15;
         constraints.gridwidth = 4;
         constraints.anchor = GridBagConstraints.LINE_END;
         mainPanel.add(confirmText2, constraints);
         
-        JLabel filler4 = new JLabel();
+        JLabel filler6 = new JLabel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 5;
-        constraints.gridy = 9;
+        constraints.gridx = 7;
+        constraints.gridy = 12;
         constraints.weightx = 0.05;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        mainPanel.add(filler4, constraints);
+        mainPanel.add(filler6, constraints);
     }
 
     public void setSendConfirmText(String confirm1, String confirm2) {

@@ -149,16 +149,16 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         expanded = false;
         selected = false;
 
-        detailsPanelOffIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_DOWN_ICON_FILE);
-        detailsPanelOnIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_UP_ICON_FILE);
+        detailsPanelOffIcon = ImageLoader.createImageIcon(ImageLoader.DETAIL_PANEL_OFF_ICON_FILE);
+        detailsPanelOnIcon = ImageLoader.createImageIcon(ImageLoader.DETAIL_PANEL_ON_ICON_FILE);
         
         unencryptedIcon = ImageLoader.createImageIcon(ImageLoader.SINGLE_WALLET_ICON_FILE);
         encryptedIcon = ImageLoader.createImageIcon(ImageLoader.LOCK_ICON_FILE);
  
         unencryptedTooltip = HelpContentsPanel.createMultilineTooltipText(new String[] {controller.getLocaliser().getString("singleWalletPanel.unencrypted.tooltip"),
-                controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip")});
+                " ", controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip")});
         encryptedTooltip = HelpContentsPanel.createMultilineTooltipText(new String[] {controller.getLocaliser().getString("singleWalletPanel.encrypted.tooltip"), 
-                controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip")});
+                " ", controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip")});
 
         underlineBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.WHITE);
         //overlineBorder = BorderFactory.createMatteBorder(1, 0, 0, 0, Color.WHITE);
@@ -223,7 +223,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         // Show details is initially invisible.
         showDetailLabel = new JLabel();
         showDetailLabel.setOpaque(false);
-        showDetailLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.DETAILS_PANEL_ON_ICON_FILE));
+        showDetailLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.DETAIL_PANEL_ON_ICON_FILE));
         showDetailLabel.setBorder(BorderFactory.createEmptyBorder(DETAILS_TOP_BORDER, DETAILS_LEFT_BORDER, 0, 0));
         showDetailLabel.setVisible(false);
         showDetailLabel.addMouseListener(new MouseAdapter() {
