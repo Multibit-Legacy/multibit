@@ -70,7 +70,7 @@ public class EncryptableECKeyTest extends TestCase {
         myKey.encrypt(PASSWORD1);
         
         // The key should now be encrypted.
-        assertTrue("Key is not encrypted but it should be", myKey.isEncrypted);
+        assertTrue("Key is not encrypted but it should be", myKey.isEncrypted());
         
         // The unencrypted private key bytes of the encrypted keychain should all be blank.
         byte[] privateKeyBytes = myKey.getPrivKeyBytes();
@@ -82,7 +82,7 @@ public class EncryptableECKeyTest extends TestCase {
         myKey.decrypt(PASSWORD1);
 
         // The key should be unencrypted
-        assertTrue("Key is not unencrypted but it should be", !myKey.isEncrypted);
+        assertTrue("Key is not unencrypted but it should be", !myKey.isEncrypted());
 
         // The reborn unencrypted private key bytes should match the original private key.
         privateKeyBytes = myKey.getPrivKeyBytes();

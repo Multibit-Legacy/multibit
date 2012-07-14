@@ -20,7 +20,7 @@ public class EncryptableECKey extends ECKey {
     
     private byte[] encryptedPrivateKey;
     
-    boolean isEncrypted;
+    private boolean isEncrypted;
     
     public EncryptableECKey() {
         super();
