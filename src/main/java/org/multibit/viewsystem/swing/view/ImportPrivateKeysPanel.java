@@ -521,7 +521,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
     private JPanel createPasswordPanel(int stentWidth) {
         // do/do not password protect radios
         MultiBitTitledPanel passwordProtectPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "showExportPrivateKeysPanel.password.title"));
+                "showImportPrivateKeysPanel.password.title"));
         GridBagConstraints constraints = new GridBagConstraints();
 
         passwordInfoLabel = MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
