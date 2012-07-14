@@ -29,7 +29,7 @@ import com.google.bitcoin.core.Utils;
 
 public class EncrypterDecrypterScryptTest extends TestCase {
 
-    private static final Logger log = LoggerFactory.getLogger(EncrypterDecrypterTest.class);
+    private static final Logger log = LoggerFactory.getLogger(EncrypterDecrypterScryptTest.class);
 
     private static final String TEST_STRING1 = "The quick brown fox jumps over the lazy dog. 01234567890 !@#$%^&*()-=[]{};':|`~,./<>?";
    
