@@ -157,12 +157,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * The type of the wallet.
      */
     private WalletType walletType;
-    
-    /**
-     * Whether the wallet has all its keys encrypted (locked = true) or not.
-     */
-    private boolean locked;
-    
+       
     /**
      * Creates a new, empty wallet with no keys and no transactions. If you want to restore a wallet from disk instead,
      * see loadFromFile.
@@ -1787,13 +1782,4 @@ public class Wallet implements Serializable, IsMultiBitClass {
     public void setWalletType(WalletType walletType) {
         this.walletType = walletType;
     }
-
-    public boolean isLocked() {
-        return locked;
-    }
-
-    public void setLocked(boolean locked) {
-        this.locked = locked;
-    }
-
 }

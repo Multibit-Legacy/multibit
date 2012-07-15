@@ -48,7 +48,8 @@ public class EncryptableECKey extends ECKey {
         encryptedPrivateKey = encrypterDecrypter.encrypt(this.getPrivKeyBytes(), password);
         
         // Clear the super private keys.
-        this.priv = BigInteger.ZERO;
+        // TODO - put this back in - currently disabled to avoid blank keys being written to disk
+        //this.priv = BigInteger.ZERO;
         
         isEncrypted = true;
     }

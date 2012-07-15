@@ -3,27 +3,34 @@ package org.multibit.crypto;
 import java.util.ArrayList;
 
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletType;
 
 /**
- * A class to encrypt and decrypt the wallet keys.
- * It also manages the state of the wallet, namely:
+ * A Wallet subclass that can be locked and unlocked.
  * 
  *    unlocked - all the wallet keys are unencrypted
  *    locked   - all the wallet keys are encrypted
- *    
- * @author jim
  *
  */
+public class LockableWallet extends Wallet {
+    private static final long serialVersionUID = -8274588170052518322L;
 
-public class WalletEncrypterDecrypter {
+    /**
+     * Whether the wallet has all its keys encrypted (locked = true) or not.
+     */
+    private boolean locked;
+ 
+    public LockableWallet(NetworkParameters params) {
+        super(params);
+        // TODO Auto-generated constructor stub
+    }
+    
 
-    public void encrypt(Wallet wallet, char[] password) {
+    public void encrypt(char[] password) {
         // TODO Check wallet is not already encrypted.
-        
-        ArrayList<ECKey> keychain = wallet.keychain;
-        
+
         boolean swapNewKeychainForOld = false;
         ArrayList<ECKey> potentialNewKeyChain = new ArrayList<ECKey>();;
         
@@ -44,37 +51,43 @@ public class WalletEncrypterDecrypter {
         
         if (swapNewKeychainForOld) {
             // Swap the encryptableECKeys for the original ones.
-            wallet.keychain.clear();
-            wallet.keychain.addAll(potentialNewKeyChain);
+            keychain.clear();
+            keychain.addAll(potentialNewKeyChain);
         }
         
-        wallet.setWalletType(WalletType.ENCRYPTED);
-        wallet.setLocked(true);
+        setWalletType(WalletType.ENCRYPTED);
+        setLocked(true);
     }
 
-    public void decrypt(Wallet wallet, char[] password) {
+    public void decrypt(char[] password) {
         // TODO Check wallet is not already decrypted.
-        
-        ArrayList<ECKey> keychain = wallet.keychain;
-        
+           
         for (ECKey key : keychain) {
             if (key instanceof EncryptableECKey) {
                 ((EncryptableECKey)key).decrypt(password);
             }
         }
         
-        wallet.setLocked(false);
+        setLocked(false);
     }
    
-    public void removeEncryption(Wallet wallet, char[] password) {
+    public void removeEncryption(char[] password) {
         // Remove any encryption on the keys.
-        if (wallet.isLocked()) {
-            decrypt(wallet, password);
+        if (isLocked()) {
+            decrypt(password);
         }
         
         // Change the wallet type to UNENCRYPTED and set it to unlocked.
         // (UNENCRYPTED wallets are never locked).
-        wallet.setWalletType(WalletType.UNENCRYPTED);
-        wallet.setLocked(false);       
+        setWalletType(WalletType.UNENCRYPTED);
+        setLocked(false);       
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
     }
 }

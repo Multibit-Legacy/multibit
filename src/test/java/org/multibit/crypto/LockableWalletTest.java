@@ -16,37 +16,20 @@
 
 package org.multibit.crypto;
 
-import static com.google.bitcoin.core.CoreTestUtils.createFakeBlock;
-import static com.google.bitcoin.core.CoreTestUtils.createFakeTx;
-import static com.google.bitcoin.core.Utils.toNanoCoins;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.List;
-
 import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletType;
-import com.google.bitcoin.store.BlockStore;
-import com.google.bitcoin.store.MemoryBlockStore;
 import com.google.bitcoin.utils.BriefLogFormatter;
 
-public class WalletEncrypterDecrypterTest extends TestCase {
+public class LockableWalletTest extends TestCase {
     static final NetworkParameters params = NetworkParameters.unitTests();
 
-    private Address myAddress;
-    private Wallet wallet;
+    private LockableWallet wallet;
     private ECKey myKey;
 
     private static char[] PASSWORD1 = "my helicopter contains eels".toCharArray();
@@ -54,8 +37,7 @@ public class WalletEncrypterDecrypterTest extends TestCase {
     @Before
     public void setUp() throws Exception {
         myKey = new ECKey();
-        myAddress = myKey.toAddress(params);
-        wallet = new Wallet(params);
+        wallet = new LockableWallet(params);
         wallet.addKey(myKey);
 
         BriefLogFormatter.init();
@@ -68,27 +50,24 @@ public class WalletEncrypterDecrypterTest extends TestCase {
         assertTrue("Wallet is not unlocked", !wallet.isLocked());
         
         // Encrypt wallet.
-        WalletEncrypterDecrypter encrypterDecrypter = new WalletEncrypterDecrypter();
-        encrypterDecrypter.encrypt(wallet, PASSWORD1);
+        wallet.encrypt(PASSWORD1);
 
         // Wallet should now be of type encrypted and locked.
         assertTrue("Wallet is not an encrypted wallet", wallet.getWalletType() == WalletType.ENCRYPTED);
         assertTrue("Wallet is not locked", wallet.isLocked());
 
         // Decrypt wallet.
-        encrypterDecrypter.decrypt(wallet, PASSWORD1);
+        wallet.decrypt(PASSWORD1);
         
         // Wallet should now be of type encrypted and unlocked.
         assertTrue("Wallet is not an encrypted wallet", wallet.getWalletType() == WalletType.ENCRYPTED);
         assertTrue("Wallet is not locked", !wallet.isLocked());
         
         // Remove the wallet encryption entirely.
-        encrypterDecrypter.removeEncryption(wallet, PASSWORD1);
+        wallet.removeEncryption(PASSWORD1);
 
         // Wallet should now be of type unencrypted and unlocked.
         assertTrue("Wallet is not an unencrypted wallet", wallet.getWalletType() == WalletType.UNENCRYPTED);
         assertTrue("Wallet is not locked", !wallet.isLocked());
     }
-
- 
 }
