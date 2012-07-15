@@ -44,7 +44,7 @@ import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileFilter;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncrypterDecrypter;
+import org.multibit.crypto.EncrypterDecrypterOpenSSL;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
@@ -104,7 +104,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
     private JLabel numberOfKeysLabel;
     private JLabel replayDateLabel;
 
-    private EncrypterDecrypter encrypterDecrypter;
+    private EncrypterDecrypterOpenSSL encrypterDecrypter;
 
     public FileFilter multiBitFileChooser;
     public FileFilter myWalletPlainFileChooser;
@@ -134,7 +134,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         }
         enableWalletPassword(walletPasswordRequired);
         
-        encrypterDecrypter = new EncrypterDecrypter();
+        encrypterDecrypter = new EncrypterDecrypterOpenSSL();
         multiBitFileChooser = new PrivateKeyFileFilter(controller);
         myWalletPlainFileChooser = new MyWalletPlainKeyFileFilter();
         myWalletEncryptedFileChooser = new MyWalletEncryptedKeyFileFilter();

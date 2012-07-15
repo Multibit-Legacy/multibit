@@ -35,7 +35,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TimeZone;
 
-import org.multibit.crypto.EncrypterDecrypter;
+import org.multibit.crypto.EncrypterDecrypterOpenSSL;
 import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +71,7 @@ public class PrivateKeysHandler {
     private NetworkParameters networkParameters;
     private static final String SEPARATOR = " ";
 
-    private EncrypterDecrypter encrypterDecrypter;
+    private EncrypterDecrypterOpenSSL encrypterDecrypter;
 
     public PrivateKeysHandler(NetworkParameters networkParameters) {
         // date format is UTC with century, T time separator and Z for UTC
@@ -84,7 +84,7 @@ public class PrivateKeysHandler {
         }
         this.networkParameters = networkParameters;
 
-        encrypterDecrypter = new EncrypterDecrypter();
+        encrypterDecrypter = new EncrypterDecrypterOpenSSL();
     }
 
     public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryption, char[] password)
@@ -108,7 +108,7 @@ public class PrivateKeysHandler {
         String keyOutputText = outputStringBuffer.toString();
 
         if (performEncryption) {
-            EncrypterDecrypter encrypter = new EncrypterDecrypter();
+            EncrypterDecrypterOpenSSL encrypter = new EncrypterDecrypterOpenSSL();
             keyOutputText = encrypter.encrypt(keyOutputText, password);
         }
 
@@ -215,7 +215,7 @@ public class PrivateKeysHandler {
 
             if (importFileContents != null && importFileContents.startsWith(encrypterDecrypter.getOpenSSLMagicText())) {
                 // decryption required
-                EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypter();
+                EncrypterDecrypterOpenSSL encrypterDecrypter = new EncrypterDecrypterOpenSSL();
                 importFileContents = encrypterDecrypter.decrypt(importFileContents, password);
             }
 

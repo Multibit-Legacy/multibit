@@ -35,7 +35,7 @@ public class WalletEncrypterDecrypter {
                 potentialNewKeyChain.add(key);
             } else {
                 // Convert ECKey to EncryptableECKey and encrypt.
-                EncryptableECKey newKey = new EncryptableECKey(key);
+                EncryptableECKey newKey = new EncryptableECKey(key, new EncrypterDecrypterScrypt());
                 newKey.encrypt(password);
                 swapNewKeychainForOld = true;
                 potentialNewKeyChain.add(newKey);

@@ -1,7 +1,7 @@
 package org.multibit.crypto;
 
 /**
- * <p>Exception to provide the following to {@link EncrypterDecrypter}:</p>
+ * <p>Exception to provide the following to {@link EncrypterDecrypterOpenSSL}:</p>
  * <ul>
  * <li>Provision of encryption / decryption exception</li>
  * </ul>

@@ -45,7 +45,7 @@ import com.lambdaworks.crypto.SCrypt;
  * @author jim
  * 
  */
-public class EncrypterDecrypterScrypt {
+public class EncrypterDecrypterScrypt implements EncrypterDecrypter {
     /**
      * The string encoding to use when converting strings to bytes.
      */
@@ -119,6 +119,7 @@ public class EncrypterDecrypterScrypt {
      * @return                 The encrypted string
      * @throws                 EncrypterDecrypterException
      */
+    @Override
     public String encrypt(String plainText, char[] password) throws EncrypterDecrypterException {
         try {
             byte[] plainTextAsBytes;
@@ -144,6 +145,7 @@ public class EncrypterDecrypterScrypt {
      * @return                  IV_LENGTH bytes of iv, followed by one byte indicating final block length followed by the encrypted bytes.
      * @throws                  EncrypterDecrypterException
      */
+    @Override
     public byte[] encrypt(byte[] plainBytes, char[] password) throws EncrypterDecrypterException {
         try {
             // Generate iv - each encryption call has a different iv - it is used as the salt in key creation.
@@ -179,6 +181,7 @@ public class EncrypterDecrypterScrypt {
      * @return                The decrypted text
      * @throws                EncrypterDecrypterException
      */
+    @Override
     public String decrypt(String textToDecode, char[] password) throws EncrypterDecrypterException {
         try {
             final byte[] decodeTextAsBytes = Base64.decodeBase64(textToDecode.getBytes(STRING_ENCODING));
@@ -198,6 +201,7 @@ public class EncrypterDecrypterScrypt {
      * @return                 The decrypted bytes
      * @throws                 EncrypterDecrypterException
      */
+    @Override
     public byte[] decrypt(byte[] bytesToDecode, char[] password) throws EncrypterDecrypterException {
         try {
             // Separate the iv, final block length and bytes to decrypt.

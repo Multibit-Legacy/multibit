@@ -16,27 +16,27 @@ public class EncryptableECKey extends ECKey {
     
     private static final long serialVersionUID = -7791522463421293238L;
     
-    private EncrypterDecrypterScrypt encrypterDecrypter;
+    private EncrypterDecrypter encrypterDecrypter;
     
     private byte[] encryptedPrivateKey;
     
     private boolean isEncrypted;
     
-    public EncryptableECKey() {
+    public EncryptableECKey(EncrypterDecrypter encrypterDecrypter) {
         super();
-        init();
+        init(encrypterDecrypter);
     }
 
     /**
      * Create a new EncryptableECKey from an existing ECKey
      */
-    public EncryptableECKey(ECKey key) {
+    public EncryptableECKey(ECKey key, EncrypterDecrypter encrypterDecrypter) {
         super(key.getPrivKeyBytes(), key.getPubKey());
-        init();   
+        init(encrypterDecrypter);   
     }
  
-    private void init() {
-        encrypterDecrypter = new EncrypterDecrypterScrypt();
+    private void init(EncrypterDecrypter encrypterDecrypter) {
+        this.encrypterDecrypter = encrypterDecrypter;
         
         // A new encryptable ECKey is not encrypted.
         isEncrypted = false;

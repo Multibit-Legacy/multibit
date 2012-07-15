@@ -31,7 +31,7 @@ public class EncryptableECKeyTest extends TestCase {
     
     @Before
     public void setUp() throws Exception {
-        myKey = new EncryptableECKey();
+        myKey = new EncryptableECKey(new EncrypterDecrypterScrypt());
 
         BriefLogFormatter.init();
     }
