@@ -39,28 +39,14 @@ public class EncrypterDecrypterScryptTest extends TestCase {
     // Nonsense bytes for encryption test.
     private static final byte[] TEST_BYTES1= new byte[]{0, -101, 2, 103, -4, 105, 6, 107, 8, -109, 10, 111, -12, 113, 14, -115, 16, 117, -18, 119, 20, 121, 22, 123, -24, 125, 26, 127, -28, 29, -30, 31};
 
-    private static byte[] PASSWORD1;
-    private static byte[] PASSWORD2;
+    private static char[] PASSWORD1 = "aTestPassword".toCharArray();
+    private static char[] PASSWORD2 = "0123456789".toCharArray();
 
-    private static byte[] WRONG_PASSWORD;
+    private static char[] WRONG_PASSWORD = "thisIsTheWrongPassword".toCharArray();
 
     // Moscow in Russian in Cyrillic.
-    private static byte[] PASSWORD3;
+    private static char[] PASSWORD3 = "\u041c\u043e\u0441\u043a\u0432\u0430".toCharArray();
     
-    static {
-        try {
-            PASSWORD1 = "aTestPassword".getBytes("UTF-8");
-            PASSWORD2 = "0123456789".getBytes("UTF-8");
-
-            WRONG_PASSWORD = "thisIsTheWrongPassword".getBytes("UTF-8");
-
-            // Moscow in Russian in Cyrillic.
-            PASSWORD3 = "\u041c\u043e\u0441\u043a\u0432\u0430".getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
 
     @Test
     public void testEncryptDecryptGood1() throws EncrypterDecrypterException {
@@ -111,13 +97,13 @@ public class EncrypterDecrypterScryptTest extends TestCase {
         for (int i = 0; i < numberOfTests; i++) {
             // Create a UUID as the plaintext and use another for the password.
             String plainText = UUID.randomUUID().toString();
-            String password = UUID.randomUUID().toString();
+            char[] password = UUID.randomUUID().toString().toCharArray();
 
-            String cipherText = encrypterDecrypter.encrypt(plainText, password.getBytes("UTF-8"));
+            String cipherText = encrypterDecrypter.encrypt(plainText, password);
 
             assertNotNull(cipherText);
 
-            String reconstructedPlainText = encrypterDecrypter.decrypt(cipherText,password.getBytes("UTF-8"));
+            String reconstructedPlainText = encrypterDecrypter.decrypt(cipherText,password);
             assertEquals(plainText, reconstructedPlainText);
             System.out.print('.');
         }

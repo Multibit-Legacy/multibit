@@ -33,7 +33,7 @@ import com.lambdaworks.crypto.SCrypt;
  * AES for the encryption.
  * 
  * The format of the encrypted byte data is a byte[] containing:
- *    Initialisation vector     IV_LENGTH bytes       The initialisation vector (also used as the salt).
+ *    Initialisation vector     BLOCK_LENGTH bytes    The initialisation vector (also used as the salt).
  *    final block length        1 byte                Cast to int for the number of bytes used in the last block (to enable pad removal).
  *    encrypted data            any length of bytes   The encrypted data.
  * 
@@ -101,13 +101,13 @@ public class EncrypterDecrypterScrypt {
      * @return            The KeyParameter containing the created key
      * @throws            EncrypterDecrypterException
      */
-    private KeyParameter getAESPasswordKey(byte[] passwordBytes, byte[] salt) throws EncrypterDecrypterException {
+    private KeyParameter getAESPasswordKey(char[] password, byte[] salt) throws EncrypterDecrypterException {
         try {
+            byte[] passwordBytes = convertToByteArray(password); 
             byte[] keyBytes = SCrypt.scrypt(passwordBytes, salt, n, r, p, KEY_LENGTH);
             return new KeyParameter(keyBytes);
         } catch (Exception e) {
-            throw new EncrypterDecrypterException("Could not generate key from password bytes of length " + passwordBytes.length
-                    + " and salt '" + Utils.bytesToHexString(salt), e);
+            throw new EncrypterDecrypterException("Could not generate key from password and salt '" + Utils.bytesToHexString(salt), e);
         }
     }
 
@@ -115,11 +115,11 @@ public class EncrypterDecrypterScrypt {
      * Password based encryption using AES - CBC 256 bits.
      * 
      * @param plainText        The text to encrypt
-     * @param passwordBytes    The password to use for encryption
+     * @param password         The password to use for encryption
      * @return                 The encrypted string
      * @throws                 EncrypterDecrypterException
      */
-    public String encrypt(String plainText, byte[] passwordBytes) throws EncrypterDecrypterException {
+    public String encrypt(String plainText, char[] password) throws EncrypterDecrypterException {
         try {
             byte[] plainTextAsBytes;
             if (plainText == null) {
@@ -128,7 +128,7 @@ public class EncrypterDecrypterScrypt {
                 plainTextAsBytes = plainText.getBytes(STRING_ENCODING);
             }
             
-            byte[] encryptedBytes = encrypt(plainTextAsBytes, passwordBytes);     
+            byte[] encryptedBytes = encrypt(plainTextAsBytes, password);     
             
             return Base64.encodeBase64String(encryptedBytes);
         } catch (Exception e) {
@@ -139,18 +139,18 @@ public class EncrypterDecrypterScrypt {
     /**
      * Password based encryption using AES - CBC 256 bits.
      * 
-     * @param plainBytes        The bytes to encrypt
+     * @param plain             The bytes to encrypt
      * @param passwordBytes     The password to use for encryption
      * @return                  IV_LENGTH bytes of iv, followed by one byte indicating final block length followed by the encrypted bytes.
      * @throws                  EncrypterDecrypterException
      */
-    public byte[] encrypt(byte[] plainBytes, byte[] passwordBytes) throws EncrypterDecrypterException {
+    public byte[] encrypt(byte[] plainBytes, char[] password) throws EncrypterDecrypterException {
         try {
             // Generate iv - each encryption call has a different iv - it is used as the salt in key creation.
             byte[] iv = new byte[BLOCK_LENGTH];
             secureRandom.nextBytes(iv);
  
-            KeyParameter key = getAESPasswordKey(passwordBytes, iv);
+            KeyParameter key = getAESPasswordKey(password, iv);
             ParametersWithIV keyWithIv = new ParametersWithIV(key, iv);
 
             // Encrypt using AES.
@@ -175,14 +175,14 @@ public class EncrypterDecrypterScrypt {
      * Decrypt text previously encrypted with this class.
      * 
      * @param textToDecode    The code to decrypt
-     * @param passwordBytes   The password to use for decryption
+     * @param password        The password to use for decryption
      * @return                The decrypted text
      * @throws                EncrypterDecrypterException
      */
-    public String decrypt(String textToDecode, byte[] passwordBytes) throws EncrypterDecrypterException {
+    public String decrypt(String textToDecode, char[] password) throws EncrypterDecrypterException {
         try {
             final byte[] decodeTextAsBytes = Base64.decodeBase64(textToDecode.getBytes(STRING_ENCODING));
-            byte[] decryptedBytes = decrypt(decodeTextAsBytes, passwordBytes);
+            byte[] decryptedBytes = decrypt(decodeTextAsBytes, password);
             
             return new String(decryptedBytes, STRING_ENCODING);
         } catch (Exception e) {
@@ -194,11 +194,11 @@ public class EncrypterDecrypterScrypt {
      * Decrypt bytes previously encrypted with this class.
      * 
      * @param bytesToDecode    The bytes to decrypt
-     * @param passwordBytes    The password to use for decryption
+     * @param password         The password to use for decryption
      * @return                 The decrypted bytes
      * @throws                 EncrypterDecrypterException
      */
-    public byte[] decrypt(byte[] bytesToDecode, byte[] passwordBytes) throws EncrypterDecrypterException {
+    public byte[] decrypt(byte[] bytesToDecode, char[] password) throws EncrypterDecrypterException {
         try {
             // Separate the iv, final block length and bytes to decrypt.
             byte[] iv = new byte[BLOCK_LENGTH];
@@ -209,7 +209,7 @@ public class EncrypterDecrypterScrypt {
             byte[] cipherBytes = new byte[bytesToDecode.length - BLOCK_LENGTH - 1];
             System.arraycopy(bytesToDecode, BLOCK_LENGTH + 1, cipherBytes, 0, bytesToDecode.length - BLOCK_LENGTH - 1);
 
-            KeyParameter key = getAESPasswordKey(passwordBytes, iv);
+            KeyParameter key = getAESPasswordKey(password, iv);
             ParametersWithIV keyWithIv = new ParametersWithIV(key, iv);
 
             // Decrypt the message.
@@ -243,5 +243,22 @@ public class EncrypterDecrypterScrypt {
         System.arraycopy(arrayB, 0, result, arrayA.length, arrayB.length);
 
         return result;
+    }
+    
+    /**
+     * Convert char array (which are UTF16) into a byte array
+     */
+    private byte[] convertToByteArray(char[] charArray) {
+        if (charArray == null) {
+            return new byte[0];
+        }
+        
+        byte[] byteArray = new byte[charArray.length << 1];
+        for(int i = 0; i < charArray.length; i++) {
+            int bytePosition = i << 1;
+            byteArray[bytePosition] = (byte) ((charArray[i]&0xFF00)>>8);
+            byteArray[bytePosition + 1] = (byte) (charArray[i]&0x00FF);
+        }
+        return byteArray;
     }
 }

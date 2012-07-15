@@ -15,39 +15,19 @@
  */
 package org.multibit.crypto;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-
 import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletType;
-import com.google.bitcoin.store.BlockStore;
-import com.google.bitcoin.store.MemoryBlockStore;
 import com.google.bitcoin.utils.BriefLogFormatter;
 
 public class EncryptableECKeyTest extends TestCase {
   
     private EncryptableECKey myKey;
 
-    private static byte[] PASSWORD1;
-
-    static {
-        try {
-            PASSWORD1 = "aTestPassword".getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-    }
+    private static char[] PASSWORD1 = "aTestPassword".toCharArray();
     
     @Before
     public void setUp() throws Exception {

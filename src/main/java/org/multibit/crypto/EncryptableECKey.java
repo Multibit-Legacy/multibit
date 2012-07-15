@@ -24,15 +24,26 @@ public class EncryptableECKey extends ECKey {
     
     public EncryptableECKey() {
         super();
-        
+        init();
+    }
+
+    /**
+     * Create a new EncryptableECKey from an existing ECKey
+     */
+    public EncryptableECKey(ECKey key) {
+        super(key.getPrivKeyBytes(), key.getPubKey());
+        init();   
+    }
+ 
+    private void init() {
         encrypterDecrypter = new EncrypterDecrypterScrypt();
         
         // A new encryptable ECKey is not encrypted.
         isEncrypted = false;
-        encryptedPrivateKey = null;
+        encryptedPrivateKey = null;    
     }
-
-    public void encrypt(byte[] password) {
+    
+    public void encrypt(char[] password) {
         // Encrypt the super private keys.
         encryptedPrivateKey = encrypterDecrypter.encrypt(this.getPrivKeyBytes(), password);
         
@@ -42,7 +53,7 @@ public class EncryptableECKey extends ECKey {
         isEncrypted = true;
     }
     
-    public void decrypt(byte[] password) {
+    public void decrypt(char[] password) {
         // Decrypt the private keys.
         byte[] plainTextPrivateKey = encrypterDecrypter.decrypt(encryptedPrivateKey, password);
         
