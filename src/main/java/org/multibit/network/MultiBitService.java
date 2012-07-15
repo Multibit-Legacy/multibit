@@ -32,6 +32,7 @@ import java.util.SimpleTimeZone;
 import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.crypto.LockableWallet;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -264,8 +265,8 @@ public class MultiBitService {
 
                 newWalletCreated = true;
             } else {
-                // create a brand new wallet - by default protobuf
-                wallet = new Wallet(networkParameters);
+                // create a brand new wallet - by default protobuf, lockable but unlocked
+                wallet = new LockableWallet(networkParameters);
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
 

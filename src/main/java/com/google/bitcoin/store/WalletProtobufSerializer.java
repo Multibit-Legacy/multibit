@@ -23,6 +23,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.TextFormat;
 import org.bitcoinj.wallet.Protos;
 import org.multibit.IsMultiBitClass;
+import org.multibit.crypto.LockableWallet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -215,7 +216,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         // System.out.println(TextFormat.printToString(walletProto));
 
         NetworkParameters params = NetworkParameters.fromID(walletProto.getNetworkIdentifier());
-        Wallet wallet = new Wallet(params);
+        Wallet wallet = new LockableWallet(params);
         
         // Read all keys
         for (Protos.Key keyProto : walletProto.getKeyList()) {

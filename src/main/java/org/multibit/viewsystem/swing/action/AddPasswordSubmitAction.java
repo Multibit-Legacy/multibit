@@ -23,12 +23,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.crypto.LockableWallet;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.AddPasswordPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
+import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletType;
 
 /**
@@ -90,11 +92,12 @@ public class AddPasswordSubmitAction extends AbstractAction {
                 passwordToUse = password1.getPassword();
             }
         }
-
-        log.debug("Password is : " + new String(passwordToUse));
-        
-        if (controller.getModel().getActiveWallet() != null) {
-            controller.getModel().getActiveWallet().setWalletType(WalletType.ENCRYPTED);
+       
+        Wallet wallet = controller.getModel().getActiveWallet();
+        if (wallet != null) {
+            if (wallet instanceof LockableWallet) {
+                ((LockableWallet)wallet).encrypt(passwordToUse);
+            }
         }
         controller.fireDataChanged();
         addPasswordPanel.updatePasswordAction();

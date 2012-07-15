@@ -23,11 +23,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.crypto.LockableWallet;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.RemovePasswordPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletType;
 
 /**
@@ -81,7 +83,13 @@ public class RemovePasswordSubmitAction extends AbstractAction {
         log.debug("Password is : " + new String(passwordToUse));
         
         if (controller.getModel().getActiveWallet() != null) {
-            controller.getModel().getActiveWallet().setWalletType(WalletType.UNENCRYPTED);
+            Wallet wallet = controller.getModel().getActiveWallet();
+            if (wallet != null) {
+                if (wallet instanceof LockableWallet) {
+                    ((LockableWallet)wallet).decrypt(passwordToUse);
+                    wallet.setWalletType(WalletType.UNENCRYPTED);
+                }
+            }
         }
         controller.fireDataChanged();
 

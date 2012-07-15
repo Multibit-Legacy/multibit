@@ -24,7 +24,6 @@ public class LockableWallet extends Wallet {
  
     public LockableWallet(NetworkParameters params) {
         super(params);
-        // TODO Auto-generated constructor stub
     }
     
 

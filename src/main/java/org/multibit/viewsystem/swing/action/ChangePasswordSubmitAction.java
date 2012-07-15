@@ -23,6 +23,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.crypto.LockableWallet;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.AddPasswordPanel;
 import org.multibit.viewsystem.swing.view.ChangePasswordPanel;
@@ -30,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
+import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletType;
 
 /**
@@ -106,6 +108,13 @@ public class ChangePasswordSubmitAction extends AbstractAction {
         log.debug("Current password is : " + new String(currentPasswordToUse));
         log.debug("New password is : " + new String(newPasswordToUse));
 
+        Wallet wallet = controller.getModel().getActiveWallet();
+        if (wallet != null) {
+            if (wallet instanceof LockableWallet) {
+                ((LockableWallet)wallet).decrypt(currentPasswordToUse);
+                ((LockableWallet)wallet).encrypt(newPasswordToUse);
+            }
+        }
         changePasswordPanel.clearMessages();
         changePasswordPanel.clearPasswords();
         
