@@ -29,7 +29,7 @@ import com.google.bitcoin.utils.BriefLogFormatter;
 public class LockableWalletTest extends TestCase {
     static final NetworkParameters params = NetworkParameters.unitTests();
 
-    private LockableWallet wallet;
+    private EncryptableWallet wallet;
     private ECKey myKey;
 
     private static char[] PASSWORD1 = "my helicopter contains eels".toCharArray();
@@ -37,7 +37,7 @@ public class LockableWalletTest extends TestCase {
     @Before
     public void setUp() throws Exception {
         myKey = new ECKey();
-        wallet = new LockableWallet(params);
+        wallet = new EncryptableWallet(params);
         wallet.addKey(myKey);
 
         BriefLogFormatter.init();
@@ -47,27 +47,27 @@ public class LockableWalletTest extends TestCase {
     public void testBasic() throws Exception {
         // Check the wallet is initially unencrypted and unlocked.
         assertTrue("Wallet is not an unencrypted wallet", wallet.getWalletType() == WalletType.UNENCRYPTED);
-        assertTrue("Wallet is not unlocked", !wallet.isLocked());
+        assertTrue("Wallet is not unlocked", !wallet.isCurrentlyEncrypted());
         
         // Encrypt wallet.
         wallet.encrypt(PASSWORD1);
 
         // Wallet should now be of type encrypted and locked.
         assertTrue("Wallet is not an encrypted wallet", wallet.getWalletType() == WalletType.ENCRYPTED);
-        assertTrue("Wallet is not locked", wallet.isLocked());
+        assertTrue("Wallet is not locked", wallet.isCurrentlyEncrypted());
 
         // Decrypt wallet.
         wallet.decrypt(PASSWORD1);
         
         // Wallet should now be of type encrypted and unlocked.
         assertTrue("Wallet is not an encrypted wallet", wallet.getWalletType() == WalletType.ENCRYPTED);
-        assertTrue("Wallet is not locked", !wallet.isLocked());
+        assertTrue("Wallet is not locked", !wallet.isCurrentlyEncrypted());
         
         // Remove the wallet encryption entirely.
         wallet.removeEncryption(PASSWORD1);
 
         // Wallet should now be of type unencrypted and unlocked.
         assertTrue("Wallet is not an unencrypted wallet", wallet.getWalletType() == WalletType.UNENCRYPTED);
-        assertTrue("Wallet is not locked", !wallet.isLocked());
+        assertTrue("Wallet is not locked", !wallet.isCurrentlyEncrypted());
     }
 }

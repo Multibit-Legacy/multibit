@@ -38,7 +38,7 @@ import java.util.Properties;
 
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.LockableWallet;
+import org.multibit.crypto.EncryptableWallet;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;

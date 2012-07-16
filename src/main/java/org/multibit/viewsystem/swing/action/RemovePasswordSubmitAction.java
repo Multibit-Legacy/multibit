@@ -21,9 +21,11 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
+import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.LockableWallet;
+import org.multibit.crypto.EncryptableWallet;
+import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.RemovePasswordPanel;
 import org.slf4j.Logger;
@@ -79,22 +81,33 @@ public class RemovePasswordSubmitAction extends AbstractAction {
                     .getString("removePasswordPanel.enterPassword"));
             return;
         }
-
-        log.debug("Password is : " + new String(passwordToUse));
-        
+       
         if (controller.getModel().getActiveWallet() != null) {
             Wallet wallet = controller.getModel().getActiveWallet();
             if (wallet != null) {
-                if (wallet instanceof LockableWallet) {
-                    ((LockableWallet)wallet).decrypt(passwordToUse);
-                    wallet.setWalletType(WalletType.UNENCRYPTED);
+                if (wallet instanceof EncryptableWallet) {
+                    try {
+                        ((EncryptableWallet)wallet).decrypt(passwordToUse);
+                        wallet.setWalletType(WalletType.UNENCRYPTED);
+                    } catch (EncrypterDecrypterException ede) {
+                        removePasswordPanel.setMessage1(controller.getLocaliser()
+                                .getString("removePasswordPanel.removePasswordFailed", new String[]{ede.getMessage()}));
+                        return;
+                    }
                 }
             }
         }
         controller.fireDataChanged();
 
-        removePasswordPanel.updatePasswordAction();
-        removePasswordPanel.clearMessages();
-        removePasswordPanel.clearPasswords();
+        // Success.
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                removePasswordPanel.clearMessages();
+                removePasswordPanel.clearPasswords();
+                removePasswordPanel.updatePasswordAction();
+                removePasswordPanel.setMessage1(controller.getLocaliser()
+                        .getString("removePasswordPanel.removePasswordSuccess")); 
+            }});
     }
 }

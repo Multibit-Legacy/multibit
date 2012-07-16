@@ -26,7 +26,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.LockableWallet;
+import org.multibit.crypto.EncryptableWallet;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
@@ -144,7 +144,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
                 }
             } else {
                 // Create a new wallet.
-                Wallet newWallet = new LockableWallet(controller.getMultiBitService().getNetworkParameters());
+                Wallet newWallet = new EncryptableWallet(controller.getMultiBitService().getNetworkParameters());
                 ECKey newKey = new ECKey();
                 newWallet.keychain.add(newKey);
                 PerWalletModelData perWalletModelData = new PerWalletModelData();

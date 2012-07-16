@@ -21,9 +21,11 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
+import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.LockableWallet;
+import org.multibit.crypto.EncryptableWallet;
+import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.AddPasswordPanel;
 import org.slf4j.Logger;
@@ -95,12 +97,30 @@ public class AddPasswordSubmitAction extends AbstractAction {
        
         Wallet wallet = controller.getModel().getActiveWallet();
         if (wallet != null) {
-            if (wallet instanceof LockableWallet) {
-                ((LockableWallet)wallet).encrypt(passwordToUse);
+            if (wallet instanceof EncryptableWallet) {
+                try {
+                    ((EncryptableWallet)wallet).encrypt(passwordToUse);
+                } catch (EncrypterDecrypterException ede) {
+                    ede.printStackTrace();
+                    addPasswordPanel.setMessage1(controller.getLocaliser().getString(
+                    "addPasswordPanel.addPasswordFailed", new String[]{ede.getMessage()}));
+                    return;
+                }
             }
         }
         controller.fireDataChanged();
-        addPasswordPanel.updatePasswordAction();
-        addPasswordPanel.clearPasswords();
+        
+        // Success.
+        
+        // Success.
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                addPasswordPanel.clearMessages();
+                addPasswordPanel.clearPasswords();
+                addPasswordPanel.updatePasswordAction();
+                addPasswordPanel.setMessage1(controller.getLocaliser()
+                        .getString("addPasswordPanel.addPasswordSuccess")); 
+            }});
     }
 }

@@ -23,7 +23,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.LockableWallet;
+import org.multibit.crypto.EncryptableWallet;
+import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.AddPasswordPanel;
 import org.multibit.viewsystem.swing.view.ChangePasswordPanel;
@@ -105,19 +106,37 @@ public class ChangePasswordSubmitAction extends AbstractAction {
             }
         }
 
-        log.debug("Current password is : " + new String(currentPasswordToUse));
-        log.debug("New password is : " + new String(newPasswordToUse));
-
         Wallet wallet = controller.getModel().getActiveWallet();
         if (wallet != null) {
-            if (wallet instanceof LockableWallet) {
-                ((LockableWallet)wallet).decrypt(currentPasswordToUse);
-                ((LockableWallet)wallet).encrypt(newPasswordToUse);
+            if (wallet instanceof EncryptableWallet) {
+                boolean decryptSuccess = false;
+                try {
+                    ((EncryptableWallet)wallet).decrypt(currentPasswordToUse);
+                    decryptSuccess = true;
+                } catch (EncrypterDecrypterException ede) {
+                    // Notify the user that either the decrypt failed
+                    changePasswordPanel.setMessage1(controller.getLocaliser()
+                            .getString("changePasswordPanel.changePasswordFailed", new String[]{ede.getMessage()}));
+                    return;
+                }
+                
+                if (decryptSuccess) {
+                    try {
+                        ((EncryptableWallet)wallet).encrypt(newPasswordToUse);
+                    } catch (EncrypterDecrypterException ede) {
+                        // Notify the user that either the encrypt failed
+                        changePasswordPanel.setMessage1(controller.getLocaliser()
+                                .getString("changePasswordPanel.changePasswordFailed", new String[]{ede.getMessage()}));
+                        return;
+                    }
+                }
             }
         }
+        
+        // Success.
         changePasswordPanel.clearMessages();
         changePasswordPanel.clearPasswords();
-        
-        controller.fireDataChanged();
+        changePasswordPanel.setMessage1(controller.getLocaliser()
+                .getString("changePasswordPanel.changePasswordSuccess")); 
     }
 }
