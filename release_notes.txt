@@ -1,5 +1,11 @@
 MultiBit release notes.
 
+Version 0.4.4
+Enhancements:
++  I18n update
++  Update to bitcoinj 0.5.2
+
+
 Version 0.4.3
 Bug fix
 +  Replay from genesis block fixed
