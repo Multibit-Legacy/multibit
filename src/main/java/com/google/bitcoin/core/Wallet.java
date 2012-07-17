@@ -240,51 +240,50 @@ public class Wallet implements Serializable, IsMultiBitClass {
     }
     
     public boolean isConsistent() {
-        
         // Seems overzealous so switch off for now.
-        return true;
+        //return true;
+
+        boolean success = true;       
+        // Pending and inactive can overlap, so merge them before counting
+        HashSet<Transaction> pendingInactive = new HashSet<Transaction>();
+        pendingInactive.addAll(pending.values());
+        pendingInactive.addAll(inactive.values());
         
-//        boolean success = true;
-//        // Pending and inactive can overlap, so merge them before counting
-//        HashSet<Transaction> pendingInactive = new HashSet<Transaction>();
-//        pendingInactive.addAll(pending.values());
-//        pendingInactive.addAll(inactive.values());
-//        
-//        Set<Transaction> transactions = getTransactions(true, true);
-//        
-//        Set<Sha256Hash> hashes = new HashSet<Sha256Hash>();
-//        for (Transaction tx : transactions) {
-//            hashes.add(tx.getHash());
-//        }
-//        
-//        int size1 = transactions.size();
-//        
-//        if (size1 != hashes.size()) {
-//            log.error("Two transactions with same hash");
-//            success = false;
-//        }
-//        
-//        int size2 = unspent.size() + spent.size() + pendingInactive.size() + dead.size();
-//        if (size1 != size2) {
-//            log.error("Inconsistent wallet sizes: {} {}", size1, size2);
-//            success = false;
-//        }
-//        
-//        for (Transaction tx : unspent.values()) {
-//            if (!tx.isConsistent(this, false)) {
-//                success = false;
-//                log.error("Inconsistent unspent tx {}", tx.getHashAsString());
-//            }
-//        }
-//        
-//        for (Transaction tx : spent.values()) {
-//            if (!tx.isConsistent(this, true)) {
-//                success = false;
-//                log.error("Inconsistent spent tx {}", tx.getHashAsString());
-//            }
-//        }
-//        
-//        return success;
+        Set<Transaction> transactions = getTransactions(true, true);
+        
+        Set<Sha256Hash> hashes = new HashSet<Sha256Hash>();
+        for (Transaction tx : transactions) {
+            hashes.add(tx.getHash());
+        }
+        
+        int size1 = transactions.size();
+        
+        if (size1 != hashes.size()) {
+            log.error("Two transactions with same hash");
+            success = false;
+        }
+        
+        int size2 = unspent.size() + spent.size() + pendingInactive.size() + dead.size();
+        if (size1 != size2) {
+            log.error("Inconsistent wallet sizes: {} {}", size1, size2);
+            success = false;
+        }
+        
+        for (Transaction tx : unspent.values()) {
+            if (!tx.isConsistent(this, false)) {
+                success = false;
+                log.error("Inconsistent unspent tx {}", tx.getHashAsString());
+            }
+        }
+        
+        for (Transaction tx : spent.values()) {
+            if (!tx.isConsistent(this, true)) {
+                success = false;
+                log.error("Inconsistent spent tx {}", tx.getHashAsString());
+            }
+        }
+        
+        return success;
     }
 
     /**
@@ -465,10 +464,11 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * Note that if the tx has inputs containing one of our keys, but the connected transaction is not in the wallet,
      * it will not be considered relevant.
      */
-    public synchronized boolean isTransactionRelevant(Transaction tx, boolean includeDoubleSpending) throws ScriptException {
-        return tx.isMine(this) || tx.getValueSentFromMe(this).compareTo(BigInteger.ZERO) > 0
-                || tx.getValueSentToMe(this).compareTo(BigInteger.ZERO) > 0
-                || (includeDoubleSpending && (findDoubleSpendAgainstPending(tx) != null));
+    public synchronized boolean isTransactionRelevant(Transaction tx,
+                                                      boolean includeDoubleSpending) throws ScriptException {
+        return tx.isMine(this) || tx.getValueSentFromMe(this).compareTo(BigInteger.ZERO) > 0 ||
+                tx.getValueSentToMe(this).compareTo(BigInteger.ZERO) > 0 ||
+                (includeDoubleSpending && (findDoubleSpendAgainstPending(tx) != null));
     }
 
     /**
@@ -509,7 +509,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         BigInteger valueDifference = valueSentToMe.subtract(valueSentFromMe);
 
         if (!reorg) {
-            log.info("Received tx{} for {} BTC: {}", new Object[]{sideChain ? " on a side chain" : "",
+            log.info("Received tx {} for {} BTC: {}", new Object[]{sideChain ? "on a side chain" : "",
                     bitcoinValueToFriendlyString(valueDifference), tx.getHashAsString()});
         }
 
@@ -523,7 +523,6 @@ public class Wallet implements Serializable, IsMultiBitClass {
             log.info("  <-pending");
             // A transaction we created appeared in a block. Probably this is a spend we broadcast that has been
             // accepted by the network.
-            //
             if (bestChain) {
                 if (valueSentToMe.equals(BigInteger.ZERO)) {
                     // There were no change transactions so this tx is fully spent.
@@ -556,8 +555,13 @@ public class Wallet implements Serializable, IsMultiBitClass {
             // This TX didn't originate with us. It could be sending us coins and also spending our own coins if keys
             // are being shared between different wallets.
             if (sideChain) {
-                log.info("  ->inactive");
-                inactive.put(tx.getHash(), tx);
+                if (unspent.containsKey(tx.getHash()) || spent.containsKey(tx.getHash())) {
+                    // This side chain block contains transactions that already appeared in the best chain. It's normal,
+                    // we don't need to consider this transaction inactive, we can just ignore it.
+                } else {
+                    log.info("  ->inactive");
+                    inactive.put(tx.getHash(), tx);
+                }
             } else if (bestChain) {
                 // This can trigger tx confidence listeners to be run in the case of double spends. We may need to
                 // delay the execution of the listeners until the bottom to avoid the wallet mutating during updates.
@@ -625,12 +629,19 @@ public class Wallet implements Serializable, IsMultiBitClass {
     private void processTxFromBestChain(Transaction tx) throws VerificationException, ScriptException {
         // This TX may spend our existing outputs even though it was not pending. This can happen in unit
         // tests, if keys are moved between wallets, and if we're catching up to the chain given only a set of keys.
+
+        if (inactive.containsKey(tx.getHash())) {
+            // This transaction was seen first on a side chain, but now it's also been seen in the best chain.
+            // So we don't need to track it as inactive anymore.
+            log.info("  new tx {} <-inactive", tx.getHashAsString());
+            inactive.remove(tx.getHash());
+        }
+
         updateForSpends(tx, true);
         if (!tx.getValueSentToMe(this).equals(BigInteger.ZERO)) {
             // It's sending us coins.
             log.info("  new tx ->unspent");
             unspent.put(tx.getHash(), tx);
-            
             // You can receive a tx twice in a replay so commented out this check.
             //checkState(!alreadyPresent, "TX was received twice");
         } else if (!tx.getValueSentFromMe(this).equals(BigInteger.ZERO)) {
@@ -812,7 +823,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
             throw new RuntimeException(e);
         }
 
-        checkState(isConsistent());
+        //checkState(isConsistent());
     }
 
     /**

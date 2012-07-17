@@ -16,8 +16,8 @@
 
 package com.google.bitcoin.core;
 
-import static com.google.bitcoin.core.CoreTestUtils.createFakeBlock;
-import static com.google.bitcoin.core.CoreTestUtils.createFakeTx;
+import static com.google.bitcoin.core.TestUtils.createFakeBlock;
+import static com.google.bitcoin.core.TestUtils.createFakeTx;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

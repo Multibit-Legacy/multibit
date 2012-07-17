@@ -58,7 +58,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
     private static final String MINING_PRIVATE_KEY = "5JDxPrBRghF1EvSBjDigywqfmAjpHPmTJxYtQTYJxJRHLLQA4mG";
 
     private static final String START_OF_REPLAY_PERIOD = "2012-03-03T13:00:00Z";
-    private static final int NUMBER_OF_BLOCKS_TO_REPLAY = 20;
+    private static final int NUMBER_OF_BLOCKS_TO_REPLAY = 10;
 
     private static final BigInteger BALANCE_AT_START = BigInteger.ZERO;
     private static final BigInteger BALANCE_AFTER_REPLAY = BigInteger.valueOf(22223642);

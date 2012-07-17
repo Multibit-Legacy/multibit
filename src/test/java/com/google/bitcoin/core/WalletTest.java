@@ -16,30 +16,35 @@
 
 package com.google.bitcoin.core;
 
-import static com.google.bitcoin.core.CoreTestUtils.createFakeBlock;
-import static com.google.bitcoin.core.CoreTestUtils.createFakeTx;
+import static com.google.bitcoin.core.TestUtils.createFakeBlock;
+import static com.google.bitcoin.core.TestUtils.createFakeTx;
 import static com.google.bitcoin.core.Utils.toNanoCoins;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.List;
-
+import com.google.bitcoin.core.WalletTransaction.Pool;
+import com.google.bitcoin.store.BlockStore;
+import com.google.bitcoin.store.MemoryBlockStore;
+import com.google.bitcoin.store.WalletProtobufSerializer;
+import com.google.bitcoin.utils.BriefLogFormatter;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.bitcoin.store.BlockStore;
-import com.google.bitcoin.store.MemoryBlockStore;
-import com.google.bitcoin.utils.BriefLogFormatter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static com.google.bitcoin.core.Utils.bitcoinValueToFriendlyString;
+import static com.google.bitcoin.core.Utils.toNanoCoins;
+import static org.junit.Assert.*;
 
 public class WalletTest {
     static final NetworkParameters params = NetworkParameters.unitTests();
 
     private Address myAddress;
     private Wallet wallet;
+    private BlockChain chain;
     private BlockStore blockStore;
     private ECKey myKey;
 
@@ -50,7 +55,7 @@ public class WalletTest {
         wallet = new Wallet(params);
         wallet.addKey(myKey);
         blockStore = new MemoryBlockStore(params);
-
+        chain = new BlockChain(params, wallet, blockStore);
         BriefLogFormatter.init();
     }
 
@@ -78,10 +83,19 @@ public class WalletTest {
 
         // We have NOT proven that the signature is correct!
 
+        final Transaction[] txns = new Transaction[1];
+        wallet.addEventListener(new AbstractWalletEventListener() {
+            @Override
+            public void onCoinsSent(Wallet wallet, Transaction tx, BigInteger prevBalance, BigInteger newBalance) {
+                assertNull(txns[0]);
+                txns[0] = tx;
+            }
+        });
         wallet.commitTx(t2);
         assertEquals(1, wallet.getPoolSize(WalletTransaction.Pool.PENDING));
         assertEquals(1, wallet.getPoolSize(WalletTransaction.Pool.SPENT));
         assertEquals(2, wallet.getPoolSize(WalletTransaction.Pool.ALL));
+        assertEquals(t2, txns[0]);
     }
 
     @Test
@@ -603,6 +617,63 @@ public class WalletTest {
 //        WalletProtobufSerializer.writeWallet(wallet, bios);
 //
 //    }
+
+    @Test
+    public void spendToSameWallet() throws Exception {
+        // Test that a spend to the same wallet is dealt with correctly.
+        // It should appear in the wallet and confirm.
+        // This is a bit of a silly thing to do in the real world as all it does is burn a fee but it is perfectly valid.
+
+        BigInteger coin1 = Utils.toNanoCoins(1, 0);
+        BigInteger coinHalf = Utils.toNanoCoins(0, 50);
+
+        // Start by giving us 1 coin.
+        Transaction inbound1 = createFakeTx(params, coin1, myAddress);
+        wallet.receiveFromBlock(inbound1, null, BlockChain.NewBlockType.BEST_CHAIN);
+
+        // Send half to ourselves. We should then have a balance available to spend of zero.
+        assertEquals(1, wallet.getPoolSize(WalletTransaction.Pool.UNSPENT));
+        assertEquals(1, wallet.getPoolSize(WalletTransaction.Pool.ALL));
+
+        Transaction outbound1 = wallet.createSend(myAddress, coinHalf, BigInteger.ZERO);
+        wallet.commitTx(outbound1);
+
+        // We should have a zero available balance before the next block.
+        assertEquals(BigInteger.ZERO, wallet.getBalance());
+
+        wallet.receiveFromBlock(outbound1, null, BlockChain.NewBlockType.BEST_CHAIN);
+
+        // We should have a balance of 1 BTC after the block is received.
+        assertEquals(coin1, wallet.getBalance());
+    }
+
+//    @Test
+//    public void rememberLastBlockSeenHash() throws Exception {
+//        BigInteger v1 = toNanoCoins(5, 0);
+//        BigInteger v2 = toNanoCoins(0, 50);
+//        BigInteger v3 = toNanoCoins(0, 25);
+//        Transaction t1 = createFakeTx(params, v1, myAddress);
+//        Transaction t2 = createFakeTx(params, v2, myAddress);
+//        Transaction t3 = createFakeTx(params, v3, myAddress);
+//
+//        Block genesis = blockStore.getChainHead().getHeader();
+//        Block b10 = makeSolvedTestBlock(params, genesis, t1);
+//        Block b11 = makeSolvedTestBlock(params, genesis, t2);
+//        Block b2 = makeSolvedTestBlock(params, b10, t3);
+//
+//        // Receive a block on the best chain - this should set the last block seen hash.
+//        chain.add(b10);
+//        assertEquals(b10.getHash(), wallet.getLastBlockSeenHash());
+//
+//        // Receive a block on the side chain - this should not change the last block seen hash.
+//        chain.add(b11);
+//        assertEquals(b10.getHash(), wallet.getLastBlockSeenHash());
+//
+//        // Receive block 2 on the best chain - this should change the last block seen hash.
+//        chain.add(b2);
+//        assertEquals(b2.getHash(), wallet.getLastBlockSeenHash());
+//    }
+
 
     // Support for offline spending is tested in PeerGroupTest
 }
