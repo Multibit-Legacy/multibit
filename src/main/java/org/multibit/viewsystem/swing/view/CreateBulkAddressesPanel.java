@@ -350,20 +350,4 @@ public class CreateBulkAddressesPanel extends JPanel implements View, CreateBulk
     public int getNumberOfAddresses() {
         return Integer.parseInt(actualNumberOfAddressesLabel.getText());
     }
-
-    public String getPreviousCurrency2() {
-        return null;
-    }
-
-    public String getPreviousExchange2() {
-        return null;
-    }
-
-    public boolean getPreviousShowSecondRow() {
-        return false;
-    }
-
-    public String getPreviousCurrency1() {
-        return null;
-    }
 }

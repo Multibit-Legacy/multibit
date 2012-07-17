@@ -149,24 +149,4 @@ public class HelpContentsPanel extends JPanel implements View {
     public int getViewId() {
         return View.HELP_CONTENTS_VIEW;
     }
-
-
-    public String getPreviousCurrency2() {
-        return null;
-    }
-
-
-    public String getPreviousExchange2() {
-        return null;
-    }
-
-
-    public boolean getPreviousShowSecondRow() {
-        return false;
-    }
-
-
-    public String getPreviousCurrency1() {
-        return null;
-    }
 }

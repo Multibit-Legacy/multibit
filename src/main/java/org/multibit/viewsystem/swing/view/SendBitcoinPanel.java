@@ -435,20 +435,4 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
     public int getViewId() {
         return View.SEND_BITCOIN_VIEW;
     }
-
-    public String getPreviousCurrency2() {
-        return null;
-    }
-
-    public String getPreviousExchange2() {
-        return null;
-    }
-
-    public boolean getPreviousShowSecondRow() {
-        return false;
-    }
-
-    public String getPreviousCurrency1() {
-        return null;
-    }
 }
