@@ -15,29 +15,24 @@
  */
 package org.multibit.viewsystem.swing.action;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.file.FileHandler;
-import org.multibit.file.WalletSaveException;
-import org.multibit.message.Message;
-import org.multibit.message.MessageManager;
-import org.multibit.model.AddressBookData;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletInfo;
-import org.multibit.model.WalletVersion;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.AbstractTradePanel;
+import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressDialog;
+import org.multibit.viewsystem.swing.view.DeleteWalletConfirmDialog;
+import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.ECKey;
-
 /**
- * This {@link Action} represents an action to create a receiving address.
+ * This {@link Action} represents the action to create the create new receiving address dialog.
  */
 public class CreateNewReceivingAddressAction extends AbstractAction {
     private static Logger log = LoggerFactory.getLogger(CreateNewReceivingAddressAction.class);
@@ -46,15 +41,17 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
 
     private MultiBitController controller;
 
-    private AbstractTradePanel receiveBitcoinPanel;
+    private ReceiveBitcoinPanel receiveBitcoinPanel;
+    private MultiBitFrame mainFrame;
 
     /**
      * Creates a new {@link CreateNewReceivingAddressAction}.
      */
-    public CreateNewReceivingAddressAction(MultiBitController controller, AbstractTradePanel receiveBitcoinPanel) {
+    public CreateNewReceivingAddressAction(MultiBitController controller, MultiBitFrame mainFrame, ReceiveBitcoinPanel receiveBitcoinPanel) {
         super(controller.getLocaliser().getString("createOrEditAddressAction.createReceiving.text"));
         this.controller = controller;
         this.receiveBitcoinPanel = receiveBitcoinPanel;
+        this.mainFrame = mainFrame;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createOrEditAddressAction.createReceiving.tooltip"));
@@ -62,7 +59,7 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
     }
 
     /**
-     * Create new receiving address.
+     * Create new receiving address dialog.
      */
     public void actionPerformed(ActionEvent e) {
         // Check to see if the wallet files have changed.
@@ -74,30 +71,17 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
             controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
-            ECKey newKey = new ECKey();
-            perWalletModelData.getWallet().keychain.add(newKey);
-
-            String addressString = newKey.toAddress(controller.getMultiBitService().getNetworkParameters()).toString();
-            WalletInfo walletInfo = perWalletModelData.getWalletInfo();
-            if (walletInfo == null) {
-                walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletVersion.PROTOBUF);
-                perWalletModelData.setWalletInfo(walletInfo);
-            }
-            walletInfo.addReceivingAddress(new AddressBookData("", addressString), false);
-            receiveBitcoinPanel.getAddressesTableModel().fireTableDataChanged();
-            receiveBitcoinPanel.selectRows();
-
-            controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, addressString);
-            controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
-            
+            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            setEnabled(false);
+      
             try {
-                controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
-            } catch (WalletSaveException wse) {
-                log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
-                MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
+                CreateNewReceivingAddressDialog createNewReceivingAddressDialog = new CreateNewReceivingAddressDialog(controller, mainFrame, receiveBitcoinPanel);
+                createNewReceivingAddressDialog.setVisible(true);
+            } finally {
+                setEnabled(true);
+                mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
-            controller.displayView(controller.getCurrentView());
-
+            
             if (receiveBitcoinPanel != null && receiveBitcoinPanel.getLabelTextArea() != null) {
                 receiveBitcoinPanel.getLabelTextArea().requestFocusInWindow();
             }

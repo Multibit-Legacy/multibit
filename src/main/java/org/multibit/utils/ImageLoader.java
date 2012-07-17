@@ -25,6 +25,7 @@ public class ImageLoader {
     private static final Logger log = LoggerFactory.getLogger(ImageLoader.class);
 
     public static final String ACCEPT_ICON_FILE = "/images/accept.png";
+    public static final String ADD_ICON_FILE = "/images/add.png";
     public static final String ADD_PASSWORD_ICON_FILE = "/images/lockAdd.png";
     public static final String ARROW_LEFT_ICON_FILE = "/images/arrowLeft.png";
     public static final String ARROW_RIGHT_ICON_FILE = "/images/arrowRight.png";   

@@ -73,7 +73,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
     
     @Override
     protected Action getCreateNewAddressAction() {
-        return new CreateNewReceivingAddressAction(controller, this);
+        return new CreateNewReceivingAddressAction(controller, mainFrame, this);
     }
     
     @Override
