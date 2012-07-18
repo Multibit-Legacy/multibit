@@ -27,6 +27,7 @@ import javax.swing.JPasswordField;
 
 import org.spongycastle.util.Arrays;
 import org.multibit.controller.MultiBitController;
+import org.multibit.crypto.EncryptableWallet;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.Verification;
 import org.multibit.utils.ImageLoader;
@@ -91,6 +92,18 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
             }
         }
         
+        // See if the password is the correct wallet password.
+        if (controller.getModel().getActiveWallet() instanceof EncryptableWallet) {
+            EncryptableWallet encryptableWallet = (EncryptableWallet)controller.getModel().getActiveWallet();
+            
+            if (!encryptableWallet.checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
+                // The password supplied is incorrect.
+                exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                exportPrivateKeysPanel.setMessage2(" ");
+                return;
+            }
+        }
+        
         // Get the required output file.
         String exportPrivateKeysFilename = exportPrivateKeysPanel.getOutputFilename();
 
@@ -108,7 +121,7 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
         boolean performEncryption = false;
         boolean performVerification = false;
 
-        char[] passwordToUse = null;
+        char[] exportPasswordToUse = null;
 
         if (exportPrivateKeysPanel.requiresEncryption()) {
             // Get the passwords on the export file password fields.
@@ -126,7 +139,7 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
                 } else {
                     // Perform encryption.
                     performEncryption = true;
-                    passwordToUse = exportFilePassword.getPassword();
+                    exportPasswordToUse = exportFilePassword.getPassword();
                 }
             }
         }
@@ -147,7 +160,7 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
             }
 
             privateKeysHandler.exportPrivateKeys(exportPrivateKeysFile, controller.getModel().getActivePerWalletModelData()
-                    .getWallet(), controller.getMultiBitService().getChain(), performEncryption, passwordToUse);
+                    .getWallet(), controller.getMultiBitService().getChain(), performEncryption, exportPasswordToUse, walletPassword.getPassword());
 
             // Success.
             exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
@@ -167,7 +180,7 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
             // Perform a verification on the exported file to see if it is correct.
             Verification verification = privateKeysHandler.verifyExportFile(exportPrivateKeysFile, controller.getModel()
                     .getActivePerWalletModelData().getWallet(), controller.getMultiBitService().getChain(), performEncryption,
-                    passwordToUse);
+                    exportPasswordToUse,  walletPassword.getPassword());
             String verifyMessage = controller.getLocaliser().getString(verification.getMessageKey(), verification.getMessageData());
             exportPrivateKeysPanel.setMessage2(verifyMessage);
         }

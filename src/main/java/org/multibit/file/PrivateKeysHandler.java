@@ -35,6 +35,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TimeZone;
 
+import org.multibit.crypto.EncryptableWallet;
 import org.multibit.crypto.EncrypterDecrypterOpenSSL;
 import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;
@@ -53,6 +54,7 @@ import com.google.bitcoin.core.TransactionInput;
 import com.google.bitcoin.core.TransactionOutput;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.WalletType;
 
 /**
  * Class for handling reading and writing of private keys to a file
@@ -87,7 +89,7 @@ public class PrivateKeysHandler {
         encrypterDecrypter = new EncrypterDecrypterOpenSSL();
     }
 
-    public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryption, char[] password)
+    public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryption, char[] exportPassword, char[] walletPassword)
             throws IOException {
 
         // construct a StringBuffer with the private key export text
@@ -98,7 +100,7 @@ public class PrivateKeysHandler {
         }
 
         // get the wallet's private keys and output them
-        Collection<PrivateKeyAndDate> keyAndDates = createKeyAndDates(wallet, blockChain);
+        Collection<PrivateKeyAndDate> keyAndDates = createKeyAndDates(wallet, blockChain, walletPassword);
         outputKeys(outputStringBuffer, keyAndDates);
 
         if (!performEncryption) {
@@ -109,7 +111,7 @@ public class PrivateKeysHandler {
 
         if (performEncryption) {
             EncrypterDecrypterOpenSSL encrypter = new EncrypterDecrypterOpenSSL();
-            keyOutputText = encrypter.encrypt(keyOutputText, password);
+            keyOutputText = encrypter.encrypt(keyOutputText, exportPassword);
         }
 
         FileWriter fileWriter = null;
@@ -142,12 +144,12 @@ public class PrivateKeysHandler {
      *            The wallet to verify the keys against
      * @param performEncryption
      *            Is Encryption required
-     * @param password
+     * @param exportPassword
      *            the password to use is encryption is required
      * @return Verification The result of verification
      */
     public Verification verifyExportFile(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryption,
-            char[] password) {
+            char[] exportPassword, char[] walletPassword) {
         boolean thereWereFailures = false;
 
         String messageKey = "privateKeysHandler.failedForUnknownReason";
@@ -155,10 +157,10 @@ public class PrivateKeysHandler {
 
         try {
             // create the expected export file contents
-            Collection<PrivateKeyAndDate> expectedKeysAndDates = createKeyAndDates(wallet, blockChain);
+            Collection<PrivateKeyAndDate> expectedKeysAndDates = createKeyAndDates(wallet, blockChain, walletPassword);
 
             // read in the specified export file
-            Collection<PrivateKeyAndDate> importedKeysAndDates = readInPrivateKeys(exportFile, password);
+            Collection<PrivateKeyAndDate> importedKeysAndDates = readInPrivateKeys(exportFile, exportPassword);
 
             if (expectedKeysAndDates.size() != importedKeysAndDates.size()) {
                 messageKey = "privateKeysHandler.wrongNumberOfKeys";
@@ -255,10 +257,24 @@ public class PrivateKeysHandler {
         out.append("#").append("\n");
     }
 
-    private Collection<PrivateKeyAndDate> createKeyAndDates(Wallet wallet, BlockChain blockChain) {
+    private Collection<PrivateKeyAndDate> createKeyAndDates(Wallet wallet, BlockChain blockChain, char[] walletPassword) {
         Collection<PrivateKeyAndDate> keyAndDates = new ArrayList<PrivateKeyAndDate>();
 
-        if (wallet != null) {
+        boolean reencryptionRequired = false;
+        
+        try {
+            if (wallet != null) {
+                if (walletPassword != null) {
+                    // decrypt wallet keys
+                    if (wallet instanceof EncryptableWallet) {
+                        EncryptableWallet encryptableWallet = (EncryptableWallet) wallet;
+                        if (encryptableWallet.isCurrentlyEncrypted()) {
+                            encryptableWallet.decrypt(walletPassword);
+                            reencryptionRequired = true;
+                        }
+                    }
+                }
+            }
             ArrayList<ECKey> keychain = wallet.keychain;
             Set<Transaction> allTransactions = wallet.getTransactions(true, true);
             if (keychain != null) {
@@ -335,6 +351,11 @@ public class PrivateKeysHandler {
                     }
                     keyAndDates.add(new PrivateKeyAndDate(ecKey, earliestUsageDate));
                 }
+            }
+        } finally {
+            if (reencryptionRequired) {
+                EncryptableWallet encryptableWallet = (EncryptableWallet) wallet;
+                encryptableWallet.encrypt(walletPassword);
             }
         }
 

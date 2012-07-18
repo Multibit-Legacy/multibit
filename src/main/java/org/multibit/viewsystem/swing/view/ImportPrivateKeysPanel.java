@@ -673,11 +673,11 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         unlockButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                setMessage(" ");
+                setMessageText(" ");
                 try {
                     readInImportFileAndUpdateDetails();
                 } catch (EncrypterDecrypterException ede) {
-                    setMessage(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysUnlockFailure",
+                    setMessageText(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysUnlockFailure",
                             new Object[] { ede.getMessage() }));
                 }
             }
@@ -803,14 +803,14 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
                             readInImportFileAndUpdateDetails();
                         }
                     } catch (IOException e) {
-                        setMessage(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
+                        setMessageText(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
                                 new Object[] { e.getClass().getName() + " " + e.getMessage() }));
                     } catch (EncrypterDecrypterException e) {
                         // TODO User may not have entered a password yet so
                         // password incorrect is ok at this stage.
                         // Other errors indicate a more general problem with the
                         // import.
-                        setMessage(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
+                        setMessageText(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
                                 new Object[] { e.getClass().getName() + " " + e.getMessage() }));
                     }
                 } else if (myWalletEncryptedFileChooser.accept(file)) {
@@ -937,7 +937,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
 
     public void requestSecondPassword() {
         enableSecondPasswordPanel(true);
-        setMessage(controller.getLocaliser().getString("importPrivateKeysSubmitAction.enterTheSecondPassword"));
+        setMessageText(controller.getLocaliser().getString("importPrivateKeysSubmitAction.enterTheSecondPassword"));
     }
 
     public String getOutputFilename() {
@@ -952,7 +952,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         }
     }
 
-    public void setMessage(String message) {
+    public void setMessageText(String message) {
         if (messageLabel != null) {
             messageLabel.setText(message);
         }
