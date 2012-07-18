@@ -67,4 +67,8 @@ public class EncryptableECKey extends ECKey {
     public boolean isEncrypted() {
         return isEncrypted;
     }
+
+    public byte[] getEncryptedPrivateKey() {
+        return encryptedPrivateKey;
+    }
 }

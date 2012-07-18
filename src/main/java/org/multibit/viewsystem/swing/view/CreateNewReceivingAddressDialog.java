@@ -44,6 +44,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
+import com.google.bitcoin.core.WalletType;
+
 /**
  * The dialog for creating new receiving addresses
  */
@@ -61,7 +63,7 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
 
     private MultiBitController controller;
 
-    private MultiBitLabel confirmText1;
+    private MultiBitLabel messageText;
     
     private MultiBitButton createNewReceivingAddressSubmitButton;
     private MultiBitButton cancelButton;
@@ -143,6 +145,7 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
         numberOfAddresses.addItem(new Integer(1));
         numberOfAddresses.addItem(new Integer(5));
         numberOfAddresses.addItem(new Integer(20));
+        numberOfAddresses.addItem(new Integer(100));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 5;
         constraints.gridy = 1;
@@ -210,6 +213,18 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(filler5, constraints);
+        
+        if (controller.getModel().getActiveWallet() != null) {
+            if (controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
+                // Need wallet password.
+                walletPasswordField.setEnabled(true);
+                walletPasswordPromptLabel.setEnabled(true);
+            } else {
+                // No wallet password required.
+                walletPasswordField.setEnabled(false);
+                walletPasswordPromptLabel.setEnabled(false);
+            }
+        }
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
@@ -228,20 +243,20 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        CreateNewReceivingAddressSubmitAction createNewReceivingAddressSubmitAction = new CreateNewReceivingAddressSubmitAction(controller, this);
+        CreateNewReceivingAddressSubmitAction createNewReceivingAddressSubmitAction = new CreateNewReceivingAddressSubmitAction(controller, this, walletPasswordField);
         createNewReceivingAddressSubmitButton = new MultiBitButton(createNewReceivingAddressSubmitAction, controller);
         buttonPanel.add(createNewReceivingAddressSubmitButton);
 
-        confirmText1 = new MultiBitLabel("");
-        confirmText1.setText(" ");
+        messageText = new MultiBitLabel("");
+        messageText.setText(" ");
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
+        constraints.gridx = 3;
         constraints.gridy = 11;
         constraints.weightx = 0.8;
         constraints.weighty = 0.15;
         constraints.gridwidth = 4;
-        constraints.anchor = GridBagConstraints.LINE_END;
-        mainPanel.add(confirmText1, constraints);
+        constraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(messageText, constraints);
         
         JLabel filler3 = new JLabel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -264,13 +279,8 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
         mainPanel.add(filler6, constraints);
     }
 
-    public void setSendConfirmText(String confirm1) {
-        confirmText1.setText(confirm1);
-        
-        OkBackToParentAction okAction = new OkBackToParentAction(controller, this);
-        createNewReceivingAddressSubmitButton.setAction(okAction);
-        
-        cancelButton.setVisible(false);
+    public void setMessageText(String message) {
+        messageText.setText(message);
     }
 
     public ReceiveBitcoinPanel getReceiveBitcoinPanel() {
@@ -278,6 +288,6 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
     }
     
     public int getNumberOfAddressesToCreate() {
-        return (Integer)numberOfAddresses.getSelectedItem();
+        return ((Integer)numberOfAddresses.getSelectedItem()).intValue();
     }
 }

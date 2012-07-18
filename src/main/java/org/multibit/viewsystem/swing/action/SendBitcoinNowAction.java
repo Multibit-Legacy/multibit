@@ -25,6 +25,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.crypto.EncryptableWallet;
+import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -40,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.core.Wallet;
 
 /**
  * This {@link Action} actually spends bitcoin.
@@ -103,22 +106,33 @@ public class SendBitcoinNowAction extends AbstractAction {
             }
             
             char[] walletPassword = walletPasswordField.getPassword();
-            log.debug("Password = " + new String(walletPassword));
-
+ 
             sendBitcoinConfirmView.setSendConfirmText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
 
-            performSend(perWalletModelData, sendAddress, sendAmount, fee);
+            performSend(perWalletModelData, sendAddress, sendAmount, fee, walletPassword);
         }
     }
 
     /**
      * send the transaction directly
      */
-    private void performSend(PerWalletModelData perWalletModelData, String sendAddress, String sendAmount, BigInteger fee) {
+    private void performSend(PerWalletModelData perWalletModelData, String sendAddress, String sendAmount, BigInteger fee, char[] walletPassword) {
         String message = null;
 
         boolean sendWasSuccessful = Boolean.FALSE;
-        try {
+        boolean reencryptRequired = false;
+        Wallet wallet = perWalletModelData.getWallet();
+       try {
+            // Decrypt the wallet prior to sending.
+             if (wallet instanceof EncryptableWallet) {
+                EncryptableWallet encryptableWallet = (EncryptableWallet)wallet;
+                if (encryptableWallet.isCurrentlyEncrypted()) {
+                    encryptableWallet.decrypt(walletPassword);
+                    // If successful will need to reencrypt in the finally.
+                    reencryptRequired = true;
+                }
+            }
+            
             log.debug("Sending from wallet " + perWalletModelData.getWalletFilename() + ", amount = " + sendAmount + ", fee = "
                     + fee + " to address = " + sendAddress);
             Transaction transaction = controller.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee);
@@ -131,9 +145,9 @@ public class SendBitcoinNowAction extends AbstractAction {
                 sendWasSuccessful = Boolean.TRUE;
                 log.debug("Sent transaction was:\n" + transaction.toString());
             }
-
-            // save the wallet
-            controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+        } catch (EncrypterDecrypterException e) {
+            log.error(e.getMessage(), e);
+            message = e.getMessage();
         } catch (WalletSaveException e) {
             log.error(e.getMessage(), e);
             message = e.getMessage();
@@ -148,6 +162,24 @@ public class SendBitcoinNowAction extends AbstractAction {
             // send bitcoin
             log.error(e.getMessage(), e);
             message = e.getMessage();
+        } finally {
+            try {
+                if (reencryptRequired) {
+                    if (wallet instanceof EncryptableWallet) {
+                        EncryptableWallet encryptableWallet = (EncryptableWallet)wallet;
+                        encryptableWallet.encrypt(walletPassword);
+                    }
+                }
+                // save the wallet
+                controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+            } catch (EncrypterDecrypterException ede) {
+                log.error(ede.getMessage(), ede);
+                if (message == null) {
+                    message = ede.getMessage();
+                } else {
+                    message = message + ". " + ede.getMessage();
+                }
+            }
         }
 
         if (sendWasSuccessful) {

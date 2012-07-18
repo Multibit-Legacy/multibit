@@ -16,12 +16,17 @@
 package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JPasswordField;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.file.FileHandler;
+import org.multibit.crypto.EncryptableECKey;
+import org.multibit.crypto.EncrypterDecrypter;
+import org.multibit.crypto.EncrypterDecrypterException;
+import org.multibit.crypto.EncrypterDecrypterScrypt;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -31,12 +36,12 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletVersion;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.swing.view.AbstractTradePanel;
 import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.WalletType;
 
 /**
  * This {@link Action} represents an action to actually create receiving addresses.
@@ -49,14 +54,17 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
     private MultiBitController controller;
 
     private CreateNewReceivingAddressDialog createNewReceivingAddressDialog;
+    
+    private JPasswordField walletPassword;
 
     /**
      * Creates a new {@link CreateNewReceivingAddressSubmitAction}.
      */
-    public CreateNewReceivingAddressSubmitAction(MultiBitController controller, CreateNewReceivingAddressDialog createNewReceivingAddressDialog) {
+    public CreateNewReceivingAddressSubmitAction(MultiBitController controller, CreateNewReceivingAddressDialog createNewReceivingAddressDialog, JPasswordField walletPassword) {
         super(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.text"), ImageLoader.createImageIcon(ImageLoader.ADD_ICON_FILE));
         this.controller = controller;
         this.createNewReceivingAddressDialog = createNewReceivingAddressDialog;
+        this.walletPassword = walletPassword;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.tooltip"));
@@ -71,23 +79,69 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
+        boolean encryptNewKeys = false;
+        
         if (haveFilesChanged) {
             // set on the perWalletModelData that files have changed and fire data changed
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
             controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
+            if (controller.getModel().getActiveWallet() != null) {
+                if (controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
+                    if (walletPassword.getPassword() == null || walletPassword.getPassword().length == 0) {
+                        // User needs to enter password.
+                        createNewReceivingAddressDialog.setMessageText(controller.getLocaliser().getString("showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
+                        return;
+                    }
+                    encryptNewKeys = true;
+                    
+                    // Check that the password can decrypt the first key in the wallet.
+                    // This is a check the password is correct.
+                    ArrayList<ECKey> keychain = perWalletModelData.getWallet().getKeychain();
+                    ECKey firstECKey = keychain.get(0);
+                    
+                    if (firstECKey instanceof EncryptableECKey) {
+                        EncryptableECKey encryptableECKey = (EncryptableECKey)firstECKey;
+                        byte[] encryptedBytes = encryptableECKey.getEncryptedPrivateKey();
+                        // Clone them.
+                        byte[] cloneEncrypted = new byte[encryptedBytes.length];
+                        System.arraycopy(encryptedBytes, 0, cloneEncrypted, 0, encryptedBytes.length);
+                        EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt();
+                        try {
+                            encrypterDecrypter.decrypt(cloneEncrypted, walletPassword.getPassword());
+                        } catch (EncrypterDecrypterException ede) {
+                            // The password supplied is incorrect.
+                            createNewReceivingAddressDialog.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                            return;
+                        }
+                    }
+                } 
+            }
+            
+ 
+            
             WalletInfo walletInfo = perWalletModelData.getWalletInfo();
             if (walletInfo == null) {
                 walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletVersion.PROTOBUF);
                 perWalletModelData.setWalletInfo(walletInfo);
             }
             String addressString = "";
+            try {
             for (int i = 0; i < createNewReceivingAddressDialog.getNumberOfAddressesToCreate(); i++) {
-                ECKey newKey = new ECKey();
+                ECKey newKey;
+                if (encryptNewKeys) {
+                    newKey = new EncryptableECKey(new EncrypterDecrypterScrypt());
+                    ((EncryptableECKey)newKey).encrypt(walletPassword.getPassword());
+                } else {
+                   newKey = new ECKey();
+                }
                 perWalletModelData.getWallet().keychain.add(newKey);
-
                 addressString = newKey.toAddress(controller.getMultiBitService().getNetworkParameters()).toString();
                 walletInfo.addReceivingAddress(new AddressBookData("", addressString), false);
+            }
+            } catch (EncrypterDecrypterException ede) {
+                log.error(ede.getMessage(), ede);
+                createNewReceivingAddressDialog.setMessageText(ede.getMessage());
             }
             createNewReceivingAddressDialog.getReceiveBitcoinPanel().getAddressesTableModel().fireTableDataChanged();
             createNewReceivingAddressDialog.getReceiveBitcoinPanel().selectRows();
