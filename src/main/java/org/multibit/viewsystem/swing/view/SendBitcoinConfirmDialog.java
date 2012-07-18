@@ -434,12 +434,12 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         confirmText1 = new MultiBitLabel("");
         confirmText1.setText(" ");
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
+        constraints.gridx = 1;
         constraints.gridy = 11;
         constraints.weightx = 0.8;
         constraints.weighty = 0.15;
-        constraints.gridwidth = 4;
-        constraints.anchor = GridBagConstraints.LINE_END;
+        constraints.gridwidth = 6;
+        constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(confirmText1, constraints);
         
         JLabel filler3 = new JLabel();
@@ -454,12 +454,12 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
 
         confirmText2 = new MultiBitLabel(" ");
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
+        constraints.gridx = 1;
         constraints.gridy = 12;
         constraints.weightx = 0.8;
         constraints.weighty = 0.15;
-        constraints.gridwidth = 4;
-        constraints.anchor = GridBagConstraints.LINE_END;
+        constraints.gridwidth = 6;
+        constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(confirmText2, constraints);
         
         JLabel filler6 = new JLabel();
@@ -473,10 +473,12 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         mainPanel.add(filler6, constraints);
     }
 
-    public void setSendConfirmText(String confirm1, String confirm2) {
-        confirmText1.setText(confirm1);
-        confirmText2.setText(" " + confirm2);
-        
+    public void setMessageText(String message1, String message2) {
+        confirmText1.setText(message1);
+        confirmText2.setText(" " + message2);
+    }    
+    
+    public void showOkButton() {
         OkBackToParentAction okAction = new OkBackToParentAction(controller, this);
         sendButton.setAction(okAction);
         

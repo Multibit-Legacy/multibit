@@ -24,6 +24,7 @@ import javax.swing.JPasswordField;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncryptableECKey;
+import org.multibit.crypto.EncryptableWallet;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.crypto.EncrypterDecrypterScrypt;
@@ -95,21 +96,10 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
                     }
                     encryptNewKeys = true;
                     
-                    // Check that the password can decrypt the first key in the wallet.
-                    // This is a check the password is correct.
-                    ArrayList<ECKey> keychain = perWalletModelData.getWallet().getKeychain();
-                    ECKey firstECKey = keychain.get(0);
-                    
-                    if (firstECKey instanceof EncryptableECKey) {
-                        EncryptableECKey encryptableECKey = (EncryptableECKey)firstECKey;
-                        byte[] encryptedBytes = encryptableECKey.getEncryptedPrivateKey();
-                        // Clone them.
-                        byte[] cloneEncrypted = new byte[encryptedBytes.length];
-                        System.arraycopy(encryptedBytes, 0, cloneEncrypted, 0, encryptedBytes.length);
-                        EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt();
-                        try {
-                            encrypterDecrypter.decrypt(cloneEncrypted, walletPassword.getPassword());
-                        } catch (EncrypterDecrypterException ede) {
+                    if (controller.getModel().getActiveWallet() instanceof EncryptableWallet) {
+                        EncryptableWallet encryptableWallet = (EncryptableWallet)controller.getModel().getActiveWallet();
+                        
+                        if (!encryptableWallet.checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
                             // The password supplied is incorrect.
                             createNewReceivingAddressDialog.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
                             return;
@@ -117,9 +107,7 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
                     }
                 } 
             }
-            
- 
-            
+                       
             WalletInfo walletInfo = perWalletModelData.getWalletInfo();
             if (walletInfo == null) {
                 walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletVersion.PROTOBUF);

@@ -23,7 +23,10 @@ public class EncryptableWallet extends Wallet {
         super(params);
     }
     
-
+    /**
+     * Encrypt the wallet with the supplied password.
+     * @param password
+     */
     public void encrypt(char[] password) {
         if (currentlyEncrypted) {
             throw new WalletIsAlreadyEncryptedException("Wallet is already encrypted");
@@ -55,6 +58,11 @@ public class EncryptableWallet extends Wallet {
         }
     }
 
+    /**
+     * Decrypt the wallet with the supplied password.
+     * 
+     * @param password
+     */
     public void decrypt(char[] password) {
         if (!currentlyEncrypted) {
             throw new WalletIsAlreadyEncryptedException("Wallet is already decrypted");
@@ -84,6 +92,12 @@ public class EncryptableWallet extends Wallet {
         }
     }
    
+    /**
+     * Remove any encryption on the private keys and change the wallet type to WalletType.UNENCRYPTED.
+     * The wallet is no longer encrypted.
+     * 
+     * @param password
+     */
     public void removeEncryption(char[] password) {
         // Remove any encryption on the keys.
         if (isCurrentlyEncrypted()) {
@@ -95,7 +109,40 @@ public class EncryptableWallet extends Wallet {
         currentlyEncrypted = false;       
     }
 
+    /**
+     * Whether the wallet is currently encrypted (=true) or not (=false).
+     */
     public boolean isCurrentlyEncrypted() {
         return currentlyEncrypted;
+    }
+    
+    
+    /**
+     *  Check whether the password can decrypt the first key in the wallet.
+     *  
+     *  @returns boolean True if password supplied can decrypt the first private key in the wallet, false otherwise.
+     */
+    public boolean checkPasswordCanDecryptFirstPrivateKey(char[] password) {
+        ECKey firstECKey = getKeychain().get(0);
+
+        if (firstECKey != null && firstECKey instanceof EncryptableECKey) {
+            EncryptableECKey encryptableECKey = (EncryptableECKey) firstECKey;
+            byte[] encryptedBytes = encryptableECKey.getEncryptedPrivateKey();
+            // Clone the encrypted bytes.
+            byte[] cloneEncrypted = new byte[encryptedBytes.length];
+            System.arraycopy(encryptedBytes, 0, cloneEncrypted, 0, encryptedBytes.length);
+            EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt();
+            try {
+                encrypterDecrypter.decrypt(cloneEncrypted, password);
+                
+                // Success.
+                return true;
+            } catch (EncrypterDecrypterException ede) {
+                // The password supplied is incorrect.
+                return false;
+            }
+        }
+        
+        return false;
     }
 }
