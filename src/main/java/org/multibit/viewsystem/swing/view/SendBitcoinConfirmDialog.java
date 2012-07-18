@@ -26,6 +26,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
@@ -40,6 +41,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+
+import com.google.bitcoin.core.WalletType;
 
 /**
  * The send bitcoin confirm dialog
@@ -410,6 +413,18 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(filler5, constraints);
 
+        if (controller.getModel().getActiveWallet() != null) {
+            if (controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
+                // Need wallet password.
+                walletPasswordField.setEnabled(true);
+                walletPasswordPromptLabel.setEnabled(true);
+            } else {
+                // No wallet password required.
+                walletPasswordField.setEnabled(false);
+                walletPasswordPromptLabel.setEnabled(false);
+            }
+        }
+        
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
@@ -473,10 +488,22 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         mainPanel.add(filler6, constraints);
     }
 
-    public void setMessageText(String message1, String message2) {
-        confirmText1.setText(message1);
-        confirmText2.setText(" " + message2);
+    public void setMessageText(final String message1, final String message2) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                confirmText1.setText(message1);
+                confirmText2.setText(" " + message2);
+            }});
     }    
+    
+    public void clearPassword() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                walletPasswordField.setText("");
+            }});
+    }
     
     public void showOkButton() {
         OkBackToParentAction okAction = new OkBackToParentAction(controller, this);

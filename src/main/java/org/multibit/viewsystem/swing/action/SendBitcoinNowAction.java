@@ -43,6 +43,7 @@ import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.WalletType;
 
 /**
  * This {@link Action} actually spends bitcoin.
@@ -54,7 +55,7 @@ public class SendBitcoinNowAction extends AbstractAction {
     private static final long serialVersionUID = 1913592460523457765L;
 
     private MultiBitController controller;
-    private SendBitcoinConfirmDialog sendBitcoinConfirmView;
+    private SendBitcoinConfirmDialog sendBitcoinConfirmDialog;
     private JPasswordField walletPasswordField;
 
     private final static int MAX_LENGTH_OF_ERROR_MESSAGE = 70;
@@ -66,7 +67,7 @@ public class SendBitcoinNowAction extends AbstractAction {
             SendBitcoinConfirmDialog sendBitcoinConfirmView, JPasswordField walletPasswordField, ImageIcon icon) {
         super(controller.getLocaliser().getString("sendBitcoinConfirmAction.text"), icon);
         this.controller = controller;
-        this.sendBitcoinConfirmView = sendBitcoinConfirmView;
+        this.sendBitcoinConfirmDialog = sendBitcoinConfirmView;
         this.walletPasswordField = walletPasswordField;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
@@ -79,6 +80,11 @@ public class SendBitcoinNowAction extends AbstractAction {
      * Actually send the bitcoin.
      */
     public void actionPerformed(ActionEvent event) {
+        sendBitcoinConfirmDialog.setMessageText(" ", " ");
+        sendBitcoinConfirmDialog.invalidate();
+        sendBitcoinConfirmDialog.validate();
+        sendBitcoinConfirmDialog.repaint();
+
         // check to see if the wallet files have changed
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
@@ -107,23 +113,28 @@ public class SendBitcoinNowAction extends AbstractAction {
             
             char[] walletPassword = walletPasswordField.getPassword();
  
-            if (walletPassword == null || walletPassword.length == 0) {
-                // User needs to enter password.
-                sendBitcoinConfirmView.setMessageText(controller.getLocaliser().getString("showExportPrivateKeysAction.youMustEnterTheWalletPassword"), "");
-                return;
-            }
-            
-            if (controller.getModel().getActiveWallet() instanceof EncryptableWallet) {
-                EncryptableWallet encryptableWallet = (EncryptableWallet)controller.getModel().getActiveWallet();
-                
-                if (!encryptableWallet.checkPasswordCanDecryptFirstPrivateKey(walletPassword)) {
-                    // The password supplied is incorrect.
-                    sendBitcoinConfirmView.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"), "");
-                    return;
+            if (controller.getModel().getActiveWallet() != null) {
+                if (controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
+                    // Encrypted wallet.
+                    if (walletPassword == null || walletPassword.length == 0) {
+                        // User needs to enter password.
+                        sendBitcoinConfirmDialog.setMessageText(controller.getLocaliser().getString("showExportPrivateKeysAction.youMustEnterTheWalletPassword"), "");
+                        return;
+                    }
+                    
+                    if (controller.getModel().getActiveWallet() instanceof EncryptableWallet) {
+                        EncryptableWallet encryptableWallet = (EncryptableWallet)controller.getModel().getActiveWallet();
+                        
+                        if (!encryptableWallet.checkPasswordCanDecryptFirstPrivateKey(walletPassword)) {
+                            // The password supplied is incorrect.
+                            sendBitcoinConfirmDialog.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"), "");
+                            return;
+                        }
+                    }
                 }
             }
             
-            sendBitcoinConfirmView.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
+            sendBitcoinConfirmDialog.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
 
             performSend(perWalletModelData, sendAddress, sendAmount, fee, walletPassword);
         }
@@ -134,7 +145,7 @@ public class SendBitcoinNowAction extends AbstractAction {
      */
     private void performSend(PerWalletModelData perWalletModelData, String sendAddress, String sendAmount, BigInteger fee, char[] walletPassword) {
         String message = null;
-
+        
         boolean sendWasSuccessful = Boolean.FALSE;
         boolean reencryptRequired = false;
         Wallet wallet = perWalletModelData.getWallet();
@@ -200,10 +211,11 @@ public class SendBitcoinNowAction extends AbstractAction {
 
         if (sendWasSuccessful) {
             String successMessage = controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk");
-            if (sendBitcoinConfirmView != null && sendBitcoinConfirmView.isVisible()) {
-                sendBitcoinConfirmView.setMessageText(
+            if (sendBitcoinConfirmDialog != null && sendBitcoinConfirmDialog.isVisible()) {
+                sendBitcoinConfirmDialog.setMessageText(
                         controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk"), "");
-                sendBitcoinConfirmView.showOkButton();
+                sendBitcoinConfirmDialog.showOkButton();
+                sendBitcoinConfirmDialog.clearPassword();
             } else {
                 MessageManager.INSTANCE.addMessage(new Message(successMessage));
             }
@@ -215,8 +227,8 @@ public class SendBitcoinNowAction extends AbstractAction {
             }
 
             String errorMessage = controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSendFailed");
-            if (sendBitcoinConfirmView != null && sendBitcoinConfirmView.isVisible()) {
-                sendBitcoinConfirmView.setMessageText(errorMessage, message);
+            if (sendBitcoinConfirmDialog != null && sendBitcoinConfirmDialog.isVisible()) {
+                sendBitcoinConfirmDialog.setMessageText(errorMessage, message);
             } else {
                 MessageManager.INSTANCE.addMessage(new Message(errorMessage + " " + message));
             }
