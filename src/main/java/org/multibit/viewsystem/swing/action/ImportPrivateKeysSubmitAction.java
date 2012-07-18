@@ -118,19 +118,19 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                     "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
                     return;
                 }
-            }
-            
-            // See if the password is the correct wallet password.
-            if (controller.getModel().getActiveWallet() instanceof EncryptableWallet) {
-                EncryptableWallet encryptableWallet = (EncryptableWallet)controller.getModel().getActiveWallet();
                 
-                if (!encryptableWallet.checkPasswordCanDecryptFirstPrivateKey(walletPasswordField.getPassword())) {
-                    // The password supplied is incorrect.
-                    importPrivateKeysPanel.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
-                    return;
+                // See if the password is the correct wallet password.
+                if (controller.getModel().getActiveWallet() instanceof EncryptableWallet) {
+                    EncryptableWallet encryptableWallet = (EncryptableWallet)controller.getModel().getActiveWallet();
+                    
+                    if (!encryptableWallet.checkPasswordCanDecryptFirstPrivateKey(walletPasswordField.getPassword())) {
+                        // The password supplied is incorrect.
+                        importPrivateKeysPanel.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                        return;
+                    }
                 }
             }
-
+            
             setEnabled(false);
             importPrivateKeysPanel.setMessageText(controller.getLocaliser().getString(
                     "importPrivateKeysSubmitAction.importingPrivateKeys"));

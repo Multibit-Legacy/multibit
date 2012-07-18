@@ -95,7 +95,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitFrame.class);
 
-    private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.75D;
+    private static final double PROPORTION_OF_VERTICAL_SCREEN_TO_FILL = 0.75D;
+    private static final double PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL = 0.80D;
 
     public static final String EXAMPLE_LONG_FIELD_TEXT = "1JiM1UyTGqpLqgayxTPbWbcdVeoepmY6pK++++++";
     public static final int WIDTH_OF_LONG_FIELDS = 320;
@@ -260,13 +261,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // get the screen size as a java dimension
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        int height = (int) (screenSize.height * PROPORTION_OF_SCREEN_TO_FILL);
-        int width = (int) (screenSize.width * PROPORTION_OF_SCREEN_TO_FILL);
+        int height = (int) (screenSize.height * PROPORTION_OF_VERTICAL_SCREEN_TO_FILL);
+        int width = (int) (screenSize.width * PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL);
 
         // set the jframe height and width
         setPreferredSize(new Dimension(width, height));
-        double startPositionRatio = (1 - PROPORTION_OF_SCREEN_TO_FILL) / 2;
-        setLocation((int) (width * startPositionRatio), (int) (height * startPositionRatio));
+        double startVerticalPositionRatio = (1 - PROPORTION_OF_VERTICAL_SCREEN_TO_FILL) / 2;
+        double startHorizontalPositionRatio = (1 - PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL) / 2;
+        setLocation((int) (width * startHorizontalPositionRatio), (int) (height * startVerticalPositionRatio));
     }
 
     private void initUI() {
