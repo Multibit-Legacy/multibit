@@ -54,7 +54,7 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
         this.mainFrame = mainFrame;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createOrEditAddressAction.createReceiving.tooltip"));
+        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.tooltip"));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("createOrEditAddressAction.createReceiving.mnemonicKey"));
     }
 
