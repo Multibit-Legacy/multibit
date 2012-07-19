@@ -92,12 +92,16 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
      * Initialise dialog.
      */
     public void initUI() {
-        FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        try {
+            FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         
-        int minimumHeight = fontMetrics.getHeight() * 8 + HEIGHT_DELTA;
-        int minimumWidth = Math.max(fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT), fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinConfirmView.message"))) + WIDTH_DELTA;
-        setMinimumSize(new Dimension(minimumWidth, minimumHeight));
-        positionDialogRelativeToParent(this, 0.5D, 0.47D);
+            int minimumHeight = fontMetrics.getHeight() * 8 + HEIGHT_DELTA;
+            int minimumWidth = Math.max(fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT), fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinConfirmView.message"))) + WIDTH_DELTA;
+            setMinimumSize(new Dimension(minimumWidth, minimumHeight));
+            positionDialogRelativeToParent(this, 0.5D, 0.47D);
+        } catch (NullPointerException npe) {
+            // FontSizer fail - probably headless in test - carry on.
+        }
 
         JPanel mainPanel = new JPanel();
         mainPanel.setOpaque(false);
@@ -243,7 +247,7 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        CreateNewReceivingAddressSubmitAction createNewReceivingAddressSubmitAction = new CreateNewReceivingAddressSubmitAction(controller, this, walletPasswordField);
+        CreateNewReceivingAddressSubmitAction createNewReceivingAddressSubmitAction = new CreateNewReceivingAddressSubmitAction(controller, this, walletPasswordField, null);
         createNewReceivingAddressSubmitButton = new MultiBitButton(createNewReceivingAddressSubmitAction, controller);
         buttonPanel.add(createNewReceivingAddressSubmitButton);
 
@@ -289,5 +293,9 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
     
     public int getNumberOfAddressesToCreate() {
         return ((Integer)numberOfAddresses.getSelectedItem()).intValue();
+    }
+
+    public JComboBox getNumberOfAddresses() {
+        return numberOfAddresses;
     }
 }

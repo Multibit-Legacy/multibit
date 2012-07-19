@@ -200,7 +200,7 @@ public class MultiBitModel {
     /**
      * Holds exchange Data.
      */
-    private ExchangeData exchangeData = new ExchangeData(); // new up an empty ExchangeData object
+    private ExchangeData exchangeData = new ExchangeData();
   
     public MultiBitModel(MultiBitController controller) {
         this(controller, new Properties());
@@ -216,8 +216,8 @@ public class MultiBitModel {
         perWalletModelDataList.add(activeWalletModelData);
         
 
-        // initialize everything to look at the stored opened view
-        // if no properties passed in just initialize to the default view
+        // Initialize everything to look at the stored opened view.
+        // If no properties passed in just initialize to the default view.
         int initialView = View.DEFAULT_VIEW;
         if (userPreferences != null) {
             String viewString = (String) userPreferences.get(MultiBitModel.SELECTED_VIEW);
@@ -225,13 +225,13 @@ public class MultiBitModel {
                 try {
                     int initialViewInProperties = Integer.parseInt(viewString);
 
-                    // do not open obsolete views
+                    // Do not open obsolete views.
                     if (View.OPEN_WALLET_VIEW != initialViewInProperties && View.SAVE_WALLET_AS_VIEW != initialViewInProperties
                             && View.SEND_BITCOIN_CONFIRM_VIEW != initialViewInProperties) {
                         initialView = initialViewInProperties;
                     }
                 } catch (NumberFormatException nfe) {
-                    // carry on
+                    // Carry on.
                 }
             }
         }
@@ -243,7 +243,7 @@ public class MultiBitModel {
     }
 
     /**
-     * get a user preference
+     * Get a user preference.
      * 
      * @param key
      *            String key of property
@@ -254,7 +254,7 @@ public class MultiBitModel {
     }
 
     /**
-     * set a user preference
+     * Set a user preference.
      * 
      * @return
      */
@@ -265,7 +265,7 @@ public class MultiBitModel {
     }
 
     /**
-     * get all user preference
+     * Get all user preference.
      * 
      * @return
      */
@@ -274,7 +274,7 @@ public class MultiBitModel {
     }
 
     /**
-     * set all user preferences
+     * Set all user preferences.
      */
     public void setAllUserPreferences(Properties properties) {
         userPreferences = properties;
@@ -285,7 +285,7 @@ public class MultiBitModel {
     }
 
     /**
-     * get a wallet preference from the active wallet
+     * Get a wallet preference from the active wallet.
      * 
      * @param key
      *            String key of property
@@ -300,7 +300,7 @@ public class MultiBitModel {
     }
 
     /**
-     * set a wallet preference from the active wallet
+     * Set a wallet preference from the active wallet.
      * 
      * @return
      */
@@ -312,7 +312,7 @@ public class MultiBitModel {
     }
 
     /**
-     * get the estimated balance of the active wallet
+     * Get the estimated balance of the active wallet.
      * 
      * @return
      */
@@ -325,7 +325,7 @@ public class MultiBitModel {
     }
 
     /**
-     * get the available balance of the active wallet
+     * Get the available balance of the active wallet.
      * 
      * @return
      */
@@ -338,7 +338,7 @@ public class MultiBitModel {
     }
 
     /**
-     * get the wallet data for the active wallet
+     * Get the wallet data for the active wallet.
      * 
      * @return
      */
@@ -347,7 +347,7 @@ public class MultiBitModel {
     }
 
     /**
-     * get the wallet info for the active wallet
+     * Get the wallet info for the active wallet.
      * 
      * @return
      */
@@ -356,7 +356,7 @@ public class MultiBitModel {
     }
 
     /**
-     * get the active wallet
+     * Get the active wallet.
      * 
      * @return
      */
@@ -365,7 +365,7 @@ public class MultiBitModel {
     }
 
     /**
-     * set the active wallet, given a wallet filename
+     * Set the active wallet, given a wallet filename.
      * 
      * @param wallet
      */
@@ -384,11 +384,11 @@ public class MultiBitModel {
     }
 
     /**
-     * Remove the specified perWalletModelData
-     * Note that this does not remove any backing wallet or wallet info files
+     * Remove the specified perWalletModelData.
+     * Note that this does not remove any backing wallet or wallet info files.
      * 
-     * Removal is determined by matching the wallet filename
-     * Use FileHandler to do that
+     * Removal is determined by matching the wallet filename.
+     * Use FileHandler to do that.
      * 
      * @param perWalletModeData
      */
@@ -407,7 +407,22 @@ public class MultiBitModel {
     }
 
     /**
-     * set a wallet description, given a wallet filename
+     * Add the specified perWalletModelData and make it the active wallet.
+     * Used only in tests.
+     * 
+     * Note that this method is incomplete as it does not hook up listeners to the wallet.
+     * 
+     * @param perWalletModeData
+     */
+    public void addAndMakeActiveWallet(PerWalletModelData perWalletModelDataToAdd) {
+        if (perWalletModelDataList != null) {
+            perWalletModelDataList.add(perWalletModelDataToAdd);
+            activeWalletModelData = perWalletModelDataToAdd;
+        }
+    }
+
+    /**
+     * Set a wallet description, given a wallet filename.
      * 
      * @param wallet
      */
@@ -427,15 +442,15 @@ public class MultiBitModel {
     }
 
     /**
-     * add a new wallet to the list of managed wallets
+     * Add a new wallet to the list of managed wallets.
      */
     public PerWalletModelData addWallet(Wallet wallet, String walletFilename) {
         if (walletFilename == null) {
             return null;
         }
 
-        // check to see if it is already in the managed list - no need to add it
-        // again if so
+        // Check to see if it is already in the managed list - no need to add it
+        // again if so.
         for (PerWalletModelData loopModelData : perWalletModelDataList) {
             if (walletFilename.equals(loopModelData.getWalletFilename())) {
                 return loopModelData;
@@ -446,10 +461,10 @@ public class MultiBitModel {
         newPerWalletModelData.setWallet(wallet);
         newPerWalletModelData.setWalletFilename(walletFilename);
 
-        // table row data used in displaying transactions - initially empty
+        // Table row data used in displaying transactions - initially empty
         newPerWalletModelData.setWalletTableDataList(new ArrayList<WalletTableData>());
 
-        // if it is the initial empty activeWalletModelData remove it
+        // If it is the initial empty activeWalletModelData remove it.
         if (activeWalletModelData != null
                 && ("".equals(activeWalletModelData.getWalletFilename()) || activeWalletModelData.getWalletFilename() == null)) {
             perWalletModelDataList.remove(activeWalletModelData);
@@ -458,7 +473,7 @@ public class MultiBitModel {
 
         perWalletModelDataList.add(newPerWalletModelData);
 
-        // wire up the controller as a wallet event listener
+        // Wire up the controller as a wallet event listener.
         if (wallet != null) {
             wallet.addEventListener(new WalletEventListener() {
                 public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
@@ -488,14 +503,13 @@ public class MultiBitModel {
     }
 
     /**
-     * Process a new coin
+     * Process a new coin.
      * 
      * @param wallet
      * @param transaction
      */
     public void processNewCoin(Wallet wallet, Transaction transaction) {
-        // loop through all the wallets, updating them as required with the new
-        // transaction
+        // Loop through all the wallets, updating them as required with the new transaction.
         log.debug("processNewCoin is processing transaction " + transaction.toString());
         try {
             java.util.List<PerWalletModelData> perWalletModelDataList = getPerWalletModelDataList();
@@ -505,10 +519,9 @@ public class MultiBitModel {
                     try {
                         Wallet loopWallet = perWalletModelData.getWallet();
                         if (loopWallet.isTransactionRelevant(transaction, true)) {
-                            // the perWalletModelData is marked as dirty
+                            // The perWalletModelData is marked as dirty.
 
-                            // check to see if the transaction is already in the
-                            // wallet
+                            // Check to see if the transaction is already in the wallet.
                             if (loopWallet.getTransaction(transaction.getHash()) == null) {
                                 log.debug("processNewCoin is receivingPending");
                                 loopWallet.receivePending(transaction);
@@ -527,8 +540,9 @@ public class MultiBitModel {
             log.error(e.getMessage(), e);
         }
     }
+    
     /**
-     * get the active wallet filename
+     * Get the active wallet filename.
      * 
      * 
      * @return
@@ -538,8 +552,8 @@ public class MultiBitModel {
     }
 
     /**
-     * convert the active wallet info into walletdata records as they are easier
-     * to show to the user in tabular form
+     * Convert the active wallet info into walletdata records as they are easier
+     * to show to the user in tabular form.
      */
     public ArrayList<WalletTableData> createWalletData(String walletFilename) {
         ArrayList<WalletTableData> walletData = new ArrayList<WalletTableData>();
@@ -587,8 +601,8 @@ public class MultiBitModel {
             }
         }
 
-        // run through all the walletdata to see if both credit and debit are
-        // set (this means change was received)
+        // Run through all the walletdata to see if both credit and debit are
+        // set (this means change was received).
         for (WalletTableData walletDataRow : walletData) {
             if (walletDataRow.getCredit() != null && (walletDataRow.getCredit().compareTo(BigInteger.ZERO) > 0)
                     && (walletDataRow.getDebit() != null) && walletDataRow.getDebit().compareTo(BigInteger.ZERO) > 0) {
@@ -607,7 +621,7 @@ public class MultiBitModel {
     }
 
     /**
-     * add the receiving addresses of all the keys of the specified wallet
+     * Add the receiving addresses of all the keys of the specified wallet.
      */
     public void createAddressBookReceivingAddresses(String walletFilename) {
         if (walletFilename == null) {
@@ -646,7 +660,7 @@ public class MultiBitModel {
     }
 
     /**
-     * create a description for a transaction
+     * Create a description for a transaction.
      * 
      * @param transactionInputs
      * @param transactionOutputs
@@ -685,7 +699,7 @@ public class MultiBitModel {
         }
 
         if (credit != null && credit.compareTo(BigInteger.ZERO) > 0) {
-            // credit
+            // Credit.
             try {
                 String addressString = "";
 
@@ -713,9 +727,9 @@ public class MultiBitModel {
         }
 
         if (debit != null && debit.compareTo(BigInteger.ZERO) > 0) {
-            // debit
+            // Debit.
             try {
-                // see if the address is a known sending address
+                // See if the address is a known sending address.
                 if (theirOutput != null) {
                     String addressString = theirOutput.getScriptPubKey().getToAddress().toString();
                     String label = null;
@@ -738,18 +752,18 @@ public class MultiBitModel {
     }
 
     /**
-     * work out the transaction date
+     * Work out the transaction date.
      * 
      * @param transaction
      * @return Date date of transaction
      */
     private Date createDate(Transaction transaction) {
-        // if transaction has altered date - return that
+        // If transaction has altered date - return that.
         if (transaction.getUpdateTime() != null) {
             return transaction.getUpdateTime();
         }
 
-        // other wise return the date of the block it first appeared in
+        // Other wise return the date of the block it first appeared in.
         Collection<Sha256Hash> appearsIn = transaction.getAppearsInHashes();
         if (appearsIn != null) {
             if (!appearsIn.isEmpty()) {
@@ -763,12 +777,11 @@ public class MultiBitModel {
                                 && controller.getMultiBitService().getBlockStore() != null) {
                             appearsInStoredBlock = controller.getMultiBitService().getBlockStore().get(appearsInHash);
                             Block appearsInBlock = appearsInStoredBlock.getHeader();
-                            // set the time of the block to be the time of the
-                            // transaction - TODO get transaction time
+                            // Set the time of the block to be the time of the
+                            // transaction - TODO get transaction time.
                             return new Date(appearsInBlock.getTimeSeconds() * 1000);
                         }
                     } catch (BlockStoreException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
@@ -778,13 +791,13 @@ public class MultiBitModel {
     }
 
     /**
-     * work out the height of the block chain in which the transaction appears
+     * Work out the height of the block chain in which the transaction appears.
      * 
      * @param transaction
      * @return
      */
     private int workOutHeight(Transaction transaction) {
-        return -1; // -1 = we do not know
+        return -1; // -1 = we do not know. TODO probably needs replacing by height on TransactionConfidence.
     }
 
     public void setActiveWalletInfo(WalletInfo walletInfo) {
@@ -825,7 +838,5 @@ public class MultiBitModel {
 
 	public void setExchangeData(ExchangeData exchangeData) {
 		this.exchangeData = exchangeData;
-	}
-    
-    
+	}    
 }

@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -25,7 +24,6 @@ import javax.swing.JPasswordField;
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncryptableECKey;
 import org.multibit.crypto.EncryptableWallet;
-import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.crypto.EncrypterDecrypterScrypt;
 import org.multibit.file.WalletSaveException;
@@ -42,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.WalletType;
 
 /**
@@ -57,15 +56,18 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
     private CreateNewReceivingAddressDialog createNewReceivingAddressDialog;
     
     private JPasswordField walletPassword;
+    
+    private NetworkParameters networkParameters;
 
     /**
      * Creates a new {@link CreateNewReceivingAddressSubmitAction}.
      */
-    public CreateNewReceivingAddressSubmitAction(MultiBitController controller, CreateNewReceivingAddressDialog createNewReceivingAddressDialog, JPasswordField walletPassword) {
+    public CreateNewReceivingAddressSubmitAction(MultiBitController controller, CreateNewReceivingAddressDialog createNewReceivingAddressDialog, JPasswordField walletPassword, NetworkParameters networkParameters) {
         super(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.text"), ImageLoader.createImageIcon(ImageLoader.ADD_ICON_FILE));
         this.controller = controller;
         this.createNewReceivingAddressDialog = createNewReceivingAddressDialog;
         this.walletPassword = walletPassword;
+        this.networkParameters = networkParameters;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.tooltip"));
@@ -87,6 +89,11 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
             controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
+            // Get the network parameters from the MultiBitService if not specified at construction.
+            if (networkParameters == null) {
+                networkParameters = controller.getMultiBitService().getNetworkParameters();
+            }
+            
             if (controller.getModel().getActiveWallet() != null) {
                 if (controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
                     if (walletPassword.getPassword() == null || walletPassword.getPassword().length == 0) {
@@ -124,16 +131,18 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
                    newKey = new ECKey();
                 }
                 perWalletModelData.getWallet().keychain.add(newKey);
-                addressString = newKey.toAddress(controller.getMultiBitService().getNetworkParameters()).toString();
+                addressString = newKey.toAddress(networkParameters).toString();
                 walletInfo.addReceivingAddress(new AddressBookData("", addressString), false);
             }
             } catch (EncrypterDecrypterException ede) {
                 log.error(ede.getMessage(), ede);
                 createNewReceivingAddressDialog.setMessageText(ede.getMessage());
             }
-            createNewReceivingAddressDialog.getReceiveBitcoinPanel().getAddressesTableModel().fireTableDataChanged();
-            createNewReceivingAddressDialog.getReceiveBitcoinPanel().selectRows();
-
+            
+            if (createNewReceivingAddressDialog.getReceiveBitcoinPanel() != null) {
+                createNewReceivingAddressDialog.getReceiveBitcoinPanel().getAddressesTableModel().fireTableDataChanged();
+                createNewReceivingAddressDialog.getReceiveBitcoinPanel().selectRows();
+            }
             controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, addressString);
             controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
             
