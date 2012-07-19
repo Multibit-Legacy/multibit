@@ -56,18 +56,15 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
     private CreateNewReceivingAddressDialog createNewReceivingAddressDialog;
     
     private JPasswordField walletPassword;
-    
-    private NetworkParameters networkParameters;
 
     /**
      * Creates a new {@link CreateNewReceivingAddressSubmitAction}.
      */
-    public CreateNewReceivingAddressSubmitAction(MultiBitController controller, CreateNewReceivingAddressDialog createNewReceivingAddressDialog, JPasswordField walletPassword, NetworkParameters networkParameters) {
+    public CreateNewReceivingAddressSubmitAction(MultiBitController controller, CreateNewReceivingAddressDialog createNewReceivingAddressDialog, JPasswordField walletPassword) {
         super(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.text"), ImageLoader.createImageIcon(ImageLoader.ADD_ICON_FILE));
         this.controller = controller;
         this.createNewReceivingAddressDialog = createNewReceivingAddressDialog;
         this.walletPassword = walletPassword;
-        this.networkParameters = networkParameters;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.tooltip"));
@@ -80,7 +77,8 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         // Check to see if the wallet files have changed.
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
+        boolean haveFilesChanged = !(Boolean.TRUE.toString().equalsIgnoreCase(System.getProperty(MultiBitModel.SUPPRESS_TIMESTAMP_CHECKING))) &&
+                                   controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
         boolean encryptNewKeys = false;
         
@@ -89,11 +87,6 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
             controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
-            // Get the network parameters from the MultiBitService if not specified at construction.
-            if (networkParameters == null) {
-                networkParameters = controller.getMultiBitService().getNetworkParameters();
-            }
-            
             if (controller.getModel().getActiveWallet() != null) {
                 if (controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
                     if (walletPassword.getPassword() == null || walletPassword.getPassword().length == 0) {
@@ -131,7 +124,7 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
                    newKey = new ECKey();
                 }
                 perWalletModelData.getWallet().keychain.add(newKey);
-                addressString = newKey.toAddress(networkParameters).toString();
+                addressString = newKey.toAddress(controller.getModel().getNetworkParameters()).toString();
                 walletInfo.addReceivingAddress(new AddressBookData("", addressString), false);
             }
             } catch (EncrypterDecrypterException ede) {

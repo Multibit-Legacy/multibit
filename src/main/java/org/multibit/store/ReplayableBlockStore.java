@@ -165,6 +165,8 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
     
     public ReplayableBlockStore(NetworkParameters params, File file, boolean alwaysCreateNewStore) throws BlockStoreException {
         this.params = params;
+        this.fileName = file.getAbsolutePath();
+        
         if (alwaysCreateNewStore) {
             createNewStore(params, file);
         } else {
@@ -381,22 +383,22 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
      */
     public synchronized void setChainHeadAndTruncate(StoredBlock chainHead) throws BlockStoreException {
         try {
+            Block chainHeadBlock = chainHead.getHeader();
+
             setChainHead(chainHead);
 
-            // find block as a record and delete past it
-            Record chainHeadRecord = getRecord(chainHead.getHeader().getHash());
+            // Find block as a record and delete past it.
+            Record chainHeadRecord = getRecord(chainHeadBlock.getHash());
             if (chainHeadRecord != null) {
-                // the record was found
+                // The record was found.
 
-                // set the length of the file to be the end of the current
-                // record
+                // Set the length of the file to be the end of the current record.
                 log.debug("File length before truncate was " + file.length());
                 file.setLength(channel.position() + Record.SIZE);
                 log.debug("File length is now " + file.length());
             }
 
-            // also clear the caches so that there are no references to later
-            // blocks
+            // Also clear the caches so that there are no references to later blocks
             clearCaches();
         } catch (IOException e) {
             throw new BlockStoreException(e);

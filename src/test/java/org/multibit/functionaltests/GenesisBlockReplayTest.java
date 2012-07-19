@@ -79,7 +79,7 @@ public class GenesisBlockReplayTest extends TestCase {
 
             log.debug("Creating Bitcoin service");
             // create the MultiBitService that connects to the bitcoin network
-            MultiBitService multiBitService = new MultiBitService(false, controller);
+            MultiBitService multiBitService = new MultiBitService(controller);
             controller.setMultiBitService(multiBitService);
 
             // add the simple view system (no Swing)

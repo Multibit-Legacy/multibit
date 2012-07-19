@@ -49,7 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Main MultiBit entry class
+ * Main MultiBit entry class.
  * 
  * @author jim
  */
@@ -57,7 +57,7 @@ public class MultiBit {
     private static final Logger log = LoggerFactory.getLogger(MultiBit.class);
 
     /**
-     * start multibit user interface
+     * Start multibit user interface.
      * 
      * @param args
      *            String encoding of arguments ([0]= Bitcoin URI)
@@ -108,21 +108,21 @@ public class MultiBit {
             }
         });
 
-        // if test or production is not specified, default to production
-        String testOrProduction = userPreferences.getProperty(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
-        if (testOrProduction == null) {
-            testOrProduction = MultiBitModel.PRODUCTION_NETWORK_VALUE;
-            userPreferences.put(MultiBitModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
-        }
-        boolean useTestNet = MultiBitModel.TEST_NETWORK_VALUE.equals(testOrProduction);
-        log.debug("useTestNet = {}", useTestNet);
+//        // if test or production is not specified, default to production
+//        String testOrProduction = userPreferences.getProperty(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
+//        if (testOrProduction == null) {
+//            testOrProduction = MultiBitModel.PRODUCTION_NETWORK_VALUE;
+//            userPreferences.put(MultiBitModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
+//        }
+//        boolean useTestNet = MultiBitModel.TEST_NETWORK_VALUE.equals(testOrProduction);
+//        log.debug("useTestNet = {}", useTestNet);
 
         Localiser localiser;
         String userLanguageCode = userPreferences.getProperty(MultiBitModel.USER_LANGUAGE_CODE);
         log.debug("userLanguageCode = {}", userLanguageCode);
 
         if (userLanguageCode == null) {
-            // initial install - no language info supplied - see if we can use the user default, else Localiser will set it to English
+            // Initial install - no language info supplied - see if we can use the user default, else Localiser will set it to English.
             localiser = new Localiser(Locale.getDefault());
             
             userPreferences.setProperty(MultiBitModel.USER_LANGUAGE_CODE, localiser.getLocale().getLanguage());
@@ -137,13 +137,13 @@ public class MultiBit {
 
         log.debug("Creating model");
 
-        // create the model
+        // Create the model.
         @SuppressWarnings("unused")
         MultiBitModel model = new MultiBitModel(controller, userPreferences);
 
         log.debug("Setting look and feel");
         try {
-            // Set System L&F
+            // Set System L&F.
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (UnsupportedLookAndFeelException e) {
             // carry on
@@ -160,33 +160,32 @@ public class MultiBit {
 
         log.debug("Registering with controller");
         controller.registerViewSystem(swingViewSystem);
-        //controller.registerViewSystem(new SimpleViewSystem());
 
         log.debug("Creating Bitcoin service");
-        // create the MultiBitService that connects to the bitcoin network
-        MultiBitService multiBitService = new MultiBitService(useTestNet, controller);
+        // Create the MultiBitService that connects to the bitcoin network.
+        MultiBitService multiBitService = new MultiBitService(controller);
         controller.setMultiBitService(multiBitService);
 
-        // display the stored view
+        // Display the stored view.
         controller.displayView(controller.getCurrentView());
 
         log.debug("Locating wallets");
-        // find the active wallet filename in the multibit.properties
+        // Find the active wallet filename in the multibit.properties.
         String activeWalletFilename = userPreferences.getProperty(MultiBitModel.ACTIVE_WALLET_FILENAME);
 
-        // load up all the wallets
+        // Load up all the wallets.
         String numberOfWalletsAsString = userPreferences.getProperty(MultiBitModel.NUMBER_OF_WALLETS);
         log.debug("When loading wallets, there were " + numberOfWalletsAsString);
 
         boolean useFastCatchup = false;
         
         if (numberOfWalletsAsString == null || "".equals(numberOfWalletsAsString)) {
-            // if this is missing then there is just the one wallet (old format
-            // properties or user has just started up for the first time)
+            // If this is missing then there is just the one wallet (old format
+            // properties or user has just started up for the first time).
             useFastCatchup = true;
             
             try {
-                // activeWalletFilename may be null on first time startup
+                // ActiveWalletFilename may be null on first time startup.
                 controller.addWalletFromFilename(activeWalletFilename);
                 List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
                 if (perWalletModelDataList != null && !perWalletModelDataList.isEmpty()) {
@@ -254,14 +253,14 @@ public class MultiBit {
                 }
                 controller.fireDataChanged();
             } catch (NumberFormatException nfe) {
-                // carry on
+                // Carry on.
             } finally {
                 ((MultiBitFrame) swingViewSystem).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         }
 
         log.debug("Checking for Bitcoin URI on command line");
-        // Check for a valid entry on the command line (protocol handler)
+        // Check for a valid entry on the command line (protocol handler).
         if (args != null && args.length > 0) {
             for (int i = 0; i < args.length; i++) {
                 log.debug("Started with args[{}]: '{}'", i, args[i]);
@@ -292,16 +291,15 @@ public class MultiBit {
 
     static void processCommandLineURI(MultiBitController controller, String rawURI) {
         try {
-            // Attempt to detect if the command line URI is valid
+            // Attempt to detect if the command line URI is valid.
             // Note that this is largely because IE6-8 strip URL encoding
-            // when passing in
-            // URIs to a protocol handler
+            // when passing in URIs to a protocol handler.
             // However, there is also the chance that anyone could
             // hand-craft a URI and pass
             // it in with non-ASCII character encoding present in the label
             // This a really limited approach (no consideration of
             // "amount=10.0&label=Black & White")
-            // but should be OK for early use cases
+            // but should be OK for early use cases.
             int queryParamIndex = rawURI.indexOf("?");
             if (queryParamIndex > 0 && !rawURI.contains("%")) {
                 // Possibly encoded but more likely not
@@ -312,8 +310,7 @@ public class MultiBit {
             }
             final URI uri;
             log.debug("Working with '{}' as a Bitcoin URI", rawURI);
-            // Construct an OpenURIEvent to simulate receiving this from a
-            // listener
+            // Construct an OpenURIEvent to simulate receiving this from a listener
             uri = new URI(rawURI);
             GenericOpenURIEvent event = new GenericOpenURIEvent() {
                 @Override
@@ -323,7 +320,7 @@ public class MultiBit {
             };
             controller.displayView(controller.getCurrentView());
             // Call the event which will attempt validation against the
-            // Bitcoin URI specification
+            // Bitcoin URI specification.
             controller.onOpenURIEvent(event);
         } catch (URISyntaxException e) {
             log.error("URI is malformed. Received: '{}'", rawURI);

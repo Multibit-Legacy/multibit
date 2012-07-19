@@ -176,6 +176,8 @@ public class MultiBitModel {
     // Wallet migration.
     public static final String LAST_FAILED_MIGRATE_VERSION = "lastFailedMigrateVersion";
     
+    // System property used to suppress wallet file time change checking (true=suppress checking).
+    public static final String SUPPRESS_TIMESTAMP_CHECKING = "suppressTimestampChecking";
     // Main controller class.
     private final MultiBitController controller;
 
@@ -838,5 +840,17 @@ public class MultiBitModel {
 
 	public void setExchangeData(ExchangeData exchangeData) {
 		this.exchangeData = exchangeData;
-	}    
+	}  
+	
+	public NetworkParameters getNetworkParameters() {
+        // If test or production is not specified, default to production.
+        String testOrProduction = userPreferences.getProperty(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
+        if (testOrProduction == null) {
+            testOrProduction = MultiBitModel.PRODUCTION_NETWORK_VALUE;
+            userPreferences.put(MultiBitModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
+        }
+        boolean useTestNet = MultiBitModel.TEST_NETWORK_VALUE.equals(testOrProduction);
+
+	    return useTestNet ? NetworkParameters.testNet() : NetworkParameters.prodNet();
+	}
 }

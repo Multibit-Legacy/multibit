@@ -128,32 +128,27 @@ public class MultiBitService {
 
     /**
      * 
-     * @param useTestNet
-     *            true = test net, false = production
      * @param controller
      *            MutliBitController
      */
-    public MultiBitService(boolean useTestNet, MultiBitController controller) {
-        this(useTestNet, controller.getModel().getUserPreference(MultiBitModel.WALLET_FILENAME), controller);
+    public MultiBitService(MultiBitController controller) {
+        this(controller.getModel().getUserPreference(MultiBitModel.WALLET_FILENAME), controller);
     }
 
     /**
      * 
-     * @param useTestNet
-     *            true = test net, false = production
      * @param walletFilename
      *            filename of current wallet
      * @param controller
      *            MutliBitController
      */
-    public MultiBitService(boolean useTestNet, String walletFilename, MultiBitController controller) {
-        this.useTestNet = useTestNet;
+    public MultiBitService(String walletFilename, MultiBitController controller) {
         this.controller = controller;
 
-        networkParameters = useTestNet ? NetworkParameters.testNet() : NetworkParameters.prodNet();
+        networkParameters = controller.getModel().getNetworkParameters();
 
         try {
-            // Load the block chain
+            // Load the block chain.
             String filePrefix = getFilePrefix();
             if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
                 blockchainFilename = filePrefix + BLOCKCHAIN_SUFFIX;
@@ -162,8 +157,8 @@ public class MultiBitService {
                         + filePrefix + BLOCKCHAIN_SUFFIX;
             }
 
-            // check to see if the user has a blockchain and copy over the
-            // installed one if they do not
+            // Check to see if the user has a blockchain and copy over the
+            // installed one if they do not.
             controller.getFileHandler().copyBlockChainFromInstallationDirectory(this, blockchainFilename);
 
             log.debug("Reading block store '{}' from disk", blockchainFilename);
@@ -202,14 +197,14 @@ public class MultiBitService {
                 log.error(e.getMessage(), e);
             }
         } else {
-            // use DNS for production, IRC for test
+            // Use DNS for production, IRC for test
             if (useTestNet) {
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
             } else {
                 peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
             }
         }
-        // add the controller as a PeerEventListener
+        // Add the controller as a PeerEventListener.
         peerGroup.addEventListener(controller);
         return peerGroup;
     }
@@ -219,7 +214,7 @@ public class MultiBitService {
     }
 
     /**
-     * initialize wallet from the wallet filename
+     * Initialize wallet from the wallet filename.
      * 
      * @param walletFilename
      * @return perWalletModelData
@@ -257,7 +252,7 @@ public class MultiBitService {
             walletFile = new File(walletFilename);
 
             if (walletFile.exists()) {
-                // wallet file exists with default name
+                // Wallet file exists with default name.
                 perWalletModelDataToReturn = controller.getFileHandler().loadFromFile(walletFile);
                 if (perWalletModelDataToReturn != null) {
                     wallet = perWalletModelDataToReturn.getWallet();
@@ -265,18 +260,18 @@ public class MultiBitService {
 
                 newWalletCreated = true;
             } else {
-                // create a brand new wallet - by default protobuf, lockable but unlocked
+                // Create a brand new wallet - by default protobuf.
                 wallet = new EncryptableWallet(networkParameters);
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
 
                 perWalletModelDataToReturn = controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
 
-                // create a wallet info
+                // Create a wallet info.
                 WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath(), WalletVersion.PROTOBUF);
                 perWalletModelDataToReturn.setWalletInfo(walletInfo);
 
-                // set a default description
+                // Set a default description.
                 String defaultDescription = controller.getLocaliser().getString("createNewWalletSubmitAction.defaultDescription");
                 perWalletModelDataToReturn.setWalletDescription(defaultDescription);
 
@@ -292,8 +287,7 @@ public class MultiBitService {
         }
 
         if (wallet != null) {
-            // add the keys for this wallet to the address book as receiving
-            // addresses
+            // Add the keys for this wallet to the address book as receiving addresses.
             ArrayList<ECKey> keys = wallet.keychain;
             if (keys != null) {
                 if (!newWalletCreated) {
@@ -312,7 +306,7 @@ public class MultiBitService {
                 }
             }
 
-            // add wallet to blockchain
+            // Add wallet to blockchain.
             if (blockChain != null) {
                 blockChain.addWallet(wallet);
             } else {
@@ -320,8 +314,7 @@ public class MultiBitService {
                         + "This is bad. MultiBit is currently looking for a blockChain at '" + blockchainFilename + "'");
             }
 
-            // add wallet to PeerGroup - this is done in a background thread as
-            // it is slow
+            // Add wallet to PeerGroup - this is done in a background thread as it is slow.
             @SuppressWarnings("rawtypes")
             SwingWorker worker = new SwingWorker() {
                 @Override
@@ -337,19 +330,18 @@ public class MultiBitService {
     }
 
     /**
-     * replay blockchain
+     * Replay blockchain.
      * 
      * @param dateToReplayFrom
      *            the date on the blockchain to replay from - if missing replay
      *            from genesis block
      */
     public void replayBlockChain(Date dateToReplayFrom) throws BlockStoreException {
-        // navigate backwards in the blockchain to work out how far back in
-        // time to go
+        // Navigate backwards in the blockchain to work out how far back in time to go.
         log.debug("Starting replay of blockchain from date = '" + dateToReplayFrom + "'");
 
         if (dateToReplayFrom == null || genesisBlockCreationDate.after(dateToReplayFrom)) {
-            // create empty new block store
+            // Create empty new block store.
             if (blockStore != null) {
                 blockStore.close();
             }
@@ -368,8 +360,7 @@ public class MultiBitService {
 
             while (!haveGoneBackInTimeEnough) {
                 if (storedBlock == null) {
-                    // null result of previous get previous - will have to stop
-                    // navigating backwards
+                    // Null result of previous get previous - will have to stop navigating backwards.
                     break;
                 }
                 Block header = storedBlock.getHeader();
@@ -393,14 +384,14 @@ public class MultiBitService {
                         numberOfBlocksGoneBackward++;
                     } catch (BlockStoreException e) {
                         e.printStackTrace();
-                        // we have to stop navigating backwards
+                        // We have to stop navigating backwards.
                         break;
                     }
                 }
             }
 
-            // in case the chain head was on an alternate fork go back more
-            // blocks to ensure back on the main chain
+            // In case the chain head was on an alternate fork go back more
+            // blocks to ensure back on the main chain.
             while (numberOfBlocksGoneBackward < MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN) {
                 try {
                     StoredBlock previousBlock = storedBlock.getPrev(blockStore);
@@ -420,17 +411,17 @@ public class MultiBitService {
 
             assert storedBlock != null;
 
-            // set the block chain head to the block just before the
-            // earliest transaction in the wallet
+            // Set the block chain head to the block just before the
+            // earliest transaction in the wallet.
             blockChain.setChainHeadClearCachesAndTruncateBlockStore(storedBlock);
         }
 
-        // restart peerGroup and download
+        // Restart peerGroup and download.
         Message message = new Message(controller.getLocaliser().getString("multiBitService.stoppingBitcoinNetworkConnection"), false);
         MessageManager.INSTANCE.addMessage(message);
         peerGroup.stop();
 
-        // reset UI to zero peers
+        // Reset UI to zero peers.
         controller.onPeerDisconnected(null, 0);
 
         if (dateToReplayFrom != null) {
@@ -453,7 +444,7 @@ public class MultiBitService {
     }
 
     /**
-     * download the block chain
+     * Download the block chain.
      */
     public void downloadBlockChain() {
         @SuppressWarnings("rawtypes")
@@ -469,7 +460,7 @@ public class MultiBitService {
     }
 
     /**
-     * send bitcoins from the active wallet
+     * Send bitcoins from the active wallet.
      * 
      * @param sendAddressString
      *            the address to send to, as a String
@@ -491,9 +482,10 @@ public class MultiBitService {
                 Utils.toNanoCoins(amount), fee);
         log.debug("MultiBitService#sendCoins - Sent coins has completed");
 
-        assert sendTransaction != null; // We should never try to send more
+        assert sendTransaction != null; 
+        // We should never try to send more
         // coins than we have!
-        // throw an exception if sendTransaction is null - no money
+        // throw an exception if sendTransaction is null - no money.
         if (sendTransaction != null) {
             log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is {}", sendTransaction.getHashAsString());
 
@@ -504,16 +496,15 @@ public class MultiBitService {
                 MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
             }
             
-            // clone the sent transaction
+            // Clone the sent transaction.
             try {
                 Transaction clonedSentTransaction = new Transaction(networkParameters, sendTransaction.bitcoinSerialize());
-                // modify the transaction so that its TransactionOutputs are
-                // unspent
-                // what is spent from the perspective of the sender is available
-                // to the recipient
+                // Modify the transaction so that its TransactionOutputs are
+                // unspent what is spent from the perspective of the sender is available
+                // to the recipient.
                 clonedSentTransaction.markOutputsAsSpendable();
 
-                // notify other wallets of the send (it might be a send to them)
+                // Notify other wallets of the send (it might be a send to them).
                 List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
                 if (perWalletModelDataList != null) {
@@ -547,7 +538,7 @@ public class MultiBitService {
     }
 
     /**
-     * utility class just to show the number of peers connected in the log
+     * Utility class just to show the number of peers connected in the log.
      */
     class CountPeerEventListener extends AbstractPeerEventListener {
         public void onPeerDisconnected(Peer peer, int peerCount) {

@@ -65,6 +65,7 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
 
     private MultiBitLabel messageText;
     
+    private CreateNewReceivingAddressSubmitAction createNewReceivingAddressSubmitAction;
     private MultiBitButton createNewReceivingAddressSubmitButton;
     private MultiBitButton cancelButton;
     
@@ -247,7 +248,7 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        CreateNewReceivingAddressSubmitAction createNewReceivingAddressSubmitAction = new CreateNewReceivingAddressSubmitAction(controller, this, walletPasswordField, null);
+        createNewReceivingAddressSubmitAction = new CreateNewReceivingAddressSubmitAction(controller, this, walletPasswordField);
         createNewReceivingAddressSubmitButton = new MultiBitButton(createNewReceivingAddressSubmitAction, controller);
         buttonPanel.add(createNewReceivingAddressSubmitButton);
 
@@ -297,5 +298,18 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
 
     public JComboBox getNumberOfAddresses() {
         return numberOfAddresses;
+    }
+    
+    // Accessors used in testing.
+    public CreateNewReceivingAddressSubmitAction getCreateNewReceivingAddressSubmitAction() {
+        return createNewReceivingAddressSubmitAction;
+    }
+    
+    public String getMessageText() {
+        return messageText.getText();
+    }
+    
+    public void setWalletPassword(String walletPassword) {
+        walletPasswordField.setText(walletPassword);
     }
 }
