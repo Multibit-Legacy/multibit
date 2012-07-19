@@ -16,10 +16,7 @@
 package org.multibit.viewsystem.swing.action;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Locale;
-
-import javax.swing.JPasswordField;
 
 import junit.framework.TestCase;
 
@@ -27,6 +24,7 @@ import org.junit.Test;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncryptableWallet;
+import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
@@ -51,9 +49,8 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
 
         // Create a new CreateNewReceivingAddressSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
-        JPasswordField walletPasswordField = new JPasswordField();
         CreateNewReceivingAddressDialog createNewDialog = new CreateNewReceivingAddressDialog(controller, null, null);
-        CreateNewReceivingAddressSubmitAction createNewAction = new CreateNewReceivingAddressSubmitAction(controller, createNewDialog, walletPasswordField);
+        CreateNewReceivingAddressSubmitAction createNewAction = createNewDialog.getCreateNewReceivingAddressSubmitAction();
 
         assertNotNull("createNewAction was not created successfully", createNewAction);
         assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
@@ -144,29 +141,34 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         return controller;
     }
     
-    private void createNewActiveWallet(MultiBitController controller, String descriptor, boolean encrypt, char[] walletPassword) throws SecurityException, IOException {
-        // Suppress timestamp checking
-        System.setProperty(MultiBitModel.SUPPRESS_TIMESTAMP_CHECKING, "true");
-        
+    private void createNewActiveWallet(MultiBitController controller, String descriptor, boolean encrypt, char[] walletPassword) throws Exception {
         EncryptableWallet wallet = new EncryptableWallet(NetworkParameters.prodNet());
         wallet.getKeychain().add(new ECKey());
-        
-        if (encrypt) {
-            wallet.encrypt(walletPassword);
-        }
-
+ 
         PerWalletModelData perWalletModelData = new PerWalletModelData();
         perWalletModelData.setWallet(wallet);
  
-        // Put the wallet in the model as the active wallet.
-        File currentDirectory = new File(".");
-        String currentPath = currentDirectory.getCanonicalPath();
-        String walletFile = currentPath + File.separator + descriptor + ".wallet";
+        // Save the wallet to a temporary directory.
+        File multiBitDirectory = FileHandler.createTempDirectory("CreateAndDeleteWalletsTest");
+        String multiBitDirectoryPath = multiBitDirectory.getAbsolutePath();
+        String walletFile = multiBitDirectoryPath + File.separator + descriptor + ".wallet";
         
+        // Put the wallet in the model as the active wallet.
         perWalletModelData.setWalletInfo(new WalletInfo(walletFile, WalletVersion.PROTOBUF));
         perWalletModelData.setWalletFilename(walletFile);
         perWalletModelData.setWalletDescription(descriptor);
-        controller.getModel().addAndMakeActiveWallet(perWalletModelData);
+        
+        // Save the wallet and load it up again, making it the active wallet.
+        // This also sets the timestamp fields used in file change detection.
+        FileHandler fileHandler = new FileHandler(controller);
+        fileHandler.savePerWalletModelData(perWalletModelData, true);
+        PerWalletModelData loadedPerWalletModelData = fileHandler.loadFromFile(new File(walletFile));
+            
+        if (encrypt) {
+            ((EncryptableWallet)loadedPerWalletModelData.getWallet()).encrypt(walletPassword);
+        }
+
+        controller.getModel().addAndMakeActiveWallet(loadedPerWalletModelData);
 
         assertEquals("The test wallet " + descriptor + " was not created properly", walletFile, controller.getModel().getActiveWalletFilename());
     }

@@ -77,8 +77,7 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         // Check to see if the wallet files have changed.
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = !(Boolean.TRUE.toString().equalsIgnoreCase(System.getProperty(MultiBitModel.SUPPRESS_TIMESTAMP_CHECKING))) &&
-                                   controller.getFileHandler().haveFilesChanged(perWalletModelData);
+        boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
         boolean encryptNewKeys = false;
         
