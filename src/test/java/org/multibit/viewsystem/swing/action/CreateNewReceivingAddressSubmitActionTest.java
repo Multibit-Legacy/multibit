@@ -23,8 +23,7 @@ import org.multibit.crypto.EncryptableWallet;
 import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
-public class CreateNewReceivingAddressSubmitActionTest extends TestCase {   
-    
+public class CreateNewReceivingAddressSubmitActionTest extends TestCase {      
     public static final char[] TEST_PASSWORD1 = "my hovercraft has eels".toCharArray();
     
     @Test
