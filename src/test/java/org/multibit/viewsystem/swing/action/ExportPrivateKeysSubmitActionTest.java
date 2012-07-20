@@ -169,7 +169,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         // Set the wallet password.
         exportPanel.setWalletPassword(WALLET_PASSWORD);
 
-        // Execute - this should now complain that no export file password is set (as password protect export file is selected by default).
+        // Execute - this should now complain that no export file is set.
         exportAction.actionPerformed(null);
         assertEquals("Wrong message1 after password set execute", EXPECTED_YOU_MUST_SELECT_AN_OUTPUT_FILE, exportPanel.getMessageText1());    
         assertEquals("Wrong message2 after password set execute", "", exportPanel.getMessageText2().trim());    
