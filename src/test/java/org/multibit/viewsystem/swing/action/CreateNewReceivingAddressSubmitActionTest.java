@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.action;
 
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.util.Locale;
 
@@ -40,7 +41,12 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
     public static final char[] TEST_PASSWORD1 = "my hovercraft has eels".toCharArray();
     
     @Test
-    public void testAddReceivingAddressesWithNonEncryptedWallet() throws Exception {   
+    public void testAddReceivingAddressesWithNonEncryptedWallet() throws Exception { 
+        // Check if headless.
+        if (GraphicsEnvironment.isHeadless()) {
+            return;
+        }
+        
         // Create MultiBit controller.
         MultiBitController controller = createController();
         
@@ -82,6 +88,11 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
     
     @Test
     public void testAddReceivingAddressesWithEncryptedWallet() throws Exception {   
+        // Check if headless.
+        if (GraphicsEnvironment.isHeadless()) {
+            return;
+        }
+        
         // Create MultiBit controller.
         MultiBitController controller = createController();
         
