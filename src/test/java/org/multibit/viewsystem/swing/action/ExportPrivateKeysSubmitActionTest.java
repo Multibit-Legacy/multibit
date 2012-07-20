@@ -33,17 +33,21 @@ import com.google.bitcoin.core.Utils;
 
 public class ExportPrivateKeysSubmitActionTest extends TestCase {   
     
-    public static final char[] TEST_PASSWORD1 = "the quick brown fox jumps over the lazy dog 0123456789".toCharArray();
+    private static final String EXPECTED_ENTER_THE_WALLET_PASSWORD = "Enter the wallet password";
+    private static final String EXPECTED_YOU_MUST_SELECT_AN_OUTPUT_FILE = "You must select an output file";
+    private static final String EXPECTED_ENTER_THE_EXPORT_FILE_PASSWORD = "Enter the password you want to use for the export file";
+    private static final String EXPECTED_PASSWORDS_DO_NOT_MATCH = "The password and repeat password do not match";
+    private static final String EXPECTED_COULD_NOT_DECRYPT_INPUT_STRING = "Could not decrypt input string";
+    private static final String EXPECTED_THE_PRIVATE_KEYS_WERE_EXPORTED = "The private keys were exported.";
+    private static final String EXPECTED_THE_EXPORT_FILE_COULD_BE_READ_IN_CORRECTLY = "The export file could be read in correctly and the private keys match the wallet contents";
+     
+    public static final char[] EXPORT_FILE_PASSWORD = "the quick brown fox jumps over the lazy dog 0123456789".toCharArray();
+    public static final char[] WALLET_PASSWORD = "the unbelievable lightness of being".toCharArray();
     public static final char[] WRONG_PASSWORD = "this is the wrong password".toCharArray();
     
     @Test
     public void testExportPrivateKeysWithNonEncryptedWallet() throws Exception { 
-        // Check if headless.
-//        if (GraphicsEnvironment.isHeadless()) {
-//            return;
-//        }
-        
-        // Create MultiBit controller
+        // Create MultiBit controller.
         MultiBitController controller = ActionTestUtils.createController();
         
         // Create a new wallet and put it in the model as the active wallet.
@@ -59,8 +63,8 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         
          // Execute - this is with an unencrypted wallet and default settings.
         exportAction.actionPerformed(null);
-        assertEquals("Wrong message1 after default export press", "You must select an output file", exportPanel.getMessageText1());    
-        assertEquals("Wrong message2 after default export press", "", exportPanel.getMessageText2().trim());    
+        assertEquals("Wrong message1 after default export execute", EXPECTED_YOU_MUST_SELECT_AN_OUTPUT_FILE, exportPanel.getMessageText1());    
+        assertEquals("Wrong message2 after default export execute", "", exportPanel.getMessageText2().trim());    
         
         // Set the output file name.
         String outputFilename1 = controller.getModel().getActiveWalletFilename() + "-" + UUID.randomUUID().toString() + ".key";
@@ -68,27 +72,28 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
  
         // Execute - this should now complain that no export file password is set (as password protect export file is selected by default).
         exportAction.actionPerformed(null);
-        assertEquals("Wrong message1 after no password set press", "Enter the password you want to use for the export file", exportPanel.getMessageText1());    
-        assertEquals("Wrong message2 after no password set press", "", exportPanel.getMessageText2().trim());    
+        assertEquals("Wrong message1 after no password set execute", EXPECTED_ENTER_THE_EXPORT_FILE_PASSWORD, exportPanel.getMessageText1());    
+        assertEquals("Wrong message2 after no password set execute", "", exportPanel.getMessageText2().trim());    
  
-        // Set the first export file password
-        exportPanel.setExportPassword(TEST_PASSWORD1);
+        // Set the first export file password.
+        exportPanel.setExportPassword(EXPORT_FILE_PASSWORD);
         
         // Execute = this is with one only of the export file passwords set.
         exportAction.actionPerformed(null);
-        assertEquals("Wrong message1 after no password set press", "The password and repeat password do not match", exportPanel.getMessageText1());    
-        assertEquals("Wrong message2 after no password set press", "", exportPanel.getMessageText2().trim());    
+        assertEquals("Wrong message1 after no password set execute", EXPECTED_PASSWORDS_DO_NOT_MATCH, exportPanel.getMessageText1());    
+        assertEquals("Wrong message2 after no password set execute", "", exportPanel.getMessageText2().trim());    
         
-        // Set the repeat export file password
-        exportPanel.setRepeatExportPassword(TEST_PASSWORD1);
+        // Set the repeat export file password.
+        exportPanel.setRepeatExportPassword(EXPORT_FILE_PASSWORD);
+        
         // Check the export file currently does not exist.
-        assertTrue("Export file exists when it should not", !(new File(outputFilename1)).exists());
+        assertTrue("Encrypted export file exists when it should not", !(new File(outputFilename1)).exists());
        
         // Execute = this should actually write the encrypted export file.
         exportAction.actionPerformed(null);
-        assertTrue("Export file does not exist when it should", (new File(outputFilename1)).exists());
-        assertEquals("Wrong message1 after export is good to go", "The private keys were exported.", exportPanel.getMessageText1());    
-        assertEquals("Wrong message2 after export is good to go", "The export file could be read in correctly and the private keys match the wallet contents", exportPanel.getMessageText2().trim());  
+        assertTrue("Encrypted export file does not exist when it should", (new File(outputFilename1)).exists());
+        assertEquals("Wrong message1 after encrypted export is good to go", EXPECTED_THE_PRIVATE_KEYS_WERE_EXPORTED, exportPanel.getMessageText1());    
+        assertEquals("Wrong message2 after encrypted export is good to go", EXPECTED_THE_EXPORT_FILE_COULD_BE_READ_IN_CORRECTLY, exportPanel.getMessageText2().trim());  
         
         // Try to read in the encrypted exported private key file with no password - this should fail.
         PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
@@ -98,7 +103,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
             fail("An encrypted export file was read in with no password. Fail.");
         } catch (EncrypterDecrypterException ede) {
             // This is what should happen.
-            assertTrue("Unexpected exception thrown when decoding export file with no password", ede.getMessage().indexOf("Could not decrypt input string") > -1);
+            assertTrue("Unexpected exception thrown when decoding export file with no password", ede.getMessage().indexOf(EXPECTED_COULD_NOT_DECRYPT_INPUT_STRING) > -1);
         }
         
         // Try to read in the encrypted exported private key file with the wrong password - this should fail.
@@ -107,33 +112,150 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
             fail("An encrypted export file was read in with the wrong password. Fail.");
         } catch (EncrypterDecrypterException ede) {
             // This is what should happen.
-            assertTrue("Unexpected exception thrown when decoding export file with no password", ede.getMessage().indexOf("Could not decrypt input string") > -1);
+            assertTrue("Unexpected exception thrown when decoding export file with wrong password", ede.getMessage().indexOf(EXPECTED_COULD_NOT_DECRYPT_INPUT_STRING) > -1);
         }
         
         // Read in the encrypted exported private key file with the correct password.
         privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
-        privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename1), TEST_PASSWORD1);
+        privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename1), EXPORT_FILE_PASSWORD);
         assertEquals("Wrong number of keys read in from encrypted export file", 1, privateKeyAndDates.size());
         assertEquals("Wrong private key read in from encrypted export file", Utils.bytesToHexString(controller.getModel().getActiveWallet().getKeychain().get(0).getPrivKeyBytes()), 
                 Utils.bytesToHexString(privateKeyAndDates.iterator().next().getKey().getPrivKeyBytes()));  
         
-        // Set the export file password protect radio to output unencrypted
+        // Set the export file password protect radio to output unencrypted.
         exportPanel.getDoNotPasswordProtect().setSelected(true);
         
         // Set the output file name.
         String outputFilename2 = controller.getModel().getActiveWalletFilename() + "-" + UUID.randomUUID().toString() + ".key";
         exportPanel.setOutputFilename(outputFilename2);
 
+        // Check the export file currently does not exist.
+        assertTrue("Unencrypted export file exists when it should not", !(new File(outputFilename2)).exists());
+       
         // Execute = this should actually write the unencrypted export file.
         exportAction.actionPerformed(null);
-        assertTrue("Export file does not exist when it should", (new File(outputFilename2)).exists());
-        assertEquals("Wrong message1 after export is good to go", "The private keys were exported.", exportPanel.getMessageText1());    
-        assertEquals("Wrong message2 after export is good to go", "The export file could be read in correctly and the private keys match the wallet contents", exportPanel.getMessageText2().trim());  
+        assertTrue("Unencrypted export file does not exist when it should", (new File(outputFilename2)).exists());
+        assertEquals("Wrong message1 after unencrypted export is good to go", EXPECTED_THE_PRIVATE_KEYS_WERE_EXPORTED, exportPanel.getMessageText1());    
+        assertEquals("Wrong message2 after unencrypted export is good to go", EXPECTED_THE_EXPORT_FILE_COULD_BE_READ_IN_CORRECTLY, exportPanel.getMessageText2().trim());  
 
-        // Read in the unencrypted exported private key file
+        // Read in the unencrypted exported private key file.
         privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename2), null);
+        assertEquals("Wrong number of keys read in from unencrypted export file", 1, privateKeyAndDates.size());
+        assertEquals("Wrong private key read in from unencrypted export file", Utils.bytesToHexString(controller.getModel().getActiveWallet().getKeychain().get(0).getPrivKeyBytes()), 
+                Utils.bytesToHexString(privateKeyAndDates.iterator().next().getKey().getPrivKeyBytes()));          
+    }
+    
+    @Test
+    public void testExportPrivateKeysWithEncryptedWallet() throws Exception { 
+        // Create MultiBit controller.
+        MultiBitController controller = ActionTestUtils.createController();
+        
+        // Create a new encrypted wallet and put it in the model as the active wallet.
+        ActionTestUtils.createNewActiveWallet(controller, "testExportPrivateKeysWithNonEncryptedWallet", true, WALLET_PASSWORD);
+
+        // Create a new ExportPrivateKeysSubmitAction to test.
+        FontSizer.INSTANCE.initialise(controller);
+        ExportPrivateKeysPanel exportPanel = new ExportPrivateKeysPanel(controller, null);
+        ExportPrivateKeysSubmitAction exportAction = exportPanel.getExportPrivateKeySubmitAction();
+
+        assertNotNull("exportAction was not created successfully", exportAction);
+        assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
+        
+        // Execute - this is with an encrypted wallet and default settings. (No wallet password set).
+        exportAction.actionPerformed(null);
+        assertEquals("Wrong message1 after default export execute", EXPECTED_ENTER_THE_WALLET_PASSWORD, exportPanel.getMessageText1());    
+        assertEquals("Wrong message2 after default export execute", "", exportPanel.getMessageText2().trim());    
+        
+        // Set the wallet password.
+        exportPanel.setWalletPassword(WALLET_PASSWORD);
+
+        // Execute - this should now complain that no export file password is set (as password protect export file is selected by default).
+        exportAction.actionPerformed(null);
+        assertEquals("Wrong message1 after password set execute", EXPECTED_YOU_MUST_SELECT_AN_OUTPUT_FILE, exportPanel.getMessageText1());    
+        assertEquals("Wrong message2 after password set execute", "", exportPanel.getMessageText2().trim());    
+
+        // Set the output file name.
+        String outputFilename1 = controller.getModel().getActiveWalletFilename() + "-" + UUID.randomUUID().toString() + ".key";
+        exportPanel.setOutputFilename(outputFilename1);
+ 
+        // Execute - this should now complain that no export file password is set (as password protect export file is selected by default).
+        exportAction.actionPerformed(null);
+        assertEquals("Wrong message1 after no password set execute", EXPECTED_ENTER_THE_EXPORT_FILE_PASSWORD, exportPanel.getMessageText1());    
+        assertEquals("Wrong message2 after no password set execute", "", exportPanel.getMessageText2().trim());    
+ 
+        // Set the first export file password.
+        exportPanel.setExportPassword(EXPORT_FILE_PASSWORD);
+        
+        // Execute = this is with one only of the export file passwords set.
+        exportAction.actionPerformed(null);
+        assertEquals("Wrong message1 after no password set execute", EXPECTED_PASSWORDS_DO_NOT_MATCH, exportPanel.getMessageText1());    
+        assertEquals("Wrong message2 after no password set execute", "", exportPanel.getMessageText2().trim());    
+        
+        // Set the repeat export file password.
+        exportPanel.setRepeatExportPassword(EXPORT_FILE_PASSWORD);
+        
+        // Check the export file currently does not exist.
+        assertTrue("Encrypted export file exists when it should not", !(new File(outputFilename1)).exists());
+       
+        // Execute = this should actually write the encrypted export file.
+        exportAction.actionPerformed(null);
+        assertTrue("Encrypted export file does not exist when it should", (new File(outputFilename1)).exists());
+        assertEquals("Wrong message1 after encrypted export is good to go", EXPECTED_THE_PRIVATE_KEYS_WERE_EXPORTED, exportPanel.getMessageText1());    
+        assertEquals("Wrong message2 after encrypted export is good to go", EXPECTED_THE_EXPORT_FILE_COULD_BE_READ_IN_CORRECTLY, exportPanel.getMessageText2().trim());  
+        
+        // Try to read in the encrypted exported private key file with no export file password - this should fail.
+        PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
+        Collection<PrivateKeyAndDate> privateKeyAndDates = null; 
+        try {
+            privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename1), null);
+            fail("An encrypted export file was read in with no export file password. Fail.");
+        } catch (EncrypterDecrypterException ede) {
+            // This is what should happen.
+            assertTrue("Unexpected exception thrown when decoding export file with no export file password", ede.getMessage().indexOf(EXPECTED_COULD_NOT_DECRYPT_INPUT_STRING) > -1);
+        }
+        
+        // Try to read in the encrypted exported private key file with the wrong export file password - this should fail.
+        try {
+            privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename1), WRONG_PASSWORD);
+            fail("An encrypted export file was read in with the wrong export file password. Fail.");
+        } catch (EncrypterDecrypterException ede) {
+            // This is what should happen.
+            assertTrue("Unexpected exception thrown when decoding export file with wrong export file password", ede.getMessage().indexOf(EXPECTED_COULD_NOT_DECRYPT_INPUT_STRING) > -1);
+        }
+        
+        // Read in the encrypted exported private key file with the correct export file password.
+        privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
+        privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename1), EXPORT_FILE_PASSWORD);
         assertEquals("Wrong number of keys read in from encrypted export file", 1, privateKeyAndDates.size());
         assertEquals("Wrong private key read in from encrypted export file", Utils.bytesToHexString(controller.getModel().getActiveWallet().getKeychain().get(0).getPrivKeyBytes()), 
+                Utils.bytesToHexString(privateKeyAndDates.iterator().next().getKey().getPrivKeyBytes()));  
+        
+        // Set the export file password protect radio to output unencrypted.
+        exportPanel.getDoNotPasswordProtect().setSelected(true);
+        
+        // Set the wallet password.
+        exportPanel.setWalletPassword(WALLET_PASSWORD);
+
+        // Set the output file name.
+        String outputFilename2 = controller.getModel().getActiveWalletFilename() + "-" + UUID.randomUUID().toString() + ".key";
+        exportPanel.setOutputFilename(outputFilename2);
+
+        // Check the export file currently does not exist.
+        assertTrue("Unencrypted export file exists when it should not", !(new File(outputFilename2)).exists());
+       
+        // Execute = this should actually write the unencrypted export file.
+        exportAction.actionPerformed(null);
+        assertTrue("Unencrypted export file does not exist when it should", (new File(outputFilename2)).exists());
+        assertEquals("Wrong message1 after unencrypted export is good to go", EXPECTED_THE_PRIVATE_KEYS_WERE_EXPORTED, exportPanel.getMessageText1());    
+        assertEquals("Wrong message2 after unencrypted export is good to go", EXPECTED_THE_EXPORT_FILE_COULD_BE_READ_IN_CORRECTLY, exportPanel.getMessageText2().trim());  
+
+        // Read in the unencrypted exported private key file.
+        privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename2), null);
+        assertEquals("Wrong number of keys read in from unencrypted export file", 1, privateKeyAndDates.size());
+        
+        // TODO - this will start failing when the private keys are cleared from Wallets on encrypt. (After persistence is done).
+        // Then will need to decrypt wallet first before getting private key out for comparision.
+        assertEquals("Wrong private key read in from unencrypted export file", Utils.bytesToHexString(controller.getModel().getActiveWallet().getKeychain().get(0).getPrivKeyBytes()), 
                 Utils.bytesToHexString(privateKeyAndDates.iterator().next().getKey().getPrivKeyBytes()));          
     }
 }

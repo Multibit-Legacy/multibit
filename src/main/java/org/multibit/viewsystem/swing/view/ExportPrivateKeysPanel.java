@@ -961,6 +961,10 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         return messageLabel2.getText();
     }
     
+    public void setWalletPassword(char[] walletPassword) {
+        walletPasswordField.setText(new String(walletPassword));
+    }
+    
     public void setExportPassword(char[] exportPassword) {
         exportFilePasswordField.setText(new String(exportPassword));
     }

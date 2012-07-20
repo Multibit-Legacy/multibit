@@ -416,12 +416,12 @@ public class MultiBitModel {
      * 
      * @param perWalletModeData
      */
-    public void addAndMakeActiveWallet(PerWalletModelData perWalletModelDataToAdd) {
-        if (perWalletModelDataList != null) {
-            perWalletModelDataList.add(perWalletModelDataToAdd);
-            activeWalletModelData = perWalletModelDataToAdd;
-        }
-    }
+//    public void addAndMakeActiveWallet(PerWalletModelData perWalletModelDataToAdd) {
+//        if (perWalletModelDataList != null) {
+//            perWalletModelDataList.add(perWalletModelDataToAdd);
+//            activeWalletModelData = perWalletModelDataToAdd;
+//        }
+//    }
 
     /**
      * Set a wallet description, given a wallet filename.

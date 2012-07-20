@@ -60,6 +60,6 @@ public class ActionTestUtils {
              ((EncryptableWallet)loadedPerWalletModelData.getWallet()).encrypt(walletPassword);
          }
 
-         controller.getModel().addAndMakeActiveWallet(loadedPerWalletModelData);
+         //controller.getModel().addAndMakeActiveWallet(loadedPerWalletModelData);
      }
 }

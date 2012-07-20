@@ -264,7 +264,7 @@ public class PrivateKeysHandler {
         
         try {
             if (wallet != null) {
-                if (walletPassword != null) {
+                if (walletPassword != null && walletPassword.length > 0) {
                     // decrypt wallet keys
                     if (wallet instanceof EncryptableWallet) {
                         EncryptableWallet encryptableWallet = (EncryptableWallet) wallet;
