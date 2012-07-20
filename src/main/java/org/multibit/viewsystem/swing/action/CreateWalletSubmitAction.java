@@ -144,7 +144,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
                 }
             } else {
                 // Create a new wallet.
-                Wallet newWallet = new EncryptableWallet(controller.getMultiBitService().getNetworkParameters());
+                Wallet newWallet = new EncryptableWallet(controller.getModel().getNetworkParameters());
                 ECKey newKey = new ECKey();
                 newWallet.keychain.add(newKey);
                 PerWalletModelData perWalletModelData = new PerWalletModelData();

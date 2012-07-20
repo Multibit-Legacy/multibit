@@ -440,7 +440,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         String uriString = rawBitcoinURI.toString().replace(" ", ENCODED_SPACE_CHARACTER);
         BitcoinURI bitcoinURI = null;
         try {
-            bitcoinURI = new BitcoinURI(this.getMultiBitService().getNetworkParameters(), uriString);
+            bitcoinURI = new BitcoinURI(this.getModel().getNetworkParameters(), uriString);
         } catch (BitcoinURIParseException pe) {
             log.error("Could not parse the uriString '" + uriString + "', aborting");
             return;

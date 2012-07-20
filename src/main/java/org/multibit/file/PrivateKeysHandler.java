@@ -57,7 +57,7 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletType;
 
 /**
- * Class for handling reading and writing of private keys to a file
+ * Class for handling reading and writing of private keys to a file.
  * 
  * @author jim
  * 
@@ -76,8 +76,7 @@ public class PrivateKeysHandler {
     private EncrypterDecrypterOpenSSL encrypterDecrypter;
 
     public PrivateKeysHandler(NetworkParameters networkParameters) {
-        // date format is UTC with century, T time separator and Z for UTC
-        // timezone
+        // Date format is UTC with century, T time separator and Z for UTC timezone.
         formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -92,14 +91,14 @@ public class PrivateKeysHandler {
     public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryption, char[] exportPassword, char[] walletPassword)
             throws IOException {
 
-        // construct a StringBuffer with the private key export text
+        // Construct a StringBuffer with the private key export text.
         StringBuffer outputStringBuffer = new StringBuffer();
 
         if (!performEncryption) {
             outputHeaderComment(outputStringBuffer);
         }
 
-        // get the wallet's private keys and output them
+        // Get the wallet's private keys and output them.
         Collection<PrivateKeyAndDate> keyAndDates = createKeyAndDates(wallet, blockChain, walletPassword);
         outputKeys(outputStringBuffer, keyAndDates);
 
@@ -122,7 +121,7 @@ public class PrivateKeysHandler {
 
             printWriter.write(keyOutputText);
 
-            // close the output stream
+            // Close the output stream.
             printWriter.close();
 
         } finally {
@@ -136,7 +135,7 @@ public class PrivateKeysHandler {
     }
 
     /**
-     * Verify the export file was correctly written to disk
+     * Verify the export file was correctly written to disk.
      * 
      * @param exportFile
      *            The export file to verify
@@ -156,10 +155,10 @@ public class PrivateKeysHandler {
         Object[] messageData = new Object[0];
 
         try {
-            // create the expected export file contents
+            // Create the expected export file contents.
             Collection<PrivateKeyAndDate> expectedKeysAndDates = createKeyAndDates(wallet, blockChain, walletPassword);
 
-            // read in the specified export file
+            // Read in the specified export file.
             Collection<PrivateKeyAndDate> importedKeysAndDates = readInPrivateKeys(exportFile, exportPassword);
 
             if (expectedKeysAndDates.size() != importedKeysAndDates.size()) {
@@ -180,9 +179,10 @@ public class PrivateKeysHandler {
                         break;
                     }
 
-                    // imported keydate must be at or before expected (further
-                    // back in time is safe
-                    if (imported.getDate().after(expected.getDate())) {
+                    // Imported keydate must be at or before expected (further
+                    // back in time is safe.
+                    if ((imported.getDate() != null &&  imported.getDate().after(expected.getDate()))
+                            || (imported.getDate() == null && expected.getDate() != null)) {
                         messageKey = "privateKeysHandler.keysDidNotMatch";
                         thereWereFailures = true;
                         break;
@@ -212,25 +212,25 @@ public class PrivateKeysHandler {
         Scanner scanner = null;
 
         try {
-            // read in the file
+            // Read in the file.
             String importFileContents = readFile(importFile);
 
             if (importFileContents != null && importFileContents.startsWith(encrypterDecrypter.getOpenSSLMagicText())) {
-                // decryption required
+                // Decryption required.
                 EncrypterDecrypterOpenSSL encrypterDecrypter = new EncrypterDecrypterOpenSSL();
                 importFileContents = encrypterDecrypter.decrypt(importFileContents, password);
             }
 
             scanner = new Scanner(new StringReader(importFileContents));
 
-            // first use a Scanner to get each line
+            // First use a Scanner to get each line.
             while (scanner.hasNextLine()) {
                 processLine(scanner.nextLine(), parseResults);
             }
         } catch (IOException ioe) {
             throw new PrivateKeysHandlerException("Could not read import file '" + importFile.getAbsolutePath() + "'", ioe);
         } finally {
-            // ensure the underlying stream is always closed
+            // Ensure the underlying stream is always closed
             // this only has any effect if the item passed
             // to the Scanner
             // constructor implements Closeable (which it
@@ -280,12 +280,12 @@ public class PrivateKeysHandler {
             if (keychain != null) {
                 HashMap<ECKey, Date> keyToEarliestUsageDateMap = new HashMap<ECKey, Date>();
 
-                // the date of the last transaction in the wallet - used where
-                // there are no tx for a key
+                // The date of the last transaction in the wallet - used where
+                // there are no tx for a key.
                 Date overallLastUsageDate = null;
 
                 for (ECKey ecKey : keychain) {
-                    // find the earliest usage of this key
+                    // Find the earliest usage of this key.
                     Date earliestUsageDate = null;
                     if (allTransactions != null) {
                         for (Transaction tx : allTransactions) {
@@ -314,14 +314,13 @@ public class PrivateKeysHandler {
                     }
                 }
 
-                // if there are no transactions in the wallet
+                // If there are no transactions in the wallet
                 // overallLastUsageDate will be null.
-                // we do not want keys output with a missing date as this forces
-                // a replay from
-                // the genesis block
+                // We do not want keys output with a missing date as this forces
+                // a replay from the genesis block
                 // In this case we know there are no transactions up to the date
                 // of the head of the
-                // chain so can set the overallLastUsageDate to then
+                // chain so can set the overallLastUsageDate to then.
                 // On import this will replay from the current chain head to
                 // include any future tx.
                 if (overallLastUsageDate == null) {
@@ -343,9 +342,9 @@ public class PrivateKeysHandler {
                     Date earliestUsageDate = keyToEarliestUsageDateMap.get(ecKey);
                     if (earliestUsageDate == null) {
                         if (overallLastUsageDate != null) {
-                            // put the last tx date for the whole wallet in for
+                            // Put the last tx date for the whole wallet in for
                             // this key - there are no tx for this key so this
-                            // will be early enough
+                            // will be early enough.
                             earliestUsageDate = overallLastUsageDate;
                         }
                     }
@@ -401,7 +400,7 @@ public class PrivateKeysHandler {
     }
 
     /**
-     * this method is here because there is no equals on ECKey
+     * This method is here because there is no equals on ECKey.
      */
     private boolean keyChainContainsPrivateKey(ArrayList<ECKey> keyChain, ECKey keyToAdd) {
         if (keyChain == null || keyToAdd == null) {

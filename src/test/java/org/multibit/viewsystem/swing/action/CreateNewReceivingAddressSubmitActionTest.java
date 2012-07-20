@@ -47,11 +47,11 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
             return;
         }
         
-        // Create MultiBit controller.
-        MultiBitController controller = createController();
+        // Create MultiBit controller
+        MultiBitController controller = ActionTestUtils.createController();
         
         // Create a new wallet and put it in the model as the active wallet.
-        createNewActiveWallet(controller, "testAddReceivingAddressesWithNonEncryptedWallet", false, null);
+        ActionTestUtils.createNewActiveWallet(controller, "testAddReceivingAddressesWithNonEncryptedWallet", false, null);
 
         // Create a new CreateNewReceivingAddressSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
@@ -94,10 +94,10 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         }
         
         // Create MultiBit controller.
-        MultiBitController controller = createController();
+        MultiBitController controller = ActionTestUtils.createController();
         
         // Create a new encrypted wallet and put it in the model as the active wallet.
-        createNewActiveWallet(controller, "testAddReceivingAddressesWithEncryptedWallet", true, TEST_PASSWORD1);
+        ActionTestUtils.createNewActiveWallet(controller, "testAddReceivingAddressesWithEncryptedWallet", true, TEST_PASSWORD1);
 
         // Create a new CreateNewReceivingAddressSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
@@ -138,49 +138,5 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         // The added private keys should be encrypted with the same password as the wallet password.
         // Thus a decrypt should work fine.
         ((EncryptableWallet)controller.getModel().getActiveWallet()).decrypt(TEST_PASSWORD1);
-    }
-    
-    private MultiBitController createController() {
-       MultiBitController controller = new MultiBitController();
-        
-        Localiser localiser = new Localiser(Locale.ENGLISH);
-        MultiBitModel model = new MultiBitModel(controller);
-        
-        controller.setLocaliser(localiser);
-        controller.setModel(model);
-        
-        return controller;
-    }
-    
-    private void createNewActiveWallet(MultiBitController controller, String descriptor, boolean encrypt, char[] walletPassword) throws Exception {
-        EncryptableWallet wallet = new EncryptableWallet(NetworkParameters.prodNet());
-        wallet.getKeychain().add(new ECKey());
- 
-        PerWalletModelData perWalletModelData = new PerWalletModelData();
-        perWalletModelData.setWallet(wallet);
- 
-        // Save the wallet to a temporary directory.
-        File multiBitDirectory = FileHandler.createTempDirectory("CreateAndDeleteWalletsTest");
-        String multiBitDirectoryPath = multiBitDirectory.getAbsolutePath();
-        String walletFile = multiBitDirectoryPath + File.separator + descriptor + ".wallet";
-        
-        // Put the wallet in the model as the active wallet.
-        perWalletModelData.setWalletInfo(new WalletInfo(walletFile, WalletVersion.PROTOBUF));
-        perWalletModelData.setWalletFilename(walletFile);
-        perWalletModelData.setWalletDescription(descriptor);
-        
-        // Save the wallet and load it up again, making it the active wallet.
-        // This also sets the timestamp fields used in file change detection.
-        FileHandler fileHandler = new FileHandler(controller);
-        fileHandler.savePerWalletModelData(perWalletModelData, true);
-        PerWalletModelData loadedPerWalletModelData = fileHandler.loadFromFile(new File(walletFile));
-            
-        if (encrypt) {
-            ((EncryptableWallet)loadedPerWalletModelData.getWallet()).encrypt(walletPassword);
-        }
-
-        controller.getModel().addAndMakeActiveWallet(loadedPerWalletModelData);
-
-        assertEquals("The test wallet " + descriptor + " was not created properly", walletFile, controller.getModel().getActiveWalletFilename());
     }
 }

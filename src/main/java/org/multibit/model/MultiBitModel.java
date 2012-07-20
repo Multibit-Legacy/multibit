@@ -643,17 +643,14 @@ public class MultiBitModel {
         if (!(perWalletModelData == null)) {
             ArrayList<ECKey> keyChain = perWalletModelData.getWallet().keychain;
             if (keyChain != null) {
-                MultiBitService multiBitService = controller.getMultiBitService();
-                if (multiBitService != null) {
-                    NetworkParameters networkParameters = multiBitService.getNetworkParameters();
-                    if (networkParameters != null) {
-                        if (perWalletModelData.getWalletInfo() != null) {
-                            // clear the existing receiving addresses
-                            perWalletModelData.getWalletInfo().getReceivingAddresses().clear();
-                            for (ECKey key : keyChain) {
-                                Address address = key.toAddress(controller.getMultiBitService().getNetworkParameters());
-                                perWalletModelData.getWalletInfo().addReceivingAddressOfKey(address);
-                            }
+                NetworkParameters networkParameters = getNetworkParameters();
+                if (networkParameters != null) {
+                    if (perWalletModelData.getWalletInfo() != null) {
+                       // clear the existing receiving addresses
+                        perWalletModelData.getWalletInfo().getReceivingAddresses().clear();
+                        for (ECKey key : keyChain) {
+                            Address address = key.toAddress(getNetworkParameters());
+                            perWalletModelData.getWalletInfo().addReceivingAddressOfKey(address);
                         }
                     }
                 }
@@ -705,8 +702,8 @@ public class MultiBitModel {
             try {
                 String addressString = "";
 
-                if (controller.getMultiBitService() != null && myOutput != null) {
-                    Address toAddress = new Address(controller.getMultiBitService().getNetworkParameters(), myOutput
+                if (myOutput != null) {
+                    Address toAddress = new Address(getNetworkParameters(), myOutput
                             .getScriptPubKey().getPubKeyHash());
                     addressString = toAddress.toString();
                 }

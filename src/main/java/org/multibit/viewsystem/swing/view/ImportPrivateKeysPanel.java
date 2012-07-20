@@ -870,7 +870,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
 
         if (multiBitFileChooser.accept(file)) {
             // Read in contents of file.
-            PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService().getNetworkParameters());
+            PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
             Collection<PrivateKeyAndDate> privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename),
                     passwordField1.getPassword());
             numberOfKeysLabel.setText("" + privateKeyAndDates.size());

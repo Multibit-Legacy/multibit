@@ -95,7 +95,7 @@ public class CreateBulkAddressesSubmitAction extends AbstractAction {
                         for (int i = 0; i < numberOfAddresses; i++) {
                             ECKey key = new ECKey();
                             perWalletModelData.getWallet().keychain.add(key);
-                            Address address = key.toAddress(controller.getMultiBitService().getNetworkParameters());
+                            Address address = key.toAddress(controller.getModel().getNetworkParameters());
                             addressString = address.toString();
                             outputStreamWriter.write(addressString + "\n");
 

@@ -529,10 +529,6 @@ public class MultiBitService {
         return blockChain;
     }
 
-    public NetworkParameters getNetworkParameters() {
-        return networkParameters;
-    }
-
     public ReplayableBlockStore getBlockStore() {
         return blockStore;
     }

@@ -60,7 +60,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import com.google.bitcoin.core.WalletType;
 
 /**
- * The export private keys view
+ * The export private keys panel.
  */
 public class ExportPrivateKeysPanel extends JPanel implements View {
 
@@ -92,6 +92,8 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
 
     private JPasswordField walletPasswordField;
     private MultiBitLabel walletPasswordPromptLabel;
+    
+    private ExportPrivateKeysSubmitAction exportPrivateKeySubmitAction;
 
     private JLabel tickLabel;
 
@@ -729,9 +731,9 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
          * Create submit action with references to the password fields - this
          * avoids having any public accessors on the panel
          */
-        ExportPrivateKeysSubmitAction submitAction = new ExportPrivateKeysSubmitAction(controller, this,
+        exportPrivateKeySubmitAction = new ExportPrivateKeysSubmitAction(controller, this,
                 ImageLoader.createImageIcon(ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE), walletPasswordField, exportFilePasswordField, repeatExportFilePasswordField, mainFrame);
-        MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
+        MultiBitButton submitButton = new MultiBitButton(exportPrivateKeySubmitAction, controller);
         buttonPanel.add(submitButton);
 
         return buttonPanel;
@@ -811,6 +813,11 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
                 clearMessages();
             }
         }
+    }
+
+    // Used in testing.
+    public void setOutputFilename(String outputFilename) {
+        this.outputFilename = outputFilename;
     }
 
     public String getOutputFilename() {
@@ -938,5 +945,31 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
     @Override
     public int getViewId() {
         return View.SHOW_EXPORT_PRIVATE_KEYS_VIEW;
+    }
+
+    // Used in testing.
+    
+    public ExportPrivateKeysSubmitAction getExportPrivateKeySubmitAction() {
+        return exportPrivateKeySubmitAction;
+    }
+
+    public String getMessageText1() {
+        return messageLabel1.getText();
+    }
+
+    public String getMessageText2() {
+        return messageLabel2.getText();
+    }
+    
+    public void setExportPassword(char[] exportPassword) {
+        exportFilePasswordField.setText(new String(exportPassword));
+    }
+    
+    public void setRepeatExportPassword(char[] exportPassword) {
+        repeatExportFilePasswordField.setText(new String(exportPassword));
+    }
+
+    public JRadioButton getDoNotPasswordProtect() {
+        return doNotPasswordProtect;
     }
 }

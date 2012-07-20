@@ -137,8 +137,8 @@ public class SwatchGenerator {
         try {
             Address decodeAddress = null;
             if (address != null && !"".equals(address) && controller.getMultiBitService() != null
-                    && controller.getMultiBitService().getNetworkParameters() != null) {
-                decodeAddress = new Address(controller.getMultiBitService().getNetworkParameters(), address);
+                    && controller.getModel().getNetworkParameters() != null) {
+                decodeAddress = new Address(controller.getModel().getNetworkParameters(), address);
             }
             if (address != null && !"".equals(address)) {
                 if (amount != null && !"".equals(amount)) {
@@ -222,8 +222,8 @@ public class SwatchGenerator {
         try {
             Address decodeAddress = null;
             if (address != null && !"".equals(address) && controller.getMultiBitService() != null
-                    && controller.getMultiBitService().getNetworkParameters() != null) {
-                decodeAddress = new Address(controller.getMultiBitService().getNetworkParameters(), address);
+                    && controller.getModel().getNetworkParameters() != null) {
+                decodeAddress = new Address(controller.getModel().getNetworkParameters(), address);
             }
             if (decodeAddress != null) {
                 if (amount != null && !"".equals(amount)) {

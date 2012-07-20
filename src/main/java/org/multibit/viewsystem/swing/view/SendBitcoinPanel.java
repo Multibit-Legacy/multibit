@@ -353,7 +353,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         String performPasteNow = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW);
         if (Boolean.TRUE.toString().equalsIgnoreCase(performPasteNow)) {
             try {
-                Address decodeAddress = new Address(controller.getMultiBitService().getNetworkParameters(), address);
+                Address decodeAddress = new Address(controller.getModel().getNetworkParameters(), address);
                 processDecodedString(com.google.bitcoin.uri.BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amount), label, null), null);
                 controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
                 sendButton.requestFocusInWindow();

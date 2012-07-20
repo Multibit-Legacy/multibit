@@ -142,7 +142,7 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
             try {
                 if (importPrivateKeysPanel.multiBitFileChooser.accept(importFile)) {
 
-                    PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService()
+                    PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel()
                             .getNetworkParameters());
 
                     Collection<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.readInPrivateKeys(importFile,
