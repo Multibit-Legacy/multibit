@@ -201,7 +201,7 @@ public class MultiBitService {
             if (useTestNet) {
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
             } else {
-                peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
+                peerGroup.addPeerDiscovery(new MultiBitDnsDiscovery(networkParameters));
             }
         }
         // Add the controller as a PeerEventListener.
