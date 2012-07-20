@@ -15,39 +15,20 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.GraphicsEnvironment;
-import java.io.File;
-import java.util.Locale;
-
 import junit.framework.TestCase;
 
 import org.junit.Test;
-import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncryptableWallet;
-import org.multibit.file.FileHandler;
-import org.multibit.model.MultiBitModel;
-import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletInfo;
-import org.multibit.model.WalletVersion;
-import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressDialog;
 import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
-
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
 
 public class CreateNewReceivingAddressSubmitActionTest extends TestCase {   
     
     public static final char[] TEST_PASSWORD1 = "my hovercraft has eels".toCharArray();
     
     @Test
-    public void testAddReceivingAddressesWithNonEncryptedWallet() throws Exception { 
-        // Check if headless.
-        if (GraphicsEnvironment.isHeadless()) {
-            return;
-        }
-        
+    public void testAddReceivingAddressesWithNonEncryptedWallet() throws Exception {       
         // Create MultiBit controller
         MultiBitController controller = ActionTestUtils.createController();
         
@@ -89,11 +70,6 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
     
     @Test
     public void testAddReceivingAddressesWithEncryptedWallet() throws Exception {   
-        // Check if headless.
-//        if (GraphicsEnvironment.isHeadless()) {
-//            return;
-//        }
-        
         // Create MultiBit controller.
         MultiBitController controller = ActionTestUtils.createController();
         
