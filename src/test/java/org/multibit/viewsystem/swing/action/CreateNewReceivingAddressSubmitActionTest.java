@@ -31,6 +31,7 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletVersion;
 import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressDialog;
+import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 import com.google.bitcoin.core.ECKey;
@@ -55,8 +56,8 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
 
         // Create a new CreateNewReceivingAddressSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
-        CreateNewReceivingAddressDialog createNewDialog = new CreateNewReceivingAddressDialog(controller, null, null);
-        CreateNewReceivingAddressSubmitAction createNewAction = createNewDialog.getCreateNewReceivingAddressSubmitAction();
+        CreateNewReceivingAddressPanel createNewPanel = new CreateNewReceivingAddressPanel(controller, null, null);
+        CreateNewReceivingAddressSubmitAction createNewAction = createNewPanel.getCreateNewReceivingAddressSubmitAction();
 
         assertNotNull("createNewAction was not created successfully", createNewAction);
         assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
@@ -66,22 +67,22 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         assertEquals("Wrong number of keys after addition of default number of keys", 2, controller.getModel().getActiveWallet().getKeychain().size());    
         
         // Add one address by selecting on the combo box.
-        createNewDialog.getNumberOfAddresses().setSelectedItem(new Integer(1));
+        createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(1));
         createNewAction.actionPerformed(null);
         assertEquals("Wrong number of keys after addition of 1 key", 3, controller.getModel().getActiveWallet().getKeychain().size());
         
         // Add five addresses by selecting on the combo box.
-        createNewDialog.getNumberOfAddresses().setSelectedItem(new Integer(5));
+        createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(5));
         createNewAction.actionPerformed(null);
         assertEquals("Wrong number of keys after addition of 5 keys", 8, controller.getModel().getActiveWallet().getKeychain().size());   
         
         // Add twenty addresses by selecting on the combo box.
-        createNewDialog.getNumberOfAddresses().setSelectedItem(new Integer(20));
+        createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(20));
         createNewAction.actionPerformed(null);
         assertEquals("Wrong number of keys after addition of 20 keys", 28, controller.getModel().getActiveWallet().getKeychain().size());  
         
         // Add one hundred addresses by selecting on the combo box.
-        createNewDialog.getNumberOfAddresses().setSelectedItem(new Integer(100));
+        createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(100));
         createNewAction.actionPerformed(null);
         assertEquals("Wrong number of keys after addition of 100 keys", 128, controller.getModel().getActiveWallet().getKeychain().size());    
     }
@@ -89,9 +90,9 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
     @Test
     public void testAddReceivingAddressesWithEncryptedWallet() throws Exception {   
         // Check if headless.
-        if (GraphicsEnvironment.isHeadless()) {
-            return;
-        }
+//        if (GraphicsEnvironment.isHeadless()) {
+//            return;
+//        }
         
         // Create MultiBit controller.
         MultiBitController controller = ActionTestUtils.createController();
@@ -101,8 +102,8 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
 
         // Create a new CreateNewReceivingAddressSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
-        CreateNewReceivingAddressDialog createNewDialog = new CreateNewReceivingAddressDialog(controller, null, null);
-        CreateNewReceivingAddressSubmitAction createNewAction = createNewDialog.getCreateNewReceivingAddressSubmitAction();
+        CreateNewReceivingAddressPanel createNewPanel = new CreateNewReceivingAddressPanel(controller, null, null);
+        CreateNewReceivingAddressSubmitAction createNewAction = createNewPanel.getCreateNewReceivingAddressSubmitAction();
 
         assertNotNull("createNewAction was not created successfully", createNewAction);
         assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
@@ -113,25 +114,25 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         assertEquals("Wrong number of keys after addition of default number of keys with no wallet password", 1, controller.getModel().getActiveWallet().getKeychain().size());    
         
         // Check there is a message that the wallet password is required.
-        assertEquals("No message to enter wallet password", "Enter the wallet password", createNewDialog.getMessageText());
+        assertEquals("No message to enter wallet password", "Enter the wallet password", createNewPanel.getMessageText());
         
         // Enter an incorrect password. There should be a message to the user.
-        createNewDialog.setWalletPassword("This is the wrong password");
+        createNewPanel.setWalletPassword("This is the wrong password");
         createNewAction.actionPerformed(null);
 
         // Check there is a message that the wallet password isincorrect.
-        assertEquals("No message to that wallet password is incorrect", "The wallet password is incorrect", createNewDialog.getMessageText());
+        assertEquals("No message to that wallet password is incorrect", "The wallet password is incorrect", createNewPanel.getMessageText());
 
         // Set the correct wallet password.
-        createNewDialog.setWalletPassword(new String(TEST_PASSWORD1));
+        createNewPanel.setWalletPassword(new String(TEST_PASSWORD1));
         
         // The new private key should now add correctly.
         createNewAction.actionPerformed(null);
         assertEquals("Wrong number of keys after addition of default number of keys with wallet password", 2, controller.getModel().getActiveWallet().getKeychain().size()); 
 
         // Add twenty addresses by selecting on the combo box.
-        createNewDialog.getNumberOfAddresses().setSelectedItem(new Integer(20));
-        createNewDialog.setWalletPassword(new String(TEST_PASSWORD1));
+        createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(20));
+        createNewPanel.setWalletPassword(new String(TEST_PASSWORD1));
         createNewAction.actionPerformed(null);
         assertEquals("Wrong number of keys after addition of 20 keys", 22, controller.getModel().getActiveWallet().getKeychain().size());  
 

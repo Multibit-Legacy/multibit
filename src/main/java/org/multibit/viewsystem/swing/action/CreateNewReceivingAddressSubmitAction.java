@@ -36,6 +36,7 @@ import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressDialog;
+import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,16 +55,18 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
     private MultiBitController controller;
 
     private CreateNewReceivingAddressDialog createNewReceivingAddressDialog;
+    private CreateNewReceivingAddressPanel createNewReceivingAddressPanel;
     
     private JPasswordField walletPassword;
 
     /**
      * Creates a new {@link CreateNewReceivingAddressSubmitAction}.
      */
-    public CreateNewReceivingAddressSubmitAction(MultiBitController controller, CreateNewReceivingAddressDialog createNewReceivingAddressDialog, JPasswordField walletPassword) {
+    public CreateNewReceivingAddressSubmitAction(MultiBitController controller, CreateNewReceivingAddressDialog createNewReceivingAddressDialog, CreateNewReceivingAddressPanel createNewReceivingAddressPanel, JPasswordField walletPassword) {
         super(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.text"), ImageLoader.createImageIcon(ImageLoader.ADD_ICON_FILE));
         this.controller = controller;
         this.createNewReceivingAddressDialog = createNewReceivingAddressDialog;
+        this.createNewReceivingAddressPanel = createNewReceivingAddressPanel;
         this.walletPassword = walletPassword;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
@@ -90,7 +93,7 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
                 if (controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
                     if (walletPassword.getPassword() == null || walletPassword.getPassword().length == 0) {
                         // User needs to enter password.
-                        createNewReceivingAddressDialog.setMessageText(controller.getLocaliser().getString("showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
+                        createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString("showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
                         return;
                     }
                     encryptNewKeys = true;
@@ -100,7 +103,7 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
                         
                         if (!encryptableWallet.checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
                             // The password supplied is incorrect.
-                            createNewReceivingAddressDialog.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                            createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
                             return;
                         }
                     }
@@ -114,7 +117,7 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
             }
             String addressString = "";
             try {
-            for (int i = 0; i < createNewReceivingAddressDialog.getNumberOfAddressesToCreate(); i++) {
+            for (int i = 0; i < createNewReceivingAddressPanel.getNumberOfAddressesToCreate(); i++) {
                 ECKey newKey;
                 if (encryptNewKeys) {
                     newKey = new EncryptableECKey(new EncrypterDecrypterScrypt());
@@ -128,12 +131,12 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
             }
             } catch (EncrypterDecrypterException ede) {
                 log.error(ede.getMessage(), ede);
-                createNewReceivingAddressDialog.setMessageText(ede.getMessage());
+                createNewReceivingAddressPanel.setMessageText(ede.getMessage());
             }
             
-            if (createNewReceivingAddressDialog.getReceiveBitcoinPanel() != null) {
-                createNewReceivingAddressDialog.getReceiveBitcoinPanel().getAddressesTableModel().fireTableDataChanged();
-                createNewReceivingAddressDialog.getReceiveBitcoinPanel().selectRows();
+            if (createNewReceivingAddressPanel.getReceiveBitcoinPanel() != null) {
+                createNewReceivingAddressPanel.getReceiveBitcoinPanel().getAddressesTableModel().fireTableDataChanged();
+                createNewReceivingAddressPanel.getReceiveBitcoinPanel().selectRows();
             }
             controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, addressString);
             controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
@@ -145,10 +148,12 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
                 MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
             }
             controller.displayView(controller.getCurrentView());
-            createNewReceivingAddressDialog.setVisible(false);
+            if (createNewReceivingAddressDialog != null) {
+                createNewReceivingAddressDialog.setVisible(false);
+            }
 
-            if (createNewReceivingAddressDialog.getReceiveBitcoinPanel() != null && createNewReceivingAddressDialog.getReceiveBitcoinPanel().getLabelTextArea() != null) {
-                createNewReceivingAddressDialog.getReceiveBitcoinPanel().getLabelTextArea().requestFocusInWindow();
+            if (createNewReceivingAddressPanel.getReceiveBitcoinPanel() != null && createNewReceivingAddressPanel.getReceiveBitcoinPanel().getLabelTextArea() != null) {
+                createNewReceivingAddressPanel.getReceiveBitcoinPanel().getLabelTextArea().requestFocusInWindow();
             }
         }
     }
