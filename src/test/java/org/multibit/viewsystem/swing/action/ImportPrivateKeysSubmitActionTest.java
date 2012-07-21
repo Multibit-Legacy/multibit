@@ -39,7 +39,6 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
      
     private static final int DELAY_TO_COMPLETE_IMPORT = 3000; // milliseconds
     
-    //public static final char[] IMPORT_FILE_PASSWORD = "the quick brown fox jumps over the lazy dog 0123456789".toCharArray();
     public static final char[] WALLET_PASSWORD = "the unbelievable lightness of being".toCharArray();
     public static final char[] WRONG_PASSWORD = "this is the wrong password".toCharArray();
     
