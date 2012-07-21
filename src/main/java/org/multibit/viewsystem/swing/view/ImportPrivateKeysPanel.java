@@ -103,6 +103,8 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
 
     private JLabel numberOfKeysLabel;
     private JLabel replayDateLabel;
+    
+    private ImportPrivateKeysSubmitAction importPrivateKeysSubmitAction;
 
     private EncrypterDecrypterOpenSSL encrypterDecrypter;
 
@@ -715,9 +717,9 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         flowLayout.setAlignment(FlowLayout.LEFT);
         buttonPanel.setLayout(flowLayout);
 
-        ImportPrivateKeysSubmitAction submitAction = new ImportPrivateKeysSubmitAction(controller, this,
+        importPrivateKeysSubmitAction = new ImportPrivateKeysSubmitAction(controller, this,
                 ImageLoader.createImageIcon(ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE), walletPasswordField, passwordField1, passwordField2);
-        MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
+        MultiBitButton submitButton = new MultiBitButton(importPrivateKeysSubmitAction, controller);
         buttonPanel.add(submitButton);
 
         return buttonPanel;
@@ -958,6 +960,13 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         }
     }
 
+    public String getMessageText() {
+        if (messageLabel != null) {
+            return messageLabel.getText();
+        } else {
+            return "";
+        }
+    }
     private String readFirstLineInFile(File file) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(file));
         return reader.readLine();
@@ -981,5 +990,23 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
     @Override
     public int getViewId() {
         return View.SHOW_IMPORT_PRIVATE_KEYS_VIEW;
+    }
+    
+    // Used in testing.
+
+    public MultiBitButton getUnlockButton() {
+        return unlockButton;
+    }
+
+    public ImportPrivateKeysSubmitAction getImportPrivateKeysSubmitAction() {
+        return importPrivateKeysSubmitAction;
+    }
+    
+    public void setOutputFilename(String outputFilename) {
+        this.outputFilename = outputFilename;
+    }
+    
+    public void setImportFilePassword(char[] password) {
+        passwordField1.setText(new String(password));
     }
 }

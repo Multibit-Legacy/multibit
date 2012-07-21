@@ -42,10 +42,13 @@ public class PrivateKeysHandlerTest extends TestCase {
     public static final String TEST1_WALLET_FILE = "test1.wallet";
     public static final String TEST1_PRIVATE_KEYS_FILE = "test1.key";
     public static final String EXPECTED_TEST1_PRIVATE_KEYS_FILE = "expectedTest1.key";
-    
+
+    public static final char[] ENCRYPTED_TEST1_PASSWORD = "password".toCharArray();
+    public static final String ENCRYPTED_TEST1_PRIVATE_KEYS_FILE = "encryptedTest1.key";
+
     public static final String[] EXPECTED_ADDRESSES_FOR_TEST1_WALLET = new String[]{"15ZLe7GCAfdTTMMkbm38KTtahq9y549rB2", 
         "1KPNYRuDJoBexHAcCwuA5EhGdzoVHTRNTX", "162zJokk8matsjGGGmyJTCBLTDc3juRxEs", "13FHXieWVDMMPuVgx9mRYmMEJTRrrSU3Ct",
-        "166ofzumkuBB8gpDqd3usn3PypRXA4wTS6", "1NcfaCrfNTRMBhCrF8uw8W6U6sRWYAH6QK", "13T5wgZj4VsWx5np4L2NNkWR8bLxzYz3b6"};
+        "166ofzumkuBB8gpDqd3usn3PypRXA4wTS6", "1NcfaCrfNTRMBhCrF8uw8W6U6sRWYAH6QK", "13T5wgZj4VsWx5np4L2NNkWR8bLxzYz3b6", "1GtMVgFstm6hLNJnMVMfqBV3tW1S7as67v"};
 
     public static final String BLOCKCHAIN_NO_PASSWORD_WALLET_FILE = "blockchain_test_nopassword.json";
     public static final String BLOCKCHAIN_NO_PASSWORD = "";

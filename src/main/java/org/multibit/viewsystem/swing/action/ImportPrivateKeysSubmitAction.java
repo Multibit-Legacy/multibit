@@ -66,6 +66,8 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
     private JPasswordField walletPasswordField;
     private JPasswordField passwordField;
     private JPasswordField passwordField2;
+    
+    private boolean performReplay = true;
 
     private static final long BUTTON_DOWNCLICK_TIME = 400;
 
@@ -284,9 +286,11 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
 
                     // Begin blockchain replay - returns quickly - just kicks it off.
                     log.debug("Starting replay from date = " + earliestTransactionDate);
-                    controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
-                    successMeasure = Boolean.TRUE;
-                    statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
+                    if (performReplay) {
+                        controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
+                        successMeasure = Boolean.TRUE;
+                        statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
+                    }
                 } catch (WalletSaveException wse) {
                     log.error(wse.getClass().getName() + " " + wse.getMessage());
                     uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
@@ -295,7 +299,6 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                     log.error(ede.getClass().getName() + " " + ede.getMessage());
                     uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
                             new Object[] { ede.getMessage() });
-
                 } catch (PrivateKeysHandlerException pkhe) {
                     log.error(pkhe.getClass().getName() + " " + pkhe.getMessage());
                     uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
@@ -357,5 +360,11 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
             }
             return false;
         }
+    }
+
+    // Used in testing.
+    
+    public void setPerformReplay(boolean performReplay) {
+        this.performReplay = performReplay;
     }
 }
