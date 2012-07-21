@@ -48,7 +48,7 @@ public class PrivateKeysHandlerTest extends TestCase {
 
     public static final String[] EXPECTED_ADDRESSES_FOR_TEST1_WALLET = new String[]{"15ZLe7GCAfdTTMMkbm38KTtahq9y549rB2", 
         "1KPNYRuDJoBexHAcCwuA5EhGdzoVHTRNTX", "162zJokk8matsjGGGmyJTCBLTDc3juRxEs", "13FHXieWVDMMPuVgx9mRYmMEJTRrrSU3Ct",
-        "166ofzumkuBB8gpDqd3usn3PypRXA4wTS6", "1NcfaCrfNTRMBhCrF8uw8W6U6sRWYAH6QK", "13T5wgZj4VsWx5np4L2NNkWR8bLxzYz3b6", "1GtMVgFstm6hLNJnMVMfqBV3tW1S7as67v"};
+        "166ofzumkuBB8gpDqd3usn3PypRXA4wTS6", "1NcfaCrfNTRMBhCrF8uw8W6U6sRWYAH6QK", "13T5wgZj4VsWx5np4L2NNkWR8bLxzYz3b6"};
 
     public static final String BLOCKCHAIN_NO_PASSWORD_WALLET_FILE = "blockchain_test_nopassword.json";
     public static final String BLOCKCHAIN_NO_PASSWORD = "";

@@ -1009,4 +1009,8 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
     public void setImportFilePassword(char[] password) {
         passwordField1.setText(new String(password));
     }
+    
+    public void setWalletPassword(char[] password) {
+        walletPasswordField.setText(new String(password));
+    }
 }
