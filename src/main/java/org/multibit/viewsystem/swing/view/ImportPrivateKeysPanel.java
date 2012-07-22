@@ -1013,4 +1013,8 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
     public void setWalletPassword(char[] password) {
         walletPasswordField.setText(new String(password));
     }
+    
+    public boolean isWalletPasswordFieldEnabled() {
+        return walletPasswordField.isEnabled();
+    }
 }

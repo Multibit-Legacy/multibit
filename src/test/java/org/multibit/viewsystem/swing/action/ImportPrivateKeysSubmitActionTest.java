@@ -60,7 +60,8 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
 
         assertNotNull("importAction was not created successfully", importAction);
         assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
-        
+        assertTrue("Wallet password is enabled when it should not be", !importPanel.isWalletPasswordFieldEnabled());
+
          // Execute - this is with an unencrypted wallet and default settings.
         importAction.actionPerformed(null);
         assertEquals("Wrong message after default import execute", EXPECTED_NO_IMPORT_FILE_WAS_CHOSEN, importPanel.getMessageText());    
@@ -107,6 +108,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
 
         assertNotNull("importAction was not created successfully", importAction);
         assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
+        assertTrue("Wallet password is enabled when it should not be", !importPanel.isWalletPasswordFieldEnabled());
         
          // Execute - this is with an unencrypted wallet and default settings.
         importAction.actionPerformed(null);
@@ -163,7 +165,8 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
 
         assertNotNull("importAction was not created successfully", importAction);
         assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
-        
+        assertTrue("Wallet password is not enabled when it should be", importPanel.isWalletPasswordFieldEnabled());
+
          // Execute - this is with an encrypted wallet and default settings.
         importAction.actionPerformed(null);
         assertEquals("Wrong message1 after default export execute", EXPECTED_NO_IMPORT_FILE_WAS_CHOSEN, importPanel.getMessageText());     
@@ -225,6 +228,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
 
         assertNotNull("importAction was not created successfully", importAction);
         assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
+        assertTrue("Wallet password is not enabled when it should be", importPanel.isWalletPasswordFieldEnabled());
         
          // Execute - this is with an encrypted wallet and default settings.
         importAction.actionPerformed(null);

@@ -57,10 +57,11 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         FontSizer.INSTANCE.initialise(controller);
         ExportPrivateKeysPanel exportPanel = new ExportPrivateKeysPanel(controller, null);
         ExportPrivateKeysSubmitAction exportAction = exportPanel.getExportPrivateKeySubmitAction();
-
+ 
         assertNotNull("exportAction was not created successfully", exportAction);
         assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
-        
+        assertTrue("Wallet password is enabled when it should not be", !exportPanel.isWalletPasswordFieldEnabled());
+       
          // Execute - this is with an unencrypted wallet and default settings.
         exportAction.actionPerformed(null);
         assertEquals("Wrong message1 after default export execute", EXPECTED_YOU_MUST_SELECT_AN_OUTPUT_FILE, exportPanel.getMessageText1());    
@@ -160,6 +161,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
 
         assertNotNull("exportAction was not created successfully", exportAction);
         assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
+        assertTrue("Wallet password is not enabled when it should be", exportPanel.isWalletPasswordFieldEnabled());
         
         // Execute - this is with an encrypted wallet and default settings. (No wallet password set).
         exportAction.actionPerformed(null);

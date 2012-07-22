@@ -41,6 +41,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
 
         assertNotNull("createNewAction was not created successfully", createNewAction);
         assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
+        assertTrue("Wallet password is enabled when it should not be", !createNewPanel.isWalletPasswordFieldEnabled());
         
         // Execute the createNewAction - by default the createNewDialog should be set to add one key.
         createNewAction.actionPerformed(null);
@@ -79,6 +80,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         FontSizer.INSTANCE.initialise(controller);
         CreateNewReceivingAddressPanel createNewPanel = new CreateNewReceivingAddressPanel(controller, null, null);
         CreateNewReceivingAddressSubmitAction createNewAction = createNewPanel.getCreateNewReceivingAddressSubmitAction();
+        assertTrue("Wallet password is not enabled when it should be", createNewPanel.isWalletPasswordFieldEnabled());
 
         assertNotNull("createNewAction was not created successfully", createNewAction);
         assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
