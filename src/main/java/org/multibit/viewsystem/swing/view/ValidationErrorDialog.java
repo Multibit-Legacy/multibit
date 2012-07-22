@@ -17,18 +17,25 @@ package org.multibit.viewsystem.swing.view;
 
 import java.awt.Dimension;
 import java.awt.FontMetrics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.Action;
 import javax.swing.JOptionPane;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.OkBackToParentAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
+
+import com.google.bitcoin.core.Wallet.BalanceType;
 
 /**
  * The validation error dialog - used to tell the user their input is invalid.
@@ -55,35 +62,35 @@ public class ValidationErrorDialog extends MultiBitDialog {
     }
 
     /**
-     * initialise the validation error dialog
+     * Initialise the validation error dialog.
      */
     private void initUI() {
-        // get the data out of the user preferences
+        // Get the data out of the user preferences.
         String addressValue = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE);
         String amountValue = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_VALUE);
 
-        // invalid address
+        // Invalid address.
         String addressIsInvalid = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID);
         boolean addressIsInvalidBoolean = false;
         if (Boolean.TRUE.toString().equals(addressIsInvalid)) {
             addressIsInvalidBoolean = true;
         }
 
-        // amount is missing
+        // Amount is missing.
         String amountIsMissing = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_MISSING);
         boolean amountIsMissingBoolean = false;
         if (Boolean.TRUE.toString().equals(amountIsMissing)) {
             amountIsMissingBoolean = true;
         }
 
-        // invalid amount i.e. not a number or could not parse
+        // Invalid amount i.e. not a number or could not parse.
         String amountIsInvalid = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID);
         boolean amountIsInvalidBoolean = false;
         if (Boolean.TRUE.toString().equals(amountIsInvalid)) {
             amountIsInvalidBoolean = true;
         }
 
-        // amount is negative or zero
+        // Amount is negative or zero.
         String amountIsNegativeOrZero = controller.getModel().getActiveWalletPreference(
                 MultiBitModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO);
         boolean amountIsNegativeOrZeroBoolean = false;
@@ -91,14 +98,14 @@ public class ValidationErrorDialog extends MultiBitDialog {
             amountIsNegativeOrZeroBoolean = true;
         }
 
-        // amount is more than available funds
+        // Amount is more than available funds.
         String notEnoughFunds = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS);
         boolean notEnoughFundsBoolean = false;
         if (Boolean.TRUE.toString().equals(notEnoughFunds)) {
             notEnoughFundsBoolean = true;
         }
 
-        // get localised validation messages;
+        // Get localised validation messages.
         String completeMessage = "";
 
         int rows = 0;
@@ -157,6 +164,10 @@ public class ValidationErrorDialog extends MultiBitDialog {
             }
             String textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage",
                     new String[] { amountValue, fee });
+            if (controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE).compareTo(controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
+                textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage2",
+                        new String[] { amountValue, fee });
+            }
             String[] lines = textToAdd.split("\n");
             for (int i = 0; i < lines.length; i++) {
                 if (lines[i] != null && lines[i].length() > longestRow.length()) {
@@ -167,12 +178,25 @@ public class ValidationErrorDialog extends MultiBitDialog {
             rows++;
         }
 
-        // tell user validation messages
+        // Tell user validation messages.
+        Action availableToSpendHelpAction = new HelpContextAction(controller, null, "validationErrorView.moreHelp",
+                "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText", HelpContentsPanel.HELP_AVAILABLE_TO_SPEND_URL);
+        HelpButton availableToSpendHelpButton = new HelpButton(availableToSpendHelpAction, controller, true);
+        final ValidationErrorDialog finalValidationErrorDialog = this;
+        availableToSpendHelpButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                finalValidationErrorDialog.setVisible(false);
+                
+            }});
+
         OkBackToParentAction okAction = new OkBackToParentAction(controller, this);
         MultiBitButton okButton = new MultiBitButton(okAction, controller);
 
-        Object[] options = { okButton };
-
+        Object[] options = {okButton};
+        if (controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE).compareTo(controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
+            options = new Object[] { okButton, availableToSpendHelpButton};
+        }
         MultiBitTextArea completeMessageTextArea = new MultiBitTextArea(completeMessage, rows, 20, controller);
         completeMessageTextArea.setOpaque(false);
         completeMessageTextArea.setEditable(false);
