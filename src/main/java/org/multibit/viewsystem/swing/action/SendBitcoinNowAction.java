@@ -35,7 +35,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.SendBitcoinConfirmDialog;
+import org.multibit.viewsystem.swing.view.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +55,7 @@ public class SendBitcoinNowAction extends AbstractAction {
     private static final long serialVersionUID = 1913592460523457765L;
 
     private MultiBitController controller;
-    private SendBitcoinConfirmDialog sendBitcoinConfirmDialog;
+    private SendBitcoinConfirmPanel sendBitcoinConfirmPanel;
     private JPasswordField walletPasswordField;
 
     private final static int MAX_LENGTH_OF_ERROR_MESSAGE = 70;
@@ -75,10 +75,10 @@ public class SendBitcoinNowAction extends AbstractAction {
      * Creates a new {@link SendBitcoinNowAction}.
      */
     public SendBitcoinNowAction(MultiBitFrame mainFrame, MultiBitController controller,
-            SendBitcoinConfirmDialog sendBitcoinConfirmView, JPasswordField walletPasswordField, ImageIcon icon) {
+            SendBitcoinConfirmPanel sendBitcoinConfirmPanel, JPasswordField walletPasswordField, ImageIcon icon) {
         super(controller.getLocaliser().getString("sendBitcoinConfirmAction.text"), icon);
         this.controller = controller;
-        this.sendBitcoinConfirmDialog = sendBitcoinConfirmView;
+        this.sendBitcoinConfirmPanel = sendBitcoinConfirmPanel;
         this.walletPasswordField = walletPasswordField;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
@@ -91,10 +91,7 @@ public class SendBitcoinNowAction extends AbstractAction {
      * Actually send the bitcoin.
      */
     public void actionPerformed(ActionEvent event) {
-        sendBitcoinConfirmDialog.setMessageText(" ", " ");
-        sendBitcoinConfirmDialog.invalidate();
-        sendBitcoinConfirmDialog.validate();
-        sendBitcoinConfirmDialog.repaint();
+        sendBitcoinConfirmPanel.setMessageText(" ", " ");
 
         // check to see if the wallet files have changed
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
@@ -129,7 +126,7 @@ public class SendBitcoinNowAction extends AbstractAction {
                     // Encrypted wallet.
                     if (walletPassword == null || walletPassword.length == 0) {
                         // User needs to enter password.
-                        sendBitcoinConfirmDialog.setMessageText(controller.getLocaliser().getString("showExportPrivateKeysAction.youMustEnterTheWalletPassword"), "");
+                        sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("showExportPrivateKeysAction.youMustEnterTheWalletPassword"), "");
                         return;
                     }
                     
@@ -138,14 +135,14 @@ public class SendBitcoinNowAction extends AbstractAction {
                         
                         if (!encryptableWallet.checkPasswordCanDecryptFirstPrivateKey(walletPassword)) {
                             // The password supplied is incorrect.
-                            sendBitcoinConfirmDialog.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"), "");
+                            sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"), "");
                             return;
                         }
                     }
                 }
             }
             
-            sendBitcoinConfirmDialog.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
+            sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
 
             performSend(perWalletModelData, sendAddress, sendAmount, fee, walletPassword);
         }
@@ -234,11 +231,11 @@ public class SendBitcoinNowAction extends AbstractAction {
 
         if (sendWasSuccessful) {
             String successMessage = controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk");
-            if (sendBitcoinConfirmDialog != null && (sendBitcoinConfirmDialog.isVisible() || useTestParameters)) {
-                sendBitcoinConfirmDialog.setMessageText(
+            if (sendBitcoinConfirmPanel != null && (sendBitcoinConfirmPanel.isVisible() || useTestParameters)) {
+                sendBitcoinConfirmPanel.setMessageText(
                         controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk"), "");
-                sendBitcoinConfirmDialog.showOkButton();
-                sendBitcoinConfirmDialog.clearPassword();
+                sendBitcoinConfirmPanel.showOkButton();
+                sendBitcoinConfirmPanel.clearPassword();
             } else {
                 MessageManager.INSTANCE.addMessage(new Message(successMessage));
             }
@@ -250,8 +247,8 @@ public class SendBitcoinNowAction extends AbstractAction {
             }
 
             String errorMessage = controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSendFailed");
-            if (sendBitcoinConfirmDialog != null  && (sendBitcoinConfirmDialog.isVisible() || useTestParameters)) {
-                sendBitcoinConfirmDialog.setMessageText(errorMessage, message);
+            if (sendBitcoinConfirmPanel != null  && (sendBitcoinConfirmPanel.isVisible() || useTestParameters)) {
+                sendBitcoinConfirmPanel.setMessageText(errorMessage, message);
             } else {
                 MessageManager.INSTANCE.addMessage(new Message(errorMessage + " " + message));
             }
