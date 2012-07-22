@@ -11,10 +11,14 @@ public class HelpButton extends MultiBitButton {
     private static final long serialVersionUID = 6708096174704292284L;
 
     public HelpButton(Action action, MultiBitController controller) {
+        this(action, controller, false);
+    }
+    
+    public HelpButton(Action action, MultiBitController controller, boolean paintBorder) {
         super(action, controller);
 
-        setBorderPainted(false);
-        setContentAreaFilled(false);
+        setBorderPainted(paintBorder);
+        setContentAreaFilled(paintBorder);
 
         if (getIcon() != null && (getText() == null || "".equals(getText()))) {
             int width = getIcon().getIconWidth();
