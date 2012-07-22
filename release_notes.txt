@@ -1,12 +1,17 @@
 MultiBit release notes.
 
-Version 0.4.4
+23 Jul 2012 Version 0.4.5
++  Faster connection to the bitcoin network at startup
++  More help on 'Available to spend'
+
+
+17 Jul 2012 Version 0.4.4
 Enhancements:
 +  I18n update
 +  Update to bitcoinj 0.5.2
 
 
-Version 0.4.3
+09 Jul 2012 Version 0.4.3
 Bug fix
 +  Replay from genesis block fixed
 
