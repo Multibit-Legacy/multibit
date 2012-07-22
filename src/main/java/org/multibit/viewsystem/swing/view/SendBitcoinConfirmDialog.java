@@ -45,7 +45,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import com.google.bitcoin.core.WalletType;
 
 /**
- * The send bitcoin confirm dialog
+ * The send bitcoin confirm dialog.
  */
 public class SendBitcoinConfirmDialog extends MultiBitDialog {
 
@@ -72,6 +72,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
 
     private MultiBitLabel confirmText1, confirmText2;
     
+    private SendBitcoinNowAction sendBitcoinNowAction;
     private MultiBitButton sendButton;
     private MultiBitButton cancelButton;
     
@@ -98,16 +99,18 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
     }
 
     /**
-     * initialise bitcoin confirm dialog
+     * Initialise bitcoin confirm dialog.
      */
     public void initUI() {
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         
-        int minimumHeight = fontMetrics.getHeight() * 11 + HEIGHT_DELTA;
-        int minimumWidth = Math.max(fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT), fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinConfirmView.message"))) + WIDTH_DELTA;
-        setMinimumSize(new Dimension(minimumWidth, minimumHeight));
-        positionDialogRelativeToParent(this, 0.5D, 0.47D);
-
+        if (mainFrame != null) {
+            int minimumHeight = fontMetrics.getHeight() * 11 + HEIGHT_DELTA;
+            int minimumWidth = Math.max(fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT), fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinConfirmView.message"))) + WIDTH_DELTA;
+            setMinimumSize(new Dimension(minimumWidth, minimumHeight));
+            positionDialogRelativeToParent(this, 0.5D, 0.47D);
+        }
+        
         JPanel mainPanel = new JPanel();
         mainPanel.setOpaque(false);
         
@@ -124,7 +127,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
                 + ExportPrivateKeysPanel.STENT_DELTA;
 
 
-        // get the data out of the wallet preferences
+        // Get the data out of the wallet preferences.
         sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
         sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
         sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
@@ -442,7 +445,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        SendBitcoinNowAction sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this, walletPasswordField, ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
+        sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this, walletPasswordField, ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
         sendButton = new MultiBitButton(sendBitcoinNowAction, controller);
         buttonPanel.add(sendButton);
 
@@ -510,5 +513,18 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         sendButton.setAction(okAction);
         
         cancelButton.setVisible(false);
+    }
+    
+    // Used in testing.
+    public SendBitcoinNowAction getSendBitcoinNowAction() {
+        return sendBitcoinNowAction;
+    }
+    
+    public String getMessageText1() {
+        return confirmText1.getText();
+    }    
+    
+    public String getMessageText2() {
+        return confirmText2.getText();
     }
 }

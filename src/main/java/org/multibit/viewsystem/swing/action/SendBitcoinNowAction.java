@@ -59,6 +59,17 @@ public class SendBitcoinNowAction extends AbstractAction {
     private JPasswordField walletPasswordField;
 
     private final static int MAX_LENGTH_OF_ERROR_MESSAGE = 70;
+    
+    /**
+     * Boolean to indicate that the test parameters should be used for "sending".
+     */
+    private boolean useTestParameters = false;
+    
+    /**
+     * Boolean to indicate that the "send was successful" or not (when useTestParameters = true). 
+     */
+    private boolean sayTestSendWasSuccessful = false;
+    
 
     /**
      * Creates a new {@link SendBitcoinNowAction}.
@@ -149,7 +160,7 @@ public class SendBitcoinNowAction extends AbstractAction {
         boolean sendWasSuccessful = Boolean.FALSE;
         boolean reencryptRequired = false;
         Wallet wallet = perWalletModelData.getWallet();
-       try {
+        try {
             // Decrypt the wallet prior to sending.
              if (wallet instanceof EncryptableWallet) {
                 EncryptableWallet encryptableWallet = (EncryptableWallet)wallet;
@@ -162,15 +173,27 @@ public class SendBitcoinNowAction extends AbstractAction {
             
             log.debug("Sending from wallet " + perWalletModelData.getWalletFilename() + ", amount = " + sendAmount + ", fee = "
                     + fee + " to address = " + sendAddress);
-            Transaction transaction = controller.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee);
-            if (transaction == null) {
-                // a null transaction returned indicates there was not
-                // enough money (in spite of our validation)
-                message = controller.getLocaliser().getString("sendBitcoinNowAction.thereWereInsufficientFundsForTheSend");
-                log.error(message);
+            
+            if (useTestParameters) {
+                log.debug("Using test parameters - not really sending");
+                if (sayTestSendWasSuccessful) {
+                    sendWasSuccessful = Boolean.TRUE;
+                    log.debug("Using test parameters - saying send was successful");  
+                } else {
+                    message = "test - send failed";
+                    log.debug("Using test parameters - saying send failed");  
+                }
             } else {
-                sendWasSuccessful = Boolean.TRUE;
-                log.debug("Sent transaction was:\n" + transaction.toString());
+                Transaction transaction = controller.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee);
+                if (transaction == null) {
+                    // a null transaction returned indicates there was not
+                    // enough money (in spite of our validation)
+                    message = controller.getLocaliser().getString("sendBitcoinNowAction.thereWereInsufficientFundsForTheSend");
+                    log.error(message);
+                } else {
+                    sendWasSuccessful = Boolean.TRUE;
+                    log.debug("Sent transaction was:\n" + transaction.toString());
+               }
             }
         } catch (EncrypterDecrypterException e) {
             log.error(e.getMessage(), e);
@@ -211,7 +234,7 @@ public class SendBitcoinNowAction extends AbstractAction {
 
         if (sendWasSuccessful) {
             String successMessage = controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk");
-            if (sendBitcoinConfirmDialog != null && sendBitcoinConfirmDialog.isVisible()) {
+            if (sendBitcoinConfirmDialog != null && (sendBitcoinConfirmDialog.isVisible() || useTestParameters)) {
                 sendBitcoinConfirmDialog.setMessageText(
                         controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSentOk"), "");
                 sendBitcoinConfirmDialog.showOkButton();
@@ -227,7 +250,7 @@ public class SendBitcoinNowAction extends AbstractAction {
             }
 
             String errorMessage = controller.getLocaliser().getString("sendBitcoinNowAction.bitcoinSendFailed");
-            if (sendBitcoinConfirmDialog != null && sendBitcoinConfirmDialog.isVisible()) {
+            if (sendBitcoinConfirmDialog != null  && (sendBitcoinConfirmDialog.isVisible() || useTestParameters)) {
                 sendBitcoinConfirmDialog.setMessageText(errorMessage, message);
             } else {
                 MessageManager.INSTANCE.addMessage(new Message(errorMessage + " " + message));
@@ -237,5 +260,10 @@ public class SendBitcoinNowAction extends AbstractAction {
         log.debug("firing fireRecreateAllViews...");
         controller.fireRecreateAllViews(false);
         log.debug("firing fireRecreateAllViews...done");
+    }
+    
+    void setTestParameters(boolean useTestParameters, boolean sayTestSendWasSuccessful) {
+        this.useTestParameters = useTestParameters;
+        this.sayTestSendWasSuccessful = sayTestSendWasSuccessful;
     }
 }
