@@ -19,30 +19,14 @@ import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
-import org.multibit.viewsystem.swing.action.OkBackToParentAction;
-import org.multibit.viewsystem.swing.action.SendBitcoinNowAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
-import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
-import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
-import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
-
-import com.google.bitcoin.core.WalletType;
 
 /**
  * The send bitcoin confirm dialog.
@@ -53,32 +37,11 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
 
     private static final int HEIGHT_DELTA = 150;
     private static final int WIDTH_DELTA = 280;
-    
-    private static final int STENT_WIDTH = 10;
-    
+        
     private MultiBitFrame mainFrame;
     private SendBitcoinConfirmPanel sendBitcoinConfirmPanel;
 
     private MultiBitController controller;
-
-    private MultiBitLabel sendAddressText;
-    private MultiBitLabel sendLabelText;
-    private MultiBitLabel sendAmountText;
-    private MultiBitLabel sendFeeText;
-
-    private String sendAddress;
-    private String sendLabel;
-    private String sendAmount;
-    private String sendFee;
-
-    private MultiBitLabel confirmText1, confirmText2;
-    
-    private SendBitcoinNowAction sendBitcoinNowAction;
-    private MultiBitButton sendButton;
-    private MultiBitButton cancelButton;
-    
-    private JPasswordField walletPasswordField;
-    private MultiBitLabel walletPasswordPromptLabel;
 
     /**
      * Creates a new {@link SendBitcoinConfirmDialog}.
@@ -95,7 +58,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         
         initUI();
         
-        cancelButton.requestFocusInWindow();
+        sendBitcoinConfirmPanel.getCancelButton().requestFocusInWindow();
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
     }
 
@@ -118,52 +81,4 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         setLayout(new BorderLayout());
         add(sendBitcoinConfirmPanel, BorderLayout.CENTER);
     }
-
-//    public void setMessageText(final String message1, final String message2) {
-//        SwingUtilities.invokeLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                confirmText1.setText(message1);
-//                confirmText2.setText(" " + message2);
-//            }});
-//        invalidate();
-//        validate();
-//        repaint();
-//    }    
-//    
-//    public void clearPassword() {
-//        SwingUtilities.invokeLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                walletPasswordField.setText("");
-//            }});
-//    }
-//    
-//    public void showOkButton() {
-//        OkBackToParentAction okAction = new OkBackToParentAction(controller, this);
-//        sendButton.setAction(okAction);
-//        
-//        cancelButton.setVisible(false);
-//    }
-//    
-//    // Used in testing.
-//    public SendBitcoinNowAction getSendBitcoinNowAction() {
-//        return sendBitcoinNowAction;
-//    }
-//    
-//    public String getMessageText1() {
-//        return confirmText1.getText();
-//    }    
-//    
-//    public String getMessageText2() {
-//        return confirmText2.getText();
-//    }
-//    
-//    public void setWalletPassword(char[] password) {
-//        walletPasswordField.setText(new String(password));
-//    }
-//    
-//    public boolean isWalletPasswordFieldEnabled() {
-//        return walletPasswordField.isEnabled();
-//    }
 }

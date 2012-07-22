@@ -50,10 +50,7 @@ import com.google.bitcoin.core.WalletType;
 public class SendBitcoinConfirmPanel extends JPanel {
 
     private static final long serialVersionUID = 191435612399957705L;
-
-    private static final int HEIGHT_DELTA = 150;
-    private static final int WIDTH_DELTA = 280;
-    
+   
     private static final int STENT_WIDTH = 10;
     
     private MultiBitFrame mainFrame;
@@ -506,6 +503,10 @@ public class SendBitcoinConfirmPanel extends JPanel {
         sendButton.setAction(okAction);
         
         cancelButton.setVisible(false);
+    }
+    
+    public MultiBitButton getCancelButton() {
+        return cancelButton;
     }
     
     // Used in testing.
