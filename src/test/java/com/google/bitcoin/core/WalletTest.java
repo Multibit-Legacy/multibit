@@ -16,8 +16,8 @@
 
 package com.google.bitcoin.core;
 
-import static com.google.bitcoin.core.TestUtils.createFakeBlock;
-import static com.google.bitcoin.core.TestUtils.createFakeTx;
+import static com.google.bitcoin.core.MultiBitTestUtils.createFakeBlock;
+import static com.google.bitcoin.core.MultiBitTestUtils.createFakeTx;
 import static com.google.bitcoin.core.Utils.toNanoCoins;
 import com.google.bitcoin.core.WalletTransaction.Pool;
 import com.google.bitcoin.store.BlockStore;
