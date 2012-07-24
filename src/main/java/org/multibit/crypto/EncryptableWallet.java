@@ -165,4 +165,8 @@ public class EncryptableWallet extends Wallet {
     public void setEncrypterDecrypter(EncrypterDecrypter encrypterDecrypter) {
         this.encrypterDecrypter = encrypterDecrypter;
     }
+
+    public void setCurrentlyEncrypted(boolean currentlyEncrypted) {
+        this.currentlyEncrypted = currentlyEncrypted;
+    }
 }

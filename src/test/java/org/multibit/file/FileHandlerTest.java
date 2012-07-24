@@ -42,7 +42,6 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletType;
-import com.google.bitcoin.utils.BriefLogFormatter;
 
 public class FileHandlerTest extends TestCase {
     private final String WALLET_TESTDATA_DIRECTORY = "wallets";
@@ -337,10 +336,10 @@ public class FileHandlerTest extends TestCase {
         assertEquals(2, perWalletModelDataReborn.getWallet().keychain.size());
 
         assertEquals(WalletVersion.PROTOBUF, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
-        //assertTrue("Wallet is not ENCRYPTED when it should be", perWalletModelDataReborn.getWallet().getWalletType() == WalletType.ENCRYPTED);
+        assertTrue("Wallet is not ENCRYPTED when it should be", perWalletModelDataReborn.getWallet().getWalletType() == WalletType.ENCRYPTED);
         
         EncryptableWallet rebornEncryptableWallet = (EncryptableWallet)perWalletModelDataReborn.getWallet();
-        //assertTrue("Wallet isCurrentlyEncrypted is false when it should be true", rebornEncryptableWallet.isCurrentlyEncrypted());
+        assertTrue("Wallet isCurrentlyEncrypted is false when it should be true", rebornEncryptableWallet.isCurrentlyEncrypted());
         
         // Get the keys out the reborn wallet and check that all the keys are EncryptableKeys and encrypted.
         ArrayList<ECKey> rebornKeys = rebornEncryptableWallet.getKeychain();

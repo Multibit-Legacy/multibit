@@ -71,4 +71,12 @@ public class EncryptableECKey extends ECKey {
     public byte[] getEncryptedPrivateKey() {
         return encryptedPrivateKey;
     }
+
+    public void setEncryptedPrivateKey(byte[] encryptedPrivateKey) {
+        this.encryptedPrivateKey = encryptedPrivateKey;
+    }
+
+    public void setEncrypted(boolean isEncrypted) {
+        this.isEncrypted = isEncrypted;
+    }
 }

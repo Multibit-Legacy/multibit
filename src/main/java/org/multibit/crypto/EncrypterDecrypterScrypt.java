@@ -247,4 +247,8 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter {
         }
         return byteArray;
     }
+
+    public ScryptParameters getScryptParameters() {
+        return scryptParameters;
+    }
 }
