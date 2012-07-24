@@ -1,11 +1,15 @@
 package org.multibit.viewsystem.swing.action;
 
 import java.io.File;
+import java.security.SecureRandom;
 import java.util.Locale;
 
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncryptableWallet;
+import org.multibit.crypto.EncrypterDecrypter;
+import org.multibit.crypto.EncrypterDecrypterScrypt;
+import org.multibit.crypto.ScryptParameters;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
@@ -21,6 +25,9 @@ import com.google.bitcoin.core.NetworkParameters;
  *
  */
 public class ActionTestUtils {
+    
+    private static SecureRandom secureRandom;
+
     public static MultiBitController createController() {
         MultiBitController controller = new MultiBitController();
          
@@ -34,7 +41,16 @@ public class ActionTestUtils {
      }
      
      public static void createNewActiveWallet(MultiBitController controller, String descriptor, boolean encrypt, char[] walletPassword) throws Exception {
-         EncryptableWallet wallet = new EncryptableWallet(NetworkParameters.prodNet());
+         if (secureRandom == null) {
+             secureRandom = new SecureRandom();
+         }
+         
+         byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
+         secureRandom.nextBytes(salt);
+         ScryptParameters scryptParameters = new ScryptParameters(salt);
+         EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
+
+         EncryptableWallet wallet = new EncryptableWallet(NetworkParameters.prodNet(), encrypterDecrypter);
          wallet.getKeychain().add(new ECKey());
   
          PerWalletModelData perWalletModelData = new PerWalletModelData();

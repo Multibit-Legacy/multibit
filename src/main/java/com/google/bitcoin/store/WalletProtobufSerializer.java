@@ -24,6 +24,9 @@ import com.google.protobuf.TextFormat;
 import org.bitcoinj.wallet.Protos;
 import org.multibit.IsMultiBitClass;
 import org.multibit.crypto.EncryptableWallet;
+import org.multibit.crypto.EncrypterDecrypter;
+import org.multibit.crypto.EncrypterDecrypterScrypt;
+import org.multibit.crypto.ScryptParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -216,7 +219,13 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         // System.out.println(TextFormat.printToString(walletProto));
 
         NetworkParameters params = NetworkParameters.fromID(walletProto.getNetworkIdentifier());
-        Wallet wallet = new EncryptableWallet(params);
+        
+        // TODO: REPLACE WITH SERIALISED SCRYPT PARAMETERS  
+        byte[] salt = new byte[ScryptParameters.SALT_LENGTH]; // ALL BLANK
+        ScryptParameters scryptParameters = new ScryptParameters(salt);
+        EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
+      
+        Wallet wallet = new EncryptableWallet(params, encrypterDecrypter);
         
         // Read all keys
         for (Protos.Key keyProto : walletProto.getKeyList()) {

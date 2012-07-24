@@ -52,62 +52,44 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter {
     public static final String STRING_ENCODING = "UTF-8";
 
     /**
-     * Key length.
+     * Key length in bytes.
      */
-    private static final int KEY_LENGTH = 32; // in bytes = 256 bits.
+    private static final int KEY_LENGTH = 32; // = 256 bits.
 
     /**
-     * The size of an AES block
+     * The size of an AES block in bytes.
      * This is also the length of the initialisation vector.
      */
-    private static final int BLOCK_LENGTH = 16;  // in bytes = 128 bits.
+    private static final int BLOCK_LENGTH = 16;  // = 128 bits.
 
     private static SecureRandom secureRandom = new SecureRandom();
 
-    // CPU cost parameter for scrypt algorithm.
-    private int n;
-    
-    // Memory cost parameter for scrypt algorithm.
-    private int r;
-    
-    // Parallelization parameter for scrypt algorithm.
-    private int p;
+    // Scrypt parameters.
+    ScryptParameters scryptParameters;
     
     /**
-     * Encryption/ Decryption using default parameters.
-     */
-    public EncrypterDecrypterScrypt() {
-        this(16384, 8, 1);
-    }
-
-    /**
-     * Encryption/ Decryption using user specified parameters.
+     * Encryption/ Decryption using specified parameters.
      * 
-     * @param n CPU cost parameter
-     * @param r Memory cost parameter
-     * @param p Parallelization parameter
+     * @param scryptParameters ScryptParameters to use
      */
-    public EncrypterDecrypterScrypt(int n, int r, int p) {
-        this.n = n;
-        this.r = r;
-        this.p = p;
+    public EncrypterDecrypterScrypt(ScryptParameters scryptParameters) {
+        this.scryptParameters = scryptParameters;
     }
 
     /**
      * Generate key.
      * 
      * @param password    The password to use in key generation
-     * @param salt        The salt to use in key generation
      * @return            The KeyParameter containing the created key
      * @throws            EncrypterDecrypterException
      */
-    private KeyParameter getAESPasswordKey(char[] password, byte[] salt) throws EncrypterDecrypterException {
+    private KeyParameter getAESPasswordKey(char[] password) throws EncrypterDecrypterException {
         try {
             byte[] passwordBytes = convertToByteArray(password); 
-            byte[] keyBytes = SCrypt.scrypt(passwordBytes, salt, n, r, p, KEY_LENGTH);
+            byte[] keyBytes = SCrypt.scrypt(passwordBytes, scryptParameters.getSalt(), scryptParameters.getN(), scryptParameters.getR(), scryptParameters.getP(), KEY_LENGTH);
             return new KeyParameter(keyBytes);
         } catch (Exception e) {
-            throw new EncrypterDecrypterException("Could not generate key from password and salt '" + Utils.bytesToHexString(salt), e);
+            throw new EncrypterDecrypterException("Could not generate key from password and salt '" + Utils.bytesToHexString(scryptParameters.getSalt()), e);
         }
     }
 
@@ -142,17 +124,17 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter {
      * 
      * @param plain             The bytes to encrypt
      * @param passwordBytes     The password to use for encryption
-     * @return                  IV_LENGTH bytes of iv, followed by one byte indicating final block length followed by the encrypted bytes.
+     * @return                  IV_LENGTH bytes of iv, followed by one byte indicating final block length, followed by the encrypted bytes.
      * @throws                  EncrypterDecrypterException
      */
     @Override
     public byte[] encrypt(byte[] plainBytes, char[] password) throws EncrypterDecrypterException {
         try {
-            // Generate iv - each encryption call has a different iv - it is used as the salt in key creation.
+            // Generate iv - each encryption call has a different iv.
             byte[] iv = new byte[BLOCK_LENGTH];
             secureRandom.nextBytes(iv);
  
-            KeyParameter key = getAESPasswordKey(password, iv);
+            KeyParameter key = getAESPasswordKey(password);
             ParametersWithIV keyWithIv = new ParametersWithIV(key, iv);
 
             // Encrypt using AES.
@@ -213,7 +195,7 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter {
             byte[] cipherBytes = new byte[bytesToDecode.length - BLOCK_LENGTH - 1];
             System.arraycopy(bytesToDecode, BLOCK_LENGTH + 1, cipherBytes, 0, bytesToDecode.length - BLOCK_LENGTH - 1);
 
-            KeyParameter key = getAESPasswordKey(password, iv);
+            KeyParameter key = getAESPasswordKey(password);
             ParametersWithIV keyWithIv = new ParametersWithIV(key, iv);
 
             // Decrypt the message.

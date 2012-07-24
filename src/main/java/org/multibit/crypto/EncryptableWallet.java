@@ -15,12 +15,25 @@ public class EncryptableWallet extends Wallet {
     private static final long serialVersionUID = -8274588170052518322L;
 
     /**
-     * Whether the wallet has all its keys encrypted (locked = true) or not.
+     * Whether the wallet has all its keys encrypted (currentlyEncrypted = true) or not.
      */
     private boolean currentlyEncrypted;
+    
+    /**
+     * The encrypterDecrypter for the wallet.
+     */
+    private EncrypterDecrypter encrypterDecrypter;
+    
+    /**
+     * Create a new EncryptableWallet.
+     * 
+     * @param params
+     * @param encrypterDecrypter EncrypterDecrypter The class used to actually encrypt and decrypt
+     */
  
-    public EncryptableWallet(NetworkParameters params) {
+    public EncryptableWallet(NetworkParameters params, EncrypterDecrypter encrypterDecrypter) {
         super(params);
+        this.encrypterDecrypter = encrypterDecrypter;
     }
     
     /**
@@ -42,7 +55,7 @@ public class EncryptableWallet extends Wallet {
                 encryptedKeyChain.add(key);
             } else {
                 // Convert plain ECKey into EncryptableECKey - then encrypt.
-                EncryptableECKey newKey = new EncryptableECKey(key, new EncrypterDecrypterScrypt());
+                EncryptableECKey newKey = new EncryptableECKey(key, encrypterDecrypter);
                 ((EncryptableECKey)newKey).encrypt(password);
                 encryptedKeyChain.add(newKey);
             }
@@ -78,7 +91,7 @@ public class EncryptableWallet extends Wallet {
                 decryptedKeyChain.add(key);
             } else {
                 // Convert plain ECKey into EncryptableECKey - does not need decrypting.
-                EncryptableECKey newKey = new EncryptableECKey(key, new EncrypterDecrypterScrypt());
+                EncryptableECKey newKey = new EncryptableECKey(key, encrypterDecrypter);
                 decryptedKeyChain.add(newKey);
             }
         }
@@ -131,7 +144,6 @@ public class EncryptableWallet extends Wallet {
             // Clone the encrypted bytes.
             byte[] cloneEncrypted = new byte[encryptedBytes.length];
             System.arraycopy(encryptedBytes, 0, cloneEncrypted, 0, encryptedBytes.length);
-            EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt();
             try {
                 encrypterDecrypter.decrypt(cloneEncrypted, password);
                 
@@ -144,5 +156,13 @@ public class EncryptableWallet extends Wallet {
         }
         
         return false;
+    }
+
+    public EncrypterDecrypter getEncrypterDecrypter() {
+        return encrypterDecrypter;
+    }
+
+    public void setEncrypterDecrypter(EncrypterDecrypter encrypterDecrypter) {
+        this.encrypterDecrypter = encrypterDecrypter;
     }
 }

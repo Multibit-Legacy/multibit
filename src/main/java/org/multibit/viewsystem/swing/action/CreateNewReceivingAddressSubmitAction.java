@@ -117,18 +117,25 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
             }
             String addressString = "";
             try {
-            for (int i = 0; i < createNewReceivingAddressPanel.getNumberOfAddressesToCreate(); i++) {
-                ECKey newKey;
-                if (encryptNewKeys) {
-                    newKey = new EncryptableECKey(new EncrypterDecrypterScrypt());
-                    ((EncryptableECKey)newKey).encrypt(walletPassword.getPassword());
-                } else {
-                   newKey = new ECKey();
+                for (int i = 0; i < createNewReceivingAddressPanel.getNumberOfAddressesToCreate(); i++) {
+                    ECKey newKey;
+                    if (encryptNewKeys) {
+                        // Use the wallet EncrypterDescrypter.
+                        if (perWalletModelData.getWallet() instanceof EncryptableWallet) {
+                            EncryptableWallet encryptableWallet = (EncryptableWallet)perWalletModelData.getWallet();
+                            newKey = new EncryptableECKey(encryptableWallet.getEncrypterDecrypter());
+                            ((EncryptableECKey) newKey).encrypt(walletPassword.getPassword());
+                        } else {
+                            // The wallet is not encryptable - should not happen.
+                            newKey = new ECKey();
+                        }
+                    } else {
+                        newKey = new ECKey();
+                    }
+                    perWalletModelData.getWallet().keychain.add(newKey);
+                    addressString = newKey.toAddress(controller.getModel().getNetworkParameters()).toString();
+                    walletInfo.addReceivingAddress(new AddressBookData("", addressString), false);
                 }
-                perWalletModelData.getWallet().keychain.add(newKey);
-                addressString = newKey.toAddress(controller.getModel().getNetworkParameters()).toString();
-                walletInfo.addReceivingAddress(new AddressBookData("", addressString), false);
-            }
             } catch (EncrypterDecrypterException ede) {
                 log.error(ede.getMessage(), ede);
                 createNewReceivingAddressPanel.setMessageText(ede.getMessage());

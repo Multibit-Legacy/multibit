@@ -15,6 +15,8 @@
  */
 package org.multibit.crypto;
 
+import java.security.SecureRandom;
+
 import junit.framework.TestCase;
 
 import org.junit.Before;
@@ -24,14 +26,22 @@ import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.utils.BriefLogFormatter;
 
 public class EncryptableECKeyTest extends TestCase {
-  
+    private SecureRandom secureRandom;
+
     private EncryptableECKey myKey;
 
     private static char[] PASSWORD1 = "aTestPassword".toCharArray();
     
     @Before
     public void setUp() throws Exception {
-        myKey = new EncryptableECKey(new EncrypterDecrypterScrypt());
+        secureRandom = new SecureRandom();
+        
+        byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
+        secureRandom.nextBytes(salt);
+        ScryptParameters scryptParameters = new ScryptParameters(salt);
+        EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
+
+        myKey = new EncryptableECKey(encrypterDecrypter);
 
         BriefLogFormatter.init();
     }

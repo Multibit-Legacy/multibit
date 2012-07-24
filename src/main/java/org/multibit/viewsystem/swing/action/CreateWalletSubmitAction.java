@@ -27,6 +27,9 @@ import javax.swing.JFileChooser;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncryptableWallet;
+import org.multibit.crypto.EncrypterDecrypter;
+import org.multibit.crypto.EncrypterDecrypterScrypt;
+import org.multibit.crypto.ScryptParameters;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
@@ -143,8 +146,13 @@ public class CreateWalletSubmitAction extends AbstractAction {
                     controller.fireDataChanged();
                 }
             } else {
-                // Create a new wallet.
-                Wallet newWallet = new EncryptableWallet(controller.getModel().getNetworkParameters());
+                // Create a new wallet - protobuf and scrypt encryptable.
+                byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
+                controller.getMultiBitService().getSecureRandom().nextBytes(salt);
+                ScryptParameters scryptParameters = new ScryptParameters(salt);
+                EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
+                Wallet newWallet = new EncryptableWallet(controller.getModel().getNetworkParameters(), encrypterDecrypter);
+
                 ECKey newKey = new ECKey();
                 newWallet.keychain.add(newKey);
                 PerWalletModelData perWalletModelData = new PerWalletModelData();

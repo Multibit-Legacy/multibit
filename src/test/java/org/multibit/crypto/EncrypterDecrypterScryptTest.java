@@ -16,16 +16,19 @@
 package org.multibit.crypto;
 
 import java.io.UnsupportedEncodingException;
+import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
 
 import junit.framework.TestCase;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.utils.BriefLogFormatter;
 
 public class EncrypterDecrypterScryptTest extends TestCase {
 
@@ -47,10 +50,23 @@ public class EncrypterDecrypterScryptTest extends TestCase {
     // Moscow in Russian in Cyrillic.
     private static char[] PASSWORD3 = "\u041c\u043e\u0441\u043a\u0432\u0430".toCharArray();
     
+    private SecureRandom secureRandom;
+    private ScryptParameters scryptParameters;
+
+    @Before
+    public void setUp() throws Exception {
+        secureRandom = new SecureRandom();
+        
+        byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
+        secureRandom.nextBytes(salt);
+        scryptParameters = new ScryptParameters(salt);
+
+        BriefLogFormatter.init();
+    }
 
     @Test
     public void testEncryptDecryptGood1() throws EncrypterDecrypterException {
-        EncrypterDecrypterScrypt encrypterDecrypter = new EncrypterDecrypterScrypt();
+        EncrypterDecrypterScrypt encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
 
         // Encrypt.
         String cipherText = encrypterDecrypter.encrypt(TEST_STRING1, PASSWORD1);
@@ -65,7 +81,7 @@ public class EncrypterDecrypterScryptTest extends TestCase {
     }
 
     public void testEncryptDecryptGood2() throws EncrypterDecrypterException {
-        EncrypterDecrypterScrypt encrypterDecrypter = new EncrypterDecrypterScrypt();
+        EncrypterDecrypterScrypt encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
 
         // Create a longer encryption string.
         StringBuffer stringBuffer = new StringBuffer();
@@ -90,7 +106,7 @@ public class EncrypterDecrypterScryptTest extends TestCase {
      * @throws UnsupportedEncodingException 
      */
     public void testEncryptDecryptGood3() throws EncrypterDecrypterException, UnsupportedEncodingException {
-        EncrypterDecrypterScrypt encrypterDecrypter = new EncrypterDecrypterScrypt();
+        EncrypterDecrypterScrypt encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
 
         int numberOfTests = 16;
         System.out.print("EncrypterDecrypterTest: Trying random UUIDs for plainText and passwords :");
@@ -111,7 +127,7 @@ public class EncrypterDecrypterScryptTest extends TestCase {
     }
 
     public void testEncryptDecryptWrongPassword() throws EncrypterDecrypterException {
-        EncrypterDecrypterScrypt encrypterDecrypter = new EncrypterDecrypterScrypt();
+        EncrypterDecrypterScrypt encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
 
         // create a longer encryption string
         StringBuffer stringBuffer = new StringBuffer();
@@ -132,7 +148,7 @@ public class EncrypterDecrypterScryptTest extends TestCase {
 
     @Test
     public void testEncryptDecryptInternational() throws EncrypterDecrypterException {
-        EncrypterDecrypterScrypt encrypterDecrypter = new EncrypterDecrypterScrypt();
+        EncrypterDecrypterScrypt encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
 
         // Encrypt.
         String cipherText = encrypterDecrypter.encrypt(TEST_STRING2, PASSWORD3);
@@ -148,7 +164,7 @@ public class EncrypterDecrypterScryptTest extends TestCase {
     
     @Test
     public void testEncryptDecryptBytes1() throws EncrypterDecrypterException {
-        EncrypterDecrypterScrypt encrypterDecrypter = new EncrypterDecrypterScrypt();
+        EncrypterDecrypterScrypt encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
 
         // Encrypt bytes.
         byte[] cipherBytes = encrypterDecrypter.encrypt(TEST_BYTES1, PASSWORD1);
@@ -164,7 +180,7 @@ public class EncrypterDecrypterScryptTest extends TestCase {
     
     @Test
     public void testEncryptDecryptBytes2() throws EncrypterDecrypterException {
-        EncrypterDecrypterScrypt encrypterDecrypter = new EncrypterDecrypterScrypt();
+        EncrypterDecrypterScrypt encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
 
         // Encrypt random bytes of various lengths up to length 50.
         Random random = new Random();

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,6 +34,9 @@ import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncryptableWallet;
+import org.multibit.crypto.EncrypterDecrypter;
+import org.multibit.crypto.EncrypterDecrypterScrypt;
+import org.multibit.crypto.ScryptParameters;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -111,6 +115,8 @@ public class MultiBitService {
     private MultiBitController controller;
 
     private final NetworkParameters networkParameters;
+    
+    private SecureRandom secureRandom = new SecureRandom();
 
     public static Date genesisBlockCreationDate;
     
@@ -260,8 +266,12 @@ public class MultiBitService {
 
                 newWalletCreated = true;
             } else {
-                // Create a brand new wallet - by default protobuf.
-                wallet = new EncryptableWallet(networkParameters);
+                // Create a brand new wallet - by default protobuf and scrypt encryptable with random salt.
+                byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
+                secureRandom.nextBytes(salt);
+                ScryptParameters scryptParameters = new ScryptParameters(salt);
+                EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
+                wallet = new EncryptableWallet(networkParameters, encrypterDecrypter);
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
 
@@ -544,5 +554,9 @@ public class MultiBitService {
         public void onPeerConnected(Peer peer, int peerCount) {
             logger.debug("Number of peers is now " + peerCount);
         }
+    }
+
+    public SecureRandom getSecureRandom() {
+        return secureRandom;
     };
 }

@@ -16,6 +16,8 @@
 
 package org.multibit.crypto;
 
+import java.security.SecureRandom;
+
 import junit.framework.TestCase;
 
 import org.junit.Before;
@@ -34,11 +36,21 @@ public class EncryptableWalletTest extends TestCase {
 
     private static char[] PASSWORD1 = "my helicopter contains eels".toCharArray();
     private static char[] WRONG_PASSWORD = "nothing noone nobody nowhere".toCharArray();
+    
+    private SecureRandom secureRandom;
 
     @Before
     public void setUp() throws Exception {
         myKey = new ECKey();
-        wallet = new EncryptableWallet(params);
+        
+        secureRandom = new SecureRandom();
+        
+        byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
+        secureRandom.nextBytes(salt);
+        ScryptParameters scryptParameters = new ScryptParameters(salt);
+        EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
+        wallet = new EncryptableWallet(params, encrypterDecrypter);
+
         wallet.addKey(myKey);
 
         BriefLogFormatter.init();
