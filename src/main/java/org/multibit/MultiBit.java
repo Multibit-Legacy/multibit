@@ -195,11 +195,6 @@ public class MultiBit {
                     MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("multiBit.createdWallet",
                             new Object[] { activeWalletFilename })));
                 }
-                if (swingViewSystem instanceof MultiBitFrame) {
-                    ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
-                    ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
-                }
-                controller.fireDataChanged();
             } catch (WalletLoadException e) {
                 String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                         new Object[] { activeWalletFilename, e.getMessage() });
@@ -210,6 +205,12 @@ public class MultiBit {
                         new Object[] { activeWalletFilename, e.getMessage() });
                 MessageManager.INSTANCE.addMessage(new Message(message));
                 log.error(message);
+            } finally {
+                if (swingViewSystem instanceof MultiBitFrame) {
+                    ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
+                    ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
+                }
+                controller.fireDataChanged();
             }
         } else {
             try {
@@ -247,14 +248,16 @@ public class MultiBit {
                         }
                     }
                 }
+  
+            } catch (NumberFormatException nfe) {
+                // Carry on.
+            } finally {
                 if (swingViewSystem instanceof MultiBitFrame) {
                     ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
                     ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
                 }
                 controller.fireDataChanged();
-            } catch (NumberFormatException nfe) {
-                // Carry on.
-            } finally {
+                
                 ((MultiBitFrame) swingViewSystem).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         }

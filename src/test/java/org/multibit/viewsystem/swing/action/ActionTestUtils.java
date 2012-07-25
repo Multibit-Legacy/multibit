@@ -62,7 +62,7 @@ public class ActionTestUtils {
          String walletFile = multiBitDirectoryPath + File.separator + descriptor + ".wallet";
          
          // Put the wallet in the model as the active wallet.
-         perWalletModelData.setWalletInfo(new WalletInfo(walletFile, WalletVersion.PROTOBUF));
+         perWalletModelData.setWalletInfo(new WalletInfo(walletFile, WalletVersion.PROTOBUF_ENCRYPTED));
          perWalletModelData.setWalletFilename(walletFile);
          perWalletModelData.setWalletDescription(descriptor);
          

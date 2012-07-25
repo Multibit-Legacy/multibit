@@ -104,7 +104,7 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
                        
             WalletInfo walletInfo = perWalletModelData.getWalletInfo();
             if (walletInfo == null) {
-                walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletVersion.PROTOBUF);
+                walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletVersion.PROTOBUF_ENCRYPTED);
                 perWalletModelData.setWalletInfo(walletInfo);
             }
             String addressString = "";

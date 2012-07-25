@@ -13,9 +13,14 @@ public enum WalletVersion {
     SERIALIZED("1", "walletVersion.1"), 
     
     /**
-     * Wallet version for protobuf wallets.
+     * Wallet version for unencrypted protobuf wallets.
      */
-    PROTOBUF("2", "walletVersion.2");
+    PROTOBUF("2", "walletVersion.2"),
+    
+    /**
+     * Wallet version for encrypted protobuf wallets.
+     */
+    PROTOBUF_ENCRYPTED("3", "walletVersion.3");
     
     /**
      * How the wallet version is represented in the wallet info files.

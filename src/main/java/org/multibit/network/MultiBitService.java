@@ -276,7 +276,7 @@ public class MultiBitService {
                 perWalletModelDataToReturn = controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
 
                 // Create a wallet info.
-                WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath(), WalletVersion.PROTOBUF);
+                WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath(), WalletVersion.PROTOBUF_ENCRYPTED);
                 perWalletModelDataToReturn.setWalletInfo(walletInfo);
 
                 // Set a default description.

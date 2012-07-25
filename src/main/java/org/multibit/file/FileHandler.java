@@ -81,18 +81,19 @@ public class FileHandler {
         String walletFilename = walletFile.getAbsolutePath();
         
         try {
-            Wallet wallet = Wallet.loadFromFile(walletFile);
-
-            // Add the new wallet into the model.
-            PerWalletModelData perWalletModelData = controller.getModel().addWallet(wallet, walletFilename);
-
             // See if the wallet is serialized or protobuf.
             WalletInfo walletInfo;
             if (isWalletSerialised(walletFile)) {
                 walletInfo = new WalletInfo(walletFilename, WalletVersion.SERIALIZED);
             } else {
-                walletInfo = new WalletInfo(walletFilename, WalletVersion.PROTOBUF);
+                walletInfo = new WalletInfo(walletFilename, WalletVersion.PROTOBUF_ENCRYPTED);
             }
+
+            Wallet wallet = Wallet.loadFromFile(walletFile);
+
+            // Add the new wallet into the model.
+            PerWalletModelData perWalletModelData = controller.getModel().addWallet(wallet, walletFilename);
+
             perWalletModelData.setWalletInfo(walletInfo);
 
             synchronized (walletInfo) {
@@ -224,7 +225,7 @@ public class FileHandler {
         if (perWalletModelData.getWallet() != null) {
             if (WalletVersion.SERIALIZED == walletInfo.getWalletVersion()) {
                 saveToFileAsSerialised(perWalletModelData.getWallet(), walletFile);
-            } else if (WalletVersion.PROTOBUF == walletInfo.getWalletVersion()) {
+            } else if (WalletVersion.PROTOBUF == walletInfo.getWalletVersion() || WalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion()) {
                 perWalletModelData.getWallet().saveToFile(walletFile);
             } else {
                 throw new WalletSaveException("Cannot save wallet '" + perWalletModelData.getWalletFilename() + "'. Its wallet version is '" + walletInfo.getWalletVersion().toString() + "' but this version of MultiBit does not understand that format.");

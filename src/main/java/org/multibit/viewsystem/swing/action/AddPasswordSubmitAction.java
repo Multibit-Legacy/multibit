@@ -26,6 +26,7 @@ import javax.swing.SwingUtilities;
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.FileHandler;
+import org.multibit.model.WalletVersion;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.AddPasswordPanel;
 import org.slf4j.Logger;
@@ -98,6 +99,8 @@ public class AddPasswordSubmitAction extends AbstractAction {
         if (wallet != null) {
             try {
                 wallet.encrypt(passwordToUse);
+                controller.getModel().getActiveWalletWalletInfo().setWalletVersion(WalletVersion.PROTOBUF_ENCRYPTED);
+                controller.getModel().getActivePerWalletModelData().setDirty(true);
                 FileHandler fileHandler = new FileHandler(controller);
                 fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);
             } catch (EncrypterDecrypterException ede) {
