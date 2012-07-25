@@ -22,10 +22,7 @@ import javax.swing.Action;
 import javax.swing.JPasswordField;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncryptableECKey;
-import org.multibit.crypto.EncryptableWallet;
 import org.multibit.crypto.EncrypterDecrypterException;
-import org.multibit.crypto.EncrypterDecrypterScrypt;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -41,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.WalletType;
 
 /**
@@ -97,15 +93,11 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
                         return;
                     }
                     encryptNewKeys = true;
-                    
-                    if (controller.getModel().getActiveWallet() instanceof EncryptableWallet) {
-                        EncryptableWallet encryptableWallet = (EncryptableWallet)controller.getModel().getActiveWallet();
-                        
-                        if (!encryptableWallet.checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
-                            // The password supplied is incorrect.
-                            createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
-                            return;
-                        }
+                                    
+                    if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
+                        // The password supplied is incorrect.
+                        createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                        return;
                     }
                 } 
             }
@@ -121,14 +113,8 @@ public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
                     ECKey newKey;
                     if (encryptNewKeys) {
                         // Use the wallet EncrypterDescrypter.
-                        if (perWalletModelData.getWallet() instanceof EncryptableWallet) {
-                            EncryptableWallet encryptableWallet = (EncryptableWallet)perWalletModelData.getWallet();
-                            newKey = new EncryptableECKey(encryptableWallet.getEncrypterDecrypter());
-                            ((EncryptableECKey) newKey).encrypt(walletPassword.getPassword());
-                        } else {
-                            // The wallet is not encryptable - should not happen.
-                            newKey = new ECKey();
-                        }
+                        newKey = new ECKey(perWalletModelData.getWallet().getEncrypterDecrypter());
+                        newKey.encrypt(walletPassword.getPassword());
                     } else {
                         newKey = new ECKey();
                     }

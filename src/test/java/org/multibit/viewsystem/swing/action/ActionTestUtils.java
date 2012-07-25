@@ -6,7 +6,6 @@ import java.util.Locale;
 
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncryptableWallet;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterScrypt;
 import org.multibit.crypto.ScryptParameters;
@@ -18,6 +17,7 @@ import org.multibit.model.WalletVersion;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Wallet;
 
 /**
  * Class containing utility methods for action tests.
@@ -50,7 +50,7 @@ public class ActionTestUtils {
          ScryptParameters scryptParameters = new ScryptParameters(salt);
          EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
 
-         EncryptableWallet wallet = new EncryptableWallet(NetworkParameters.prodNet(), encrypterDecrypter);
+         Wallet wallet = new Wallet(NetworkParameters.prodNet(), encrypterDecrypter);
          wallet.getKeychain().add(new ECKey());
   
          PerWalletModelData perWalletModelData = new PerWalletModelData();
@@ -73,9 +73,7 @@ public class ActionTestUtils {
          PerWalletModelData loadedPerWalletModelData = fileHandler.loadFromFile(new File(walletFile));
              
          if (encrypt) {
-             ((EncryptableWallet)loadedPerWalletModelData.getWallet()).encrypt(walletPassword);
+             loadedPerWalletModelData.getWallet().encrypt(walletPassword);
          }
-
-         //controller.getModel().addAndMakeActiveWallet(loadedPerWalletModelData);
      }
 }

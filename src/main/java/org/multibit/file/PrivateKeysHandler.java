@@ -35,7 +35,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TimeZone;
 
-import org.multibit.crypto.EncryptableWallet;
 import org.multibit.crypto.EncrypterDecrypterOpenSSL;
 import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;
@@ -266,12 +265,9 @@ public class PrivateKeysHandler {
             if (wallet != null) {
                 if (walletPassword != null && walletPassword.length > 0) {
                     // decrypt wallet keys
-                    if (wallet instanceof EncryptableWallet) {
-                        EncryptableWallet encryptableWallet = (EncryptableWallet) wallet;
-                        if (encryptableWallet.isCurrentlyEncrypted()) {
-                            encryptableWallet.decrypt(walletPassword);
-                            reencryptionRequired = true;
-                        }
+                    if (wallet.isCurrentlyEncrypted()) {
+                        wallet.decrypt(walletPassword);
+                        reencryptionRequired = true;
                     }
                 }
             }
@@ -353,8 +349,7 @@ public class PrivateKeysHandler {
             }
         } finally {
             if (reencryptionRequired) {
-                EncryptableWallet encryptableWallet = (EncryptableWallet) wallet;
-                encryptableWallet.encrypt(walletPassword);
+                wallet.encrypt(walletPassword);
             }
         }
 

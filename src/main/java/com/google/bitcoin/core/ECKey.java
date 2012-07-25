@@ -17,6 +17,7 @@
 package com.google.bitcoin.core;
 
 import org.multibit.IsMultiBitClass;
+import org.multibit.crypto.EncrypterDecrypter;
 import org.spongycastle.asn1.*;
 import org.spongycastle.asn1.sec.SECNamedCurves;
 import org.spongycastle.asn1.x9.X9ECParameters;
@@ -69,6 +70,22 @@ public class ECKey implements Serializable, IsMultiBitClass {
     // not have this field.
     private long creationTimeSeconds;
 
+    /**
+     * Instance of the EncrypterDecrypter interface to use for encrypting and decrypting the key.
+     */
+    private EncrypterDecrypter encrypterDecrypter;
+    
+    /**
+     * The encrypted private key bytes.
+     */
+    private byte[] encryptedPrivateKey;
+    
+    /**
+     * Indicates whether the private key is encrypted (true) or not (false).
+     * A private key is deemed to be encrypted when there is no private key and the encryptedPrivateKey is non-zero.
+     */
+    private boolean isEncrypted;
+    
     // Transient because it's calculated on demand.
     transient private byte[] pubKeyHash;
 
@@ -84,6 +101,32 @@ public class ECKey implements Serializable, IsMultiBitClass {
         // The public key is an encoded point on the elliptic curve. It has no meaning independent of the curve.
         pub = pubParams.getQ().getEncoded();
         creationTimeSeconds = Utils.now().getTime() / 1000;
+    }
+    
+    /**
+     * Create an entirely new keypair with an EncrypterDecrypter
+     */
+    public ECKey(EncrypterDecrypter encrypterDecrypter) {
+        this();
+        this.encrypterDecrypter = encrypterDecrypter;
+        
+        isEncrypted = false;
+        encryptedPrivateKey = new byte[0];
+    }
+    
+    /**
+     * Create a new ECKey with an encrypted private key, a public key and a EncrypterDecrypter.
+     * @param encryptedPrivateKey The private key, encrypted,
+     * @param pubKey The keys public key
+     * @param encrypterDecrypter The EncrypterDecrypter that will be used to encrypt and decrypt the private key
+     */
+    public ECKey(byte[] encryptedPrivateKey, byte[] pubKey, EncrypterDecrypter encrypterDecrypter) {
+        this((byte[])null, pubKey);
+        this.encrypterDecrypter = encrypterDecrypter;
+        this.encryptedPrivateKey = encryptedPrivateKey;
+        
+        // If a non trivial encryptedPrivateKey is supplied then the ECKey is encrypted.
+        isEncrypted = encryptedPrivateKey != null && encryptedPrivateKey.length > 0;
     }
 
     /**
@@ -332,5 +375,53 @@ public class ECKey implements Serializable, IsMultiBitClass {
         if (newCreationTimeSeconds < 0)
             throw new IllegalArgumentException("Cannot set creation time to negative value: " + newCreationTimeSeconds);
         creationTimeSeconds = newCreationTimeSeconds;
+    }
+    
+    /**
+     * Encrypt the private key with the password supplied, using the keys encrypterDecrypter.
+     * The plaintext private keys are cleared after encryption.
+     * @param password
+     */
+    public void encrypt(char[] password) {
+        encryptedPrivateKey = encrypterDecrypter.encrypt(getPrivKeyBytes(), password);
+        
+        // Clear the private keys.
+        this.priv = BigInteger.ZERO;
+        
+        isEncrypted = true;
+    }
+    
+    /**
+     * Decrypt the private key with the password supplied, using the keys encrypterDecrypter
+     * @param password
+     */
+    public void decrypt(char[] password) {
+        // Decrypt the private key.
+        byte[] plainTextPrivateKey = encrypterDecrypter.decrypt(encryptedPrivateKey, password);
+        
+        // Set the plaintext key into the private key field.
+        this.priv = new BigInteger(1, plainTextPrivateKey);
+        
+        isEncrypted = false;
+    }
+
+    public boolean isEncrypted() {
+        return isEncrypted;
+    }
+    
+    public byte[] getEncryptedPrivateKey() {
+        if (encryptedPrivateKey == null) {
+            return null;
+        }
+        
+        // Copy the private key to make it unmodifiable.
+        byte[] copy = new byte[encryptedPrivateKey.length];
+        System.arraycopy(encryptedPrivateKey, 0, copy, 0, encryptedPrivateKey.length);
+                  
+        return copy;
+    }
+
+    public void setEncrypterDecrypter(EncrypterDecrypter encrypterDecrypter) {
+        this.encrypterDecrypter = encrypterDecrypter;
     }
 }

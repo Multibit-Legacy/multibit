@@ -24,7 +24,6 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncryptableWallet;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.FileHandler;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -85,16 +84,14 @@ public class RemovePasswordSubmitAction extends AbstractAction {
         if (controller.getModel().getActiveWallet() != null) {
             Wallet wallet = controller.getModel().getActiveWallet();
             if (wallet != null) {
-                if (wallet instanceof EncryptableWallet) {
-                    try {
-                        ((EncryptableWallet)wallet).removeEncryption(passwordToUse);
-                        FileHandler fileHandler = new FileHandler(controller);
-                        fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);
-                    } catch (EncrypterDecrypterException ede) {
-                        removePasswordPanel.setMessage1(controller.getLocaliser()
-                                .getString("removePasswordPanel.removePasswordFailed", new String[]{ede.getMessage()}));
-                        return;
-                    }
+                try {
+                   wallet.removeEncryption(passwordToUse);
+                   FileHandler fileHandler = new FileHandler(controller);
+                    fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);
+                } catch (EncrypterDecrypterException ede) {
+                    removePasswordPanel.setMessage1(controller.getLocaliser()
+                            .getString("removePasswordPanel.removePasswordFailed", new String[]{ede.getMessage()}));
+                    return;
                 }
             }
         }

@@ -23,8 +23,6 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.TextFormat;
 import org.bitcoinj.wallet.Protos;
 import org.multibit.IsMultiBitClass;
-import org.multibit.crypto.EncryptableECKey;
-import org.multibit.crypto.EncryptableWallet;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterScrypt;
 import org.multibit.crypto.ScryptParameters;
@@ -106,13 +104,11 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             Protos.Key.Builder buf = Protos.Key.newBuilder().setCreationTimestamp(key.getCreationTimeSeconds() * 1000)
                                                          // .setLabel() TODO
                                                             .setType(Protos.Key.Type.ORIGINAL);
-            if (key.getPrivKeyBytes() != null)
+            if (key.getPrivKeyBytes() != null) {
                 buf.setPrivateKey(ByteString.copyFrom(key.getPrivKeyBytes()));
-            
-            if (key instanceof EncryptableECKey) {
-                EncryptableECKey encryptableECKey = (EncryptableECKey)key;
-                buf.setEncryptedPrivateKey(ByteString.copyFrom(encryptableECKey.getEncryptedPrivateKey()));
-                // TODO: wipe the private keys so that they never get written out for encrypted keys.
+            }
+            if (key.getEncryptedPrivateKey() != null) {
+                buf.setEncryptedPrivateKey(ByteString.copyFrom(key.getEncryptedPrivateKey()));
             }
             // We serialize the public key even if the private key is present for speed reasons: we don't want to do
             // lots of slow EC math to load the wallet, we prefer to store the redundant data instead. It matters more
@@ -128,19 +124,16 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         }
         
         // Populate the scrypt parameters.
-        if (wallet instanceof EncryptableWallet) {
-            EncryptableWallet encryptableWallet = (EncryptableWallet)wallet;
-            EncrypterDecrypter encrypterDecrypter = encryptableWallet.getEncrypterDecrypter();
-            if (encrypterDecrypter instanceof EncrypterDecrypterScrypt) {
-                EncrypterDecrypterScrypt encrypterDecrypterScrypt = (EncrypterDecrypterScrypt)encrypterDecrypter;
-                ScryptParameters scryptParameters = encrypterDecrypterScrypt.getScryptParameters();
-                Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder()
-                    .setSalt(ByteString.copyFrom(scryptParameters.getSalt()))
-                    .setN(scryptParameters.getN())
-                    .setP(scryptParameters.getP())
-                    .setR(scryptParameters.getR());
-                walletBuilder.setEncryptionParameters(scryptParametersBuilder);
-            }
+        EncrypterDecrypter encrypterDecrypter = wallet.getEncrypterDecrypter();
+        if (encrypterDecrypter instanceof EncrypterDecrypterScrypt) {
+            EncrypterDecrypterScrypt encrypterDecrypterScrypt = (EncrypterDecrypterScrypt)encrypterDecrypter;
+            ScryptParameters scryptParameters = encrypterDecrypterScrypt.getScryptParameters();
+            Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder()
+                .setSalt(ByteString.copyFrom(scryptParameters.getSalt()))
+                .setN(scryptParameters.getN())
+                .setP(scryptParameters.getP())
+                .setR(scryptParameters.getR());
+            walletBuilder.setEncryptionParameters(scryptParametersBuilder);
         }
         
         // Populate the wallet type.
@@ -257,7 +250,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         ScryptParameters scryptParameters = new ScryptParameters(encryptionParameters.getSalt().toByteArray(), 16384, 8, 1);
         EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
       
-        EncryptableWallet wallet = new EncryptableWallet(params, encrypterDecrypter);
+        Wallet wallet = new Wallet(params, encrypterDecrypter);
 
         // Read the WalletType.
         WalletType walletType = null;
@@ -284,30 +277,26 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             if (keyProto.getType() != Protos.Key.Type.ORIGINAL) {
                 throw new IllegalArgumentException("Unknown key type in wallet");
             }
-            byte[] privKey = null;
-            if (keyProto.hasPrivateKey()) {
-                privKey = keyProto.getPrivateKey().toByteArray();
-            }
-            byte[] encryptedPrivKey = null;
-            if (keyProto.hasEncryptedPrivateKey()) {
-                encryptedPrivKey = keyProto.getEncryptedPrivateKey().toByteArray();
-            }
+
+            byte[] privKey = keyProto.hasPrivateKey() ? keyProto.getPrivateKey().toByteArray() : null;
+            byte[] encryptedPrivKey = keyProto.hasEncryptedPrivateKey() ? keyProto.getEncryptedPrivateKey().toByteArray() : null;
             byte[] pubKey = keyProto.hasPublicKey() ? keyProto.getPublicKey().toByteArray() : null;
-            ECKey ecKey = new ECKey(privKey, pubKey);
-            ecKey.setCreationTimeSeconds((keyProto.getCreationTimestamp() + 500) / 1000);
-            // If the key is an encrypted key construct an EncryptableECKey with the encrypted private key bytes.
+            
+            ECKey ecKey = null;
             if (walletType == WalletType.ENCRYPTED) {
-                EncryptableECKey encryptableECKey = new EncryptableECKey(ecKey, encryptedPrivKey, encrypterDecrypter);
+                // If the key is an encrypted key construct an ECKey with the encrypted private key bytes.
+                ecKey = new ECKey(encryptedPrivKey, pubKey, encrypterDecrypter);
                 
                 // If any of the keys are encrypted, mark the wallet as encrypted.
-                if (encryptableECKey.isEncrypted()) {
+                if (ecKey.isEncrypted()) {
                     isWalletCurrentlyEncrypted = true;
                 }
-                wallet.addKey(encryptableECKey);
             } else {
-                wallet.addKey(ecKey);
+                ecKey = new ECKey(privKey, pubKey);
+                             
             }
-            
+            ecKey.setCreationTimeSeconds((keyProto.getCreationTimestamp() + 500) / 1000);
+            wallet.addKey(ecKey);           
         }
         
         wallet.setCurrentlyEncrypted(isWalletCurrentlyEncrypted);

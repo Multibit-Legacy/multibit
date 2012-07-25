@@ -25,7 +25,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncryptableWallet;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
@@ -129,15 +128,11 @@ public class SendBitcoinNowAction extends AbstractAction {
                         sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("showExportPrivateKeysAction.youMustEnterTheWalletPassword"), "");
                         return;
                     }
-                    
-                    if (controller.getModel().getActiveWallet() instanceof EncryptableWallet) {
-                        EncryptableWallet encryptableWallet = (EncryptableWallet)controller.getModel().getActiveWallet();
-                        
-                        if (!encryptableWallet.checkPasswordCanDecryptFirstPrivateKey(walletPassword)) {
-                            // The password supplied is incorrect.
-                            sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"), "");
-                            return;
-                        }
+     
+                    if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword)) {
+                        // The password supplied is incorrect.
+                        sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"), "");
+                        return;
                     }
                 }
             }
@@ -159,13 +154,10 @@ public class SendBitcoinNowAction extends AbstractAction {
         Wallet wallet = perWalletModelData.getWallet();
         try {
             // Decrypt the wallet prior to sending.
-             if (wallet instanceof EncryptableWallet) {
-                EncryptableWallet encryptableWallet = (EncryptableWallet)wallet;
-                if (encryptableWallet.isCurrentlyEncrypted()) {
-                    encryptableWallet.decrypt(walletPassword);
-                    // If successful will need to reencrypt in the finally.
-                    reencryptRequired = true;
-                }
+            if (wallet.isCurrentlyEncrypted()) {
+                wallet.decrypt(walletPassword);
+                // If successful will need to reencrypt in the finally.
+               reencryptRequired = true;
             }
             
             log.debug("Sending from wallet " + perWalletModelData.getWalletFilename() + ", amount = " + sendAmount + ", fee = "
@@ -212,10 +204,7 @@ public class SendBitcoinNowAction extends AbstractAction {
         } finally {
             try {
                 if (reencryptRequired) {
-                    if (wallet instanceof EncryptableWallet) {
-                        EncryptableWallet encryptableWallet = (EncryptableWallet)wallet;
-                        encryptableWallet.encrypt(walletPassword);
-                    }
+                    wallet.encrypt(walletPassword);
                 }
                 // save the wallet
                 controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);

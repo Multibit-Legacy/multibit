@@ -25,13 +25,14 @@ import org.junit.Test;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletType;
 import com.google.bitcoin.utils.BriefLogFormatter;
 
 public class EncryptableWalletTest extends TestCase {
     static final NetworkParameters params = NetworkParameters.unitTests();
 
-    private EncryptableWallet wallet;
+    private Wallet wallet;
     private ECKey myKey;
 
     private static char[] PASSWORD1 = "my helicopter contains eels".toCharArray();
@@ -49,7 +50,7 @@ public class EncryptableWalletTest extends TestCase {
         secureRandom.nextBytes(salt);
         ScryptParameters scryptParameters = new ScryptParameters(salt);
         EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
-        wallet = new EncryptableWallet(params, encrypterDecrypter);
+        wallet = new Wallet(params, encrypterDecrypter);
 
         wallet.addKey(myKey);
 
@@ -57,7 +58,7 @@ public class EncryptableWalletTest extends TestCase {
     }
 
     @Test
-    public void testStates() throws Exception {
+    public void testEncryptionDecryption() throws Exception {
         // Check the wallet is initially of WalletType UNENCRYPTED and not currently encrypted
         assertTrue("Wallet is not an unencrypted wallet", wallet.getWalletType() == WalletType.UNENCRYPTED);
         assertTrue("Wallet is currently encrypted but should not be", !wallet.isCurrentlyEncrypted());

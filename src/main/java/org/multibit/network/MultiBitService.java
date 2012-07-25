@@ -33,7 +33,6 @@ import java.util.SimpleTimeZone;
 import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncryptableWallet;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterScrypt;
 import org.multibit.crypto.ScryptParameters;
@@ -63,7 +62,6 @@ import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.discovery.DnsDiscovery;
 import com.google.bitcoin.discovery.IrcDiscovery;
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
@@ -271,7 +269,7 @@ public class MultiBitService {
                 secureRandom.nextBytes(salt);
                 ScryptParameters scryptParameters = new ScryptParameters(salt);
                 EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
-                wallet = new EncryptableWallet(networkParameters, encrypterDecrypter);
+                wallet = new Wallet(networkParameters, encrypterDecrypter);
                 ECKey newKey = new ECKey();
                 wallet.keychain.add(newKey);
 

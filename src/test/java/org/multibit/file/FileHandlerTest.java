@@ -28,8 +28,6 @@ import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncryptableECKey;
-import org.multibit.crypto.EncryptableWallet;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterScrypt;
 import org.multibit.crypto.ScryptParameters;
@@ -106,9 +104,6 @@ public class FileHandlerTest extends TestCase {
         
         // Check wallet type.
         assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getWalletType() == WalletType.UNENCRYPTED);
-        
-        // Check wallet is not an EncryptableWallet - it should just be a plain Wallet
-        assertTrue("Wallet is an EncryptableWallet when it should not be", !(perWalletModelData.getWallet() instanceof EncryptableWallet));
     }
 
     @Test
@@ -141,9 +136,6 @@ public class FileHandlerTest extends TestCase {
         
         // Check wallet type.
         assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getWalletType() == WalletType.UNENCRYPTED);
- 
-        // Check wallet is not an EncryptableWallet - it should just be a plain Wallet
-        assertTrue("Wallet is an EncryptableWallet when it should not be", !(perWalletModelData.getWallet() instanceof EncryptableWallet));
     }
     
     @Test
@@ -227,12 +219,6 @@ public class FileHandlerTest extends TestCase {
         // Check the wallet status before it is written out and reborn.
         assertEquals(WalletVersion.PROTOBUF, perWalletModelData.getWalletInfo().getWalletVersion());
         assertTrue("Wallet is not UNENCRYPTED when it should be", perWalletModelData.getWallet().getWalletType() == WalletType.UNENCRYPTED);
-
-        // Get the keys of the wallet and check that all the keys are not EncryptableKeys
-        ArrayList<ECKey> keys = newWallet.getKeychain();
-        for (ECKey key : keys) {
-            assertTrue("Key is an EncryptableKey when it should not be", !(key instanceof EncryptableECKey));
-        }
         
         // Save the wallet and then read it back in.
         controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
@@ -257,14 +243,7 @@ public class FileHandlerTest extends TestCase {
         assertEquals(WalletVersion.PROTOBUF, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
         assertTrue("Wallet is not UNENCRYPTED when it should be", perWalletModelDataReborn.getWallet().getWalletType() == WalletType.UNENCRYPTED);
         
-        EncryptableWallet rebornEncryptableWallet = (EncryptableWallet)perWalletModelDataReborn.getWallet();
-        assertTrue("Wallet isCurrentlyEncrypted when it should not be", !rebornEncryptableWallet.isCurrentlyEncrypted());
-        
-        // Get the keys of the reborn wallet and check that all the keys are not EncryptableKeys.
-         ArrayList<ECKey> rebornKeys = rebornEncryptableWallet.getKeychain();
-        for (ECKey key : rebornKeys) {
-            assertTrue("Key is an EncryptableKey when it should not be", !(key instanceof EncryptableECKey));
-        }
+        assertTrue("Wallet isCurrentlyEncrypted when it should not be", !perWalletModelDataReborn.getWallet().isCurrentlyEncrypted());
         
         // Delete wallet.
         fileHandler.deleteWalletAndWalletInfo(perWalletModelDataReborn);
@@ -285,7 +264,7 @@ public class FileHandlerTest extends TestCase {
 
         String newWalletFilename = temporaryWallet.getAbsolutePath();
 
-        EncryptableWallet newWallet = new EncryptableWallet(NetworkParameters.prodNet(), encrypterDecrypter);
+        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), encrypterDecrypter);
         ECKey newKey = new ECKey();
         newWallet.keychain.add(newKey);
         newKey = new ECKey();
@@ -305,15 +284,12 @@ public class FileHandlerTest extends TestCase {
         assertEquals(WalletVersion.PROTOBUF, perWalletModelData.getWalletInfo().getWalletVersion());
         assertTrue("Wallet is not ENCRYPTED when it should be", perWalletModelData.getWallet().getWalletType() == WalletType.ENCRYPTED);
         
-        EncryptableWallet encryptableWallet = (EncryptableWallet)perWalletModelData.getWallet();
-        assertTrue("Wallet isCurrentlyEncrypted is false when it should be true", encryptableWallet.isCurrentlyEncrypted());
+        assertTrue("Wallet isCurrentlyEncrypted is false when it should be true", perWalletModelData.getWallet().isCurrentlyEncrypted());
 
         // Get the keys of the wallet and check that all the keys are EncryptableKeys and encrypted.
         ArrayList<ECKey> keys = newWallet.getKeychain();
         for (ECKey key : keys) {
-            assertTrue("Key is not a EncryptableKey when it should be", key instanceof EncryptableECKey);
-            EncryptableECKey encryptableECKey = (EncryptableECKey)key;
-            assertTrue("Key is not encrypted when it should be", encryptableECKey.isEncrypted());
+            assertTrue("Key is not encrypted when it should be", key.isEncrypted());
         }
         
         // Save the wallet and read it back in again.
@@ -338,15 +314,12 @@ public class FileHandlerTest extends TestCase {
         assertEquals(WalletVersion.PROTOBUF, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
         assertTrue("Wallet is not ENCRYPTED when it should be", perWalletModelDataReborn.getWallet().getWalletType() == WalletType.ENCRYPTED);
         
-        EncryptableWallet rebornEncryptableWallet = (EncryptableWallet)perWalletModelDataReborn.getWallet();
-        assertTrue("Wallet isCurrentlyEncrypted is false when it should be true", rebornEncryptableWallet.isCurrentlyEncrypted());
+        assertTrue("Wallet isCurrentlyEncrypted is false when it should be true", perWalletModelDataReborn.getWallet().isCurrentlyEncrypted());
         
         // Get the keys out the reborn wallet and check that all the keys are EncryptableKeys and encrypted.
-        ArrayList<ECKey> rebornKeys = rebornEncryptableWallet.getKeychain();
+        ArrayList<ECKey> rebornKeys = perWalletModelDataReborn.getWallet().getKeychain();
         for (ECKey key : rebornKeys) {
-            assertTrue("Key is not a EncryptableKey when it should be", key instanceof EncryptableECKey);
-            EncryptableECKey encryptableECKey = (EncryptableECKey)key;
-            assertTrue("Key is not encrypted when it should be", encryptableECKey.isEncrypted());
+            assertTrue("Key is not encrypted when it should be", key.isEncrypted());
         }
         
         // Delete wallet.

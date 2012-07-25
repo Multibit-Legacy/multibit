@@ -19,9 +19,6 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncryptableWallet;
-import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressPanel;
-import org.multibit.viewsystem.swing.view.SendBitcoinConfirmDialog;
 import org.multibit.viewsystem.swing.view.SendBitcoinConfirmPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 

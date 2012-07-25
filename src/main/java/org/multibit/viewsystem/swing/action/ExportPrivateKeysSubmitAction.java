@@ -27,7 +27,6 @@ import javax.swing.JPasswordField;
 
 import org.spongycastle.util.Arrays;
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncryptableWallet;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.Verification;
 import org.multibit.utils.ImageLoader;
@@ -92,16 +91,12 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
                 return;
             }
             
-            // See if the password is the correct wallet password.
-            if (controller.getModel().getActiveWallet() instanceof EncryptableWallet) {
-                EncryptableWallet encryptableWallet = (EncryptableWallet)controller.getModel().getActiveWallet();
-                
-                if (!encryptableWallet.checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
-                    // The password supplied is incorrect.
-                    exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
-                    exportPrivateKeysPanel.setMessage2(" ");
-                    return;
-                }
+            // See if the password is the correct wallet password. 
+            if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
+                // The password supplied is incorrect.
+                exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                exportPrivateKeysPanel.setMessage2(" ");
+                return;
             }
         }
         

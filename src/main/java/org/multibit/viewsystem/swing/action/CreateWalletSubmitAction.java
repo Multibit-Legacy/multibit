@@ -26,7 +26,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncryptableWallet;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterScrypt;
 import org.multibit.crypto.ScryptParameters;
@@ -151,7 +150,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
                 controller.getMultiBitService().getSecureRandom().nextBytes(salt);
                 ScryptParameters scryptParameters = new ScryptParameters(salt);
                 EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
-                Wallet newWallet = new EncryptableWallet(controller.getModel().getNetworkParameters(), encrypterDecrypter);
+                Wallet newWallet = new Wallet(controller.getModel().getNetworkParameters(), encrypterDecrypter);
 
                 ECKey newKey = new ECKey();
                 newWallet.keychain.add(newKey);

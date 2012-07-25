@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.crypto;
+package com.google.bitcoin.core;
 
 import java.security.SecureRandom;
 
@@ -21,12 +21,15 @@ import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.crypto.EncrypterDecrypter;
+import org.multibit.crypto.EncrypterDecrypterScrypt;
+import org.multibit.crypto.ScryptParameters;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.utils.BriefLogFormatter;
 
-public class EncryptableECKeyTest extends TestCase {
+public class ECKeyTest extends TestCase {
     private SecureRandom secureRandom;
 
     private EncrypterDecrypter encrypterDecrypter;
@@ -47,7 +50,7 @@ public class EncryptableECKeyTest extends TestCase {
 
     @Test
     public void testUnencryptedCreate() throws Exception {
-        EncryptableECKey unencryptedKey = new EncryptableECKey(encrypterDecrypter);
+        ECKey unencryptedKey = new ECKey(encrypterDecrypter);
 
         // The key should initially be unencrypted
         assertTrue("Key not unencrypted at start",  !unencryptedKey.isEncrypted());
@@ -94,15 +97,17 @@ public class EncryptableECKeyTest extends TestCase {
         System.out.println("EncryptableECKeyTest - Original private key = " + Utils.bytesToHexString(originalPrivateKeyBytes));
 
         byte[] encryptedBytes = encrypterDecrypter.encrypt(unencryptedKey.getPrivKeyBytes(), PASSWORD1);
-        EncryptableECKey encryptedKey = new EncryptableECKey(unencryptedKey, encryptedBytes, encrypterDecrypter);
+        ECKey encryptedKey = new ECKey(encryptedBytes, unencryptedKey.getPubKey(), encrypterDecrypter);
 
         // The key should initially be encrypted
         assertTrue("Key not encrypted at start",  encryptedKey.isEncrypted());
         
         // The unencrypted private key bytes of the encrypted keychain should all be blank.
         byte[] privateKeyBytes = encryptedKey.getPrivKeyBytes();
-        for (int i = 0; i < privateKeyBytes.length; i++) {
-            assertEquals("Byte " + i + " of the private key was not zero but should be", 0, privateKeyBytes[i]);
+        if (privateKeyBytes != null) { 
+            for (int i = 0; i < privateKeyBytes.length; i++) {
+                assertEquals("Byte " + i + " of the private key was not zero but should be", 0, privateKeyBytes[i]);
+            }
         }
         
         // Decrypt the key.

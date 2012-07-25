@@ -32,7 +32,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncryptableWallet;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
@@ -121,15 +120,11 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                     return;
                 }
                 
-                // See if the password is the correct wallet password.
-                if (controller.getModel().getActiveWallet() instanceof EncryptableWallet) {
-                    EncryptableWallet encryptableWallet = (EncryptableWallet)controller.getModel().getActiveWallet();
-                    
-                    if (!encryptableWallet.checkPasswordCanDecryptFirstPrivateKey(walletPasswordField.getPassword())) {
-                        // The password supplied is incorrect.
-                        importPrivateKeysPanel.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
-                        return;
-                    }
+                // See if the password is the correct wallet password.  
+                if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPasswordField.getPassword())) {
+                    // The password supplied is incorrect.
+                    importPrivateKeysPanel.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                    return;
                 }
             }
             
@@ -231,12 +226,9 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                 try {
                     // Decrypt the wallet before adding keys.
                     if (finalPerWalletModelData.getWallet().getWalletType() == WalletType.ENCRYPTED) {
-                        if (finalPerWalletModelData.getWallet() instanceof EncryptableWallet) {
-                            EncryptableWallet encryptableWallet = (EncryptableWallet)finalPerWalletModelData.getWallet();
-                            if (encryptableWallet.isCurrentlyEncrypted()) {
-                                encryptableWallet.decrypt(walletPassword);
-                                reencryptionRequired = true;    
-                            }
+                        if (finalPerWalletModelData.getWallet().isCurrentlyEncrypted()) {
+                            finalPerWalletModelData.getWallet().decrypt(walletPassword);
+                            reencryptionRequired = true;    
                         }
                     }
                     
@@ -312,8 +304,7 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                             new Object[] { bse.getClass().getName() + " " + bse.getMessage() });
                 } finally {
                     if (reencryptionRequired) {
-                        EncryptableWallet encryptableWallet = (EncryptableWallet)finalPerWalletModelData.getWallet();
-                        encryptableWallet.encrypt(walletPassword);
+                        finalPerWalletModelData.getWallet().encrypt(walletPassword);
                     }
                 }
                 return successMeasure;

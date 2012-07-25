@@ -24,7 +24,6 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncryptableWallet;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.FileHandler;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -34,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletType;
 
 /**
  * This {@link Action} action encrypts the private keys with the password.
@@ -98,17 +96,15 @@ public class AddPasswordSubmitAction extends AbstractAction {
        
         Wallet wallet = controller.getModel().getActiveWallet();
         if (wallet != null) {
-            if (wallet instanceof EncryptableWallet) {
-                try {
-                    ((EncryptableWallet)wallet).encrypt(passwordToUse);
-                    FileHandler fileHandler = new FileHandler(controller);
-                    fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);
-                } catch (EncrypterDecrypterException ede) {
-                    ede.printStackTrace();
-                    addPasswordPanel.setMessage1(controller.getLocaliser().getString(
-                    "addPasswordPanel.addPasswordFailed", new String[]{ede.getMessage()}));
-                    return;
-                }
+            try {
+                wallet.encrypt(passwordToUse);
+                FileHandler fileHandler = new FileHandler(controller);
+                fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);
+            } catch (EncrypterDecrypterException ede) {
+                ede.printStackTrace();
+                addPasswordPanel.setMessage1(controller.getLocaliser().getString(
+                "addPasswordPanel.addPasswordFailed", new String[]{ede.getMessage()}));
+                return;
             }
         }
         controller.fireDataChanged();

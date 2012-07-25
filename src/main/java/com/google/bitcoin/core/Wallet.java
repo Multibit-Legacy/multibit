@@ -20,6 +20,9 @@ import com.google.bitcoin.core.WalletTransaction.Pool;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.bitcoin.utils.EventListenerInvoker;
 import org.multibit.IsMultiBitClass;
+import org.multibit.crypto.EncrypterDecrypter;
+import org.multibit.crypto.EncrypterDecrypterException;
+import org.multibit.crypto.WalletIsAlreadyEncryptedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,6 +162,16 @@ public class Wallet implements Serializable, IsMultiBitClass {
     private WalletType walletType;
        
     /**
+     * Whether the wallet has all its keys encrypted (currentlyEncrypted = true) or not.
+     */
+    private boolean currentlyEncrypted;
+    
+    /**
+     * The encrypterDecrypter for the wallet.
+     */
+    private EncrypterDecrypter encrypterDecrypter;
+    
+    /**
      * Creates a new, empty wallet with no keys and no transactions. If you want to restore a wallet from disk instead,
      * see loadFromFile.
      */
@@ -172,6 +185,11 @@ public class Wallet implements Serializable, IsMultiBitClass {
         dead = new HashMap<Sha256Hash, Transaction>();
         eventListeners = new ArrayList<WalletEventListener>();
         hasTransactionConfidences = true;
+    }
+    
+    public Wallet(NetworkParameters params, EncrypterDecrypter encrypterDecrypter) {
+        this(params);
+        this.encrypterDecrypter = encrypterDecrypter;
     }
     
     public NetworkParameters getNetworkParameters() {
@@ -1781,5 +1799,129 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
     public void setWalletType(WalletType walletType) {
         this.walletType = walletType;
+    }
+    
+    /**
+     * Encrypt the wallet with the supplied password.
+     * @param password
+     */
+    public void encrypt(char[] password) {
+        if (currentlyEncrypted) {
+            throw new WalletIsAlreadyEncryptedException("Wallet is already encrypted");
+        }
+
+        // Create a new arraylist that will contain the encrypted keys
+        ArrayList<ECKey> encryptedKeyChain = new ArrayList<ECKey>();;
+        
+        for (ECKey key : keychain) {
+            // TODO Check key is unencrypted.
+            key.setEncrypterDecrypter(encrypterDecrypter);
+            key.encrypt(password);
+            encryptedKeyChain.add(key);
+        }
+        
+        synchronized(this) {
+            // Swap the encryptableECKeys for the original ones.
+            keychain.clear();
+            keychain.addAll(encryptedKeyChain);
+        
+            setWalletType(WalletType.ENCRYPTED);
+            currentlyEncrypted = true;
+        }
+    }
+
+    /**
+     * Decrypt the wallet with the supplied password.
+     * 
+     * @param password
+     */
+    public void decrypt(char[] password) {
+        if (!currentlyEncrypted) {
+            throw new WalletIsAlreadyEncryptedException("Wallet is already decrypted");
+        }
+
+        // Create a new arraylist that will contain the decrypted keys
+        ArrayList<ECKey> decryptedKeyChain = new ArrayList<ECKey>();;
+ 
+        for (ECKey key : keychain) {
+            key.decrypt(password);
+            decryptedKeyChain.add(key);
+        }
+        
+        synchronized(this) {
+            // Swap the encryptableECKeys for the original ones.
+            keychain.clear();
+            keychain.addAll(decryptedKeyChain);
+       
+            currentlyEncrypted = false;
+        }
+    }
+   
+    /**
+     * Remove any encryption on the private keys and change the wallet type to WalletType.UNENCRYPTED.
+     * The wallet is no longer encrypted.
+     * 
+     * @param password
+     */
+    public void removeEncryption(char[] password) {
+        // Remove any encryption on the keys.
+        if (isCurrentlyEncrypted()) {
+            decrypt(password);
+        }
+        
+        // Change the wallet type to UNENCRYPTED and set it to being unencrypted.
+        setWalletType(WalletType.UNENCRYPTED);
+        currentlyEncrypted = false;       
+    }
+
+    /**
+     * Whether the wallet is currently encrypted (=true) or not (=false).
+     */
+    public boolean isCurrentlyEncrypted() {
+        return currentlyEncrypted;
+    }
+    
+    
+    /**
+     *  Check whether the password can decrypt the first key in the wallet.
+     *  
+     *  @returns boolean True if password supplied can decrypt the first private key in the wallet, false otherwise.
+     */
+    public boolean checkPasswordCanDecryptFirstPrivateKey(char[] password) {
+        if (getKeychain() == null || getKeychain().size() == 0) {
+            return false;
+        }
+        
+        ECKey firstECKey = getKeychain().get(0);
+
+        if (firstECKey != null && firstECKey.getEncryptedPrivateKey() != null) {
+            byte[] encryptedBytes = firstECKey.getEncryptedPrivateKey();
+            // Clone the encrypted bytes.
+            byte[] cloneEncrypted = new byte[encryptedBytes.length];
+            System.arraycopy(encryptedBytes, 0, cloneEncrypted, 0, encryptedBytes.length);
+            try {
+                encrypterDecrypter.decrypt(cloneEncrypted, password);
+                
+                // Success.
+                return true;
+            } catch (EncrypterDecrypterException ede) {
+                // The password supplied is incorrect.
+                return false;
+            }
+        }
+        
+        return false;
+    }
+
+    public EncrypterDecrypter getEncrypterDecrypter() {
+        return encrypterDecrypter;
+    }
+
+    public void setEncrypterDecrypter(EncrypterDecrypter encrypterDecrypter) {
+        this.encrypterDecrypter = encrypterDecrypter;
+    }
+
+    public void setCurrentlyEncrypted(boolean currentlyEncrypted) {
+        this.currentlyEncrypted = currentlyEncrypted;
     }
 }
