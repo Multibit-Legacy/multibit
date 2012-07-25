@@ -86,9 +86,11 @@ public class EncryptableWallet extends Wallet {
  
         for (ECKey key : keychain) {
             if (key instanceof EncryptableECKey) {
-                // TODO Check key is not encrypted.
-                ((EncryptableECKey)key).decrypt(password);
-                decryptedKeyChain.add(key);
+               EncryptableECKey encryptableECKey = (EncryptableECKey)key;
+               if (encryptableECKey.isEncrypted()) {
+                   encryptableECKey.decrypt(password);
+               }
+                decryptedKeyChain.add(encryptableECKey);
             } else {
                 // Convert plain ECKey into EncryptableECKey - does not need decrypting.
                 EncryptableECKey newKey = new EncryptableECKey(key, encrypterDecrypter);

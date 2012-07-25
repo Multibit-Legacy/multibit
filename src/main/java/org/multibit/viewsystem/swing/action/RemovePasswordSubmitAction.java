@@ -26,13 +26,13 @@ import javax.swing.SwingUtilities;
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncryptableWallet;
 import org.multibit.crypto.EncrypterDecrypterException;
+import org.multibit.file.FileHandler;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.RemovePasswordPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletType;
 
 /**
  * This {@link Action} action removes the encryption of private keys in a wallet.
@@ -87,8 +87,9 @@ public class RemovePasswordSubmitAction extends AbstractAction {
             if (wallet != null) {
                 if (wallet instanceof EncryptableWallet) {
                     try {
-                        ((EncryptableWallet)wallet).decrypt(passwordToUse);
-                        wallet.setWalletType(WalletType.UNENCRYPTED);
+                        ((EncryptableWallet)wallet).removeEncryption(passwordToUse);
+                        FileHandler fileHandler = new FileHandler(controller);
+                        fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);
                     } catch (EncrypterDecrypterException ede) {
                         removePasswordPanel.setMessage1(controller.getLocaliser()
                                 .getString("removePasswordPanel.removePasswordFailed", new String[]{ede.getMessage()}));
