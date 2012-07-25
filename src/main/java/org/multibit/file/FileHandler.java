@@ -81,11 +81,6 @@ public class FileHandler {
         String walletFilename = walletFile.getAbsolutePath();
         
         try {
-            Wallet wallet = Wallet.loadFromFile(walletFile);
-
-            // Add the new wallet into the model.
-            PerWalletModelData perWalletModelData = controller.getModel().addWallet(wallet, walletFilename);
-
             // See if the wallet is serialized or protobuf.
             WalletInfo walletInfo;
             if (isWalletSerialised(walletFile)) {
@@ -93,6 +88,12 @@ public class FileHandler {
             } else {
                 walletInfo = new WalletInfo(walletFilename, WalletVersion.PROTOBUF);
             }
+
+            Wallet wallet = Wallet.loadFromFile(walletFile);
+
+            // Add the new wallet into the model.
+            PerWalletModelData perWalletModelData = controller.getModel().addWallet(wallet, walletFilename);
+
             perWalletModelData.setWalletInfo(walletInfo);
 
             synchronized (walletInfo) {

@@ -113,10 +113,15 @@ public class WalletInfo {
             loadFromFile();
         } catch (WalletLoadException wle) {
             // load may fail on first construct if no backing file written -
-            // just log it
+            // just log it unless it is from wallet version
             log.debug(wle.getMessage());
             if (wle.getCause() != null) {
                 log.debug("Cause : " + wle.getCause().getMessage());
+            }
+            
+            if (wle.getMessage().indexOf("Cannot understand wallet version") > -1) {
+                // throw it again
+                throw wle;
             }
         }
     }
@@ -411,10 +416,15 @@ public class WalletInfo {
                     // This refers to a version of the wallet we do not know about.
                     throw new WalletLoadException("Cannot understand wallet version of '" + walletVersionMarker + "', '" + walletVersionString + "'" );
                 } else {
-                    // The wallet version passed in the constructor is used rather than the value in the file
-                    if (!walletVersion.equals(walletVersionString)) {
-                        log.debug("The wallet version in the constructor was '" + walletVersion + "'. In the wallet info file it was '" + walletVersionString + "'. Using the former.");
-                    }
+                    // The wallet version passed in the file is used rather than the value in the constructor
+                    if (!walletVersion.getWalletVersionString().equals(walletVersionString)) {
+                        log.debug("The wallet version in the constructor was '" + walletVersion + "'. In the wallet info file it was '" + walletVersionString + "'. Using the latter.");
+                        if (WalletVersion.SERIALIZED.getWalletVersionString().equals(walletVersionString)) {
+                            walletVersion = WalletVersion.SERIALIZED;
+                        } else if (WalletVersion.PROTOBUF.getWalletVersionString().equals(walletVersionString)) {
+                            walletVersion = WalletVersion.PROTOBUF;
+                        } 
+                    }                
                 }
             } else {
                 // The format of the info format is wrong.
