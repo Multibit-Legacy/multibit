@@ -344,9 +344,9 @@ public class FileHandlerTest extends TestCase {
         // Get the keys out the reborn wallet and check that all the keys are EncryptableKeys and encrypted.
         ArrayList<ECKey> rebornKeys = rebornEncryptableWallet.getKeychain();
         for (ECKey key : rebornKeys) {
-            //assertTrue("Key is not a EncryptableKey when it should be", key instanceof EncryptableECKey);
-            //EncryptableECKey encryptableECKey = (EncryptableECKey)key;
-            //assertTrue("Key is not encrypted when it should be", encryptableECKey.isEncrypted());
+            assertTrue("Key is not a EncryptableKey when it should be", key instanceof EncryptableECKey);
+            EncryptableECKey encryptableECKey = (EncryptableECKey)key;
+            assertTrue("Key is not encrypted when it should be", encryptableECKey.isEncrypted());
         }
         
         // Delete wallet.

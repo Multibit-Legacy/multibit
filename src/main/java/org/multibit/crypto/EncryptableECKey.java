@@ -2,8 +2,6 @@ package org.multibit.crypto;
 
 import java.math.BigInteger;
 
-import org.multibit.crypto.EncrypterDecrypterScrypt;
-
 import com.google.bitcoin.core.ECKey;
 
 /**
@@ -20,8 +18,18 @@ public class EncryptableECKey extends ECKey {
     
     private byte[] encryptedPrivateKey;
     
+    /**
+     * Indicates whether the private key is encrypted (true) or not (false).
+     * A private key is deemed to be encrypted when there is no private key and the encryptedPrivateKey is non-zero.
+     */
     private boolean isEncrypted;
     
+    /**
+     * Create a new EncryptableECKey.
+     * This creates a new private key.
+     * 
+     * @param encrypterDecrypter
+     */
     public EncryptableECKey(EncrypterDecrypter encrypterDecrypter) {
         super();
         init(encrypterDecrypter);
@@ -29,10 +37,30 @@ public class EncryptableECKey extends ECKey {
 
     /**
      * Create a new EncryptableECKey from an existing ECKey
+     * @param key ECKey The key to 'wrap' into an EncryptableECKey
+     * @param encrypterDecrypter The EncrypterDEcrypter that will be used to encrypt and decrypt the key
      */
     public EncryptableECKey(ECKey key, EncrypterDecrypter encrypterDecrypter) {
         super(key.getPrivKeyBytes(), key.getPubKey());
         init(encrypterDecrypter);   
+    }
+ 
+    /**
+     * Create a new EncryptableECKey from an existing ECKey and an encrypted private key
+     * @param key ECKey The key to 'wrap' into an EncryptableECKey
+     * @param encryptedPrivateKey The encrypted bytes of the private key
+     * @param encrypterDecrypter The EncrypterDEcrypter that will be used to encrypt and decrypt the key
+     */
+    public EncryptableECKey(ECKey key, byte[] encryptedPrivateKey, EncrypterDecrypter encrypterDecrypter) {
+        super(key.getPrivKeyBytes(), key.getPubKey());
+        this.encryptedPrivateKey = encryptedPrivateKey;
+        this.encrypterDecrypter = encrypterDecrypter;
+               
+        // If a nonblank encrypted private key is specified then blank the private keys and mark it as encrypted.
+        if (encryptedPrivateKey != null && encryptedPrivateKey.length > 0 ) {
+            priv = BigInteger.ZERO;
+            isEncrypted = true;
+        }
     }
  
     private void init(EncrypterDecrypter encrypterDecrypter) {
@@ -48,8 +76,7 @@ public class EncryptableECKey extends ECKey {
         encryptedPrivateKey = encrypterDecrypter.encrypt(getPrivKeyBytes(), password);
         
         // Clear the super private keys.
-        // TODO - put this back in - currently disabled to avoid blank keys being written to disk
-        //this.priv = BigInteger.ZERO;
+        this.priv = BigInteger.ZERO;
         
         isEncrypted = true;
     }
@@ -69,14 +96,14 @@ public class EncryptableECKey extends ECKey {
     }
 
     public byte[] getEncryptedPrivateKey() {
-        return encryptedPrivateKey;
-    }
-
-    public void setEncryptedPrivateKey(byte[] encryptedPrivateKey) {
-        this.encryptedPrivateKey = encryptedPrivateKey;
-    }
-
-    public void setEncrypted(boolean isEncrypted) {
-        this.isEncrypted = isEncrypted;
+        if (encryptedPrivateKey == null) {
+            return null;
+        }
+        
+        // Copy the private key to make it unmodifiable.
+        byte[] copy = new byte[encryptedPrivateKey.length];
+        System.arraycopy(encryptedPrivateKey, 0, copy, 0, encryptedPrivateKey.length);
+                  
+        return copy;
     }
 }

@@ -257,7 +257,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         ScryptParameters scryptParameters = new ScryptParameters(encryptionParameters.getSalt().toByteArray(), 16384, 8, 1);
         EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
       
-        Wallet wallet = new EncryptableWallet(params, encrypterDecrypter);
+        EncryptableWallet wallet = new EncryptableWallet(params, encrypterDecrypter);
 
         // Read the WalletType.
         WalletType walletType = null;
@@ -273,7 +273,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
                 throw new IllegalArgumentException("Unknown wallet type of '" + protoWalletType.toString());
             }
         } else {
-            // If not specified, grandfather in as unencrypted
+            // If not specified, grandfather in as unencrypted.
             walletType = WalletType.UNENCRYPTED;
         }
         wallet.setWalletType(walletType);
@@ -294,21 +294,23 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             }
             byte[] pubKey = keyProto.hasPublicKey() ? keyProto.getPublicKey().toByteArray() : null;
             ECKey ecKey = new ECKey(privKey, pubKey);
-            // If the key is an encrypted key construct an EncryptableECKey with the encrypted private key bytes
-            if (walletType == WalletType.ENCRYPTED) {
-                ecKey = new EncryptableECKey(ecKey, encrypterDecrypter);
-                ((EncryptableECKey)ecKey).setEncryptedPrivateKey(encryptedPrivKey);
-                
-                // If there is a encrypted private key then the key is currently encrypted.
-                if (encryptedPrivKey.length > 0) {
-                    ((EncryptableECKey)ecKey).setEncrypted(true);
-                    isWalletCurrentlyEncrypted = true;
-                 }
-            } 
             ecKey.setCreationTimeSeconds((keyProto.getCreationTimestamp() + 500) / 1000);
-            wallet.addKey(ecKey);
+            // If the key is an encrypted key construct an EncryptableECKey with the encrypted private key bytes.
+            if (walletType == WalletType.ENCRYPTED) {
+                EncryptableECKey encryptableECKey = new EncryptableECKey(ecKey, encryptedPrivKey, encrypterDecrypter);
+                
+                // If any of the keys are encrypted, mark the wallet as encrypted.
+                if (encryptableECKey.isEncrypted()) {
+                    isWalletCurrentlyEncrypted = true;
+                }
+                wallet.addKey(encryptableECKey);
+            } else {
+                wallet.addKey(ecKey);
+            }
+            
         }
-        ((EncryptableWallet)wallet).setCurrentlyEncrypted(isWalletCurrentlyEncrypted);
+        
+        wallet.setCurrentlyEncrypted(isWalletCurrentlyEncrypted);
 
         
         // Read all transactions and insert into the txMap.
