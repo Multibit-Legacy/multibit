@@ -1,5 +1,9 @@
 MultiBit release notes.
 
+Version 0.4.6
++  Wallet versions from the future now not loaded
+
+
 23 Jul 2012 Version 0.4.5
 +  Faster connection to the bitcoin network at startup
 +  More help on 'Available to spend'
