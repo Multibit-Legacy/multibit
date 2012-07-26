@@ -111,9 +111,7 @@ public class AddPasswordSubmitAction extends AbstractAction {
             }
         }
         controller.fireDataChanged();
-        
-        // Success.
-        
+
         // Success.
         SwingUtilities.invokeLater(new Runnable() {
             @Override
