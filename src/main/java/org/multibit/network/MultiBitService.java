@@ -36,7 +36,9 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterScrypt;
 import org.multibit.crypto.ScryptParameters;
+import org.multibit.file.FileHandlerException;
 import org.multibit.file.WalletSaveException;
+import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
@@ -61,6 +63,7 @@ import com.google.bitcoin.core.ProtocolException;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.discovery.IrcDiscovery;
 import com.google.bitcoin.store.BlockStore;
@@ -181,10 +184,19 @@ public class MultiBitService {
             peerGroup.start();
             log.debug("Started peergroup.");
         } catch (BlockStoreException e) {
-            log.error("Error creating MultiBitService.1 " + e.getClass().getName() + " " + e.getMessage());
+            handleError(e);
+        } catch (FileHandlerException e) {
+            handleError(e);    
         } catch (Exception e) {
-            log.error("Error creating MultiBitService.2 " + e.getClass().getName() + " " + e.getMessage());
+            handleError(e);
         }
+    }
+    
+    private void handleError(Exception e) {
+        controller.setOnlineStatus(StatusEnum.ERROR);
+        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("multiBitService.couldNotLoadBlockchain", 
+                new Object[]{blockchainFilename, e.getClass().getName() + " " + e.getMessage()})));
+        log.error("Error creating MultiBitService " + e.getClass().getName() + " " + e.getMessage());        
     }
 
     private MultiBitPeerGroup createNewPeerGroup() {
@@ -290,6 +302,9 @@ public class MultiBitService {
                 } catch (WalletSaveException wse) {
                     log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
                     MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
+                } catch (WalletVersionException wve) {
+                    log.error(wve.getClass().getCanonicalName() + " " + wve.getMessage());
+                    MessageManager.INSTANCE.addMessage(new Message(wve.getClass().getCanonicalName() + " " + wve.getMessage()));
                 }
             }
         }
@@ -349,15 +364,12 @@ public class MultiBitService {
         log.debug("Starting replay of blockchain from date = '" + dateToReplayFrom + "'");
 
         if (dateToReplayFrom == null || genesisBlockCreationDate.after(dateToReplayFrom)) {
-            // Create empty new block store.
-            if (blockStore != null) {
-                blockStore.close();
-            }
-            blockStore = new ReplayableBlockStore(networkParameters, new File(blockchainFilename), true);
-
-            log.debug("Creating new blockStore.2 - need to redownload from Genesis block");
-            blockChain = new MultiBitBlockChain(networkParameters, (BlockStore) blockStore);
-            log.debug("Created new blockStore.2 '" + blockChain + "'");
+            // Go back to the genesis block
+            try {
+                blockChain.setChainHeadClearCachesAndTruncateBlockStore(new StoredBlock(networkParameters.genesisBlock, networkParameters.genesisBlock.getWork(), 0));
+            } catch (VerificationException e) {
+                throw new BlockStoreException(e);
+            } 
         } else {
             StoredBlock storedBlock = blockStore.getChainHead();
 
@@ -539,19 +551,6 @@ public class MultiBitService {
 
     public ReplayableBlockStore getBlockStore() {
         return blockStore;
-    }
-
-    /**
-     * Utility class just to show the number of peers connected in the log.
-     */
-    class CountPeerEventListener extends AbstractPeerEventListener {
-        public void onPeerDisconnected(Peer peer, int peerCount) {
-            logger.debug("Number of peers is now " + peerCount);
-        }
-
-        public void onPeerConnected(Peer peer, int peerCount) {
-            logger.debug("Number of peers is now " + peerCount);
-        }
     }
 
     public SecureRandom getSecureRandom() {

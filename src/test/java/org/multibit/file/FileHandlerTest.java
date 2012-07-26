@@ -46,6 +46,8 @@ public class FileHandlerTest extends TestCase {
 
     private final String WALLET_PROTOBUF1 = "protobuf1.wallet";
 
+    private static final String WALLET_FUTURE = "future.wallet";
+
     private final String WALLET_SERIALISED1 = "serialised1.wallet";
     private final BigInteger WALLET_SERIALISED1_BALANCE = new BigInteger("6700000");;
 
@@ -58,7 +60,11 @@ public class FileHandlerTest extends TestCase {
     private final String TEST_CREATE_UNENCRYPTED_PROTOBUF_PREFIX = "testCreateUnencryptedProtobuf";
 
     private final String TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX = "testCreateEncryptedProtobuf";
-    
+        
+    private static final String TEST_CREATE_PROTOBUF_PREFIX = "testCreateProtobuf";
+
+    private static final String TEST_WALLET_VERSION_PREFIX = "testCannotLoadOrSaveFutureWalletVersions";
+
     private final char[] WALLET_PASSWORD = "horatio nelson 123".toCharArray();
 
     private SecureRandom secureRandom;
@@ -352,5 +358,57 @@ public class FileHandlerTest extends TestCase {
 
         File protobufWalletFile = new File(protobufWalletName);;
         assertTrue(!fileHandler.isWalletSerialised(protobufWalletFile));
+    }
+    
+    
+    @Test
+    public void testCannotLoadOrSaveFutureWalletVersions() throws IOException {
+        MultiBitController controller = new MultiBitController();
+        @SuppressWarnings("unused")
+        MultiBitModel model = new MultiBitModel(controller);
+        FileHandler fileHandler = new FileHandler(controller);
+
+        File temporaryWallet = File.createTempFile(TEST_WALLET_VERSION_PREFIX, ".wallet");
+        temporaryWallet.deleteOnExit();
+
+        String newWalletFilename = temporaryWallet.getAbsolutePath();
+
+        // Create a new protobuf wallet with a future wallet version
+        Wallet newWallet = new Wallet(NetworkParameters.prodNet());
+        ECKey newKey = new ECKey();
+        newWallet.keychain.add(newKey);
+        newKey = new ECKey();
+        newWallet.keychain.add(newKey);
+        PerWalletModelData perWalletModelData = new PerWalletModelData();
+        WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletVersion.FUTURE);
+        
+        perWalletModelData.setWalletInfo(walletInfo);
+       
+        perWalletModelData.setWallet(newWallet);
+        perWalletModelData.setWalletFilename(newWalletFilename);
+        perWalletModelData.setWalletDescription(TEST_CREATE_PROTOBUF_PREFIX);
+        
+        // Should not be able to save a wallet version from the future.
+        try {
+            controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
+            fail("Could save a wallet version from the future but should not be able to");
+        } catch (WalletVersionException wve) {
+            // Expected result.
+        } 
+
+        // Check a wallet from the future cannot be loaded.
+        File directory = new File(".");
+        String currentPath = directory.getAbsolutePath();
+
+        String futureWalletName = currentPath + File.separator + Constants.TESTDATA_DIRECTORY + File.separator
+                + WALLET_TESTDATA_DIRECTORY + File.separator + WALLET_FUTURE;
+
+        try {
+            File futureWalletFile = new File(futureWalletName);
+            fileHandler.loadFromFile(futureWalletFile);
+            fail("Could load a wallet version from the future but should not be able to");
+        } catch (WalletVersionException wve) {
+            // Expected result.
+        }
     }
 }

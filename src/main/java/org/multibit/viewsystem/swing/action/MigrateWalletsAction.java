@@ -43,6 +43,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
+import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
@@ -105,7 +106,7 @@ public class MigrateWalletsAction extends AbstractAction {
                 return;
             }
             
-            MultiBitDialog infoDialog = this.createDialog(mainFrame, walletFilenamesToMigrate.size());
+            MultiBitDialog infoDialog = createDialog(mainFrame, walletFilenamesToMigrate.size());
             
             infoDialog.setVisible(true);
             
@@ -167,6 +168,9 @@ public class MigrateWalletsAction extends AbstractAction {
                         } catch (WalletSaveException e1) {
                             migrationWasNotSuccessful(loopPerWalletModelData, e1);
                             thereWereFailures = true;
+                        } catch (WalletVersionException wve) {
+                            migrationWasNotSuccessful(loopPerWalletModelData, wve);
+                            thereWereFailures = true;
                         } catch (IllegalStateException e1) {
                             migrationWasNotSuccessful(loopPerWalletModelData, e1);
                             thereWereFailures = true;
@@ -186,9 +190,10 @@ public class MigrateWalletsAction extends AbstractAction {
                         try {
                             if (walletMigrationErrorText == null) {
                                 // Test migrate was successful - now do it for real.
-                                // Backup serialised wallet.
-                                fileHandler.backupPerWalletModelData(loopPerWalletModelData);
-                                MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.backingUpFile", 
+                                // Backup serialised wallet, specifying that it should not be migrated for this version of MultiBit.
+                                // (It will likely ony be opened if the real migrate fails).
+                                fileHandler.backupPerWalletModelData(loopPerWalletModelData, controller.getLocaliser().getVersionNumber());
+                               MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.backingUpFile", 
                                         new Object[] {loopPerWalletModelData.getWalletBackupFilename()})));
                                            
                                 // Load serialised, change to protobuf, save, reload, check.
@@ -208,6 +213,9 @@ public class MigrateWalletsAction extends AbstractAction {
                                 }
                             }
                         } catch (WalletSaveException e1) {
+                            migrationWasNotSuccessfulUseBackup(loopPerWalletModelData, e1);
+                            thereWereFailures = true;
+                        } catch (WalletVersionException e1) {
                             migrationWasNotSuccessfulUseBackup(loopPerWalletModelData, e1);
                             thereWereFailures = true;
                         } catch (WalletLoadException e1) {
@@ -231,8 +239,7 @@ public class MigrateWalletsAction extends AbstractAction {
                 MessageManager.INSTANCE.addMessage(new Message(" "));
                 controller.fireRecreateAllViews(false);
                 controller.displayView(View.MESSAGES_VIEW);
-            }
-                       
+            }                    
         } finally {
             setEnabled(true);
             mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -311,16 +318,20 @@ public class MigrateWalletsAction extends AbstractAction {
         Set<String> protobufPrivateKeysAsStrings = new HashSet<String>();    
         ArrayList<ECKey> protobufKeys = protobuf.getWallet().keychain;
         for (ECKey ecKey : protobufKeys) {
-            protobufPrivateKeysAsStrings.add(ecKey.toStringWithPrivate());
+            if (ecKey != null) {
+                protobufPrivateKeysAsStrings.add(ecKey.toStringWithPrivate());
+            }
         }
         
         // Every serialised private key should be in the protobuf.
         // (We do not care if the order is different).
         ArrayList<ECKey> serialisedKeys = serialised.getWallet().keychain;
         for (ECKey ecKey : serialisedKeys) {
-            if (!protobufPrivateKeysAsStrings.contains(ecKey.toStringWithPrivate())) {
-                return controller.getLocaliser().getString("migrateWalletsAction.privateKeyWasMissing", 
-                        new Object[] {ecKey.toAddress(controller.getModel().getNetworkParameters())});
+            if (ecKey != null) {
+                if (!protobufPrivateKeysAsStrings.contains(ecKey.toStringWithPrivate())) {
+                    return controller.getLocaliser().getString("migrateWalletsAction.privateKeyWasMissing", 
+                            new Object[] {ecKey.toAddress(controller.getModel().getNetworkParameters())});
+                }
             }
         }
        
@@ -338,25 +349,29 @@ public class MigrateWalletsAction extends AbstractAction {
         Set<Transaction> protobufTransactions = protobuf.getWallet().getTransactions(true, true);
         Set<Transaction> serialisedTransactions = serialised.getWallet().getTransactions(true, true);
         if (protobufTransactions.size() != serialisedTransactions.size()) {
-            return  controller.getLocaliser().getString("migrateWalletsAction.numberOfTransactionsAreDifferent", 
+            return controller.getLocaliser().getString("migrateWalletsAction.numberOfTransactionsAreDifferent", 
                     new Object[] {serialisedTransactions.size(), protobufTransactions.size()});
         }
         
         // Check every transaction id in the serialised is in the protobuf.
         Set<String> protobufTransactionIds = new HashSet<String>();    
         for (Transaction protobufTx : protobufTransactions) {
-            protobufTransactionIds.add(protobufTx.getHashAsString());
+            if (protobufTx != null) {
+                protobufTransactionIds.add(protobufTx.getHashAsString());
+            }
         }
         
         // Every serialised transaction should be in the protobuf.
         // (We do not care if the order is different).
        for (Transaction serialisedTx : serialisedTransactions) {
-            if (!protobufTransactionIds.contains(serialisedTx.getHashAsString())) {
-                return controller.getLocaliser().getString("migrateWalletsAction.transactionWasMissing", new Object[] {serialisedTx.getHashAsString()});
-            }
+           if (serialisedTx != null) {
+               if (!protobufTransactionIds.contains(serialisedTx.getHashAsString())) {
+                   return controller.getLocaliser().getString("migrateWalletsAction.transactionWasMissing", new Object[] {serialisedTx.getHashAsString()});
+               }
+           }
         }
         
-        // Th two wallets are equal.
+        // The two wallets are equal.
         return null;       
     }
     
@@ -422,8 +437,7 @@ public class MigrateWalletsAction extends AbstractAction {
         String information4 = controller.getLocaliser().getString("migrateWalletsAction.information3");
         Object[] array = {information1, information2, information3, information4};
  
-        //Create an array specifying the number of dialog buttons
-        //and their text.
+        //Create an array specifying the number of dialog buttons and their text.
         Object[] options = {okButton, cancelButton};
  
         // Create the JOptionPane.

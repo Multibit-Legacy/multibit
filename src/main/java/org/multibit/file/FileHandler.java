@@ -73,13 +73,13 @@ public class FileHandler {
         this.controller = controller;
     }
 
-    public PerWalletModelData loadFromFile(File walletFile) throws WalletLoadException {
+    public PerWalletModelData loadFromFile(File walletFile) throws WalletLoadException, WalletVersionException {
         if (walletFile == null) {
             return null;
         }
 
         String walletFilename = walletFile.getAbsolutePath();
-        
+
         try {
             // See if the wallet is serialized or protobuf.
             WalletInfo walletInfo;
@@ -102,18 +102,22 @@ public class FileHandler {
             }
 
             return perWalletModelData;
+        } catch (WalletVersionException wve) {
+            // We want this to propagate out.
+            throw wve;
         } catch (Exception e) {
             e.printStackTrace();
-            log.error(e.getClass().getCanonicalName() + " "  + e.getMessage());
-            throw new WalletLoadException(e.getClass().getCanonicalName() + " "  + e.getMessage(), e);
-        } 
+            log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
+            throw new WalletLoadException(e.getClass().getCanonicalName() + " " + e.getMessage(), e);
+        }
     }
-    
+
     boolean isWalletSerialised(File walletFile) {
         boolean isWalletSerialised = false;
         InputStream stream = null;
         try {
-            // Determine what kind of wallet stream this is: Java Serialization or protobuf format.
+            // Determine what kind of wallet stream this is: Java Serialization
+            // or protobuf format.
             stream = new BufferedInputStream(new FileInputStream(walletFile));
             isWalletSerialised = stream.read() == 0xac && stream.read() == 0xed;
         } catch (FileNotFoundException e) {
@@ -126,7 +130,7 @@ public class FileHandler {
                     stream.close();
                 } catch (IOException e) {
                     log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
-                } 
+                }
             }
         }
         return isWalletSerialised;
@@ -145,21 +149,22 @@ public class FileHandler {
         // log.info("Wallet details for wallet file = " +
         // perWalletModelData.getWalletFilename() + "\n"
         // + perWalletModelData.getWallet().toString());
- 
+
         if (perWalletModelData == null || perWalletModelData.getWalletFilename() == null) {
             return;
         }
-        
+
         File walletFile = new File(perWalletModelData.getWalletFilename());
-        
+
         WalletInfo walletInfo = perWalletModelData.getWalletInfo();
-               
+
         synchronized (walletInfo) {
-            // Save the perWalletModelData if it is dirty or if forceWrite is true.
+            // Save the perWalletModelData if it is dirty or if forceWrite is
+            // true.
             if (perWalletModelData.isDirty() || forceWrite) {
                 // Check dates and sizes of files.
                 boolean filesHaveChanged = haveFilesChanged(perWalletModelData);
-                
+
                 if (!filesHaveChanged || forceWrite) {
                     // Normal write of data.
                     String walletInfoFilename = WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename());
@@ -171,14 +176,23 @@ public class FileHandler {
                     perWalletModelData.setDirty(false);
                 } else {
                     // Write to backup files.
-                    backupPerWalletModelData(perWalletModelData);
+                    backupPerWalletModelData(perWalletModelData, null);
                 }
             }
         }
         return;
     }
 
-    public void backupPerWalletModelData(PerWalletModelData perWalletModelData) {
+    /**
+     * Backup the perWalletModelData. The lastFailedMigrateVersion parameter can
+     * be used so that wallet migration is delayed for the backup should it ever
+     * need to be opened in MultiBit (to stop the wallet migrate trying to
+     * re-migrate it).
+     * 
+     * @param perWalletModelData
+     * @param lastFailedMigrateVersion
+     */
+    public void backupPerWalletModelData(PerWalletModelData perWalletModelData, String lastFailedMigrateVersion) {
         // Write to backup files.
         // Work out / reuse the backup file names.
         String walletInfoBackupFilename = null;
@@ -200,19 +214,34 @@ public class FileHandler {
                         new File(WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename())), true);
                 perWalletModelData.setWalletInfoBackupFilename(walletInfoBackupFilename);
             }
-            
+
+            String previousLastFailedMigrateVersion = perWalletModelData.getWalletInfo().getProperty(
+                    MultiBitModel.LAST_FAILED_MIGRATE_VERSION);
+            if (lastFailedMigrateVersion != null) {
+                perWalletModelData.getWalletInfo().put(MultiBitModel.LAST_FAILED_MIGRATE_VERSION, lastFailedMigrateVersion);
+            }
             saveWalletAndWalletInfo(perWalletModelData, walletBackupFilename, walletInfoBackupFilename);
+
+            // Put the previous lastFailedMigrateVersion back.
+            if (lastFailedMigrateVersion != null) {
+                if (previousLastFailedMigrateVersion == null) {
+                    perWalletModelData.getWalletInfo().remove(lastFailedMigrateVersion);
+                } else {
+                    perWalletModelData.getWalletInfo().put(MultiBitModel.LAST_FAILED_MIGRATE_VERSION,
+                            previousLastFailedMigrateVersion);
+                }
+            }
 
             // The perWalletModelData is no longer dirty.
             perWalletModelData.setDirty(false);
-            
+
             log.info("Written backup wallet files to '" + walletBackupFilename + "'");
         } catch (IOException ioe) {
-            log.error(ioe.getClass().getCanonicalName() + " "  + ioe.getMessage());
-            throw new WalletSaveException("Cannot backup wallet '" + perWalletModelData.getWalletFilename(), ioe);            
+            log.error(ioe.getClass().getCanonicalName() + " " + ioe.getMessage());
+            throw new WalletSaveException("Cannot backup wallet '" + perWalletModelData.getWalletFilename(), ioe);
         }
     }
-    
+
     private void saveWalletAndWalletInfo(PerWalletModelData perWalletModelData, String walletFilename, String walletInfoFilename) {
         File walletFile = new File(walletFilename);
         WalletInfo walletInfo = perWalletModelData.getWalletInfo();
@@ -222,15 +251,18 @@ public class FileHandler {
 
         // Save the wallet file
         try {
-        if (perWalletModelData.getWallet() != null) {
-            if (WalletVersion.SERIALIZED == walletInfo.getWalletVersion()) {
-                saveToFileAsSerialised(perWalletModelData.getWallet(), walletFile);
-            } else if (WalletVersion.PROTOBUF == walletInfo.getWalletVersion() || WalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion()) {
-                perWalletModelData.getWallet().saveToFile(walletFile);
-            } else {
-                throw new WalletSaveException("Cannot save wallet '" + perWalletModelData.getWalletFilename() + "'. Its wallet version is '" + walletInfo.getWalletVersion().toString() + "' but this version of MultiBit does not understand that format.");
+            if (perWalletModelData.getWallet() != null) {
+                if (WalletVersion.SERIALIZED == walletInfo.getWalletVersion()) {
+                    saveToFileAsSerialised(perWalletModelData.getWallet(), walletFile);
+                } else if (WalletVersion.PROTOBUF == walletInfo.getWalletVersion()
+                        || WalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion()) {
+                    perWalletModelData.getWallet().saveToFile(walletFile);
+                } else {
+                    throw new WalletSaveException("Cannot save wallet '" + perWalletModelData.getWalletFilename()
+                            + "'. Its wallet version is '" + walletInfo.getWalletVersion().toString()
+                            + "' but this version of MultiBit does not understand that format.");
+                }
             }
-        }
         } catch (IOException ioe) {
             throw new WalletSaveException("Cannot save wallet '" + perWalletModelData.getWalletFilename(), ioe);
         }
@@ -245,18 +277,18 @@ public class FileHandler {
         if (perWalletModelData == null) {
             return;
         }
-        
+
         File walletFile = new File(perWalletModelData.getWalletFilename());
         WalletInfo walletInfo = perWalletModelData.getWalletInfo();
         String walletInfoFilenameAsString = WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename());
         File walletInfoFile = new File(walletInfoFilenameAsString);
-               
+
         synchronized (walletInfo) {
             // See if either of the files are readonly - abort.
             if (!walletFile.canWrite() || !walletInfoFile.canWrite()) {
                 throw new DeleteWalletException(controller.getLocaliser().getString("deleteWalletException.walletWasReadonly"));
             }
-            
+
             // Delete the wallet info file first, then the wallet.
             try {
                 FileHandler.secureDelete(walletInfoFile);
@@ -265,13 +297,13 @@ public class FileHandler {
             } catch (IOException ioe) {
                 log.error(ioe.getClass().getCanonicalName() + " " + ioe.getMessage());
                 throw new DeleteWalletException(controller.getLocaliser().getString("deleteWalletException.genericCouldNotDelete",
-                            new String[]{perWalletModelData.getWalletFilename()}));                        
+                        new String[] { perWalletModelData.getWalletFilename() }));
             }
         }
-        
+
         // If the wallet was deleted, delete the model data.
         if (walletInfo.isDeleted()) {
-                controller.getModel().remove(perWalletModelData);
+            controller.getModel().remove(perWalletModelData);
         }
         return;
     }
@@ -366,8 +398,8 @@ public class FileHandler {
         walletInfo.put(MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED, "" + walletInfoFileLastModified);
 
         // TODO Fix this - create a toString()
-        log.debug("rememberFileSizesAndLastModified: Wallet filename " + walletFilename + " , " + MultiBitModel.WALLET_FILE_SIZE + " " + walletFileSize + " ,"
-                + MultiBitModel.WALLET_FILE_LAST_MODIFIED + " " + walletFileLastModified + " ,"
+        log.debug("rememberFileSizesAndLastModified: Wallet filename " + walletFilename + " , " + MultiBitModel.WALLET_FILE_SIZE
+                + " " + walletFileSize + " ," + MultiBitModel.WALLET_FILE_LAST_MODIFIED + " " + walletFileLastModified + " ,"
                 + MultiBitModel.WALLET_INFO_FILE_SIZE + " " + walletInfoFileSize + " ,"
                 + MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED + " " + walletInfoFileLastModified);
     }
@@ -438,7 +470,6 @@ public class FileHandler {
         return userPreferences;
     }
 
-    
     /**
      * Uses Java serialization to save the wallet to the given file.
      */
@@ -462,7 +493,7 @@ public class FileHandler {
         oos.writeObject(wallet);
         oos.close();
     }
-    
+
     /**
      * Create a backup filename the format is: original file: filename.suffix.
      * backup file: filename-yyyymmddhhmmss.suffix
@@ -480,7 +511,8 @@ public class FileHandler {
         // Find suffix.
         int suffixSeparator = filename.lastIndexOf(".");
         String stem = filename.substring(0, suffixSeparator);
-        String suffix = filename.substring(suffixSeparator); // Includes separating dot.
+        String suffix = filename.substring(suffixSeparator); // Includes
+                                                             // separating dot.
 
         if (dateForBackupName == null || !reusePreviousBackupDate) {
             dateForBackupName = new Date();
@@ -498,51 +530,49 @@ public class FileHandler {
      * 
      * Thus each user has their own copy of the blockchain.
      */
-    public void copyBlockChainFromInstallationDirectory(MultiBitService multiBitService, String destinationBlockChainFilename) {
+    public void copyBlockChainFromInstallationDirectory(MultiBitService multiBitService, String destinationBlockChainFilename)
+            throws IOException {
         if (destinationBlockChainFilename == null) {
             return;
         }
 
-        // See if the block chain in the user's application data directory exists.
+        // See if the block chain in the user's application data directory
+        // exists.
         // It is never overwritten.
         File destinationBlockchain = new File(destinationBlockChainFilename);
         if (!destinationBlockchain.exists()) {
             // Work out the source blockchain (put into the program installation
             // directory by the installer).
             File directory = new File(".");
-            try {
-                String currentWorkingDirectory = directory.getCanonicalPath();
+            String currentWorkingDirectory = directory.getCanonicalPath();
 
-                String filePrefix = multiBitService.getFilePrefix();
-                String blockchainFilename = filePrefix + MultiBitService.BLOCKCHAIN_SUFFIX;
-                String sourceBlockchainFilename = currentWorkingDirectory + File.separator + blockchainFilename;
-                File sourceBlockchain = new File(sourceBlockchainFilename);
-                if (sourceBlockchain.exists()) {
-                    // It should exist since installer puts them in.
-                    log.info("Copying blockchain from '" + sourceBlockchainFilename + "' to '" + destinationBlockChainFilename
-                            + "'");
-                    long startTime = (DateUtils.nowUtc()).getMillis();
-                    copyFile(sourceBlockchain, destinationBlockchain);
-                    long stopTime = (DateUtils.nowUtc()).getMillis();
-                    log.info("Time taken to copy blockchain was " + (stopTime - startTime) + " ms.");
+            String filePrefix = multiBitService.getFilePrefix();
+            String blockchainFilename = filePrefix + MultiBitService.BLOCKCHAIN_SUFFIX;
+            String sourceBlockchainFilename = currentWorkingDirectory + File.separator + blockchainFilename;
+            File sourceBlockchain = new File(sourceBlockchainFilename);
+            if (sourceBlockchain.exists()) {
+                // It should exist since installer puts them in.
+                log.info("Copying blockchain from '" + sourceBlockchainFilename + "' to '" + destinationBlockChainFilename + "'");
+                long startTime = (DateUtils.nowUtc()).getMillis();
+                copyFile(sourceBlockchain, destinationBlockchain);
+                long stopTime = (DateUtils.nowUtc()).getMillis();
+                log.info("Time taken to copy blockchain was " + (stopTime - startTime) + " ms.");
 
-                    // Check all the data was copied.
-                    long sourceLength = sourceBlockchain.length();
-                    long destinationLength = destinationBlockchain.length();
-                    if (sourceLength != destinationLength) {
-                        log.error("Blockchain was not copied to user's application data directory correctly.\nThe source blockchain '"
-                                + sourceBlockchainFilename
-                                + "' is of length "
-                                + sourceLength
-                                + "\nbut the destination blockchain '"
-                                + destinationBlockChainFilename
-                                + "' is of length "
-                                + destinationLength);
-                    }
+                // Check all the data was copied.
+                long sourceLength = sourceBlockchain.length();
+                long destinationLength = destinationBlockchain.length();
+                if (sourceLength != destinationLength) {
+                    String errorText = "Blockchain was not copied to user's application data directory correctly.\nThe source blockchain '"
+                            + sourceBlockchainFilename
+                            + "' is of length "
+                            + sourceLength
+                            + "\nbut the destination blockchain '"
+                            + destinationBlockChainFilename
+                            + "' is of length "
+                            + destinationLength;
+                    log.error(errorText);
+                    throw new FileHandlerException(errorText);
                 }
-
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -579,7 +609,7 @@ public class FileHandler {
             }
         }
     }
-    
+
     public static File createTempDirectory(String filePrefix) throws IOException {
         final File temp;
 
@@ -597,7 +627,7 @@ public class FileHandler {
 
         return temp;
     }
-    
+
     public static void secureDelete(File file) throws IOException {
         if (file.exists()) {
             long length = file.length();

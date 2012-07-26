@@ -20,7 +20,12 @@ public enum WalletVersion {
     /**
      * Wallet version for encrypted protobuf wallets.
      */
-    PROTOBUF_ENCRYPTED("3", "walletVersion.3");
+    PROTOBUF_ENCRYPTED("3", "walletVersion.3"),
+    
+    /**
+     * Wallet version future wallets - used in testing only.
+     */
+    FUTURE("1000000", "walletVersion.1000000");
     
     /**
      * How the wallet version is represented in the wallet info files.

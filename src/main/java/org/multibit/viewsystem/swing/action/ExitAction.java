@@ -27,6 +27,7 @@ import org.multibit.ApplicationInstanceManager;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
+import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
@@ -35,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * exit the application
+ * Exit the application.
  * 
  * @author jim
  * 
@@ -70,8 +71,8 @@ public class ExitAction extends AbstractAction {
                 }});
            
         }
-        
-        // save all the wallets and put their filenames in the user preferences
+
+        // Save all the wallets and put their filenames in the user preferences.
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
@@ -82,19 +83,26 @@ public class ExitAction extends AbstractAction {
                     MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
                     
                     // Save to backup.
-                    controller.getFileHandler().backupPerWalletModelData(loopPerWalletModelData);
+                    try {
+                        controller.getFileHandler().backupPerWalletModelData(loopPerWalletModelData, null);
+                    } catch (WalletSaveException wse2) {
+                        log.error(wse2.getClass().getCanonicalName() + " " + wse2.getMessage());
+                        MessageManager.INSTANCE.addMessage(new Message(wse2.getClass().getCanonicalName() + " " + wse2.getMessage()));
+                    }
+                } catch (WalletVersionException wve) {
+                    log.error(wve.getClass().getCanonicalName() + " " + wve.getMessage());
+                    MessageManager.INSTANCE.addMessage(new Message(wve.getClass().getCanonicalName() + " " + wve.getMessage()));
                 }
             }
         }
-        // write the user properties
+        // Write the user properties.
         log.debug("Saving user preferences ...");
-        // controller.updateStatusLabel("Saving user preferences ...");
         FileHandler.writeUserPreferences(controller);
 
         log.debug("Shutting down Bitcoin URI checker ...");
         ApplicationInstanceManager.shutdownSocket();
 
-        // get rid of main display
+        // Get rid of main display.
         if (mainFrame != null) {
             mainFrame.setVisible(false);
         }
