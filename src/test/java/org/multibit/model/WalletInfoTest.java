@@ -39,6 +39,12 @@ public class WalletInfoTest extends TestCase {
     public static final String EXAMPLE_SENDING_ADDRESS = "1K9A6xh9wGZD1xNLBdxUSFNxtRFUsw5Z4n";
     public static final String EXAMPLE_SENDING_ADDRESS_LABEL = "mySendingAddress label, text after comma\n text after return";
 
+    private String PROPERTY_NAME1 = "aProperty";
+    private String PROPERTY_VALUE1 = "aValue";
+       
+    private String PROPERTY_NAME2 = "anotherProperty";
+    private String PROPERTY_VALUE2 = "anotherValue";
+       
     @Test
     public void testRoundTrip() throws Exception {
         // set up core objects
@@ -68,6 +74,9 @@ public class WalletInfoTest extends TestCase {
         AddressBookData sendingAddress = new AddressBookData(EXAMPLE_SENDING_ADDRESS_LABEL, EXAMPLE_SENDING_ADDRESS);
         walletInfo.addSendingAddress(sendingAddress);
 
+        walletInfo.put(PROPERTY_NAME1, PROPERTY_VALUE1);
+        walletInfo.put(PROPERTY_NAME2, PROPERTY_VALUE2);
+        
         // write to file
         walletInfo.writeToFile(WalletInfo.createWalletInfoFilename(walletName), WalletVersion.SERIALIZED);
 
@@ -95,6 +104,10 @@ public class WalletInfoTest extends TestCase {
         AddressBookData receiveAddress = receiveAddresses.get(0);
         assertEquals(EXAMPLE_RECEIVING_ADDRESS_LABEL, receiveAddress.getLabel());
         assertEquals(EXAMPLE_RECEIVING_ADDRESS, receiveAddress.getAddress());
+        
+        // Check properties.
+        assertEquals(PROPERTY_VALUE1, rebornWalletInfo.getProperty(PROPERTY_NAME1));
+        assertEquals(PROPERTY_VALUE2, rebornWalletInfo.getProperty(PROPERTY_NAME2));
     }
 
     @Test
