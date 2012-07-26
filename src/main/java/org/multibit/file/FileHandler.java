@@ -95,6 +95,14 @@ public class FileHandler {
             PerWalletModelData perWalletModelData = controller.getModel().addWallet(wallet, walletFilename);
 
             perWalletModelData.setWalletInfo(walletInfo);
+            
+            // Check to see if the encrypted public keys have been wiped by a roundtrip by an old multibit.
+            // (Prior to v0.4.6 protobuf.3 wallets were erroneously "half-loaded" and when they are saved
+            // the encrypted public keys get wiped. For this reason, a copy of the encrypted public keys
+            // are stored in the walletInfo properties.
+            if (checkEncryptedKeysAreWiped(perWalletModelData)) {
+                loadEncryptedPublicKeysFromWalletInfo(perWalletModelData);
+            }
 
             synchronized (walletInfo) {
                 rememberFileSizesAndLastModified(walletFile, walletInfo);
@@ -110,6 +118,14 @@ public class FileHandler {
             log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
             throw new WalletLoadException(e.getClass().getCanonicalName() + " " + e.getMessage(), e);
         }
+    }
+    
+    boolean checkEncryptedKeysAreWiped(PerWalletModelData perModelWalletData) {
+        return false;
+    }
+
+    void loadEncryptedPublicKeysFromWalletInfo(PerWalletModelData perModelWalletData) {
+        
     }
 
     boolean isWalletSerialised(File walletFile) {
