@@ -31,6 +31,7 @@ import org.multibit.file.FileHandler;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.model.StatusEnum;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.listener.GenericAboutEvent;
 import org.multibit.platform.listener.GenericAboutEventListener;
@@ -280,22 +281,20 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     public void onPeerConnected(Peer peer, int peerCount) {
-        // log.debug("Peer = " + peer + " connected.  PeerCount =  " +
-        // peerCount);
         if (peerCount >= 1) {
-            for (ViewSystem viewSystem : viewSystems) {
-                viewSystem.nowOnline();
-            }
+            setOnlineStatus(StatusEnum.ONLINE);
         }
     }
 
     public void onPeerDisconnected(Peer peer, int peerCount) {
-        // log.debug("Peer = " + peer + " disconnected.  PeerCount =  " +
-        // peerCount);
         if (peerCount == 0) {
-            for (ViewSystem viewSystem : viewSystems) {
-                viewSystem.nowOffline();
-            }
+           setOnlineStatus(StatusEnum.CONNECTING);
+        }
+    }
+
+    public void setOnlineStatus(StatusEnum statusEnum) {
+        for (ViewSystem viewSystem : viewSystems) {
+            viewSystem.setOnlineStatus(statusEnum);
         }
     }
 

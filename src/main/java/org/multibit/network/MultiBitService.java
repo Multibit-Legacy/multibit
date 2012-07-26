@@ -43,6 +43,7 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.model.StatusEnum;
 import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletVersion;
 import org.multibit.store.ReplayableBlockStore;

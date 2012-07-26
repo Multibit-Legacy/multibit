@@ -73,6 +73,7 @@ import javax.swing.text.html.HTMLDocument;
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageListener;
+import org.multibit.model.StatusEnum;
 import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.view.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
@@ -88,7 +89,7 @@ import org.slf4j.LoggerFactory;
  * 
  * In MultiBit the StatusBar is responsible for :
  * 
- * 1) Online/ Connecting status label 
+ * 1) Online/ Connecting/ Error status label 
  * 2) Status messages - these are cleared after a period of time
  * 3) Synchronisatin progress bar
  */
@@ -106,7 +107,7 @@ public class StatusBar extends JPanel implements MessageListener {
 
     private MultiBitLabel onlineLabel;
     private MultiBitButton statusLabel;
-    private boolean isOnline;
+    private StatusEnum statusEnum;
 
     public static final long TIMER_REPEAT_TIME = 5000; // millisecond
     public static final int NUMBER_OF_REPEATS = 12;
@@ -185,11 +186,14 @@ public class StatusBar extends JPanel implements MessageListener {
                 controller.getLocaliser().getString("multiBitFrame.statusBar.tooltip2") });
         statusLabel.setToolTipText(tooltipText);
 
-        int onlineWidth = Math.max(
+        int onlineWidth = Math.max(Math.max(
                 getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
                         controller.getLocaliser().getString("multiBitFrame.onlineText")),
                 getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
-                        controller.getLocaliser().getString("multiBitFrame.offlineText")))
+                        controller.getLocaliser().getString("multiBitFrame.offlineText"))),
+                        getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
+                                controller.getLocaliser().getString("multiBitFrame.errorText"))
+                        )
                 + ONLINE_LABEL_DELTA;
 
         syncProgressBar = new JProgressBar(0, 100);
@@ -216,7 +220,7 @@ public class StatusBar extends JPanel implements MessageListener {
      * initialise the statusbar;
      */
     public void initialise() {
-        updateOnlineStatusText(false);
+        updateOnlineStatusText(StatusEnum.CONNECTING);
         updateStatusLabel("", true);
     }
 
@@ -224,7 +228,7 @@ public class StatusBar extends JPanel implements MessageListener {
      * refresh online status text with existing value
      */
     public void refreshOnlineStatusText() {
-        updateOnlineStatusText(isOnline);
+        updateOnlineStatusText(statusEnum);
     }
 
     /**
@@ -233,14 +237,13 @@ public class StatusBar extends JPanel implements MessageListener {
      * @param isOnline
      *            True if online, false if offline
      */
-    public void updateOnlineStatusText(boolean isOnline) {
-        this.isOnline = isOnline;
-        final boolean finalIsOnline = isOnline;
+    public void updateOnlineStatusText(StatusEnum statusEnum) {
+        this.statusEnum = statusEnum;
+        final StatusEnum finalStatusEnum = statusEnum;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                String onlineStatus = finalIsOnline ? controller.getLocaliser().getString("multiBitFrame.onlineText") : controller
-                        .getLocaliser().getString("multiBitFrame.offlineText");
-                if (finalIsOnline) {
+                String onlineStatus = controller.getLocaliser().getString(finalStatusEnum.getLocalisationKey());
+                if (finalStatusEnum == StatusEnum.ONLINE) {
                     onlineLabel.setForeground(new Color(0, 100, 0));
                     if (mainFrame != null) {
                         BlinkLabel estimatedBalanceTextLabel = mainFrame.getEstimatedBalanceTextLabel();
@@ -252,6 +255,13 @@ public class StatusBar extends JPanel implements MessageListener {
                     onlineLabel.setForeground(new Color(180, 0, 0));
                 }
                 onlineLabel.setText(onlineStatus);
+                if (finalStatusEnum == StatusEnum.ERROR) {
+                    // Set tooltip to look at Messages view
+                    String toolTip = HelpContentsPanel.createMultilineTooltipText(
+                            new String[] {controller.getLocaliser().getString("multiBitFrame.statusBar.error1"), 
+                                    controller.getLocaliser().getString("multiBitFrame.statusBar.error2")});
+                    onlineLabel.setToolTipText(toolTip);
+                }
             }
         });
     }

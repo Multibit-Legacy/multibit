@@ -57,6 +57,7 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.model.StatusEnum;
 import org.multibit.platform.GenericApplication;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
@@ -108,7 +109,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final int HEIGHT_OF_HEADER = 64;
 
     private StatusBar statusBar;
-    private boolean online = false;
+    private StatusEnum online = StatusEnum.CONNECTING;
     public static final String SEPARATOR = " - ";
 
     private static final long serialVersionUID = 7621813615342923041L;
@@ -932,20 +933,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         });
     }
 
-    public void nowOnline() {
-        online = true;
+    @Override
+    public void setOnlineStatus(StatusEnum statusEnum) {
+        online = statusEnum;
         if (statusBar != null) {
-            statusBar.updateOnlineStatusText(true);
-        }
+            statusBar.updateOnlineStatusText(statusEnum);
+        }    
     }
-
-    public void nowOffline() {
-        online = false;
-        if (statusBar != null) {
-            statusBar.updateOnlineStatusText(false);
-        }
-    }
-
+    
     public void updatePasswordMenuItems() {
         if (controller.getModel().getActiveWallet() == null) {
             // Cannot do anything password related.
