@@ -297,14 +297,19 @@ public class ShowTransactionsPanel extends JPanel implements View {
                 break;
             }
             case BUILDING: {
-                int numberOfBlocksEmbedded = confidence.getDepthInBlocks(controller.getMultiBitService().getChain());
-                ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded);
-                label.setIcon(buildingIcon);
-                label.setText("");
-                if (numberOfBlocksEmbedded >= 6) {
-                    label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.isConfirmed"));
+                if (controller.getMultiBitService().getChain() == null) {
+                    label.setText("?");
+                    label.setIcon(null);
                 } else {
-                    label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
+                    int numberOfBlocksEmbedded = confidence.getDepthInBlocks(controller.getMultiBitService().getChain());
+                    ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded);
+                    label.setIcon(buildingIcon);
+                    label.setText("");
+                    if (numberOfBlocksEmbedded >= 6) {
+                        label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.isConfirmed"));
+                    } else {
+                        label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
+                    }
                 }
                 break;
             }

@@ -258,7 +258,7 @@ public class FileHandler {
                         || WalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion()) {
                     perWalletModelData.getWallet().saveToFile(walletFile);
                 } else {
-                    throw new WalletSaveException("Cannot save wallet '" + perWalletModelData.getWalletFilename()
+                    throw new WalletVersionException("Cannot save wallet '" + perWalletModelData.getWalletFilename()
                             + "'. Its wallet version is '" + walletInfo.getWalletVersion().toString()
                             + "' but this version of MultiBit does not understand that format.");
                 }

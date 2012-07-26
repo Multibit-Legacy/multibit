@@ -35,6 +35,7 @@ import java.util.StringTokenizer;
 
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
+import org.multibit.file.WalletVersionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,11 +118,6 @@ public class WalletInfo {
             log.debug(wle.getMessage());
             if (wle.getCause() != null) {
                 log.debug("Cause : " + wle.getCause().getMessage());
-            }
-            
-            if (wle.getMessage().indexOf("Cannot understand wallet version") > -1) {
-                // throw it again
-                throw wle;
             }
         }
     }
@@ -415,7 +411,7 @@ public class WalletInfo {
                                 || WalletVersion.PROTOBUF.getWalletVersionString().equals(walletVersionString)
                                 || WalletVersion.PROTOBUF_ENCRYPTED.getWalletVersionString().equals(walletVersionString))) {
                     // This refers to a version of the wallet we do not know about.
-                    throw new WalletLoadException("Cannot understand wallet version of '" + walletVersionMarker + "', '" + walletVersionString + "'" );
+                    throw new WalletVersionException("Cannot understand wallet version of '" + walletVersionMarker + "', '" + walletVersionString + "'" );
                 } else {
                     // The wallet version passed in the file is used rather than the value in the constructor
                     if (!walletVersion.getWalletVersionString().equals(walletVersionString)) {
@@ -431,7 +427,7 @@ public class WalletInfo {
                 }
             } else {
                 // The format of the info format is wrong.
-                throw new WalletLoadException("Cannot understand wallet version text of '" + secondLine + "'");
+                throw new WalletVersionException("Cannot understand wallet version text of '" + secondLine + "'");
             }
 
             // Read the addresses and general properties.
