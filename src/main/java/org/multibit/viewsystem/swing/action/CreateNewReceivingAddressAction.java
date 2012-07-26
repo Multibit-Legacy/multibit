@@ -23,6 +23,7 @@ import javax.swing.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
+import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.AddressBookData;
@@ -95,6 +96,9 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
             } catch (WalletSaveException wse) {
                 log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
                 MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
+            } catch (WalletVersionException wve) {
+                log.error(wve.getClass().getCanonicalName() + " " + wve.getMessage());
+                MessageManager.INSTANCE.addMessage(new Message(wve.getClass().getCanonicalName() + " " + wve.getMessage()));
             }
             controller.displayView(controller.getCurrentView());
 

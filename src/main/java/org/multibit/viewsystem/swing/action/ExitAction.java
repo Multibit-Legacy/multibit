@@ -27,6 +27,7 @@ import org.multibit.ApplicationInstanceManager;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
+import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
@@ -82,7 +83,15 @@ public class ExitAction extends AbstractAction {
                     MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
                     
                     // Save to backup.
-                    controller.getFileHandler().backupPerWalletModelData(loopPerWalletModelData, null);
+                    try {
+                        controller.getFileHandler().backupPerWalletModelData(loopPerWalletModelData, null);
+                    } catch (WalletSaveException wse2) {
+                        log.error(wse2.getClass().getCanonicalName() + " " + wse2.getMessage());
+                        MessageManager.INSTANCE.addMessage(new Message(wse2.getClass().getCanonicalName() + " " + wse2.getMessage()));
+                    }
+                } catch (WalletVersionException wve) {
+                    log.error(wve.getClass().getCanonicalName() + " " + wve.getMessage());
+                    MessageManager.INSTANCE.addMessage(new Message(wve.getClass().getCanonicalName() + " " + wve.getMessage()));
                 }
             }
         }

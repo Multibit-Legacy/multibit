@@ -20,6 +20,7 @@ import java.util.TimerTask;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.WalletSaveException;
+import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
@@ -80,6 +81,11 @@ public class FileChangeTimerTask extends TimerTask {
                         try {
                             controller.getFileHandler().savePerWalletModelData(loopModelData, false);
                         } catch (WalletSaveException e) {
+                            String message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
+                                    new Object[] { loopModelData.getWalletFilename(), e.getMessage() });
+                            log.error(message);
+                            MessageManager.INSTANCE.addMessage(new Message(message));
+                        } catch (WalletVersionException e) {
                             String message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
                                     new Object[] { loopModelData.getWalletFilename(), e.getMessage() });
                             log.error(message);

@@ -15,7 +15,12 @@ public enum WalletVersion {
     /**
      * Wallet version for protobuf wallets.
      */
-    PROTOBUF("2", "walletVersion.2");
+    PROTOBUF("2", "walletVersion.2"),
+    
+    /**
+     * Wallet version for something from the future - used only in testing.
+     */
+    FUTURE("1000000", "walletVersion.1000000");
     
     /**
      * How the wallet version is represented in the wallet info files.

@@ -73,7 +73,7 @@ public class FileHandler {
         this.controller = controller;
     }
 
-    public PerWalletModelData loadFromFile(File walletFile) throws WalletLoadException {
+    public PerWalletModelData loadFromFile(File walletFile) throws WalletLoadException, WalletVersionException {
         if (walletFile == null) {
             return null;
         }
@@ -102,6 +102,9 @@ public class FileHandler {
             }
 
             return perWalletModelData;
+        } catch (WalletVersionException wve) {
+            // We want this to propagate out.
+            throw wve;
         } catch (Exception e) {
             e.printStackTrace();
             log.error(e.getClass().getCanonicalName() + " "  + e.getMessage());

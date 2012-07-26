@@ -29,6 +29,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
+import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
@@ -172,6 +173,11 @@ public class CreateWalletSubmitAction extends AbstractAction {
             log.error(message);
             MessageManager.INSTANCE.addMessage(new Message(message));
         } catch (WalletSaveException e) {
+            message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
+                    new Object[] { newWalletFilename, e.getMessage() });
+            log.error(message);
+            MessageManager.INSTANCE.addMessage(new Message(message));
+        } catch (WalletVersionException e) {
             message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
                     new Object[] { newWalletFilename, e.getMessage() });
             log.error(message);

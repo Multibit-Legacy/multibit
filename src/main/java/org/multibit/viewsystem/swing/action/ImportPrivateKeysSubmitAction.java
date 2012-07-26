@@ -37,6 +37,7 @@ import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.PrivateKeysHandlerException;
 import org.multibit.file.WalletSaveException;
+import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
@@ -258,6 +259,10 @@ public class ImportPrivateKeysSubmitAction extends AbstractAction {
                     log.error(wse.getClass().getName() + " " + wse.getMessage());
                     uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
                             new Object[] { wse.getMessage() });
+                } catch (WalletVersionException wve) {
+                    log.error(wve.getClass().getName() + " " + wve.getMessage());
+                    uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
+                            new Object[] { wve.getMessage() });
                 } catch (EncrypterDecrypterException ede) {
                     log.error(ede.getClass().getName() + " " + ede.getMessage());
                     uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",

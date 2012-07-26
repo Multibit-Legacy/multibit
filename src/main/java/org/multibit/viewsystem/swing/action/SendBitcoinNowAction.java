@@ -25,6 +25,7 @@ import javax.swing.ImageIcon;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.WalletSaveException;
+import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.AddressBookData;
@@ -130,6 +131,9 @@ public class SendBitcoinNowAction extends AbstractAction {
             // save the wallet
             controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
         } catch (WalletSaveException e) {
+            log.error(e.getMessage(), e);
+            message = e.getMessage();
+        } catch (WalletVersionException e) {
             log.error(e.getMessage(), e);
             message = e.getMessage();
         } catch (IOException e) {

@@ -26,6 +26,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.file.DeleteWalletException;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
+import org.multibit.file.WalletVersionException;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.view.DeleteWalletConfirmDialog;
 import org.slf4j.Logger;
@@ -88,6 +89,14 @@ public class DeleteWalletSubmitAction extends AbstractAction {
              deleteWalletConfirmDialog.getExplainLabel().setText(" ");
              deleteWalletConfirmDialog.setDeleteConfirmText(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError1"), controller
                      .getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new Object[] { wle.getMessage() }));
+         } catch (WalletVersionException wve) {
+             log.error(wve.getClass().getName() + " " + wve.getMessage());
+             if (wve.getCause() != null) {
+                 log.error(wve.getClass().getName() + ", cause = " + wve.getCause().getMessage());
+             }
+             deleteWalletConfirmDialog.getExplainLabel().setText(" ");
+             deleteWalletConfirmDialog.setDeleteConfirmText(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError1"), controller
+                     .getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new Object[] { wve.getMessage() }));
          } catch (DeleteWalletException dwe) {
             log.error(dwe.getClass().getName() + " " + dwe.getMessage());
             if (dwe.getCause() != null) {
@@ -124,7 +133,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
      * @throws DeleteWalletException
      * @throws IOException
      */
-    public boolean deleteActiveWallet()  throws DeleteWalletException, IOException {
+    public boolean deleteActiveWallet()  throws DeleteWalletException, WalletVersionException, IOException {
         return deleteWallet(controller.getModel().getActivePerWalletModelData());
     }
     
@@ -135,7 +144,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
      * @throws DeleteWalletException
      * @throws IOException
      */
-    private boolean deleteWallet(PerWalletModelData perWalletModelData) throws DeleteWalletException, IOException {
+    private boolean deleteWallet(PerWalletModelData perWalletModelData) throws DeleteWalletException, WalletVersionException, IOException {
         FileHandler fileHandler = new FileHandler(controller);
         fileHandler.deleteWalletAndWalletInfo(perWalletModelData);
 

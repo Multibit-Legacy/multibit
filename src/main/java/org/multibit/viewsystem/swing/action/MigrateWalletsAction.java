@@ -40,6 +40,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
+import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
@@ -162,6 +163,9 @@ public class MigrateWalletsAction extends AbstractAction {
                         } catch (WalletSaveException e1) {
                             migrationWasNotSuccessful(loopPerWalletModelData, e1);
                             thereWereFailures = true;
+                        } catch (WalletVersionException wve) {
+                            migrationWasNotSuccessful(loopPerWalletModelData, wve);
+                            thereWereFailures = true;
                         } catch (IllegalStateException e1) {
                             migrationWasNotSuccessful(loopPerWalletModelData, e1);
                             thereWereFailures = true;
@@ -206,7 +210,10 @@ public class MigrateWalletsAction extends AbstractAction {
                         } catch (WalletSaveException e1) {
                             migrationWasNotSuccessfulUseBackup(loopPerWalletModelData, e1);
                             thereWereFailures = true;
-                        } catch (WalletLoadException e1) {
+                        } catch (WalletVersionException e1) {
+                            migrationWasNotSuccessfulUseBackup(loopPerWalletModelData, e1);
+                            thereWereFailures = true;
+                        }catch (WalletLoadException e1) {
                             migrationWasNotSuccessfulUseBackup(loopPerWalletModelData, e1);
                             thereWereFailures = true;
                         } catch (IllegalStateException e1) {

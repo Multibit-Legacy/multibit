@@ -34,6 +34,7 @@ import javax.swing.SwingWorker;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandlerException;
 import org.multibit.file.WalletSaveException;
+import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
@@ -244,7 +245,6 @@ public class MultiBitService {
             if (walletFile.isDirectory()) {
                 walletFileIsADirectory = true;
             } else {
-
                 perWalletModelDataToReturn = controller.getFileHandler().loadFromFile(walletFile);
                 if (perWalletModelDataToReturn != null) {
                     wallet = perWalletModelDataToReturn.getWallet();
@@ -295,6 +295,9 @@ public class MultiBitService {
                 } catch (WalletSaveException wse) {
                     log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
                     MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
+                } catch (WalletVersionException wve) {
+                    log.error(wve.getClass().getCanonicalName() + " " + wve.getMessage());
+                    MessageManager.INSTANCE.addMessage(new Message(wve.getClass().getCanonicalName() + " " + wve.getMessage()));
                 }
             }
         }
@@ -496,13 +499,15 @@ public class MultiBitService {
 
         assert sendTransaction != null; 
         // We should never try to send more coins than we have!
-        // TODO: Throw an exception if sendTransaction is null - no money.
         if (sendTransaction != null) {
             log.debug("MultiBitService#sendCoins - Sent coins. Transaction hash is {}", sendTransaction.getHashAsString());
 
             try {
                 controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
             } catch (WalletSaveException wse) {
+                log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
+                MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
+            } catch (WalletVersionException wse) {
                 log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
                 MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
             }

@@ -33,6 +33,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
+import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
@@ -212,6 +213,11 @@ public class MultiBit {
                             new Object[] { activeWalletFilename, e.getMessage() });
                     MessageManager.INSTANCE.addMessage(new Message(message));
                     log.error(message);
+                } catch (WalletVersionException e) {
+                    String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                            new Object[] { activeWalletFilename, e.getMessage() });
+                    MessageManager.INSTANCE.addMessage(new Message(message));
+                    log.error(message);
                 } catch (IOException e) {
                     String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                             new Object[] { activeWalletFilename, e.getMessage() });
@@ -242,6 +248,11 @@ public class MultiBit {
                                 MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("multiBit.openingWalletIsDone",
                                         new Object[] { loopWalletFilename })));
                             } catch (WalletLoadException e) {
+                                message = new Message( controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                                        new Object[] { loopWalletFilename, e.getMessage() }));
+                                MessageManager.INSTANCE.addMessage(message);
+                                log.error(message.getText());
+                            } catch (WalletVersionException e) {
                                 message = new Message( controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                                         new Object[] { loopWalletFilename, e.getMessage() }));
                                 MessageManager.INSTANCE.addMessage(message);
@@ -299,6 +310,7 @@ public class MultiBit {
             e.printStackTrace();
             
             log.error("An unexpected error caused MultiBit to quit.");
+            log.error("The error was '" + e.getClass().getCanonicalName() + " " + e.getMessage() + "'");
             log.error("Please read http://multibit.org/help_troubleshooting.html for help on troubleshooting.");
             
             // Try saving any dirty wallets.
