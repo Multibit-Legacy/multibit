@@ -375,12 +375,14 @@ public class MigrateWalletsAction extends AbstractAction {
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
         for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
             // Is it a serialized wallet ?
-            if (WalletVersion.SERIALIZED == loopPerWalletModelData.getWalletInfo().getWalletVersion()) {
-                // Have we already tried to migrate it with this version of MultiBit and failed ?
-                String lastMigrateVersion = loopPerWalletModelData.getWalletInfo().getProperty(MultiBitModel.LAST_FAILED_MIGRATE_VERSION);
-                VersionComparator versionComparator = new VersionComparator();
-                if (lastMigrateVersion == null || versionComparator.compare(controller.getLocaliser().getVersionNumber(), lastMigrateVersion) > 0) {
-                    walletFilenamesToMigrate.add(loopPerWalletModelData.getWalletFilename());
+            if (loopPerWalletModelData.getWalletInfo() != null) {
+                if (WalletVersion.SERIALIZED == loopPerWalletModelData.getWalletInfo().getWalletVersion()) {
+                    // Have we already tried to migrate it with this version of MultiBit and failed ?
+                    String lastMigrateVersion = loopPerWalletModelData.getWalletInfo().getProperty(MultiBitModel.LAST_FAILED_MIGRATE_VERSION);
+                    VersionComparator versionComparator = new VersionComparator();
+                    if (lastMigrateVersion == null || versionComparator.compare(controller.getLocaliser().getVersionNumber(), lastMigrateVersion) > 0) {
+                        walletFilenamesToMigrate.add(loopPerWalletModelData.getWalletFilename());
+                    }
                 }
             }
         }
