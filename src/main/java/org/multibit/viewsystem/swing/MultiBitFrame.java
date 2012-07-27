@@ -212,8 +212,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         recreateAllViews(false);
 
-        // initialise status bar
+        // Initialise status bar.
         statusBar.initialise();
+
+        // Initialise the file change timer.
+        fileChangeTimer = new Timer();
+        fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), 0, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
+
+        // Initialise the ticker.
+        tickerTimer = new Timer();
+        tickerTimer.schedule(new TickerTimerTask(controller, this), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
 
         estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString4(model.getActiveWalletEstimatedBalance(),
                 true, false));
@@ -224,7 +232,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         .bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true, false) }));
 
         estimatedBalanceTextLabel.setFocusable(false);
-        // estimatedBalanceTextLabel.requestFocusInWindow();
 
         availableBalanceTextButton.setFocusable(false);
 
@@ -239,12 +246,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         pack();
 
         setVisible(true);
-
-        fileChangeTimer = new Timer();
-        fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), 0, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
-
-        tickerTimer = new Timer();
-        tickerTimer.schedule(new TickerTimerTask(controller, this), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
     }
 
     public GenericApplication getApplication() {

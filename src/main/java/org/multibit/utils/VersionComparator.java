@@ -15,16 +15,16 @@ public class VersionComparator implements Comparator<String> {
 
     @Override
     public int compare(String first, String second) {
-        Integer firstOrdinal = calculateOrdinal(first);
+        Long firstOrdinal = calculateOrdinal(first);
         //System.out.println("VersionComparator#compare first = " + firstOrdinal);
-        Integer secondOrdinal = calculateOrdinal(second);
+        Long secondOrdinal = calculateOrdinal(second);
         //System.out.println("VersionComparator#compare second = " + secondOrdinal);
                
         return firstOrdinal.compareTo(secondOrdinal);
     }
 
-    Integer calculateOrdinal(String version) throws NumberFormatException {
-        int ordinal = 0;
+    Long calculateOrdinal(String version) throws NumberFormatException {
+        long ordinal = 0;
 
         version = version.toLowerCase();
 
@@ -39,20 +39,31 @@ public class VersionComparator implements Comparator<String> {
         String[] tokens = version.split("\\.");
 
         if (tokens.length > 0) {
-            ordinal = ordinal + Integer.parseInt(tokens[0]) * MAXIMIMUM_NUMBER_PER_CATEGORY ^ 3;
+            
+            ordinal = ordinal + (parseInt(tokens[0]) * MAXIMIMUM_NUMBER_PER_CATEGORY * MAXIMIMUM_NUMBER_PER_CATEGORY * MAXIMIMUM_NUMBER_PER_CATEGORY);
         }
         if (tokens.length > 1) {
-            ordinal = ordinal + Integer.parseInt(tokens[1]) * MAXIMIMUM_NUMBER_PER_CATEGORY ^ 2;
+            ordinal = ordinal + (parseInt(tokens[1]) * MAXIMIMUM_NUMBER_PER_CATEGORY  * MAXIMIMUM_NUMBER_PER_CATEGORY);
         }
         if (tokens.length > 2) {
-            ordinal = ordinal + Integer.parseInt(tokens[2]) * MAXIMIMUM_NUMBER_PER_CATEGORY ^ 1;
+            ordinal = ordinal + (parseInt(tokens[2]) * MAXIMIMUM_NUMBER_PER_CATEGORY);
         }
         if (tokens.length > 3) {
-            ordinal = ordinal + Integer.parseInt(tokens[3]);
+            ordinal = ordinal + parseInt(tokens[3]);
         }
         ordinal =  ordinal -  MAXIMIMUM_NUMBER_PER_CATEGORY / 4 * (isAlpha * 3 + isBeta * 2 + isReleaseCandidate);
 
-        return new Integer(ordinal);
+        return new Long(ordinal);
+    }
+    
+    private int parseInt(String intString) {
+        int toReturn = 0;
+        try {
+            toReturn = Integer.parseInt(intString);
+        } catch (NumberFormatException nfe) {
+            // Do nothing.
+        }
+        return toReturn;
     }
 
 }
