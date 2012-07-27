@@ -15,6 +15,7 @@
  */
 package com.google.bitcoin.core;
 
+import java.math.BigInteger;
 import java.security.SecureRandom;
 
 import junit.framework.TestCase;
@@ -123,5 +124,21 @@ public class ECKeyTest extends TestCase {
         for (int i = 0; i < privateKeyBytes.length; i++) {
             assertEquals("Byte " + i + " of the private key did not match the original", originalPrivateKeyBytes[i], privateKeyBytes[i]);
         }
+    }
+    
+    @Test
+    public void testToString() throws Exception {
+        ECKey key = new ECKey(BigInteger.TEN); // An example private key
+        
+        assertEquals("pub:04a0434d9e47f3c86235477c7b1ae6ae5d3442d49b1943c2b752a68e2a47e247c7893aba425419bc27a3b6c7e693a24c696f794c2ed877a1593cbee53b037368d7", key.toString());
+
+//        ScryptParameters scryptParameters = new ScryptParameters(new byte[]{0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7}); 
+//        key.setEncrypterDecrypter(new EncrypterDecrypterScrypt(scryptParameters));
+//        key.encrypt(PASSWORD1);
+//
+//        assertEquals("pub:04a0434d9e47f3c86235477c7b1ae6ae5d3442d49b1943c2b752a68e2a47e247c7893aba425419bc27a3b6c7e693a24c696f794c2ed877a1593cbee53b037368d7 enc.priv:a86be280f1efbefb187cce0409d9fca100b8a97748b2c24d921b6b072905b4196be67a608bca3594c26049fae3bcd5a79addcca8794f44abada4cbd96dcea88e62", key.toString());
+
+        assertEquals("pub:04a0434d9e47f3c86235477c7b1ae6ae5d3442d49b1943c2b752a68e2a47e247c7893aba425419bc27a3b6c7e693a24c696f794c2ed877a1593cbee53b037368d7 priv:0a", key.toStringWithPrivate());
+
     }
 }

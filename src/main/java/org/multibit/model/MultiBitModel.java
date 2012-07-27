@@ -84,11 +84,19 @@ public class MultiBitModel {
     public static final String TICKER_SECOND_ROW_CURRENCY = "tickerSecondRowCurrency";
     
     // Wallets, open wallet and save wallet as dialog.
-    public static final String ACTIVE_WALLET_FILENAME = "selectedWalletFilename";
-    public static final String WALLET_FILENAME_PREFIX = "walletFilename.";
-    public static final String WALLET_DESCRIPTION_PREFIX = "walletDescription.";
-    public static final String NUMBER_OF_WALLETS = "numberOfWallets";
     public static final String GRAB_FOCUS_FOR_ACTIVE_WALLET = "grabFocusForActiveWallet";
+    public static final String ACTIVE_WALLET_FILENAME = "selectedWalletFilename";
+    public static final String WALLET_DESCRIPTION_PREFIX = "walletDescription.";
+
+    // The number of serialised and protobuf2 wallets in the multibit.properties.
+    public static final String EARLY_WALLET_FILENAME_PREFIX = "walletFilename.";
+    public static final String NUMBER_OF_EARLY_WALLETS = "numberOfWallets";
+
+    public static final String PROTOBUF3_WALLET_FILENAME_PREFIX = "protobuf3WalletFilename.";
+    public static final String NUMBER_OF_PROTOBUF3_WALLETS = "numberfProtobuf3Wallets";
+
+    public static final String WALLET_ORDER_TOTAL = "walletOrderTotal";
+    public static final String WALLET_ORDER_PREFIX = "walletOrder.";
 
     // Send bitcoin and send bitcoin confirm.
     public static final String SEND_ADDRESS = "sendAddress";
@@ -176,8 +184,13 @@ public class MultiBitModel {
     // Wallet migration.
     public static final String LAST_FAILED_MIGRATE_VERSION = "lastFailedMigrateVersion";
     
-    // System property used to suppress wallet file time change checking (true=suppress checking).
-    public static final String SUPPRESS_TIMESTAMP_CHECKING = "suppressTimestampChecking";
+    // Sideloading from wallet info properties
+    public static final String SIDELOAD_PROTOBUF_VERSION = "sideloadProtobufVersion";
+    public static final String SIDELOAD_NUMBER_OF_KEYS = "sideloadNumberOfKeys";
+    public static final String SIDELOAD_KEYDATA_PREFIX = "sideloadKey";
+    public static final String SIDELOAD_KEYDATA_SEPARATOR = "z";
+    
+    
     // Main controller class.
     private final MultiBitController controller;
 

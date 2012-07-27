@@ -21,10 +21,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -172,15 +176,18 @@ public class MultiBit {
             // Find the active wallet filename in the multibit.properties.
             String activeWalletFilename = userPreferences.getProperty(MultiBitModel.ACTIVE_WALLET_FILENAME);
 
-            // Load up all the wallets.
-            String numberOfWalletsAsString = userPreferences.getProperty(MultiBitModel.NUMBER_OF_WALLETS);
-            log.debug("When loading wallets, there were " + numberOfWalletsAsString);
+            // Get the number of the early wallets - these are serialised and protobuf2
+            String numberOfEarlyWalletsAsString = userPreferences.getProperty(MultiBitModel.NUMBER_OF_EARLY_WALLETS);
+            log.debug("When loading early wallets, there were " + numberOfEarlyWalletsAsString);
+
+            // Get the number of the protobuf3 wallets
+            String numberOfProtobuf3WalletsAsString = userPreferences.getProperty(MultiBitModel.NUMBER_OF_PROTOBUF3_WALLETS);
+            log.debug("When loading protobuf3 wallets, there were " + numberOfProtobuf3WalletsAsString);
 
             boolean useFastCatchup = false;
 
-            if (numberOfWalletsAsString == null || "".equals(numberOfWalletsAsString)) {
-                // If this is missing then there is just the one wallet (old
-                // format
+            if (numberOfEarlyWalletsAsString == null || "".equals(numberOfEarlyWalletsAsString)) {
+                // If this is missing then there is just the one wallet (old format
                 // properties or user has just started up for the first time).
                 useFastCatchup = true;
 
@@ -219,40 +226,114 @@ public class MultiBit {
                 }
             } else {
                 try {
-                    int numberOfWallets = Integer.parseInt(numberOfWalletsAsString);
+                    List<String> walletFilenamesToLoad = new ArrayList<String>();
+                    try {
+                        int numberOfEarlyWallets = Integer.parseInt(numberOfEarlyWalletsAsString);
+                        if (numberOfEarlyWallets > 0) {
+                            for (int i = 1; i <= numberOfEarlyWallets; i++) {
+                                // look up ith wallet filename
+                                String loopWalletFilename = userPreferences.getProperty(MultiBitModel.EARLY_WALLET_FILENAME_PREFIX + i);
+                                if (!walletFilenamesToLoad.contains(loopWalletFilename)) {
+                                    walletFilenamesToLoad.add(loopWalletFilename);
+                                }
+                            }
+                        }
+                    } catch (NumberFormatException nfe) {
+                        // Carry on.
+                    }
+                    try {
+                        int numberOfProtobuf3Wallets = Integer.parseInt(numberOfProtobuf3WalletsAsString);
+                        if (numberOfProtobuf3Wallets > 0) {
+                            for (int i = 1; i <= numberOfProtobuf3Wallets; i++) {
+                                // look up ith wallet filename
+                                String loopWalletFilename = userPreferences.getProperty(MultiBitModel.PROTOBUF3_WALLET_FILENAME_PREFIX + i);
+                                if (!walletFilenamesToLoad.contains(loopWalletFilename)) {
+                                    walletFilenamesToLoad.add(loopWalletFilename);
+                                }
+                            }
+                        }
+                    } catch (NumberFormatException nfe) {
+                        // Carry on.
+                    }
+                    
+                    // Load up the order the wallets are to appear in.
+                    // There may be wallets in this list of types from the future but only load wallets we know about
+                    boolean haveWalletOrder = false;
+                    List<String> walletFilenameOrder = new ArrayList<String>();
+                    try {
+                        String walletOrderTotalAsString = userPreferences.getProperty(MultiBitModel.WALLET_ORDER_TOTAL);
+                        log.debug("When loading the wallet orders, there were " + walletOrderTotalAsString);
 
-                    if (numberOfWallets > 0) {
+                        int walletOrderTotal = Integer.parseInt(walletOrderTotalAsString);
+                        if (walletOrderTotal > 0) {
+                            haveWalletOrder = true;
+                            for (int i = 1; i <= walletOrderTotal; i++) {
+                                // add the wallet filename order
+                                String loopWalletFilename = userPreferences.getProperty(MultiBitModel.WALLET_ORDER_PREFIX + i);
+                                if (!walletFilenameOrder.contains(loopWalletFilename)) {
+                                    walletFilenameOrder.add(loopWalletFilename);
+                                }
+                            }
+                        }
+                    } catch (NumberFormatException nfe) {
+                        // Carry on.
+                    }
+                    
+                    List<String> actualOrderToLoad = new ArrayList<String>();
+                    if (haveWalletOrder) {
+                        for (String orderWallet : walletFilenameOrder) {
+                            if (walletFilenamesToLoad.contains(orderWallet)) {
+                                // Add it.
+                                actualOrderToLoad.add(orderWallet);
+                            }
+                        }
+                        // There may be some extras so add them to the end.
+                        for (String loadWallet : walletFilenamesToLoad) {
+                            if (!walletFilenameOrder.contains(loadWallet)) {
+                                // Add it.
+                                actualOrderToLoad.add(loadWallet);
+                            }
+                        }                        
+                    } else {
+                        // Just load all the wallets, early then later.
+                        for (String loadWallet : walletFilenamesToLoad) {
+                            if (!actualOrderToLoad.contains(loadWallet)) {
+                                // Add it.
+                                actualOrderToLoad.add(loadWallet);
+                            }
+                        }
+                    }
+                    
+
+                    if (actualOrderToLoad.size() > 0) {
                         ((MultiBitFrame) swingViewSystem).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-                        for (int i = 1; i <= numberOfWallets; i++) {
-                            // load up ith wallet filename
-                            String loopWalletFilename = userPreferences.getProperty(MultiBitModel.WALLET_FILENAME_PREFIX + i);
-                            log.debug("Loading wallet from '{}'", loopWalletFilename);
+                        for (String actualOrder : actualOrderToLoad) {
+                            log.debug("Loading wallet from '{}'", actualOrder);
                             Message message = new Message(controller.getLocaliser().getString("multiBit.openingWallet",
-                                    new Object[] { loopWalletFilename }));
+                                    new Object[] { actualOrder }));
                             MessageManager.INSTANCE.addMessage(message);
                             try {
-                                if (activeWalletFilename != null && activeWalletFilename.equals(loopWalletFilename)) {
-                                    controller.addWalletFromFilename(loopWalletFilename);
-                                    controller.getModel().setActiveWalletByFilename(loopWalletFilename);
+                                if (activeWalletFilename != null && activeWalletFilename.equals(actualOrder)) {
+                                    controller.addWalletFromFilename(actualOrder);
+                                    controller.getModel().setActiveWalletByFilename(actualOrder);
                                 } else {
-                                    controller.addWalletFromFilename(loopWalletFilename);
+                                    controller.addWalletFromFilename(actualOrder);
                                 }
                                 MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
-                                        "multiBit.openingWalletIsDone", new Object[] { loopWalletFilename })));
+                                        "multiBit.openingWalletIsDone", new Object[] { actualOrder })));
                             } catch (WalletLoadException e) {
                                 message = new Message(controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                                        new Object[] { loopWalletFilename, e.getMessage() }));
+                                        new Object[] { actualOrder, e.getMessage() }));
                                 MessageManager.INSTANCE.addMessage(message);
                                 log.error(message.getText());
                             } catch (WalletVersionException e) {
                                 message = new Message(controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                                        new Object[] { loopWalletFilename, e.getMessage() }));
+                                        new Object[] { actualOrder, e.getMessage() }));
                                 MessageManager.INSTANCE.addMessage(message);
                                 log.error(message.getText());
                             } catch (IOException e) {
                                 message = new Message(controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                                        new Object[] { loopWalletFilename, e.getMessage() }));
+                                        new Object[] { actualOrder, e.getMessage() }));
                                 MessageManager.INSTANCE.addMessage(message);
                                 log.error(message.getText());
                             }

@@ -28,13 +28,19 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
+import java.math.BigInteger;
 import java.nio.channels.FileChannel;
 import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.MultiBitController;
@@ -47,6 +53,8 @@ import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 
 /**
@@ -95,14 +103,6 @@ public class FileHandler {
             PerWalletModelData perWalletModelData = controller.getModel().addWallet(wallet, walletFilename);
 
             perWalletModelData.setWalletInfo(walletInfo);
-            
-            // Check to see if the encrypted public keys have been wiped by a roundtrip by an old multibit.
-            // (Prior to v0.4.6 protobuf.3 wallets were erroneously "half-loaded" and when they are saved
-            // the encrypted public keys get wiped. For this reason, a copy of the encrypted public keys
-            // are stored in the walletInfo properties.
-            if (checkEncryptedKeysAreWiped(perWalletModelData)) {
-                loadEncryptedPublicKeysFromWalletInfo(perWalletModelData);
-            }
 
             synchronized (walletInfo) {
                 rememberFileSizesAndLastModified(walletFile, walletInfo);
@@ -118,14 +118,6 @@ public class FileHandler {
             log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
             throw new WalletLoadException(e.getClass().getCanonicalName() + " " + e.getMessage(), e);
         }
-    }
-    
-    boolean checkEncryptedKeysAreWiped(PerWalletModelData perModelWalletData) {
-        return false;
-    }
-
-    void loadEncryptedPublicKeysFromWalletInfo(PerWalletModelData perModelWalletData) {
-        
     }
 
     boolean isWalletSerialised(File walletFile) {
@@ -156,10 +148,8 @@ public class FileHandler {
      * Save the perWalletModelData to file.
      * 
      * @param perWalletModelData
-     *            TODO give notification of whether data was written to a backup
-     *            file
      * @param forceWrite
-     *            force the write of the perWalletModelData
+     *            force the write of the perWalletModelData     
      */
     public void savePerWalletModelData(PerWalletModelData perWalletModelData, boolean forceWrite) {
         // log.info("Wallet details for wallet file = " +
@@ -261,8 +251,8 @@ public class FileHandler {
     private void saveWalletAndWalletInfo(PerWalletModelData perWalletModelData, String walletFilename, String walletInfoFilename) {
         File walletFile = new File(walletFilename);
         WalletInfo walletInfo = perWalletModelData.getWalletInfo();
-
-        // Save the companion wallet info.
+        
+        // Write wallet info.
         walletInfo.writeToFile(walletInfoFilename, walletInfo.getWalletVersion());
 
         // Save the wallet file
@@ -424,21 +414,50 @@ public class FileHandler {
         // Save all the wallets' filenames in the user preferences.
         if (controller.getModel().getPerWalletModelDataList() != null) {
             List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
-
-            int numberOfWallets = perWalletModelDataList.size();
-            log.debug("When writing wallets, there were " + numberOfWallets);
-            controller.getModel().setUserPreference(MultiBitModel.NUMBER_OF_WALLETS, numberOfWallets + "");
-            controller.getModel().setUserPreference(MultiBitModel.ACTIVE_WALLET_FILENAME,
-                    controller.getModel().getActiveWalletFilename());
-            if (numberOfWallets > 0) {
-                for (int i = 1; i <= numberOfWallets; i++) {
-                    PerWalletModelData perWalletModelData = perWalletModelDataList.get(i - 1);
-                    if (perWalletModelData.getWalletFilename() != null) {
-                        controller.getModel().setUserPreference(MultiBitModel.WALLET_FILENAME_PREFIX + i,
-                                perWalletModelData.getWalletFilename());
+      
+            List<String> orderList = new ArrayList<String>();
+            List<String> earlyList = new ArrayList<String>();
+            List<String> protobuf3List = new ArrayList<String>();
+            
+            for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                if (!orderList.contains(perWalletModelData.getWalletFilename())) {
+                    orderList.add(perWalletModelData.getWalletFilename());
+                }
+                
+                if (perWalletModelData.getWalletInfo().getWalletVersion() == WalletVersion.PROTOBUF_ENCRYPTED) {
+                    if (!protobuf3List.contains(perWalletModelData.getWalletFilename())) {
+                        protobuf3List.add(perWalletModelData.getWalletFilename());
+                    }
+                 } else if (perWalletModelData.getWalletInfo().getWalletVersion() == null
+                         || perWalletModelData.getWalletInfo().getWalletVersion() == WalletVersion.SERIALIZED 
+                         || perWalletModelData.getWalletInfo().getWalletVersion() == WalletVersion.PROTOBUF) {
+                    if (!earlyList.contains(perWalletModelData.getWalletFilename())) {
+                        earlyList.add(perWalletModelData.getWalletFilename());
                     }
                 }
             }
+            
+            int orderCount = 1;
+            for (String walletFilename : orderList) {
+                controller.getModel().setUserPreference(MultiBitModel.WALLET_ORDER_PREFIX + orderCount, walletFilename);
+                orderCount++;  
+            }
+            controller.getModel().setUserPreference(MultiBitModel.WALLET_ORDER_TOTAL, "" + orderList.size());
+        
+            int earlyCount = 1;
+            for (String walletFilename : earlyList) {
+                controller.getModel().setUserPreference(MultiBitModel.EARLY_WALLET_FILENAME_PREFIX + earlyCount, walletFilename);
+                earlyCount++;
+            }
+            controller.getModel().setUserPreference(MultiBitModel.NUMBER_OF_EARLY_WALLETS, "" + earlyList.size());
+            
+            int protobuf3Count = 1;
+            for (String walletFilename : protobuf3List) {
+                controller.getModel().setUserPreference(MultiBitModel.PROTOBUF3_WALLET_FILENAME_PREFIX + protobuf3Count, walletFilename);
+                protobuf3Count++;
+            }
+            controller.getModel().setUserPreference(MultiBitModel.NUMBER_OF_PROTOBUF3_WALLETS, "" + protobuf3List.size());
+            controller.getModel().setUserPreference(MultiBitModel.ACTIVE_WALLET_FILENAME, controller.getModel().getActiveWalletFilename());
         }
 
         // Write the user preference properties.

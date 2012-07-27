@@ -1,6 +1,8 @@
 package org.multibit.crypto;
 
-public interface EncrypterDecrypter {
+import java.io.Serializable;
+
+public interface EncrypterDecrypter extends Serializable {
 
     public byte[] decrypt(byte[] bytesToDecode, char[] password) throws EncrypterDecrypterException;
 

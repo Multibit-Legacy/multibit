@@ -37,7 +37,7 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
     public static final char[] WALLET_PASSWORD = "testing testing 123".toCharArray();
 
     private static final int DELAY_TO_COMPLETE_OPERATION = 4000; // milliseconds
-    private static final int DELAY_TO_UPDATE_MESSAGES = 1000; // milliseconds
+    private static final int DELAY_TO_UPDATE_MESSAGES = 2000; // milliseconds
     
     @Test
     public void testSendBitcoinWithNonEncryptedWallet() throws Exception {       

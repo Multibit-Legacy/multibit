@@ -15,6 +15,7 @@
  */
 package org.multibit.crypto;
 
+import java.io.Serializable;
 import java.security.SecureRandom;
 
 import org.apache.commons.codec.binary.Base64;
@@ -45,7 +46,10 @@ import com.lambdaworks.crypto.SCrypt;
  * @author jim
  * 
  */
-public class EncrypterDecrypterScrypt implements EncrypterDecrypter {
+public class EncrypterDecrypterScrypt implements EncrypterDecrypter, Serializable {
+
+    private static final long serialVersionUID = 949662512049152670L;
+
     /**
      * The string encoding to use when converting strings to bytes.
      */
@@ -54,18 +58,22 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter {
     /**
      * Key length in bytes.
      */
-    private static final int KEY_LENGTH = 32; // = 256 bits.
+    public static final int KEY_LENGTH = 32; // = 256 bits.
 
     /**
      * The size of an AES block in bytes.
      * This is also the length of the initialisation vector.
      */
-    private static final int BLOCK_LENGTH = 16;  // = 128 bits.
+    public static final int BLOCK_LENGTH = 16;  // = 128 bits.
 
-    private static SecureRandom secureRandom = new SecureRandom();
+    transient private static SecureRandom secureRandom = new SecureRandom();
 
     // Scrypt parameters.
-    ScryptParameters scryptParameters;
+    transient private ScryptParameters scryptParameters;
+    
+    public EncrypterDecrypterScrypt() {
+        
+    }
     
     /**
      * Encryption/ Decryption using specified parameters.
@@ -250,5 +258,39 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter {
 
     public ScryptParameters getScryptParameters() {
         return scryptParameters;
+    }
+
+    @Override
+    public String toString() {
+        return "EncrypterDecrypterScrypt [scryptParameters=" + scryptParameters.toString() + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((scryptParameters == null) ? 0 : scryptParameters.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        EncrypterDecrypterScrypt other = (EncrypterDecrypterScrypt) obj;
+        if (scryptParameters == null) {
+            if (other.scryptParameters != null)
+                return false;
+        } else if (!scryptParameters.equals(other.scryptParameters))
+            return false;
+        return true;
+    }
+
+    public void setScryptParameters(ScryptParameters scryptParameters) {
+        this.scryptParameters = scryptParameters;
     }
 }

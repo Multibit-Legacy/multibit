@@ -73,7 +73,7 @@ public class ECKey implements Serializable, IsMultiBitClass {
     /**
      * Instance of the EncrypterDecrypter interface to use for encrypting and decrypting the key.
      */
-    private EncrypterDecrypter encrypterDecrypter;
+    transient private EncrypterDecrypter encrypterDecrypter;
     
     /**
      * The encrypted private key bytes.
@@ -231,6 +231,9 @@ public class ECKey implements Serializable, IsMultiBitClass {
         if (creationTimeSeconds != 0) {
             b.append(" timestamp:" + creationTimeSeconds);
         }
+//        if (encryptedPrivateKey != null && encryptedPrivateKey.length > 0) {
+//            b.append(" enc.priv:").append(Utils.bytesToHexString(encryptedPrivateKey));
+//        }
         return b.toString();
     }
 
@@ -383,6 +386,9 @@ public class ECKey implements Serializable, IsMultiBitClass {
      * @param password
      */
     public void encrypt(char[] password) {
+        if (encrypterDecrypter == null) {
+            throw new IllegalStateException("No encrypterDecrypter has been set for this key and so cannot encrypt");
+        }
         encryptedPrivateKey = encrypterDecrypter.encrypt(getPrivKeyBytes(), password);
         
         // Clear the private keys.
@@ -396,6 +402,10 @@ public class ECKey implements Serializable, IsMultiBitClass {
      * @param password
      */
     public void decrypt(char[] password) {
+        if (encrypterDecrypter == null) {
+            throw new IllegalStateException("No encrypterDecrypter has been set for this key and so cannot decrypt");
+        }
+        
         // Decrypt the private key.
         byte[] plainTextPrivateKey = encrypterDecrypter.decrypt(encryptedPrivateKey, password);
         
@@ -423,5 +433,9 @@ public class ECKey implements Serializable, IsMultiBitClass {
 
     public void setEncrypterDecrypter(EncrypterDecrypter encrypterDecrypter) {
         this.encrypterDecrypter = encrypterDecrypter;
+    }
+
+    public EncrypterDecrypter getEncrypterDecrypter() {
+        return encrypterDecrypter;
     }
 }

@@ -169,7 +169,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
     /**
      * The encrypterDecrypter for the wallet.
      */
-    private EncrypterDecrypter encrypterDecrypter;
+    transient private EncrypterDecrypter encrypterDecrypter;
     
     /**
      * Creates a new, empty wallet with no keys and no transactions. If you want to restore a wallet from disk instead,
@@ -1446,6 +1446,11 @@ public class Wallet implements Serializable, IsMultiBitClass {
             builder.append("\nDEAD:\n");
             toStringHelper(builder, dead);
         }
+        
+        // Add the EncrypterDecrypter so that any setup parameters are in the wallet toString.
+        if (this.encrypterDecrypter != null) {
+            builder.append("\n EncrypterDecrypter: " + encrypterDecrypter.toString());
+        }
         return builder.toString();
     }
 
@@ -1880,7 +1885,6 @@ public class Wallet implements Serializable, IsMultiBitClass {
     public boolean isCurrentlyEncrypted() {
         return currentlyEncrypted;
     }
-    
     
     /**
      *  Check whether the password can decrypt the first key in the wallet.
