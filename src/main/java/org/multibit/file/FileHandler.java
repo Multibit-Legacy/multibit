@@ -479,6 +479,11 @@ public class FileHandler {
             List<String> protobuf3List = new ArrayList<String>();
             
             for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                // Check if this is the initial empty PerWalletModelData
+                if ("".equals(perWalletModelData.getWalletFilename()) || perWalletModelData.getWalletFilename() == null) {
+                    continue;
+                }
+                
                 if (!orderList.contains(perWalletModelData.getWalletFilename())) {
                     orderList.add(perWalletModelData.getWalletFilename());
                 }
