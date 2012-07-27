@@ -10,40 +10,44 @@ public enum WalletVersion {
     /**
      * Wallet version for Java serialised wallets.
      */
-    SERIALIZED("1", "walletVersion.1"), 
+    SERIALIZED((byte)0x01, "walletVersion.1"), 
     
     /**
      * Wallet version for unencrypted protobuf wallets.
      */
-    PROTOBUF("2", "walletVersion.2"),
+    PROTOBUF((byte)0x02, "walletVersion.2"),
     
     /**
      * Wallet version for encrypted protobuf wallets.
      */
-    PROTOBUF_ENCRYPTED("3", "walletVersion.3"),
+    PROTOBUF_ENCRYPTED((byte)0x03, "walletVersion.3"),
     
     /**
      * Wallet version future wallets - used in testing only.
      */
-    FUTURE("1000000", "walletVersion.1000000");
+    FUTURE((byte)0xff, "walletVersion.1000000");
     
     /**
      * How the wallet version is represented in the wallet info files.
      */
-    private String walletVersionString;
+    private byte walletVersionByte;
         
     /**
      * The key to use in localisation to describe the wallet version.
      */
     private String localisationKey;
     
-    private WalletVersion(String walletVersionString, String localisationKey) {
-      this.walletVersionString = walletVersionString;
+    private WalletVersion(byte walletVersionByte, String localisationKey) {
+      this.walletVersionByte = walletVersionByte;
       this.localisationKey = localisationKey;
     }
         
     public String getWalletVersionString() {
-      return walletVersionString;
+      return Byte.toString(walletVersionByte);
+    }
+    
+    public byte getWalletVersionByte() {
+        return walletVersionByte;
     }
     
     public String getLocalisationKey() {
@@ -51,6 +55,6 @@ public enum WalletVersion {
     }
     
     public String toString() {
-        return walletVersionString;
+        return Byte.toString(walletVersionByte);
     }
 }
