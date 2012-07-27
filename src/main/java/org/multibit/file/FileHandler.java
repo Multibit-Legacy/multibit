@@ -402,6 +402,13 @@ public class FileHandler {
             List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
             int numberOfWallets = perWalletModelDataList.size();
+            
+            PerWalletModelData activeWalletModelData = controller.getModel().getActivePerWalletModelData();
+            if (activeWalletModelData != null
+                    && ("".equals(activeWalletModelData.getWalletFilename()) || activeWalletModelData.getWalletFilename() == null)) {
+                // This is the initial placeholder perWalletModelData - there are no wallets.
+                numberOfWallets = 0;
+            }
             log.debug("When writing wallets, there were " + numberOfWallets);
             controller.getModel().setUserPreference(MultiBitModel.NUMBER_OF_WALLETS, numberOfWallets + "");
             controller.getModel().setUserPreference(MultiBitModel.ACTIVE_WALLET_FILENAME,
