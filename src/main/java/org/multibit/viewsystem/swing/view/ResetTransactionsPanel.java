@@ -82,6 +82,8 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
     private final SimpleDateFormat dateFormatter;
 
+    private ResetTransactionsSubmitAction resetTransactionsSubmitAction;
+    
     private JRadioButton resetFromFirstTransactionRadioButton;
     private JRadioButton chooseResetDateRadioButton;
     private JCalendar calendarChooser;
@@ -341,9 +343,9 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        ResetTransactionsSubmitAction submitAction = new ResetTransactionsSubmitAction(controller,
+        resetTransactionsSubmitAction = new ResetTransactionsSubmitAction(controller,
                 ImageLoader.createImageIcon(ImageLoader.RESET_TRANSACTIONS_ICON_FILE), this);
-        MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
+        MultiBitButton submitButton = new MultiBitButton(resetTransactionsSubmitAction, controller);
         buttonPanel.add(submitButton);
 
         return buttonPanel;
@@ -537,5 +539,9 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         } else {
             return true;
         }
+    }
+
+    public ResetTransactionsSubmitAction getResetTransactionsSubmitAction() {
+        return resetTransactionsSubmitAction;
     }
 }

@@ -75,10 +75,16 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
      * reset the transactions and replay the blockchain
      */
     public void actionPerformed(ActionEvent event) {
+        // Check if there is an ative wallet.
+        if (controller.getModel().thereIsNoActiveWallet()) {
+            MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("multiBitFrame.statusBar.thereIsNoActiveWallet")));
+            return;
+        }
+
         // check to see if another process has changed the active wallet
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
-
+        
         if (haveFilesChanged) {
             // set on the perWalletModelData that files have changed and fire
             // data changed

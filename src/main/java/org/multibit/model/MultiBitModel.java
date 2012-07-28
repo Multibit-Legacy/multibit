@@ -450,8 +450,7 @@ public class MultiBitModel {
         newPerWalletModelData.setWalletTableDataList(new ArrayList<WalletTableData>());
 
         // if it is the initial empty activeWalletModelData remove it
-        if (activeWalletModelData != null
-                && ("".equals(activeWalletModelData.getWalletFilename()) || activeWalletModelData.getWalletFilename() == null)) {
+        if (thereIsNoActiveWallet()) {
             perWalletModelDataList.remove(activeWalletModelData);
             activeWalletModelData = newPerWalletModelData;
         }
@@ -826,6 +825,9 @@ public class MultiBitModel {
 	public void setExchangeData(ExchangeData exchangeData) {
 		this.exchangeData = exchangeData;
 	}
-    
-    
+	
+	public boolean thereIsNoActiveWallet() {
+        return activeWalletModelData == null
+                || "".equals(activeWalletModelData.getWalletFilename()) || activeWalletModelData.getWalletFilename() == null;
+	}    
 }
