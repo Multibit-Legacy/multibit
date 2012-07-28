@@ -226,6 +226,7 @@ public class ECKey implements Serializable, IsMultiBitClass {
     }
 
     public String toString() {
+        
         StringBuffer b = new StringBuffer();
         b.append("pub:").append(Utils.bytesToHexString(pub));
         if (creationTimeSeconds != 0) {
@@ -234,6 +235,7 @@ public class ECKey implements Serializable, IsMultiBitClass {
 //        if (encryptedPrivateKey != null && encryptedPrivateKey.length > 0) {
 //            b.append(" enc.priv:").append(Utils.bytesToHexString(encryptedPrivateKey));
 //        }
+
         return b.toString();
     }
 
