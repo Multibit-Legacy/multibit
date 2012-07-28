@@ -893,11 +893,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         final View viewToNavigateAwayFromFinal = viewFactory.getView(viewToNavigateAwayFrom);
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                viewToNavigateAwayFromFinal.navigateAwayFromView();
-            }
-        });
+        if (viewToNavigateAwayFromFinal != null) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    viewToNavigateAwayFromFinal.navigateAwayFromView();
+                }
+            });
+        }
     }    
 
     @Override
