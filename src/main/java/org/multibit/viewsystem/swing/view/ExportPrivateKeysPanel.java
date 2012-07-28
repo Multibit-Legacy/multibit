@@ -89,6 +89,8 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
     private JPasswordField repeatPasswordField;
 
     private JLabel tickLabel;
+    
+    private  ExportPrivateKeysSubmitAction exportPrivateKeysSubmitAction;
 
     public static final int STENT_HEIGHT = 12;
     public static final int STENT_DELTA = 20;
@@ -675,9 +677,9 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
          * Create submit action with references to the password fields - this
          * avoids having any public accessors on the panel
          */
-        ExportPrivateKeysSubmitAction submitAction = new ExportPrivateKeysSubmitAction(controller, this,
+        exportPrivateKeysSubmitAction = new ExportPrivateKeysSubmitAction(controller, this,
                 ImageLoader.createImageIcon(ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE), passwordField, repeatPasswordField, mainFrame);
-        MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
+        MultiBitButton submitButton = new MultiBitButton(exportPrivateKeysSubmitAction, controller);
         buttonPanel.add(submitButton);
 
         return buttonPanel;
@@ -861,5 +863,9 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
     @Override
     public int getViewId() {
         return View.SHOW_EXPORT_PRIVATE_KEYS_VIEW;
+    }
+
+    public ExportPrivateKeysSubmitAction getExportPrivateKeysSubmitAction() {
+        return exportPrivateKeysSubmitAction;
     }
 }

@@ -19,13 +19,11 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 
-import org.spongycastle.util.Arrays;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.Verification;
@@ -34,16 +32,15 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.ExportPrivateKeysPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.util.Arrays;
 
 /**
  * This {@link Action} exports the active wallets private keys
  */
-public class ExportPrivateKeysSubmitAction extends AbstractAction {
+public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
     private static final Logger log = LoggerFactory.getLogger(ExportPrivateKeysSubmitAction.class);
 
     private static final long serialVersionUID = 1923492460598757765L;
-
-    private MultiBitController controller;
 
     private ExportPrivateKeysPanel exportPrivateKeysPanel;
     private MultiBitFrame mainFrame;
@@ -59,22 +56,20 @@ public class ExportPrivateKeysSubmitAction extends AbstractAction {
      */
     public ExportPrivateKeysSubmitAction(MultiBitController controller, ExportPrivateKeysPanel exportPrivateKeysPanel,
             ImageIcon icon, JPasswordField password1, JPasswordField password2, MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("showExportPrivateKeysAction.text.camel"), icon);
-        this.controller = controller;
+        super(controller, "showExportPrivateKeysAction.text.camel", "showExportPrivateKeysAction.tooltip", "showExportPrivateKeysAction.mnemonicKey", icon);
         this.exportPrivateKeysPanel = exportPrivateKeysPanel;
         this.password1 = password1;
         this.password2 = password2;
         this.mainFrame = mainFrame;
-
-        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("showExportPrivateKeysAction.tooltip"));
-        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("showExportPrivateKeysAction.mnemonicKey"));
     }
 
     /**
      * Export the private keys to a file
      */
     public void actionPerformed(ActionEvent e) {
+        if (abort()) {
+            return;
+        }
         exportPrivateKeysPanel.clearMessages();
 
         // get the required output file

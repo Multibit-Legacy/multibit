@@ -18,7 +18,6 @@ package org.multibit.viewsystem.swing.action;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
@@ -27,31 +26,29 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.DeleteWalletConfirmDialog;
 
 /**
- * This {@link Action} show the delete walet confirmation dialog
+ * This {@link Action} show the delete wallet confirmation dialog.
  */
-public class DeleteWalletAction extends AbstractAction {
+public class DeleteWalletAction extends MultiBitSubmitAction {
     private static final long serialVersionUID = 1923933460523457765L;
 
-    private MultiBitController controller;
     private MultiBitFrame mainFrame;
 
     /**
      * Creates a new {@link DeleteWalletAction}.
      */
     public DeleteWalletAction(MultiBitController controller, ImageIcon icon, MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("deleteWalletAction.text"), icon);
+        super(controller, "deleteWalletAction.text", "deleteWalletAction.tooltip", "deleteWalletAction.mnemonicKey", icon);
         this.controller = controller;
         this.mainFrame = mainFrame;
-
-        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("deleteWalletAction.tooltip"));
-        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("deleteWalletAction.mnemonicKey"));
     }
 
     /**
      * prompt for deletion of a wallet
      */
     public void actionPerformed(ActionEvent e) {
+        if (abort()) {
+            return;
+        }
         mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         setEnabled(false);
   
