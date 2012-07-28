@@ -58,6 +58,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
+import org.multibit.model.WalletVersion;
 import org.multibit.platform.GenericApplication;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
@@ -954,7 +955,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 changePasswordAction.setEnabled(true);
                 removePasswordAction.setEnabled(true);
             } else {
-                addPasswordAction.setEnabled(true);
+                if (controller.getModel().getActiveWalletWalletInfo().getWalletVersion() == WalletVersion.SERIALIZED) {
+                    addPasswordAction.setEnabled(false);
+                } else {
+                    addPasswordAction.setEnabled(true);
+                }
                 changePasswordAction.setEnabled(false);
                 removePasswordAction.setEnabled(false);                
             }

@@ -237,6 +237,7 @@ public class MigrateWalletsAction extends AbstractAction {
                 }
                 MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("migrateWalletsAction.end") + " " + controller.getLocaliser().getString("migrateWalletsAction.text") + "."));
                 MessageManager.INSTANCE.addMessage(new Message(" "));
+                controller.fireDataChanged();
                 controller.fireRecreateAllViews(false);
                 controller.displayView(View.MESSAGES_VIEW);
             }                    
