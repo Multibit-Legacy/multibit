@@ -25,8 +25,6 @@ import org.multibit.viewsystem.swing.view.ResetTransactionsPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 public class ResetTransactionsSubmitActionTest extends TestCase {
-
-
     public static final String EXPECTED_NO_WALLET_IS_SELECTED = "There is no wallet selected. Nothing to do.";
 
     @Test
