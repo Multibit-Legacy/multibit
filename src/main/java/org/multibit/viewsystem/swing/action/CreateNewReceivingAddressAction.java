@@ -17,11 +17,9 @@ package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
 import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
@@ -40,12 +38,10 @@ import com.google.bitcoin.core.ECKey;
 /**
  * This {@link Action} represents an action to create a receiving address.
  */
-public class CreateNewReceivingAddressAction extends AbstractAction {
+public class CreateNewReceivingAddressAction extends MultiBitSubmitAction {
     private static Logger log = LoggerFactory.getLogger(CreateNewReceivingAddressAction.class);
-    
-    private static final long serialVersionUID = 200152235465875405L;
 
-    private MultiBitController controller;
+    private static final long serialVersionUID = 200152235465875405L;
 
     private AbstractTradePanel receiveBitcoinPanel;
 
@@ -53,58 +49,51 @@ public class CreateNewReceivingAddressAction extends AbstractAction {
      * Creates a new {@link CreateNewReceivingAddressAction}.
      */
     public CreateNewReceivingAddressAction(MultiBitController controller, AbstractTradePanel receiveBitcoinPanel) {
-        super(controller.getLocaliser().getString("createOrEditAddressAction.createReceiving.text"));
-        this.controller = controller;
+        super(controller, "createOrEditAddressAction.createReceiving.text", "createOrEditAddressAction.createReceiving.tooltip",
+                "createOrEditAddressAction.createReceiving.mnemonicKey", null);
         this.receiveBitcoinPanel = receiveBitcoinPanel;
-
-        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createOrEditAddressAction.createReceiving.tooltip"));
-        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("createOrEditAddressAction.createReceiving.mnemonicKey"));
     }
 
     /**
      * Create new receiving address.
      */
     public void actionPerformed(ActionEvent e) {
+        if (abort()) {
+            return;
+        }
+
         // Check to see if the wallet files have changed.
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
-        if (haveFilesChanged) {
-            // set on the perWalletModelData that files have changed and fire data changed
-            perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
-        } else {
-            ECKey newKey = new ECKey();
-            perWalletModelData.getWallet().keychain.add(newKey);
+        ECKey newKey = new ECKey();
+        perWalletModelData.getWallet().keychain.add(newKey);
 
-            String addressString = newKey.toAddress(controller.getMultiBitService().getNetworkParameters()).toString();
-            WalletInfo walletInfo = perWalletModelData.getWalletInfo();
-            if (walletInfo == null) {
-                walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletVersion.PROTOBUF);
-                perWalletModelData.setWalletInfo(walletInfo);
-            }
-            walletInfo.addReceivingAddress(new AddressBookData("", addressString), false);
-            receiveBitcoinPanel.getAddressesTableModel().fireTableDataChanged();
-            receiveBitcoinPanel.selectRows();
+        String addressString = newKey.toAddress(controller.getMultiBitService().getNetworkParameters()).toString();
+        WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+        if (walletInfo == null) {
+            walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletVersion.PROTOBUF);
+            perWalletModelData.setWalletInfo(walletInfo);
+        }
+        walletInfo.addReceivingAddress(new AddressBookData("", addressString), false);
+        receiveBitcoinPanel.getAddressesTableModel().fireTableDataChanged();
+        receiveBitcoinPanel.selectRows();
 
-            controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, addressString);
-            controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
-            
-            try {
-                controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
-            } catch (WalletSaveException wse) {
-                log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
-                MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
-            } catch (WalletVersionException wve) {
-                log.error(wve.getClass().getCanonicalName() + " " + wve.getMessage());
-                MessageManager.INSTANCE.addMessage(new Message(wve.getClass().getCanonicalName() + " " + wve.getMessage()));
-            }
-            controller.displayView(controller.getCurrentView());
+        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, addressString);
+        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
 
-            if (receiveBitcoinPanel != null && receiveBitcoinPanel.getLabelTextArea() != null) {
-                receiveBitcoinPanel.getLabelTextArea().requestFocusInWindow();
-            }
+        try {
+            controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+        } catch (WalletSaveException wse) {
+            log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
+            MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
+        } catch (WalletVersionException wve) {
+            log.error(wve.getClass().getCanonicalName() + " " + wve.getMessage());
+            MessageManager.INSTANCE.addMessage(new Message(wve.getClass().getCanonicalName() + " " + wve.getMessage()));
+        }
+        controller.displayView(controller.getCurrentView());
+
+        if (receiveBitcoinPanel != null && receiveBitcoinPanel.getLabelTextArea() != null) {
+            receiveBitcoinPanel.getLabelTextArea().requestFocusInWindow();
         }
     }
 }

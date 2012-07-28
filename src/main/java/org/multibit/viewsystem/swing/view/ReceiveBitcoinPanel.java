@@ -62,6 +62,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
 
     private static final long serialVersionUID = -2065108865497842662L;
 
+    private CreateNewReceivingAddressAction createNewReceivingAddressAction;
+    
     public ReceiveBitcoinPanel(MultiBitFrame mainFrame, MultiBitController controller) {
         super(mainFrame, controller);
     }
@@ -73,7 +75,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
     
     @Override
     protected Action getCreateNewAddressAction() {
-        return new CreateNewReceivingAddressAction(controller, this);
+        createNewReceivingAddressAction = new CreateNewReceivingAddressAction(controller, this);
+        return createNewReceivingAddressAction;
     }
     
     @Override
@@ -445,5 +448,9 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
 
     public String getPreviousCurrency1() {
         return null;
+    }
+
+    public CreateNewReceivingAddressAction getCreateNewReceivingAddressAction() {
+        return createNewReceivingAddressAction;
     }
 }
