@@ -611,6 +611,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                     return 1;
                 } else if (o2 == null) {
                     return -1;
+                } else if ("".equals(o1) && !"".equals(o2)) {
+                    return 1;
+                } else if ("".equals(o2) && !"".equals(o1)) {
+                    return -1;
                 } else {
                     return collator.compare(o1, o2);
                 }
