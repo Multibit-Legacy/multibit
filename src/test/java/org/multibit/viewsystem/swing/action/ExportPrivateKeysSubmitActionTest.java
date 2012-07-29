@@ -26,6 +26,8 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.viewsystem.swing.view.ExportPrivateKeysPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
@@ -259,5 +261,27 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         // Then will need to decrypt wallet first before getting private key out for comparision.
         assertEquals("Wrong private key read in from unencrypted export file", Utils.bytesToHexString(controller.getModel().getActiveWallet().getKeychain().get(0).getPrivKeyBytes()), 
                 Utils.bytesToHexString(privateKeyAndDates.iterator().next().getKey().getPrivKeyBytes()));          
+    }
+    
+    @Test
+    public void testNoWalletSelected() throws Exception {
+        // Create MultiBit controller.
+        MultiBitController controller = ActionTestUtils.createController();
+
+        // This test runs against an empty PerWalletModelDataList.
+        assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());
+
+        // Create a new ExportPrivateKeysSubmitAction to test.
+        FontSizer.INSTANCE.initialise(controller);
+        ExportPrivateKeysPanel exportPrivateKeysPanel = new ExportPrivateKeysPanel(controller, null);
+        ExportPrivateKeysSubmitAction exportPrivateKeysSubmitAction = exportPrivateKeysPanel.getExportPrivateKeySubmitAction();
+
+        assertNotNull("exportPrivateKeysSubmitAction was not created successfully", exportPrivateKeysSubmitAction);
+
+        // Execute.
+        exportPrivateKeysSubmitAction.actionPerformed(null);
+        Object[] messages = MessageManager.INSTANCE.getMessages().toArray();
+        assertTrue("There were no messages but there should have been", messages != null && messages.length > 0);
+        assertEquals("Wrong message after receive bitcoin confirm with no active wallet", ResetTransactionsSubmitActionTest.EXPECTED_NO_WALLET_IS_SELECTED, ((Message)messages[messages.length - 1]).getText());
     }
 }

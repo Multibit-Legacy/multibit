@@ -183,14 +183,7 @@ public class MultiBitModel {
 
     // Wallet migration.
     public static final String LAST_FAILED_MIGRATE_VERSION = "lastFailedMigrateVersion";
-    
-    // Sideloading from wallet info properties
-    public static final String SIDELOAD_PROTOBUF_VERSION = "sideloadProtobufVersion";
-    public static final String SIDELOAD_NUMBER_OF_KEYS = "sideloadNumberOfKeys";
-    public static final String SIDELOAD_KEYDATA_PREFIX = "sideloadKey";
-    public static final String SIDELOAD_KEYDATA_SEPARATOR = "z";
-    
-    
+       
     // Main controller class.
     private final MultiBitController controller;
 
@@ -422,21 +415,6 @@ public class MultiBitModel {
     }
 
     /**
-     * Add the specified perWalletModelData and make it the active wallet.
-     * Used only in tests.
-     * 
-     * Note that this method is incomplete as it does not hook up listeners to the wallet.
-     * 
-     * @param perWalletModeData
-     */
-//    public void addAndMakeActiveWallet(PerWalletModelData perWalletModelDataToAdd) {
-//        if (perWalletModelDataList != null) {
-//            perWalletModelDataList.add(perWalletModelDataToAdd);
-//            activeWalletModelData = perWalletModelDataToAdd;
-//        }
-//    }
-
-    /**
      * Set a wallet description, given a wallet filename.
      * 
      * @param wallet
@@ -480,8 +458,7 @@ public class MultiBitModel {
         newPerWalletModelData.setWalletTableDataList(new ArrayList<WalletTableData>());
 
         // If it is the initial empty activeWalletModelData remove it.
-        if (activeWalletModelData != null
-                && ("".equals(activeWalletModelData.getWalletFilename()) || activeWalletModelData.getWalletFilename() == null)) {
+        if (thereIsNoActiveWallet()) {
             perWalletModelDataList.remove(activeWalletModelData);
             activeWalletModelData = newPerWalletModelData;
         }
@@ -863,4 +840,9 @@ public class MultiBitModel {
 
 	    return useTestNet ? NetworkParameters.testNet() : NetworkParameters.prodNet();
 	}
+	   
+    public boolean thereIsNoActiveWallet() {
+        return activeWalletModelData == null
+                || "".equals(activeWalletModelData.getWalletFilename()) || activeWalletModelData.getWalletFilename() == null;
+    }    
 }

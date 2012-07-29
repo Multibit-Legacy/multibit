@@ -28,9 +28,9 @@ import org.multibit.viewsystem.swing.view.SendBitcoinConfirmDialog;
 import org.multibit.viewsystem.swing.view.ValidationErrorDialog;
 
 /**
- * This {@link Action} shows the send bitcoin confirm dialog or validation dialog on an attempted spend
+ * This {@link Action} shows the send bitcoin confirm dialog or validation dialog on an attempted spend.
  */
-public class SendBitcoinConfirmAction extends AbstractAction {
+public class SendBitcoinConfirmAction extends MultiBitSubmitAction {
 
     private static final long serialVersionUID = 1913592460523457765L;
 
@@ -42,28 +42,21 @@ public class SendBitcoinConfirmAction extends AbstractAction {
      * Creates a new {@link SendBitcoinConfirmAction}.
      */
     public SendBitcoinConfirmAction(MultiBitController controller, MultiBitFrame mainFrame, BitcoinFormDataProvider dataProvider) {
-        super(controller.getLocaliser().getString("sendBitcoinConfirmAction.text"), ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
-        this.controller = controller;
+        super(controller, "sendBitcoinConfirmAction.text", "sendBitcoinConfirmAction.tooltip","sendBitcoinConfirmAction.mnemonicKey", ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
         this.mainFrame = mainFrame;
         this.dataProvider = dataProvider;
-
-        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("sendBitcoinConfirmAction.tooltip"));
-        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("sendBitcoinConfirmAction.mnemonicKey"));
     }
 
     /**
-     * show the send bitcoin confirm dialog
+     * Show the send bitcoin confirm dialog.
      */
     public void actionPerformed(ActionEvent e) {
+        if (abort()) {
+            return;
+        }
+
         SendBitcoinConfirmDialog sendBitcoinConfirmDialog = null;
         ValidationErrorDialog validationErrorDialog = null;
-
-        // copy the data into the user preferences (side effect of getData call)
-        //dataProvider.getData();
-
-        //String sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
-        //String sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
 
         String sendAddress = dataProvider.getAddress();
         String sendAmount = dataProvider.getAmount();

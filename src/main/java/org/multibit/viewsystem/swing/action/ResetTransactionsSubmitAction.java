@@ -21,7 +21,6 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.SwingWorker;
@@ -40,9 +39,9 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.store.BlockStoreException;
 
 /**
- * This {@link Action} views the BitCoinJ preferences
+ * This {@link Action} resets the blockchain and transactions.
  */
-public class ResetTransactionsSubmitAction extends AbstractAction {
+public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
 
     private static final Logger log = LoggerFactory.getLogger(ResetTransactionsSubmitAction.class);
 
@@ -52,8 +51,6 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
 
     private static final long BUTTON_DOWNCLICK_TIME = 400;
 
-    private MultiBitController controller;
-
     private ResetTransactionsDataProvider resetTransactionsDataProvider;
 
     /**
@@ -61,26 +58,26 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
      */
     public ResetTransactionsSubmitAction(MultiBitController controller, Icon icon,
             ResetTransactionsDataProvider resetTransactionsDataProvider) {
-        super(controller.getLocaliser().getString("resetTransactionsSubmitAction.text"), icon);
-        this.controller = controller;
+        super(controller, "resetTransactionsSubmitAction.text", "resetTransactionsSubmitAction.tooltip",
+                "resetTransactionsSubmitAction.mnemonicKey", icon);
         this.resetTransactionsDataProvider = resetTransactionsDataProvider;
-
-        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("resetTransactionsSubmitAction.tooltip"));
-        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("resetTransactionsSubmitAction.mnemonicKey"));
     }
 
+
     /**
-     * reset the transactions and replay the blockchain
+     * Reset the transactions and replay the blockchain.
      */
     public void actionPerformed(ActionEvent event) {
-        // check to see if another process has changed the active wallet
+        if (abort()) {
+            return;
+        }
+        
+        // Check to see if another process has changed the active wallet.
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
 
         if (haveFilesChanged) {
-            // set on the perWalletModelData that files have changed and fire
-            // data changed
+            // Set on the perWalletModelData that files have changed and fire data changed.
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
             controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
@@ -95,8 +92,7 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
             Date actualResetDate = null;
 
             if (resetFromFirstTransaction) {
-                // work out the earliest transaction date and save it to the
-                // wallet
+                // Work out the earliest transaction date and save it to the wallet.
 
                 Date earliestTransactionDate = new Date(DateUtils.nowUtc().getMillis());
                 Set<Transaction> allTransactions = activePerWalletModelData.getWallet().getTransactions(true, true);
@@ -112,9 +108,8 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
                 }
                 actualResetDate = earliestTransactionDate;
 
-                // also look at the earliest key creation time - this is
-                // returned in
-                // seconds and is converted to milliseconds
+                // Look at the earliest key creation time - this is
+                // returned in seconds and is converted to milliseconds.
                 long earliestKeyCreationTime = activePerWalletModelData.getWallet().getEarliestKeyCreationTime()
                         * NUMBER_OF_MILLISECOND_IN_A_SECOND;
                 if (earliestKeyCreationTime != 0 && earliestKeyCreationTime < earliestTransactionDate.getTime()) {
@@ -125,10 +120,10 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
                 actualResetDate = resetDate;
             }
 
-            // remove the transactions from the wallet
+            // Remove the transactions from the wallet.
             activePerWalletModelData.getWallet().clearTransactions(actualResetDate);
 
-            // save the wallet without the transactions
+            // Save the wallet without the transactions.
             try {
                 controller.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
                 controller.getModel().createWalletData(controller.getModel().getActiveWalletFilename());
@@ -150,7 +145,7 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
     }
 
     /**
-     * reset the transaction in a background Swing worker thread
+     * Reset the transaction in a background Swing worker thread.
      */
     private void resetTransactionsInBackground(final boolean resetFromFirstTransaction, final Date resetDate) {
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
@@ -184,8 +179,7 @@ public class ResetTransactionsSubmitAction extends AbstractAction {
                         MessageManager.INSTANCE.addMessage(new Message(message));
                     }
                 } catch (Exception e) {
-                    // not really used but caught so that SwingWorker shuts down
-                    // cleanly
+                    // Not really used but caught so that SwingWorker shuts down cleanly.
                     log.error(e.getClass() + " " + e.getMessage());
                 }
             }

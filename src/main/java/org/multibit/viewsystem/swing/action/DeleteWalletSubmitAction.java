@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This {@link Action} deletes a wallet
+ * This {@link Action} deletes a wallet.
  */
 public class DeleteWalletSubmitAction extends AbstractAction {
 
@@ -58,16 +58,16 @@ public class DeleteWalletSubmitAction extends AbstractAction {
     }
 
     /**
-     * delete the wallet and updates the dialog
+     * Delete the wallet and updates the dialog.
      */
     public void actionPerformed(ActionEvent e) {
         try {
             String walletDescription = controller.getModel().getActivePerWalletModelData().getWalletDescription();
 
-            // delete the wallet
+            // Delete the wallet.
             boolean newWalletCreated = deleteActiveWallet();
             
-            // set the first wallet to be the active wallet
+            // Set the first wallet to be the active wallet.
             PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
             controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
             controller.fireRecreateAllViews(true);
@@ -117,7 +117,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
     }
     
     /**
-     * Delete wallet by filename
+     * Delete wallet by filename.
      * 
      * @param filename of wallet to delete
      * @return newWalletCreated
@@ -128,7 +128,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
     }
     
     /**
-     * Delete the active wallet
+     * Delete the active wallet.
      * @return newWalletCreated
      * @throws DeleteWalletException
      * @throws IOException
@@ -138,7 +138,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
     }
     
     /**
-     * Actually delete the wallet (no UI elements used)
+     * Actually delete the wallet (no UI elements used).
      * @param perWalletModelData of wallet to delete
      * @return newWalletCreated
      * @throws DeleteWalletException
@@ -148,7 +148,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
         FileHandler fileHandler = new FileHandler(controller);
         fileHandler.deleteWalletAndWalletInfo(perWalletModelData);
 
-        // if no wallets, create an empty one
+        // If no wallets, create an empty one.
         boolean newWalletCreated = false;
         if (controller.getModel().getPerWalletModelDataList().size() == 0) {
             if (controller.getMultiBitService() != null) {
@@ -158,7 +158,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
              }
         }
         
-        // set the first wallet to be the active wallet
+        // Set the first wallet to be the active wallet.
         PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
         controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
         controller.fireRecreateAllViews(true);

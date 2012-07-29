@@ -23,6 +23,8 @@ import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.PrivateKeysHandlerTest;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.viewsystem.swing.view.ImportPrivateKeysPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
@@ -275,6 +277,28 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         
         // Check every key on the expected list is now on the wallet.
         checkEveryExpectedKeyIsPresent(controller);
+    }
+    
+    @Test
+    public void testNoWalletSelected() throws Exception {
+        // Create MultiBit controller.
+        MultiBitController controller = ActionTestUtils.createController();
+
+        // This test runs against an empty PerWalletModelDataList.
+        assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());
+
+        // Create a new ImportPrivateKeysSubmitAction to test.
+        FontSizer.INSTANCE.initialise(controller);
+        ImportPrivateKeysPanel importPrivateKeysPanel = new ImportPrivateKeysPanel(controller, null);
+        ImportPrivateKeysSubmitAction importPrivateKeysSubmitAction = importPrivateKeysPanel.getImportPrivateKeysSubmitAction();
+
+        assertNotNull("importPrivateKeysSubmitAction was not created successfully", importPrivateKeysSubmitAction);
+
+        // Execute.
+        importPrivateKeysSubmitAction.actionPerformed(null);
+        Object[] messages = MessageManager.INSTANCE.getMessages().toArray();
+        assertTrue("There were no messages but there should have been", messages != null && messages.length > 0);
+        assertEquals("Wrong message after receive bitcoin confirm with no active wallet", ResetTransactionsSubmitActionTest.EXPECTED_NO_WALLET_IS_SELECTED, ((Message)messages[messages.length - 1]).getText());
     }
     
     private void checkEveryExpectedKeyIsPresent(MultiBitController controller) {

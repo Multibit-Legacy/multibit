@@ -27,7 +27,7 @@ import org.multibit.model.WalletInfo;
  */
 public class WalletVersionException extends RuntimeException {
 
-    private static final long serialVersionUID = 2372470341301293437L;
+    private static final long serialVersionUID = 2379990341301293437L;
 
     public WalletVersionException(String s) {
         super(s);

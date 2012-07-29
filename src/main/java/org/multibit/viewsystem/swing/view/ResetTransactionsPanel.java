@@ -81,6 +81,8 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
     private static final int DEFAULT_NUMBER_OF_DAYS = 14;
 
     private final SimpleDateFormat dateFormatter;
+    
+    private ResetTransactionsSubmitAction resetTransactionsSubmitAction;
 
     private JRadioButton resetFromFirstTransactionRadioButton;
     private JRadioButton chooseResetDateRadioButton;
@@ -341,9 +343,9 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
 
-        ResetTransactionsSubmitAction submitAction = new ResetTransactionsSubmitAction(controller,
+        resetTransactionsSubmitAction = new ResetTransactionsSubmitAction(controller,
                 ImageLoader.createImageIcon(ImageLoader.RESET_TRANSACTIONS_ICON_FILE), this);
-        MultiBitButton submitButton = new MultiBitButton(submitAction, controller);
+        MultiBitButton submitButton = new MultiBitButton(resetTransactionsSubmitAction, controller);
         buttonPanel.add(submitButton);
 
         return buttonPanel;
@@ -526,6 +528,10 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         }
     }
 
+    public ResetTransactionsSubmitAction getResetTransactionsSubmitAction() {
+        return resetTransactionsSubmitAction;
+    }
+    
     // ResetTransactionDataProvider methods
     public Date getResetDate() {
         return resetDate;

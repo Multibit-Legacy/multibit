@@ -62,6 +62,8 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
 
     private MultiBitButton pasteAddressButton;
     private MultiBitButton sendButton;
+    private SendBitcoinConfirmAction sendBitcoinConfirmAction;
+    private CreateNewSendingAddressAction  createNewSendingAddressAction;
 
     public SendBitcoinPanel(MultiBitFrame mainFrame, MultiBitController controller) {
         super(mainFrame, controller);
@@ -74,7 +76,8 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
 
     @Override
     protected Action getCreateNewAddressAction() {
-        return new CreateNewSendingAddressAction(controller, this);
+        createNewSendingAddressAction =  new CreateNewSendingAddressAction(controller, this);
+        return createNewSendingAddressAction;
     }
 
     @Override
@@ -289,7 +292,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         constraints.anchor = GridBagConstraints.BELOW_BASELINE_LEADING;
         formPanel.add(helpButton, constraints);
 
-        SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, mainFrame, this);
+        sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, mainFrame, this);
         sendButton = new MultiBitButton(sendBitcoinConfirmAction, controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 6;
@@ -434,5 +437,13 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
     @Override
     public int getViewId() {
         return View.SEND_BITCOIN_VIEW;
+    }
+    
+    public SendBitcoinConfirmAction getSendBitcoinConfirmAction() {
+        return sendBitcoinConfirmAction;
+    }
+
+    public CreateNewSendingAddressAction getCreateNewSendingAddressAction() {
+        return createNewSendingAddressAction;
     }
 }
