@@ -13,13 +13,19 @@ Internationalisation:
 Arvis Lacis         - Latvian
 Azrael_PT           - Portuguese
 bitcoin.hu          - Hungarian
+bitcoinspot         - Dutch
+D4CH                - Danish
 damnek              - Dutch
+DutchBrat           - Dutch
 Emin Gun Sirer      - Turkish
 ffe                 - Arabic
 finway              - Simplified Chinese
 freemoney           - Spanish, German
+grouver             - Dutch
 GSBank              - French
 guillo.92199        - French
+gulaschkanone       - German
+guy46               - Portuguese
 haritosh            - Hindi
 HostFat             - Italian
 lzsaver             - Russian
@@ -32,9 +38,16 @@ Marx1996xvx         - Polish
 Mats Henricson      - Swedish
 Memory Dealers      - Japanese
 mrmx                - Spanish
+mrvision            - Spanish
+nsnia               - Croatian
+nuntius.marii       - Dutch
 Piotr Waskiewicz    - Polish
 raymccarthy         - Swedish
+rbreban             - Spanish
+spiccioli           - Italian
 Technomage          - Finnish
+tesla               - Russian
 Wissam Idrissi      - Arabic
+Wim1441             - Dutch
+XeF6                - Turkish
 ziomik              - Italian
-

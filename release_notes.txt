@@ -1,5 +1,40 @@
 MultiBit release notes.
 
+30 Jul 2012 Version 0.4.6
++  Wallet versions from the future now not loaded
+
+
+23 Jul 2012 Version 0.4.5
++  Faster connection to the bitcoin network at startup
++  More help on 'Available to spend'
+
+
+17 Jul 2012 Version 0.4.4
+Enhancements:
++  I18n update
++  Update to bitcoinj 0.5.2
+
+
+09 Jul 2012 Version 0.4.3
+Bug fix
++  Replay from genesis block fixed
+
+
+03 Jul 2012 Version 0.4.2
+Enhancements:
++  Added utility to migrate wallets from serialised to protobuf format.
++  'Delete wallet' now overwrites wallet file with random data before deletion (secure delete).
++  Improved error handling on startup if blockchain cannot be loaded.
+
+Bug fix:
++  Installer now works on Win7 x64.
+
+
+26 Jun 2012 Version 0.4.1
+Bug fix:
++  Fix for wallet load error "Illegal state exception - duplicate transaction"
+
+
 18 Jun 2012 Version 0.4.0
 Enhancements:
 +  Introduction of protobuf format for new wallets
