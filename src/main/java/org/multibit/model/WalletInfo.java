@@ -412,12 +412,14 @@ public class WalletInfo {
             if (walletVersionTokenNumber == 2) {
                 String walletVersionMarker = walletVersionTokenizer.nextToken();
                 String walletVersionString = walletVersionTokenizer.nextToken();
-                if (!WALLET_VERSION_MARKER.equals(walletVersionMarker) 
-                                || !(WalletVersion.SERIALIZED.getWalletVersionString().equals(walletVersionString) 
+                if (!WALLET_VERSION_MARKER.equals(walletVersionMarker)) {
+                    // The wallet version marker was incorrect.
+                    throw new WalletVersionException("Cannot understand wallet version of '" + walletVersionMarker + "', '" + walletVersionString + "'" );
+                } else if (!(WalletVersion.SERIALIZED.getWalletVersionString().equals(walletVersionString) 
                                 || WalletVersion.PROTOBUF.getWalletVersionString().equals(walletVersionString))) {
                     // This refers to a version of the wallet we do not know about.
-                    throw new WalletVersionException("Cannot understand wallet version of '" + walletVersionMarker + "', '" + walletVersionString + "'" );
-                } else {
+                    throw new WalletVersionException("Cannot understand the wallet version of '" + walletVersionString + "'. You may need to update your copy of MultiBit.");
+                }else {
                     // The wallet version passed in the file is used rather than the value in the constructor
                     if (!walletVersion.getWalletVersionString().equals(walletVersionString)) {
                         log.debug("The wallet version in the constructor was '" + walletVersion + "'. In the wallet info file it was '" + walletVersionString + "'. Using the latter.");
