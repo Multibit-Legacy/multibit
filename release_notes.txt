@@ -1,6 +1,6 @@
 MultiBit release notes.
 
-Version 0.4.6
+30 Jul 2012 Version 0.4.6
 +  Wallet versions from the future now not loaded
 
 
