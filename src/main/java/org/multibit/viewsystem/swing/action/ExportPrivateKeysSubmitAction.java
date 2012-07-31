@@ -112,7 +112,6 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
         privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
 
         boolean performEncryption = false;
-        boolean performVerification = false;
 
         char[] exportPasswordToUse = null;
 
@@ -162,7 +161,14 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
             // Success.
             exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
                     "showExportPrivateKeysAction.privateKeysExportSuccess"));
-            performVerification = true;
+            
+            // Perform a verification on the exported file to see if it is correct.            
+            Verification verification = privateKeysHandler.verifyExportFile(exportPrivateKeysFile, controller.getModel()
+                    .getActivePerWalletModelData().getWallet(), blockChain, performEncryption,
+                    exportPasswordToUse,  walletPassword.getPassword());
+            String verifyMessage = controller.getLocaliser().getString(verification.getMessageKey(), verification.getMessageData());
+            exportPrivateKeysPanel.setMessage2(verifyMessage);
+            
             exportPrivateKeysPanel.clearPasswords();
         } catch (IOException ioe) {
             log.error(ioe.getClass().getName() + " " + ioe.getMessage());
@@ -171,20 +177,6 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
             exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
                     "showExportPrivateKeysAction.privateKeysExportFailure",
                     new Object[] { ioe.getClass().getName() + " " + ioe.getMessage() }));
-        }
-
-        if (performVerification) {
-            // Perform a verification on the exported file to see if it is correct.
-            MultiBitBlockChain blockChain = null;
-            if (controller.getMultiBitService() != null) {
-                blockChain = controller.getMultiBitService().getChain();
-            }
-            
-            Verification verification = privateKeysHandler.verifyExportFile(exportPrivateKeysFile, controller.getModel()
-                    .getActivePerWalletModelData().getWallet(), blockChain, performEncryption,
-                    exportPasswordToUse,  walletPassword.getPassword());
-            String verifyMessage = controller.getLocaliser().getString(verification.getMessageKey(), verification.getMessageData());
-            exportPrivateKeysPanel.setMessage2(verifyMessage);
         }
     }
 }

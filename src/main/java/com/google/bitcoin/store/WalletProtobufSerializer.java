@@ -107,6 +107,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             if (key.getPrivKeyBytes() != null) {
                 buf.setPrivateKey(ByteString.copyFrom(key.getPrivKeyBytes()));
             }
+
             if (key.getEncryptedPrivateKey() != null) {
                 buf.setEncryptedPrivateKey(ByteString.copyFrom(key.getEncryptedPrivateKey()));
             }

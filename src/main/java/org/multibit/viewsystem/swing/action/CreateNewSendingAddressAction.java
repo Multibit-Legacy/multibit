@@ -35,8 +35,6 @@ public class CreateNewSendingAddressAction extends MultiBitSubmitAction {
 
     private static final long serialVersionUID = 200111935465875405L;
 
-    private MultiBitController controller;
-
     private AbstractTradePanel sendBitcoinPanel;
 
     /**

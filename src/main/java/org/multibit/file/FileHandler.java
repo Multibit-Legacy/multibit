@@ -192,9 +192,9 @@ public class FileHandler {
      *            force the write of the perWalletModelData     
      */
     public void savePerWalletModelData(PerWalletModelData perWalletModelData, boolean forceWrite) {
-//        log.info("Wallet details for wallet file = " +
-//         perWalletModelData.getWalletFilename() + "\n"
-//         + perWalletModelData.getWallet().toString());
+        log.info("Wallet details for wallet file = " +
+         perWalletModelData.getWalletFilename() + "\n"
+         + perWalletModelData.getWallet().toString());
 
         if (perWalletModelData == null || perWalletModelData.getWalletFilename() == null) {
             return;
