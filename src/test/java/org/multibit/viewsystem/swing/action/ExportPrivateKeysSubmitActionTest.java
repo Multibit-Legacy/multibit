@@ -156,6 +156,11 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         // Create a new encrypted wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testExportPrivateKeysWithNonEncryptedWallet", true, WALLET_PASSWORD);
 
+        // Remember the private keys for the key - for comparision later.
+        // Copy the private key bytes for checking later.
+        byte[] encryptedBytes = controller.getModel().getActiveWallet().keychain.get(0).getEncryptedPrivateKey();
+        byte[] originalPrivateKeyBytes = controller.getModel().getActiveWallet().getEncrypterDecrypter().decrypt(encryptedBytes, WALLET_PASSWORD);
+
         // Create a new ExportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
         ExportPrivateKeysPanel exportPanel = new ExportPrivateKeysPanel(controller, null);
@@ -231,7 +236,8 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
         privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename1), EXPORT_FILE_PASSWORD);
         assertEquals("Wrong number of keys read in from encrypted export file", 1, privateKeyAndDates.size());
-        assertEquals("Wrong private key read in from encrypted export file", Utils.bytesToHexString(controller.getModel().getActiveWallet().getKeychain().get(0).getPrivKeyBytes()), 
+        
+        assertEquals("Wrong private key read in from encrypted export file", Utils.bytesToHexString(originalPrivateKeyBytes), 
                 Utils.bytesToHexString(privateKeyAndDates.iterator().next().getKey().getPrivKeyBytes()));  
         
         // Set the export file password protect radio to output unencrypted.
@@ -257,9 +263,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename2), null);
         assertEquals("Wrong number of keys read in from unencrypted export file", 1, privateKeyAndDates.size());
         
-        // TODO - this will start failing when the private keys are cleared from Wallets on encrypt. (After persistence is done).
-        // Then will need to decrypt wallet first before getting private key out for comparision.
-        assertEquals("Wrong private key read in from unencrypted export file", Utils.bytesToHexString(controller.getModel().getActiveWallet().getKeychain().get(0).getPrivKeyBytes()), 
+        assertEquals("Wrong private key read in from unencrypted export file", Utils.bytesToHexString(originalPrivateKeyBytes), 
                 Utils.bytesToHexString(privateKeyAndDates.iterator().next().getKey().getPrivKeyBytes()));          
     }
     
