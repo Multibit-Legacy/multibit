@@ -246,8 +246,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         
         // Read the scrypt parameters.
         Protos.ScryptParameters encryptionParameters = walletProto.getEncryptionParameters();
-        // TODO transcribe the other parameters.
-        ScryptParameters scryptParameters = new ScryptParameters(encryptionParameters.getSalt().toByteArray(), 16384, 8, 1);
+        ScryptParameters scryptParameters = new ScryptParameters(encryptionParameters.getSalt().toByteArray(), (int)encryptionParameters.getN(), encryptionParameters.getR(), encryptionParameters.getP());
         EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
       
         Wallet wallet = new Wallet(params, encrypterDecrypter);

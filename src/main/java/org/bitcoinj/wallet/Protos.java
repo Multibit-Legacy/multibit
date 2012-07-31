@@ -3872,15 +3872,15 @@ public final class Protos {
     boolean hasSalt();
     com.google.protobuf.ByteString getSalt();
     
-    // optional int64 n = 2;
+    // optional int64 n = 2 [default = 16384];
     boolean hasN();
     long getN();
     
-    // optional int32 r = 3;
+    // optional int32 r = 3 [default = 8];
     boolean hasR();
     int getR();
     
-    // optional int32 p = 4;
+    // optional int32 p = 4 [default = 1];
     boolean hasP();
     int getP();
   }
@@ -3923,7 +3923,7 @@ public final class Protos {
       return salt_;
     }
     
-    // optional int64 n = 2;
+    // optional int64 n = 2 [default = 16384];
     public static final int N_FIELD_NUMBER = 2;
     private long n_;
     public boolean hasN() {
@@ -3933,7 +3933,7 @@ public final class Protos {
       return n_;
     }
     
-    // optional int32 r = 3;
+    // optional int32 r = 3 [default = 8];
     public static final int R_FIELD_NUMBER = 3;
     private int r_;
     public boolean hasR() {
@@ -3943,7 +3943,7 @@ public final class Protos {
       return r_;
     }
     
-    // optional int32 p = 4;
+    // optional int32 p = 4 [default = 1];
     public static final int P_FIELD_NUMBER = 4;
     private int p_;
     public boolean hasP() {
@@ -3955,9 +3955,9 @@ public final class Protos {
     
     private void initFields() {
       salt_ = com.google.protobuf.ByteString.EMPTY;
-      n_ = 0L;
-      r_ = 0;
-      p_ = 0;
+      n_ = 16384L;
+      r_ = 8;
+      p_ = 1;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -4138,11 +4138,11 @@ public final class Protos {
         super.clear();
         salt_ = com.google.protobuf.ByteString.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000001);
-        n_ = 0L;
+        n_ = 16384L;
         bitField0_ = (bitField0_ & ~0x00000002);
-        r_ = 0;
+        r_ = 8;
         bitField0_ = (bitField0_ & ~0x00000004);
-        p_ = 0;
+        p_ = 1;
         bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
@@ -4311,8 +4311,8 @@ public final class Protos {
         return this;
       }
       
-      // optional int64 n = 2;
-      private long n_ ;
+      // optional int64 n = 2 [default = 16384];
+      private long n_ = 16384L;
       public boolean hasN() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
@@ -4327,13 +4327,13 @@ public final class Protos {
       }
       public Builder clearN() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        n_ = 0L;
+        n_ = 16384L;
         onChanged();
         return this;
       }
       
-      // optional int32 r = 3;
-      private int r_ ;
+      // optional int32 r = 3 [default = 8];
+      private int r_ = 8;
       public boolean hasR() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
@@ -4348,13 +4348,13 @@ public final class Protos {
       }
       public Builder clearR() {
         bitField0_ = (bitField0_ & ~0x00000004);
-        r_ = 0;
+        r_ = 8;
         onChanged();
         return this;
       }
       
-      // optional int32 p = 4;
-      private int p_ ;
+      // optional int32 p = 4 [default = 1];
+      private int p_ = 1;
       public boolean hasP() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
@@ -4369,7 +4369,7 @@ public final class Protos {
       }
       public Builder clearP() {
         bitField0_ = (bitField0_ & ~0x00000008);
-        p_ = 0;
+        p_ = 1;
         onChanged();
         return this;
       }
@@ -6565,19 +6565,20 @@ public final class Protos {
       "\030\010 \003(\014\0221\n\nconfidence\030\t \001(\0132\035.wallet.Tran" +
       "sactionConfidence\"Y\n\004Pool\022\013\n\007UNSPENT\020\004\022\t" +
       "\n\005SPENT\020\005\022\014\n\010INACTIVE\020\002\022\010\n\004DEAD\020\n\022\013\n\007PEN" +
-      "DING\020\020\022\024\n\020PENDING_INACTIVE\020\022\"A\n\020ScryptPa" +
-      "rameters\022\014\n\004salt\030\001 \002(\014\022\t\n\001n\030\002 \001(\003\022\t\n\001r\030\003" +
-      " \001(\005\022\t\n\001p\030\004 \001(\005\"8\n\tExtension\022\n\n\002id\030\001 \002(\t",
-      "\022\014\n\004data\030\002 \002(\014\022\021\n\tmandatory\030\003 \002(\010\"\303\002\n\006Wa" +
-      "llet\022\032\n\022network_identifier\030\001 \002(\t\022\034\n\024last" +
-      "_seen_block_hash\030\002 \001(\014\022\030\n\003key\030\003 \003(\0132\013.wa" +
-      "llet.Key\022(\n\013transaction\030\004 \003(\0132\023.wallet.T" +
-      "ransaction\022.\n\013wallet_type\030\005 \001(\0162\031.wallet" +
-      ".Wallet.WalletType\0227\n\025encryption_paramet" +
-      "ers\030\006 \001(\0132\030.wallet.ScryptParameters\022$\n\te" +
-      "xtension\030\n \003(\0132\021.wallet.Extension\",\n\nWal" +
-      "letType\022\017\n\013UNENCRYPTED\020\001\022\r\n\tENCRYPTED\020\002B" +
-      "\035\n\023org.bitcoinj.walletB\006Protos"
+      "DING\020\020\022\024\n\020PENDING_INACTIVE\020\022\"N\n\020ScryptPa" +
+      "rameters\022\014\n\004salt\030\001 \002(\014\022\020\n\001n\030\002 \001(\003:\00516384" +
+      "\022\014\n\001r\030\003 \001(\005:\0018\022\014\n\001p\030\004 \001(\005:\0011\"8\n\tExtensio",
+      "n\022\n\n\002id\030\001 \002(\t\022\014\n\004data\030\002 \002(\014\022\021\n\tmandatory" +
+      "\030\003 \002(\010\"\303\002\n\006Wallet\022\032\n\022network_identifier\030" +
+      "\001 \002(\t\022\034\n\024last_seen_block_hash\030\002 \001(\014\022\030\n\003k" +
+      "ey\030\003 \003(\0132\013.wallet.Key\022(\n\013transaction\030\004 \003" +
+      "(\0132\023.wallet.Transaction\022.\n\013wallet_type\030\005" +
+      " \001(\0162\031.wallet.Wallet.WalletType\0227\n\025encry" +
+      "ption_parameters\030\006 \001(\0132\030.wallet.ScryptPa" +
+      "rameters\022$\n\textension\030\n \003(\0132\021.wallet.Ext" +
+      "ension\",\n\nWalletType\022\017\n\013UNENCRYPTED\020\001\022\r\n" +
+      "\tENCRYPTED\020\002B\035\n\023org.bitcoinj.walletB\006Pro",
+      "tos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {

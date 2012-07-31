@@ -61,16 +61,19 @@ public class FileHandlerTest extends TestCase {
     private final String TEST_CREATE_UNENCRYPTED_PROTOBUF_PREFIX = "testCreateUnencryptedProtobuf";
 
     private final String TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX = "testCreateEncryptedProtobuf";
-    
-    private final String TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX_THEN_BREAK_IT = "testCreateEncryptedProtobufThenBreakIt";
-        
+
     private static final String TEST_CREATE_PROTOBUF_PREFIX = "testCreateProtobuf";
 
     private static final String TEST_WALLET_VERSION_PREFIX = "testCannotLoadOrSaveFutureWalletVersions";
 
+    private static final String TEST_SCRYPT_PARAMETERS = "testScryptParameters";
+    
     private final char[] WALLET_PASSWORD = "horatio nelson 123".toCharArray();
 
     private SecureRandom secureRandom;
+    
+    private MultiBitController controller;
+    private FileHandler fileHandler;
     
     private EncrypterDecrypter encrypterDecrypter;
 
@@ -82,19 +85,17 @@ public class FileHandlerTest extends TestCase {
         secureRandom.nextBytes(salt);
         ScryptParameters scryptParameters = new ScryptParameters(salt);
         encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
+        
+        controller = new MultiBitController();
+        Localiser localiser = new Localiser();
+        MultiBitModel model = new MultiBitModel(controller);
+        controller.setLocaliser(localiser);
+        controller.setModel(model);
+        fileHandler = new FileHandler(controller);
     }
     
     @Test
     public void testLoadSerialised1() throws IOException {
-        MultiBitController controller = new MultiBitController();
-        Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
-
-        controller.setLocaliser(localiser);
-        controller.setModel(model);
-
-        FileHandler fileHandler = new FileHandler(controller);
-
         File directory = new File(".");
         String currentPath = directory.getAbsolutePath();
 
@@ -117,15 +118,6 @@ public class FileHandlerTest extends TestCase {
 
     @Test
     public void testLoadSerialised2() throws IOException {
-        MultiBitController controller = new MultiBitController();
-        Localiser localiser = new Localiser();
-        MultiBitModel model = new MultiBitModel(controller);
-
-        controller.setLocaliser(localiser);
-        controller.setModel(model);
-
-        FileHandler fileHandler = new FileHandler(controller);
-
         File directory = new File(".");
         String currentPath = directory.getAbsolutePath();
 
@@ -149,11 +141,6 @@ public class FileHandlerTest extends TestCase {
     
     @Test
     public void testCreateSerialisedWallet() throws IOException {
-        MultiBitController controller = new MultiBitController();
-        @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
-        FileHandler fileHandler = new FileHandler(controller);
-
         File temporaryWallet = File.createTempFile(TEST_CREATE_SERIALISED_PREFIX, ".wallet");
         temporaryWallet.deleteOnExit();
 
@@ -193,19 +180,11 @@ public class FileHandlerTest extends TestCase {
 
         assertEquals(WalletVersion.SERIALIZED, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
         
-        // Delete wallet.
-        fileHandler.deleteWalletAndWalletInfo(perWalletModelDataReborn);
-        assertTrue(!newWalletFile.exists());
-        assertTrue(!walletInfoFile.exists());
+        deleteWalletAndCheckDeleted(perWalletModelDataReborn, newWalletFile, walletInfoFile);
     }
     
     @Test
     public void testCreateProtobufUnencryptedWallet() throws IOException {
-        MultiBitController controller = new MultiBitController();
-        @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
-        FileHandler fileHandler = new FileHandler(controller);
-
         File temporaryWallet = File.createTempFile(TEST_CREATE_UNENCRYPTED_PROTOBUF_PREFIX, ".wallet");
         temporaryWallet.deleteOnExit();
 
@@ -254,19 +233,11 @@ public class FileHandlerTest extends TestCase {
         
         assertTrue("Wallet isCurrentlyEncrypted when it should not be", !perWalletModelDataReborn.getWallet().isCurrentlyEncrypted());
         
-        // Delete wallet.
-        fileHandler.deleteWalletAndWalletInfo(perWalletModelDataReborn);
-        assertTrue(!newWalletFile.exists());
-        assertTrue(!walletInfoFile.exists());
+        deleteWalletAndCheckDeleted(perWalletModelDataReborn, newWalletFile, walletInfoFile);
     }
     
     @Test
     public void testCreateProtobufEncryptedWallet() throws IOException {
-        MultiBitController controller = new MultiBitController();
-        @SuppressWarnings("unused")
-        MultiBitModel model = new MultiBitModel(controller);
-        FileHandler fileHandler = new FileHandler(controller);
-
         // Create an encrypted wallet.
         File temporaryWallet = File.createTempFile(TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX, ".wallet");
         temporaryWallet.deleteOnExit();
@@ -369,151 +340,120 @@ public class FileHandlerTest extends TestCase {
             assertEquals("Byte " + i + " of the reborn second private key did not match the original", originalPrivateKeyBytes2[i], secondRebornPrivateKeyBytes[i]);
         }
         
-        // Delete wallet.
-        fileHandler.deleteWalletAndWalletInfo(perWalletModelDataReborn);
-        assertTrue(!newWalletFile.exists());
-        assertTrue(!walletInfoFile.exists());
+        deleteWalletAndCheckDeleted(perWalletModelDataReborn, newWalletFile, walletInfoFile);
     }
 
-//    @Test
-//    /**
-//     * This test emulates what happens to an encrypted protobuf wallet when it is loaded by a 
-//     * version of MultiBit 0.4.0 to 0.4.5. The wallet version checking is faulty on those releases.
-//     * It 'half loads' the wallet and when it is saved it does not store the encrypted private key.
-//     * As the unencrypted provate keys are wiped in an encrypted wallet all the private keys are lost.
-//     * 
-//     * To get round this, the encrypted private keys are also stored in the WalletInfo properties.
-//     */
-//    public void testCreateProtobufEncryptedWalletThenBreakIt() throws IOException {
-//        MultiBitController controller = new MultiBitController();
-//        @SuppressWarnings("unused")
-//        MultiBitModel model = new MultiBitModel(controller);
-//        FileHandler fileHandler = new FileHandler(controller);
-//
-//        // Create an encrypted wallet.
-//        File temporaryWallet = File.createTempFile(TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX_THEN_BREAK_IT, ".wallet");
-//        temporaryWallet.deleteOnExit();
-//
-//        String newWalletFilename = temporaryWallet.getAbsolutePath();
-//
-//        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), encrypterDecrypter);
-//        ECKey newKey = new ECKey();
-//        newWallet.keychain.add(newKey);
-//        
-//        // Copy the private key bytes for checking later.
-//        byte[] originalPrivateKeyBytes1 = new byte[32];
-//        System.arraycopy(newKey.getPrivKeyBytes(), 0, originalPrivateKeyBytes1, 0, 32);
-//        System.out.println("EncryptableECKeyTest - Original private key 1 = " + Utils.bytesToHexString(originalPrivateKeyBytes1));
-//        
-//        newKey = new ECKey();
-//        newWallet.keychain.add(newKey);
-//
-//        byte[] originalPrivateKeyBytes2 = new byte[32];
-//        System.arraycopy(newKey.getPrivKeyBytes(), 0, originalPrivateKeyBytes2, 0, 32);
-//        System.out.println("EncryptableECKeyTest - Original private key 2 = " + Utils.bytesToHexString(originalPrivateKeyBytes2));
-//
-//        newWallet.encrypt(WALLET_PASSWORD);
-//        
-//        PerWalletModelData perWalletModelData = new PerWalletModelData();
-//        WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletVersion.PROTOBUF_ENCRYPTED);
-//        
-//        perWalletModelData.setWalletInfo(walletInfo);
-//        perWalletModelData.setWallet(newWallet);
-//        perWalletModelData.setWalletFilename(newWalletFilename);
-//        perWalletModelData.setWalletDescription(TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX_THEN_BREAK_IT);
-//        
-//        // Check the wallet status before it is written out and reborn.
-//        assertEquals(WalletVersion.PROTOBUF_ENCRYPTED, perWalletModelData.getWalletInfo().getWalletVersion());
-//        assertTrue("Wallet is not of type ENCRYPTED when it should be", perWalletModelData.getWallet().getWalletType() == WalletType.ENCRYPTED);
-//        
-//        assertTrue("Wallet isCurrentlyEncrypted is false when it should be true", perWalletModelData.getWallet().isCurrentlyEncrypted());
-//
-//        // Get the keys of the wallet and check that all the keys are encrypted.
-//        ArrayList<ECKey> keys = newWallet.getKeychain();
-//        for (ECKey key : keys) {
-//            assertTrue("Key is not encrypted when it should be", key.isEncrypted());
-//        }      
-//        
-//        // Save the wallet properly so that the walletinfo has the encrypted private key data in it
-//        controller.getFileHandler().savePerWalletModelData(perWalletModelData, true, true);
-// 
-//        // Emulate what happens when the wallet is roundtripped by a 0.4.0 to 0.4.5 version
-//        // of MultiBit;
-//        // 1) Encrypted private keys are wiped.
-//        //perWalletModelData.getWalletInfo().setWalletVersion(WalletVersion.PROTOBUF);
-//        ArrayList<ECKey> keychain = perWalletModelData.getWallet().keychain;
-//        ArrayList<ECKey> brokenKeychain = new ArrayList<ECKey>();
-//        for (ECKey key : keychain) {
-//            // No encrypted private key.
-//            ECKey brokenKey = new ECKey(new byte[0], key.getPubKey(), perWalletModelData.getWallet().getEncrypterDecrypter());
-//            brokenKeychain.add(brokenKey);
-//        }
-//        perWalletModelData.getWallet().keychain.clear();
-//        perWalletModelData.getWallet().keychain.addAll(brokenKeychain);
-//        
-//        // Save the wallet but do not update the sideload data so that it still has the encrypted private keys in it
-//        controller.getFileHandler().savePerWalletModelData(perWalletModelData, true, false);
-// 
-//        String walletInfoFileAsString = WalletInfo.createWalletInfoFilename(newWalletFilename);
-//
-//        // Check the wallet and wallet info file exists.
-//        File newWalletFile = new File(newWalletFilename);
-//        assertTrue(newWalletFile.exists());
-//
-// 
-//        File walletInfoFile = new File(walletInfoFileAsString);
-//        assertTrue(walletInfoFile.exists());
-//
-//        // Check wallet can be loaded and is still protobuf and encrypted.
-//        PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
-//        assertNotNull(perWalletModelDataReborn);
-//        assertEquals(BigInteger.ZERO, perWalletModelDataReborn.getWallet().getBalance());
-//        assertEquals(TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX_THEN_BREAK_IT, perWalletModelDataReborn.getWalletDescription());
-//        assertEquals(2, perWalletModelDataReborn.getWallet().keychain.size());
-//
-//        assertEquals(WalletVersion.PROTOBUF_ENCRYPTED, perWalletModelDataReborn.getWalletInfo().getWalletVersion());
-//        assertTrue("Wallet is not of type ENCRYPTED when it should be", perWalletModelDataReborn.getWallet().getWalletType() == WalletType.ENCRYPTED);
-//        
-//        assertTrue("Wallet isCurrentlyEncrypted is false when it should be true", perWalletModelDataReborn.getWallet().isCurrentlyEncrypted());
-// 
-//        for (ECKey key : perWalletModelDataReborn.getWallet().keychain) {
-//            assertTrue("Reborn key is not encrypted when it should be", key.isEncrypted());
-//        }
-//        
-//        // Decrypt the reborn wallet.
-//        perWalletModelDataReborn.getWallet().decrypt(WALLET_PASSWORD);
-//
-//        // Get the keys out the reborn wallet and check that all the keys match.
-//        ArrayList<ECKey> rebornKeys = perWalletModelDataReborn.getWallet().getKeychain();
-//        
-//        assertEquals("Wrong number of keys in reborn broken wallet", 2, rebornKeys.size());
-//        
-//        ECKey firstRebornKey = rebornKeys.get(0);
-//        assertTrue("firstRebornKey should now de decrypted but is not", !firstRebornKey.isEncrypted());
-//        // The reborn unencrypted private key bytes should match the original private key.
-//        byte[] firstRebornPrivateKeyBytes = firstRebornKey.getPrivKeyBytes();
-//        System.out.println("FileHandlerTest - Reborn decrypted first private key = " + Utils.bytesToHexString(firstRebornPrivateKeyBytes));
-//
-//        for (int i = 0; i < firstRebornPrivateKeyBytes.length; i++) {
-//            assertEquals("Byte " + i + " of the reborn first private key did not match the original", originalPrivateKeyBytes1[i], firstRebornPrivateKeyBytes[i]);
-//        }
-//        ECKey secondRebornKey = rebornKeys.get(1);
-//        assertTrue("secondRebornKey should now de decrypted but is not", !secondRebornKey.isEncrypted());
-//        // The reborn unencrypted private key bytes should match the original private key.
-//        byte[] secondRebornPrivateKeyBytes = secondRebornKey.getPrivKeyBytes();
-//        System.out.println("FileHandlerTest - Reborn decrypted second private key = " + Utils.bytesToHexString(secondRebornPrivateKeyBytes));
-//
-//        for (int i = 0; i < secondRebornPrivateKeyBytes.length; i++) {
-//            assertEquals("Byte " + i + " of the reborn second private key did not match the original", originalPrivateKeyBytes2[i], secondRebornPrivateKeyBytes[i]);
-//        }
-//        
-//        // Delete wallet.
-//        fileHandler.deleteWalletAndWalletInfo(perWalletModelDataReborn);
-//        assertTrue(!newWalletFile.exists());
-//        assertTrue(!walletInfoFile.exists());
-//    }
-    
+    @Test
+    public void testDefaultScryptParameters() throws IOException {
+        // Create an encrypted wallet with default scrypt parameters.
+        File temporaryWallet = File.createTempFile(TEST_SCRYPT_PARAMETERS + "1", ".wallet");
+        temporaryWallet.deleteOnExit();
 
+        String newWalletFilename = temporaryWallet.getAbsolutePath();
+
+        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), encrypterDecrypter);
+        ECKey newKey = new ECKey();
+        newWallet.keychain.add(newKey);
+
+        newWallet.encrypt(WALLET_PASSWORD);
+        
+        PerWalletModelData perWalletModelData = new PerWalletModelData();
+        WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletVersion.PROTOBUF_ENCRYPTED);
+        
+        perWalletModelData.setWalletInfo(walletInfo);
+        perWalletModelData.setWallet(newWallet);
+        perWalletModelData.setWalletFilename(newWalletFilename);
+        perWalletModelData.setWalletDescription(TEST_SCRYPT_PARAMETERS);
+        
+        // Save the wallet and read it back in again.
+        controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
+
+        // Check the wallet and wallet info file exists.
+        File newWalletFile = new File(newWalletFilename);
+        String walletInfoFileAsString = WalletInfo.createWalletInfoFilename(newWalletFilename);
+        File walletInfoFile = new File(walletInfoFileAsString);
+
+        // Load the wallet and check the default scrypt parameters
+        PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
+        assertNotNull(perWalletModelDataReborn);
+        
+        EncrypterDecrypter rebornEncrypterDecrypter = perWalletModelDataReborn.getWallet().getEncrypterDecrypter();
+        assertNotNull("There was no encrypterDecrypter after round trip", rebornEncrypterDecrypter);
+
+        assertTrue("EncrypterDecrypter was not an EncrypterDecrypterScrypt", rebornEncrypterDecrypter instanceof EncrypterDecrypterScrypt);
+        
+        EncrypterDecrypterScrypt rebornEncrypterDecrypterScrypt = (EncrypterDecrypterScrypt)rebornEncrypterDecrypter;
+        assertEquals("Wrong N parameter", ScryptParameters.DEFAULT_N, rebornEncrypterDecrypterScrypt.getScryptParameters().getN());
+        assertEquals("Wrong R parameter", ScryptParameters.DEFAULT_R, rebornEncrypterDecrypterScrypt.getScryptParameters().getR());
+        assertEquals("Wrong P parameter", ScryptParameters.DEFAULT_P, rebornEncrypterDecrypterScrypt.getScryptParameters().getP());
+        
+        deleteWalletAndCheckDeleted(perWalletModelDataReborn, newWalletFile, walletInfoFile);
+    }
+
+    @Test
+    public void testNonDefaultScryptParameters() throws IOException {
+        // Non default scrypt parameters.
+        int n = 32768;
+        int r = 8;
+        int p = 3;
+        
+        byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
+        secureRandom.nextBytes(salt);
+        ScryptParameters scryptParameters = new ScryptParameters(salt, n, r, p);
+        EncrypterDecrypter testEncrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
+        
+        // Create an encrypted wallet with nondefault scrypt parameters.
+        File temporaryWallet = File.createTempFile(TEST_SCRYPT_PARAMETERS + "2", ".wallet");
+        temporaryWallet.deleteOnExit();
+
+        String newWalletFilename = temporaryWallet.getAbsolutePath();
+
+        Wallet newWallet = new Wallet(NetworkParameters.prodNet(), testEncrypterDecrypter);
+        ECKey newKey = new ECKey();
+        newWallet.keychain.add(newKey);
+
+        newWallet.encrypt(WALLET_PASSWORD);
+        
+        PerWalletModelData perWalletModelData = new PerWalletModelData();
+        WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletVersion.PROTOBUF_ENCRYPTED);
+        
+        perWalletModelData.setWalletInfo(walletInfo);
+        perWalletModelData.setWallet(newWallet);
+        perWalletModelData.setWalletFilename(newWalletFilename);
+        perWalletModelData.setWalletDescription(TEST_SCRYPT_PARAMETERS + "2");
+        
+        // Save the wallet and read it back in again.
+        controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
+
+        // Check the wallet and wallet info file exists.
+        File newWalletFile = new File(newWalletFilename);
+        String walletInfoFileAsString = WalletInfo.createWalletInfoFilename(newWalletFilename);
+        File walletInfoFile = new File(walletInfoFileAsString);
+
+        // Load the wallet and check the default scrypt parameters
+        PerWalletModelData perWalletModelDataReborn = fileHandler.loadFromFile(newWalletFile);
+        assertNotNull(perWalletModelDataReborn);
+        
+        EncrypterDecrypter rebornEncrypterDecrypter = perWalletModelDataReborn.getWallet().getEncrypterDecrypter();
+        assertNotNull("There was no encrypterDecrypter after round trip", rebornEncrypterDecrypter);
+
+        assertTrue("EncrypterDecrypter was not an EncrypterDecrypterScrypt", rebornEncrypterDecrypter instanceof EncrypterDecrypterScrypt);
+        
+        EncrypterDecrypterScrypt rebornEncrypterDecrypterScrypt = (EncrypterDecrypterScrypt)rebornEncrypterDecrypter;
+        assertEquals("Wrong N parameter", n, rebornEncrypterDecrypterScrypt.getScryptParameters().getN());
+        assertEquals("Wrong R parameter", r, rebornEncrypterDecrypterScrypt.getScryptParameters().getR());
+        assertEquals("Wrong P parameter", p, rebornEncrypterDecrypterScrypt.getScryptParameters().getP());
+        
+        deleteWalletAndCheckDeleted(perWalletModelDataReborn, newWalletFile, walletInfoFile);
+    }
+    
+    private void deleteWalletAndCheckDeleted(PerWalletModelData perWalletModelData, File walletFile, File walletInfoFile) {
+        // Delete wallet and check it is deleted.
+        fileHandler.deleteWalletAndWalletInfo(perWalletModelData);
+        assertTrue(!walletFile.exists());
+        assertTrue(!walletInfoFile.exists());
+    }
+    
     public void testIsSerialisdWallet() throws Exception {
         MultiBitController controller = new MultiBitController();
         Localiser localiser = new Localiser();

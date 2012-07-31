@@ -15,6 +15,14 @@ public class ScryptParameters implements Serializable {
 
     public static final int SALT_LENGTH = 8;
     
+    public static int DEFAULT_N = 16384;
+    
+    public static int DEFAULT_R = 8;
+    
+    public static int DEFAULT_P = 1;
+    
+    
+    
     // Salt to use.
     private byte[] salt;
     
@@ -28,12 +36,10 @@ public class ScryptParameters implements Serializable {
     private int p;
 
     /**
-     * Encryption/ Decryption using default parameters.
-     * 
-     * @param salt Salt to use
+     * Encryption/ Decryption using default parameters and blank salt.
      */
     public ScryptParameters() {
-        this(new byte[0], 16384, 8, 1);
+        this(new byte[0]);
     }
 
     /**
@@ -42,7 +48,7 @@ public class ScryptParameters implements Serializable {
      * @param salt Salt to use
      */
     public ScryptParameters(byte[] salt) {
-        this(salt, 16384, 8, 1);
+        this(salt, DEFAULT_N, DEFAULT_R, DEFAULT_P);
     }
 
     /**
@@ -101,7 +107,7 @@ public class ScryptParameters implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + n;
+        result = (int) (prime * result + n);
         result = prime * result + p;
         result = prime * result + r;
         result = prime * result + Arrays.hashCode(salt);

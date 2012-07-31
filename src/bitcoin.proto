@@ -152,10 +152,10 @@ message Transaction {
  
 /** The parameters used in the scrypt KDF */
 message ScryptParameters {
-  required bytes salt = 1;      // Salt to use in generation of the wallet password (8 bytes)
-  optional int64 n = 2;         // CPU/ memory cost parameter, default = 16384
-  optional int32 r = 3;         // Block size parameter, default = 8
-  optional int32 p = 4;         // Parallelisation parameter, default = 1
+  required bytes salt = 1;                        // Salt to use in generation of the wallet password (8 bytes)
+  optional int64 n = 2 [default = 16384];         // CPU/ memory cost parameter
+  optional int32 r = 3 [default = 8];             // Block size parameter
+  optional int32 p = 4 [default = 1];             // Parallelisation parameter
 }
 
 /** An extension to the wallet */
