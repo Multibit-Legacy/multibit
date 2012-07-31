@@ -24,7 +24,10 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterException;
+import org.multibit.crypto.EncrypterDecrypterScrypt;
+import org.multibit.crypto.ScryptParameters;
 import org.multibit.file.FileHandler;
 import org.multibit.model.WalletVersion;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -97,7 +100,23 @@ public class AddPasswordSubmitAction extends AbstractAction {
        
         Wallet wallet = controller.getModel().getActiveWallet();
         if (wallet != null) {
+            if (controller.getModel().getActiveWalletWalletInfo() != null) {
+                // Only an unencrypted protobuf wallet can have a password added to it.
+                if (controller.getModel().getActiveWalletWalletInfo().getWalletVersion() != WalletVersion.PROTOBUF) {
+                    addPasswordPanel.setMessage1(controller.getLocaliser().getString(
+                            "addPasswordPanel.addPasswordFailed", new String[]{"Wallet is not protobuf.2"}));
+                    return;
+                }
+            }
             try {
+                if (wallet.getEncrypterDecrypter() == null) {
+                    byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
+                    controller.getMultiBitService().getSecureRandom().nextBytes(salt);
+                    ScryptParameters scryptParameters = new ScryptParameters(salt);
+                    EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
+                wallet.setEncrypterDecrypter(encrypterDecrypter);
+                }
+
                 wallet.encrypt(passwordToUse);
                 controller.getModel().getActiveWalletWalletInfo().setWalletVersion(WalletVersion.PROTOBUF_ENCRYPTED);
                 controller.getModel().getActivePerWalletModelData().setDirty(true);

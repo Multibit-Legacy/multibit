@@ -146,17 +146,13 @@ public class CreateWalletSubmitAction extends AbstractAction {
                     controller.fireDataChanged();
                 }
             } else {
-                // Create a new wallet - protobuf and scrypt encryptable.
-                byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
-                controller.getMultiBitService().getSecureRandom().nextBytes(salt);
-                ScryptParameters scryptParameters = new ScryptParameters(salt);
-                EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
-                Wallet newWallet = new Wallet(controller.getModel().getNetworkParameters(), encrypterDecrypter);
+                // Create a new wallet - protobuf.2 initially for backwards compatibility.
+                Wallet newWallet = new Wallet(controller.getModel().getNetworkParameters());
 
                 ECKey newKey = new ECKey();
                 newWallet.keychain.add(newKey);
                 PerWalletModelData perWalletModelData = new PerWalletModelData();
-                perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename, WalletVersion.PROTOBUF_ENCRYPTED));
+                perWalletModelData.setWalletInfo(new WalletInfo(newWalletFilename, WalletVersion.PROTOBUF));
                 perWalletModelData.setWallet(newWallet);
                 perWalletModelData.setWalletFilename(newWalletFilename);
                 perWalletModelData.setWalletDescription(controller.getLocaliser().getString(

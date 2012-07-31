@@ -17,7 +17,6 @@ package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
@@ -34,7 +33,6 @@ public class SendBitcoinConfirmAction extends MultiBitSubmitAction {
 
     private static final long serialVersionUID = 1913592460523457765L;
 
-    private MultiBitController controller;
     private MultiBitFrame mainFrame;
     private BitcoinFormDataProvider dataProvider;
 
