@@ -493,14 +493,14 @@ public class MultiBitService {
      *         funds for send)
      */
 
-    public Transaction sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee)
+    public Transaction sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee, boolean decryptBeforeSigning, char[] password)
             throws java.io.IOException, AddressFormatException {
         // send the coins
         Address sendAddress = new Address(networkParameters, sendAddressString);
 
         log.debug("MultiBitService#sendCoins - Just about to send coins");
         Transaction sendTransaction = perWalletModelData.getWallet().sendCoinsAsync(peerGroup, sendAddress,
-                Utils.toNanoCoins(amount), fee);
+                Utils.toNanoCoins(amount), fee, decryptBeforeSigning, password);
         log.debug("MultiBitService#sendCoins - Sent coins has completed");
 
         assert sendTransaction != null; 

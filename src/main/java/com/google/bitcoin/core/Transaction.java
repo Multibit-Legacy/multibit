@@ -640,7 +640,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * @param hashType This should always be set to SigHash.ALL currently. Other types are unused.
      * @param wallet   A wallet is required to fetch the keys needed for signing.
      */
-    public synchronized void signInputs(SigHash hashType, Wallet wallet) throws ScriptException {
+    public synchronized void signInputs(SigHash hashType, Wallet wallet, boolean decryptBeforeSigning, char[] password) throws ScriptException {
         Preconditions.checkState(inputs.size() > 0);
         Preconditions.checkState(outputs.size() > 0);
 
@@ -677,7 +677,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
             try {
                 // Usually 71-73 bytes.
                 ByteArrayOutputStream bos = new UnsafeByteArrayOutputStream(73);
-                bos.write(key.sign(hash.getBytes()));
+                bos.write(key.sign(hash.getBytes(), decryptBeforeSigning, password));
                 bos.write((hashType.ordinal() + 1) | (anyoneCanPay ? 0x80 : 0));
                 signatures[i] = bos.toByteArray();
             } catch (IOException e) {

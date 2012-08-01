@@ -1078,8 +1078,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * Transaction objects which are equal. The wallet is not updated to track its pending status or to mark the
      * coins as spent until commitTx is called on the result.
      */
-    public synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee) {
-        return createSend(address, nanocoins, fee, getChangeAddress());
+    public synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, boolean decryptBeforeSigning, char[] password) {
+        return createSend(address, nanocoins, fee, getChangeAddress(), decryptBeforeSigning, password);
     }
 
     /**
@@ -1091,8 +1091,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param nanocoins How many coins to send.
      * @return the Transaction that was created, or null if there are insufficient coins in thew allet.
      */
-    public synchronized Transaction sendCoinsOffline(Address to, BigInteger nanocoins, BigInteger fee) {
-        Transaction tx = createSend(to, nanocoins, fee);
+    public synchronized Transaction sendCoinsOffline(Address to, BigInteger nanocoins, BigInteger fee, boolean decryptBeforeSigning, char[] password) {
+        Transaction tx = createSend(to, nanocoins, fee, decryptBeforeSigning, password);
         if (tx == null)   // Not enough money! :-(
             return null;
         try {
@@ -1117,9 +1117,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @return the Transaction
      * @throws IOException if there was a problem broadcasting the transaction
      */
-    public synchronized Transaction sendCoinsAsync(PeerGroup peerGroup, Address to, BigInteger nanocoins, BigInteger fee)
+    public synchronized Transaction sendCoinsAsync(PeerGroup peerGroup, Address to, BigInteger nanocoins, BigInteger fee, boolean decryptBeforeSigning, char[] password)
             throws IOException {
-        Transaction tx = sendCoinsOffline(to, nanocoins, fee);
+        Transaction tx = sendCoinsOffline(to, nanocoins, fee, decryptBeforeSigning, password);
         if (tx == null)
             return null;  // Not enough money.
         // Just throw away the Future here. If the user wants it, they can call sendCoinsOffline/broadcastTransaction
@@ -1138,9 +1138,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param fee       The fee to include     
      * @return The {@link Transaction} that was created or null if there was insufficient balance to send the coins.
      */
-    public synchronized Transaction sendCoins(PeerGroup peerGroup, Address to, BigInteger nanocoins, final BigInteger fee)
+    public synchronized Transaction sendCoins(PeerGroup peerGroup, Address to, BigInteger nanocoins, final BigInteger fee, boolean decryptBeforeSigning, char[] password)
             throws IOException {
-        Transaction tx = sendCoinsOffline(to, nanocoins, fee);
+        Transaction tx = sendCoinsOffline(to, nanocoins, fee, decryptBeforeSigning, password);
         if (tx == null)
             return null;  // Not enough money.
         try {
@@ -1163,12 +1163,12 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @return The {@link Transaction} that was created or null if there was insufficient balance to send the coins.
      * @throws IOException if there was a problem broadcasting the transaction
      */
-    public synchronized Transaction sendCoins(Peer peer, Address to, BigInteger nanocoins, BigInteger fee) throws IOException {
+    public synchronized Transaction sendCoins(Peer peer, Address to, BigInteger nanocoins, BigInteger fee, boolean decryptBeforeSigning, char[] password) throws IOException {
         // TODO: This API is fairly questionable and the function isn't tested. If anything goes wrong during sending
         // on the peer you don't get access to the created Transaction object and must fish it out of the wallet then
         // do your own retry later.
 
-        Transaction tx = createSend(to, nanocoins, fee);
+        Transaction tx = createSend(to, nanocoins, fee, decryptBeforeSigning, password);
         if (tx == null)   // Not enough money! :-(
             return null;
         try {
@@ -1195,14 +1195,14 @@ public class Wallet implements Serializable, IsMultiBitClass {
      *                      our coins. This should be an address we own (is in the keychain).
      * @return a new {@link Transaction} or null if we cannot afford this send.
      */
-    synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, Address changeAddress) {
+    synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, Address changeAddress, boolean decryptBeforeSigning, char[] password) {
         log.info("Creating send tx to " + address.toString() + " for " +
                 bitcoinValueToFriendlyString(nanocoins));
 
         Transaction sendTx = new Transaction(params);
         sendTx.addOutput(nanocoins, address);
 
-        if (completeTx(sendTx, changeAddress, fee)) {
+        if (completeTx(sendTx, changeAddress, fee, decryptBeforeSigning, password)) {
             return sendTx;
         } else {
             return null;
@@ -1217,7 +1217,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param fee              The fee to include     
      * @return False if we cannot afford this send, true otherwise
      */
-    public synchronized boolean completeTx(Transaction sendTx, Address changeAddress, BigInteger fee) {
+    public synchronized boolean completeTx(Transaction sendTx, Address changeAddress, BigInteger fee, boolean decryptBeforeSigning, char[] password) {
         // Calculate the transaction total
         BigInteger nanocoins = BigInteger.ZERO;
         for(TransactionOutput output : sendTx.getOutputs()) {
@@ -1265,7 +1265,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
         // Now sign the inputs, thus proving that we are entitled to redeem the connected outputs.
         try {
-            sendTx.signInputs(Transaction.SigHash.ALL, this);
+            sendTx.signInputs(Transaction.SigHash.ALL, this, decryptBeforeSigning, password);
         } catch (ScriptException e) {
             // If this happens it means an output script in a wallet tx could not be understood. That should never
             // happen, if it does it means the wallet has got into an inconsistent state.
@@ -1287,8 +1287,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param fee              The fee to include
      * @return False if we cannot afford this send, true otherwise
      */
-    public synchronized boolean completeTx(Transaction sendTx, BigInteger fee) {
-        return completeTx(sendTx, getChangeAddress(), fee);
+    public synchronized boolean completeTx(Transaction sendTx, BigInteger fee, boolean decryptBeforeSigning, char[] password) {
+        return completeTx(sendTx, getChangeAddress(), fee, decryptBeforeSigning, password);
     }
 
     synchronized Address getChangeAddress() {

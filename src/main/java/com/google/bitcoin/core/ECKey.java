@@ -260,13 +260,32 @@ public class ECKey implements Serializable, IsMultiBitClass {
     /**
      * Calcuates an ECDSA signature in DER format for the given input hash. Note that the input is expected to be
      * 32 bytes long.
+     * @param input Bytes to sign
+     * @param decryptBeforeSigning If true, decrypt the key before signing with the password provided.
+     * @param password Password to use for decryptionn
+     * 
      * @throws IllegalStateException if this ECKey has only a public key.
      */
-    public byte[] sign(byte[] input) {
-        if (priv == null)
-            throw new IllegalStateException("This ECKey does not have the private key necessary for signing.");
+    public byte[] sign(byte[] input, boolean decryptBeforeSigning, char[] password) {
+        // The private key bytes to use for signing.
+        BigInteger privateKeyForSigning;
+        if (decryptBeforeSigning) {
+            if (!isEncrypted()) {
+                throw new IllegalStateException("This ECKey is not encrypted and hence cannot be decrypted.");
+            }
+            if (encrypterDecrypter == null) {
+                throw new IllegalStateException("There is no EncrypterDecrypter to decrypt the private key for signing.");
+            }
+            privateKeyForSigning =  new BigInteger(1, encrypterDecrypter.decrypt(encryptedPrivateKey, password));
+        } else {
+            if (priv == null) {
+                throw new IllegalStateException("This ECKey does not have the private key necessary for signing.");
+            } else {
+                privateKeyForSigning = priv;
+            }
+        }
         ECDSASigner signer = new ECDSASigner();
-        ECPrivateKeyParameters privKey = new ECPrivateKeyParameters(priv, ecParams);
+        ECPrivateKeyParameters privKey = new ECPrivateKeyParameters(privateKeyForSigning, ecParams);
         signer.init(true, privKey);
         BigInteger[] sigs = signer.generateSignature(input);
         // What we get back from the signer are the two components of a signature, r and s. To get a flat byte stream

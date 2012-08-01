@@ -150,14 +150,12 @@ public class SendBitcoinNowAction extends AbstractAction {
         String message = null;
         
         boolean sendWasSuccessful = Boolean.FALSE;
-        boolean reencryptRequired = false;
+        boolean decryptBeforeSigning = false;
         Wallet wallet = perWalletModelData.getWallet();
         try {
-            // Decrypt the wallet prior to sending.
+            // Work out if keys need decrypting before signing occurs.
             if (wallet.isCurrentlyEncrypted()) {
-                wallet.decrypt(walletPassword);
-                // If successful will need to reencrypt in the finally.
-               reencryptRequired = true;
+                decryptBeforeSigning = true;
             }
             
             log.debug("Sending from wallet " + perWalletModelData.getWalletFilename() + ", amount = " + sendAmount + ", fee = "
@@ -173,7 +171,7 @@ public class SendBitcoinNowAction extends AbstractAction {
                     log.debug("Using test parameters - saying send failed");  
                 }
             } else {
-                Transaction transaction = controller.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee);
+                Transaction transaction = controller.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee, decryptBeforeSigning, walletPassword);
                 if (transaction == null) {
                     // a null transaction returned indicates there was not
                     // enough money (in spite of our validation)
@@ -197,24 +195,16 @@ public class SendBitcoinNowAction extends AbstractAction {
             log.error(e.getMessage(), e);
             message = e.getMessage();
         } catch (Exception e) {
-            // really trying to catch anything that goes wrong with the
-            // send bitcoin
+            // really trying to catch anything that goes wrong with the send bitcoin
             log.error(e.getMessage(), e);
             message = e.getMessage();
         } finally {
+            // save the wallet
             try {
-                if (reencryptRequired) {
-                    wallet.encrypt(walletPassword);
-                }
-                // save the wallet
                 controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
-            } catch (EncrypterDecrypterException ede) {
-                log.error(ede.getMessage(), ede);
-                if (message == null) {
-                    message = ede.getMessage();
-                } else {
-                    message = message + ". " + ede.getMessage();
-                }
+            } catch (WalletSaveException e) {
+                log.error(e.getMessage(), e);
+                message = e.getMessage();
             }
         }
 
