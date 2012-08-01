@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletType;
 import com.google.bitcoin.store.BlockStoreException;
@@ -212,47 +213,90 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction {
             protected Boolean doInBackground() throws Exception {
                 Boolean successMeasure = Boolean.FALSE;
 
-                boolean reencryptionRequired = false;
+                boolean keyEncryptionRequired = false;
                 try {
-                    // Decrypt the wallet before adding keys.
-                    if (finalPerWalletModelData.getWallet().getWalletType() == WalletType.ENCRYPTED) {
-                        if (finalPerWalletModelData.getWallet().isCurrentlyEncrypted()) {
-                            finalPerWalletModelData.getWallet().decrypt(walletPassword);
-                            reencryptionRequired = true;
-                        }
+                    // Work out if the keys need to be encrypted when added to the wallet.
+                    if (finalPerWalletModelData.getWallet().getWalletType() == WalletType.ENCRYPTED
+                            && finalPerWalletModelData.getWallet().isCurrentlyEncrypted()) {
+                        keyEncryptionRequired = true;
                     }
 
-                    // Keep track of earliest transaction date go backwards from now.
                     Wallet walletToAddKeysTo = finalPerWalletModelData.getWallet();
+
+                    Collection<byte[]> unencryptedWalletPrivateKeys = new ArrayList<byte[]>();
                     Date earliestTransactionDate = new Date(DateUtils.nowUtc().getMillis());
-                    if (privateKeyAndDateArray != null) {
-                        for (PrivateKeyAndDate privateKeyAndDate : privateKeyAndDateArray) {
-                            ECKey keyToAdd = privateKeyAndDate.getKey();
-                            if (keyToAdd != null) {
-                                if (privateKeyAndDate.getDate() != null) {
-                                    keyToAdd.setCreationTimeSeconds(privateKeyAndDate.getDate().getTime()
-                                            / NUMBER_OF_MILLISECONDS_IN_A_SECOND);
-                                }
-
-                                if (walletToAddKeysTo != null
-                                        && !keyChainContainsPrivateKey(walletToAddKeysTo.getKeychain(), keyToAdd)) {
-                                    walletToAddKeysTo.addKey(keyToAdd);
-
-                                    // Update earliest transaction date.
-                                    if (privateKeyAndDate.getDate() == null) {
-                                        // Need to go back to the genesis block.
-                                        earliestTransactionDate = null;
+                    try {
+                        // Work out what the unencrypted private keys are.
+                         if (walletToAddKeysTo != null) {
+                            for (ECKey ecKey : walletToAddKeysTo.keychain) {
+                                if (keyEncryptionRequired) {
+                                    // Wallet keys are encrypted.
+                                    if (ecKey.getEncrypterDecrypter() == null) {
+                                        log.error("Missing EncrypterDecrypter. Could not decrypt private key " + ecKey.toString() + ", enc.priv = " + Utils.bytesToHexString(ecKey.getEncryptedPrivateKey()));
                                     } else {
-                                        if (earliestTransactionDate != null) {
-                                            earliestTransactionDate = earliestTransactionDate.before(privateKeyAndDate.getDate()) ? earliestTransactionDate
-                                                    : privateKeyAndDate.getDate();
+                                        if (ecKey.getEncryptedPrivateKey() == null || ecKey.getEncryptedPrivateKey().length == 0) {
+                                            log.error("Missing encrypted private key bytes for key " + ecKey.toString() + ", enc.priv = " + Utils.bytesToHexString(ecKey.getEncryptedPrivateKey()));                                               
+                                        } else {
+                                            byte[] decryptedPrivateKey = ecKey.getEncrypterDecrypter().decrypt(
+                                                    ecKey.getEncryptedPrivateKey(), walletPassword);                                               
+                                            unencryptedWalletPrivateKeys.add(decryptedPrivateKey);
+                                        }
+                                    }
+                                } else {
+                                    // Wallet is not encrypted.
+                                    unencryptedWalletPrivateKeys.add(ecKey.getPrivKeyBytes());
+                                }
+                            }
+                        }                                           
+
+                        // Keep track of earliest transaction date go backwards
+                        // from now.
+                        if (privateKeyAndDateArray != null) {
+                            for (PrivateKeyAndDate privateKeyAndDate : privateKeyAndDateArray) {
+                                ECKey keyToAdd = privateKeyAndDate.getKey();
+                                if (keyToAdd != null) {
+                                    if (privateKeyAndDate.getDate() != null) {
+                                        keyToAdd.setCreationTimeSeconds(privateKeyAndDate.getDate().getTime()
+                                                / NUMBER_OF_MILLISECONDS_IN_A_SECOND);
+                                    }                                            
+
+                                    if (walletToAddKeysTo != null
+                                            && !keyChainContainsPrivateKey(unencryptedWalletPrivateKeys, keyToAdd, walletPassword)) {                                             
+                                       if (keyEncryptionRequired) {                                             
+                                            ECKey encryptedKey = new ECKey(walletToAddKeysTo.getEncrypterDecrypter().encrypt(
+                                                    keyToAdd.getPrivKeyBytes(), walletPassword), keyToAdd.getPubKey(),
+                                                    walletToAddKeysTo.getEncrypterDecrypter());
+                                            walletToAddKeysTo.addKey(encryptedKey);
+                                        } else {
+                                            walletToAddKeysTo.addKey(keyToAdd);
+                                        }                                             
+
+                                        // Update earliest transaction date.
+                                        if (privateKeyAndDate.getDate() == null) {
+                                            // Need to go back to the genesis
+                                            // block.
+                                            earliestTransactionDate = null;
+                                        } else {
+                                            if (earliestTransactionDate != null) {
+                                                earliestTransactionDate = earliestTransactionDate.before(privateKeyAndDate
+                                                        .getDate()) ? earliestTransactionDate : privateKeyAndDate.getDate();
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
+                    } finally {
+                        // Wipe the collection of private key bytes to remove it from memory.
+                        for (byte[] privateKeyBytes : unencryptedWalletPrivateKeys) {
+                            if (privateKeyBytes != null) {
+                                for (int i = 0; i < privateKeyBytes.length; i++) {
+                                    privateKeyBytes[i] = 0;
+                                }
+                            }
+                        }
                     }
-
+                    
                     log.debug(walletToAddKeysTo.toString());
 
                     controller.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
@@ -274,30 +318,28 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction {
                         statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
                     }
                 } catch (WalletSaveException wse) {
-                    log.error(wse.getClass().getName() + " " + wse.getMessage());
-                    uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
-                            new Object[] { wse.getMessage() });
+                    logError(wse);
                 } catch (EncrypterDecrypterException ede) {
-                    log.error(ede.getClass().getName() + " " + ede.getMessage());
-                    uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
-                            new Object[] { ede.getMessage() });
+                    logError(ede);
                 } catch (PrivateKeysHandlerException pkhe) {
-                    log.error(pkhe.getClass().getName() + " " + pkhe.getMessage());
-                    uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
-                            new Object[] { pkhe.getClass().getName() + " " + pkhe.getMessage() });
-
+                    logError(pkhe);
                 } catch (BlockStoreException bse) {
                     log.error(bse.getClass().getName() + " " + bse.getMessage());
+                    bse.printStackTrace();
                     statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.replayUnsuccessful",
                             new Object[] { bse.getMessage() });
                     uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
                             new Object[] { bse.getClass().getName() + " " + bse.getMessage() });
-                } finally {
-                    if (reencryptionRequired) {
-                        finalPerWalletModelData.getWallet().encrypt(walletPassword);
-                    }
                 }
                 return successMeasure;
+            }
+            
+            private void logError(Exception e) {
+                log.error(e.getClass().getName() + " " + e.getMessage());
+                e.printStackTrace();
+                uiMessage = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
+                        new Object[] { e.getMessage() });
+
             }
 
             protected void done() {
@@ -327,14 +369,18 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction {
     }
 
     /**
-     * This method is here because there is no equals on ECKey.
+     * Determine whether the key is already in the wallet.
      */
-    private boolean keyChainContainsPrivateKey(ArrayList<ECKey> keyChain, ECKey keyToAdd) {
-        if (keyChain == null || keyToAdd == null) {
+    private boolean keyChainContainsPrivateKey(Collection<byte[]> privateKeyBytes, ECKey keyToAdd, char[] walletPassword) {
+        if (privateKeyBytes == null || keyToAdd == null) {
             return false;
         } else {
-            for (ECKey loopKey : keyChain) {
-                if (Arrays.equals(keyToAdd.getPrivKeyBytes(), loopKey.getPrivKeyBytes())) {
+            byte[] privKeyBytes = keyToAdd.getPrivKeyBytes();
+            if (keyToAdd.isEncrypted()) {
+                privKeyBytes = keyToAdd.getEncrypterDecrypter().decrypt(privKeyBytes, walletPassword);
+            }
+            for (byte[] loopKeyBytes : privateKeyBytes) { 
+                if (Arrays.equals(privKeyBytes, loopKeyBytes)) {
                     return true;
                 }
             }

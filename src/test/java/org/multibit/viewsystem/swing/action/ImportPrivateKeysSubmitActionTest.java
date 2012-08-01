@@ -210,7 +210,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
     }
     
     @Test
-    public void testImportEncryptedPrivateKeysWithEnencryptedWallet() throws Exception { 
+    public void testImportEncryptedPrivateKeysWithEncryptedWallet() throws Exception { 
         // Create MultiBit controller.
         MultiBitController controller = ActionTestUtils.createController();
         

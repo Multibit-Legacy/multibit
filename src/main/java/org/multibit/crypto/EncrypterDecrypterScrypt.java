@@ -224,6 +224,7 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter, Serializabl
             
             return strippedDecryptedBytes;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new EncrypterDecrypterException("Could not decrypt bytes", e);
         }
     }
