@@ -87,45 +87,27 @@ public class PrivateKeysHandler {
         encrypterDecrypter = new EncrypterDecrypterOpenSSL();
     }
 
-    public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryption, char[] exportPassword, char[] walletPassword)
+    public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryptionOfExportFile, char[] exportPassword, char[] walletPassword)
             throws IOException {
 
         // Construct a StringBuffer with the private key export text.
         StringBuffer outputStringBuffer = new StringBuffer();
 
-        if (!performEncryption) {
+        if (!performEncryptionOfExportFile) {
             outputHeaderComment(outputStringBuffer);
         }
 
-        // Decrypt the wallet if necessary.
-        boolean reencryptionRequired = false;
-        try {
-            if (wallet != null) {
-                if (walletPassword != null && walletPassword.length > 0) {
-                    // decrypt wallet keys
-                    if (wallet.isCurrentlyEncrypted()) {
-                        wallet.decrypt(walletPassword);
-                        reencryptionRequired = true;
-                    }
-                }
-            }
-
-            // Get the wallet's private keys and output them.
-            Collection<PrivateKeyAndDate> keyAndDates = createKeyAndDates(wallet, blockChain);
-            outputKeys(outputStringBuffer, keyAndDates);
-        } finally {
-            if (reencryptionRequired) {
-                wallet.encrypt(walletPassword);
-            }
-        }
+        // Get the wallet's private keys and output them.
+        Collection<PrivateKeyAndDate> keyAndDates = createKeyAndDates(wallet, blockChain, walletPassword);
+        outputKeys(outputStringBuffer, keyAndDates);
         
-        if (!performEncryption) {
+        if (!performEncryptionOfExportFile) {
             outputFooterComment(outputStringBuffer);
         }
 
         String keyOutputText = outputStringBuffer.toString();
 
-        if (performEncryption) {
+        if (performEncryptionOfExportFile) {
             EncrypterDecrypterOpenSSL encrypter = new EncrypterDecrypterOpenSSL();
             keyOutputText = encrypter.encrypt(keyOutputText, exportPassword);
         }
@@ -158,33 +140,22 @@ public class PrivateKeysHandler {
      *            The export file to verify
      * @param wallet
      *            The wallet to verify the keys against
-     * @param performEncryption
+     * @param performEncryptionOfExportFile
      *            Is Encryption required
      * @param exportPassword
      *            the password to use is encryption is required
      * @return Verification The result of verification
      */
-    public Verification verifyExportFile(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryption,
+    public Verification verifyExportFile(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryptionOfExportFile,
             char[] exportPassword, char[] walletPassword) {
         boolean thereWereFailures = false;
 
         String messageKey = "privateKeysHandler.failedForUnknownReason";
         Object[] messageData = new Object[0];
 
-        boolean reencryptionRequired = false;
         try {
-            // Decrypt the wallet if necessary.
-            if (wallet != null) {
-                if (walletPassword != null && walletPassword.length > 0) {
-                    // decrypt wallet keys
-                    if (wallet.isCurrentlyEncrypted()) {
-                        wallet.decrypt(walletPassword);
-                        reencryptionRequired = true;
-                    }
-                }
-            }
             // Create the expected export file contents.
-            Collection<PrivateKeyAndDate> expectedKeysAndDates = createKeyAndDates(wallet, blockChain);
+             Collection<PrivateKeyAndDate> expectedKeysAndDates = createKeyAndDates(wallet, blockChain, walletPassword);
 
             // Read in the specified export file.
             Collection<PrivateKeyAndDate> importedKeysAndDates = readInPrivateKeys(exportFile, exportPassword);
@@ -207,8 +178,7 @@ public class PrivateKeysHandler {
                         break;
                     }
 
-                    // Imported keydate must be at or before expected (further
-                    // back in time is safe.
+                    // Imported keydate must be at or before expected (further back in time is safe).
                     if ((imported.getDate() != null && imported.getDate().after(expected.getDate()))
                             || (imported.getDate() == null && expected.getDate() != null)) {
                         messageKey = "privateKeysHandler.keysDidNotMatch";
@@ -222,10 +192,6 @@ public class PrivateKeysHandler {
             messageKey = "privateKeysHandler.thereWasAnException";
             messageData = new Object[] { pkhe.getMessage() };
             thereWereFailures = true;
-        } finally {
-            if (reencryptionRequired) {
-                wallet.encrypt(walletPassword);
-            }
         }
 
         if (!thereWereFailures) {
@@ -289,7 +255,19 @@ public class PrivateKeysHandler {
         out.append("#").append("\n");
     }
 
-    private Collection<PrivateKeyAndDate> createKeyAndDates(Wallet wallet, BlockChain blockChain) {
+    private Collection<PrivateKeyAndDate> createKeyAndDates(Wallet wallet, BlockChain blockChain, char[] walletPassword) {
+        // Determine if keys need to be decrypted.
+        boolean decryptionRequired = false;
+
+        if (wallet != null) {
+            if (walletPassword != null && walletPassword.length > 0) {
+                // Wallet keys need to be decrypted before output.
+                if (wallet.isCurrentlyEncrypted()) {
+                    decryptionRequired = true;
+                }
+            }
+        }
+
         Collection<PrivateKeyAndDate> keyAndDates = new ArrayList<PrivateKeyAndDate>();
 
         ArrayList<ECKey> keychain = wallet.keychain;
@@ -365,7 +343,15 @@ public class PrivateKeysHandler {
                         earliestUsageDate = overallLastUsageDate;
                     }
                 }
-                keyAndDates.add(new PrivateKeyAndDate(ecKey, earliestUsageDate));
+                if (decryptionRequired) {
+                    // Create a new decrypted key holding the private key.
+                    ECKey decryptedKey = new ECKey(ecKey.getEncrypterDecrypter().decrypt(ecKey.getEncryptedPrivateKey(),
+                            walletPassword), ecKey.getPubKey());
+                    keyAndDates.add(new PrivateKeyAndDate(decryptedKey, earliestUsageDate));
+                } else {
+                    keyAndDates.add(new PrivateKeyAndDate(ecKey, earliestUsageDate));
+                }
+
             }
         }
 

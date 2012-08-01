@@ -103,7 +103,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction {
 
         // See if a wallet password is required and present.
         if (controller.getModel().getActiveWallet() != null
-                && controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
+                && controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
             if (walletPasswordField.getPassword() == null || walletPasswordField.getPassword().length == 0) {
                 importPrivateKeysPanel.setMessageText(controller.getLocaliser().getString(
                         "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));

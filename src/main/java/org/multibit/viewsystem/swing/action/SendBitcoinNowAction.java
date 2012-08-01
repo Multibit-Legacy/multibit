@@ -121,7 +121,7 @@ public class SendBitcoinNowAction extends AbstractAction {
             char[] walletPassword = walletPasswordField.getPassword();
  
             if (controller.getModel().getActiveWallet() != null) {
-                if (controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
+                if (controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
                     // Encrypted wallet.
                     if (walletPassword == null || walletPassword.length == 0) {
                         // User needs to enter password.

@@ -19,13 +19,11 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 
-import org.spongycastle.util.Arrays;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.file.Verification;
@@ -34,6 +32,7 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.ExportPrivateKeysPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.util.Arrays;
 
 import com.google.bitcoin.core.MultiBitBlockChain;
 import com.google.bitcoin.core.WalletType;
@@ -81,7 +80,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
         exportPrivateKeysPanel.clearMessages();
 
         // See if a wallet password is required and present.
-        if (controller.getModel().getActiveWallet() != null && controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
+        if (controller.getModel().getActiveWallet() != null && controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
             if (walletPassword.getPassword() == null || walletPassword.getPassword().length == 0) {
                 exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
                 "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
@@ -111,7 +110,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
 
         privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
 
-        boolean performEncryption = false;
+        boolean performEncryptionOfExportFile = false;
 
         char[] exportPasswordToUse = null;
 
@@ -130,7 +129,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
                     return;
                 } else {
                     // Perform encryption.
-                    performEncryption = true;
+                    performEncryptionOfExportFile = true;
                     exportPasswordToUse = exportFilePassword.getPassword();
                 }
             }
@@ -156,7 +155,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
                 blockChain = controller.getMultiBitService().getChain();
             }
             privateKeysHandler.exportPrivateKeys(exportPrivateKeysFile, controller.getModel().getActivePerWalletModelData()
-                    .getWallet(), blockChain, performEncryption, exportPasswordToUse, walletPassword.getPassword());
+                    .getWallet(), blockChain, performEncryptionOfExportFile, exportPasswordToUse, walletPassword.getPassword());
 
             // Success.
             exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
@@ -164,7 +163,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
             
             // Perform a verification on the exported file to see if it is correct.            
             Verification verification = privateKeysHandler.verifyExportFile(exportPrivateKeysFile, controller.getModel()
-                    .getActivePerWalletModelData().getWallet(), blockChain, performEncryption,
+                    .getActivePerWalletModelData().getWallet(), blockChain, performEncryptionOfExportFile,
                     exportPasswordToUse,  walletPassword.getPassword());
             String verifyMessage = controller.getLocaliser().getString(verification.getMessageKey(), verification.getMessageData());
             exportPrivateKeysPanel.setMessage2(verifyMessage);
