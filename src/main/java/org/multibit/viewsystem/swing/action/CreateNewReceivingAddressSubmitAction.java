@@ -79,7 +79,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         boolean encryptNewKeys = false;
         if (controller.getModel().getActiveWallet() != null) {
-            if (controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
+            if (controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
                 if (walletPassword.getPassword() == null || walletPassword.getPassword().length == 0) {
                     // User needs to enter password.
                     createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
