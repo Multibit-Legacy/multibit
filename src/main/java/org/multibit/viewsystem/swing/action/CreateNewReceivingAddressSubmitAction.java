@@ -41,113 +41,108 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.WalletType;
 
 /**
- * This {@link Action} represents an action to actually create receiving addresses.
+ * This {@link Action} represents an action to actually create receiving
+ * addresses.
  */
-public class CreateNewReceivingAddressSubmitAction extends AbstractAction {
+public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction {
     private static Logger log = LoggerFactory.getLogger(CreateNewReceivingAddressAction.class);
-    
-    private static final long serialVersionUID = 200152235465875405L;
 
-    private MultiBitController controller;
+    private static final long serialVersionUID = 200152235465875405L;
 
     private CreateNewReceivingAddressDialog createNewReceivingAddressDialog;
     private CreateNewReceivingAddressPanel createNewReceivingAddressPanel;
-    
+
     private JPasswordField walletPassword;
 
     /**
      * Creates a new {@link CreateNewReceivingAddressSubmitAction}.
      */
-    public CreateNewReceivingAddressSubmitAction(MultiBitController controller, CreateNewReceivingAddressDialog createNewReceivingAddressDialog, CreateNewReceivingAddressPanel createNewReceivingAddressPanel, JPasswordField walletPassword) {
-        super(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.text"), ImageLoader.createImageIcon(ImageLoader.ADD_ICON_FILE));
-        this.controller = controller;
+    public CreateNewReceivingAddressSubmitAction(MultiBitController controller,
+            CreateNewReceivingAddressDialog createNewReceivingAddressDialog,
+            CreateNewReceivingAddressPanel createNewReceivingAddressPanel, JPasswordField walletPassword) {
+        super(controller, "createNewReceivingAddressSubmitAction.text", "createNewReceivingAddressSubmitAction.tooltip",
+                "createNewReceivingAddressSubmitAction.mnemonicKey", ImageLoader.createImageIcon(ImageLoader.ADD_ICON_FILE));
         this.createNewReceivingAddressDialog = createNewReceivingAddressDialog;
         this.createNewReceivingAddressPanel = createNewReceivingAddressPanel;
         this.walletPassword = walletPassword;
 
-        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.tooltip"));
-        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("createNewReceivingAddressSubmitAction.mnemonicKey"));
     }
 
     /**
-     * Create new receiving address.
+     * Create new receiving addresses.
      */
     public void actionPerformed(ActionEvent e) {
-        // Check to see if the wallet files have changed.
+        if (abort()) {
+            return;
+        }
+
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
-
         boolean encryptNewKeys = false;
-        
-        if (haveFilesChanged) {
-            // set on the perWalletModelData that files have changed and fire data changed
-            perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
-        } else {
-            if (controller.getModel().getActiveWallet() != null) {
-                if (controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
-                    if (walletPassword.getPassword() == null || walletPassword.getPassword().length == 0) {
-                        // User needs to enter password.
-                        createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString("showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
-                        return;
-                    }
-                    encryptNewKeys = true;
-                                    
-                    if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
-                        // The password supplied is incorrect.
-                        createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
-                        return;
-                    }
-                } 
-            }
-                       
-            WalletInfo walletInfo = perWalletModelData.getWalletInfo();
-            if (walletInfo == null) {
-                walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletVersion.PROTOBUF_ENCRYPTED);
-                perWalletModelData.setWalletInfo(walletInfo);
-            }
-            String addressString = "";
-            try {
-                for (int i = 0; i < createNewReceivingAddressPanel.getNumberOfAddressesToCreate(); i++) {
-                    ECKey newKey;
-                    if (encryptNewKeys) {
-                        // Use the wallet EncrypterDescrypter.
-                        newKey = new ECKey(perWalletModelData.getWallet().getEncrypterDecrypter());
-                        newKey.encrypt(walletPassword.getPassword());
-                    } else {
-                        newKey = new ECKey();
-                    }
-                    perWalletModelData.getWallet().keychain.add(newKey);
-                    addressString = newKey.toAddress(controller.getModel().getNetworkParameters()).toString();
-                    walletInfo.addReceivingAddress(new AddressBookData("", addressString), false);
+        if (controller.getModel().getActiveWallet() != null) {
+            if (controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
+                if (walletPassword.getPassword() == null || walletPassword.getPassword().length == 0) {
+                    // User needs to enter password.
+                    createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
+                            "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
+                    return;
                 }
-            } catch (EncrypterDecrypterException ede) {
-                log.error(ede.getMessage(), ede);
-                createNewReceivingAddressPanel.setMessageText(ede.getMessage());
-            }
-            
-            if (createNewReceivingAddressPanel.getReceiveBitcoinPanel() != null) {
-                createNewReceivingAddressPanel.getReceiveBitcoinPanel().getAddressesTableModel().fireTableDataChanged();
-                createNewReceivingAddressPanel.getReceiveBitcoinPanel().selectRows();
-            }
-            controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, addressString);
-            controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
-            
-            try {
-                controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
-            } catch (WalletSaveException wse) {
-                log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
-                MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
-            }
-            controller.displayView(controller.getCurrentView());
-            if (createNewReceivingAddressDialog != null) {
-                createNewReceivingAddressDialog.setVisible(false);
-            }
+                encryptNewKeys = true;
 
-            if (createNewReceivingAddressPanel.getReceiveBitcoinPanel() != null && createNewReceivingAddressPanel.getReceiveBitcoinPanel().getLabelTextArea() != null) {
-                createNewReceivingAddressPanel.getReceiveBitcoinPanel().getLabelTextArea().requestFocusInWindow();
+                if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
+                    // The password supplied is incorrect.
+                    createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
+                            "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                    return;
+                }
             }
+        }
+
+        WalletInfo walletInfo = perWalletModelData.getWalletInfo();
+        if (walletInfo == null) {
+            walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletVersion.PROTOBUF_ENCRYPTED);
+            perWalletModelData.setWalletInfo(walletInfo);
+        }
+        String addressString = "";
+        try {
+            for (int i = 0; i < createNewReceivingAddressPanel.getNumberOfAddressesToCreate(); i++) {
+                ECKey newKey;
+                if (encryptNewKeys) {
+                    // Use the wallet EncrypterDescrypter.
+                    newKey = new ECKey(perWalletModelData.getWallet().getEncrypterDecrypter());
+                    newKey.encrypt(walletPassword.getPassword());
+                } else {
+                    newKey = new ECKey();
+                }
+                perWalletModelData.getWallet().keychain.add(newKey);
+                addressString = newKey.toAddress(controller.getModel().getNetworkParameters()).toString();
+                walletInfo.addReceivingAddress(new AddressBookData("", addressString), false);
+            }
+        } catch (EncrypterDecrypterException ede) {
+            log.error(ede.getMessage(), ede);
+            createNewReceivingAddressPanel.setMessageText(ede.getMessage());
+        }
+
+        if (createNewReceivingAddressPanel.getReceiveBitcoinPanel() != null) {
+            createNewReceivingAddressPanel.getReceiveBitcoinPanel().getAddressesTableModel().fireTableDataChanged();
+            createNewReceivingAddressPanel.getReceiveBitcoinPanel().selectRows();
+        }
+        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, addressString);
+        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
+
+        try {
+            controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
+        } catch (WalletSaveException wse) {
+            log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
+            MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
+        }
+        controller.displayView(controller.getCurrentView());
+        if (createNewReceivingAddressDialog != null) {
+            createNewReceivingAddressDialog.setVisible(false);
+        }
+
+        if (createNewReceivingAddressPanel.getReceiveBitcoinPanel() != null
+                && createNewReceivingAddressPanel.getReceiveBitcoinPanel().getLabelTextArea() != null) {
+            createNewReceivingAddressPanel.getReceiveBitcoinPanel().getLabelTextArea().requestFocusInWindow();
         }
     }
 }
