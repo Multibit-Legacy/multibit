@@ -92,6 +92,7 @@
       <description>MultiBit install files.</description>
       <file src="readme.txt" targetdir="$INSTALL_PATH"/>
       <file src="multibit.ico" targetdir="$INSTALL_PATH"/>
+      <file src="multibit.properties" targetdir="$INSTALL_PATH"/>
       <file src="multibit.blockchain" targetdir="$INSTALL_PATH"/>
       <file src="release_notes.txt" targetdir="$INSTALL_PATH"/>
       <file src="COPYING" targetdir="$INSTALL_PATH"/>

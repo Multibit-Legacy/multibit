@@ -170,6 +170,11 @@ public class MultiBit {
             controller.setMultiBitService(multiBitService);
 
             // Display the stored view.
+            if (swingViewSystem instanceof MultiBitFrame) {
+                ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
+                ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
+            }
+
             controller.displayView(controller.getCurrentView());
 
             log.debug("Locating wallets");

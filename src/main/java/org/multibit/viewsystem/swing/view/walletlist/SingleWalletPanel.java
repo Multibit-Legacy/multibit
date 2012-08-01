@@ -339,7 +339,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     public void setIconForWalletType(WalletType walletType, JButton button) {
         button.setHorizontalAlignment(SwingConstants.LEADING);
         button.setBorder(BorderFactory.createEmptyBorder(WALLET_TYPE_TOP_BORDER, WALLET_TYPE_LEFT_BORDER, 0, 0));
-        
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
         if (walletType == WalletType.ENCRYPTED) {
             Action helpAction = new HelpContextAction(controller, ImageLoader.LOCK_ICON_FILE,
                     "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
