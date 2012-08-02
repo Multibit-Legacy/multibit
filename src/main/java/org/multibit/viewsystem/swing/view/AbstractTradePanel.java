@@ -74,7 +74,7 @@ import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
-import org.multibit.model.WalletVersion;
+import org.multibit.model.WalletMajorVersion;
 import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.qrcode.SwatchGenerator;
 import org.multibit.utils.ImageLoader;
@@ -1228,7 +1228,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
             WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
             if (walletInfo == null) {
-                walletInfo = new WalletInfo(controller.getModel().getActiveWalletFilename(), WalletVersion.PROTOBUF_ENCRYPTED);
+                walletInfo = new WalletInfo(controller.getModel().getActiveWalletFilename(), WalletMajorVersion.PROTOBUF_ENCRYPTED);
                 controller.getModel().setActiveWalletInfo(walletInfo);
             }
             address = WhitespaceTrimmer.trim(address);

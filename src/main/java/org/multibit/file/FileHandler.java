@@ -47,15 +47,13 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
-import org.multibit.model.WalletVersion;
+import org.multibit.model.WalletMajorVersion;
 import org.multibit.network.MultiBitService;
 import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 
 /**
@@ -78,9 +76,10 @@ public class FileHandler {
 
     private Date dateForBackupName = null;
     
-    private static final int NUMBER_OF_MAGIC_BYTES = 8;
-    private static final byte[] MAGIC_BYTES = new byte[]{(byte)0x0f, (byte)0x0e, (byte)0x0d, (byte)0x0c, (byte)0x0e, (byte)0x0d, (byte)0x0e,(byte)0x0d};
-    private static final int NUMBER_OF_VERSION_NUMBER_BYTES = 2;
+    private static final int NUMBER_OF_MAGIC_BYTES = 4;
+    private static final byte[] MAGIC_BYTES = new byte[]{(byte)0x16, (byte)0x18, (byte)0x03, (byte)0x40};
+    private static final int NUMBER_OF_MAJOR_VERSION_NUMBER_BYTES = 2;
+    private static final int NUMBER_OF_MINOR_VERSION_NUMBER_BYTES = 2;
 
     public FileHandler(MultiBitController controller) {
         this.controller = controller;
@@ -94,12 +93,14 @@ public class FileHandler {
         String walletFilename = walletFile.getAbsolutePath();
 
         try {
+            int walletMinorVersion = 0;
+            
             // See if the wallet is serialized or protobuf.
             WalletInfo walletInfo;
             if (isWalletSerialised(walletFile)) {
-                walletInfo = new WalletInfo(walletFilename, WalletVersion.SERIALIZED);
+                walletInfo = new WalletInfo(walletFilename, WalletMajorVersion.SERIALIZED);
             } else {
-                walletInfo = new WalletInfo(walletFilename, WalletVersion.PROTOBUF_ENCRYPTED);
+                walletInfo = new WalletInfo(walletFilename, WalletMajorVersion.PROTOBUF_ENCRYPTED);
             }
 
             FileInputStream fileInputStream = new FileInputStream(walletFile);
@@ -107,7 +108,7 @@ public class FileHandler {
             Wallet wallet = null;
             try {
                 stream = new BufferedInputStream(fileInputStream);
-                stream.mark( NUMBER_OF_MAGIC_BYTES + NUMBER_OF_VERSION_NUMBER_BYTES);
+                stream.mark( NUMBER_OF_MAGIC_BYTES + NUMBER_OF_MAJOR_VERSION_NUMBER_BYTES + NUMBER_OF_MINOR_VERSION_NUMBER_BYTES);
                 
                 byte[] header = new byte[NUMBER_OF_MAGIC_BYTES];
                 int headerRead = stream.read(header, 0, NUMBER_OF_MAGIC_BYTES);
@@ -115,13 +116,14 @@ public class FileHandler {
                 if (headerRead == NUMBER_OF_MAGIC_BYTES && Arrays.areEqual(MAGIC_BYTES, header)) {
                     // The wallet has a protobuf header so read the wallet version.
                     // Top byte from 0 to 127 (positive) so radix 128 - negatives not used.
-                    int walletVersion = stream.read() * 128 + stream.read();
+                    int walletMajorVersion = stream.read() * 128 + stream.read();
                     
-                    if (walletVersion > (int)WalletVersion.PROTOBUF_ENCRYPTED.getWalletVersionByte()) {
+                    if (walletMajorVersion > (int)WalletMajorVersion.PROTOBUF_ENCRYPTED.getWalletMajorVersionByte()) {
                         // Something from the future.
-                        throw new WalletVersionException("The wallet version in the wallet bytes was '" + walletVersion + "'. This version of MultiBit does not understand that.");
+                        throw new WalletVersionException("The wallet major version in the wallet bytes was '" + walletMajorVersion + "'. This version of MultiBit does not understand that.");
                     }
-                    
+                    walletMinorVersion = stream.read() * 128 + stream.read();
+                                       
                     // Carry on loading the wallet from here i.e. no stream reset.
                 } else {
                     // Reset the input stream
@@ -130,7 +132,7 @@ public class FileHandler {
                 
                 // serialised.1 wallets are read from the beginning.
                 // protobuf.2   (unencrypted) wallets are reead from the beginning.
-                // protobuf.3   (encrypted) are read from NUMBER_OF_MAGIC_BYTES + NUMBER_OF_VERSION_NUMBER_BYTES.
+                // protobuf.3   (encrypted) are read from NUMBER_OF_MAGIC_BYTES + NUMBER_OF_MAJOR_VERSION_NUMBER_BYTES + NUMBER_OF_MINOR_VERSION_NUMBER_BYTES.
                 wallet = Wallet.loadFromFileStream(stream);
             } finally {
                 if (stream != null) {
@@ -139,9 +141,10 @@ public class FileHandler {
                 fileInputStream.close();
             }
   
-            // Add the new wallet into the model.
+            // Add the new wallet and wallet info into the model.
             PerWalletModelData perWalletModelData = controller.getModel().addWallet(wallet, walletFilename);
 
+            walletInfo.setWalletMinorVersion(walletMinorVersion);
             perWalletModelData.setWalletInfo(walletInfo);
 
             synchronized (walletInfo) {
@@ -293,30 +296,35 @@ public class FileHandler {
         WalletInfo walletInfo = perWalletModelData.getWalletInfo();
         
         // Write wallet info.
-        walletInfo.writeToFile(walletInfoFilename, walletInfo.getWalletVersion());
+        walletInfo.writeToFile(walletInfoFilename, walletInfo.getWalletMajorVersion());
 
         FileOutputStream fileOutputStream = null;
         
         // Save the wallet file
         try {
             if (perWalletModelData.getWallet() != null) {
-                if (WalletVersion.SERIALIZED == walletInfo.getWalletVersion()) {
+                if (WalletMajorVersion.SERIALIZED == walletInfo.getWalletMajorVersion()) {
                     saveToFileAsSerialised(perWalletModelData.getWallet(), walletFile);
-                } else if (WalletVersion.PROTOBUF == walletInfo.getWalletVersion()) {
+                } else if (WalletMajorVersion.PROTOBUF == walletInfo.getWalletMajorVersion()) {
                     // Save directly to file - no header bytes.
                     perWalletModelData.getWallet().saveToFile(walletFile);
-                } else if (WalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion()) {
+                } else if (WalletMajorVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletMajorVersion()) {
                     // Save header to byte stream first
                     fileOutputStream = new FileOutputStream(walletFile); 
                     fileOutputStream.write(MAGIC_BYTES);
-                    fileOutputStream.write((byte)0x00); // Wallet version top byte.
-                    fileOutputStream.write(WalletVersion.PROTOBUF_ENCRYPTED.getWalletVersionByte()); // Wallet version bottom byte.
+                    fileOutputStream.write((byte)0x00); // Wallet major version top byte.
+                    fileOutputStream.write(WalletMajorVersion.PROTOBUF_ENCRYPTED.getWalletMajorVersionByte()); // Wallet major version bottom byte.
+                    
+                    // Write wallet minor version.
+                    int walletMinorVersion = perWalletModelData.getWalletInfo().getWalletMinorVersion();
+                    fileOutputStream.write((byte)((int)(walletMinorVersion / 128)));    // Wallet minor version top byte
+                    fileOutputStream.write((byte)((int)(walletMinorVersion % 128)));    // Wallet minor version bottom byte
                     
                     // Write rest of wallet using protobuf.
                     perWalletModelData.getWallet().saveToFileStream(fileOutputStream);
                 } else {
                     throw new WalletVersionException("Cannot save wallet '" + perWalletModelData.getWalletFilename()
-                            + "'. Its wallet version is '" + walletInfo.getWalletVersion().toString()
+                            + "'. Its wallet version is '" + walletInfo.getWalletMajorVersion().toString()
                             + "' but this version of MultiBit does not understand that format.");
                 }
             }
@@ -488,13 +496,13 @@ public class FileHandler {
                     orderList.add(perWalletModelData.getWalletFilename());
                 }
                 
-                if (perWalletModelData.getWalletInfo().getWalletVersion() == WalletVersion.PROTOBUF_ENCRYPTED) {
+                if (perWalletModelData.getWalletInfo().getWalletMajorVersion() == WalletMajorVersion.PROTOBUF_ENCRYPTED) {
                     if (!protobuf3List.contains(perWalletModelData.getWalletFilename())) {
                         protobuf3List.add(perWalletModelData.getWalletFilename());
                     }
-                 } else if (perWalletModelData.getWalletInfo().getWalletVersion() == null
-                         || perWalletModelData.getWalletInfo().getWalletVersion() == WalletVersion.SERIALIZED 
-                         || perWalletModelData.getWalletInfo().getWalletVersion() == WalletVersion.PROTOBUF) {
+                 } else if (perWalletModelData.getWalletInfo().getWalletMajorVersion() == null
+                         || perWalletModelData.getWalletInfo().getWalletMajorVersion() == WalletMajorVersion.SERIALIZED 
+                         || perWalletModelData.getWalletInfo().getWalletMajorVersion() == WalletMajorVersion.PROTOBUF) {
                     if (!earlyList.contains(perWalletModelData.getWalletFilename())) {
                         earlyList.add(perWalletModelData.getWalletFilename());
                     }

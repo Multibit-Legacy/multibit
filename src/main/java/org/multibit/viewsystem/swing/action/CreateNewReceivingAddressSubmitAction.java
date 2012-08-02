@@ -30,7 +30,7 @@ import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
-import org.multibit.model.WalletVersion;
+import org.multibit.model.WalletMajorVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressDialog;
 import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressPanel;
@@ -99,7 +99,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
 
         WalletInfo walletInfo = perWalletModelData.getWalletInfo();
         if (walletInfo == null) {
-            walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletVersion.PROTOBUF_ENCRYPTED);
+            walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletMajorVersion.PROTOBUF_ENCRYPTED);
             perWalletModelData.setWalletInfo(walletInfo);
         }
         String addressString = "";

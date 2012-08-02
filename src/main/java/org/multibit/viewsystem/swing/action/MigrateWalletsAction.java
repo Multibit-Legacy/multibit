@@ -48,7 +48,7 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletVersion;
+import org.multibit.model.WalletMajorVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.VersionComparator;
 import org.multibit.viewsystem.View;
@@ -282,7 +282,7 @@ public class MigrateWalletsAction extends AbstractAction {
         PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
         
         // Change wallet to protobuf.
-        perWalletModelData.getWalletInfo().setWalletVersion(WalletVersion.PROTOBUF);
+        perWalletModelData.getWalletInfo().setWalletVersion(WalletMajorVersion.PROTOBUF);
         
         // Try to save it. This should save it in protobuf format
         fileHandler.savePerWalletModelData(perWalletModelData, true);
@@ -295,7 +295,7 @@ public class MigrateWalletsAction extends AbstractAction {
         }
         
         // The new wallet should be protobuf.
-        if (WalletVersion.PROTOBUF != protobuf.getWalletInfo().getWalletVersion()) {
+        if (WalletMajorVersion.PROTOBUF != protobuf.getWalletInfo().getWalletMajorVersion()) {
             return controller.getLocaliser().getString("migrateWalletsAction.theWalletWasStillSerialised");
         }
         
@@ -382,7 +382,7 @@ public class MigrateWalletsAction extends AbstractAction {
         for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
             // Is it a serialized wallet ?
             if (loopPerWalletModelData.getWalletInfo() != null) {
-                if (WalletVersion.SERIALIZED == loopPerWalletModelData.getWalletInfo().getWalletVersion()) {
+                if (WalletMajorVersion.SERIALIZED == loopPerWalletModelData.getWalletInfo().getWalletMajorVersion()) {
                     // Have we already tried to migrate it with this version of MultiBit and failed ?
                     String lastMigrateVersion = loopPerWalletModelData.getWalletInfo().getProperty(MultiBitModel.LAST_FAILED_MIGRATE_VERSION);
                     VersionComparator versionComparator = new VersionComparator();

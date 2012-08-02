@@ -29,7 +29,7 @@ import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.crypto.EncrypterDecrypterScrypt;
 import org.multibit.crypto.ScryptParameters;
 import org.multibit.file.FileHandler;
-import org.multibit.model.WalletVersion;
+import org.multibit.model.WalletMajorVersion;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.AddPasswordPanel;
 import org.slf4j.Logger;
@@ -102,7 +102,7 @@ public class AddPasswordSubmitAction extends AbstractAction {
         if (wallet != null) {
             if (controller.getModel().getActiveWalletWalletInfo() != null) {
                 // Only an unencrypted protobuf wallet can have a password added to it.
-                if (controller.getModel().getActiveWalletWalletInfo().getWalletVersion() != WalletVersion.PROTOBUF) {
+                if (controller.getModel().getActiveWalletWalletInfo().getWalletMajorVersion() != WalletMajorVersion.PROTOBUF) {
                     addPasswordPanel.setMessage1(controller.getLocaliser().getString(
                             "addPasswordPanel.addPasswordFailed", new String[]{"Wallet is not protobuf.2"}));
                     return;
@@ -118,7 +118,7 @@ public class AddPasswordSubmitAction extends AbstractAction {
                 }
 
                 wallet.encrypt(passwordToUse);
-                controller.getModel().getActiveWalletWalletInfo().setWalletVersion(WalletVersion.PROTOBUF_ENCRYPTED);
+                controller.getModel().getActiveWalletWalletInfo().setWalletVersion(WalletMajorVersion.PROTOBUF_ENCRYPTED);
                 controller.getModel().getActivePerWalletModelData().setDirty(true);
                 FileHandler fileHandler = new FileHandler(controller);
                 fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);

@@ -44,7 +44,7 @@ import javax.swing.border.Border;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletVersion;
+import org.multibit.model.WalletMajorVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -502,7 +502,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             setIconForWalletType(perWalletModelData.getWallet().getWalletType(), walletTypeButton);
     
             if (walletFormatButton != null) {
-                WalletVersion walletVersion = perWalletModelData.getWalletInfo().getWalletVersion();
+                WalletMajorVersion walletVersion = perWalletModelData.getWalletInfo().getWalletMajorVersion();
                 if (walletVersion != null) {
                     walletFormatButton.setText(controller.getLocaliser().getString(walletVersion.getLocalisationKey()));
                 }
@@ -597,7 +597,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.LINE_START;
         innerDetailPanel.add(walletFilenameLabel, constraints);
 
-        WalletVersion walletVersion = perWalletModelData.getWalletInfo().getWalletVersion();
+        WalletMajorVersion walletVersion = perWalletModelData.getWalletInfo().getWalletMajorVersion();
         
         Action walletFormatHelpAction = new HelpContextAction(controller, null, walletVersion.getLocalisationKey(),
                 walletVersion.getLocalisationKey(), walletVersion.getLocalisationKey(), HelpContentsPanel.HELP_WALLET_FORMATS_URL);

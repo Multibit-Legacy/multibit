@@ -63,7 +63,7 @@ public class WalletInfoTest extends TestCase {
                 + WALLET_TESTDATA_DIRECTORY + File.separator + WALLET_TEST1;
 
         // create wallet info
-        WalletInfo walletInfo = new WalletInfo(walletName, WalletVersion.SERIALIZED);
+        WalletInfo walletInfo = new WalletInfo(walletName, WalletMajorVersion.SERIALIZED);
         assertNotNull(walletInfo);
 
         walletInfo.put(WalletInfo.DESCRIPTION_PROPERTY, DESCRIPTION_TEST1);
@@ -78,14 +78,14 @@ public class WalletInfoTest extends TestCase {
         walletInfo.put(PROPERTY_NAME2, PROPERTY_VALUE2);
         
         // write to file
-        walletInfo.writeToFile(WalletInfo.createWalletInfoFilename(walletName), WalletVersion.SERIALIZED);
+        walletInfo.writeToFile(WalletInfo.createWalletInfoFilename(walletName), WalletMajorVersion.SERIALIZED);
 
         String createdWalletInfoFile = WalletInfo.createWalletInfoFilename(walletName);
 
         assertTrue((new File(createdWalletInfoFile)).exists());
 
         // create new wallet info and reload
-        WalletInfo rebornWalletInfo = new WalletInfo(walletName, WalletVersion.SERIALIZED);
+        WalletInfo rebornWalletInfo = new WalletInfo(walletName, WalletMajorVersion.SERIALIZED);
         assertNotNull(rebornWalletInfo);
 
         // check description
@@ -128,7 +128,7 @@ public class WalletInfoTest extends TestCase {
                 + WALLET_TESTDATA_DIRECTORY + File.separator + NON_EXISTENT_WALLET;
 
         // Create wallet info - should not throw exception.
-        WalletInfo walletInfo = new WalletInfo(walletName, WalletVersion.PROTOBUF);
+        WalletInfo walletInfo = new WalletInfo(walletName, WalletMajorVersion.PROTOBUF);
         assertNotNull(walletInfo);
     }
     
