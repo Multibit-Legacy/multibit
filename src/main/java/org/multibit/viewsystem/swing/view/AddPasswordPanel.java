@@ -181,7 +181,7 @@ public class AddPasswordPanel extends JPanel implements View {
 
         Action helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
                 "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
-                HelpContentsPanel.HELP_EXPORTING_PRIVATE_KEYS_URL);
+                HelpContentsPanel.HELP_WALLET_TYPES_URL);
         HelpButton helpButton = new HelpButton(helpAction, controller);
         helpButton.setText("");
 
