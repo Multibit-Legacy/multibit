@@ -12,14 +12,13 @@ It is recommended you create a test directory and save any wallets you create fo
 
 2) There is a lot of new code that has been added to MultiBit to support encrypted wallets. New code usually means new bugs. For this reason I have temporarily altered the MultiBit build so that MultiBit 0.5.0alpha opens in 'portable mode'. It has its own startup file (multibit.properties) so that it does not open your 'real' MultiBit wallets.
 
-At this stage do not put large amounts of bitcoin in the encrypted wallets just in case there is a bug that zaps your private keys. Do an export of your private keys to be on the safe side. I have been testing it with 0.1 BTC here and there. (You can probably use the testnet - see the configuration.txt - to to be honest I never bother with the testnet).
+At this stage do not put large amounts of bitcoin in the encrypted wallets just in case there is a bug that zaps your private keys. Do an export of your private keys to be on the safe side. I have been testing it with 0.1 BTC here and there. (You can probably use the testnet - see the configuration.txt - but to be honest I never bother with the testnet).
 
 I have managed to zap my private keys a couple of times in development so please be careful!
 
 
 
-3) Let me know if you have any problems even if they are difficult to reproduce or a little vague. Tightening up and hardening the code now may very well save someone's hard earned bitcoins in the future.
-
+3) Let me know if you have any problems even if they are difficult to reproduce or a little vague. Improving the code now may very well save someone's hard earned bitcoins in the future.
 
 
 4) Caveats aside - I hope you like the new encrypted wallets functionality. :-)
