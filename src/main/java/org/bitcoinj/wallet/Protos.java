@@ -6489,6 +6489,560 @@ public final class Protos {
     // @@protoc_insertion_point(class_scope:wallet.Wallet)
   }
   
+  public interface VersionableWalletOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required .wallet.Wallet wallet = 1001;
+    boolean hasWallet();
+    org.bitcoinj.wallet.Protos.Wallet getWallet();
+    org.bitcoinj.wallet.Protos.WalletOrBuilder getWalletOrBuilder();
+    
+    // optional int32 major_version = 1002;
+    boolean hasMajorVersion();
+    int getMajorVersion();
+    
+    // optional int32 minor_version = 1003;
+    boolean hasMinorVersion();
+    int getMinorVersion();
+  }
+  public static final class VersionableWallet extends
+      com.google.protobuf.GeneratedMessage
+      implements VersionableWalletOrBuilder {
+    // Use VersionableWallet.newBuilder() to construct.
+    private VersionableWallet(Builder builder) {
+      super(builder);
+    }
+    private VersionableWallet(boolean noInit) {}
+    
+    private static final VersionableWallet defaultInstance;
+    public static VersionableWallet getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public VersionableWallet getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.bitcoinj.wallet.Protos.internal_static_wallet_VersionableWallet_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.bitcoinj.wallet.Protos.internal_static_wallet_VersionableWallet_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required .wallet.Wallet wallet = 1001;
+    public static final int WALLET_FIELD_NUMBER = 1001;
+    private org.bitcoinj.wallet.Protos.Wallet wallet_;
+    public boolean hasWallet() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public org.bitcoinj.wallet.Protos.Wallet getWallet() {
+      return wallet_;
+    }
+    public org.bitcoinj.wallet.Protos.WalletOrBuilder getWalletOrBuilder() {
+      return wallet_;
+    }
+    
+    // optional int32 major_version = 1002;
+    public static final int MAJOR_VERSION_FIELD_NUMBER = 1002;
+    private int majorVersion_;
+    public boolean hasMajorVersion() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public int getMajorVersion() {
+      return majorVersion_;
+    }
+    
+    // optional int32 minor_version = 1003;
+    public static final int MINOR_VERSION_FIELD_NUMBER = 1003;
+    private int minorVersion_;
+    public boolean hasMinorVersion() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public int getMinorVersion() {
+      return minorVersion_;
+    }
+    
+    private void initFields() {
+      wallet_ = org.bitcoinj.wallet.Protos.Wallet.getDefaultInstance();
+      majorVersion_ = 0;
+      minorVersion_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasWallet()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getWallet().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1001, wallet_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt32(1002, majorVersion_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt32(1003, minorVersion_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1001, wallet_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1002, majorVersion_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1003, minorVersion_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    public static org.bitcoinj.wallet.Protos.VersionableWallet parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static org.bitcoinj.wallet.Protos.VersionableWallet parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static org.bitcoinj.wallet.Protos.VersionableWallet parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static org.bitcoinj.wallet.Protos.VersionableWallet parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static org.bitcoinj.wallet.Protos.VersionableWallet parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static org.bitcoinj.wallet.Protos.VersionableWallet parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static org.bitcoinj.wallet.Protos.VersionableWallet parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static org.bitcoinj.wallet.Protos.VersionableWallet parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static org.bitcoinj.wallet.Protos.VersionableWallet parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static org.bitcoinj.wallet.Protos.VersionableWallet parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.bitcoinj.wallet.Protos.VersionableWallet prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements org.bitcoinj.wallet.Protos.VersionableWalletOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.bitcoinj.wallet.Protos.internal_static_wallet_VersionableWallet_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.bitcoinj.wallet.Protos.internal_static_wallet_VersionableWallet_fieldAccessorTable;
+      }
+      
+      // Construct using org.bitcoinj.wallet.Protos.VersionableWallet.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getWalletFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        if (walletBuilder_ == null) {
+          wallet_ = org.bitcoinj.wallet.Protos.Wallet.getDefaultInstance();
+        } else {
+          walletBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        majorVersion_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        minorVersion_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.bitcoinj.wallet.Protos.VersionableWallet.getDescriptor();
+      }
+      
+      public org.bitcoinj.wallet.Protos.VersionableWallet getDefaultInstanceForType() {
+        return org.bitcoinj.wallet.Protos.VersionableWallet.getDefaultInstance();
+      }
+      
+      public org.bitcoinj.wallet.Protos.VersionableWallet build() {
+        org.bitcoinj.wallet.Protos.VersionableWallet result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private org.bitcoinj.wallet.Protos.VersionableWallet buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        org.bitcoinj.wallet.Protos.VersionableWallet result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public org.bitcoinj.wallet.Protos.VersionableWallet buildPartial() {
+        org.bitcoinj.wallet.Protos.VersionableWallet result = new org.bitcoinj.wallet.Protos.VersionableWallet(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (walletBuilder_ == null) {
+          result.wallet_ = wallet_;
+        } else {
+          result.wallet_ = walletBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.majorVersion_ = majorVersion_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.minorVersion_ = minorVersion_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.bitcoinj.wallet.Protos.VersionableWallet) {
+          return mergeFrom((org.bitcoinj.wallet.Protos.VersionableWallet)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(org.bitcoinj.wallet.Protos.VersionableWallet other) {
+        if (other == org.bitcoinj.wallet.Protos.VersionableWallet.getDefaultInstance()) return this;
+        if (other.hasWallet()) {
+          mergeWallet(other.getWallet());
+        }
+        if (other.hasMajorVersion()) {
+          setMajorVersion(other.getMajorVersion());
+        }
+        if (other.hasMinorVersion()) {
+          setMinorVersion(other.getMinorVersion());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasWallet()) {
+          
+          return false;
+        }
+        if (!getWallet().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 8010: {
+              org.bitcoinj.wallet.Protos.Wallet.Builder subBuilder = org.bitcoinj.wallet.Protos.Wallet.newBuilder();
+              if (hasWallet()) {
+                subBuilder.mergeFrom(getWallet());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setWallet(subBuilder.buildPartial());
+              break;
+            }
+            case 8016: {
+              bitField0_ |= 0x00000002;
+              majorVersion_ = input.readInt32();
+              break;
+            }
+            case 8024: {
+              bitField0_ |= 0x00000004;
+              minorVersion_ = input.readInt32();
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required .wallet.Wallet wallet = 1001;
+      private org.bitcoinj.wallet.Protos.Wallet wallet_ = org.bitcoinj.wallet.Protos.Wallet.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.bitcoinj.wallet.Protos.Wallet, org.bitcoinj.wallet.Protos.Wallet.Builder, org.bitcoinj.wallet.Protos.WalletOrBuilder> walletBuilder_;
+      public boolean hasWallet() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public org.bitcoinj.wallet.Protos.Wallet getWallet() {
+        if (walletBuilder_ == null) {
+          return wallet_;
+        } else {
+          return walletBuilder_.getMessage();
+        }
+      }
+      public Builder setWallet(org.bitcoinj.wallet.Protos.Wallet value) {
+        if (walletBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          wallet_ = value;
+          onChanged();
+        } else {
+          walletBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder setWallet(
+          org.bitcoinj.wallet.Protos.Wallet.Builder builderForValue) {
+        if (walletBuilder_ == null) {
+          wallet_ = builderForValue.build();
+          onChanged();
+        } else {
+          walletBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder mergeWallet(org.bitcoinj.wallet.Protos.Wallet value) {
+        if (walletBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              wallet_ != org.bitcoinj.wallet.Protos.Wallet.getDefaultInstance()) {
+            wallet_ =
+              org.bitcoinj.wallet.Protos.Wallet.newBuilder(wallet_).mergeFrom(value).buildPartial();
+          } else {
+            wallet_ = value;
+          }
+          onChanged();
+        } else {
+          walletBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder clearWallet() {
+        if (walletBuilder_ == null) {
+          wallet_ = org.bitcoinj.wallet.Protos.Wallet.getDefaultInstance();
+          onChanged();
+        } else {
+          walletBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      public org.bitcoinj.wallet.Protos.Wallet.Builder getWalletBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getWalletFieldBuilder().getBuilder();
+      }
+      public org.bitcoinj.wallet.Protos.WalletOrBuilder getWalletOrBuilder() {
+        if (walletBuilder_ != null) {
+          return walletBuilder_.getMessageOrBuilder();
+        } else {
+          return wallet_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          org.bitcoinj.wallet.Protos.Wallet, org.bitcoinj.wallet.Protos.Wallet.Builder, org.bitcoinj.wallet.Protos.WalletOrBuilder> 
+          getWalletFieldBuilder() {
+        if (walletBuilder_ == null) {
+          walletBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.bitcoinj.wallet.Protos.Wallet, org.bitcoinj.wallet.Protos.Wallet.Builder, org.bitcoinj.wallet.Protos.WalletOrBuilder>(
+                  wallet_,
+                  getParentForChildren(),
+                  isClean());
+          wallet_ = null;
+        }
+        return walletBuilder_;
+      }
+      
+      // optional int32 major_version = 1002;
+      private int majorVersion_ ;
+      public boolean hasMajorVersion() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public int getMajorVersion() {
+        return majorVersion_;
+      }
+      public Builder setMajorVersion(int value) {
+        bitField0_ |= 0x00000002;
+        majorVersion_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearMajorVersion() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        majorVersion_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional int32 minor_version = 1003;
+      private int minorVersion_ ;
+      public boolean hasMinorVersion() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public int getMinorVersion() {
+        return minorVersion_;
+      }
+      public Builder setMinorVersion(int value) {
+        bitField0_ |= 0x00000004;
+        minorVersion_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearMinorVersion() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        minorVersion_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:wallet.VersionableWallet)
+    }
+    
+    static {
+      defaultInstance = new VersionableWallet(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:wallet.VersionableWallet)
+  }
+  
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_wallet_Key_descriptor;
   private static
@@ -6529,6 +7083,11 @@ public final class Protos {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_wallet_Wallet_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_wallet_VersionableWallet_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_wallet_VersionableWallet_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -6577,8 +7136,10 @@ public final class Protos {
       "ption_parameters\030\006 \001(\0132\030.wallet.ScryptPa" +
       "rameters\022$\n\textension\030\n \003(\0132\021.wallet.Ext" +
       "ension\",\n\nWalletType\022\017\n\013UNENCRYPTED\020\001\022\r\n" +
-      "\tENCRYPTED\020\002B\035\n\023org.bitcoinj.walletB\006Pro",
-      "tos"
+      "\tENCRYPTED\020\002\"d\n\021VersionableWallet\022\037\n\006wal",
+      "let\030\351\007 \002(\0132\016.wallet.Wallet\022\026\n\rmajor_vers" +
+      "ion\030\352\007 \001(\005\022\026\n\rminor_version\030\353\007 \001(\005B\035\n\023or" +
+      "g.bitcoinj.walletB\006Protos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -6649,6 +7210,14 @@ public final class Protos {
               new java.lang.String[] { "NetworkIdentifier", "LastSeenBlockHash", "Key", "Transaction", "WalletType", "EncryptionParameters", "Extension", },
               org.bitcoinj.wallet.Protos.Wallet.class,
               org.bitcoinj.wallet.Protos.Wallet.Builder.class);
+          internal_static_wallet_VersionableWallet_descriptor =
+            getDescriptor().getMessageTypes().get(8);
+          internal_static_wallet_VersionableWallet_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_wallet_VersionableWallet_descriptor,
+              new java.lang.String[] { "Wallet", "MajorVersion", "MinorVersion", },
+              org.bitcoinj.wallet.Protos.VersionableWallet.class,
+              org.bitcoinj.wallet.Protos.VersionableWallet.Builder.class);
           return null;
         }
       };

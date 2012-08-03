@@ -87,7 +87,7 @@ public class RemovePasswordSubmitAction extends AbstractAction {
             if (wallet != null) {
                 try {
                    wallet.removeEncryption(passwordToUse);
-                   controller.getModel().getActiveWalletWalletInfo().setWalletVersion(WalletMajorVersion.PROTOBUF);
+                   controller.getModel().getActiveWalletWalletInfo().setWalletMajorVersion(WalletMajorVersion.PROTOBUF);
                    controller.getModel().getActivePerWalletModelData().setDirty(true);
                    FileHandler fileHandler = new FileHandler(controller);
                    fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);

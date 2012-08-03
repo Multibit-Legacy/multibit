@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.TextFormat;
 import org.bitcoinj.wallet.Protos;
+import org.bitcoinj.wallet.Protos.VersionableWallet;
 import org.multibit.IsMultiBitClass;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterScrypt;
@@ -67,6 +68,14 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
     }
 
     /**
+     * Formats the given VersionableWallet to the given output stream in protocol buffer format.<p>
+     */
+    public static void writeVersionableWallet(org.multibit.model.VersionableWallet versionableWallet, OutputStream output) throws IOException {
+        Protos.VersionableWallet versionableWalletProto = versionableWalletToProto(versionableWallet);
+        versionableWalletProto.writeTo(output);
+    }
+
+    /**
      * Formats the given wallet (transactions and keys) to the given output stream in protocol buffer format.<p>
      *     
      * Equivalent to <tt>walletToProto(wallet).writeTo(output);</tt>
@@ -89,10 +98,29 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
     }
 
     /**
+     * Converts the given versionableWallet to the object representation of the protocol buffers. This can be modified, or
+     * additional data fields set, before serialization takes place.
+     */
+    public static Protos.VersionableWallet versionableWalletToProto(org.multibit.model.VersionableWallet versionableWallet) {
+        Protos.VersionableWallet.Builder versionableWalletBuilder = Protos.VersionableWallet.newBuilder();
+        versionableWalletBuilder.setMajorVersion(versionableWallet.getMajorVersion());
+        versionableWalletBuilder.setMinorVersion(versionableWallet.getMinorVersion());
+        
+        Protos.Wallet.Builder protoWalletBuilder = walletToProtoBuilder(versionableWallet.getWallet());
+        versionableWalletBuilder.setWallet(protoWalletBuilder);
+        
+        return versionableWalletBuilder.build();
+    }
+    
+    /**
      * Converts the given wallet to the object representation of the protocol buffers. This can be modified, or
      * additional data fields set, before serialization takes place.
      */
     public static Protos.Wallet walletToProto(Wallet wallet) {
+        return walletToProtoBuilder(wallet).build();
+    }
+    
+    private static Protos.Wallet.Builder walletToProtoBuilder(Wallet wallet) {
         Protos.Wallet.Builder walletBuilder = Protos.Wallet.newBuilder();
         walletBuilder.setNetworkIdentifier(wallet.getNetworkParameters().getId());
         for (WalletTransaction wtx : wallet.getWalletTransactions()) {
@@ -144,7 +172,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             walletBuilder.setWalletType(Protos.Wallet.WalletType.UNENCRYPTED);
             
         }
-        return walletBuilder.build();
+        return walletBuilder;
     }
     
     private static Protos.Transaction makeTxProto(WalletTransaction wtx) {
@@ -229,6 +257,33 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
     }
 
     /**
+     * Parses a VersionableWallet from the given stream. The stream is expected to contain a binary serialization of a 
+     * {@link Protos.VersionableWallet} object.<p>
+     *  
+     * If the stream is invalid or the serialized wallet contains unsupported features, 
+     * {@link IllegalArgumentException} is thrown.
+     *
+     */
+    public static org.multibit.model.VersionableWallet readVersionableWallet(InputStream input) throws IOException {
+        Protos.VersionableWallet versionableWalletProto = Protos.VersionableWallet.parseFrom(input);
+
+        // System.out.println(TextFormat.printToString(versionableWalletProto));
+        Wallet wallet = parseWalletProto(versionableWalletProto.getWallet());
+
+        int majorVersion = 0;
+        if (versionableWalletProto.hasMajorVersion()) {
+            majorVersion = versionableWalletProto.getMajorVersion();
+        }
+        int minorVersion = 0;
+        if (versionableWalletProto.hasMinorVersion()) {
+            minorVersion = versionableWalletProto.getMinorVersion();
+        }
+        org.multibit.model.VersionableWallet versionableWallet = new org.multibit.model.VersionableWallet(wallet, majorVersion, minorVersion);
+        
+        return versionableWallet;
+    }
+
+    /**
      * Parses a wallet from the given stream. The stream is expected to contain a binary serialization of a 
      * {@link Protos.Wallet} object.<p>
      *     
@@ -237,11 +292,17 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
      *
      */
     public static Wallet readWallet(InputStream input) throws IOException {
-        // TODO: This method should throw more specific exception types than IllegalArgumentException.
-        WalletProtobufSerializer serializer = new WalletProtobufSerializer();
         Protos.Wallet walletProto = Protos.Wallet.parseFrom(input);
 
         // System.out.println(TextFormat.printToString(walletProto));
+        Wallet wallet = parseWalletProto(walletProto);
+
+        return wallet;
+    }
+    
+    private static Wallet parseWalletProto(Protos.Wallet walletProto) {
+        // TODO: This method should throw more specific exception types than IllegalArgumentException.
+        WalletProtobufSerializer serializer = new WalletProtobufSerializer();
 
         NetworkParameters params = NetworkParameters.fromID(walletProto.getNetworkIdentifier());
         

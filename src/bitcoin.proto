@@ -196,3 +196,10 @@ message Wallet {
 
   repeated Extension extension = 10; 
 } // end of Wallet
+
+/** A versionable bitcoin wallet */
+message VersionableWallet {
+  required Wallet wallet = 1001;
+  optional int32 major_version = 1002;
+  optional int32 minor_version = 1003;
+} // end of VersionableWallet

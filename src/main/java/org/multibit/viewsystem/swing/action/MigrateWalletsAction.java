@@ -282,7 +282,7 @@ public class MigrateWalletsAction extends AbstractAction {
         PerWalletModelData perWalletModelData = fileHandler.loadFromFile(walletFile);
         
         // Change wallet to protobuf.
-        perWalletModelData.getWalletInfo().setWalletVersion(WalletMajorVersion.PROTOBUF);
+        perWalletModelData.getWalletInfo().setWalletMajorVersion(WalletMajorVersion.PROTOBUF);
         
         // Try to save it. This should save it in protobuf format
         fileHandler.savePerWalletModelData(perWalletModelData, true);

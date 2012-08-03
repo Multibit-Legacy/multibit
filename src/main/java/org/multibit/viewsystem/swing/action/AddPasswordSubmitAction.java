@@ -118,7 +118,7 @@ public class AddPasswordSubmitAction extends AbstractAction {
                 }
 
                 wallet.encrypt(passwordToUse);
-                controller.getModel().getActiveWalletWalletInfo().setWalletVersion(WalletMajorVersion.PROTOBUF_ENCRYPTED);
+                controller.getModel().getActiveWalletWalletInfo().setWalletMajorVersion(WalletMajorVersion.PROTOBUF_ENCRYPTED);
                 controller.getModel().getActivePerWalletModelData().setDirty(true);
                 FileHandler fileHandler = new FileHandler(controller);
                 fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);

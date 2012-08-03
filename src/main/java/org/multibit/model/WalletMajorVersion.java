@@ -10,44 +10,44 @@ public enum WalletMajorVersion {
     /**
      * Wallet major version for Java serialised wallets.
      */
-    SERIALIZED((byte)0x01, "walletVersion.1"), 
+    SERIALIZED(1, "walletVersion.1"), 
     
     /**
      * Wallet major version for unencrypted protobuf wallets.
      */
-    PROTOBUF((byte)0x02, "walletVersion.2"),
+    PROTOBUF(2, "walletVersion.2"),
     
     /**
      * Wallet major version for encrypted protobuf wallets.
      */
-    PROTOBUF_ENCRYPTED((byte)0x03, "walletVersion.3"),
+    PROTOBUF_ENCRYPTED(3, "walletVersion.3"),
     
     /**
      * Wallet major version future wallets - used in testing only.
      */
-    FUTURE((byte)0xff, "walletVersion.1000000");
+    FUTURE(1000000, "walletVersion.1000000");
     
     /**
-     * How the wallet major version is represented in the wallet info files.
+     * How the wallet version is represented in the wallet info files.
      */
-    private byte walletMajorVersionByte;
+    private int walletVersionAsInt;
         
     /**
-     * The key to use in localisation to describe the wallet major version.
+     * The key to use in localisation to describe the wallet version.
      */
     private String localisationKey;
     
-    private WalletMajorVersion(byte walletMajorVersionByte, String localisationKey) {
-      this.walletMajorVersionByte = walletMajorVersionByte;
+    private WalletMajorVersion(int walletVersionAsInt, String localisationKey) {
+      this.walletVersionAsInt = walletVersionAsInt;
       this.localisationKey = localisationKey;
     }
         
-    public String getWalletMajorVersionString() {
-      return Byte.toString(walletMajorVersionByte);
+    public String getWalletVersionString() {
+      return "" + walletVersionAsInt;
     }
     
-    public byte getWalletMajorVersionByte() {
-        return walletMajorVersionByte;
+    public int getWalletVersionAsInt() {
+        return walletVersionAsInt;
     }
     
     public String getLocalisationKey() {
@@ -55,6 +55,6 @@ public enum WalletMajorVersion {
     }
     
     public String toString() {
-        return Byte.toString(walletMajorVersionByte);
+        return getWalletVersionString();
     }
 }
