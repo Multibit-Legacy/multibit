@@ -25,10 +25,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -68,7 +65,7 @@ import com.google.bitcoin.core.Wallet.BalanceType;
  */
 public class MigrateWalletsAction extends AbstractAction {
 
-    public Logger log = LoggerFactory.getLogger(MultiBitFrame.class.getName());
+    public Logger log = LoggerFactory.getLogger(MigrateWalletsAction.class.getName());
 
     private static final long serialVersionUID = 1913592460523457705L;
 

@@ -175,11 +175,11 @@ message Wallet {
    *
    * The wallet type is UNENCRYPTED for wallets where the wallet does not support encryption - wallets prior to encryption support
    * are grandfathered in as this wallet type.
-   * When a wallet is ENCRYPTED all the keys are either all encrypted, or all unencrypted.
+   * When a wallet is ENCRYPTED_SCRYPT_AES all the keys are either all encrypted, or all unencrypted.
    */
   enum WalletType {
-    UNENCRYPTED = 1;       // All keys in the wallet are unencrypted
-    ENCRYPTED = 2;         // All keys are encrypted with a passphrase based KDF of scrypt and AES encryption 
+    UNENCRYPTED = 1;                 // All keys in the wallet are unencrypted
+    ENCRYPTED_SCRYPT_AES = 2;        // All keys are encrypted with a passphrase based KDF of scrypt and AES encryption 
   }
 
   required string network_identifier = 1; // the network used by this wallet

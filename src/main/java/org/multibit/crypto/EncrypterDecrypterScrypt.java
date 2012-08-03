@@ -16,9 +16,14 @@
 package org.multibit.crypto;
 
 import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.security.SecureRandom;
 
 import org.apache.commons.codec.binary.Base64;
+import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.BufferedBlockCipher;
 import org.spongycastle.crypto.engines.AESFastEngine;
 import org.spongycastle.crypto.modes.CBCBlockCipher;
@@ -35,7 +40,7 @@ import com.lambdaworks.crypto.SCrypt;
  * 
  * The format of the encrypted byte data is a byte[] containing:
  *    Initialisation vector     BLOCK_LENGTH bytes    The initialisation vector (also used as the salt).
- *    final block length        1 byte                Cast to int for the number of bytes used in the last block (to enable pad removal).
+ *    final block length        2 bytes               Two bytes for the number of bytes used in the last block (to enable pad removal). Little endian.
  *    encrypted data            any length of bytes   The encrypted data.
  * 
  * String data is encrypted by:
@@ -47,6 +52,8 @@ import com.lambdaworks.crypto.SCrypt;
  * 
  */
 public class EncrypterDecrypterScrypt implements EncrypterDecrypter, Serializable {
+
+    public Logger log = LoggerFactory.getLogger(EncrypterDecrypterScrypt.class.getName());
 
     private static final long serialVersionUID = 949662512049152670L;
 
@@ -65,7 +72,7 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter, Serializabl
      * This is also the length of the initialisation vector.
      */
     public static final int BLOCK_LENGTH = 16;  // = 128 bits.
-
+    
     transient private static SecureRandom secureRandom = new SecureRandom();
 
     // Scrypt parameters.
@@ -156,8 +163,12 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter, Serializabl
             // Work out how many bytes in the last block are real data as opposed to padding
             int finalBlockLength = plainBytes.length % BLOCK_LENGTH;
             
-            // The result bytes are the BLOCK_LENGTH iv bytes followed by one byte containing the final block length, followed by the encrypted bytes.
-            return concat(concat(iv, new byte[]{(byte)finalBlockLength}), encryptedBytes);
+            // Convert to two bytes, little endian
+            byte[] padBytes = new byte[]{(byte)(finalBlockLength % 256), (byte)(finalBlockLength / 256) };
+            
+            log.debug("pad bytes for finalBlockLength of " + finalBlockLength + " = " + Utils.bytesToHexString(padBytes));
+            // The result bytes are the BLOCK_LENGTH iv bytes followed by two bytes containing the final block length, followed by the encrypted bytes.
+            return concat(concat(iv, padBytes), encryptedBytes);
         } catch (Exception e) {
             throw new EncrypterDecrypterException("Could not encrypt bytes '" + Utils.bytesToHexString(plainBytes) + "'", e);
         }
@@ -198,10 +209,13 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter, Serializabl
             byte[] iv = new byte[BLOCK_LENGTH];
             System.arraycopy(bytesToDecode, 0, iv, 0, BLOCK_LENGTH);
 
-            int finalBlockLength = (int)bytesToDecode[BLOCK_LENGTH];
-            
-            byte[] cipherBytes = new byte[bytesToDecode.length - BLOCK_LENGTH - 1];
-            System.arraycopy(bytesToDecode, BLOCK_LENGTH + 1, cipherBytes, 0, bytesToDecode.length - BLOCK_LENGTH - 1);
+            // Work out the final block length - little endian.
+            ByteBuffer buffer = ByteBuffer.wrap(new byte[]{bytesToDecode[BLOCK_LENGTH], bytesToDecode[BLOCK_LENGTH + 1 ]});
+            buffer.order(ByteOrder.LITTLE_ENDIAN);  // if you want little-endian
+            int finalBlockLength = buffer.getShort();
+           
+            byte[] cipherBytes = new byte[bytesToDecode.length - BLOCK_LENGTH - 2];
+            System.arraycopy(bytesToDecode, BLOCK_LENGTH + 2, cipherBytes, 0, bytesToDecode.length - BLOCK_LENGTH - 2);
 
             KeyParameter key = getAESPasswordKey(password);
             ParametersWithIV keyWithIv = new ParametersWithIV(key, iv);
