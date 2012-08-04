@@ -1915,8 +1915,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
             // Clone the encrypted bytes.
             byte[] cloneEncrypted = new byte[encryptedBytes.length];
             System.arraycopy(encryptedBytes, 0, cloneEncrypted, 0, encryptedBytes.length);
-            EncryptedPrivateKey clonedEncryptedPrivateKey = new EncryptedPrivateKey(firstECKey.getEncryptedPrivateKey().getInitialisationVector(),
-                    firstECKey.getEncryptedPrivateKey().getFinalBlockLength(), cloneEncrypted);
+            EncryptedPrivateKey clonedEncryptedPrivateKey = new EncryptedPrivateKey(firstECKey.getEncryptedPrivateKey().getInitialisationVector(), cloneEncrypted);
             try {
                 encrypterDecrypter.decrypt(clonedEncryptedPrivateKey, encrypterDecrypter.deriveKey(password));
                 

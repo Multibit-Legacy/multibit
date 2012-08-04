@@ -15,11 +15,7 @@ public final class Protos {
     boolean hasInitialisationVector();
     com.google.protobuf.ByteString getInitialisationVector();
     
-    // required int32 final_block_length = 2;
-    boolean hasFinalBlockLength();
-    int getFinalBlockLength();
-    
-    // required bytes encrypted_private_key = 3;
+    // required bytes encrypted_private_key = 2;
     boolean hasEncryptedPrivateKey();
     com.google.protobuf.ByteString getEncryptedPrivateKey();
   }
@@ -62,21 +58,11 @@ public final class Protos {
       return initialisationVector_;
     }
     
-    // required int32 final_block_length = 2;
-    public static final int FINAL_BLOCK_LENGTH_FIELD_NUMBER = 2;
-    private int finalBlockLength_;
-    public boolean hasFinalBlockLength() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    public int getFinalBlockLength() {
-      return finalBlockLength_;
-    }
-    
-    // required bytes encrypted_private_key = 3;
-    public static final int ENCRYPTED_PRIVATE_KEY_FIELD_NUMBER = 3;
+    // required bytes encrypted_private_key = 2;
+    public static final int ENCRYPTED_PRIVATE_KEY_FIELD_NUMBER = 2;
     private com.google.protobuf.ByteString encryptedPrivateKey_;
     public boolean hasEncryptedPrivateKey() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+      return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     public com.google.protobuf.ByteString getEncryptedPrivateKey() {
       return encryptedPrivateKey_;
@@ -84,7 +70,6 @@ public final class Protos {
     
     private void initFields() {
       initialisationVector_ = com.google.protobuf.ByteString.EMPTY;
-      finalBlockLength_ = 0;
       encryptedPrivateKey_ = com.google.protobuf.ByteString.EMPTY;
     }
     private byte memoizedIsInitialized = -1;
@@ -93,10 +78,6 @@ public final class Protos {
       if (isInitialized != -1) return isInitialized == 1;
       
       if (!hasInitialisationVector()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasFinalBlockLength()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -115,10 +96,7 @@ public final class Protos {
         output.writeBytes(1, initialisationVector_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeInt32(2, finalBlockLength_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBytes(3, encryptedPrivateKey_);
+        output.writeBytes(2, encryptedPrivateKey_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -135,11 +113,7 @@ public final class Protos {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, finalBlockLength_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, encryptedPrivateKey_);
+          .computeBytesSize(2, encryptedPrivateKey_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -267,10 +241,8 @@ public final class Protos {
         super.clear();
         initialisationVector_ = com.google.protobuf.ByteString.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000001);
-        finalBlockLength_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
         encryptedPrivateKey_ = com.google.protobuf.ByteString.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
       
@@ -316,10 +288,6 @@ public final class Protos {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.finalBlockLength_ = finalBlockLength_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
         result.encryptedPrivateKey_ = encryptedPrivateKey_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -340,9 +308,6 @@ public final class Protos {
         if (other.hasInitialisationVector()) {
           setInitialisationVector(other.getInitialisationVector());
         }
-        if (other.hasFinalBlockLength()) {
-          setFinalBlockLength(other.getFinalBlockLength());
-        }
         if (other.hasEncryptedPrivateKey()) {
           setEncryptedPrivateKey(other.getEncryptedPrivateKey());
         }
@@ -352,10 +317,6 @@ public final class Protos {
       
       public final boolean isInitialized() {
         if (!hasInitialisationVector()) {
-          
-          return false;
-        }
-        if (!hasFinalBlockLength()) {
           
           return false;
         }
@@ -394,13 +355,8 @@ public final class Protos {
               initialisationVector_ = input.readBytes();
               break;
             }
-            case 16: {
+            case 18: {
               bitField0_ |= 0x00000002;
-              finalBlockLength_ = input.readInt32();
-              break;
-            }
-            case 26: {
-              bitField0_ |= 0x00000004;
               encryptedPrivateKey_ = input.readBytes();
               break;
             }
@@ -434,31 +390,10 @@ public final class Protos {
         return this;
       }
       
-      // required int32 final_block_length = 2;
-      private int finalBlockLength_ ;
-      public boolean hasFinalBlockLength() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      public int getFinalBlockLength() {
-        return finalBlockLength_;
-      }
-      public Builder setFinalBlockLength(int value) {
-        bitField0_ |= 0x00000002;
-        finalBlockLength_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearFinalBlockLength() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        finalBlockLength_ = 0;
-        onChanged();
-        return this;
-      }
-      
-      // required bytes encrypted_private_key = 3;
+      // required bytes encrypted_private_key = 2;
       private com.google.protobuf.ByteString encryptedPrivateKey_ = com.google.protobuf.ByteString.EMPTY;
       public boolean hasEncryptedPrivateKey() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public com.google.protobuf.ByteString getEncryptedPrivateKey() {
         return encryptedPrivateKey_;
@@ -467,13 +402,13 @@ public final class Protos {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000004;
+  bitField0_ |= 0x00000002;
         encryptedPrivateKey_ = value;
         onChanged();
         return this;
       }
       public Builder clearEncryptedPrivateKey() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000002);
         encryptedPrivateKey_ = getDefaultInstance().getEncryptedPrivateKey();
         onChanged();
         return this;
@@ -7679,53 +7614,52 @@ public final class Protos {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\rbitcoin.proto\022\006wallet\"o\n\023EncryptedPriv" +
-      "ateKey\022\035\n\025initialisation_vector\030\001 \002(\014\022\032\n" +
-      "\022final_block_length\030\002 \002(\005\022\035\n\025encrypted_p" +
-      "rivate_key\030\003 \002(\014\"\313\001\n\003Key\022\036\n\004type\030\001 \002(\0162\020" +
-      ".wallet.Key.Type\022\023\n\013private_key\030\002 \001(\014\022:\n" +
-      "\025encrypted_private_key\030\006 \001(\0132\033.wallet.En" +
-      "cryptedPrivateKey\022\022\n\npublic_key\030\003 \001(\014\022\r\n" +
-      "\005label\030\004 \001(\t\022\032\n\022creation_timestamp\030\005 \001(\003" +
-      "\"\024\n\004Type\022\014\n\010ORIGINAL\020\001\"\203\001\n\020TransactionIn" +
-      "put\022\"\n\032transaction_out_point_hash\030\001 \002(\014\022",
-      "#\n\033transaction_out_point_index\030\002 \002(\005\022\024\n\014" +
-      "script_bytes\030\003 \002(\014\022\020\n\010sequence\030\004 \001(\r\"\177\n\021" +
-      "TransactionOutput\022\r\n\005value\030\001 \002(\003\022\024\n\014scri" +
-      "pt_bytes\030\002 \002(\014\022!\n\031spent_by_transaction_h" +
-      "ash\030\003 \001(\014\022\"\n\032spent_by_transaction_index\030" +
-      "\004 \001(\005\"\366\001\n\025TransactionConfidence\0220\n\004type\030" +
-      "\001 \001(\0162\".wallet.TransactionConfidence.Typ" +
-      "e\022\032\n\022appeared_at_height\030\002 \001(\005\022\036\n\026overrid" +
-      "ing_transaction\030\003 \001(\014\"o\n\004Type\022\013\n\007UNKNOWN" +
-      "\020\000\022\014\n\010BUILDING\020\001\022\025\n\021NOT_SEEN_IN_CHAIN\020\002\022",
-      "\025\n\021NOT_IN_BEST_CHAIN\020\003\022\036\n\032OVERRIDDEN_BY_" +
-      "DOUBLE_SPEND\020\004\"\211\003\n\013Transaction\022\017\n\007versio" +
-      "n\030\001 \002(\005\022\014\n\004hash\030\002 \002(\014\022&\n\004pool\030\003 \001(\0162\030.wa" +
-      "llet.Transaction.Pool\022\021\n\tlock_time\030\004 \001(\r" +
-      "\022\022\n\nupdated_at\030\005 \001(\003\0223\n\021transaction_inpu" +
-      "t\030\006 \003(\0132\030.wallet.TransactionInput\0225\n\022tra" +
-      "nsaction_output\030\007 \003(\0132\031.wallet.Transacti" +
-      "onOutput\022\022\n\nblock_hash\030\010 \003(\014\0221\n\nconfiden" +
-      "ce\030\t \001(\0132\035.wallet.TransactionConfidence\"" +
-      "Y\n\004Pool\022\013\n\007UNSPENT\020\004\022\t\n\005SPENT\020\005\022\014\n\010INACT",
-      "IVE\020\002\022\010\n\004DEAD\020\n\022\013\n\007PENDING\020\020\022\024\n\020PENDING_" +
-      "INACTIVE\020\022\"N\n\020ScryptParameters\022\014\n\004salt\030\001" +
-      " \002(\014\022\020\n\001n\030\002 \001(\003:\00516384\022\014\n\001r\030\003 \001(\005:\0018\022\014\n\001" +
-      "p\030\004 \001(\005:\0011\"8\n\tExtension\022\n\n\002id\030\001 \002(\t\022\014\n\004d" +
-      "ata\030\002 \002(\014\022\021\n\tmandatory\030\003 \002(\010\"\210\003\n\006Wallet\022" +
-      "\032\n\022network_identifier\030\001 \002(\t\022\034\n\024last_seen" +
-      "_block_hash\030\002 \001(\014\022\030\n\003key\030\003 \003(\0132\013.wallet." +
-      "Key\022(\n\013transaction\030\004 \003(\0132\023.wallet.Transa" +
-      "ction\0226\n\017encryption_type\030\005 \001(\0162\035.wallet." +
-      "Wallet.EncryptionType\0227\n\025encryption_para",
-      "meters\030\006 \001(\0132\030.wallet.ScryptParameters\022\025" +
-      "\n\rmajor_version\030\007 \001(\005\022\025\n\rminor_version\030\010" +
-      " \001(\005\022$\n\textension\030\n \003(\0132\021.wallet.Extensi" +
-      "on\";\n\016EncryptionType\022\017\n\013UNENCRYPTED\020\001\022\030\n" +
-      "\024ENCRYPTED_SCRYPT_AES\020\002\"0\n\rWrappedWallet" +
-      "\022\037\n\006wallet\030\350\007 \002(\0132\016.wallet.WalletB\035\n\023org" +
-      ".bitcoinj.walletB\006Protos"
+      "\n\rbitcoin.proto\022\006wallet\"S\n\023EncryptedPriv" +
+      "ateKey\022\035\n\025initialisation_vector\030\001 \002(\014\022\035\n" +
+      "\025encrypted_private_key\030\002 \002(\014\"\313\001\n\003Key\022\036\n\004" +
+      "type\030\001 \002(\0162\020.wallet.Key.Type\022\023\n\013private_" +
+      "key\030\002 \001(\014\022:\n\025encrypted_private_key\030\006 \001(\013" +
+      "2\033.wallet.EncryptedPrivateKey\022\022\n\npublic_" +
+      "key\030\003 \001(\014\022\r\n\005label\030\004 \001(\t\022\032\n\022creation_tim" +
+      "estamp\030\005 \001(\003\"\024\n\004Type\022\014\n\010ORIGINAL\020\001\"\203\001\n\020T" +
+      "ransactionInput\022\"\n\032transaction_out_point" +
+      "_hash\030\001 \002(\014\022#\n\033transaction_out_point_ind",
+      "ex\030\002 \002(\005\022\024\n\014script_bytes\030\003 \002(\014\022\020\n\010sequen" +
+      "ce\030\004 \001(\r\"\177\n\021TransactionOutput\022\r\n\005value\030\001" +
+      " \002(\003\022\024\n\014script_bytes\030\002 \002(\014\022!\n\031spent_by_t" +
+      "ransaction_hash\030\003 \001(\014\022\"\n\032spent_by_transa" +
+      "ction_index\030\004 \001(\005\"\366\001\n\025TransactionConfide" +
+      "nce\0220\n\004type\030\001 \001(\0162\".wallet.TransactionCo" +
+      "nfidence.Type\022\032\n\022appeared_at_height\030\002 \001(" +
+      "\005\022\036\n\026overriding_transaction\030\003 \001(\014\"o\n\004Typ" +
+      "e\022\013\n\007UNKNOWN\020\000\022\014\n\010BUILDING\020\001\022\025\n\021NOT_SEEN" +
+      "_IN_CHAIN\020\002\022\025\n\021NOT_IN_BEST_CHAIN\020\003\022\036\n\032OV",
+      "ERRIDDEN_BY_DOUBLE_SPEND\020\004\"\211\003\n\013Transacti" +
+      "on\022\017\n\007version\030\001 \002(\005\022\014\n\004hash\030\002 \002(\014\022&\n\004poo" +
+      "l\030\003 \001(\0162\030.wallet.Transaction.Pool\022\021\n\tloc" +
+      "k_time\030\004 \001(\r\022\022\n\nupdated_at\030\005 \001(\003\0223\n\021tran" +
+      "saction_input\030\006 \003(\0132\030.wallet.Transaction" +
+      "Input\0225\n\022transaction_output\030\007 \003(\0132\031.wall" +
+      "et.TransactionOutput\022\022\n\nblock_hash\030\010 \003(\014" +
+      "\0221\n\nconfidence\030\t \001(\0132\035.wallet.Transactio" +
+      "nConfidence\"Y\n\004Pool\022\013\n\007UNSPENT\020\004\022\t\n\005SPEN" +
+      "T\020\005\022\014\n\010INACTIVE\020\002\022\010\n\004DEAD\020\n\022\013\n\007PENDING\020\020",
+      "\022\024\n\020PENDING_INACTIVE\020\022\"N\n\020ScryptParamete" +
+      "rs\022\014\n\004salt\030\001 \002(\014\022\020\n\001n\030\002 \001(\003:\00516384\022\014\n\001r\030" +
+      "\003 \001(\005:\0018\022\014\n\001p\030\004 \001(\005:\0011\"8\n\tExtension\022\n\n\002i" +
+      "d\030\001 \002(\t\022\014\n\004data\030\002 \002(\014\022\021\n\tmandatory\030\003 \002(\010" +
+      "\"\210\003\n\006Wallet\022\032\n\022network_identifier\030\001 \002(\t\022" +
+      "\034\n\024last_seen_block_hash\030\002 \001(\014\022\030\n\003key\030\003 \003" +
+      "(\0132\013.wallet.Key\022(\n\013transaction\030\004 \003(\0132\023.w" +
+      "allet.Transaction\0226\n\017encryption_type\030\005 \001" +
+      "(\0162\035.wallet.Wallet.EncryptionType\0227\n\025enc" +
+      "ryption_parameters\030\006 \001(\0132\030.wallet.Scrypt",
+      "Parameters\022\025\n\rmajor_version\030\007 \001(\005\022\025\n\rmin" +
+      "or_version\030\010 \001(\005\022$\n\textension\030\n \003(\0132\021.wa" +
+      "llet.Extension\";\n\016EncryptionType\022\017\n\013UNEN" +
+      "CRYPTED\020\001\022\030\n\024ENCRYPTED_SCRYPT_AES\020\002\"0\n\rW" +
+      "rappedWallet\022\037\n\006wallet\030\350\007 \002(\0132\016.wallet.W" +
+      "alletB\035\n\023org.bitcoinj.walletB\006Protos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -7737,7 +7671,7 @@ public final class Protos {
           internal_static_wallet_EncryptedPrivateKey_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_wallet_EncryptedPrivateKey_descriptor,
-              new java.lang.String[] { "InitialisationVector", "FinalBlockLength", "EncryptedPrivateKey", },
+              new java.lang.String[] { "InitialisationVector", "EncryptedPrivateKey", },
               org.bitcoinj.wallet.Protos.EncryptedPrivateKey.class,
               org.bitcoinj.wallet.Protos.EncryptedPrivateKey.Builder.class);
           internal_static_wallet_Key_descriptor =

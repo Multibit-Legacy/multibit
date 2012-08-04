@@ -32,8 +32,7 @@ option java_outer_classname = "Protos";
  */
 message EncryptedPrivateKey {
   required bytes initialisation_vector = 1;       // The initialisation vector for the AES encryption (16 bytes)
-  required int32 final_block_length = 2;          // Number of bytes used in the last block. (For pad removal)
-  required bytes encrypted_private_key = 3;       // The encrypted private key
+  required bytes encrypted_private_key = 2;       // The encrypted private key
 }
 
 /**

@@ -141,8 +141,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             if (encryptedPrivateKey != null) {
                 Protos.EncryptedPrivateKey.Builder encryptedKeyBuilder = Protos.EncryptedPrivateKey.newBuilder()
                     .setEncryptedPrivateKey(ByteString.copyFrom(encryptedPrivateKey.getEncryptedBytes()))
-                    .setInitialisationVector(ByteString.copyFrom(encryptedPrivateKey.getInitialisationVector()))
-                    .setFinalBlockLength(encryptedPrivateKey.getFinalBlockLength());
+                    .setInitialisationVector(ByteString.copyFrom(encryptedPrivateKey.getInitialisationVector()));
                 buf.setEncryptedPrivateKey(encryptedKeyBuilder);
             }
 
@@ -349,7 +348,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             EncryptedPrivateKey encryptedPrivateKey = null;
             if (keyProto.hasEncryptedPrivateKey()) {
                 Protos.EncryptedPrivateKey encryptedPrivateKeyProto = keyProto.getEncryptedPrivateKey();
-                encryptedPrivateKey = new EncryptedPrivateKey(encryptedPrivateKeyProto.getInitialisationVector().toByteArray(), encryptedPrivateKeyProto.getFinalBlockLength(), 
+                encryptedPrivateKey = new EncryptedPrivateKey(encryptedPrivateKeyProto.getInitialisationVector().toByteArray(),
                         encryptedPrivateKeyProto.getEncryptedPrivateKey().toByteArray());
             }
 

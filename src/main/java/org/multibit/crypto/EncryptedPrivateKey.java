@@ -6,14 +6,10 @@ public class EncryptedPrivateKey {
 
     // The initialisation vector for the AES encryption (16 bytes)
     private byte[] initialisationVector; 
-    
-    // Number of bytes used in the last block. (For pad removal)
-    private int finalBlockLength;    
-    
-    public EncryptedPrivateKey(byte[] initialisationVector, int finalBlockLength, byte[] encryptedPrivateKey) {
+       
+    public EncryptedPrivateKey(byte[] initialisationVector, byte[] encryptedPrivateKey) {
         super();
         this.initialisationVector = initialisationVector;
-        this.finalBlockLength = finalBlockLength;
         this.encryptedPrivateKey = encryptedPrivateKey;
     }
 
@@ -26,14 +22,6 @@ public class EncryptedPrivateKey {
 
     public void setInitialisationVector(byte[] initialisationVector) {
         this.initialisationVector = initialisationVector;
-    }
-
-    public int getFinalBlockLength() {
-        return finalBlockLength;
-    }
-
-    public void setFinalBlockLength(int finalBlockLength) {
-        this.finalBlockLength = finalBlockLength;
     }
 
     public byte[] getEncryptedBytes() {
@@ -49,7 +37,6 @@ public class EncryptedPrivateKey {
         final int prime = 31;
         int result = 1;
         result = prime * result + Arrays.hashCode(encryptedPrivateKey);
-        result = prime * result + finalBlockLength;
         result = prime * result + Arrays.hashCode(initialisationVector);
         return result;
     }
@@ -65,8 +52,7 @@ public class EncryptedPrivateKey {
         EncryptedPrivateKey other = (EncryptedPrivateKey) obj;
         if (!Arrays.equals(encryptedPrivateKey, other.encryptedPrivateKey))
             return false;
-        if (finalBlockLength != other.finalBlockLength)
-            return false;
+
         if (!Arrays.equals(initialisationVector, other.initialisationVector))
             return false;
         return true;
@@ -74,7 +60,6 @@ public class EncryptedPrivateKey {
 
     @Override
     public String toString() {
-        return "EncryptedPrivateKey [initialisationVector=" + Arrays.toString(initialisationVector) + ", finalBlockLength="
-                + finalBlockLength + ", encryptedPrivateKey=" + Arrays.toString(encryptedPrivateKey) + "]";
+        return "EncryptedPrivateKey [initialisationVector=" + Arrays.toString(initialisationVector) + ", encryptedPrivateKey=" + Arrays.toString(encryptedPrivateKey) + "]";
     }       
 }

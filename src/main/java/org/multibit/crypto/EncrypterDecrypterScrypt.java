@@ -36,16 +36,6 @@ import com.lambdaworks.crypto.SCrypt;
 /**
  * This class encrypts and decrypts byte arrays and strings using scrypt as the KDF and 
  * AES for the encryption.
- * 
- * The format of the encrypted byte data is a byte[] containing:
- *    Initialisation vector     BLOCK_LENGTH bytes    The initialisation vector (also used as the salt).
- *    final block length        2 bytes               Two bytes for the number of bytes used in the last block (to enable pad removal). Little endian.
- *    encrypted data            any length of bytes   The encrypted data.
- * 
- * String data is encrypted by:
- *    1) Converting the String to bytes using the STRING_ENCODING.
- *    2) Encrypting the resultant bytes as above.
- *    3) Converting the encrypted bytes to a String using Base64.
  *    
  * @author jim
  * 
@@ -55,11 +45,6 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter, Serializabl
     public Logger log = LoggerFactory.getLogger(EncrypterDecrypterScrypt.class.getName());
 
     private static final long serialVersionUID = 949662512049152670L;
-
-    /**
-     * The string encoding to use when converting strings to bytes.
-     */
-    public static final String STRING_ENCODING = "UTF-8";
 
     /**
      * Key length in bytes.
@@ -112,8 +97,8 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter, Serializabl
      * Password based encryption using AES - CBC 256 bits.
      * 
      * @param plain             The bytes to encrypt
-     * @param passwordBytes     The password to use for encryption
-     * @return                  EncryptedPrivateKey containing IV, the final block length and the encrypted private keys
+     * @param aesKey            The AES key to use for encryption
+     * @return                  EncryptedPrivateKey containing IV and the encrypted private keys
      * @throws                  EncrypterDecrypterException
      */
     @Override
@@ -133,10 +118,7 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter, Serializabl
 
             cipher.doFinal(encryptedBytes, length);
 
-            // Work out how many bytes in the last block are real data as opposed to padding
-            int finalBlockLength = plainBytes.length % BLOCK_LENGTH;
-
-            return new EncryptedPrivateKey(iv, finalBlockLength, encryptedBytes);
+            return new EncryptedPrivateKey(iv, encryptedBytes);
         } catch (Exception e) {
             throw new EncrypterDecrypterException("Could not encrypt bytes '" + Utils.bytesToHexString(plainBytes) + "'", e);
         }
@@ -146,7 +128,7 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter, Serializabl
      * Decrypt bytes previously encrypted with this class.
      * 
      * @param bytesToDecode    The bytes to decrypt
-     * @param password         The password to use for decryption
+     * @param aesKey           The AES key to use for decryption
      * @return                 The decrypted bytes
      * @throws                 EncrypterDecrypterException
      */
@@ -160,19 +142,16 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter, Serializabl
             cipher.init(false, keyWithIv);
 
             byte[] cipherBytes = privateKeyToDecode.getEncryptedBytes();
-            byte[] paddedDecryptedBytes = new byte[cipher.getOutputSize(cipherBytes.length)];
-            int length = cipher.processBytes(cipherBytes, 0, cipherBytes.length, paddedDecryptedBytes, 0);
+            int minimumSize = cipher.getOutputSize(cipherBytes.length);
+            byte[] outputBuffer = new byte[minimumSize];
+            int length1 = cipher.processBytes(cipherBytes, 0, cipherBytes.length, outputBuffer, 0);
+            int length2 = cipher.doFinal(outputBuffer, length1);
+            int actualLength = length1 + length2;
 
-            cipher.doFinal(paddedDecryptedBytes, length);
-
-            // Strip off any padding bytes.
-            int paddedLength = paddedDecryptedBytes.length;
-            int strippedLength = paddedLength - BLOCK_LENGTH + privateKeyToDecode.getFinalBlockLength();
+            byte[] decryptedBytes = new byte[actualLength];
+            System.arraycopy(outputBuffer, 0, decryptedBytes, 0, actualLength);
             
-            byte[] strippedDecryptedBytes = new byte[strippedLength];
-            System.arraycopy(paddedDecryptedBytes, 0, strippedDecryptedBytes, 0, strippedLength);
-            
-            return strippedDecryptedBytes;
+            return decryptedBytes;
         } catch (Exception e) {
             e.printStackTrace();
             throw new EncrypterDecrypterException("Could not decrypt bytes", e);

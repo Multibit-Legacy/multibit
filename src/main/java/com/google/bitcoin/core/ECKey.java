@@ -112,7 +112,7 @@ public class ECKey implements Serializable, IsMultiBitClass {
         this.encrypterDecrypter = encrypterDecrypter;
         
         isEncrypted = false;
-        encryptedPrivateKey = new EncryptedPrivateKey(new byte[0], 0, new byte[0]);
+        encryptedPrivateKey = new EncryptedPrivateKey(new byte[0], new byte[0]);
     }
     
     /**
@@ -451,7 +451,7 @@ public class ECKey implements Serializable, IsMultiBitClass {
         if (encryptedPrivateKey.getEncryptedBytes().length > 0) {
             System.arraycopy(encryptedPrivateKey.getEncryptedBytes(), 0, copyEncryptedPrivateKey, 0, encryptedPrivateKey.getEncryptedBytes().length);
         }
-        EncryptedPrivateKey clonedEncryptedPrivateKey = new EncryptedPrivateKey(encryptedPrivateKey.getInitialisationVector(), encryptedPrivateKey.getFinalBlockLength(), copyEncryptedPrivateKey);
+        EncryptedPrivateKey clonedEncryptedPrivateKey = new EncryptedPrivateKey(encryptedPrivateKey.getInitialisationVector(), copyEncryptedPrivateKey);
                   
         return clonedEncryptedPrivateKey ;
     }
