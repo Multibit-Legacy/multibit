@@ -86,7 +86,6 @@ public class WalletInfo {
 
     private String walletFilename;
     private WalletMajorVersion walletMajorVersion;
-    private int walletMinorVersion;
 
     private Properties walletPreferences;
     
@@ -94,25 +93,15 @@ public class WalletInfo {
      * Flag indicated that the wallet has been deleted and should not be used.
      */
     private boolean deleted = false;
-    
-    /**
-     * 
-     * @param walletFilename
-     *            the filename for the wallet this is the info for
-     */
-    public WalletInfo(String walletFilename, WalletMajorVersion walletMajorVersion) {
-        this(walletFilename, walletMajorVersion, 0);
-    }
 
     /**
      * 
      * @param walletFilename
      *            the filename for the wallet this is the info for
      */
-    public WalletInfo(String walletFilename, WalletMajorVersion walletMajorVersion, int walletMinorVersion) {
+    public WalletInfo(String walletFilename, WalletMajorVersion walletMajorVersion) {
         this.walletFilename = walletFilename;
         this.walletMajorVersion = walletMajorVersion;
-        this.setWalletMinorVersion(walletMinorVersion);
 
         candidateReceivingAddresses = new HashSet<AddressBookData>();
         receivingAddresses = new ArrayList<AddressBookData>();
@@ -648,13 +637,5 @@ public class WalletInfo {
 
     public void setWalletMajorVersion(WalletMajorVersion walletVersion) {
         this.walletMajorVersion = walletVersion;
-    }
-
-    public void setWalletMinorVersion(int walletMinorVersion) {
-        this.walletMinorVersion = walletMinorVersion;
-    }
-
-    public int getWalletMinorVersion() {
-        return walletMinorVersion;
     }
 }

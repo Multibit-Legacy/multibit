@@ -80,6 +80,11 @@ public class PerWalletModelData {
 
     public void setWalletInfo(WalletInfo walletInfo) {
         this.walletInfo = walletInfo;
+        if (walletInfo != null && wallet != null) {
+            if (wallet.getMajorVersion() == null) {
+                wallet.setMajorVersion(walletInfo.getWalletMajorVersion());
+            }
+        }
     }
 
     public List<WalletTableData> getWalletTableDataList() {

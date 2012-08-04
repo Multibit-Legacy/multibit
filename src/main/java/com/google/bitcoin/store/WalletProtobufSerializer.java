@@ -22,11 +22,14 @@ import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.TextFormat;
 import org.bitcoinj.wallet.Protos;
-import org.bitcoinj.wallet.Protos.VersionableWallet;
+import org.bitcoinj.wallet.Protos.WrappedWallet;
 import org.multibit.IsMultiBitClass;
+import org.multibit.crypto.EncryptedPrivateKey;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterScrypt;
 import org.multibit.crypto.ScryptParameters;
+import org.multibit.file.WalletVersionException;
+import org.multibit.model.WalletMajorVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,11 +71,11 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
     }
 
     /**
-     * Formats the given VersionableWallet to the given output stream in protocol buffer format.<p>
+     * Formats the given WrappedWallet to the given output stream in protocol buffer format.<p>
      */
-    public static void writeVersionableWallet(org.multibit.model.VersionableWallet versionableWallet, OutputStream output) throws IOException {
-        Protos.VersionableWallet versionableWalletProto = versionableWalletToProto(versionableWallet);
-        versionableWalletProto.writeTo(output);
+    public static void writeWrappedWallet(org.multibit.model.WrappedWallet wrappedWallet, OutputStream output) throws IOException {
+        Protos.WrappedWallet wrappedWalletProto = wrappedWalletToProto(wrappedWallet);
+        wrappedWalletProto.writeTo(output);
     }
 
     /**
@@ -98,18 +101,15 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
     }
 
     /**
-     * Converts the given versionableWallet to the object representation of the protocol buffers. This can be modified, or
+     * Converts the given wrappedWallet to the object representation of the protocol buffers. This can be modified, or
      * additional data fields set, before serialization takes place.
      */
-    public static Protos.VersionableWallet versionableWalletToProto(org.multibit.model.VersionableWallet versionableWallet) {
-        Protos.VersionableWallet.Builder versionableWalletBuilder = Protos.VersionableWallet.newBuilder();
-        versionableWalletBuilder.setMajorVersion(versionableWallet.getMajorVersion());
-        versionableWalletBuilder.setMinorVersion(versionableWallet.getMinorVersion());
+    public static Protos.WrappedWallet wrappedWalletToProto(org.multibit.model.WrappedWallet wrappedWallet) {
+        Protos.WrappedWallet.Builder wrappedWalletBuilder = Protos.WrappedWallet.newBuilder();
+        Protos.Wallet.Builder protoWalletBuilder = walletToProtoBuilder(wrappedWallet.getWallet());
+        wrappedWalletBuilder.setWallet(protoWalletBuilder);
         
-        Protos.Wallet.Builder protoWalletBuilder = walletToProtoBuilder(versionableWallet.getWallet());
-        versionableWalletBuilder.setWallet(protoWalletBuilder);
-        
-        return versionableWalletBuilder.build();
+        return wrappedWalletBuilder.build();
     }
     
     /**
@@ -136,9 +136,16 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
                 buf.setPrivateKey(ByteString.copyFrom(key.getPrivKeyBytes()));
             }
 
-            if (key.getEncryptedPrivateKey() != null) {
-                buf.setEncryptedPrivateKey(ByteString.copyFrom(key.getEncryptedPrivateKey()));
+            
+            EncryptedPrivateKey encryptedPrivateKey = key.getEncryptedPrivateKey();
+            if (encryptedPrivateKey != null) {
+                Protos.EncryptedPrivateKey.Builder encryptedKeyBuilder = Protos.EncryptedPrivateKey.newBuilder()
+                    .setEncryptedPrivateKey(ByteString.copyFrom(encryptedPrivateKey.getEncryptedBytes()))
+                    .setInitialisationVector(ByteString.copyFrom(encryptedPrivateKey.getInitialisationVector()))
+                    .setFinalBlockLength(encryptedPrivateKey.getFinalBlockLength());
+                buf.setEncryptedPrivateKey(encryptedKeyBuilder);
             }
+
             // We serialize the public key even if the private key is present for speed reasons: we don't want to do
             // lots of slow EC math to load the wallet, we prefer to store the redundant data instead. It matters more
             // on mobile platforms.
@@ -167,11 +174,18 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         
         // Populate the wallet type.
         if (wallet.getWalletType() == WalletType.ENCRYPTED) {
-            walletBuilder.setWalletType(Protos.Wallet.WalletType.ENCRYPTED);
+            walletBuilder.setEncryptionType(Protos.Wallet.EncryptionType.ENCRYPTED_SCRYPT_AES);
         } else {
-            walletBuilder.setWalletType(Protos.Wallet.WalletType.UNENCRYPTED);
-            
+            walletBuilder.setEncryptionType(Protos.Wallet.EncryptionType.UNENCRYPTED);
         }
+        
+        // Populate the major and minor wallet version.
+        if (wallet.getMajorVersion() != null) {
+            walletBuilder.setMajorVersion(wallet.getMajorVersion().getWalletVersionAsInt());
+        }
+        walletBuilder.setMinorVersion(wallet.getMinorVersion());
+        
+
         return walletBuilder;
     }
     
@@ -258,29 +272,21 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
 
     /**
      * Parses a VersionableWallet from the given stream. The stream is expected to contain a binary serialization of a 
-     * {@link Protos.VersionableWallet} object.<p>
+     * {@link Protos.WrappedWallet} object.<p>
      *  
      * If the stream is invalid or the serialized wallet contains unsupported features, 
      * {@link IllegalArgumentException} is thrown.
      *
      */
-    public static org.multibit.model.VersionableWallet readVersionableWallet(InputStream input) throws IOException {
-        Protos.VersionableWallet versionableWalletProto = Protos.VersionableWallet.parseFrom(input);
+    public static org.multibit.model.WrappedWallet readWrappedWallet(InputStream input) throws IOException {
+        Protos.WrappedWallet wrappedWalletProto = Protos.WrappedWallet.parseFrom(input);
 
         // System.out.println(TextFormat.printToString(versionableWalletProto));
-        Wallet wallet = parseWalletProto(versionableWalletProto.getWallet());
+        Wallet wallet = parseWalletProto(wrappedWalletProto.getWallet());
 
-        int majorVersion = 0;
-        if (versionableWalletProto.hasMajorVersion()) {
-            majorVersion = versionableWalletProto.getMajorVersion();
-        }
-        int minorVersion = 0;
-        if (versionableWalletProto.hasMinorVersion()) {
-            minorVersion = versionableWalletProto.getMinorVersion();
-        }
-        org.multibit.model.VersionableWallet versionableWallet = new org.multibit.model.VersionableWallet(wallet, majorVersion, minorVersion);
+        org.multibit.model.WrappedWallet wrappedWallet = new org.multibit.model.WrappedWallet(wallet);
         
-        return versionableWallet;
+        return wrappedWallet;
     }
 
     /**
@@ -315,12 +321,12 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
 
         // Read the WalletType.
         WalletType walletType = null;
-        if (walletProto.hasWalletType()) {
+        if (walletProto.hasEncryptionType()) {
             // There is a wallet type specified so use it directly.
-            Protos.Wallet.WalletType protoWalletType = walletProto.getWalletType();
-            if (protoWalletType.getNumber() == Protos.Wallet.WalletType.ENCRYPTED_VALUE) {
+            Protos.Wallet.EncryptionType protoWalletType = walletProto.getEncryptionType();
+            if (protoWalletType.getNumber() == Protos.Wallet.EncryptionType.ENCRYPTED_SCRYPT_AES_VALUE) {
                 walletType = WalletType.ENCRYPTED;
-            } else  if (protoWalletType.getNumber() == Protos.Wallet.WalletType.UNENCRYPTED_VALUE) {
+            } else  if (protoWalletType.getNumber() == Protos.Wallet.EncryptionType.UNENCRYPTED_VALUE) {
                 walletType = WalletType.UNENCRYPTED;
             } else {
                 // Unknown wallet type - something from the future.
@@ -340,13 +346,19 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             }
 
             byte[] privKey = keyProto.hasPrivateKey() ? keyProto.getPrivateKey().toByteArray() : null;
-            byte[] encryptedPrivKey = keyProto.hasEncryptedPrivateKey() ? keyProto.getEncryptedPrivateKey().toByteArray() : null;
+            EncryptedPrivateKey encryptedPrivateKey = null;
+            if (keyProto.hasEncryptedPrivateKey()) {
+                Protos.EncryptedPrivateKey encryptedPrivateKeyProto = keyProto.getEncryptedPrivateKey();
+                encryptedPrivateKey = new EncryptedPrivateKey(encryptedPrivateKeyProto.getInitialisationVector().toByteArray(), encryptedPrivateKeyProto.getFinalBlockLength(), 
+                        encryptedPrivateKeyProto.getEncryptedPrivateKey().toByteArray());
+            }
+
             byte[] pubKey = keyProto.hasPublicKey() ? keyProto.getPublicKey().toByteArray() : null;
             
             ECKey ecKey = null;
             if (walletType == WalletType.ENCRYPTED) {
                 // If the key is an encrypted key construct an ECKey with the encrypted private key bytes.
-                ecKey = new ECKey(encryptedPrivKey, pubKey, encrypterDecrypter);
+                ecKey = new ECKey(encryptedPrivateKey, pubKey, encrypterDecrypter);
                 
                 // If any of the keys are encrypted, mark the wallet as encrypted.
                 if (ecKey.isEncrypted()) {
@@ -387,6 +399,29 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             }
         }
         
+        if (walletProto.hasMajorVersion()) {
+            int majorVersion = walletProto.getMajorVersion();
+            if (majorVersion == WalletMajorVersion.PROTOBUF.getWalletVersionAsInt()) {
+                wallet.setMajorVersion(WalletMajorVersion.PROTOBUF);                
+            } else {
+                if (majorVersion == WalletMajorVersion.PROTOBUF_ENCRYPTED.getWalletVersionAsInt()) {
+                    wallet.setMajorVersion(WalletMajorVersion.PROTOBUF_ENCRYPTED);                
+                } else {
+                    // Something from the future.
+                    throw new WalletVersionException("Did not understand wallet major version of '" + majorVersion + "'");
+                }   
+            }
+        } else {
+            // Grandfather in as protobuf.2
+            wallet.setMajorVersion(WalletMajorVersion.PROTOBUF);
+        }
+        
+        int minorVersion = 0;
+        if (walletProto.hasMinorVersion()) {
+            minorVersion = walletProto.getMinorVersion();
+        }
+        wallet.setMinorVersion(minorVersion);
+       
         return wallet;
     }
 

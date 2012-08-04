@@ -17,6 +17,7 @@
 package com.google.bitcoin.core;
 
 import org.multibit.IsMultiBitClass;
+import org.multibit.crypto.EncryptedPrivateKey;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.spongycastle.asn1.*;
 import org.spongycastle.asn1.sec.SECNamedCurves;
@@ -76,9 +77,9 @@ public class ECKey implements Serializable, IsMultiBitClass {
     transient private EncrypterDecrypter encrypterDecrypter;
     
     /**
-     * The encrypted private key bytes.
+     * The encrypted private key information.
      */
-    private byte[] encryptedPrivateKey;
+    private EncryptedPrivateKey encryptedPrivateKey;
     
     /**
      * Indicates whether the private key is encrypted (true) or not (false).
@@ -111,7 +112,7 @@ public class ECKey implements Serializable, IsMultiBitClass {
         this.encrypterDecrypter = encrypterDecrypter;
         
         isEncrypted = false;
-        encryptedPrivateKey = new byte[0];
+        encryptedPrivateKey = new EncryptedPrivateKey(new byte[0], 0, new byte[0]);
     }
     
     /**
@@ -120,13 +121,13 @@ public class ECKey implements Serializable, IsMultiBitClass {
      * @param pubKey The keys public key
      * @param encrypterDecrypter The EncrypterDecrypter that will be used to encrypt and decrypt the private key
      */
-    public ECKey(byte[] encryptedPrivateKey, byte[] pubKey, EncrypterDecrypter encrypterDecrypter) {
+    public ECKey(EncryptedPrivateKey encryptedPrivateKey, byte[] pubKey, EncrypterDecrypter encrypterDecrypter) {
         this((byte[])null, pubKey);
         this.encrypterDecrypter = encrypterDecrypter;
         this.encryptedPrivateKey = encryptedPrivateKey;
         
         // If a non trivial encryptedPrivateKey is supplied then the ECKey is encrypted.
-        isEncrypted = encryptedPrivateKey != null && encryptedPrivateKey.length > 0;
+        isEncrypted = encryptedPrivateKey != null && encryptedPrivateKey.getEncryptedBytes() != null &&  encryptedPrivateKey.getEncryptedBytes().length > 0;
     }
 
     /**
@@ -276,7 +277,7 @@ public class ECKey implements Serializable, IsMultiBitClass {
             if (encrypterDecrypter == null) {
                 throw new IllegalStateException("There is no EncrypterDecrypter to decrypt the private key for signing.");
             }
-            privateKeyForSigning =  new BigInteger(1, encrypterDecrypter.decrypt(encryptedPrivateKey, password));
+            privateKeyForSigning =  new BigInteger(1, encrypterDecrypter.decrypt(encryptedPrivateKey, encrypterDecrypter.deriveKey(password)));
         } else {
             if (priv == null) {
                 throw new IllegalStateException("This ECKey does not have the private key necessary for signing.");
@@ -410,8 +411,8 @@ public class ECKey implements Serializable, IsMultiBitClass {
         if (encrypterDecrypter == null) {
             throw new IllegalStateException("No encrypterDecrypter has been set for this key and so cannot encrypt");
         }
-        encryptedPrivateKey = encrypterDecrypter.encrypt(getPrivKeyBytes(), password);
-        
+                encryptedPrivateKey = encrypterDecrypter.encrypt(getPrivKeyBytes(), encrypterDecrypter.deriveKey(password));
+
         // Clear the private keys.
         this.priv = BigInteger.ZERO;
         
@@ -428,7 +429,7 @@ public class ECKey implements Serializable, IsMultiBitClass {
         }
         
         // Decrypt the private key.
-        byte[] plainTextPrivateKey = encrypterDecrypter.decrypt(encryptedPrivateKey, password);
+        byte[] plainTextPrivateKey = encrypterDecrypter.decrypt(encryptedPrivateKey, encrypterDecrypter.deriveKey(password));
         
         // Set the plaintext key into the private key field.
         this.priv = new BigInteger(1, plainTextPrivateKey);
@@ -440,16 +441,19 @@ public class ECKey implements Serializable, IsMultiBitClass {
         return isEncrypted;
     }
     
-    public byte[] getEncryptedPrivateKey() {
-        if (encryptedPrivateKey == null) {
+    public EncryptedPrivateKey getEncryptedPrivateKey() {
+        if (encryptedPrivateKey == null || encryptedPrivateKey.getEncryptedBytes() == null) {
             return null;
         }
         
         // Copy the private key to make it unmodifiable.
-        byte[] copy = new byte[encryptedPrivateKey.length];
-        System.arraycopy(encryptedPrivateKey, 0, copy, 0, encryptedPrivateKey.length);
+        byte[] copyEncryptedPrivateKey = new byte[encryptedPrivateKey.getEncryptedBytes().length];
+        if (encryptedPrivateKey.getEncryptedBytes().length > 0) {
+            System.arraycopy(encryptedPrivateKey.getEncryptedBytes(), 0, copyEncryptedPrivateKey, 0, encryptedPrivateKey.getEncryptedBytes().length);
+        }
+        EncryptedPrivateKey clonedEncryptedPrivateKey = new EncryptedPrivateKey(encryptedPrivateKey.getInitialisationVector(), encryptedPrivateKey.getFinalBlockLength(), copyEncryptedPrivateKey);
                   
-        return copy;
+        return clonedEncryptedPrivateKey ;
     }
 
     public void setEncrypterDecrypter(EncrypterDecrypter encrypterDecrypter) {

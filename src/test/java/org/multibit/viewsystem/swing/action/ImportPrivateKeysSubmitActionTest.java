@@ -38,7 +38,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
     private static final String EXPECTED_IMPORTING_PRIVATE_KEYS = "Importing private keys...";
     private static final String EXPECTED_IMPORTED_PRIVATE_KEYS = "Importing private keys... completed successfully";
      
-    private static final int DELAY_TO_COMPLETE_IMPORT = 3000; // milliseconds
+    private static final int DELAY_TO_COMPLETE_IMPORT = 5000; // milliseconds
     
     public static final char[] WALLET_PASSWORD = "the unbelievable lightness of being".toCharArray();
     public static final char[] WRONG_PASSWORD = "this is the wrong password".toCharArray();

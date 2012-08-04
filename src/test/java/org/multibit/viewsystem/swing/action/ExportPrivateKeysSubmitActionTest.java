@@ -23,6 +23,8 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.multibit.controller.MultiBitController;
+import org.multibit.crypto.EncryptedPrivateKey;
+import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
@@ -158,8 +160,9 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
 
         // Remember the private keys for the key - for comparision later.
         // Copy the private key bytes for checking later.
-        byte[] encryptedBytes = controller.getModel().getActiveWallet().keychain.get(0).getEncryptedPrivateKey();
-        byte[] originalPrivateKeyBytes = controller.getModel().getActiveWallet().getEncrypterDecrypter().decrypt(encryptedBytes, WALLET_PASSWORD);
+        EncryptedPrivateKey encryptedPrivateKey = controller.getModel().getActiveWallet().keychain.get(0).getEncryptedPrivateKey();
+        EncrypterDecrypter encrypterDecrypter = controller.getModel().getActiveWallet().getEncrypterDecrypter();
+        byte[] originalPrivateKeyBytes = encrypterDecrypter.decrypt(encryptedPrivateKey, encrypterDecrypter.deriveKey(WALLET_PASSWORD));
 
         // Create a new ExportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);

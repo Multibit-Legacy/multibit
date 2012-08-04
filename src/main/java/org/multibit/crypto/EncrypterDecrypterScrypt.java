@@ -21,7 +21,6 @@ import java.nio.ByteOrder;
 import java.security.SecureRandom;
 
 import org.apache.commons.codec.binary.Base64;
-import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.BufferedBlockCipher;
@@ -92,13 +91,14 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter, Serializabl
     }
 
     /**
-     * Generate key.
+     * Generate AES key.
      * 
      * @param password    The password to use in key generation
      * @return            The KeyParameter containing the created key
      * @throws            EncrypterDecrypterException
      */
-    private KeyParameter getAESPasswordKey(char[] password) throws EncrypterDecrypterException {
+    @Override
+    public KeyParameter deriveKey(char[] password) throws EncrypterDecrypterException {
         try {
             byte[] passwordBytes = convertToByteArray(password); 
             byte[] keyBytes = SCrypt.scrypt(passwordBytes, scryptParameters.getSalt(), scryptParameters.getN(), scryptParameters.getR(), scryptParameters.getP(), KEY_LENGTH);
@@ -111,46 +111,19 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter, Serializabl
     /**
      * Password based encryption using AES - CBC 256 bits.
      * 
-     * @param plainText        The text to encrypt
-     * @param password         The password to use for encryption
-     * @return                 The encrypted string
-     * @throws                 EncrypterDecrypterException
-     */
-    @Override
-    public String encrypt(String plainText, char[] password) throws EncrypterDecrypterException {
-        try {
-            byte[] plainTextAsBytes;
-            if (plainText == null) {
-                plainTextAsBytes = new byte[0];
-            } else {
-                plainTextAsBytes = plainText.getBytes(STRING_ENCODING);
-            }
-            
-            byte[] encryptedBytes = encrypt(plainTextAsBytes, password);     
-            
-            return Base64.encodeBase64String(encryptedBytes);
-        } catch (Exception e) {
-            throw new EncrypterDecrypterException("Could not encrypt string '" + plainText + "'", e);
-        }
-    }
-
-    /**
-     * Password based encryption using AES - CBC 256 bits.
-     * 
      * @param plain             The bytes to encrypt
      * @param passwordBytes     The password to use for encryption
-     * @return                  IV_LENGTH bytes of iv, followed by one byte indicating final block length, followed by the encrypted bytes.
+     * @return                  EncryptedPrivateKey containing IV, the final block length and the encrypted private keys
      * @throws                  EncrypterDecrypterException
      */
     @Override
-    public byte[] encrypt(byte[] plainBytes, char[] password) throws EncrypterDecrypterException {
+    public EncryptedPrivateKey encrypt(byte[] plainBytes, KeyParameter aesKey) throws EncrypterDecrypterException {
         try {
             // Generate iv - each encryption call has a different iv.
             byte[] iv = new byte[BLOCK_LENGTH];
             secureRandom.nextBytes(iv);
  
-            KeyParameter key = getAESPasswordKey(password);
-            ParametersWithIV keyWithIv = new ParametersWithIV(key, iv);
+            ParametersWithIV keyWithIv = new ParametersWithIV(aesKey, iv);
 
             // Encrypt using AES.
             BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESFastEngine()));
@@ -162,35 +135,10 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter, Serializabl
 
             // Work out how many bytes in the last block are real data as opposed to padding
             int finalBlockLength = plainBytes.length % BLOCK_LENGTH;
-            
-            // Convert to two bytes, little endian
-            byte[] padBytes = new byte[]{(byte)(finalBlockLength % 256), (byte)(finalBlockLength / 256) };
-            
-            log.debug("pad bytes for finalBlockLength of " + finalBlockLength + " = " + Utils.bytesToHexString(padBytes));
-            // The result bytes are the BLOCK_LENGTH iv bytes followed by two bytes containing the final block length, followed by the encrypted bytes.
-            return concat(concat(iv, padBytes), encryptedBytes);
+
+            return new EncryptedPrivateKey(iv, finalBlockLength, encryptedBytes);
         } catch (Exception e) {
             throw new EncrypterDecrypterException("Could not encrypt bytes '" + Utils.bytesToHexString(plainBytes) + "'", e);
-        }
-    }
-
-    /**
-     * Decrypt text previously encrypted with this class.
-     * 
-     * @param textToDecode    The code to decrypt
-     * @param password        The password to use for decryption
-     * @return                The decrypted text
-     * @throws                EncrypterDecrypterException
-     */
-    @Override
-    public String decrypt(String textToDecode, char[] password) throws EncrypterDecrypterException {
-        try {
-            final byte[] decodeTextAsBytes = Base64.decodeBase64(textToDecode.getBytes(STRING_ENCODING));
-            byte[] decryptedBytes = decrypt(decodeTextAsBytes, password);
-            
-            return new String(decryptedBytes, STRING_ENCODING);
-        } catch (Exception e) {
-            throw new EncrypterDecrypterException("Could not decrypt input string", e); 
         }
     }
 
@@ -203,27 +151,15 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter, Serializabl
      * @throws                 EncrypterDecrypterException
      */
     @Override
-    public byte[] decrypt(byte[] bytesToDecode, char[] password) throws EncrypterDecrypterException {
+    public byte[] decrypt(EncryptedPrivateKey privateKeyToDecode, KeyParameter aesKey) throws EncrypterDecrypterException {
         try {
-            // Separate the iv, final block length and bytes to decrypt.
-            byte[] iv = new byte[BLOCK_LENGTH];
-            System.arraycopy(bytesToDecode, 0, iv, 0, BLOCK_LENGTH);
-
-            // Work out the final block length - little endian.
-            ByteBuffer buffer = ByteBuffer.wrap(new byte[]{bytesToDecode[BLOCK_LENGTH], bytesToDecode[BLOCK_LENGTH + 1 ]});
-            buffer.order(ByteOrder.LITTLE_ENDIAN);  // if you want little-endian
-            int finalBlockLength = buffer.getShort();
-           
-            byte[] cipherBytes = new byte[bytesToDecode.length - BLOCK_LENGTH - 2];
-            System.arraycopy(bytesToDecode, BLOCK_LENGTH + 2, cipherBytes, 0, bytesToDecode.length - BLOCK_LENGTH - 2);
-
-            KeyParameter key = getAESPasswordKey(password);
-            ParametersWithIV keyWithIv = new ParametersWithIV(key, iv);
+            ParametersWithIV keyWithIv = new ParametersWithIV(new KeyParameter(aesKey.getKey()), privateKeyToDecode.getInitialisationVector());
 
             // Decrypt the message.
             BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESFastEngine()));
             cipher.init(false, keyWithIv);
 
+            byte[] cipherBytes = privateKeyToDecode.getEncryptedBytes();
             byte[] paddedDecryptedBytes = new byte[cipher.getOutputSize(cipherBytes.length)];
             int length = cipher.processBytes(cipherBytes, 0, cipherBytes.length, paddedDecryptedBytes, 0);
 
@@ -231,7 +167,7 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter, Serializabl
 
             // Strip off any padding bytes.
             int paddedLength = paddedDecryptedBytes.length;
-            int strippedLength = paddedLength - BLOCK_LENGTH + finalBlockLength;
+            int strippedLength = paddedLength - BLOCK_LENGTH + privateKeyToDecode.getFinalBlockLength();
             
             byte[] strippedDecryptedBytes = new byte[strippedLength];
             System.arraycopy(paddedDecryptedBytes, 0, strippedDecryptedBytes, 0, strippedLength);
@@ -241,17 +177,6 @@ public class EncrypterDecrypterScrypt implements EncrypterDecrypter, Serializabl
             e.printStackTrace();
             throw new EncrypterDecrypterException("Could not decrypt bytes", e);
         }
-    }
-
-    /**
-     * Concatenate two byte arrays.
-     */
-    private byte[] concat(byte[] arrayA, byte[] arrayB) {
-        byte[] result = new byte[arrayA.length + arrayB.length];
-        System.arraycopy(arrayA, 0, result, 0, arrayA.length);
-        System.arraycopy(arrayB, 0, result, arrayA.length, arrayB.length);
-
-        return result;
     }
     
     /**

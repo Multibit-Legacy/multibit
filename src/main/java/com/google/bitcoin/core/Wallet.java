@@ -20,9 +20,11 @@ import com.google.bitcoin.core.WalletTransaction.Pool;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.bitcoin.utils.EventListenerInvoker;
 import org.multibit.IsMultiBitClass;
+import org.multibit.crypto.EncryptedPrivateKey;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.crypto.WalletIsAlreadyEncryptedException;
+import org.multibit.model.WalletMajorVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -167,9 +169,19 @@ public class Wallet implements Serializable, IsMultiBitClass {
     private boolean currentlyEncrypted;
     
     /**
+     * The wallet major version
+     */
+    WalletMajorVersion majorVersion;
+    
+    /** 
+     * The wallet minor version
+     */
+    private int minorVersion;
+    
+    /**
      * The encrypterDecrypter for the wallet.
      */
-    transient private EncrypterDecrypter encrypterDecrypter;
+    private EncrypterDecrypter encrypterDecrypter;
     
     /**
      * Creates a new, empty wallet with no keys and no transactions. If you want to restore a wallet from disk instead,
@@ -1899,12 +1911,14 @@ public class Wallet implements Serializable, IsMultiBitClass {
         ECKey firstECKey = getKeychain().get(0);
 
         if (firstECKey != null && firstECKey.getEncryptedPrivateKey() != null) {
-            byte[] encryptedBytes = firstECKey.getEncryptedPrivateKey();
+            byte[] encryptedBytes = firstECKey.getEncryptedPrivateKey().getEncryptedBytes();
             // Clone the encrypted bytes.
             byte[] cloneEncrypted = new byte[encryptedBytes.length];
             System.arraycopy(encryptedBytes, 0, cloneEncrypted, 0, encryptedBytes.length);
+            EncryptedPrivateKey clonedEncryptedPrivateKey = new EncryptedPrivateKey(firstECKey.getEncryptedPrivateKey().getInitialisationVector(),
+                    firstECKey.getEncryptedPrivateKey().getFinalBlockLength(), cloneEncrypted);
             try {
-                encrypterDecrypter.decrypt(cloneEncrypted, password);
+                encrypterDecrypter.decrypt(clonedEncryptedPrivateKey, encrypterDecrypter.deriveKey(password));
                 
                 // Success.
                 return true;
@@ -1927,5 +1941,21 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
     public void setCurrentlyEncrypted(boolean currentlyEncrypted) {
         this.currentlyEncrypted = currentlyEncrypted;
+    }
+
+    public int getMinorVersion() {
+        return minorVersion;
+    }
+
+    public void setMinorVersion(int minorVersion) {
+        this.minorVersion = minorVersion;
+    }
+
+    public WalletMajorVersion getMajorVersion() {
+        return majorVersion;
+    }
+
+    public void setMajorVersion(WalletMajorVersion majorVersion) {
+        this.majorVersion = majorVersion;
     }
 }

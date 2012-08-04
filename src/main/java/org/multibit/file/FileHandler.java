@@ -46,7 +46,7 @@ import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.model.VersionableWallet;
+import org.multibit.model.WrappedWallet;
 import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletMajorVersion;
 import org.multibit.network.MultiBitService;
@@ -112,33 +112,22 @@ public class FileHandler {
                 if (walletInfo.getWalletMajorVersion() == WalletMajorVersion.SERIALIZED) {
                     wallet = Wallet.loadFromFileStream(stream);
                 } else {
-                    // Try loading it first as a VersionableWallet
-                    VersionableWallet versionableWallet = null;
+                    // Try loading it first as a WrappedWallet
+                    WrappedWallet wrappedWallet = null;
                     try {
-                        versionableWallet = WalletProtobufSerializer.readVersionableWallet(stream);
+                        wrappedWallet = WalletProtobufSerializer.readWrappedWallet(stream);
                     } catch (IllegalArgumentException iae) {
-                        // Not a VersionableWallet or otherwise unreadable. 
+                        // Not a WrappedWallet or otherwise unreadable. 
                         iae.printStackTrace();
                     } catch (com.google.protobuf.InvalidProtocolBufferException ipbe) {
-                        // Not a VersionableWallet or otherwise unreadable.   
+                        // Not a WrappedWallet or otherwise unreadable.   
                         ipbe.printStackTrace();
                     }
                     
-                    if (versionableWallet != null) {
-                        // Load as VersionableWallet was successful.
+                    if (wrappedWallet != null) {
+                        // Load as WrappedWallet was successful.
                         // Copy wallet version info into wallet info.
-                        wallet = versionableWallet.getWallet();
-                        if (versionableWallet.getMajorVersion() == WalletMajorVersion.PROTOBUF.getWalletVersionAsInt()) {
-                            walletInfo.setWalletMajorVersion(WalletMajorVersion.PROTOBUF);                            
-                        } else {
-                            if (versionableWallet.getMajorVersion() == WalletMajorVersion.PROTOBUF_ENCRYPTED.getWalletVersionAsInt()) {
-                                walletInfo.setWalletMajorVersion(WalletMajorVersion.PROTOBUF_ENCRYPTED);                            
-                            } else {
-                                // Something from the future
-                                throw new WalletVersionException("Cannot understand a wallet major version of " + versionableWallet.getMajorVersion() );
-                            }
-                        }
-                        walletInfo.setWalletMinorVersion(versionableWallet.getMinorVersion());
+                        wallet = wrappedWallet.getWallet();
                     } else {
                         // Close streams
                         if (stream != null) {
@@ -328,11 +317,9 @@ public class FileHandler {
                 } else if (WalletMajorVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletMajorVersion()) {
                     fileOutputStream = new FileOutputStream(walletFile);
                     
-                    // Save as a VersionableWallet message.
-                    VersionableWallet versionableWallet = new VersionableWallet(perWalletModelData.getWallet(), 
-                            perWalletModelData.getWalletInfo().getWalletMajorVersion().getWalletVersionAsInt(),
-                            perWalletModelData.getWalletInfo().getWalletMinorVersion());
-                    WalletProtobufSerializer.writeVersionableWallet(versionableWallet, fileOutputStream);
+                    // Save as a WrappedWallet message.
+                    WrappedWallet wrappedWallet = new WrappedWallet(perWalletModelData.getWallet());
+                    WalletProtobufSerializer.writeWrappedWallet(wrappedWallet, fileOutputStream);
                 } else {
                     throw new WalletVersionException("Cannot save wallet '" + perWalletModelData.getWalletFilename()
                             + "'. Its wallet version is '" + walletInfo.getWalletMajorVersion().toString()

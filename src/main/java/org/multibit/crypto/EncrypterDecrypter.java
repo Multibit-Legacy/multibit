@@ -1,14 +1,14 @@
 package org.multibit.crypto;
 
 import java.io.Serializable;
+import org.spongycastle.crypto.params.KeyParameter;
 
 public interface EncrypterDecrypter extends Serializable {
 
-    public byte[] decrypt(byte[] bytesToDecode, char[] password) throws EncrypterDecrypterException;
+    public KeyParameter deriveKey(char[] password) throws EncrypterDecrypterException;
+    
+    public byte[] decrypt(EncryptedPrivateKey encryptedBytesToDecode, KeyParameter aesKey) throws EncrypterDecrypterException;
 
-    public String decrypt(String textToDecode, char[] password) throws EncrypterDecrypterException;
+    public EncryptedPrivateKey encrypt(byte[] plainBytes, KeyParameter aesKey) throws EncrypterDecrypterException;
 
-    public byte[] encrypt(byte[] plainBytes, char[] password) throws EncrypterDecrypterException;
-
-    public String encrypt(String plainText, char[] password) throws EncrypterDecrypterException;
 }

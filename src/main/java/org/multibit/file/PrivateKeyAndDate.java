@@ -34,7 +34,7 @@ public class PrivateKeyAndDate {
         result = prime * result + ((date == null) ? 0 : date.hashCode());
         result = prime * result + ((key == null) ? 0 : Utils.bytesToHexString(key.getPrivKeyBytes()).hashCode());
         result = prime * result + ((key == null) ? 0 : Utils.bytesToHexString(key.getPubKey()).hashCode());
-        result = prime * result + ((key == null) ? 0 : Utils.bytesToHexString(key.getEncryptedPrivateKey()).hashCode());
+        result = prime * result + ((key == null) ? 0 : Utils.bytesToHexString(key.getEncryptedPrivateKey().getEncryptedBytes()).hashCode());
                return result;
     }
 
@@ -62,7 +62,7 @@ public class PrivateKeyAndDate {
             return false;
         } else if (!Utils.bytesToHexString(key.getPubKey()).equals(Utils.bytesToHexString(other.key.getPubKey()))) {
             return false;
-        } else if (!Utils.bytesToHexString(key.getEncryptedPrivateKey()).equals(Utils.bytesToHexString(other.key.getEncryptedPrivateKey()))) {
+        } else if (!Utils.bytesToHexString(key.getEncryptedPrivateKey().getEncryptedBytes()).equals(Utils.bytesToHexString(other.key.getEncryptedPrivateKey().getEncryptedBytes()))) {
             // Note you can have two equivalent keys (with the same private key) and when encrypted and they appear different due to the random IV.
             return false;
         }

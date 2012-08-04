@@ -47,7 +47,7 @@ import com.google.bitcoin.core.Utils;
  * @author jim
  * 
  */
-public class EncrypterDecrypterOpenSSL implements EncrypterDecrypter {
+public class EncrypterDecrypterOpenSSL {
     /**
      * The string encoding to use when converting strings to bytes
      */

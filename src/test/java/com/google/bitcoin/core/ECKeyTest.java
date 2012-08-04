@@ -22,6 +22,7 @@ import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.crypto.EncryptedPrivateKey;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterScrypt;
 import org.multibit.crypto.ScryptParameters;
@@ -97,8 +98,8 @@ public class ECKeyTest extends TestCase {
         System.arraycopy(unencryptedKey.getPrivKeyBytes(), 0, originalPrivateKeyBytes, 0, 32);
         System.out.println("EncryptableECKeyTest - Original private key = " + Utils.bytesToHexString(originalPrivateKeyBytes));
 
-        byte[] encryptedBytes = encrypterDecrypter.encrypt(unencryptedKey.getPrivKeyBytes(), PASSWORD1);
-        ECKey encryptedKey = new ECKey(encryptedBytes, unencryptedKey.getPubKey(), encrypterDecrypter);
+        EncryptedPrivateKey encryptedPrivateKey = encrypterDecrypter.encrypt(unencryptedKey.getPrivKeyBytes(), encrypterDecrypter.deriveKey(PASSWORD1));
+        ECKey encryptedKey = new ECKey(encryptedPrivateKey, unencryptedKey.getPubKey(), encrypterDecrypter);
 
         // The key should initially be encrypted
         assertTrue("Key not encrypted at start",  encryptedKey.isEncrypted());

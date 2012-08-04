@@ -346,7 +346,7 @@ public class PrivateKeysHandler {
                 if (decryptionRequired) {
                     // Create a new decrypted key holding the private key.
                     ECKey decryptedKey = new ECKey(ecKey.getEncrypterDecrypter().decrypt(ecKey.getEncryptedPrivateKey(),
-                            walletPassword), ecKey.getPubKey());
+                            ecKey.getEncrypterDecrypter().deriveKey(walletPassword)), ecKey.getPubKey());
                     keyAndDates.add(new PrivateKeyAndDate(decryptedKey, earliestUsageDate));
                 } else {
                     keyAndDates.add(new PrivateKeyAndDate(ecKey, earliestUsageDate));

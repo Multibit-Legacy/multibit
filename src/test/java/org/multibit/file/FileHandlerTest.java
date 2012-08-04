@@ -554,7 +554,6 @@ public class FileHandlerTest extends TestCase {
         newWallet.keychain.add(newKey);
         PerWalletModelData perWalletModelData = new PerWalletModelData();
         WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletMajorVersion.PROTOBUF_ENCRYPTED);
-        walletInfo.setWalletMinorVersion(150);
         
         perWalletModelData.setWalletInfo(walletInfo);
        
@@ -571,7 +570,6 @@ public class FileHandlerTest extends TestCase {
         
         WalletInfo rebornWalletInfo = perWalletModelDataReborn.getWalletInfo();
         assertEquals("Wallet major version was not roundtripped", WalletMajorVersion.PROTOBUF_ENCRYPTED, rebornWalletInfo.getWalletMajorVersion());;
-        assertTrue("Wallet minor version was not roundtripped", rebornWalletInfo.getWalletMinorVersion() == 150);
     }
 
 }
