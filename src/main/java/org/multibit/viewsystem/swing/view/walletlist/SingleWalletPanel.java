@@ -59,7 +59,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 
 import com.google.bitcoin.core.Wallet.BalanceType;
-import com.google.bitcoin.core.WalletType;
+import com.google.bitcoin.core.EncryptionType;
 
 public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener {
 
@@ -246,7 +246,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
         walletTypeButton.setBorder(BorderFactory.createEmptyBorder(WALLET_TYPE_TOP_BORDER, WALLET_TYPE_LEFT_BORDER, 0, 0));
         if (perWalletModelData.getWallet() != null) {
-            setIconForWalletType(perWalletModelData.getWallet().getWalletType(), walletTypeButton);
+            setIconForWalletType(perWalletModelData.getWallet().getEncryptionType(), walletTypeButton);
         }
 
         constraints.fill = GridBagConstraints.NONE;
@@ -336,12 +336,12 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         setSelected(false);
     }
 
-    public void setIconForWalletType(WalletType walletType, JButton button) {
+    public void setIconForWalletType(EncryptionType walletType, JButton button) {
         button.setHorizontalAlignment(SwingConstants.LEADING);
         button.setBorder(BorderFactory.createEmptyBorder(WALLET_TYPE_TOP_BORDER, WALLET_TYPE_LEFT_BORDER, 0, 0));
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
-        if (walletType == WalletType.ENCRYPTED) {
+        if (walletType == EncryptionType.ENCRYPTED_SCRYPT_AES) {
             Action helpAction = new HelpContextAction(controller, ImageLoader.LOCK_ICON_FILE,
                     "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
                     HelpContentsPanel.HELP_WALLET_TYPES_URL);
@@ -396,7 +396,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             }
 
             if (perWalletModelData.getWallet() != null) {
-                setIconForWalletType(perWalletModelData.getWallet().getWalletType(), walletTypeButton);
+                setIconForWalletType(perWalletModelData.getWallet().getEncryptionType(), walletTypeButton);
             }
             
             if (selected) {
@@ -494,12 +494,12 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         
         String encryptionText = "";
         if (perWalletModelData.getWallet() != null) {
-            if (perWalletModelData.getWallet().getWalletType() == WalletType.ENCRYPTED) {
+            if (perWalletModelData.getWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
                 encryptionText = controller.getLocaliser().getString("singleWalletPanel.encrypted");
             } else {
                 encryptionText = controller.getLocaliser().getString("singleWalletPanel.unencrypted");
             }
-            setIconForWalletType(perWalletModelData.getWallet().getWalletType(), walletTypeButton);
+            setIconForWalletType(perWalletModelData.getWallet().getEncryptionType(), walletTypeButton);
     
             if (walletFormatButton != null) {
                 WalletMajorVersion walletVersion = perWalletModelData.getWalletInfo().getWalletMajorVersion();

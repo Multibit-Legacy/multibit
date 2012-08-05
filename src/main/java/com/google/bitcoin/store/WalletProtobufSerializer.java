@@ -172,7 +172,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         }
         
         // Populate the wallet type.
-        if (wallet.getWalletType() == WalletType.ENCRYPTED) {
+        if (wallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
             walletBuilder.setEncryptionType(Protos.Wallet.EncryptionType.ENCRYPTED_SCRYPT_AES);
         } else {
             walletBuilder.setEncryptionType(Protos.Wallet.EncryptionType.UNENCRYPTED);
@@ -319,23 +319,23 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         Wallet wallet = new Wallet(params, encrypterDecrypter);
 
         // Read the WalletType.
-        WalletType walletType = null;
+        EncryptionType walletType = null;
         if (walletProto.hasEncryptionType()) {
             // There is a wallet type specified so use it directly.
             Protos.Wallet.EncryptionType protoWalletType = walletProto.getEncryptionType();
             if (protoWalletType.getNumber() == Protos.Wallet.EncryptionType.ENCRYPTED_SCRYPT_AES_VALUE) {
-                walletType = WalletType.ENCRYPTED;
+                walletType = EncryptionType.ENCRYPTED_SCRYPT_AES;
             } else  if (protoWalletType.getNumber() == Protos.Wallet.EncryptionType.UNENCRYPTED_VALUE) {
-                walletType = WalletType.UNENCRYPTED;
+                walletType = EncryptionType.UNENCRYPTED;
             } else {
                 // Unknown wallet type - something from the future.
                 throw new IllegalArgumentException("Unknown wallet type of '" + protoWalletType.toString());
             }
         } else {
             // If not specified, grandfather in as unencrypted.
-            walletType = WalletType.UNENCRYPTED;
+            walletType = EncryptionType.UNENCRYPTED;
         }
-        wallet.setWalletType(walletType);
+        wallet.setEncryptionType(walletType);
 
         boolean isWalletCurrentlyEncrypted = false;
         // Read all keys
@@ -355,7 +355,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             byte[] pubKey = keyProto.hasPublicKey() ? keyProto.getPublicKey().toByteArray() : null;
             
             ECKey ecKey = null;
-            if (walletType == WalletType.ENCRYPTED) {
+            if (walletType == EncryptionType.ENCRYPTED_SCRYPT_AES) {
                 // If the key is an encrypted key construct an ECKey with the encrypted private key bytes.
                 ecKey = new ECKey(encryptedPrivateKey, pubKey, encrypterDecrypter);
                 

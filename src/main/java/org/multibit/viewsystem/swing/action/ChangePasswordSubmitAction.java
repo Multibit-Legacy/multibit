@@ -17,7 +17,6 @@ package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
@@ -25,7 +24,6 @@ import javax.swing.JPasswordField;
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.FileHandler;
-import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.ChangePasswordPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,15 +34,12 @@ import com.google.bitcoin.core.Wallet;
 /**
  * This {@link Action} action decrypts private keys with the old password and then encrypts the private keys with the new password.
  */
-public class ChangePasswordSubmitAction extends AbstractAction {
+public class ChangePasswordSubmitAction extends MultiBitSubmitAction {
     private static final Logger log = LoggerFactory.getLogger(ChangePasswordSubmitAction.class);
 
     private static final long serialVersionUID = 1923492460598757765L;
 
-    private MultiBitController controller;
-
     private ChangePasswordPanel changePasswordPanel;
-    private MultiBitFrame mainFrame;
 
     private JPasswordField currentPassword;
     
@@ -56,18 +51,12 @@ public class ChangePasswordSubmitAction extends AbstractAction {
      * Creates a new {@link ChangePasswordSubmitAction}.
      */
     public ChangePasswordSubmitAction(MultiBitController controller, ChangePasswordPanel changePasswordPanel,
-            ImageIcon icon, JPasswordField currentPassword, JPasswordField newPassword, JPasswordField repeatNewPassword, MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("changePasswordSubmitAction.text"), icon);
-        this.controller = controller;
+            ImageIcon icon, JPasswordField currentPassword, JPasswordField newPassword, JPasswordField repeatNewPassword) {
+        super(controller, "changePasswordSubmitAction.text", "changePasswordSubmitAction.tooltip", "changePasswordSubmitAction.mnemonicKey", icon);
         this.changePasswordPanel = changePasswordPanel;
         this.currentPassword = currentPassword;
         this.newPassword = newPassword;
         this.repeatNewPassword = repeatNewPassword;
-        this.mainFrame = mainFrame;
-
-        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("changePasswordSubmitAction.tooltip"));
-        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("changePasswordSubmitAction.mnemonicKey"));
     }
 
     /**

@@ -17,7 +17,6 @@ package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
@@ -37,16 +36,12 @@ import com.google.bitcoin.core.Wallet;
 /**
  * This {@link Action} action removes the encryption of private keys in a wallet.
  */
-public class RemovePasswordSubmitAction extends AbstractAction {
+public class RemovePasswordSubmitAction extends MultiBitSubmitAction {
     private static final Logger log = LoggerFactory.getLogger(RemovePasswordSubmitAction.class);
 
     private static final long serialVersionUID = 1923492460598757765L;
 
-    private MultiBitController controller;
-
     private RemovePasswordPanel removePasswordPanel;
-    private MultiBitFrame mainFrame;
-
     private JPasswordField password1;
 
     /**
@@ -54,15 +49,9 @@ public class RemovePasswordSubmitAction extends AbstractAction {
      */
     public RemovePasswordSubmitAction(MultiBitController controller, RemovePasswordPanel removePasswordPanel,
             ImageIcon icon, JPasswordField password1, MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("removePasswordSubmitAction.text"), icon);
-        this.controller = controller;
+        super(controller, "removePasswordSubmitAction.text", "removePasswordSubmitAction.tooltip", "removePasswordSubmitAction.mnemonicKey", icon);
         this.removePasswordPanel = removePasswordPanel;
         this.password1 = password1;
-        this.mainFrame = mainFrame;
-
-        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("removePasswordSubmitAction.tooltip"));
-        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("removePasswordSubmitAction.mnemonicKey"));
     }
 
     /**
@@ -70,7 +59,6 @@ public class RemovePasswordSubmitAction extends AbstractAction {
      */
     public void actionPerformed(ActionEvent e) {
         removePasswordPanel.clearMessages();
-
 
         char[] passwordToUse = password1.getPassword();
 

@@ -23,6 +23,7 @@ import org.multibit.IsMultiBitClass;
 import org.multibit.crypto.EncryptedPrivateKey;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterException;
+import org.multibit.crypto.WalletIsAlreadyDecryptedException;
 import org.multibit.crypto.WalletIsAlreadyEncryptedException;
 import org.multibit.model.WalletMajorVersion;
 import org.slf4j.Logger;
@@ -159,9 +160,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
     transient private ArrayList<WalletEventListener> eventListeners;
 
     /**
-     * The type of the wallet.
+     * The type of encryption used in the wallet
      */
-    private WalletType walletType;
+    private EncryptionType encryptionType;
        
     /**
      * Whether the wallet has all its keys encrypted (currentlyEncrypted = true) or not.
@@ -1805,17 +1806,17 @@ public class Wallet implements Serializable, IsMultiBitClass {
         return keychain;
     }
 
-    public WalletType getWalletType() {
-        if (walletType == null) {
+    public EncryptionType getEncryptionType() {
+        if (encryptionType == null) {
             // By default, wallets are unencrypted
-            return WalletType.UNENCRYPTED;
+            return EncryptionType.UNENCRYPTED;
         }
         
-        return walletType;
+        return encryptionType;
     }
 
-    public void setWalletType(WalletType walletType) {
-        this.walletType = walletType;
+    public void setEncryptionType(EncryptionType encryptionType) {
+        this.encryptionType = encryptionType;
     }
     
     /**
@@ -1829,21 +1830,39 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
         // Create a new arraylist that will contain the encrypted keys
         ArrayList<ECKey> encryptedKeyChain = new ArrayList<ECKey>();;
+
+        // Any exception is thrown outside the synchronized block as it will percolate out and affect the GUI.
+        WalletIsAlreadyEncryptedException walletIsAlreadyEncryptedException = null;
+        boolean anErrorOccurred = false;
         
-        for (ECKey key : keychain) {
-            // TODO Check key is unencrypted.
-            key.setEncrypterDecrypter(encrypterDecrypter);
-            key.encrypt(password);
-            encryptedKeyChain.add(key);
+        synchronized(keychain) {
+            for (ECKey key : keychain) {
+                if (key.isEncrypted()) {
+                    walletIsAlreadyEncryptedException = new WalletIsAlreadyEncryptedException("Key '" + key.toString() + "' is already encrypted.");
+                    anErrorOccurred = true;
+                    break;
+                }
+                
+                // Clone the key before encrypting.
+                // (note that only the EncryptedPrivateKey is deep copied).
+                ECKey clonedECKey = new ECKey(key.getPrivKeyBytes(), new EncryptedPrivateKey(key.getEncryptedPrivateKey()), key.getPubKey(), encrypterDecrypter);
+                clonedECKey.encrypt(password);
+                encryptedKeyChain.add(clonedECKey);
+            }
+        
+            if (!anErrorOccurred) {
+                // Swap the encrypted ECKeys for the original ones.
+                keychain.clear();
+                keychain.addAll(encryptedKeyChain);
+        
+                setEncryptionType(EncryptionType.ENCRYPTED_SCRYPT_AES);
+
+                currentlyEncrypted = true;
+            }
         }
         
-        synchronized(this) {
-            // Swap the encryptableECKeys for the original ones.
-            keychain.clear();
-            keychain.addAll(encryptedKeyChain);
-        
-            setWalletType(WalletType.ENCRYPTED);
-            currentlyEncrypted = true;
+        if (anErrorOccurred) {
+            throw walletIsAlreadyEncryptedException;
         }
     }
 
@@ -1854,28 +1873,47 @@ public class Wallet implements Serializable, IsMultiBitClass {
      */
     public void decrypt(char[] password) {
         if (!currentlyEncrypted) {
-            throw new WalletIsAlreadyEncryptedException("Wallet is already decrypted");
+            throw new WalletIsAlreadyDecryptedException("Wallet is already decrypted");
         }
 
         // Create a new arraylist that will contain the decrypted keys
         ArrayList<ECKey> decryptedKeyChain = new ArrayList<ECKey>();;
- 
-        for (ECKey key : keychain) {
-            key.decrypt(password);
-            decryptedKeyChain.add(key);
+
+        // Any exception is thrown outside the synchronized block as it will percolate out and affect the GUI.
+        WalletIsAlreadyDecryptedException walletIsAlreadyDecryptedException = null;
+        boolean anErrorOccurred = false;
+        
+        synchronized(keychain) {
+            for (ECKey key : keychain) {
+                if (!key.isEncrypted()) {
+                    walletIsAlreadyDecryptedException = new WalletIsAlreadyDecryptedException("Key '" + key.toString() + "' is already decrypted.");
+                    anErrorOccurred = true;
+                    break;
+                }
+                
+                // Clone the key before decrypting.
+                // (note that only the EncryptedPrivateKey is deep copied).
+                ECKey clonedECKey = new ECKey(new EncryptedPrivateKey(key.getEncryptedPrivateKey()), key.getPubKey(), encrypterDecrypter);
+                clonedECKey.decrypt(password);
+                decryptedKeyChain.add(clonedECKey);
+            }
+        
+            if (!anErrorOccurred) {
+                // Swap the encrypted ECKeys for the original ones.
+                keychain.clear();
+                keychain.addAll(decryptedKeyChain);
+        
+                currentlyEncrypted = false;
+            }
         }
         
-        synchronized(this) {
-            // Swap the encryptableECKeys for the original ones.
-            keychain.clear();
-            keychain.addAll(decryptedKeyChain);
-       
-            currentlyEncrypted = false;
+        if (anErrorOccurred) {
+            throw walletIsAlreadyDecryptedException;
         }
     }
    
     /**
-     * Remove any encryption on the private keys and change the wallet type to WalletType.UNENCRYPTED.
+     * Remove any encryption on the private keys and change the encryption type to EncryptionType.UNENCRYPTED.
      * The wallet is no longer encrypted.
      * 
      * @param password
@@ -1886,8 +1924,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
             decrypt(password);
         }
         
-        // Change the wallet type to UNENCRYPTED and set it to being unencrypted.
-        setWalletType(WalletType.UNENCRYPTED);
+        // Change the encryption type to UNENCRYPTED and set it to being unencrypted.
+        setEncryptionType(EncryptionType.UNENCRYPTED);
         currentlyEncrypted = false;       
     }
 
@@ -1911,13 +1949,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
         ECKey firstECKey = getKeychain().get(0);
 
         if (firstECKey != null && firstECKey.getEncryptedPrivateKey() != null) {
-            byte[] encryptedBytes = firstECKey.getEncryptedPrivateKey().getEncryptedBytes();
-            // Clone the encrypted bytes.
-            byte[] cloneEncrypted = new byte[encryptedBytes.length];
-            System.arraycopy(encryptedBytes, 0, cloneEncrypted, 0, encryptedBytes.length);
-            EncryptedPrivateKey clonedEncryptedPrivateKey = new EncryptedPrivateKey(firstECKey.getEncryptedPrivateKey().getInitialisationVector(), cloneEncrypted);
             try {
-                encrypterDecrypter.decrypt(clonedEncryptedPrivateKey, encrypterDecrypter.deriveKey(password));
+                EncryptedPrivateKey clonedPrivateKey  = new EncryptedPrivateKey(firstECKey.getEncryptedPrivateKey());
+                encrypterDecrypter.decrypt(clonedPrivateKey, encrypterDecrypter.deriveKey(password));
                 
                 // Success.
                 return true;

@@ -21,7 +21,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
-import com.google.bitcoin.core.WalletType;
+import com.google.bitcoin.core.EncryptionType;
 
 /**
  * JPanel for creating new receiving addresses.
@@ -176,7 +176,7 @@ public class CreateNewReceivingAddressPanel extends JPanel {
         mainPanel.add(filler5, constraints);
 
         if (controller.getModel().getActiveWallet() != null) {
-            if (controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
+            if (controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
                 // Need wallet password.
                 walletPasswordField.setEnabled(true);
                 walletPasswordPromptLabel.setEnabled(true);

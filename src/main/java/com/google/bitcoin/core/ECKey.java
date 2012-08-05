@@ -116,18 +116,31 @@ public class ECKey implements Serializable, IsMultiBitClass {
     }
     
     /**
+     * Create a new ECKey with a plaintext private key, an encrypted private key, a public key and a EncrypterDecrypter.
+     * This can be used to clone and ECKey.
+     * 
+     * @param uncryptedPrivateKey The private key, unencrypted,
+     * @param encryptedPrivateKey The private key, encrypted,
+     * @param pubKey The keys public key
+     * @param encrypterDecrypter The EncrypterDecrypter that will be used to encrypt and decrypt the private key
+     */
+    public ECKey(byte[] unencryptedPrivateKey, EncryptedPrivateKey encryptedPrivateKey, byte[] pubKey, EncrypterDecrypter encrypterDecrypter) {
+        this(unencryptedPrivateKey, pubKey);
+        this.encrypterDecrypter = encrypterDecrypter;
+        this.encryptedPrivateKey = encryptedPrivateKey;
+        
+        // If a non trivial encryptedPrivateKey is supplied then the ECKey is encrypted.
+        isEncrypted = encryptedPrivateKey != null && encryptedPrivateKey.getEncryptedBytes() != null &&  encryptedPrivateKey.getEncryptedBytes().length > 0;
+    }
+
+    /**
      * Create a new ECKey with an encrypted private key, a public key and a EncrypterDecrypter.
      * @param encryptedPrivateKey The private key, encrypted,
      * @param pubKey The keys public key
      * @param encrypterDecrypter The EncrypterDecrypter that will be used to encrypt and decrypt the private key
      */
     public ECKey(EncryptedPrivateKey encryptedPrivateKey, byte[] pubKey, EncrypterDecrypter encrypterDecrypter) {
-        this((byte[])null, pubKey);
-        this.encrypterDecrypter = encrypterDecrypter;
-        this.encryptedPrivateKey = encryptedPrivateKey;
-        
-        // If a non trivial encryptedPrivateKey is supplied then the ECKey is encrypted.
-        isEncrypted = encryptedPrivateKey != null && encryptedPrivateKey.getEncryptedBytes() != null &&  encryptedPrivateKey.getEncryptedBytes().length > 0;
+        this((byte[])null, encryptedPrivateKey, pubKey, encrypterDecrypter);
     }
 
     /**
@@ -271,11 +284,12 @@ public class ECKey implements Serializable, IsMultiBitClass {
         // The private key bytes to use for signing.
         BigInteger privateKeyForSigning;
         if (decryptBeforeSigning) {
-            if (!isEncrypted()) {
-                throw new IllegalStateException("This ECKey is not encrypted and hence cannot be decrypted.");
-            }
             if (encrypterDecrypter == null) {
                 throw new IllegalStateException("There is no EncrypterDecrypter to decrypt the private key for signing.");
+            }
+            
+            if (!isEncrypted()) {
+                throw new IllegalStateException("This ECKey is not encrypted and hence cannot be decrypted.");
             }
             privateKeyForSigning =  new BigInteger(1, encrypterDecrypter.decrypt(encryptedPrivateKey, encrypterDecrypter.deriveKey(password)));
         } else {
@@ -411,7 +425,7 @@ public class ECKey implements Serializable, IsMultiBitClass {
         if (encrypterDecrypter == null) {
             throw new IllegalStateException("No encrypterDecrypter has been set for this key and so cannot encrypt");
         }
-                encryptedPrivateKey = encrypterDecrypter.encrypt(getPrivKeyBytes(), encrypterDecrypter.deriveKey(password));
+        encryptedPrivateKey = encrypterDecrypter.encrypt(getPrivKeyBytes(), encrypterDecrypter.deriveKey(password));
 
         // Clear the private keys.
         this.priv = BigInteger.ZERO;

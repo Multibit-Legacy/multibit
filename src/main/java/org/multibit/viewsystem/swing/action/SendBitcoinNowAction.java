@@ -42,7 +42,7 @@ import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletType;
+import com.google.bitcoin.core.EncryptionType;
 
 /**
  * This {@link Action} actually spends bitcoin.
@@ -121,7 +121,7 @@ public class SendBitcoinNowAction extends AbstractAction {
             char[] walletPassword = walletPasswordField.getPassword();
  
             if (controller.getModel().getActiveWallet() != null) {
-                if (controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
+                if (controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
                     // Encrypted wallet.
                     if (walletPassword == null || walletPassword.length == 0) {
                         // User needs to enter password.

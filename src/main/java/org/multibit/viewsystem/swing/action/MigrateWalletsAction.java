@@ -137,9 +137,7 @@ public class MigrateWalletsAction extends AbstractAction {
                             tempDirectory = createTempDirectory(new File(loopPerWalletModelData.getWalletFilename()));
                             testWalletFile = File.createTempFile("migrate", ".wallet", tempDirectory);
                             testWalletFile.deleteOnExit();
-
-                            String testWalletFilename = testWalletFile.getAbsolutePath();
-                            
+                          
                             // Copy the serialised wallet to the new test wallet location.
                             FileHandler.copyFile(new File(loopPerWalletModelData.getWalletFilename()), testWalletFile);
 
@@ -280,6 +278,7 @@ public class MigrateWalletsAction extends AbstractAction {
         
         // Change wallet to protobuf.
         perWalletModelData.getWalletInfo().setWalletMajorVersion(WalletMajorVersion.PROTOBUF);
+        perWalletModelData.getWallet().setMajorVersion(WalletMajorVersion.PROTOBUF);
         
         // Try to save it. This should save it in protobuf format
         fileHandler.savePerWalletModelData(perWalletModelData, true);

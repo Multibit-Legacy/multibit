@@ -44,7 +44,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
-import com.google.bitcoin.core.WalletType;
+import com.google.bitcoin.core.EncryptionType;
 
 /**
  * The remove password view.
@@ -469,7 +469,7 @@ public class RemovePasswordPanel extends JPanel implements View {
     }
     
     public void updatePasswordAction() {
-        boolean enableAction = controller.getModel().getActiveWallet() == null ? false : controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED;
+        boolean enableAction = controller.getModel().getActiveWallet() == null ? false : controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES;
         removePasswordSubmitAction.setEnabled(enableAction);
     }
 

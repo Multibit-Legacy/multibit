@@ -47,7 +47,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
-import com.google.bitcoin.core.WalletType;
+import com.google.bitcoin.core.EncryptionType;
 
 /**
  * The change password view.
@@ -664,7 +664,7 @@ public class ChangePasswordPanel extends JPanel implements View {
          * avoids having any public accessors on the panel
          */
         changePasswordSubmitAction = new ChangePasswordSubmitAction(controller, this,
-                ImageLoader.createImageIcon(ImageLoader.CHANGE_PASSWORD_ICON_FILE), currentPasswordField, newPasswordField, repeatNewPasswordField, mainFrame);
+                ImageLoader.createImageIcon(ImageLoader.CHANGE_PASSWORD_ICON_FILE), currentPasswordField, newPasswordField, repeatNewPasswordField);
         MultiBitButton submitButton = new MultiBitButton(changePasswordSubmitAction, controller);
         buttonPanel.add(submitButton);
 
@@ -681,7 +681,7 @@ public class ChangePasswordPanel extends JPanel implements View {
     }
     
     public void updatePasswordAction() {
-        boolean enableAction = controller.getModel().getActiveWallet() == null ? false : controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED;
+        boolean enableAction = controller.getModel().getActiveWallet() == null ? false : controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES;
         changePasswordSubmitAction.setEnabled(enableAction);
     }
 

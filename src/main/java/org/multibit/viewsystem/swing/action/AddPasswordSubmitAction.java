@@ -30,7 +30,6 @@ import org.multibit.crypto.EncrypterDecrypterScrypt;
 import org.multibit.crypto.ScryptParameters;
 import org.multibit.file.FileHandler;
 import org.multibit.model.WalletMajorVersion;
-import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.AddPasswordPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,15 +40,12 @@ import com.google.bitcoin.core.Wallet;
 /**
  * This {@link Action} action encrypts the private keys with the password.
  */
-public class AddPasswordSubmitAction extends AbstractAction {
+public class AddPasswordSubmitAction extends MultiBitSubmitAction {
     private static final Logger log = LoggerFactory.getLogger(AddPasswordSubmitAction.class);
 
     private static final long serialVersionUID = 1923492460598757765L;
 
-    private MultiBitController controller;
-
     private AddPasswordPanel addPasswordPanel;
-    private MultiBitFrame mainFrame;
 
     private JPasswordField password1;
 
@@ -59,17 +55,11 @@ public class AddPasswordSubmitAction extends AbstractAction {
      * Creates a new {@link AddPasswordSubmitAction}.
      */
     public AddPasswordSubmitAction(MultiBitController controller, AddPasswordPanel addPasswordPanel,
-            ImageIcon icon, JPasswordField password1, JPasswordField password2, MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("addPasswordSubmitAction.text"), icon);
-        this.controller = controller;
+            ImageIcon icon, JPasswordField password1, JPasswordField password2) {
+        super(controller, "addPasswordSubmitAction.text", "addPasswordSubmitAction.tooltip", "addPasswordSubmitAction.mnemonicKey", icon);
         this.addPasswordPanel = addPasswordPanel;
         this.password1 = password1;
         this.password2 = password2;
-        this.mainFrame = mainFrame;
-
-        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("addPasswordSubmitAction.tooltip"));
-        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("addPasswordSubmitAction.mnemonicKey"));
     }
 
     /**
@@ -77,7 +67,6 @@ public class AddPasswordSubmitAction extends AbstractAction {
      */
     public void actionPerformed(ActionEvent e) {
         addPasswordPanel.clearMessages();
-
 
         char[] passwordToUse = null;
 
@@ -114,7 +103,7 @@ public class AddPasswordSubmitAction extends AbstractAction {
                     controller.getMultiBitService().getSecureRandom().nextBytes(salt);
                     ScryptParameters scryptParameters = new ScryptParameters(salt);
                     EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
-                wallet.setEncrypterDecrypter(encrypterDecrypter);
+                    wallet.setEncrypterDecrypter(encrypterDecrypter);
                 }
 
                 wallet.encrypt(passwordToUse);

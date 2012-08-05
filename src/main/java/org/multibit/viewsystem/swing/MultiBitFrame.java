@@ -88,7 +88,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletType;
+import com.google.bitcoin.core.EncryptionType;
 
 /*
  * JFrame displaying Swing version of MultiBit
@@ -946,7 +946,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             changePasswordAction.setEnabled(false);
             removePasswordAction.setEnabled(false);
         } else {
-            if (controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED) {
+            if (controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
                 addPasswordAction.setEnabled(false);
                 changePasswordAction.setEnabled(true);
                 removePasswordAction.setEnabled(true);

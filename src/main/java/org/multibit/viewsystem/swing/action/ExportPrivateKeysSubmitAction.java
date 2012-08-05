@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
 import com.google.bitcoin.core.MultiBitBlockChain;
-import com.google.bitcoin.core.WalletType;
+import com.google.bitcoin.core.EncryptionType;
 
 /**
  * This {@link Action} exports the active wallets private keys.
@@ -80,7 +80,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
         exportPrivateKeysPanel.clearMessages();
 
         // See if a wallet password is required and present.
-        if (controller.getModel().getActiveWallet() != null && controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
+        if (controller.getModel().getActiveWallet() != null && controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
             if (walletPassword.getPassword() == null || walletPassword.getPassword().length == 0) {
                 exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
                 "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));

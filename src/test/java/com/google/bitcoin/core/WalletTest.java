@@ -627,7 +627,7 @@ public class WalletTest {
     @Test
     public void encryptionDecryption() throws Exception {
         // Check the wallet is initially of WalletType UNENCRYPTED and not currently encrypted
-        assertTrue("Wallet is not an unencrypted wallet", encryptedWallet.getWalletType() == WalletType.UNENCRYPTED);
+        assertTrue("Wallet is not an unencrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.UNENCRYPTED);
         assertTrue("Wallet is currently encrypted but should not be", !encryptedWallet.isCurrentlyEncrypted());
         
         // Correct password should not decrypt first private key as wallet is decrypted.
@@ -637,7 +637,7 @@ public class WalletTest {
         encryptedWallet.encrypt(PASSWORD1);
 
         // Wallet should now be of type WalletType.UNENCRYPTED and currently encrypted.
-        assertTrue("Wallet is not an encrypted wallet", encryptedWallet.getWalletType() == WalletType.ENCRYPTED);
+        assertTrue("Wallet is not an encrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
         assertTrue("Wallet is not currently encrypted", encryptedWallet.isCurrentlyEncrypted());
 
         // Correct password should decrypt first private key.
@@ -650,7 +650,7 @@ public class WalletTest {
         encryptedWallet.decrypt(PASSWORD1);
         
         // Wallet should now be of type WalletType.ENCRYPTED and not currently encrypted.
-        assertTrue("Wallet is not an encrypted wallet", encryptedWallet.getWalletType() == WalletType.ENCRYPTED);
+        assertTrue("Wallet is not an encrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
         assertTrue("Wallet is currently encrypted but should not be", !encryptedWallet.isCurrentlyEncrypted());
 
         // Correct password should decrypt first private key as wallet is has encrypted bytes.
@@ -664,7 +664,7 @@ public class WalletTest {
         encryptedWallet.removeEncryption(PASSWORD1);
 
         // Wallet should now be of type WalletType.UNENCRYPTED and not currently encrypted.
-        assertTrue("Wallet is not an unencrypted wallet", wallet.getWalletType() == WalletType.UNENCRYPTED);
+        assertTrue("Wallet is not an unencrypted wallet", wallet.getEncryptionType() == EncryptionType.UNENCRYPTED);
         assertTrue("Wallet is currently encrypted but should not be", !encryptedWallet.isCurrentlyEncrypted());
 
         // Correct password should decrypt first private key as wallet is has encrypted bytes.

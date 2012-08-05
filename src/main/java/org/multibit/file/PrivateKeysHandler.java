@@ -53,7 +53,6 @@ import com.google.bitcoin.core.TransactionInput;
 import com.google.bitcoin.core.TransactionOutput;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletType;
 
 /**
  * Class for handling reading and writing of private keys to a file.
@@ -259,99 +258,100 @@ public class PrivateKeysHandler {
         // Determine if keys need to be decrypted.
         boolean decryptionRequired = false;
 
-        if (wallet != null) {
-            if (walletPassword != null && walletPassword.length > 0) {
-                // Wallet keys need to be decrypted before output.
-                if (wallet.isCurrentlyEncrypted()) {
-                    decryptionRequired = true;
-                }
-            }
-        }
-
+        ArrayList<ECKey> keychain = wallet.keychain;
         Collection<PrivateKeyAndDate> keyAndDates = new ArrayList<PrivateKeyAndDate>();
 
-        ArrayList<ECKey> keychain = wallet.keychain;
-        Set<Transaction> allTransactions = wallet.getTransactions(true, true);
-        if (keychain != null) {
-            HashMap<ECKey, Date> keyToEarliestUsageDateMap = new HashMap<ECKey, Date>();
+        synchronized (keychain) {
+            if (wallet != null) {
+                if (walletPassword != null && walletPassword.length > 0) {
+                    // Wallet keys need to be decrypted before output.
+                    if (wallet.isCurrentlyEncrypted()) {
+                        decryptionRequired = true;
+                    }
+                }
+            }
 
-            // The date of the last transaction in the wallet - used where
-            // there are no tx for a key.
-            Date overallLastUsageDate = null;
+            Set<Transaction> allTransactions = wallet.getTransactions(true, true);
+            if (keychain != null) {
+                HashMap<ECKey, Date> keyToEarliestUsageDateMap = new HashMap<ECKey, Date>();
 
-            for (ECKey ecKey : keychain) {
-                // Find the earliest usage of this key.
-                Date earliestUsageDate = null;
-                if (allTransactions != null) {
-                    for (Transaction tx : allTransactions) {
-                        if (transactionUsesKey(tx, ecKey)) {
-                            Date updateTime = tx.getUpdateTime();
-                            if (updateTime != null) {
+                // The date of the last transaction in the wallet - used where
+                // there are no tx for a key.
+                Date overallLastUsageDate = null;
+
+                for (ECKey ecKey : keychain) {
+                    // Find the earliest usage of this key.
+                    Date earliestUsageDate = null;
+                    if (allTransactions != null) {
+                        for (Transaction tx : allTransactions) {
+                            if (transactionUsesKey(tx, ecKey)) {
+                                Date updateTime = tx.getUpdateTime();
                                 if (updateTime != null) {
-                                    if (overallLastUsageDate == null) {
-                                        overallLastUsageDate = updateTime;
+                                    if (updateTime != null) {
+                                        if (overallLastUsageDate == null) {
+                                            overallLastUsageDate = updateTime;
+                                        } else {
+                                            overallLastUsageDate = overallLastUsageDate.after(updateTime) ? overallLastUsageDate
+                                                    : updateTime;
+                                        }
+                                    }
+                                    if (earliestUsageDate == null) {
+                                        earliestUsageDate = updateTime;
                                     } else {
-                                        overallLastUsageDate = overallLastUsageDate.after(updateTime) ? overallLastUsageDate
-                                                : updateTime;
+                                        earliestUsageDate = earliestUsageDate.before(updateTime) ? earliestUsageDate : updateTime;
                                     }
                                 }
-                                if (earliestUsageDate == null) {
-                                    earliestUsageDate = updateTime;
-                                } else {
-                                    earliestUsageDate = earliestUsageDate.before(updateTime) ? earliestUsageDate : updateTime;
+                            }
+                        }
+                    }
+                    if (earliestUsageDate != null) {
+                        keyToEarliestUsageDateMap.put(ecKey, earliestUsageDate);
+                    }
+                }
+
+                // If there are no transactions in the wallet
+                // overallLastUsageDate will be null.
+                // We do not want keys output with a missing date as this forces
+                // a replay from the genesis block
+                // In this case we know there are no transactions up to the date
+                // of the head of the
+                // chain so can set the overallLastUsageDate to then.
+                // On import this will replay from the current chain head to
+                // include any future tx.
+                if (overallLastUsageDate == null) {
+                    if (blockChain != null) {
+                        StoredBlock chainHead = blockChain.getChainHead();
+                        if (chainHead != null) {
+                            Block header = chainHead.getHeader();
+                            if (header != null) {
+                                long timeSeconds = header.getTimeSeconds();
+                                if (timeSeconds != 0) {
+                                    overallLastUsageDate = new Date(timeSeconds * NUMBER_OF_MILLISECONDS_IN_A_SECOND);
                                 }
                             }
                         }
                     }
                 }
-                if (earliestUsageDate != null) {
-                    keyToEarliestUsageDateMap.put(ecKey, earliestUsageDate);
-                }
-            }
 
-            // If there are no transactions in the wallet
-            // overallLastUsageDate will be null.
-            // We do not want keys output with a missing date as this forces
-            // a replay from the genesis block
-            // In this case we know there are no transactions up to the date
-            // of the head of the
-            // chain so can set the overallLastUsageDate to then.
-            // On import this will replay from the current chain head to
-            // include any future tx.
-            if (overallLastUsageDate == null) {
-                if (blockChain != null) {
-                    StoredBlock chainHead = blockChain.getChainHead();
-                    if (chainHead != null) {
-                        Block header = chainHead.getHeader();
-                        if (header != null) {
-                            long timeSeconds = header.getTimeSeconds();
-                            if (timeSeconds != 0) {
-                                overallLastUsageDate = new Date(timeSeconds * NUMBER_OF_MILLISECONDS_IN_A_SECOND);
-                            }
+                for (ECKey ecKey : keychain) {
+                    Date earliestUsageDate = keyToEarliestUsageDateMap.get(ecKey);
+                    if (earliestUsageDate == null) {
+                        if (overallLastUsageDate != null) {
+                            // Put the last tx date for the whole wallet in for
+                            // this key - there are no tx for this key so this
+                            // will be early enough.
+                            earliestUsageDate = overallLastUsageDate;
                         }
                     }
-                }
-            }
-
-            for (ECKey ecKey : keychain) {
-                Date earliestUsageDate = keyToEarliestUsageDateMap.get(ecKey);
-                if (earliestUsageDate == null) {
-                    if (overallLastUsageDate != null) {
-                        // Put the last tx date for the whole wallet in for
-                        // this key - there are no tx for this key so this
-                        // will be early enough.
-                        earliestUsageDate = overallLastUsageDate;
+                    if (decryptionRequired) {
+                        // Create a new decrypted key holding the private key.
+                        ECKey decryptedKey = new ECKey(ecKey.getEncrypterDecrypter().decrypt(ecKey.getEncryptedPrivateKey(),
+                                ecKey.getEncrypterDecrypter().deriveKey(walletPassword)), ecKey.getPubKey());
+                        keyAndDates.add(new PrivateKeyAndDate(decryptedKey, earliestUsageDate));
+                    } else {
+                        keyAndDates.add(new PrivateKeyAndDate(ecKey, earliestUsageDate));
                     }
                 }
-                if (decryptionRequired) {
-                    // Create a new decrypted key holding the private key.
-                    ECKey decryptedKey = new ECKey(ecKey.getEncrypterDecrypter().decrypt(ecKey.getEncryptedPrivateKey(),
-                            ecKey.getEncrypterDecrypter().deriveKey(walletPassword)), ecKey.getPubKey());
-                    keyAndDates.add(new PrivateKeyAndDate(decryptedKey, earliestUsageDate));
-                } else {
-                    keyAndDates.add(new PrivateKeyAndDate(ecKey, earliestUsageDate));
-                }
-
             }
         }
 

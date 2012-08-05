@@ -1,6 +1,6 @@
 package com.google.bitcoin.core;
 
-public enum WalletType{
+public enum EncryptionType{
     UNENCRYPTED,
-    ENCRYPTED
+    ENCRYPTED_SCRYPT_AES
 }

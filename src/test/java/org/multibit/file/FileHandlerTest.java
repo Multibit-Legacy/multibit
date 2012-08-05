@@ -40,7 +40,7 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletType;
+import com.google.bitcoin.core.EncryptionType;
 
 public class FileHandlerTest extends TestCase {
     private final String WALLET_TESTDATA_DIRECTORY = "wallets";
@@ -115,7 +115,7 @@ public class FileHandlerTest extends TestCase {
         assertEquals(WALLET_SERIALISED1_BALANCE, perWalletModelData.getWallet().getBalance());
         
         // Check wallet type.
-        assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getWalletType() == WalletType.UNENCRYPTED);
+        assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getEncryptionType() == EncryptionType.UNENCRYPTED);
     }
 
     @Test
@@ -138,7 +138,7 @@ public class FileHandlerTest extends TestCase {
         assertEquals(WALLET_SERIALISED2_BALANCE, perWalletModelData.getWallet().getBalance());
         
         // Check wallet type.
-        assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getWalletType() == WalletType.UNENCRYPTED);
+        assertTrue("Wallet type is WalletType.ENCRYPTED but it should not be", perWalletModelData.getWallet().getEncryptionType() == EncryptionType.UNENCRYPTED);
     }
     
     @Test
@@ -208,7 +208,7 @@ public class FileHandlerTest extends TestCase {
         
         // Check the wallet status before it is written out and reborn.
         assertEquals(WalletMajorVersion.PROTOBUF_ENCRYPTED, perWalletModelData.getWalletInfo().getWalletMajorVersion());
-        assertTrue("Wallet is not UNENCRYPTED when it should be", perWalletModelData.getWallet().getWalletType() == WalletType.UNENCRYPTED);
+        assertTrue("Wallet is not UNENCRYPTED when it should be", perWalletModelData.getWallet().getEncryptionType() == EncryptionType.UNENCRYPTED);
         
         // Save the wallet and then read it back in.
         controller.getFileHandler().savePerWalletModelData(perWalletModelData, true);
@@ -231,7 +231,7 @@ public class FileHandlerTest extends TestCase {
         assertEquals(2, perWalletModelDataReborn.getWallet().keychain.size());
 
         assertEquals(WalletMajorVersion.PROTOBUF_ENCRYPTED, perWalletModelDataReborn.getWalletInfo().getWalletMajorVersion());
-        assertTrue("Wallet is not UNENCRYPTED when it should be", perWalletModelDataReborn.getWallet().getWalletType() == WalletType.UNENCRYPTED);
+        assertTrue("Wallet is not UNENCRYPTED when it should be", perWalletModelDataReborn.getWallet().getEncryptionType() == EncryptionType.UNENCRYPTED);
         
         assertTrue("Wallet isCurrentlyEncrypted when it should not be", !perWalletModelDataReborn.getWallet().isCurrentlyEncrypted());
         
@@ -274,7 +274,7 @@ public class FileHandlerTest extends TestCase {
         
         // Check the wallet status before it is written out and reborn.
         assertEquals(WalletMajorVersion.PROTOBUF_ENCRYPTED, perWalletModelData.getWalletInfo().getWalletMajorVersion());
-        assertTrue("Wallet is not ENCRYPTED when it should be", perWalletModelData.getWallet().getWalletType() == WalletType.ENCRYPTED);
+        assertTrue("Wallet is not ENCRYPTED when it should be", perWalletModelData.getWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
         
         assertTrue("Wallet isCurrentlyEncrypted is false when it should be true", perWalletModelData.getWallet().isCurrentlyEncrypted());
 
@@ -304,7 +304,7 @@ public class FileHandlerTest extends TestCase {
         assertEquals(2, perWalletModelDataReborn.getWallet().keychain.size());
 
         assertEquals(WalletMajorVersion.PROTOBUF_ENCRYPTED, perWalletModelDataReborn.getWalletInfo().getWalletMajorVersion());
-        assertTrue("Wallet is not of type ENCRYPTED when it should be", perWalletModelDataReborn.getWallet().getWalletType() == WalletType.ENCRYPTED);
+        assertTrue("Wallet is not of type ENCRYPTED when it should be", perWalletModelDataReborn.getWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
         
         assertTrue("Wallet isCurrentlyEncrypted is false when it should be true", perWalletModelDataReborn.getWallet().isCurrentlyEncrypted());
         

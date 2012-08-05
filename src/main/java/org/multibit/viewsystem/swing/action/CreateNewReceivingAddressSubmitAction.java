@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.WalletType;
+import com.google.bitcoin.core.EncryptionType;
 
 /**
  * This {@link Action} represents an action to actually create receiving
@@ -79,7 +79,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         boolean encryptNewKeys = false;
         if (controller.getModel().getActiveWallet() != null) {
-            if (controller.getModel().getActiveWallet().getWalletType() == WalletType.ENCRYPTED && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
+            if (controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
                 if (walletPassword.getPassword() == null || walletPassword.getPassword().length == 0) {
                     // User needs to enter password.
                     createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
