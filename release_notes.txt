@@ -1,5 +1,9 @@
 MultiBit release notes.
 
+06 Aug 2012 Version 0.5.0alpha
++  Alpha version of encrypted wallet support
+
+
 30 Jul 2012 Version 0.4.6
 +  Wallet versions from the future now not loaded
 

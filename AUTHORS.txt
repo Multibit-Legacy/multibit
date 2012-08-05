@@ -45,6 +45,7 @@ Piotr Waskiewicz    - Polish
 raymccarthy         - Swedish
 rbreban             - Spanish
 spiccioli           - Italian
+techmix             - Persian
 Technomage          - Finnish
 tesla               - Russian
 Wissam Idrissi      - Arabic
