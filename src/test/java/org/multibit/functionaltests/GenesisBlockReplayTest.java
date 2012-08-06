@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * functional test to check that replay from the genesis block works ok
+ * Functional test to check that replay from the genesis block works ok.
  * 
  * See bug report: https://github.com/jim618/multibit/issues/21
  * 
@@ -49,48 +49,47 @@ public class GenesisBlockReplayTest extends TestCase {
     private static final int NUMBER_OF_BLOCKS_TO_REPLAY = 10;
 
     private static final int BLOCKSIZE_BEFORE_REPLAY = 133;
-    private static final int BLOCKSIZE_AFTER_REPLAY = 2133; // each block is 100 bytes, min NUMBER_OF_BLOCKS_TO_REPLAY blocks downloaded
+    private static final int BLOCKSIZE_AFTER_REPLAY = 2133; // Each block is 100 bytes, min NUMBER_OF_BLOCKS_TO_REPLAY blocks downloaded.
 
     private SimpleDateFormat formatter;
 
     @Test
     public void testReplayFromGenesisBlock() throws Exception {
 
-        // get the system property runFunctionalTest to see if the functional tests need running
+        // Get the system property runFunctionalTest to see if the functional tests need running.
         String runFunctionalTests = System.getProperty(Constants.RUN_FUNCTIONAL_TESTS_PARAMETER);
         if (Boolean.TRUE.toString().equalsIgnoreCase(runFunctionalTests)) {
 
-            // date format is UTC with century, T time separator and Z for UTC
-            // timezone
+            // Date format is UTC with century, T time separator and Z for UTC timezone.
             formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
             formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 
             File multiBitDirectory = createMultiBitRuntime();
 
-            // set the application data directory to be the one we just created
+            // Set the application data directory to be the one we just created.
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator(multiBitDirectory);
 
-            // create the controller
+            // Create the controller.
             final MultiBitController controller = new MultiBitController(applicationDataDirectoryLocator);
 
-            // create the model - gets hooked up to controller automatically
+            // Create the model - gets hooked up to controller automatically.
             @SuppressWarnings("unused")
             MultiBitModel model = new MultiBitModel(controller);
 
             log.debug("Creating Bitcoin service");
-            // create the MultiBitService that connects to the bitcoin network
+            // Create the MultiBitService that connects to the bitcoin network.
             MultiBitService multiBitService = new MultiBitService(controller);
             controller.setMultiBitService(multiBitService);
 
-            // add the simple view system (no Swing)
+            // Add the simple view system (no Swing).
             SimpleViewSystem simpleViewSystem = new SimpleViewSystem();
             controller.registerViewSystem(simpleViewSystem);
 
             //
-            // MultiBit runtime is now setup and running
+            // MultiBit runtime is now setup and running.
             //
 
-            // wait for a peer connection
+            // Wait for a peer connection.
             log.debug("Waiting for peer connection. . . ");
             while (!simpleViewSystem.isOnline()) {
                 Thread.sleep(1000);
@@ -101,18 +100,20 @@ public class GenesisBlockReplayTest extends TestCase {
             multiBitService.replayBlockChain(null);
             assertEquals(BLOCKSIZE_BEFORE_REPLAY, multiBitService.getBlockStore().getFile().length());            
 
-            // wait for blockchain replay to download more than the required
-            // amount
+            // Wait for blockchain replay to download more than the required amount.
             log.debug("Waiting for blockchain replay to download more than " + NUMBER_OF_BLOCKS_TO_REPLAY + " blocks. . . ");
             while (simpleViewSystem.getNumberOfBlocksDownloaded() < NUMBER_OF_BLOCKS_TO_REPLAY) {
                 Thread.sleep(1000);
                 log.debug("Blocks downloaded =  " + simpleViewSystem.getNumberOfBlocksDownloaded());
             }
 
-            // check the blockstore has added the downloaded blocks
+            // Check the blockstore has added the downloaded blocks.
+            assertNotNull("No multiBitService after replay", multiBitService);
+            assertNotNull("No blockStore after replay",  multiBitService.getBlockStore());
+            assertNotNull("No blockStore file after replay",  multiBitService.getBlockStore().getFile());
             assertTrue(BLOCKSIZE_AFTER_REPLAY <=  multiBitService.getBlockStore().getFile().length());
 
-            // tidy up
+            // Tidy up.
             multiBitService.getPeerGroup().stop();
         } else {
             log.debug("Not running functional test: GenesisBlockReplayTest#testReplayFromGenesisBlock. Add '-DrunFunctionalTests=true' to run");
@@ -120,7 +121,7 @@ public class GenesisBlockReplayTest extends TestCase {
     }
 
     /**
-     * Create a working, portable runtime of MultiBit in a temporary directory
+     * Create a working, portable runtime of MultiBit in a temporary directory.
      * 
      * @return the temporary directory the multibit runtime has been created in
      */
@@ -130,13 +131,12 @@ public class GenesisBlockReplayTest extends TestCase {
 
         System.out.println("Building MultiBit runtime in : " + multiBitDirectory.getAbsolutePath());
 
-        // create an empty multibit.properties
+        // Create an empty multibit.properties.
         File multibitProperties = new File(multiBitDirectoryPath + File.separator + "multibit.properties");
         multibitProperties.createNewFile();
         multibitProperties.deleteOnExit();
 
-        // copy in the blockchain stored in git - this is in
-        // source/main/resources/
+        // Copy in the blockchain stored in git - this is in source/main/resources/.
         File multibitBlockchain = new File(multiBitDirectoryPath + File.separator + "multibit.blockchain");
         FileHandler.copyFile(new File("./src/main/resources/multibit.blockchain"), multibitBlockchain);
         multibitBlockchain.deleteOnExit();
