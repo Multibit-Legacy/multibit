@@ -19,8 +19,3 @@ singleNodeConnection=12.34.56.78
 To use the testnet set the property "testOrProductionNetwork" 
 to be "test".
 
-
-+ Show the merchant menu
-To show the merchant menu set the property "showMerchantMenu" 
-to be "true".
-

@@ -553,16 +553,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Build the Merchant menu.
         // see if it is required
-        String showMerchantMenuString = controller.getModel().getUserPreference(MultiBitModel.SHOW_MERCHANT_MENU);
-        boolean showMerchantMenu = Boolean.TRUE.toString().equalsIgnoreCase(showMerchantMenuString);
-        JMenu merchantMenu = null;
-        if (showMerchantMenu) {
-            merchantMenu = new JMenu(localiser.getString("multiBitFrame.merchantMenuText"));
-            merchantMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-            merchantMenu.setComponentOrientation(componentOrientation);
-            merchantMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.merchantMenuMnemonic"));
-            menuBar.add(merchantMenu);
-        }
+//        String showMerchantMenuString = controller.getModel().getUserPreference(MultiBitModel.SHOW_MERCHANT_MENU);
+//        boolean showMerchantMenu = Boolean.TRUE.toString().equalsIgnoreCase(showMerchantMenuString);
+//        JMenu merchantMenu = null;
+//        if (showMerchantMenu) {
+//            merchantMenu = new JMenu(localiser.getString("multiBitFrame.merchantMenuText"));
+//            merchantMenu.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+//            merchantMenu.setComponentOrientation(componentOrientation);
+//            merchantMenu.setMnemonic(mnemonicUtil.getMnemonic("multiBitFrame.merchantMenuMnemonic"));
+//            menuBar.add(merchantMenu);
+//        }
 
         // Build the Help menu.
         JMenu helpMenu = new JMenu(localiser.getString("multiBitFrame.helpMenuText"));
@@ -775,16 +775,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setComponentOrientation(componentOrientation);
         toolsMenu.add(menuItem);
 
-        if (showMerchantMenu) {
-            // create bulk addresses action
-            MultiBitAction createBulkAddressesAction = new MultiBitAction(controller, null, "showCreateBulkAddressesAction.text",
-                    "showCreateBulkAddressesAction.tooltip", "showCreateBulkAddressesAction.mnemonic",
-                    View.CREATE_BULK_ADDRESSES_VIEW);
-            menuItem = new JMenuItem(createBulkAddressesAction);
-            menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-            menuItem.setComponentOrientation(componentOrientation);
-            merchantMenu.add(menuItem);
-        }
+//        if (showMerchantMenu) {
+//            // create bulk addresses action
+//            MultiBitAction createBulkAddressesAction = new MultiBitAction(controller, null, "showCreateBulkAddressesAction.text",
+//                    "showCreateBulkAddressesAction.tooltip", "showCreateBulkAddressesAction.mnemonic",
+//                    View.CREATE_BULK_ADDRESSES_VIEW);
+//            menuItem = new JMenuItem(createBulkAddressesAction);
+//            menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+//            menuItem.setComponentOrientation(componentOrientation);
+//            merchantMenu.add(menuItem);
+//        }
 
         setJMenuBar(menuBar);
 

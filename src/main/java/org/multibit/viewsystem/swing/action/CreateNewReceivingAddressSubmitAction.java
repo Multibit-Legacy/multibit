@@ -17,7 +17,6 @@ package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JPasswordField;
 
