@@ -23,12 +23,9 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;

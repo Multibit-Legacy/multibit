@@ -77,7 +77,6 @@ import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
-import org.multibit.viewsystem.swing.view.components.VerticalGradientPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTablePanel;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
 import org.multibit.viewsystem.swing.view.walletlist.WalletListPanel;
@@ -286,7 +285,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             setIconImage(imageIcon.getImage());
         }
 
-        headerPanel = new VerticalGradientPanel();
+        headerPanel = new JPanel();
+        headerPanel.setOpaque(false);
+        headerPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         headerPanel.setLayout(new GridBagLayout());
 
         JPanel balancePanel = createBalancePanel();

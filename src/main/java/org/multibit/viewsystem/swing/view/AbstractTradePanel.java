@@ -95,7 +95,6 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
-import org.multibit.viewsystem.swing.view.components.VerticalGradientPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -511,7 +510,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     protected abstract void loadForm();
 
     protected JPanel createAddressesHeaderPanel() {
-        JPanel addressesHeaderPanel = new VerticalGradientPanel();
+        JPanel addressesHeaderPanel = new JPanel();
+        addressesHeaderPanel.setOpaque(false);
+        addressesHeaderPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
         addressesHeaderPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder));
         addressesHeaderPanel.setLayout(new GridBagLayout());
