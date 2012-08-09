@@ -39,7 +39,7 @@ public interface View {
     public static final int SAVE_WALLET_AS_VIEW = 9;        // obsolete - now done with Swing dialog
     public static final int VALIDATION_ERROR_VIEW = 10;     // obsolete - now done with Swing dialog
     public static final int YOUR_WALLETS_VIEW = 11;
-    public static final int CREATE_BULK_ADDRESSES_VIEW = 12;
+    public static final int CREATE_BULK_ADDRESSES_VIEW = 12;  // obsolete
     public static final int RESET_TRANSACTIONS_VIEW = 13;
     public static final int SHOW_OPEN_URI_DIALOG_VIEW = 14;
     public static final int SHOW_IMPORT_PRIVATE_KEYS_VIEW = 15;

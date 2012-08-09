@@ -98,11 +98,6 @@ public class ViewFactory {
             viewToReturn = new ShowPreferencesPanel(controller, mainFrame);
             break;
         }
-       
-        case View.CREATE_BULK_ADDRESSES_VIEW: {
-            viewToReturn = new CreateBulkAddressesPanel(controller, mainFrame);
-            break;
-        }
 
         case View.RESET_TRANSACTIONS_VIEW: {
             viewToReturn = new ResetTransactionsPanel(controller, mainFrame);

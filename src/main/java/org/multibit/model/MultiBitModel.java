@@ -160,9 +160,6 @@ public class MultiBitModel {
     public static final String WALLET_INFO_FILE_SIZE = "walletInfoFileSize";
     public static final String WALLET_INFO_FILE_LAST_MODIFIED = "walletInfoFileLastModified";
 
-    // Merchant menu.
-    public static final String SHOW_MERCHANT_MENU = "showMerchantMenu";
-
     // User preference font.
     public static final String FONT = "font";
     public static final String FONT_NAME = "fontName";

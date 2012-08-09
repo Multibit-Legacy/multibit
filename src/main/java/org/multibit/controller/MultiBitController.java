@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2012 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ import com.google.bitcoin.uri.BitcoinURI;
 import com.google.bitcoin.uri.BitcoinURIParseException;
 
 /**
- * the MVC controller for Multibit
+ * The MVC controller for MultiBit.
  * 
  * @author jim
  */
@@ -73,32 +73,32 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     private Logger log = LoggerFactory.getLogger(MultiBitController.class);
 
     /**
-     * the view systems under control of the MultiBitController
+     * The view systems under control of the MultiBitController.
      */
     private Collection<ViewSystem> viewSystems;
 
     /**
-     * the data model backing the views
+     * The data model backing the views.
      */
     private MultiBitModel model;
 
     /**
-     * the localiser used to localise everything
+     * The localiser used to localise everything.
      */
     private Localiser localiser;
 
     /**
-     * the bitcoinj network interface
+     * The bitcoinj network interface.
      */
     private MultiBitService multiBitService;
 
     /**
-     * class encapsulating File IO
+     * Class encapsulating File IO.
      */
     private FileHandler fileHandler;
 
     /**
-     * class encapsulating the location of the Application Data Directory
+     * Class encapsulating the location of the Application Data Directory.
      */
     private ApplicationDataDirectoryLocator applicationDataDirectoryLocator;
 
@@ -111,7 +111,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     private volatile boolean applicationStarting = true;
 
     /**
-     * used for testing only
+     * Used for testing only.
      */
     public MultiBitController() {
         this(null);
@@ -129,7 +129,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * Display the view specified
+     * Display the view specified.
      * 
      * @param viewToDisplay
      *            View to display. Must be one of the View constants
@@ -151,7 +151,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * Display the help context specified
+     * Display the help context specified.
      * 
      * @param helpContextToDisplay
      *            The help context to display. A path in the help
@@ -173,7 +173,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * register a new MultiBitViewSystem from the list of views that are managed
+     * Register a new MultiBitViewSystem from the list of views that are managed.
      * 
      * @param viewSystem
      *            system
@@ -191,7 +191,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * add a wallet to multibit from a filename
+     * Add a wallet to multibit from a filename.
      * 
      * @param walletFilename
      *            The wallet filename
@@ -207,7 +207,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * the language has been changed
+     * The language has been changed.
      */
     public void fireDataStructureChanged() {
         Locale newLocale = new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE));
@@ -225,7 +225,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * fire that all the views need recreating
+     * Fire that all the views need recreating.
      */
     public void fireRecreateAllViews(boolean initUI) {
         // tell the viewSystems to refresh their views
@@ -260,7 +260,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * the controller listens for PeerGroup events and notifies interested
+     * The controller listens for PeerGroup events and notifies interested
      * parties
      */
 
@@ -299,7 +299,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     /**
-     * method called by downloadListener whenever a block is downloaded
+     * Method called by downloadListener whenever a block is downloaded.
      */
     public void fireBlockDownloaded() {
         // log.debug("Fire blockdownloaded");
@@ -332,7 +332,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        // update the model
+        // Update the model.
         getModel().processNewCoin(wallet, transaction);
 
         for (ViewSystem viewSystem : viewSystems) {
@@ -431,7 +431,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         }
         // Process the URI
         // TODO Consider handling the possible runtime exception at a suitable
-        // level for recovery
+        // level for recovery.
 
         // Early MultiBit versions did not URL encode the label hence may
         // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER i.e
@@ -445,23 +445,23 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             return;
         }
 
-        // Convert the URI data into suitably formatted view data
+        // Convert the URI data into suitably formatted view data.
         String address = bitcoinURI.getAddress().toString();
         String label = "";
         try {
             // No label? Set it to a blank String otherwise perform a URL decode
-            // on it just to be sure
+            // on it just to be sure.
             label = null == bitcoinURI.getLabel() ? "" : URLDecoder.decode(bitcoinURI.getLabel(), "UTF-8");
         } catch (UnsupportedEncodingException e) {
             log.error("Could not decode the label in UTF-8. Unusual URI entry or platform.");
         }
-        // No amount? Set it to zero
+        // No amount? Set it to zero.
         BigInteger numericAmount = null == bitcoinURI.getAmount() ? BigInteger.ZERO : bitcoinURI.getAmount();
         String amount = getLocaliser().bitcoinValueToString(numericAmount, false, false);
 
         if (Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
-            // do not show confirm dialog - go straight to send view
-            // Populate the model with the URI data
+            // Do not show confirm dialog - go straight to send view.
+            // Populate the model with the URI data.
             getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, address);
             getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, label);
             getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amount);
@@ -472,8 +472,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             displayView(View.SEND_BITCOIN_VIEW);
             return;
         } else {
-            // show the confirm dialog to see if the user wants to use URI
-            // Populate the model with the URI data
+            // Show the confirm dialog to see if the user wants to use URI.
+            // Populate the model with the URI data.
             getModel().setUserPreference(MultiBitModel.OPEN_URI_ADDRESS, address);
             getModel().setUserPreference(MultiBitModel.OPEN_URI_LABEL, label);
             getModel().setUserPreference(MultiBitModel.OPEN_URI_AMOUNT, amount);
@@ -519,8 +519,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     @Override
     public void onTransaction(Peer peer, Transaction transaction) {
-        // loop through all the wallets, seeing if the transaction is relevant
-        // and adding them as pending if so
+        // Loop through all the wallets, seeing if the transaction is relevant
+        // and adding them as pending if so.
         if (transaction != null) {
             try {
                 java.util.List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();

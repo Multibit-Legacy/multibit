@@ -1,0 +1,43 @@
+To extract the private keys from the current MultiBit wallets is not for the faint of heart!
+
+First you will need a hex editor. I used HexEditor for the Mac.
+
+Here is a typical block of bytes that you are searching for, containing the all important private key and the public key:
+
+Code:
+78 70 00 00 00 20                                           << The 20 is the length of the private key in hex
+                  e5 d4  25 0e 2e 45 ff 82 4e ff            << private key in hex
+3b 49 da 1a 4e 9a 4c b5  3f 71 cb 8f b6 80 46 10            << private key in hex 
+e1 ed 1a 7b 16 28                                           << private key in hex
+                  78                                        << ignore this byte
+                     75  71 00 7e 00 11 00 00 00            << search bytes
+41                                                          << length of public key in hex
+   04 19 0a 40 a0 a7 d0  48 c8 79 eb 93 e9 63 48            << public key in hex
+82 09 ea ab 65 13 95 c2  7f 21 c2 0e 79 a0 24 18            << public key in hex
+05 62 55 34 fc a2 bb 7f  04 46 ce 23 43 89 06 52            << public key in hex
+9a 0c 32 11 c5 ef 1b e1  d4 ca 16 fc e3 48 29 73            << public key in hex
+10 14                                                       << public key in hex
+      78 73                                                 << public key post amble
+
+In reality your hex editor will show them all together - I have added the line separations just for clarity.
+
+To identify a block of bytes containing a private and public key, seach for the hex "75 71 00 7e 00 11 00 00 00 41". You are actually searching for a boundary between the private key and public key stored in a serialization of the class ECKey (which contains the private and public key).
+
+The "41" is the length of the public key (=65 in decimal) so look forward 65 bytes. It should look completely random. This is the public key in hex. After these bytes there should be "78 73". 
+
+Before the search string is a single byte which is usually "78" but does seem to vary. Ignore that. Look backwards for 33 bytes and you should see a "20". This is the length of the private key (=32 bytes in decimal). The 32 bytes following the "20" are your private key in hex.
+
+Result!
+
+Repeat this search through your wallet until you extract all the private keys. You will sometimes get false positives in that you get a search hit but the bytes around it have a different structure. You can ignore these.
+
+In Java this hexadecimal representation of the private key can be added to a bitcoinj wallet using:
+
+Code:
+Wallet newWallet = new Wallet(NetworkParameters.prodNet());
+ECKey key1 = new ECKey(new BigInteger(1, Hex.decode("e5d4250e2e45ff824eff3b49da1a4e9a4cb53f71cb8fb6804610e1ed1a7b1628")));
+newWallet.keychain.add(key1);
+
+A useful check that you have not extracted garbage is to print out the bitcoinj wallet using toString() and look at the public key in hex. It should match the public key you extracted from the wallet at the byte level.
+
+You then need to replay the blocks from the date of the first transaction for that address to get the transactions. I just looked up the address in blockchain.info and looked at the first transaction to see what this date was.
