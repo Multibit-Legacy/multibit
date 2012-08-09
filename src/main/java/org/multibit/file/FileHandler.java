@@ -28,35 +28,27 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
-import java.math.BigInteger;
 import java.nio.channels.FileChannel;
 import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WrappedWallet;
 import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletMajorVersion;
+import org.multibit.model.WrappedWallet;
 import org.multibit.network.MultiBitService;
 import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spongycastle.util.Arrays;
 
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 
@@ -121,7 +113,7 @@ public class FileHandler {
                         iae.printStackTrace();
                     } catch (com.google.protobuf.InvalidProtocolBufferException ipbe) {
                         // Not a WrappedWallet or otherwise unreadable.   
-                        ipbe.printStackTrace();
+                        log.debug("Wallet file '" + walletFile.getAbsolutePath() + "' is not a WrappedWallet");
                     }
                     
                     if (wrappedWallet != null) {

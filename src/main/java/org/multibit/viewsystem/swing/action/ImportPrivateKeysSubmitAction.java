@@ -213,51 +213,77 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction {
             @Override
             protected Boolean doInBackground() throws Exception {
                 Boolean successMeasure = Boolean.FALSE;
-
+System.out.println("Ping 1");
                 boolean keyEncryptionRequired = false;
                 try {
                     Wallet walletToAddKeysTo = finalPerWalletModelData.getWallet();
+                    System.out.println("Ping 2");
 
                     Collection<byte[]> unencryptedWalletPrivateKeys = new ArrayList<byte[]>();
                     Date earliestTransactionDate = new Date(DateUtils.nowUtc().getMillis());
+                    System.out.println("Ping 3");
 
                     // Work out if the keys need to be encrypted when added to the wallet.
                     if (finalPerWalletModelData.getWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES
                             && finalPerWalletModelData.getWallet().isCurrentlyEncrypted()) {
                         keyEncryptionRequired = true;
                     }
+                    System.out.println("Ping 4");
+
 
                     try {
                         if (walletToAddKeysTo != null) {
+                            System.out.println("Ping 5");
+
                             synchronized (walletToAddKeysTo.keychain) {
                                 // Work out what the unencrypted private keys are.
+                                System.out.println("Ping 6");
+
                                 for (ECKey ecKey : walletToAddKeysTo.keychain) {
                                     if (keyEncryptionRequired) {
                                         if (ecKey.getEncrypterDecrypter() == null) {
+                                            System.out.println("Ping 7");
+
                                             log.error("Missing EncrypterDecrypter. Could not decrypt private key "
                                                     + ecKey.toString() + ", enc.priv = "
                                                     + Utils.bytesToHexString(ecKey.getEncryptedPrivateKey().getEncryptedBytes()));
+                                            System.out.println("Ping 8");
+
                                         } else {
                                             if (ecKey.getEncryptedPrivateKey() == null
                                                     || ecKey.getEncryptedPrivateKey().getEncryptedBytes() == null
                                                     || ecKey.getEncryptedPrivateKey().getEncryptedBytes().length == 0) {
+                                                System.out.println("Ping 9");
+
                                                 log.error("Missing encrypted private key bytes for key "
                                                         + ecKey.toString()
                                                         + ", enc.priv = "
                                                         + Utils.bytesToHexString(ecKey.getEncryptedPrivateKey().getEncryptedBytes()));
+                                                System.out.println("Ping 10");
+
                                             } else {
+                                                System.out.println("Ping 11");
+
                                                 byte[] decryptedPrivateKey = ecKey.getEncrypterDecrypter().decrypt(
                                                         ecKey.getEncryptedPrivateKey(),
                                                         ecKey.getEncrypterDecrypter().deriveKey(walletPassword));
                                                 unencryptedWalletPrivateKeys.add(decryptedPrivateKey);
+                                                System.out.println("Ping 12");
+
                                             }
                                         }
                                     } else {
+                                        System.out.println("Ping 13");
+
                                         // Wallet is not encrypted.
                                         unencryptedWalletPrivateKeys.add(ecKey.getPrivKeyBytes());
+                                        System.out.println("Ping 14");
+
                                     }
                                 }
                                 
+                                System.out.println("Ping 15");
+
                                 // Keep track of earliest transaction date go backwards from now.
                                 if (privateKeyAndDateArray != null) {
                                     for (PrivateKeyAndDate privateKeyAndDate : privateKeyAndDateArray) {
@@ -295,9 +321,13 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction {
                                         }
                                     }
                                 }
+                                System.out.println("Ping 16");
+
                             }
                         }                     
                     } finally {
+                        System.out.println("Ping 17");
+
                         // Wipe the collection of private key bytes to remove it from memory.
                         for (byte[] privateKeyBytes : unencryptedWalletPrivateKeys) {
                             if (privateKeyBytes != null) {
@@ -306,11 +336,17 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction {
                                 }
                             }
                         }
+                        System.out.println("Ping 18");
+
                     }
                     
+                    System.out.println("Ping 19");
+
                     log.debug(walletToAddKeysTo.toString());
 
                     controller.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
+                    System.out.println("Ping 20");
+
                     controller.getModel().createAddressBookReceivingAddresses(finalPerWalletModelData.getWalletFilename());
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -321,6 +357,8 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction {
                         }
                     });
 
+                    System.out.println("Ping 21");
+
                     // Begin blockchain replay - returns quickly - just kicks it off.
                     log.debug("Starting replay from date = " + earliestTransactionDate);
                     if (performReplay) {
@@ -328,6 +366,8 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction {
                         successMeasure = Boolean.TRUE;
                         statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
                     }
+                    System.out.println("Ping 22");
+
                 } catch (WalletSaveException wse) {
                     logError(wse);
                 } catch (EncrypterDecrypterException ede) {

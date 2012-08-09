@@ -68,80 +68,88 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
      * Reset the transactions and replay the blockchain.
      */
     public void actionPerformed(ActionEvent event) {
+        System.out.println("RT Ping 1");
         if (abort()) {
             return;
         }
-        
-        // Check to see if another process has changed the active wallet.
-        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
-        boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
+        System.out.println("RT Ping 2");
 
-        if (haveFilesChanged) {
-            // Set on the perWalletModelData that files have changed and fire data changed.
-            perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
-            controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
-        } else {
-            final ResetTransactionsSubmitAction thisAction = this;
-            setEnabled(false);
+        final ResetTransactionsSubmitAction thisAction = this;
+        setEnabled(false);
 
-            boolean resetFromFirstTransaction = resetTransactionsDataProvider.isResetFromFirstTransaction();
-            Date resetDate = resetTransactionsDataProvider.getResetDate();
+        boolean resetFromFirstTransaction = resetTransactionsDataProvider.isResetFromFirstTransaction();
+        Date resetDate = resetTransactionsDataProvider.getResetDate();
 
-            PerWalletModelData activePerWalletModelData = controller.getModel().getActivePerWalletModelData();
+        PerWalletModelData activePerWalletModelData = controller.getModel().getActivePerWalletModelData();
+        System.out.println("RT Ping 3");
 
-            Date actualResetDate = null;
+        Date actualResetDate = null;
 
-            if (resetFromFirstTransaction) {
-                // Work out the earliest transaction date and save it to the wallet.
+        if (resetFromFirstTransaction) {
+            // Work out the earliest transaction date and save it to the wallet.
+            System.out.println("RT Ping 4");
 
-                Date earliestTransactionDate = new Date(DateUtils.nowUtc().getMillis());
-                Set<Transaction> allTransactions = activePerWalletModelData.getWallet().getTransactions(true, true);
-                if (allTransactions != null) {
-                    for (Transaction transaction : allTransactions) {
-                        if (transaction != null) {
-                            Date updateTime = transaction.getUpdateTime();
-                            if (updateTime != null && earliestTransactionDate.after(updateTime)) {
-                                earliestTransactionDate = updateTime;
-                            }
+            Date earliestTransactionDate = new Date(DateUtils.nowUtc().getMillis());
+            Set<Transaction> allTransactions = activePerWalletModelData.getWallet().getTransactions(true, true);
+            if (allTransactions != null) {
+                for (Transaction transaction : allTransactions) {
+                    if (transaction != null) {
+                        Date updateTime = transaction.getUpdateTime();
+                        if (updateTime != null && earliestTransactionDate.after(updateTime)) {
+                            earliestTransactionDate = updateTime;
                         }
                     }
                 }
+            }
+            actualResetDate = earliestTransactionDate;
+            System.out.println("RT Ping 5");
+
+            // Look at the earliest key creation time - this is
+            // returned in seconds and is converted to milliseconds.
+            long earliestKeyCreationTime = activePerWalletModelData.getWallet().getEarliestKeyCreationTime()
+                    * NUMBER_OF_MILLISECOND_IN_A_SECOND;
+            if (earliestKeyCreationTime != 0 && earliestKeyCreationTime < earliestTransactionDate.getTime()) {
+                earliestTransactionDate = new Date(earliestKeyCreationTime);
                 actualResetDate = earliestTransactionDate;
-
-                // Look at the earliest key creation time - this is
-                // returned in seconds and is converted to milliseconds.
-                long earliestKeyCreationTime = activePerWalletModelData.getWallet().getEarliestKeyCreationTime()
-                        * NUMBER_OF_MILLISECOND_IN_A_SECOND;
-                if (earliestKeyCreationTime != 0 && earliestKeyCreationTime < earliestTransactionDate.getTime()) {
-                    earliestTransactionDate = new Date(earliestKeyCreationTime);
-                    actualResetDate = earliestTransactionDate;
-                }
-            } else {
-                actualResetDate = resetDate;
             }
-
-            // Remove the transactions from the wallet.
-            activePerWalletModelData.getWallet().clearTransactions(actualResetDate);
-
-            // Save the wallet without the transactions.
-            try {
-                controller.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
-                controller.getModel().createWalletData(controller.getModel().getActiveWalletFilename());
-                controller.fireRecreateAllViews(false);
-            } catch (WalletSaveException wse) {
-                log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
-                MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
-            }
-
-            resetTransactionsInBackground(resetFromFirstTransaction, actualResetDate);
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    thisAction.setEnabled(true);
-                }
-            }, BUTTON_DOWNCLICK_TIME);
+            System.out.println("RT Ping 6");
+        } else {
+            System.out.println("RT Ping 7");
+            actualResetDate = resetDate;
         }
+        System.out.println("RT Ping 8");
+
+        // Remove the transactions from the wallet.
+        activePerWalletModelData.getWallet().clearTransactions(actualResetDate);
+        System.out.println("RT Ping 9");
+
+        // Save the wallet without the transactions.
+        try {
+            controller.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
+            System.out.println("RT Ping 10");
+
+            controller.getModel().createWalletData(controller.getModel().getActiveWalletFilename());
+            System.out.println("RT Ping 11");
+
+            controller.fireRecreateAllViews(false);
+            System.out.println("RT Ping 12");
+
+        } catch (WalletSaveException wse) {
+            log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
+            MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
+        }
+        System.out.println("RT Ping 13");
+
+        resetTransactionsInBackground(resetFromFirstTransaction, actualResetDate);
+        System.out.println("RT Ping 14");
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                thisAction.setEnabled(true);
+            }
+        }, BUTTON_DOWNCLICK_TIME);
     }
 
     /**

@@ -32,6 +32,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
+import org.multibit.network.CacheManager;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.listener.GenericAboutEvent;
 import org.multibit.platform.listener.GenericAboutEventListener;
@@ -54,6 +55,7 @@ import com.google.bitcoin.core.Message;
 import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
 import com.google.bitcoin.core.ScriptException;
+import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
@@ -110,6 +112,9 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     private volatile boolean applicationStarting = true;
 
+    private boolean useCacheManagerDetermined = false;
+    private boolean useCacheManager = false;
+    
     /**
      * Used for testing only.
      */
@@ -264,14 +269,22 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      * parties
      */
 
-    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {      
-        // looking for block 169482
-//        if (block.getHash().toString().equals("0000000000000756935f1ee9d5987857b604046f846d3df56d024cdb5f368665")) {
-//            // this is the coinbase block we are interested in
-//            System.out.println("MultiBitController#onBlocksDownloaded - foundit.1");
-//            System.out.println("Block data =\nSTART\n" + Utils.bytesToHexString(block.bitcoinSerialize()) + "\nEND");
-//        }
+    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {             
+        // Work out whether to use CacheManager.
+        if (!useCacheManagerDetermined) {
+            String useCacheManagerString = getModel().getUserPreference(MultiBitModel.USE_CACHE_MANAGER);
+            useCacheManager = false;
+            if (Boolean.TRUE.toString().equalsIgnoreCase(useCacheManagerString)) {
+                useCacheManager = true;
+            }
+            useCacheManagerDetermined = true;
+        }
         
+        if (useCacheManager) {
+            CacheManager.INSTANCE.setController(this);
+            CacheManager.INSTANCE.writeFile(block);
+        }
+ 
         fireBlockDownloaded();
     }
 
@@ -553,4 +566,44 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     public List<Message> getData(Peer peer, GetDataMessage m) {
         return null;
     }
+    
+    /**
+     * Called from replay when a block is replayed from cache.
+     * @param block
+     */
+    public void onBlock(StoredBlock storedBlock, Block block) {
+        // Loop through the transactions in the block.
+        List<Transaction> transactions = block.getTransactions();
+        if (transactions != null) {
+            for (Transaction transaction : transactions) {
+                // loop through all the wallets, seeing if the transaction is relevant
+                if (transaction != null) {
+                    try {
+                        java.util.List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
+
+                        if (perWalletModelDataList != null) {
+                            for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                                Wallet loopWallet = perWalletModelData.getWallet();
+                                if (loopWallet != null) {
+                                    if (loopWallet.isTransactionRelevant(transaction, true)) {
+                                        // the perWalletModelData is marked as dirty
+                                        perWalletModelData.setDirty(true);
+                                        if (loopWallet.getTransaction(transaction.getHash()) == null) {
+                                            log.debug("MultiBit adding a new transaction from a block for the wallet '"
+                                                    + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());
+                                            loopWallet.receiveFromBlock(transaction, storedBlock, com.google.bitcoin.core.BlockChain.NewBlockType.BEST_CHAIN);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch (ScriptException e) {
+                        log.error(e.getMessage(), e);
+                    } catch (VerificationException e) {
+                        log.error(e.getMessage(), e);
+                    }
+                }            }
+        }
+    }
+
 }
