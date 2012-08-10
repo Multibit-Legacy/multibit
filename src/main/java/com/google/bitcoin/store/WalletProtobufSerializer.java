@@ -163,12 +163,14 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         if (encrypterDecrypter instanceof EncrypterDecrypterScrypt) {
             EncrypterDecrypterScrypt encrypterDecrypterScrypt = (EncrypterDecrypterScrypt)encrypterDecrypter;
             ScryptParameters scryptParameters = encrypterDecrypterScrypt.getScryptParameters();
-            Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder()
+            if (scryptParameters != null) {
+                Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder()
                 .setSalt(ByteString.copyFrom(scryptParameters.getSalt()))
                 .setN(scryptParameters.getN())
                 .setP(scryptParameters.getP())
                 .setR(scryptParameters.getR());
-            walletBuilder.setEncryptionParameters(scryptParametersBuilder);
+                walletBuilder.setEncryptionParameters(scryptParametersBuilder);
+            }
         }
         
         // Populate the wallet type.

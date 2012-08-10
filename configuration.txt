@@ -19,3 +19,10 @@ singleNodeConnection=12.34.56.78
 To use the testnet set the property "testOrProductionNetwork" 
 to be "test".
 
+
++ UseCacheManager
+To use the experimental caching of blocks in the <applicationDataDirectory/cache/block directory set:
+useCacheManager = true.
+
+This will take about 3GB of data (for 200,000 blocks).
+

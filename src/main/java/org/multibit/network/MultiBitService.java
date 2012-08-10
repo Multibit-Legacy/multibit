@@ -360,18 +360,18 @@ public class MultiBitService {
      */
     public void replayBlockChain(Date dateToReplayFrom) throws BlockStoreException {   
         // Work out whether to use CacheManager.
-        System.out.println("MBS Ping 1");
-
         String useCacheManagerString = controller.getModel().getUserPreference(MultiBitModel.USE_CACHE_MANAGER);
         boolean useCacheManager = false;
         if (Boolean.TRUE.toString().equalsIgnoreCase(useCacheManagerString)) {
             useCacheManager = true;
+            CacheManager cacheManager = CacheManager.INSTANCE;
+            log.debug("CacheManager = " + cacheManager);
+            cacheManager.setController(controller);
+            cacheManager.initialise();
         }
         
         // Navigate backwards in the blockchain to work out how far back in time to go.
         log.debug("Starting replay of blockchain from date = '" + dateToReplayFrom + "', useCacheManager = " + useCacheManager);
-        System.out.println("MBS Ping 2");
-
         StoredBlock storedBlock = null;
 
         Stack<StoredBlock> blockStack = new Stack<StoredBlock>();
@@ -386,33 +386,23 @@ public class MultiBitService {
                     throw new BlockStoreException(e);
                 }
             } else {
-                System.out.println("MBS Ping 2");
-
-                // Make sure the genesis block is cached.
+                // Make sure the genesis block is cached - this will be the starting point for the replay from cache.
                 CacheManager.INSTANCE.writeFile(networkParameters.genesisBlock);
-                System.out.println("MBS Ping 3");
 
                 File blockFile = CacheManager.INSTANCE.getBlockCacheFile(networkParameters.genesisBlock);
-                System.out.println("MBS Ping 4");
 
                 log.debug("Actual Satoshi genesis exists = "
                         + (new File(CacheManager.INSTANCE.getBlockCacheDirectory() + File.separator
                                 + "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f.block")).exists());
 
                 if (blockFile.exists()) {
-                    System.out.println("MBS Ping 5");
-
                     log.debug("Can replay blocks from the cache from  the genesis block");
-                    System.out.println("MBS Ping 6");
 
                     // Put the whole chain on the stack.
                     storedBlock = blockStore.getChainHead();
-                    System.out.println("MBS Ping 7");
-
                     assert storedBlock != null;
 
                     blockStack.push(storedBlock);
-                    System.out.println("MBS Ping 8");
 
                     while (true) {
                         if (storedBlock == null) {
@@ -420,14 +410,11 @@ public class MultiBitService {
                             // reached genesis block.
                             break;
                         }
-                        System.out.println("MBS Ping 9");
-
                         Block header = storedBlock.getHeader();
                         if (header == null) {
                             log.debug("No header for stored block " + storedBlock.getHeight());
                             break;
                         }
-                        System.out.println("MBS Ping 10");
 
                         try {
                             StoredBlock previousBlock = storedBlock.getPrev(blockStore);
@@ -440,21 +427,16 @@ public class MultiBitService {
                             }
                         } catch (BlockStoreException e) {
                             e.printStackTrace();
-                            // we have to stop navigating backwards
+                            // We have to stop navigating backwards.
                             break;
                         }
                     }
-                    System.out.println("MBS Ping 11");
-
                     storedBlock = CacheManager.INSTANCE.replayFromBlockCache(blockStack);
-                    System.out.println("MBS Ping 12");
-
                 }
             }
         } else {
             // Not a replay from the genesis block.
             storedBlock = blockStore.getChainHead();
-
             assert storedBlock != null;
 
             boolean haveGoneBackInTimeEnough = false;
@@ -519,27 +501,29 @@ public class MultiBitService {
                 // See if block is already cached. If it is, replay the cached blocks.
                 File blockFile = CacheManager.INSTANCE.getBlockCacheFile(storedBlock);
 
-                if (blockFile.exists()) {
+                if (blockFile != null && blockFile.exists()) {
+
                     log.debug("Can replay blocks from the cache from storedBlock height = " + storedBlock.getHeight());
                     storedBlock = CacheManager.INSTANCE.replayFromBlockCache(blockStack);
                 }
             }
 
-            // Set the block chain head to the earliest block that we need to
-            // download.
+            // Set the block chain head to the earliest block that we need to download.
             blockChain.setChainHeadClearCachesAndTruncateBlockStore(storedBlock);
+
         }
 
         // Restart peerGroup and download.
         Message message = new Message(controller.getLocaliser().getString("multiBitService.stoppingBitcoinNetworkConnection"),
                 false);
         MessageManager.INSTANCE.addMessage(message);
+
         peerGroup.stop();
 
         // Reset UI to zero peers.
         controller.onPeerDisconnected(null, 0);
-
-        if (dateToReplayFrom != null && storedBlock != null) {
+ 
+        if (dateToReplayFrom != null && storedBlock != null  && storedBlock.getHeader() != null) {
             message = new Message(controller.getLocaliser().getString(
                     "resetTransactionSubmitAction.replayingBlockchain",
                     new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
@@ -549,7 +533,8 @@ public class MultiBitService {
                     "resetTransactionSubmitAction.replayingBlockchain",
                     new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
                             genesisBlockCreationDate) }), false);
-        }
+       }
+
         MessageManager.INSTANCE.addMessage(message);
 
         peerGroup = createNewPeerGroup();

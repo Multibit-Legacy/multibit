@@ -158,14 +158,18 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
     private void resetTransactionsInBackground(final boolean resetFromFirstTransaction, final Date resetDate) {
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
 
-            private String message = null;
+            private String message = "";
 
             @Override
             protected Boolean doInBackground() throws Exception {
+                System.out.println("RTB Ping 1");
                 Boolean successMeasure = Boolean.FALSE;
 
                 try {
+                    System.out.println("RTB Ping 2");
                     controller.getMultiBitService().replayBlockChain(resetDate);
+                    System.out.println("RTB Ping 3");
+
                     successMeasure = Boolean.TRUE;
                     message = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
                 } catch (BlockStoreException e) {
@@ -173,19 +177,24 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
                             new Object[] { e.getMessage() });
                     ;
                 }
+                System.out.println("RTB Ping 4");
+
                 return successMeasure;
             }
 
             protected void done() {
                 try {
+                    System.out.println("RTB Ping 5.1");
+
                     Boolean wasSuccessful = get();
-                    if (wasSuccessful) {
+                    System.out.println("RTB Ping 5.2");
+                    if (wasSuccessful != null && wasSuccessful.booleanValue()) {
                         log.debug(message);
-                        MessageManager.INSTANCE.addMessage(new Message(message));
                     } else {
                         log.error(message);
-                        MessageManager.INSTANCE.addMessage(new Message(message));
                     }
+                    MessageManager.INSTANCE.addMessage(new Message(message, false));
+                    System.out.println("RTB Ping 6");
                 } catch (Exception e) {
                     // Not really used but caught so that SwingWorker shuts down cleanly.
                     log.error(e.getClass() + " " + e.getMessage());
