@@ -16,13 +16,10 @@
 package org.multibit.network;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Stack;
 
@@ -35,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.Block;
 import com.google.bitcoin.core.ProtocolException;
 import com.google.bitcoin.core.StoredBlock;
+import com.google.bitcoin.store.BlockStoreException;
 
 /**
  * Enum singleton to manage cached blocks.
@@ -51,8 +49,6 @@ public enum CacheManager {
     public static final String BLOCK_CACHE_DIRECTORY = "block";
     public static final String BLOCK_SUFFIX = ".block";
 
-    private static int SIZE = 128 * 1024;
-    
     private String applicationDataDirectory = null;
     private String cacheDirectory = null;
     private String blockCacheDirectory = null;
@@ -69,19 +65,17 @@ public enum CacheManager {
      * @return StoredBlock The block from which conventional download replay must start.
      */
     public StoredBlock replayFromBlockCache(Stack<StoredBlock> blockStack) {
-        System.out.println("CM Ping 1");
 
         assert(CacheManager.INSTANCE.getController() != null);
         
         initialise();
 
-        log.debug("Replaying a stack of " + blockStack.size() + " from the block cache.");
-        MessageManager.INSTANCE.addMessage(new Message("Replaying a stack of " + blockStack.size() + " from the block cache."));
-        System.out.println("CM Ping 2");
+        int initialStackSize = blockStack.size();
+        log.debug("Replaying a stack of " + initialStackSize + " from the block cache.");
+        MessageManager.INSTANCE.addMessage(new Message("Replaying " + blockStack.size() + " block(s) from the local cache."));
                
         MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("multiBitService.replayingFromBlockCache"), false));
         StoredBlock newChainHead = blockStack.peek();
-        System.out.println("CM Ping 3");
 
         while (!blockStack.isEmpty()) {
  
@@ -90,7 +84,8 @@ public enum CacheManager {
             boolean getTimings = false;
             if (blockStack.size() % 1000 == 0) {
                 log.debug("The block stack is of size " + blockStack.size());
-                MessageManager.INSTANCE.addMessage(new Message("The block stack is of size " + blockStack.size()));
+                double percentComplete = 100 * (initialStackSize - blockStack.size())/ initialStackSize;
+                MessageManager.INSTANCE.addMessage(new Message(blockStack.size() + " blocks to replay from local cache", percentComplete));
                 getTimings = true;
             }
  
@@ -109,6 +104,9 @@ public enum CacheManager {
                     Block replayBlock = new Block(controller.getModel().getNetworkParameters(), blockBytes);
                     if (getTimings) time3 = System.currentTimeMillis();
                     // Replay the block.
+                    if (newChainHead.getHeight() < 187070 && newChainHead.getHeight() > 187050) {
+                        log.debug("Saw block at height " + newChainHead.getHeight() +  ", hash " + newChainHead.getHeader().getHashAsString());                        
+                    }
                     controller.onBlock(newChainHead, replayBlock);
                     if (getTimings) time4 = System.currentTimeMillis();
                     controller.onBlocksDownloaded(null, replayBlock, -1);
@@ -132,11 +130,30 @@ public enum CacheManager {
                 }
             } else {
                 // The block is not cached so start downloading.
-                MessageManager.INSTANCE.addMessage(new Message("Start downloading from block height " + newChainHead.getHeight()));
+                if (newChainHead.getHeight() < 187070 && newChainHead.getHeight() > 187050) {
+                    log.debug("Block does not exist on disk at height " + newChainHead.getHeight() +  ", hash " + newChainHead.getHeader().getHashAsString());                        
+                }
+                
+                // Go back some more blocks to ensure there is an overlap of blocks downloaded.
+                for (int i = 0; i < MultiBitService.MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN; i++) {
+                    try {
+                        StoredBlock previousBlock = newChainHead.getPrev(controller.getMultiBitService().getBlockStore());
+                        if (previousBlock == null) {
+                            log.debug("Could not navigate backwards form storedBlock.2 " + newChainHead.getHeight());
+                            break;
+                        } else {
+                            newChainHead = previousBlock;
+                        }
+                    } catch (BlockStoreException e) {
+                        e.printStackTrace();
+                        // We have to stop - fail.
+                        break;
+                    }
+                }
+                MessageManager.INSTANCE.addMessage(new Message("Start downloading from network at block height " + newChainHead.getHeight(), 100));
                 return newChainHead;
             }
         }
-        System.out.println("CM Ping 4");
 
         MessageManager.INSTANCE.addMessage(new Message(" "));
         return newChainHead;
@@ -165,7 +182,6 @@ public enum CacheManager {
                 blockCacheDirectoryFile.mkdir();
             }   
         }
-        //System.out.println("CM I Ping 4");
     }
       
     public void writeFile(Block block) {
@@ -188,8 +204,6 @@ public enum CacheManager {
         try {
             out = new RandomAccessFile(file.getAbsolutePath(), "r");
             FileChannel fileChannel = out.getChannel();
-
-            // FileChannel fileChannel = new FileInputStream(file).getChannel();
             ByteBuffer buffer = ByteBuffer.allocate((int) fileChannel.size());
             fileChannel.read(buffer);
             toReturn = buffer.array();

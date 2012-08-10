@@ -85,7 +85,7 @@ public class MultiBitService {
     private static final Logger log = LoggerFactory.getLogger(MultiBitService.class);
 
     private static final int NUMBER_OF_MILLISECOND_IN_A_SECOND = 1000;
-    private static final int MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN = 6;
+    public static final int MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN = 6;
 
     public static final String MULTIBIT_PREFIX = "multibit";
     public static final String TEST_NET_PREFIX = "testnet";
@@ -358,7 +358,9 @@ public class MultiBitService {
      *            the date on the blockchain to replay from - if missing replay
      *            from genesis block
      */
-    public void replayBlockChain(Date dateToReplayFrom) throws BlockStoreException {   
+    public void replayBlockChain(Date dateToReplayFrom) throws BlockStoreException {
+        boolean restartPeerGroup = true;
+        
         // Work out whether to use CacheManager.
         String useCacheManagerString = controller.getModel().getUserPreference(MultiBitModel.USE_CACHE_MANAGER);
         boolean useCacheManager = false;
@@ -431,6 +433,8 @@ public class MultiBitService {
                             break;
                         }
                     }
+                    restartPeerGroup();
+                    restartPeerGroup = false;
                     storedBlock = CacheManager.INSTANCE.replayFromBlockCache(blockStack);
                 }
             }
@@ -483,7 +487,7 @@ public class MultiBitService {
                 try {
                     StoredBlock previousBlock = storedBlock.getPrev(blockStore);
                     if (previousBlock == null) {
-                        log.debug("Could not navigate backwards form storedBlock " + storedBlock.getHeight());
+                        log.debug("Could not navigate backwards form storedBlock.1 " + storedBlock.getHeight());
                         break;
                     } else {
                         storedBlock = previousBlock;
@@ -498,11 +502,29 @@ public class MultiBitService {
             }
 
             if (useCacheManager) {
+                // Go back some more blocks to ensure there is an overlap of blocks downloaded.
+                for (int i = 0; i < MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN; i++) {
+                    try {
+                        StoredBlock previousBlock = storedBlock.getPrev(blockStore);
+                        if (previousBlock == null) {
+                            log.debug("Could not navigate backwards form storedBlock.2 " + storedBlock.getHeight());
+                            break;
+                        } else {
+                            storedBlock = previousBlock;
+                        }
+                    } catch (BlockStoreException e) {
+                        e.printStackTrace();
+                        // We have to stop - fail.
+                        break;
+                    }
+                }
+                
                 // See if block is already cached. If it is, replay the cached blocks.
                 File blockFile = CacheManager.INSTANCE.getBlockCacheFile(storedBlock);
 
                 if (blockFile != null && blockFile.exists()) {
-
+                    restartPeerGroup();
+                    restartPeerGroup = false;
                     log.debug("Can replay blocks from the cache from storedBlock height = " + storedBlock.getHeight());
                     storedBlock = CacheManager.INSTANCE.replayFromBlockCache(blockStack);
                 }
@@ -510,19 +532,10 @@ public class MultiBitService {
 
             // Set the block chain head to the earliest block that we need to download.
             blockChain.setChainHeadClearCachesAndTruncateBlockStore(storedBlock);
-
         }
 
-        // Restart peerGroup and download.
-        Message message = new Message(controller.getLocaliser().getString("multiBitService.stoppingBitcoinNetworkConnection"),
-                false);
-        MessageManager.INSTANCE.addMessage(message);
-
-        peerGroup.stop();
-
-        // Reset UI to zero peers.
-        controller.onPeerDisconnected(null, 0);
- 
+        // Restart peerGroup and download rest of blockchain.
+        Message message;
         if (dateToReplayFrom != null && storedBlock != null  && storedBlock.getHeader() != null) {
             message = new Message(controller.getLocaliser().getString(
                     "resetTransactionSubmitAction.replayingBlockchain",
@@ -533,14 +546,30 @@ public class MultiBitService {
                     "resetTransactionSubmitAction.replayingBlockchain",
                     new Object[] { DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale()).format(
                             genesisBlockCreationDate) }), false);
-       }
-
+        }
         MessageManager.INSTANCE.addMessage(message);
 
-        peerGroup = createNewPeerGroup();
-        peerGroup.start();
+
+        if (restartPeerGroup) {
+            restartPeerGroup();
+        }
 
         downloadBlockChain();
+    }
+    
+    public void restartPeerGroup() {
+        // Restart peerGroup and download.
+        Message message = new Message(controller.getLocaliser().getString("multiBitService.stoppingBitcoinNetworkConnection"),
+                false, 0);
+        MessageManager.INSTANCE.addMessage(message);
+
+        peerGroup.stop();
+
+        // Reset UI to zero peers.
+        controller.onPeerDisconnected(null, 0);
+ 
+        peerGroup = createNewPeerGroup();
+        peerGroup.start();
     }
 
     /**
