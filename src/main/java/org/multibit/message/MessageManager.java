@@ -46,10 +46,6 @@ public enum MessageManager {
     
     synchronized public void addMessage(Message message) {
         if (message != null) {
-            if ("Messages".equals(message.getText())) {
-                boolean ping = true;
-                ping = !ping;
-            }
             boolean wasAdded = messageQueue.offer(message);
             if (!wasAdded) {
                 // remove the oldest message

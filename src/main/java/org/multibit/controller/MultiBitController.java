@@ -268,8 +268,11 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      * The controller listens for PeerGroup events and notifies interested
      * parties
      */
-
-    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {             
+    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {   
+        onBlocksDownloaded(peer, block, blocksLeft, true);
+    }
+    
+    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft, boolean checkIfBlockNeedsWriting) {             
         // Work out whether to use CacheManager.
         if (!useCacheManagerDetermined) {
             String useCacheManagerString = getModel().getUserPreference(MultiBitModel.USE_CACHE_MANAGER);
@@ -278,10 +281,10 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
                 useCacheManager = true;
             }
             useCacheManagerDetermined = true;
+            CacheManager.INSTANCE.setController(this);
         }
         
-        if (useCacheManager) {
-            CacheManager.INSTANCE.setController(this);
+        if (checkIfBlockNeedsWriting && useCacheManager) {
             CacheManager.INSTANCE.writeFile(block);
         }
  
@@ -602,8 +605,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
                     } catch (VerificationException e) {
                         log.error(e.getMessage(), e);
                     }
-                }            }
+                }            
+            }
         }
     }
-
 }

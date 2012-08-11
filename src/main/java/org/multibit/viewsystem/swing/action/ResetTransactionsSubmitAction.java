@@ -162,39 +162,32 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
 
             @Override
             protected Boolean doInBackground() throws Exception {
-                System.out.println("RTB Ping 1");
                 Boolean successMeasure = Boolean.FALSE;
 
                 try {
-                    System.out.println("RTB Ping 2");
                     controller.getMultiBitService().replayBlockChain(resetDate);
-                    System.out.println("RTB Ping 3");
 
                     successMeasure = Boolean.TRUE;
-                    message = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
+                    //message = controller.getLocaliser().getString("resetTransactionsSubmitAction.replaySuccessful");
                 } catch (BlockStoreException e) {
                     message = controller.getLocaliser().getString("resetTransactionsSubmitAction.replayUnsuccessful",
                             new Object[] { e.getMessage() });
-                    ;
                 }
-                System.out.println("RTB Ping 4");
 
                 return successMeasure;
             }
 
             protected void done() {
                 try {
-                    System.out.println("RTB Ping 5.1");
-
                     Boolean wasSuccessful = get();
-                    System.out.println("RTB Ping 5.2");
                     if (wasSuccessful != null && wasSuccessful.booleanValue()) {
                         log.debug(message);
                     } else {
                         log.error(message);
                     }
-                    MessageManager.INSTANCE.addMessage(new Message(message, false));
-                    System.out.println("RTB Ping 6");
+                    if (message != "") {
+                        MessageManager.INSTANCE.addMessage(new Message(message));
+                    }
                 } catch (Exception e) {
                     // Not really used but caught so that SwingWorker shuts down cleanly.
                     log.error(e.getClass() + " " + e.getMessage());

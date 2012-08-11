@@ -81,39 +81,25 @@ public enum CacheManager {
  
             newChainHead = blockStack.pop();
               
-            boolean getTimings = false;
             if (blockStack.size() % 1000 == 0) {
                 log.debug("The block stack is of size " + blockStack.size());
                 double percentComplete = 100 * (initialStackSize - blockStack.size())/ initialStackSize;
                 MessageManager.INSTANCE.addMessage(new Message(blockStack.size() + " blocks to replay from local cache", percentComplete));
-                getTimings = true;
             }
  
-            long time1 = 0, time2 = 0, time3 = 0, time4 = 0, time5 = 0;
-            if (getTimings) time1 = System.currentTimeMillis();
-
             // See if block is already cached.
             String blockFilename = blockCacheDirectory + File.separator + newChainHead.getHeader().getHashAsString() + BLOCK_SUFFIX;
             File blockFile = new File(blockFilename);
             
             if (blockFile.exists()) {
-                byte[] blockBytes;
                 try {
-                    blockBytes = getBytesFromFile(blockFile);
-                    if (getTimings) time2 = System.currentTimeMillis();
+                    byte[] blockBytes = getBytesFromFile(blockFile);
                     Block replayBlock = new Block(controller.getModel().getNetworkParameters(), blockBytes);
-                    if (getTimings) time3 = System.currentTimeMillis();
                     // Replay the block.
-                    if (newChainHead.getHeight() < 187070 && newChainHead.getHeight() > 187050) {
-                        log.debug("Saw block at height " + newChainHead.getHeight() +  ", hash " + newChainHead.getHeader().getHashAsString());                        
-                    }
                     controller.onBlock(newChainHead, replayBlock);
-                    if (getTimings) time4 = System.currentTimeMillis();
-                    controller.onBlocksDownloaded(null, replayBlock, -1);
-                    if (getTimings)  {
-                        time5 = System.currentTimeMillis();
-                        log.debug("Timings : " + (time2 - time1) + ", " +  (time3 - time2) + ", " +  (time4 - time3) + ", " +  (time5 - time4)) ;                  
-                    }
+                    
+                    // Notify listeners but no need to write the file to cache (we already know it is cached)
+                    controller.onBlocksDownloaded(null, replayBlock, -1, false);
                 } catch (IOException e) {
                     // We did not successfully read the block so start downloading from here.
                     String messageText = e.getClass().getCanonicalName() + " " +e.getMessage();
@@ -130,9 +116,6 @@ public enum CacheManager {
                 }
             } else {
                 // The block is not cached so start downloading.
-                if (newChainHead.getHeight() < 187070 && newChainHead.getHeight() > 187050) {
-                    log.debug("Block does not exist on disk at height " + newChainHead.getHeight() +  ", hash " + newChainHead.getHeader().getHashAsString());                        
-                }
                 
                 // Go back some more blocks to ensure there is an overlap of blocks downloaded.
                 for (int i = 0; i < MultiBitService.MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN; i++) {
@@ -160,11 +143,9 @@ public enum CacheManager {
     }
     
     public void initialise() {
-        //System.out.println("CM I Ping 1");
         if (applicationDataDirectory == null) {
             applicationDataDirectory = controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory();
         }
-        //System.out.println("CM I Ping 2");
         
         if (cacheDirectory == null) {
             cacheDirectory = applicationDataDirectory + File.separator + CACHE_DIRECTORY;
@@ -173,7 +154,6 @@ public enum CacheManager {
                 cacheDirectoryFile.mkdir();
             }   
         }
-        //System.out.println("CM I Ping 3");
         
         if (blockCacheDirectory == null) {
             blockCacheDirectory = cacheDirectory + File.separator + BLOCK_CACHE_DIRECTORY;
