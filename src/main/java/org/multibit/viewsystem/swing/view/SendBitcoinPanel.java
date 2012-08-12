@@ -316,8 +316,8 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         constraints.weightx = 0.1;
         constraints.weighty = 0.3;
         constraints.gridwidth = 5;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
+        constraints.gridheight = 3;
+        constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
         formPanel.add(sidePanelButton, constraints);
 
         return formPanel;

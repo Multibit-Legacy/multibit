@@ -41,7 +41,7 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.AbstractTradePanel;
 
 /**
- * This {@link Action} displays a swatch or QR code zoomed to the whole display
+ * This {@link Action} displays a QR code zoomed to the whole display
  */
 public class ZoomAction extends AbstractAction {
     private static final long serialVersionUID = 1923492460523457765L;
@@ -91,23 +91,11 @@ public class ZoomAction extends AbstractAction {
 
             SwatchGenerator swatchGenerator = new SwatchGenerator(controller);
 
-            Image image = null;
-            if (tradePanel.isDisplayAsQRcode()) {
-                image = swatchGenerator.generateQRcode(address, amount, label, 1);
-
-                if (image != null) {
-                    int scaleFactor = (int) (Math.floor(Math.min(scaleHeight / image.getHeight(null),
-                            scaleWidth / image.getWidth(null))));
-                    image = swatchGenerator.generateQRcode(address, amount, label, scaleFactor);
-                }
-            } else if (tradePanel.isDisplayAsSwatch()) {
-                image = swatchGenerator.generateSwatch(address, amount, label);
-                if (image != null) {
-                    int widthFactor = (int)(Math.floor(scaleWidth / image.getWidth(null)));
-                    int heightFactor = (int)(Math.floor(scaleHeight / image.getHeight(null)));
-                    int scaleFactor = Math.min(widthFactor, heightFactor);
-                    image = swatchGenerator.generateSwatch(address, amount, label, scaleFactor);
-                }
+            Image image = swatchGenerator.generateQRcode(address, amount, label, 1);
+            if (image != null) {
+                int scaleFactor = (int) (Math.floor(Math.min(scaleHeight / image.getHeight(null),
+                        scaleWidth / image.getWidth(null))));
+                image = swatchGenerator.generateQRcode(address, amount, label, scaleFactor);
             }
 
             // display the icon
@@ -123,7 +111,6 @@ public class ZoomAction extends AbstractAction {
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
             final JOptionPane optionPane = new JOptionPane(iconPanel, JOptionPane.PLAIN_MESSAGE);
-            //optionPane.setIcon(ImageLoader.createImageIcon(ImageLoader.ZOOM_ICON_FILE));
             optionPane.addPropertyChangeListener(new PropertyChangeListener() {
                 public void propertyChange(PropertyChangeEvent e) {
                     String prop = e.getPropertyName();
