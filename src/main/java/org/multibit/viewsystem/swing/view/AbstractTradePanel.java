@@ -282,7 +282,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     protected void initUI() {
         setMinimumSize(new Dimension(550, 220));
-        // setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
         setLayout(new GridBagLayout());
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
@@ -428,7 +427,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints.weighty = 10000;
         constraints.gridwidth = 1;
         constraints.gridheight = 8;
-        constraints.anchor = GridBagConstraints.LINE_END;
+        constraints.anchor = GridBagConstraints.LINE_START;
         JPanel dashedStent = MultiBitTitledPanel.createStent(smallSeparatorSize);
         dashedStent.setBorder(new DashedBorder(controller.getLocaliser().getLocale()));
         panel.add(dashedStent, constraints);
@@ -487,8 +486,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         if (showSidePanel) {
             // show less
-            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.ARROW_RIGHT_ICON_FILE));
-            sidePanelButton.setText(controller.getLocaliser().getString("sendBitcoinPanel.showLess.text"));
+            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.SIDE_PANEL_HIDE_ICON_FILE));
+            sidePanelButton.setText("");
+            sidePanelButton.setBorderPainted(false);
             sidePanelButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.showLess.tooltip"));
             sidePanelButton.setMnemonic(mnemonicUtil.getMnemonic(controller.getLocaliser().getString(
                     "sendBitcoinPanel.showLess.mnemonic")));
@@ -496,13 +496,14 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             sidePanelButton.setHorizontalTextPosition(JLabel.LEFT);
         } else {
             // show more
-            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.ARROW_LEFT_ICON_FILE));
-            sidePanelButton.setText(controller.getLocaliser().getString("sendBitcoinPanel.showMore.text"));
+            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.SIDE_PANEL_SHOW_ICON_FILE));
+            sidePanelButton.setText("");
+            sidePanelButton.setBorderPainted(false);
             sidePanelButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.showMore.tooltip"));
             sidePanelButton.setMnemonic(mnemonicUtil.getMnemonic(controller.getLocaliser().getString(
                     "sendBitcoinPanel.showMore.mnemonic")));
             sidePanelButton.setVerticalTextPosition(JLabel.BOTTOM);
-            sidePanelButton.setHorizontalTextPosition(JLabel.RIGHT);
+            sidePanelButton.setHorizontalTextPosition(JLabel.LEFT);
         }
     }
 

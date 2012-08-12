@@ -304,14 +304,15 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
 
         Action sidePanelAction = new MoreOrLessAction(controller, this);
         sidePanelButton = new MultiBitButton(sidePanelAction, controller);
+        sidePanelButton.setBorder(BorderFactory.createEmptyBorder());
         displaySidePanel();
-        
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 6;
-        constraints.gridy = 8;
+        constraints.gridy = 3;
         constraints.weightx = 0.1;
         constraints.weighty = 0.3;
-        constraints.gridwidth = 4;
+        constraints.gridwidth = 5;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
         formPanel.add(sidePanelButton, constraints);
