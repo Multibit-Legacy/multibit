@@ -44,6 +44,7 @@ import java.util.Map;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -896,7 +897,12 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     private void setDragLabelTextAndTooltip() {
         if (!isReceiveBitcoin()) {
-            qrCodeLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabelQRcode.text"));
+            Icon icon = qrCodeLabel.getIcon();
+            if (icon == null || icon.getIconHeight() == -1) {
+                qrCodeLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabelQRcode.text"));
+            } else {
+                qrCodeLabel.setText("");                
+            }
             qrCodeLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabelQRcode.tooltip"));
         }
     }
@@ -1146,6 +1152,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             }
             if (qrCodeLabel != null) {
                 qrCodeLabel.setIcon(icon);
+                setDragLabelTextAndTooltip();
             }
         } catch (RuntimeException re) {
             // QR code generation failed
@@ -1285,6 +1292,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
             if (icon != null) {
                 qrCodeLabel.setIcon(icon);
+                setDragLabelTextAndTooltip();
             } else {
                 displayQRCode(addressString, amountString, decodedLabel);
             }
