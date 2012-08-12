@@ -311,11 +311,11 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         displaySidePanel();
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 6;
+        constraints.gridx = 4;
         constraints.gridy = 3;
         constraints.weightx = 0.1;
         constraints.weighty = 0.3;
-        constraints.gridwidth = 5;
+        constraints.gridwidth = 7;
         constraints.gridheight = 3;
         constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
         formPanel.add(sidePanelButton, constraints);
