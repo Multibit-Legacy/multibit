@@ -19,6 +19,8 @@ public class HelpButton extends MultiBitButton {
 
         setBorderPainted(paintBorder);
         setContentAreaFilled(paintBorder);
+        setFocusPainted(false);
+
 
         if (getIcon() != null && (getText() == null || "".equals(getText()))) {
             int width = getIcon().getIconWidth();
