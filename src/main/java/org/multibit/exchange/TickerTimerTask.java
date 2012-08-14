@@ -55,36 +55,11 @@ public class TickerTimerTask extends TimerTask {
      * @param str
      */
     public TickerTimerTask(MultiBitController controller, MultiBitFrame mainFrame) {
-    	
+        
         this.controller = controller;
         this.mainFrame = mainFrame;
 
-        // Demonstrate the public market data service
-        // Use the factory to get the version 1 MtGox exchange API using default
-        // settings
-        try {
-            mtGox = ExchangeFactory.INSTANCE.createExchange("com.xeiam.xchange.mtgox.v1.MtGoxExchange");
-
-            // Interested in the public market data feed (no authentication)
-            marketDataService = mtGox.getPollingMarketDataService();
-
-            // get the list of available currencies
-            exchangeSymbols = marketDataService.getExchangeSymbols();
-
-            if (exchangeSymbols != null) {
-                String[] availableCurrencies = new String[exchangeSymbols.size()];
-                for (int i = 0; i < exchangeSymbols.size(); i++) {
-                    availableCurrencies[i] = exchangeSymbols.get(i).counterCurrency;
-                    log.debug("Available currency " + i + " = " +  exchangeSymbols.get(i).counterCurrency);
-                }
-                controller.getModel().getExchangeData()
-                        .setAvailableCurrenciesForExchange(ExchangeData.MT_GOX_EXCHANGE_NAME, availableCurrencies);
-            }
-        } catch (NoClassDefFoundError e) {
-            // probably xchange is not on classpath - ticker will not run
-            // but error should not spread out from here to rest of MultiBit
-            log.error(e.getClass().getName() + " " + e.getMessage());
-        }
+        createExchange();
 
         // set the list of currencies we are interested in
         String currency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
@@ -106,6 +81,11 @@ public class TickerTimerTask extends TimerTask {
      */
     public void run() {
         try {
+            // Create exchange if failure in constructor.
+            if (mtGox == null) {
+                createExchange();
+            }
+            
             if (marketDataService != null) {
                 if (exchangeSymbols != null) {
                     for (CurrencyPair loopSymbolPair : exchangeSymbols) {
@@ -145,6 +125,36 @@ public class TickerTimerTask extends TimerTask {
             if (e.getCause() != null)  {
                 log.error(e.getCause().getClass().getName() + " " + e.getCause().getMessage());                
             }
+        }
+    }
+    
+    private void createExchange() {
+        try {
+            // Demonstrate the public market data service
+            // Use the factory to get the version 1 MtGox exchange API using default
+            // settings
+
+            mtGox = ExchangeFactory.INSTANCE.createExchange("com.xeiam.xchange.mtgox.v1.MtGoxExchange");
+            
+            // Interested in the public market data feed (no authentication)
+            marketDataService = mtGox.getPollingMarketDataService();
+
+            // get the list of available currencies
+            exchangeSymbols = marketDataService.getExchangeSymbols();
+
+            if (exchangeSymbols != null) {
+                String[] availableCurrencies = new String[exchangeSymbols.size()];
+                for (int i = 0; i < exchangeSymbols.size(); i++) {
+                    availableCurrencies[i] = exchangeSymbols.get(i).counterCurrency;
+                    log.debug("Available currency " + i + " = " +  exchangeSymbols.get(i).counterCurrency);
+                }
+                controller.getModel().getExchangeData()
+                        .setAvailableCurrenciesForExchange(ExchangeData.MT_GOX_EXCHANGE_NAME, availableCurrencies);
+            }
+        } catch (NoClassDefFoundError e) {
+            // probably xchange is not on classpath - ticker will not run
+            // but error should not spread out from here to rest of MultiBit
+            log.error(e.getClass().getName() + " " + e.getMessage());
         }
     }
 }
