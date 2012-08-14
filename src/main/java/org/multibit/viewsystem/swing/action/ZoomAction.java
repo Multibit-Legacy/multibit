@@ -36,7 +36,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.qrcode.SwatchGenerator;
+import org.multibit.qrcode.QRCodeGenerator;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.AbstractTradePanel;
 
@@ -89,13 +89,13 @@ public class ZoomAction extends AbstractAction {
             int scaleWidth = (int) (mainFrameSize.getWidth() - WIDTH_DELTA);
             int scaleHeight = (int) (mainFrameSize.getHeight() - HEIGHT_DELTA);
 
-            SwatchGenerator swatchGenerator = new SwatchGenerator(controller);
+            QRCodeGenerator qrCodeGenerator = new QRCodeGenerator(controller);
 
-            Image image = swatchGenerator.generateQRcode(address, amount, label, 1);
+            Image image = qrCodeGenerator.generateQRcode(address, amount, label, 1);
             if (image != null) {
                 int scaleFactor = (int) (Math.floor(Math.min(scaleHeight / image.getHeight(null),
                         scaleWidth / image.getWidth(null))));
-                image = swatchGenerator.generateQRcode(address, amount, label, scaleFactor);
+                image = qrCodeGenerator.generateQRcode(address, amount, label, scaleFactor);
             }
 
             // display the icon

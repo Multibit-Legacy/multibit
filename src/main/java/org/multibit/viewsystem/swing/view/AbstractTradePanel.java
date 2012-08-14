@@ -74,7 +74,7 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletVersion;
 import org.multibit.qrcode.QRCodeEncoderDecoder;
-import org.multibit.qrcode.SwatchGenerator;
+import org.multibit.qrcode.QRCodeGenerator;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.View;
@@ -125,7 +125,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     private static final int TABLE_BORDER = 3;
 
-    protected static final int PREFERRED_NUMBER_OF_LABEL_ROWS = 4;
+    protected static final int PREFERRED_NUMBER_OF_LABEL_ROWS = 3;
 
     protected MultiBitFrame mainFrame;
 
@@ -157,7 +157,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     public final static int QR_CODE_LEFT_COLUMN = 11;
 
-    protected static final int SWATCH_WIDTH = 360;
     protected static final int QRCODE_WIDTH = 140;
     protected static final int QRCODE_HEIGHT = 140;
 
@@ -185,7 +184,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     private final AbstractTradePanel thisAbstractTradePanel;
 
-    private SwatchGenerator swatchGenerator;
+    private QRCodeGenerator qrCodeGenerator;
 
     /**
      * map that maps one of the key constants in this class to the actual key to
@@ -426,7 +425,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints.gridx = 9;
         constraints.gridy = 7;
         constraints.weightx = 10000;
-        constraints.weighty = 1.0;
+        constraints.weighty = 4.0;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
@@ -899,7 +898,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         if (!isReceiveBitcoin()) {
             Icon icon = qrCodeLabel.getIcon();
             if (icon == null || icon.getIconHeight() == -1) {
-                qrCodeLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabelQRcode.text"));
+                qrCodeLabel.setText(createCenteredMultilineLabelText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabelQRcode.text")));
             } else {
                 qrCodeLabel.setText("");                
             }
@@ -1139,11 +1138,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
      * Display the address, amount and label as a QR code.
      */
     private void displayQRCode(String address, String amount, String label) {
-        if (swatchGenerator == null) {
-            swatchGenerator = new SwatchGenerator(controller);
+        if (qrCodeGenerator == null) {
+            qrCodeGenerator = new QRCodeGenerator(controller);
         }
         try {
-            BufferedImage image = swatchGenerator.generateQRcode(address, amount, label);
+            BufferedImage image = qrCodeGenerator.generateQRcode(address, amount, label);
             ImageIcon icon;
             if (image != null) {
                 icon = new ImageIcon(image);
@@ -1385,6 +1384,22 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     public JTable getAddressesTable() {
         return addressesTable;
+    }
+    
+    private String createCenteredMultilineLabelText(String labelText) {
+        String centeredText = "<html><center>";
+        String[] lines = labelText.split("\\|");
+        if (lines != null) {
+            for (int i = 0; i < lines.length ; i++) {
+                if ( i > 0) {
+                    centeredText += "<br>";
+                }
+                centeredText += lines[i];
+            }
+        }
+        centeredText += "</center></html>";
+        
+        return centeredText;
     }
 
     // CopyQRCodeImageDataProvider methods

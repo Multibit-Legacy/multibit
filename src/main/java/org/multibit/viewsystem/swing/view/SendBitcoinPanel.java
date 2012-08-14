@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
