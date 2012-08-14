@@ -294,7 +294,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
 
         sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, mainFrame, this);
         sendButton = new MultiBitButton(sendBitcoinConfirmAction, controller);
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 6;
         constraints.gridy = 5;
         constraints.weightx = 0.1;
@@ -306,16 +306,21 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
 
         Action sidePanelAction = new MoreOrLessAction(controller, this);
         sidePanelButton = new MultiBitButton(sidePanelAction, controller);
+        sidePanelButton.setBorder(BorderFactory.createEmptyBorder());
+        sidePanelButton.setBorderPainted(false);
+        sidePanelButton.setFocusPainted(false);
+        sidePanelButton.setContentAreaFilled(false);
+
         displaySidePanel();
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 6;
-        constraints.gridy = 8;
+        constraints.gridx = 4;
+        constraints.gridy = 3;
         constraints.weightx = 0.1;
         constraints.weighty = 0.3;
-        constraints.gridwidth = 4;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
+        constraints.gridwidth = 7;
+        constraints.gridheight = 3;
+        constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
         formPanel.add(sidePanelButton, constraints);
 
         return formPanel;

@@ -174,6 +174,7 @@ public class StatusBar extends JPanel implements MessageListener {
         statusLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         statusLabel.setOpaque(true);
         statusLabel.setBorderPainted(false);
+        statusLabel.setFocusPainted(false);
         statusLabel.setContentAreaFilled(false);
 
         // show messages action

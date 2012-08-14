@@ -304,16 +304,21 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
 
         Action sidePanelAction = new MoreOrLessAction(controller, this);
         sidePanelButton = new MultiBitButton(sidePanelAction, controller);
+        sidePanelButton.setBorder(BorderFactory.createEmptyBorder());
+        sidePanelButton.setBorderPainted(false);
+        sidePanelButton.setFocusPainted(false);
+        sidePanelButton.setContentAreaFilled(false);
+
         displaySidePanel();
-        
+
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 6;
-        constraints.gridy = 8;
+        constraints.gridx = 3;
+        constraints.gridy = 3;
         constraints.weightx = 0.1;
         constraints.weighty = 0.3;
-        constraints.gridwidth = 4;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
+        constraints.gridwidth = 8;
+        constraints.gridheight = 3;
+        constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
         formPanel.add(sidePanelButton, constraints);
 
         // disable any new changes if another process has changed the wallet

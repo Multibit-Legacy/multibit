@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2012 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,12 +36,12 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.qrcode.SwatchGenerator;
+import org.multibit.qrcode.QRCodeGenerator;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.AbstractTradePanel;
 
 /**
- * This {@link Action} displays a swatch or QR code zoomed to the whole display
+ * This {@link Action} displays a QR code zoomed to the whole display.
  */
 public class ZoomAction extends AbstractAction {
     private static final long serialVersionUID = 1923492460523457765L;
@@ -71,46 +71,34 @@ public class ZoomAction extends AbstractAction {
     }
 
     /**
-     * create new wallet
+     * Zoom the QR code.
      */
     public void actionPerformed(ActionEvent e) {
         mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         setEnabled(false);
 
         try {
-            // get the current address, label and amount
+            // Get the current address, label and amount.
             String address = controller.getModel().getActiveWalletPreference(tradePanel.getAddressConstant());
             String label = controller.getModel().getActiveWalletPreference(tradePanel.getLabelConstant());
             String amount = controller.getModel().getActiveWalletPreference(tradePanel.getAmountConstant());
 
-            // get the bounds of the current frame
+            // Get the bounds of the current frame.
             Dimension mainFrameSize = mainFrame.getSize();
 
             int scaleWidth = (int) (mainFrameSize.getWidth() - WIDTH_DELTA);
             int scaleHeight = (int) (mainFrameSize.getHeight() - HEIGHT_DELTA);
 
-            SwatchGenerator swatchGenerator = new SwatchGenerator(controller);
+            QRCodeGenerator qrCodeGenerator = new QRCodeGenerator(controller);
 
-            Image image = null;
-            if (tradePanel.isDisplayAsQRcode()) {
-                image = swatchGenerator.generateQRcode(address, amount, label, 1);
-
-                if (image != null) {
-                    int scaleFactor = (int) (Math.floor(Math.min(scaleHeight / image.getHeight(null),
-                            scaleWidth / image.getWidth(null))));
-                    image = swatchGenerator.generateQRcode(address, amount, label, scaleFactor);
-                }
-            } else if (tradePanel.isDisplayAsSwatch()) {
-                image = swatchGenerator.generateSwatch(address, amount, label);
-                if (image != null) {
-                    int widthFactor = (int)(Math.floor(scaleWidth / image.getWidth(null)));
-                    int heightFactor = (int)(Math.floor(scaleHeight / image.getHeight(null)));
-                    int scaleFactor = Math.min(widthFactor, heightFactor);
-                    image = swatchGenerator.generateSwatch(address, amount, label, scaleFactor);
-                }
+            Image image = qrCodeGenerator.generateQRcode(address, amount, label, 1);
+            if (image != null) {
+                int scaleFactor = (int) (Math.floor(Math.min(scaleHeight / image.getHeight(null),
+                        scaleWidth / image.getWidth(null))));
+                image = qrCodeGenerator.generateQRcode(address, amount, label, scaleFactor);
             }
 
-            // display the icon
+            // Display the icon.
             JPanel iconPanel = new JPanel(new BorderLayout());
             JLabel iconLabel = new JLabel();
             iconLabel.setIcon(new ImageIcon(image));
@@ -123,7 +111,6 @@ public class ZoomAction extends AbstractAction {
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
             final JOptionPane optionPane = new JOptionPane(iconPanel, JOptionPane.PLAIN_MESSAGE);
-            //optionPane.setIcon(ImageLoader.createImageIcon(ImageLoader.ZOOM_ICON_FILE));
             optionPane.addPropertyChangeListener(new PropertyChangeListener() {
                 public void propertyChange(PropertyChangeEvent e) {
                     String prop = e.getPropertyName();

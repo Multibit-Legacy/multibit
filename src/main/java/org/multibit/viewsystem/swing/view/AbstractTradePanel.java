@@ -28,8 +28,6 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.SystemColor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -46,8 +44,8 @@ import java.util.Map;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -76,7 +74,7 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletMajorVersion;
 import org.multibit.qrcode.QRCodeEncoderDecoder;
-import org.multibit.qrcode.SwatchGenerator;
+import org.multibit.qrcode.QRCodeGenerator;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.View;
@@ -126,7 +124,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     private static final int TABLE_BORDER = 3;
 
-    protected static final int PREFERRED_NUMBER_OF_LABEL_ROWS = 4;
+    protected static final int PREFERRED_NUMBER_OF_LABEL_ROWS = 3;
 
     protected MultiBitFrame mainFrame;
 
@@ -158,7 +156,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     public final static int QR_CODE_LEFT_COLUMN = 11;
 
-    protected static final int SWATCH_WIDTH = 360;
     protected static final int QRCODE_WIDTH = 140;
     protected static final int QRCODE_HEIGHT = 140;
 
@@ -167,10 +164,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     protected static final int AMOUNT_BTC_INDENT = 4;
 
     private final int STENT_DELTA = 4;
-
-    protected JComboBox displayUsingComboBox;
-    protected static boolean displayAsSwatch = false;
-    protected static boolean displayAsQRcode = true;
 
     protected FontMetrics fontMetrics;
     protected int separatorSize;
@@ -190,7 +183,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     private final AbstractTradePanel thisAbstractTradePanel;
 
-    private SwatchGenerator swatchGenerator;
+    private QRCodeGenerator qrCodeGenerator;
 
     /**
      * map that maps one of the key constants in this class to the actual key to
@@ -281,25 +274,12 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     protected void initUI() {
         setMinimumSize(new Dimension(550, 220));
-        // setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
         setLayout(new GridBagLayout());
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         String showSidePanelText = controller.getModel().getUserPreference(MultiBitModel.SHOW_SIDE_PANEL);
         if (Boolean.TRUE.toString().equals(showSidePanelText)) {
             showSidePanel = true;
-        }
-
-        String displayAsSwatchText = controller.getModel().getUserPreference(MultiBitModel.DISPLAY_AS_SWATCH);
-        if (Boolean.TRUE.toString().equals(displayAsSwatchText)) {
-            displayAsSwatch = true;
-            displayAsQRcode = false;
-        }
-
-        String displayAsQRcodeText = controller.getModel().getUserPreference(MultiBitModel.DISPLAY_AS_QR_CODE);
-        if (Boolean.TRUE.toString().equals(displayAsQRcodeText)) {
-            displayAsSwatch = false;
-            displayAsQRcode = true;
         }
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -427,7 +407,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints.weighty = 10000;
         constraints.gridwidth = 1;
         constraints.gridheight = 8;
-        constraints.anchor = GridBagConstraints.LINE_END;
+        constraints.anchor = GridBagConstraints.LINE_START;
         JPanel dashedStent = MultiBitTitledPanel.createStent(smallSeparatorSize);
         dashedStent.setBorder(new DashedBorder(controller.getLocaliser().getLocale()));
         panel.add(dashedStent, constraints);
@@ -440,11 +420,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         forcer1.setPreferredSize(new Dimension(QRCODE_WIDTH, 1));
         forcer1.setMinimumSize(new Dimension((int) (QRCODE_WIDTH * 0.1), 1));
 
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 9;
         constraints.gridy = 7;
         constraints.weightx = 10000;
-        constraints.weighty = 1.0;
+        constraints.weighty = 4.0;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
@@ -452,23 +432,15 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         forcer2 = new JPanel();
         forcer2.setOpaque(false);
-        // forcer2.setBorder(BorderFactory.createLineBorder(Color.CYAN));
-        if (displayAsQRcode) {
-            forcer2.setMaximumSize(new Dimension((int) (QRCODE_WIDTH * 1.2), 1));
-            forcer2.setPreferredSize(new Dimension(QRCODE_WIDTH, 1));
-            forcer2.setMinimumSize(new Dimension((int) (QRCODE_WIDTH * 1.0), 1));
-        } else {
-            if (displayAsSwatch) {
-                forcer2.setMaximumSize(new Dimension((int) (SWATCH_WIDTH * 1.2), 1));
-                forcer2.setPreferredSize(new Dimension(SWATCH_WIDTH, 1));
-                forcer2.setMinimumSize(new Dimension((int) (SWATCH_WIDTH * 1.0), 1));
-            }
-        }
+        forcer2.setMaximumSize(new Dimension((int) (QRCODE_WIDTH * 1.2), 1));
+        forcer2.setPreferredSize(new Dimension(QRCODE_WIDTH, 1));
+        forcer2.setMinimumSize(new Dimension((int) (QRCODE_WIDTH * 1.0), 1));
+       
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = QR_CODE_LEFT_COLUMN;
         constraints.gridy = 7;
         constraints.weightx = 1;
-        constraints.weighty = 100.0;
+        constraints.weighty = 1.0;
         constraints.gridwidth = 3;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -486,8 +458,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         if (showSidePanel) {
             // show less
-            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.ARROW_RIGHT_ICON_FILE));
-            sidePanelButton.setText(controller.getLocaliser().getString("sendBitcoinPanel.showLess.text"));
+            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.SIDE_PANEL_HIDE_ICON_FILE));
+            sidePanelButton.setText("");
+            sidePanelButton.setBorderPainted(false);
             sidePanelButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.showLess.tooltip"));
             sidePanelButton.setMnemonic(mnemonicUtil.getMnemonic(controller.getLocaliser().getString(
                     "sendBitcoinPanel.showLess.mnemonic")));
@@ -495,13 +468,14 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             sidePanelButton.setHorizontalTextPosition(JLabel.LEFT);
         } else {
             // show more
-            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.ARROW_LEFT_ICON_FILE));
-            sidePanelButton.setText(controller.getLocaliser().getString("sendBitcoinPanel.showMore.text"));
+            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.SIDE_PANEL_SHOW_ICON_FILE));
+            sidePanelButton.setText("");
+            sidePanelButton.setBorderPainted(false);
             sidePanelButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.showMore.tooltip"));
             sidePanelButton.setMnemonic(mnemonicUtil.getMnemonic(controller.getLocaliser().getString(
                     "sendBitcoinPanel.showMore.mnemonic")));
             sidePanelButton.setVerticalTextPosition(JLabel.BOTTOM);
-            sidePanelButton.setHorizontalTextPosition(JLabel.RIGHT);
+            sidePanelButton.setHorizontalTextPosition(JLabel.LEFT);
         }
     }
 
@@ -687,10 +661,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             displayUsingLabel.setVisible(visible);
         }
 
-        if (displayUsingComboBox != null) {
-            displayUsingComboBox.setVisible(visible);
-        }
-
         if (qrCodeScrollPane != null) {
             qrCodeScrollPane.setVisible(visible);
         }
@@ -764,7 +734,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                         }
                         labelTextArea.setText(rowData.getLabel());
 
-                        displaySwatch(rowData.getAddress(), amountTextField.getText(), labelTextArea.getText());
+                        displayQRCode(rowData.getAddress(), amountTextField.getText(), labelTextArea.getText());
                     }
                 }
             }
@@ -876,31 +846,12 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     }
 
     protected void createQRCodePanel(JPanel panel, GridBagConstraints constraints) {
-        // add display using combo box
-        displayUsingComboBox = createDisplayAsCombo();
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = QR_CODE_LEFT_COLUMN;
-        constraints.gridy = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 3;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        panel.add(displayUsingComboBox, constraints);
-
         qrCodeLabel = new MultiBitLabel("", JLabel.CENTER);
         qrCodeLabel.setVerticalTextPosition(JLabel.BOTTOM);
         qrCodeLabel.setHorizontalTextPosition(JLabel.CENTER);
         qrCodeLabel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         qrCodeLabel.setOpaque(true);
-        if (displayAsQRcode) {
-
-            qrCodeLabel.setMinimumSize(new Dimension(QRCODE_WIDTH, QRCODE_HEIGHT));
-        } else {
-            if (displayAsSwatch) {
-                qrCodeLabel.setMinimumSize(new Dimension(SWATCH_WIDTH, QRCODE_HEIGHT));
-            }
-        }
+        qrCodeLabel.setMinimumSize(new Dimension(QRCODE_WIDTH, QRCODE_HEIGHT));
 
         setDragLabelTextAndTooltip();
 
@@ -927,8 +878,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints.weightx = 1;
         constraints.weighty = 0.5;
         constraints.gridwidth = 5;
-        constraints.gridheight = 5;
-        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.gridheight = 3;
+        constraints.anchor = GridBagConstraints.BASELINE;
 
         qrCodeScrollPane = new JScrollPane(qrCodeLabel);
         qrCodeScrollPane.setOpaque(true);
@@ -945,80 +896,17 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     private void setDragLabelTextAndTooltip() {
         if (!isReceiveBitcoin()) {
-            if (displayAsSwatch) {
-                qrCodeLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabel.text"));
-                qrCodeLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabel.tooltip"));
-            } else if (displayAsQRcode) {
-                qrCodeLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabelQRcode.text"));
-                qrCodeLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabelQRcode.tooltip"));
+            Icon icon = qrCodeLabel.getIcon();
+            if (icon == null || icon.getIconHeight() == -1) {
+                qrCodeLabel.setText(createCenteredMultilineLabelText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabelQRcode.text")));
+            } else {
+                qrCodeLabel.setText("");                
             }
+            qrCodeLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.dragBitcoinLabelQRcode.tooltip"));
         }
-    }
-
-    /**
-     * Create display as combo box
-     * 
-     * @return The "display as" combo box
-     */
-    private JComboBox createDisplayAsCombo() {
-        String[] indexArray = new String[] { controller.getLocaliser().getString("abstractTradePanel.displayAsQRcode"),
-                controller.getLocaliser().getString("abstractTradePanel.displayAsSwatch") };
-
-        displayUsingComboBox = new JComboBox(indexArray);
-        displayUsingComboBox.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        displayUsingComboBox.setOpaque(false);
-        if (displayAsSwatch) {
-            displayUsingComboBox.setSelectedIndex(1);
-        } else {
-            if (displayAsQRcode) {
-                displayUsingComboBox.setSelectedIndex(0);
-            }
-        }
-
-        displayUsingComboBox.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                int selectedIndex = displayUsingComboBox.getSelectedIndex();
-                if (selectedIndex == 1) {
-                    displayAsSwatch = true;
-                    displayAsQRcode = false;
-                    controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_SWATCH, "true");
-                    controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_QR_CODE, "false");
-                } else if (selectedIndex == 0) {
-                    displayAsSwatch = false;
-                    displayAsQRcode = true;
-                    controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_SWATCH, "false");
-                    controller.getModel().setUserPreference(MultiBitModel.DISPLAY_AS_QR_CODE, "true");
-                }
-                updateQRCodePanel();
-            }
-        });
-
-        return displayUsingComboBox;
-
     }
 
     protected void updateQRCodePanel() {
-        if (displayAsSwatch) {
-            displayUsingComboBox.setSelectedIndex(1);
-        } else if (displayAsQRcode) {
-            displayUsingComboBox.setSelectedIndex(0);
-        }
-        setDragLabelTextAndTooltip();
-
-        if (displayAsQRcode) {
-            forcer2.setMaximumSize(new Dimension((int) (QRCODE_WIDTH * 1.2), 1));
-            forcer2.setPreferredSize(new Dimension(QRCODE_WIDTH, 1));
-            forcer2.setMinimumSize(new Dimension((int) (QRCODE_WIDTH * 1.0), 1));
-        } else {
-            if (displayAsSwatch) {
-                forcer2.setMaximumSize(new Dimension((int) (SWATCH_WIDTH * 1.2), 1));
-                forcer2.setPreferredSize(new Dimension(SWATCH_WIDTH, 1));
-                forcer2.setMinimumSize(new Dimension((int) (SWATCH_WIDTH * 1.0), 1));
-            }
-        }
-
         String address = null;
         if (isReceiveBitcoin()) {
             if (addressTextArea != null) {
@@ -1037,7 +925,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         if (labelTextArea != null) {
             label = labelTextArea.getText();
         }
-        displaySwatch(address, amount, label);
+        displayQRCode(address, amount, label);
         qrCodeLabel.invalidate();
         upperPanel.invalidate();
         qrCodeLabel.validate();
@@ -1052,7 +940,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = QR_CODE_LEFT_COLUMN;
-        constraints.gridy = 8;
+        constraints.gridy = 1;
         constraints.weightx = 1.0;
         constraints.weighty = 1.0;
         constraints.gridwidth = 1;
@@ -1242,28 +1130,19 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAmountConstant(), amount);
             controller.getModel().getActivePerWalletModelData().setDirty(true);
 
-            displaySwatch(address, amount, label);
+            displayQRCode(address, amount, label);
         }
     }
 
     /**
-     * display the address, amount and label as a swatch
+     * Display the address, amount and label as a QR code.
      */
-    private void displaySwatch(String address, String amount, String label) {
-        if (swatchGenerator == null) {
-            swatchGenerator = new SwatchGenerator(controller);
+    private void displayQRCode(String address, String amount, String label) {
+        if (qrCodeGenerator == null) {
+            qrCodeGenerator = new QRCodeGenerator(controller);
         }
         try {
-            BufferedImage image;
-            if (displayAsSwatch) {
-                image = swatchGenerator.generateSwatch(address, amount, label);
-            } else {
-                if (displayAsQRcode) {
-                    image = swatchGenerator.generateQRcode(address, amount, label);
-                } else {
-                    image = null;
-                }
-            }
+            BufferedImage image = qrCodeGenerator.generateQRcode(address, amount, label);
             ImageIcon icon;
             if (image != null) {
                 icon = new ImageIcon(image);
@@ -1272,9 +1151,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             }
             if (qrCodeLabel != null) {
                 qrCodeLabel.setIcon(icon);
+                setDragLabelTextAndTooltip();
             }
         } catch (RuntimeException re) {
-            // swatch generation failed
+            // QR code generation failed
             log.error(re.getMessage(), re);
         }
     }
@@ -1411,8 +1291,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
             if (icon != null) {
                 qrCodeLabel.setIcon(icon);
+                setDragLabelTextAndTooltip();
             } else {
-                displaySwatch(addressString, amountString, decodedLabel);
+                displayQRCode(addressString, amountString, decodedLabel);
             }
             return true;
         }
@@ -1426,7 +1307,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         addressesListener.setEnabled(false);
 
         String address = controller.getModel().getActiveWalletPreference(getAddressConstant());
-        displaySwatch(address, amountTextField.getText(), labelTextArea.getText());
+        displayQRCode(address, amountTextField.getText(), labelTextArea.getText());
 
         // see if the current address is on the table and select it
         int rowToSelectModel = addressesTableModel.findRowByAddress(address, isReceiveBitcoin());
@@ -1497,20 +1378,28 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         return bufferedImage;
     }
 
-    public boolean isDisplayAsSwatch() {
-        return displayAsSwatch;
-    }
-
-    public boolean isDisplayAsQRcode() {
-        return displayAsQRcode;
-    }
-
     public AddressBookTableModel getAddressesTableModel() {
         return addressesTableModel;
     }
 
     public JTable getAddressesTable() {
         return addressesTable;
+    }
+    
+    private String createCenteredMultilineLabelText(String labelText) {
+        String centeredText = "<html><center>";
+        String[] lines = labelText.split("\\|");
+        if (lines != null) {
+            for (int i = 0; i < lines.length ; i++) {
+                if ( i > 0) {
+                    centeredText += "<br>";
+                }
+                centeredText += lines[i];
+            }
+        }
+        centeredText += "</center></html>";
+        
+        return centeredText;
     }
 
     // CopyQRCodeImageDataProvider methods

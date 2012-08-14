@@ -36,6 +36,8 @@ public class ImageLoader {
     public static final String CREATE_NEW_ICON_FILE = "/images/createNew.png";
     public static final String CROSS_ICON_FILE = "/images/cross.png";
     public static final String DELETE_WALLET_ICON_FILE = "/images/deleteWallet.png";
+    public static final String DETAIL_PANEL_ON_ICON_FILE = "/images/twistyDown.png";
+    public static final String DETAIL_PANEL_OFF_ICON_FILE = "/images/twistyRight.png";
     public static final String EXCHANGES_ICON_FILE = "/images/exchanges.png";
     public static final String EXCLAMATION_MARK_ICON_FILE = "/images/exclamationMark.png";
     public static final String EXPORT_PRIVATE_KEYS_ICON_FILE = "/images/exportKey.png";
@@ -59,13 +61,12 @@ public class ImageLoader {
     public static final String RESET_TRANSACTIONS_ICON_FILE = "/images/resetTransactions.png";
     public static final String RTL_WALLET_ICON_FILE = "/images/rtl_wallet.png";
     public static final String SEND_BITCOIN_ICON_FILE = "/images/sendOut.png";
+    public static final String SIDE_PANEL_SHOW_ICON_FILE = "/images/sidePanelShow.png";
+    public static final String SIDE_PANEL_HIDE_ICON_FILE = "/images/sidePanelHide.png";
     public static final String SINGLE_WALLET_ICON_FILE = "/images/singleWallet.png";
     public static final String SHAPE_SQUARE_ICON_FILE = "/images/shapeSquare.png";
     public static final String TICK_ICON_FILE = "/images/tick.png";
     public static final String TRANSACTIONS_ICON_FILE = "/images/transactions.png";
-    public static final String TWISTY_RIGHT_ICON_FILE = "/images/twistyRight.png";
-    public static final String DETAIL_PANEL_ON_ICON_FILE = "/images/twistyDown.png";
-    public static final String DETAIL_PANEL_OFF_ICON_FILE = "/images/twistyRight.png";
     public static final String UNDO_ICON_FILE = "/images/undo.png";
     public static final String WALLET_ICON_FILE = "/images/wallet.png";
     public static final String WELCOME_ICON_FILE = "/images/welcome.png";
