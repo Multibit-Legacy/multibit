@@ -16,13 +16,15 @@
 
 package com.google.bitcoin.store;
 
-import com.google.bitcoin.core.*;
-import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
-import com.google.common.base.Preconditions;
-import com.google.protobuf.ByteString;
-import com.google.protobuf.TextFormat;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.math.BigInteger;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bitcoinj.wallet.Protos;
-import org.bitcoinj.wallet.Protos.WrappedWallet;
 import org.multibit.IsMultiBitClass;
 import org.multibit.crypto.EncryptedPrivateKey;
 import org.multibit.crypto.EncrypterDecrypter;
@@ -33,13 +35,21 @@ import org.multibit.model.WalletMajorVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.math.BigInteger;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.EncryptionType;
+import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.Sha256Hash;
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.TransactionConfidence;
+import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
+import com.google.bitcoin.core.TransactionInput;
+import com.google.bitcoin.core.TransactionOutPoint;
+import com.google.bitcoin.core.TransactionOutput;
+import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.WalletTransaction;
+import com.google.common.base.Preconditions;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.TextFormat;
 
 /**
  * Serialize and de-serialize a wallet to a byte stream containing a
@@ -272,7 +282,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
     }
 
     /**
-     * Parses a VersionableWallet from the given stream. The stream is expected to contain a binary serialization of a 
+     * Parses a WrappedWallet from the given stream. The stream is expected to contain a binary serialization of a 
      * {@link Protos.WrappedWallet} object.<p>
      *  
      * If the stream is invalid or the serialized wallet contains unsupported features, 
@@ -282,7 +292,6 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
     public static org.multibit.model.WrappedWallet readWrappedWallet(InputStream input) throws IOException {
         Protos.WrappedWallet wrappedWalletProto = Protos.WrappedWallet.parseFrom(input);
 
-        // System.out.println(TextFormat.printToString(versionableWalletProto));
         Wallet wallet = parseWalletProto(wrappedWalletProto.getWallet());
 
         org.multibit.model.WrappedWallet wrappedWallet = new org.multibit.model.WrappedWallet(wallet);
