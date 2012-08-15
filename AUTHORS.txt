@@ -14,6 +14,7 @@ Arvis Lacis         - Latvian
 Azrael_PT           - Portuguese
 bitcoin.hu          - Hungarian
 bitcoinspot         - Dutch
+corn3               - Portuguese
 D4CH                - Danish
 damnek              - Dutch
 DutchBrat           - Dutch
