@@ -117,6 +117,7 @@ public class Browser extends javax.swing.JEditorPane {
             if (!newHref.equals(currentHref)) {
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 Message message = new Message(getLoadingMessage(newHref, loadingMessage));
+                message.setShowInMessagesTab(false);
                 MessageManager.INSTANCE.addMessage(message);
                 // Load and display the URL.
                 getUrlContentInBackground(this, new URL(newHref));

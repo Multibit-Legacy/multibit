@@ -300,6 +300,10 @@ public class StatusBar extends JPanel implements MessageListener {
     
     @Override
     public void newMessageReceived(final Message newMessage) {
+        if (newMessage == null || !newMessage.isShowInStatusBar()) {
+            return;
+        }
+        
         if (newMessage.getPercentComplete() == Message.NOT_RELEVANT_PERCENTAGE_COMPLETE) {
             updateStatusLabel(newMessage.getText(), newMessage.isClearAutomatically());
         } else {
