@@ -129,7 +129,7 @@ public class MessagesPanel extends JPanel implements View, MessageListener {
             @Override
             public void run() {
                 if (textArea != null) {
-                    if (message.getText() != null && !message.getText().equals(lastMessageAdded)) {
+                    if (message != null && message.isShowInMessagesTab() && message.getText() != null && !message.getText().equals(lastMessageAdded)) {
                         textArea.append(message.getText() + "\n");
                         lastMessageAdded = message.getText();
                     }                

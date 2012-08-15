@@ -51,6 +51,7 @@ public class ActivatedHyperlinkListener implements HyperlinkListener {
         final URL url = hyperlinkEvent.getURL();
         if (type == HyperlinkEvent.EventType.ENTERED) {
             Message message = new Message(url.toString(), true);
+            message.setShowInMessagesTab(false);
             MessageManager.INSTANCE.addMessage(message);
             if (browser.isLoading()) {
                 SwingUtilities.invokeLater(new Runnable() {
@@ -67,6 +68,7 @@ public class ActivatedHyperlinkListener implements HyperlinkListener {
             }
         } else if (type == HyperlinkEvent.EventType.EXITED) {
             Message message = new Message(SPACER, true);
+            message.setShowInMessagesTab(false);
             MessageManager.INSTANCE.addMessage(message);
             if (browser.isLoading()) {
                 SwingUtilities.invokeLater(new Runnable() {

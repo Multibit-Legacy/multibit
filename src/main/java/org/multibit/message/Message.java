@@ -8,6 +8,7 @@ package org.multibit.message;
 public class Message {
     
     public static final int NOT_RELEVANT_PERCENTAGE_COMPLETE = -1;
+    
     /**
      * The text of the message.
      */
@@ -17,6 +18,18 @@ public class Message {
      * Whether the message should be cleared automatically.
      */
     private boolean clearAutomatically;
+    
+    /**
+     * Whether the message is to appear in the statusbar.
+     * true = show in statusbar, false = do not.
+     */
+    private boolean showInStatusBar = true;
+    
+    /**
+     * Whether the message is to appear on the messages tab.
+     * true = show in messages tab, false = do not.
+     */
+    private boolean showInMessagesTab = true;
     
     /**
      * The percentage complete required for any progress bar.
@@ -104,5 +117,21 @@ public class Message {
     public String toString() {
         return "Message [text=" + text + ", clearAutomatically=" + clearAutomatically + ", percentComplete=" + percentComplete
                 + "]";
+    }
+
+    public boolean isShowInStatusBar() {
+        return showInStatusBar;
+    }
+
+    public void setShowInStatusBar(boolean showInStatusBar) {
+        this.showInStatusBar = showInStatusBar;
+    }
+
+    public boolean isShowInMessagesTab() {
+        return showInMessagesTab;
+    }
+
+    public void setShowInMessagesTab(boolean showInMessagesTab) {
+        this.showInMessagesTab = showInMessagesTab;
     }
 }
