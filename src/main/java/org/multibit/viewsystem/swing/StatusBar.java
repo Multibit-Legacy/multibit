@@ -319,10 +319,6 @@ public class StatusBar extends JPanel implements MessageListener {
     }
 
     private void updateStatusLabel(final String newStatusLabel, Boolean clearAutomatically) {
-        if ("Messages".equals(newStatusLabel)) {
-            boolean ping1 = false;
-            ping1 = !ping1;
-        }
         StatusBar.clearAutomatically = clearAutomatically;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
