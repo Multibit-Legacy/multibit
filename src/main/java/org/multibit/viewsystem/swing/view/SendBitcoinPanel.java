@@ -40,6 +40,7 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopySendAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewSendingAddressAction;
+import org.multibit.viewsystem.swing.action.DeleteSendingAddressAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.MoreOrLessAction;
 import org.multibit.viewsystem.swing.action.PasteAddressAction;
@@ -64,6 +65,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
     private MultiBitButton sendButton;
     private SendBitcoinConfirmAction sendBitcoinConfirmAction;
     private CreateNewSendingAddressAction  createNewSendingAddressAction;
+    private DeleteSendingAddressAction  deleteSendingAddressAction;
 
     public SendBitcoinPanel(MultiBitFrame mainFrame, MultiBitController controller) {
         super(mainFrame, controller);
@@ -78,6 +80,12 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
     protected Action getCreateNewAddressAction() {
         createNewSendingAddressAction =  new CreateNewSendingAddressAction(controller, this);
         return createNewSendingAddressAction;
+    }
+    
+    @Override
+    protected Action getDeleteAddressAction() {
+        deleteSendingAddressAction =  new DeleteSendingAddressAction(controller, mainFrame, this);
+        return deleteSendingAddressAction;
     }
 
     @Override
@@ -281,7 +289,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
                 controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip") });
         helpButton.setToolTipText(tooltipText);
         helpButton.setHorizontalAlignment(SwingConstants.LEADING);
-        helpButton.setBorder(BorderFactory.createEmptyBorder(0, HELP_BUTTON_INDENT, 0, 0));
+        helpButton.setBorder(BorderFactory.createEmptyBorder(0, HELP_BUTTON_INDENT, HELP_BUTTON_INDENT, 0));
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 8;
@@ -450,5 +458,9 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
 
     public CreateNewSendingAddressAction getCreateNewSendingAddressAction() {
         return createNewSendingAddressAction;
+    }
+
+    public DeleteSendingAddressAction getDeleteSendingAddressAction() {
+        return deleteSendingAddressAction;
     }
 }

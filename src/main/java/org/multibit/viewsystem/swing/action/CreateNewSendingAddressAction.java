@@ -17,7 +17,6 @@ package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
@@ -68,7 +67,7 @@ public class CreateNewSendingAddressAction extends MultiBitSubmitAction {
             String label = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
 
             perWalletModelData.getWalletInfo().addSendingAddress(new AddressBookData(label, address));
-            sendBitcoinPanel.getAddressesTableModel().fireTableStructureChanged();
+            sendBitcoinPanel.getAddressesTableModel().fireTableDataChanged();
             controller.getModel().getActivePerWalletModelData().setDirty(true);
         } else {
             perWalletModelData.getWalletInfo().addSendingAddress(new AddressBookData("", ""));

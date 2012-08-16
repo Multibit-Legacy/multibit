@@ -89,7 +89,7 @@ public class QRCodeGenerator {
                     && controller.getModel().getNetworkParameters() != null) {
                 decodeAddress = new Address(controller.getModel().getNetworkParameters(), address);
             }
-            if (address != null && !"".equals(address)) {
+            if (decodeAddress != null && !"".equals(decodeAddress)) {
                 if (amount != null && !"".equals(amount)) {
                     bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amount), label, null);
                 } else {

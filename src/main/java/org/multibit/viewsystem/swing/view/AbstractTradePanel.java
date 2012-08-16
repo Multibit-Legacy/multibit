@@ -148,6 +148,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     protected SelectionListener addressesListener;
 
     protected MultiBitButton createNewButton;
+    protected MultiBitButton deleteButton;
 
     protected JLabel titleLabel;
 
@@ -160,7 +161,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     protected static final int QRCODE_HEIGHT = 140;
 
     protected static final int TEXTFIELD_VERTICAL_DELTA = 6;
-    protected static final int HELP_BUTTON_INDENT = 8;
+    protected static final int HELP_BUTTON_INDENT = 6;
     protected static final int AMOUNT_BTC_INDENT = 4;
 
     private final int STENT_DELTA = 4;
@@ -240,6 +241,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     public abstract String getAmountConstant();
 
     protected abstract Action getCreateNewAddressAction();
+
+    protected abstract Action getDeleteAddressAction();
 
     /**
      * method for concrete impls to populate the localisation map
@@ -506,13 +509,28 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints.gridx = 1;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
-        constraints.weightx = 0.3;
+        constraints.weightx = 0.1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         addressesHeaderPanel.add(createNewButton, constraints);
 
+        int offset = 0;
+        Action deleteAddressAction = getDeleteAddressAction();
+        if (deleteAddressAction != null) {
+            deleteButton = new MultiBitButton(deleteAddressAction, controller);
+            offset = 1;
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.gridx = 2;
+            constraints.gridy = 0;
+            constraints.gridwidth = 1;
+            constraints.weightx = 0.1;
+            constraints.weighty = 1;
+            constraints.anchor = GridBagConstraints.LINE_START;
+            addressesHeaderPanel.add(deleteButton, constraints);
+        }
+
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 2;
+        constraints.gridx = 2 + offset;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
@@ -526,7 +544,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         titleLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
+        constraints.gridx = 3 + offset;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
@@ -540,7 +558,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints.gridx = 4;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
-        constraints.weightx = 100;
+        constraints.weightx = 25;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         addressesHeaderPanel.add(filler2, constraints);
@@ -1137,7 +1155,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     /**
      * Display the address, amount and label as a QR code.
      */
-    private void displayQRCode(String address, String amount, String label) {
+    public void displayQRCode(String address, String amount, String label) {
         if (qrCodeGenerator == null) {
             qrCodeGenerator = new QRCodeGenerator(controller);
         }
@@ -1436,5 +1454,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
        } else {
            return null;
        }
+    }
+
+    public MultiBitTextField getAddressTextField() {
+        return addressTextField;
     }
 }
