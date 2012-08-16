@@ -2,7 +2,6 @@ package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -13,10 +12,8 @@ import javax.swing.JPasswordField;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
 import org.multibit.viewsystem.swing.action.CreateNewReceivingAddressSubmitAction;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
