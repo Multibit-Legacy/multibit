@@ -80,6 +80,11 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
     }
     
     @Override
+    protected Action getDeleteAddressAction() {
+        return null;
+    }
+    
+    @Override
     public String getAddressConstant() {
         return MultiBitModel.RECEIVE_ADDRESS;
     }
@@ -278,7 +283,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
                 "\n", controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip") });
         helpButton.setToolTipText(tooltipText);
         helpButton.setHorizontalAlignment(SwingConstants.LEADING);
-        helpButton.setBorder(BorderFactory.createEmptyBorder(0, HELP_BUTTON_INDENT, 0, 0));
+        helpButton.setBorder(BorderFactory.createEmptyBorder(0, HELP_BUTTON_INDENT, HELP_BUTTON_INDENT, 0));
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 8;

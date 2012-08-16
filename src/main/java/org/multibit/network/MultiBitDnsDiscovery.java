@@ -46,12 +46,12 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
 
     public static final String[] defaultGoodHosts = new String[]{
          "bitseed.xf2.org",             // Jeff Garzik
-         "dnsseed.bitcoin.dashjr.org",  // Luke Dashjr
          "dnsseed.bluematt.me",         // Matt Corallo
          "seed.bitcoin.sipa.be"         // Pieter Wuille
     };
 
     public static final String[] defaultPossibleHosts = new String[]{
+        "dnsseed.bitcoin.dashjr.org"  // Luke Dashjr
     };
 
     /**

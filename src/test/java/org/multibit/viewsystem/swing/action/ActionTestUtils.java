@@ -56,6 +56,6 @@ public class ActionTestUtils {
          // This also sets the timestamp fields used in file change detection.
          FileHandler fileHandler = new FileHandler(controller);
          fileHandler.savePerWalletModelData(perWalletModelData, true);
-         fileHandler.loadFromFile(new File(walletFile));
+         PerWalletModelData loadedPerWalletModelData = fileHandler.loadFromFile(new File(walletFile));
      }
 }

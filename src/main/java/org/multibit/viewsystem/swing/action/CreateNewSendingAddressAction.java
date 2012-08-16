@@ -66,7 +66,7 @@ public class CreateNewSendingAddressAction extends MultiBitSubmitAction {
             String label = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
 
             perWalletModelData.getWalletInfo().addSendingAddress(new AddressBookData(label, address));
-            sendBitcoinPanel.getAddressesTableModel().fireTableStructureChanged();
+            sendBitcoinPanel.getAddressesTableModel().fireTableDataChanged();
             controller.getModel().getActivePerWalletModelData().setDirty(true);
         } else {
             perWalletModelData.getWalletInfo().addSendingAddress(new AddressBookData("", ""));
