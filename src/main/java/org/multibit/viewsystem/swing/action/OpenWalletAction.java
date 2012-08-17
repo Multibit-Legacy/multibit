@@ -95,7 +95,9 @@ public class OpenWalletAction extends AbstractAction {
                 if (file != null) {
                     if (!file.isDirectory()) {
                         selectedWalletFilename = file.getAbsolutePath();
-                        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("multiBit.openingWallet", new Object[]{selectedWalletFilename})));
+                        Message openMessage = new Message(controller.getLocaliser().getString("multiBit.openingWallet", new Object[]{selectedWalletFilename}));
+                        openMessage.setShowInStatusBar(false);
+                        MessageManager.INSTANCE.addMessage(openMessage);
                         openWalletInBackground(selectedWalletFilename);
                     }
                 } else {
@@ -158,7 +160,10 @@ public class OpenWalletAction extends AbstractAction {
                     Boolean wasSuccessful = get();
                     if (wasSuccessful) {
                         log.debug(message);
-                        MessageManager.INSTANCE.addMessage(new Message(message));  
+                        Message messageMessage = new Message(message);
+                        messageMessage.setShowInStatusBar(false);
+                        MessageManager.INSTANCE.addMessage(messageMessage);  
+                        
                         controller.fireRecreateAllViews(false);
                         controller.fireDataChanged();
                     } else {
