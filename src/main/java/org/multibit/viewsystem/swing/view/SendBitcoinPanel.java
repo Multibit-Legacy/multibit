@@ -41,7 +41,6 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopySendAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewSendingAddressAction;
 import org.multibit.viewsystem.swing.action.DeleteSendingAddressAction;
-import org.multibit.viewsystem.swing.action.DeleteSendingAddressSubmitAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.MoreOrLessAction;
 import org.multibit.viewsystem.swing.action.PasteAddressAction;
@@ -65,11 +64,10 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
     private MultiBitButton pasteAddressButton;
     private MultiBitButton sendButton;
     private SendBitcoinConfirmAction sendBitcoinConfirmAction;
-    private CreateNewSendingAddressAction  createNewSendingAddressAction;
-    private DeleteSendingAddressAction  deleteSendingAddressAction;
 
     public SendBitcoinPanel(MultiBitFrame mainFrame, MultiBitController controller) {
         super(mainFrame, controller);
+        checkDeleteSendingEnabled();
     }
 
     @Override
@@ -78,15 +76,20 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
     }
 
     @Override
-    protected Action getCreateNewAddressAction() {
-        createNewSendingAddressAction =  new CreateNewSendingAddressAction(controller, this);
-        return createNewSendingAddressAction;
+    public Action getCreateNewAddressAction() {
+        return new CreateNewSendingAddressAction(controller, this);
     }
 
     @Override
     protected Action getDeleteAddressAction() {
-        deleteSendingAddressAction =  new DeleteSendingAddressAction(controller, mainFrame, this);
-        return deleteSendingAddressAction;
+        return new DeleteSendingAddressAction(controller, mainFrame, this);
+    }
+    
+    public void checkDeleteSendingEnabled() {
+        AddressBookTableModel addressesTableModel = getAddressesTableModel();
+        if (deleteAddressAction != null) {
+            deleteAddressAction.setEnabled(addressesTableModel != null && addressesTableModel.getRowCount() > 0);
+        }
     }
 
     @Override
@@ -331,7 +334,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         constraints.gridheight = 3;
         constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
         formPanel.add(sidePanelButton, constraints);
-
+  
         return formPanel;
     }
 
@@ -431,6 +434,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
             titleLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.sendingAddressesTitle"));
             titleLabel.setToolTipText(null);
         }
+        checkDeleteSendingEnabled();
     }
 
     @Override
@@ -455,13 +459,5 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
 
     public SendBitcoinConfirmAction getSendBitcoinConfirmAction() {
         return sendBitcoinConfirmAction;
-    }
-
-    public CreateNewSendingAddressAction getCreateNewSendingAddressAction() {
-        return createNewSendingAddressAction;
-    }
-
-    public DeleteSendingAddressAction getDeleteSendingAddressAction() {
-        return deleteSendingAddressAction;
     }
 }
