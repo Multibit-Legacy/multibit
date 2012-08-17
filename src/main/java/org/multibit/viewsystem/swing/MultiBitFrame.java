@@ -467,7 +467,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Add ticker panel.
         tickerTablePanel = new TickerTablePanel(this, controller);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 6;
         constraints.gridy = 0;
         constraints.weightx = 1;
@@ -475,20 +475,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
 
-        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_TRAILING;
+        constraints.anchor = GridBagConstraints.CENTER;
         headerPanel.add(tickerTablePanel, constraints);
-
-        JLabel pusher1 = new JLabel();
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 6;
-        constraints.gridy = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 100;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-
-        constraints.anchor = GridBagConstraints.LINE_END;
-        headerPanel.add(pusher1, constraints);
 
         // Add a little stent to keep it off the right hand edge.
         int stent = 6; // A reasonable default.

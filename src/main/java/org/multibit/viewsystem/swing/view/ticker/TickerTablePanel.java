@@ -63,7 +63,7 @@ public class TickerTablePanel extends JPanel {
 
     private static final String SPACER = "  "; // 2 spaces
 
-    private static final int VERTICAL_DELTA_MAC = 6;
+    private static final int VERTICAL_DELTA_MAC = 0;
     private static final int VERTICAL_DELTA_NON_MAC = 12;
     private static final int HORIZONTAL_DELTA = 30;
     private static final int SCROLLBAR_WIDTH = 20;
@@ -115,9 +115,6 @@ public class TickerTablePanel extends JPanel {
         GridBagConstraints constraints = new GridBagConstraints();
 
         tickerTableModel = new TickerTableModel(controller);
-        JPanel tableEncloser = new JPanel();
-        tableEncloser.setOpaque(false);
-        tableEncloser.setLayout(new BorderLayout());
         
         table = new JTable(tickerTableModel);
         table.setOpaque(true);
@@ -191,9 +188,7 @@ public class TickerTablePanel extends JPanel {
         int idealHeight = (1 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta;
         setPreferredSize(new Dimension(tickerWidth, idealHeight));
 
-        tableEncloser.add(table.getTableHeader(), BorderLayout.NORTH);
-        tableEncloser.add(table, BorderLayout.CENTER);
-        JScrollPane scrollPane = new JScrollPane(tableEncloser, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+        JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
@@ -210,6 +205,7 @@ public class TickerTablePanel extends JPanel {
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
 
         add(scrollPane, constraints);
     }
