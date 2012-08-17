@@ -150,6 +150,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     protected MultiBitButton createNewButton;
     protected MultiBitButton deleteButton;
 
+    protected Action  createNewAddressAction;
+    protected Action  deleteAddressAction;
+
     protected JLabel titleLabel;
 
     protected MultiBitLabel qrCodeLabel;
@@ -503,7 +506,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints.anchor = GridBagConstraints.LINE_START;
         addressesHeaderPanel.add(MultiBitTitledPanel.createStent(HELP_BUTTON_INDENT), constraints);
 
-        createNewButton = new MultiBitButton(getCreateNewAddressAction(), controller);
+        createNewAddressAction = getCreateNewAddressAction();
+        createNewButton = new MultiBitButton(createNewAddressAction, controller);
         createNewButton.setText(controller.getLocaliser().getString("crudButton.new"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
@@ -515,7 +519,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         addressesHeaderPanel.add(createNewButton, constraints);
 
         int offset = 0;
-        Action deleteAddressAction = getDeleteAddressAction();
+        deleteAddressAction = getDeleteAddressAction();
         if (deleteAddressAction != null) {
             deleteButton = new MultiBitButton(deleteAddressAction, controller);
             offset = 1;
@@ -1458,5 +1462,13 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     public MultiBitTextField getAddressTextField() {
         return addressTextField;
+    }
+
+    public Action getCreateNewSendingAddressAction() {
+        return createNewAddressAction;
+    }
+
+    public Action getDeleteSendingAddressAction() {
+        return deleteAddressAction;
     }
 }

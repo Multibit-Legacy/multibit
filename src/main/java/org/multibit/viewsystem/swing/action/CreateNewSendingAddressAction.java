@@ -25,7 +25,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletMajorVersion;
-import org.multibit.viewsystem.swing.view.AbstractTradePanel;
+import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
 
 /**
  * This {@link Action} represents an action to create a sending address.
@@ -34,12 +34,12 @@ public class CreateNewSendingAddressAction extends MultiBitSubmitAction {
 
     private static final long serialVersionUID = 200111935465875405L;
 
-    private AbstractTradePanel sendBitcoinPanel;
+    private SendBitcoinPanel sendBitcoinPanel;
 
     /**
      * Creates a new {@link CreateNewSendingAddressAction}.
      */
-    public CreateNewSendingAddressAction(MultiBitController controller, AbstractTradePanel sendBitcoinPanel) {
+    public CreateNewSendingAddressAction(MultiBitController controller, SendBitcoinPanel sendBitcoinPanel) {
         super(controller, "createOrEditAddressAction.createReceiving.text", "createOrEditAddressAction.createSending.tooltip",
                 "createOrEditAddressAction.createSending.mnemonicKey", null);
         this.sendBitcoinPanel = sendBitcoinPanel;
@@ -77,6 +77,9 @@ public class CreateNewSendingAddressAction extends MultiBitSubmitAction {
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, "");
             controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, "");
         }
+        
+        sendBitcoinPanel.checkDeleteSendingEnabled();
+        
         controller.displayView(controller.getCurrentView());
 
         if (sendBitcoinPanel != null && sendBitcoinPanel.getLabelTextArea() != null) {

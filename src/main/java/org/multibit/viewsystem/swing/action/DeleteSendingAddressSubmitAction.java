@@ -26,9 +26,9 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletMajorVersion;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.swing.view.AbstractTradePanel;
 import org.multibit.viewsystem.swing.view.AddressBookTableModel;
 import org.multibit.viewsystem.swing.view.DeleteSendingAddressConfirmDialog;
+import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,13 +41,13 @@ public class DeleteSendingAddressSubmitAction extends MultiBitSubmitAction {
 
     private static final Logger log = LoggerFactory.getLogger(DeleteSendingAddressSubmitAction.class);
 
-    private AbstractTradePanel sendBitcoinPanel;
+    private SendBitcoinPanel sendBitcoinPanel;
     private DeleteSendingAddressConfirmDialog deleteSendingAddressConfirmDialog;
 
     /**
      * Creates a new {@link DeleteSendingAddressSubmitAction}.
      */
-    public DeleteSendingAddressSubmitAction(MultiBitController controller, AbstractTradePanel sendBitcoinPanel, DeleteSendingAddressConfirmDialog deleteSendingAddressConfirmDialog) {
+    public DeleteSendingAddressSubmitAction(MultiBitController controller, SendBitcoinPanel sendBitcoinPanel, DeleteSendingAddressConfirmDialog deleteSendingAddressConfirmDialog) {
         super(controller, "deleteSendingAddressSubmitAction.text", "deleteSendingAddressSubmitAction.tooltip",
                 "deleteSendingAddressSubmitAction.mnemonicKey", ImageLoader.createImageIcon(ImageLoader.CROSS_ICON_FILE));
         this.sendBitcoinPanel = sendBitcoinPanel;
@@ -106,6 +106,8 @@ public class DeleteSendingAddressSubmitAction extends MultiBitSubmitAction {
                 }
             }     
         }
+        
+        sendBitcoinPanel.checkDeleteSendingEnabled();
         
         if (deleteSendingAddressConfirmDialog != null) {
             deleteSendingAddressConfirmDialog.setVisible(false);

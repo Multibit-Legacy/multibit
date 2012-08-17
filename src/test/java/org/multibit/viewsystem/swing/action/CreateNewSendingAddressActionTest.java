@@ -36,7 +36,7 @@ public class CreateNewSendingAddressActionTest extends TestCase {
         // Create a new CreateNewSendingAddressAction to test.
         FontSizer.INSTANCE.initialise(controller);
         SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(null, controller);
-        CreateNewSendingAddressAction createNewSendingAddressAction = sendBitcoinPanel.getCreateNewSendingAddressAction();
+        CreateNewSendingAddressAction createNewSendingAddressAction = (CreateNewSendingAddressAction)sendBitcoinPanel.getCreateNewAddressAction();
 
         assertNotNull("createNewSendingAddressAction was not created successfully", createNewSendingAddressAction);
 
