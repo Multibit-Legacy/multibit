@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
@@ -370,6 +371,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private JPanel createBalancePanel() {
         JPanel headerPanel = new JPanel();
+        //headerPanel.setBorder(BorderFactory.createLineBorder(Color.CYAN));
 
         headerPanel.setMinimumSize(new Dimension(700, HEIGHT_OF_HEADER));
         headerPanel.setPreferredSize(new Dimension(700, HEIGHT_OF_HEADER));
@@ -457,7 +459,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // add ticker panel
         tickerTablePanel = new TickerTablePanel(this, controller);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 6;
         constraints.gridy = 0;
         constraints.weightx = 1;
@@ -465,20 +467,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
 
-        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_TRAILING;
+        constraints.anchor = GridBagConstraints.CENTER;
         headerPanel.add(tickerTablePanel, constraints);
-
-        JLabel pusher1 = new JLabel();
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 6;
-        constraints.gridy = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 100;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-
-        constraints.anchor = GridBagConstraints.LINE_END;
-        headerPanel.add(pusher1, constraints);
 
         // add a little stent to keep it off the right hand edge
         int stent = 6; // a reasonable default
