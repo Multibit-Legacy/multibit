@@ -67,7 +67,6 @@ import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
-import org.multibit.viewsystem.swing.action.MigrateWalletsAction;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
@@ -85,9 +84,9 @@ import org.simplericity.macify.eawt.ApplicationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.EncryptionType;
 
 /*
  * JFrame displaying Swing version of MultiBit
@@ -408,10 +407,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         } else {
             walletIconLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.RTL_WALLET_ICON_FILE));
         }
+        int walletIconWidth = 60;
+        int walletIconHeight = HEIGHT_OF_HEADER - 10;
+    
         walletIconLabel.setOpaque(false);
-        walletIconLabel.setMinimumSize(new Dimension(60, HEIGHT_OF_HEADER - 10));
-        walletIconLabel.setMaximumSize(new Dimension(60, HEIGHT_OF_HEADER - 10));
-        walletIconLabel.setPreferredSize(new Dimension(60, HEIGHT_OF_HEADER - 10));
+        walletIconLabel.setMinimumSize(new Dimension(walletIconWidth, walletIconHeight));
+        walletIconLabel.setMaximumSize(new Dimension(walletIconWidth, walletIconHeight));
+        walletIconLabel.setPreferredSize(new Dimension(walletIconWidth, walletIconHeight));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 0;

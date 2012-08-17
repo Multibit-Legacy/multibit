@@ -15,6 +15,12 @@
  */
 package org.multibit.utils;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.util.Random;
+
 import javax.swing.ImageIcon;
 
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -73,7 +79,6 @@ public class ImageLoader {
     public static final String YOUR_WALLETS_ICON_FILE = "/images/yourWallets.png";
     public static final String ZOOM_ICON_FILE = "/images/zoom.png";
           
-
     public ImageLoader() {
         
     }
@@ -94,5 +99,4 @@ public class ImageLoader {
             return null;
         }
     }
-
 }
