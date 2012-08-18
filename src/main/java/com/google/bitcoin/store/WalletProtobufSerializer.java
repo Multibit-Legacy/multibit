@@ -71,6 +71,8 @@ import com.google.protobuf.TextFormat;
  * @author Miron Cuperman
  */
 public class WalletProtobufSerializer implements IsMultiBitClass {
+    private static final String ORG_MULTIBIT_WALLET_PROTECT = "org.multibit.walletProtect";
+
     private static final Logger log = LoggerFactory.getLogger(WalletProtobufSerializer.class);
 
     // Used for de-serialization
@@ -81,11 +83,17 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
     }
 
     /**
-     * Formats the given WrappedWallet to the given output stream in protocol buffer format.<p>
+     * Formats the given Wallet to the given output stream in protocol buffer format.
+     * Add a mandatory extension so that it will not be loaded by older versions.
      */
-    public static void writeWrappedWallet(org.multibit.model.WrappedWallet wrappedWallet, OutputStream output) throws IOException {
-        Protos.WrappedWallet wrappedWalletProto = wrappedWalletToProto(wrappedWallet);
-        wrappedWalletProto.writeTo(output);
+    public static void writeWalletWithMandatoryExtension(Wallet wallet, OutputStream output) throws IOException {
+        Protos.Wallet walletProto = walletToProto(wallet);
+        Protos.Wallet.Builder walletBuilder = Protos.Wallet.newBuilder(walletProto);
+        Protos.Extension.Builder extensionBuilder = Protos.Extension.newBuilder().setId(ORG_MULTIBIT_WALLET_PROTECT).setData(ByteString.copyFrom(new byte[0x01])).setMandatory(true);
+        walletBuilder.addExtension(extensionBuilder);
+        
+        Protos.Wallet walletProtoWithMandatory = walletBuilder.build();
+        walletProtoWithMandatory.writeTo(output);
     }
 
     /**
@@ -114,13 +122,13 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
      * Converts the given wrappedWallet to the object representation of the protocol buffers. This can be modified, or
      * additional data fields set, before serialization takes place.
      */
-    public static Protos.WrappedWallet wrappedWalletToProto(org.multibit.model.WrappedWallet wrappedWallet) {
-        Protos.WrappedWallet.Builder wrappedWalletBuilder = Protos.WrappedWallet.newBuilder();
-        Protos.Wallet.Builder protoWalletBuilder = walletToProtoBuilder(wrappedWallet.getWallet());
-        wrappedWalletBuilder.setWallet(protoWalletBuilder);
-        
-        return wrappedWalletBuilder.build();
-    }
+//    public static Protos.WrappedWallet wrappedWalletToProto(org.multibit.model.WrappedWallet wrappedWallet) {
+//        Protos.WrappedWallet.Builder wrappedWalletBuilder = Protos.WrappedWallet.newBuilder();
+//        Protos.Wallet.Builder protoWalletBuilder = walletToProtoBuilder(wrappedWallet.getWallet());
+//        wrappedWalletBuilder.setWallet(protoWalletBuilder);
+//        
+//        return wrappedWalletBuilder.build();
+//    }
     
     /**
      * Converts the given wallet to the object representation of the protocol buffers. This can be modified, or
@@ -289,15 +297,15 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
      * {@link IllegalArgumentException} is thrown.
      *
      */
-    public static org.multibit.model.WrappedWallet readWrappedWallet(InputStream input) throws IOException {
-        Protos.WrappedWallet wrappedWalletProto = Protos.WrappedWallet.parseFrom(input);
-
-        Wallet wallet = parseWalletProto(wrappedWalletProto.getWallet());
-
-        org.multibit.model.WrappedWallet wrappedWallet = new org.multibit.model.WrappedWallet(wallet);
-        
-        return wrappedWallet;
-    }
+//    public static org.multibit.model.WrappedWallet readWrappedWallet(InputStream input) throws IOException {
+//        Protos.WrappedWallet wrappedWalletProto = Protos.WrappedWallet.parseFrom(input);
+//
+//        Wallet wallet = parseWalletProto(wrappedWalletProto.getWallet());
+//
+//        org.multibit.model.WrappedWallet wrappedWallet = new org.multibit.model.WrappedWallet(wallet);
+//        
+//        return wrappedWallet;
+//    }
 
     /**
      * Parses a wallet from the given stream. The stream is expected to contain a binary serialization of a 
@@ -405,7 +413,11 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
 
         for (Protos.Extension extProto : walletProto.getExtensionList()) {
             if (extProto.getMandatory()) {
-                throw new IllegalArgumentException("Did not understand a mandatory extension in the wallet");
+                // If the extension is the ORG_MULTIBIT_WALLET_PROTECT then we know about that.
+                // This is a marker extension to prevent earlier versions of multibit loading encrypted wallets.
+                if (!extProto.getId().equals(ORG_MULTIBIT_WALLET_PROTECT)) {
+                    throw new IllegalArgumentException("Did not understand a mandatory extension in the wallet of '" + extProto.getId() + "'");
+                }
             }
         }
         

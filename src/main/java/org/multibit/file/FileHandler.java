@@ -43,7 +43,6 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletMajorVersion;
-import org.multibit.model.WrappedWallet;
 import org.multibit.network.MultiBitService;
 import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;
@@ -98,42 +97,10 @@ public class FileHandler {
             try {
                 stream = new BufferedInputStream(fileInputStream);
                 
-                // serialised.1 wallets are read from the beginning.
+                // serialised.1 wallets are stored as serialised.
                 // protobuf.2   (unencrypted) wallets stored as Wallet messages
-                // protobuf.3   (encrypted) wallets are stored as VersionableWallet messages
-                if (walletInfo.getWalletMajorVersion() == WalletMajorVersion.SERIALIZED) {
-                    wallet = Wallet.loadFromFileStream(stream);
-                } else {
-                    // Try loading it first as a WrappedWallet
-                    WrappedWallet wrappedWallet = null;
-                    try {
-                        wrappedWallet = WalletProtobufSerializer.readWrappedWallet(stream);
-                    } catch (IllegalArgumentException iae) {
-                        // Not a WrappedWallet or otherwise unreadable. 
-                        iae.printStackTrace();
-                    } catch (com.google.protobuf.InvalidProtocolBufferException ipbe) {
-                        // Not a WrappedWallet or otherwise unreadable.   
-                        log.debug("Wallet file '" + walletFile.getAbsolutePath() + "' is not a WrappedWallet");
-                    }
-                    
-                    if (wrappedWallet != null) {
-                        // Load as WrappedWallet was successful.
-                        // Copy wallet version info into wallet info.
-                        wallet = wrappedWallet.getWallet();
-                    } else {
-                        // Close streams
-                        if (stream != null) {
-                            stream.close();
-                        }
-                        fileInputStream.close();
-                        
-                        // Reopen streams and load wallet as a Wallet message.
-                        fileInputStream = new FileInputStream(walletFile);
-                        stream = new BufferedInputStream(fileInputStream);
-
-                        wallet = Wallet.loadFromFileStream(stream);
-                    }
-                }
+                // protobuf.3   (encrypted) wallets are stored as Wallet messages with a mandatory extension
+                wallet = Wallet.loadFromFileStream(stream);
             } finally {
                 if (stream != null) {
                     stream.close();
@@ -309,9 +276,8 @@ public class FileHandler {
                 } else if (WalletMajorVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletMajorVersion()) {
                     fileOutputStream = new FileOutputStream(walletFile);
                     
-                    // Save as a WrappedWallet message.
-                    WrappedWallet wrappedWallet = new WrappedWallet(perWalletModelData.getWallet());
-                    WalletProtobufSerializer.writeWrappedWallet(wrappedWallet, fileOutputStream);
+                    // Save as a Wallet message with a mandatory extension to prevent loading by older versions of multibit.
+                    WalletProtobufSerializer.writeWalletWithMandatoryExtension(perWalletModelData.getWallet(), fileOutputStream);
                 } else {
                     throw new WalletVersionException("Cannot save wallet '" + perWalletModelData.getWalletFilename()
                             + "'. Its wallet version is '" + walletInfo.getWalletMajorVersion().toString()

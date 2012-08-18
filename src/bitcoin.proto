@@ -208,7 +208,3 @@ message Wallet {
   repeated Extension extension = 10; 
 } // end of Wallet
 
-/** A wrapped bitcoin wallet - this is used in MultiBit to prevent earlier versions from incorrectly reading encrypted wallets */
-message WrappedWallet {
-  required Wallet wallet = 1000;
-} // end of WrappedWallet
