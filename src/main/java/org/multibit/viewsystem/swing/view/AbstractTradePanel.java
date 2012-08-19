@@ -183,6 +183,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     protected JPanel qrCodeButtonPanelStent1;
     protected JPanel qrCodeButtonPanelStent2;
     protected JPanel qrCodeButtonPanelStent3;
+    protected JPanel qrCodeButtonPanelStent4;
     protected JPanel forcer2;
 
     protected MultiBitButton sidePanelButton;
@@ -712,6 +713,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         if (qrCodeButtonPanelStent3 != null) {
             qrCodeButtonPanelStent3.setVisible(visible);
         }
+        if (qrCodeButtonPanelStent4 != null) {
+            qrCodeButtonPanelStent4.setVisible(visible);
+        }
+        
         if (forcer2 != null) {
             forcer2.setVisible(visible);
         }
@@ -990,6 +995,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         zoomButton = new MultiBitButton(zoomAction, controller);
         zoomButton.setText("");
 
+        qrCodeButtonPanelStent4 = MultiBitTitledPanel.createStent((int)zoomButton.getPreferredSize().getWidth(), (int)zoomButton.getPreferredSize().getHeight());
+
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 1;
         constraints2.gridy = 0;
@@ -1030,6 +1037,26 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints2.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
         if (isReceiveBitcoin()) {
             buttonPanel.add(zoomButton, constraints2);
+            
+            constraints2.fill = GridBagConstraints.NONE;
+            constraints2.gridx = 5;
+            constraints2.gridy = 0;
+            constraints2.weightx = 0.1;
+            constraints2.weighty = 1.0;
+            constraints2.gridwidth = 1;
+            constraints2.gridheight = 1;
+            constraints2.anchor = GridBagConstraints.CENTER;
+            buttonPanel.add(qrCodeButtonPanelStent3, constraints2);
+
+            constraints2.fill = GridBagConstraints.NONE;
+            constraints2.gridx = 6;
+            constraints2.gridy = 0;
+            constraints2.weightx = 0.1;
+            constraints2.weighty = 1.0;
+            constraints2.gridwidth = 1;
+            constraints2.gridheight = 1;
+            constraints2.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
+            buttonPanel.add(qrCodeButtonPanelStent4, constraints2);
         } else {
             buttonPanel.add(pasteSwatchButton, constraints2);
 

@@ -102,8 +102,6 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         this.controller = controller;
         this.mainFrame = mainFrame;
 
-        //setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
-        //        BorderFactory.createMatteBorder(1, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         this.controller = controller;
@@ -436,7 +434,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         outputFilenamePanel.add(filler2, constraints);
 
         outputFilenameLabel = new MultiBitLabel(outputFilename);
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 3;
         constraints.gridy = 4;
         constraints.weightx = 0.5;

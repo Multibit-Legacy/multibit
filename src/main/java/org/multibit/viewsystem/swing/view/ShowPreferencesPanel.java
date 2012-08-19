@@ -971,13 +971,13 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         showSecondRowCheckBox.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         showSecondRowCheckBox.addItemListener(new ChangeTickerShowSecondRowListener());
 
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 18;
         constraints.weightx = 0.3;
         constraints.weighty = 1;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_END;
+        constraints.gridwidth = 3;
+        constraints.anchor = GridBagConstraints.LINE_START;
         tickerPanel.add(showSecondRowCheckBox, constraints);
 
         exchangeLabel2 = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.ticker.exchange"));

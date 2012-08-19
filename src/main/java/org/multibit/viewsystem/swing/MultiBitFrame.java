@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
@@ -459,7 +458,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // add ticker panel
         tickerTablePanel = new TickerTablePanel(this, controller);
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 6;
         constraints.gridy = 0;
         constraints.weightx = 1;
@@ -483,7 +482,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
         headerPanel.add(MultiBitTitledPanel.createStent(stent), constraints);
-
+    
+//        JPanel forcer = new JPanel();
+//        forcer.setOpaque(false);
+//        constraints.fill = GridBagConstraints.BOTH;
+//        constraints.gridx = 6;
+//        constraints.gridy = 1;
+//        constraints.weighty = 0.1;
+//        constraints.anchor = GridBagConstraints.CENTER;
+//        headerPanel.add(forcer, constraints);
+        
         return headerPanel;
     }
 
