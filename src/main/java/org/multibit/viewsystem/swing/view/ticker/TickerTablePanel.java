@@ -15,7 +15,6 @@
  */
 package org.multibit.viewsystem.swing.view.ticker;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
@@ -134,10 +133,8 @@ public class TickerTablePanel extends JPanel {
         table.addMouseListener(viewPreferencesMouseListener);
         table.getTableHeader().addMouseListener(viewPreferencesMouseListener);
         table.getTableHeader().setToolTipText(tickerTooltipText);
-        table.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.LIGHT_GRAY));
+        table.getTableHeader().setBorder(BorderFactory.createMatteBorder(1, 1, 0, 0, Color.LIGHT_GRAY));
         table.getTableHeader().setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-1));
-
-        table.setBorder(BorderFactory.createEmptyBorder());
 
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
         JLabel label = (JLabel) renderer;
@@ -179,18 +176,20 @@ public class TickerTablePanel extends JPanel {
         }
 
         int verticalDelta;
+        int idealHeight;
         if (mainFrame.getApplication().isMac()) {
             verticalDelta = VERTICAL_DELTA_MAC;
+            idealHeight = (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta;
         } else {
             verticalDelta = VERTICAL_DELTA_NON_MAC;
+            idealHeight = (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta;
         }
 
-        int idealHeight = (1 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta;
         setPreferredSize(new Dimension(tickerWidth, idealHeight));
 
         JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
+        scrollPane.setOpaque(false);
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.getViewport().setPreferredSize(
                 new Dimension(tickerWidth, idealHeight));
@@ -198,6 +197,8 @@ public class TickerTablePanel extends JPanel {
 
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.addMouseListener(viewPreferencesMouseListener);
+        scrollPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;

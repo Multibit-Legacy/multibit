@@ -469,7 +469,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Add ticker panel.
         tickerTablePanel = new TickerTablePanel(this, controller);
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 6;
         constraints.gridy = 0;
         constraints.weightx = 1;

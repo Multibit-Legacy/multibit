@@ -158,7 +158,7 @@ public class MultiBitTitledPanel extends JPanel {
  
         MultiBitLabel label = new MultiBitLabel(text);
         label.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = row;
         constraints.weightx = 0.6;

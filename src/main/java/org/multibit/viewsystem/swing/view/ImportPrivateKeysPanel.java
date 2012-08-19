@@ -430,7 +430,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
 
         MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "resetTransactionsPanel.walletFilenameLabel"));
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 4;
         constraints.weightx = 0.5;
@@ -450,7 +450,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
                 constraints);
 
         outputFilenameLabel = new MultiBitLabel(outputFilename);
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 3;
         constraints.gridy = 4;
         constraints.weightx = 0.5;
@@ -507,7 +507,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         outputFilenamePanel.add(filler3, constraints);
 
         numberOfKeysLabel = new MultiBitLabel(" ");
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 3;
         constraints.gridy = 6;
         constraints.weightx = 0.5;
@@ -529,7 +529,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         outputFilenamePanel.add(replayDateLabelLabel, constraints);
 
         replayDateLabel = new MultiBitLabel(" ");
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 3;
         constraints.gridy = 7;
         constraints.weightx = 0.5;

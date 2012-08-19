@@ -490,7 +490,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         outputFilenamePanel.add(filler2, constraints);
 
         outputFilenameLabel = new MultiBitLabel(outputFilename);
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 3;
         constraints.gridy = 4;
         constraints.weightx = 0.5;
