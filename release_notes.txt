@@ -1,9 +1,10 @@
 MultiBit release notes.
 
-Version 0.4.7
+20 Aug Version 0.4.7
 +  Sidepanel UI improvements
 +  Less noisy at startup with wallet loading messages
 +  Better error handling with currency ticker
++  Minor UI enhancements
 
 
 30 Jul 2012 Version 0.4.6

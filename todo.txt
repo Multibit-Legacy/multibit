@@ -1,7 +1,0 @@
-Outstanding Tasks
----------------------------------
-
-+ Prioritise encryption.
-+ client does not go offline if you disconnect from network
-+ If you have a wallet offline it does not know about any blocks downloaded onto the blockchain
-
