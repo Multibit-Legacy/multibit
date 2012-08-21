@@ -29,6 +29,7 @@ gulaschkanone       - German
 guy46               - Portuguese
 haritosh            - Hindi
 HostFat             - Italian
+ildubbioso          - Italian
 lzsaver             - Russian
 Jan-steenbergen     - Dutch
 JeppeJ              - Swedish
@@ -42,7 +43,7 @@ mrmx                - Spanish
 mrvision            - Spanish
 nsnia               - Croatian
 nuntius.marii       - Dutch
-Pginvest            - Portuguese
+pginvest            - Portuguese
 Piotr Waskiewicz    - Polish
 raymccarthy         - Swedish
 rbreban             - Spanish

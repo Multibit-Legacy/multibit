@@ -21,8 +21,19 @@ to be "test".
 
 
 + UseCacheManager
-To use the experimental caching of blocks in the <applicationDataDirectory/cache/block directory set:
+To use the experimental caching of blocks in the 
+<applicationDataDirectory/cache/block directory set:
 useCacheManager = true.
 
 This will take about 3GB of data (for 200,000 blocks).
+How it works is that whenever a block is downloaded, it is stored
+in the cache directory in a file [hash of block].block. To get
+the whole blockchain cached locally you can do a 'Reset blockchain
+and transactions' from a date before the genesis block, say sometime
+in 2008.
+
+Note: this technique I have put in simply for convenience (my
+download bandwidth is capped). It is not the 'right' way to do
+things. Matt Corrallo's work on having a server side bloom 
+filter I expect will eliminate this cache.
 

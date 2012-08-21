@@ -430,6 +430,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
 
         MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "resetTransactionsPanel.walletFilenameLabel"));
+        walletFilenameLabelLabel.setHorizontalAlignment(JLabel.RIGHT);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 4;

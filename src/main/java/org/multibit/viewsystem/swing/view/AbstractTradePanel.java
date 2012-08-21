@@ -253,6 +253,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
      * method for concrete impls to populate the localisation map
      */
     protected abstract void populateLocalisationMap();
+    
+    public abstract void checkDeleteSendingEnabled();   
 
     /**
      * get the layout stent for all the keys on the left hand side of the panel
@@ -1346,6 +1348,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             } else {
                 displayQRCode(addressString, amountString, decodedLabel);
             }
+            
+            checkDeleteSendingEnabled();
+
             return true;
         }
     }

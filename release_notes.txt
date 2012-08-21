@@ -1,7 +1,8 @@
 MultiBit release notes.
 
-Version 0.5.1alpha
+22 Aug 2012 Version 0.5.1alpha
 +  All changes added to v0.4.7
++  Encrypted wallets no longer have WrappedWallet message.
 +  Ability to cache blocks locally (see configuration.txt).
 
 
@@ -10,7 +11,7 @@ Version 0.5.1alpha
 +  removed optional merchant menu
 
 
-Version 0.4.7
+20 Aug 2012 Version 0.4.7
 +  Sidepanel UI improvements
 +  Less noisy at startup with wallet loading messages
 +  Better error handling with currency ticker

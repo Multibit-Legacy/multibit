@@ -446,5 +446,10 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
     
     public CreateNewReceivingAddressAction getCreateNewReceivingAddressAction() {
         return createNewReceivingAddressAction;
+    }
+
+    @Override
+    public void checkDeleteSendingEnabled() {
+        // Not used on receive bitcoin panel.
     }   
 }
