@@ -114,7 +114,11 @@ public class GenesisBlockReplayTest extends TestCase {
             assertTrue(BLOCKSIZE_AFTER_REPLAY <=  multiBitService.getBlockStore().getFile().length());
 
             // Tidy up.
-            multiBitService.getPeerGroup().stop();
+            try {
+                multiBitService.getPeerGroup().stop();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else {
             log.debug("Not running functional test: GenesisBlockReplayTest#testReplayFromGenesisBlock. Add '-DrunFunctionalTests=true' to run");
         }

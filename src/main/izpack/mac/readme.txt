@@ -5,14 +5,15 @@ encrypted wallets. Please try it out cautiously.
 
 This is NOT production code yet so please read the following notes:
 
-1) The encryption algorithm used in 0.5.1alpha HAS CHANGED from
-   0.5.0alpha.
+1) How the encrypted wallets are stored in MultiBit 0.5.1alpha 
+   HAS CHANGED from the 0.5.0alpha version.
 
    For your MultiBit 0.5.0alpha encrypted wallets:
 
-   + Open them in 0.5.0alpha and do a File | Remove Password.
+   + Open them in MultiBit 0.5.0alpha and do a 
+     "File | Remove Password".
    + Close 0.5.0alpha.
-   + Open them in 0.5.1alpha. You can then re-encrypt them.
+   + Open them in MultiBit 0.5.1alpha. You can then re-encrypt them.
 
 
 2) It is recommended you keep your encrypted wallets in a separate

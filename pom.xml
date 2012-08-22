@@ -630,7 +630,7 @@
     <staging.linux.dir>${project.build.directory}/staging.linux</staging.linux.dir>
 
     <!-- Version of BitCoinJ to use (multiple uses) -->
-    <bitcoinj.version>0.5.1</bitcoinj.version>
+    <bitcoinj.version>0.5.2</bitcoinj.version>
 
     <!-- Version of spongycastle to use -->
     <sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>
