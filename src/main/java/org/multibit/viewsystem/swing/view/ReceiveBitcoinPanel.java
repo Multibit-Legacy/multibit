@@ -83,7 +83,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
     protected Action getDeleteAddressAction() {
         return null;
     }
-    
+
     @Override
     public String getAddressConstant() {
         return MultiBitModel.RECEIVE_ADDRESS;
@@ -443,24 +443,13 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
     public int getViewId() {
         return View.RECEIVE_BITCOIN_VIEW;
     }
-
-    public String getPreviousCurrency2() {
-        return null;
-    }
-
-    public String getPreviousExchange2() {
-        return null;
-    }
-
-    public boolean getPreviousShowSecondRow() {
-        return false;
-    }
-
-    public String getPreviousCurrency1() {
-        return null;
-    }
-
+    
     public CreateNewReceivingAddressAction getCreateNewReceivingAddressAction() {
         return createNewReceivingAddressAction;
     }
+
+    @Override
+    public void checkDeleteSendingEnabled() {
+        // Not used on receive bitcoin panel.
+    }   
 }

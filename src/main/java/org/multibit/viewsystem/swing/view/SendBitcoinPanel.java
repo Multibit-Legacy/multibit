@@ -334,7 +334,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         constraints.gridheight = 3;
         constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
         formPanel.add(sidePanelButton, constraints);
-  
+
         return formPanel;
     }
 
@@ -456,7 +456,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
     public int getViewId() {
         return View.SEND_BITCOIN_VIEW;
     }
-
+    
     public SendBitcoinConfirmAction getSendBitcoinConfirmAction() {
         return sendBitcoinConfirmAction;
     }

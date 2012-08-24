@@ -184,6 +184,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     protected JPanel qrCodeButtonPanelStent2;
     protected JPanel qrCodeButtonPanelStent3;
     protected JPanel qrCodeButtonPanelStent4;
+    
     protected JPanel forcer2;
 
     protected MultiBitButton sidePanelButton;
@@ -255,6 +256,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
      * method for concrete impls to populate the localisation map
      */
     protected abstract void populateLocalisationMap();
+    
+    public abstract void checkDeleteSendingEnabled();   
 
     /**
      * get the layout stent for all the keys on the left hand side of the panel
@@ -424,11 +427,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         JPanel forcer1 = new JPanel();
         forcer1.setOpaque(false);
+        //forcer1.setBorder(BorderFactory.createLineBorder(Color.CYAN));
 
         forcer1.setMaximumSize(new Dimension(QRCODE_WIDTH, 1));
         forcer1.setPreferredSize(new Dimension(QRCODE_WIDTH, 1));
         forcer1.setMinimumSize(new Dimension((int) (QRCODE_WIDTH * 0.1), 1));
-        //forcer1.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
         
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 9;
@@ -445,7 +448,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         forcer2.setMaximumSize(new Dimension((int) (QRCODE_WIDTH * 1.2), 1));
         forcer2.setPreferredSize(new Dimension(QRCODE_WIDTH, 1));
         forcer2.setMinimumSize(new Dimension((int) (QRCODE_WIDTH * 1.0), 1));
-        //forcer2.setBorder(BorderFactory.createLineBorder(Color.RED));
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = QR_CODE_LEFT_COLUMN;
@@ -713,10 +715,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         if (qrCodeButtonPanelStent3 != null) {
             qrCodeButtonPanelStent3.setVisible(visible);
         }
+
         if (qrCodeButtonPanelStent4 != null) {
             qrCodeButtonPanelStent4.setVisible(visible);
         }
-        
+
         if (forcer2 != null) {
             forcer2.setVisible(visible);
         }
@@ -1346,6 +1349,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             } else {
                 displayQRCode(addressString, amountString, decodedLabel);
             }
+            
+            checkDeleteSendingEnabled();
+
             return true;
         }
     }
@@ -1458,7 +1464,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     public JLabel getURIImage() {
         return qrCodeLabel;
     }
-   
+    
     @Override
     public String getAddress() {
         if (addressTextField != null) {
@@ -1492,7 +1498,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         return addressTextField;
     }
     
-
     public Action getCreateNewSendingAddressAction() {
         return createNewAddressAction;
     }
