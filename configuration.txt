@@ -34,6 +34,6 @@ in 2008.
 
 Note: this technique I have put in simply for convenience (my
 download bandwidth is capped). It is not the 'right' way to do
-things. Matt Corrallo's work on having a server side bloom 
+things. Matt Corallo's work on having a server side bloom 
 filter I expect will eliminate this cache.
 
