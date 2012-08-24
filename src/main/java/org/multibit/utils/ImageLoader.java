@@ -42,6 +42,7 @@ public class ImageLoader {
     public static final String CREATE_NEW_ICON_FILE = "/images/createNew.png";
     public static final String CROSS_ICON_FILE = "/images/cross.png";
     public static final String DELETE_WALLET_ICON_FILE = "/images/deleteWallet.png";
+    public static final String DELETE_ADDRESS_ICON_FILE = "/images/book_open_delete.png";
     public static final String DETAIL_PANEL_ON_ICON_FILE = "/images/twistyDown.png";
     public static final String DETAIL_PANEL_OFF_ICON_FILE = "/images/twistyRight.png";
     public static final String EXCHANGES_ICON_FILE = "/images/exchanges.png";
