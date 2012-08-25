@@ -24,7 +24,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -35,6 +34,7 @@ import javax.swing.JScrollPane;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -48,7 +48,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 /**
  * The wallet list view.
  */
-public class WalletListPanel extends JPanel implements View {
+public class WalletListPanel extends JPanel implements View, WalletBusyListener {
 
     private static final long serialVersionUID = 191352298245057705L;
 
@@ -77,6 +77,8 @@ public class WalletListPanel extends JPanel implements View {
         initUI();
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        
+        controller.registerWalletBusyListener(this);
     }
 
     @Override
@@ -350,5 +352,16 @@ public class WalletListPanel extends JPanel implements View {
 
     public String getPreviousCurrency1() {
         return null;
+    }
+
+    @Override
+    public void walletBusyChange(boolean newWalletIsBusy) {
+        for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
+            // Update the visibility of the hourglass if wallet is busy.
+            loopSingleWalletPanel.setBusy(loopSingleWalletPanel.getPerWalletModelData().isBusy());
+            loopSingleWalletPanel.invalidate();
+            loopSingleWalletPanel.revalidate();
+            loopSingleWalletPanel.repaint();
+        }
     }
 }

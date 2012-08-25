@@ -32,6 +32,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
+import org.multibit.model.WalletBusyListener;
 import org.multibit.network.CacheManager;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.listener.GenericAboutEvent;
@@ -80,6 +81,11 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     private Collection<ViewSystem> viewSystems;
 
     /**
+     * The WalletBusy listeners
+     */
+    private Collection<WalletBusyListener> walletBusyListeners;
+    
+    /**
      * The data model backing the views.
      */
     private MultiBitModel model;
@@ -126,6 +132,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         this.applicationDataDirectoryLocator = applicationDataDirectoryLocator;
 
         viewSystems = new ArrayList<ViewSystem>();
+        
+        walletBusyListeners = new ArrayList<WalletBusyListener>();
 
         fileHandler = new FileHandler(this);
 
@@ -185,6 +193,13 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      */
     public void registerViewSystem(ViewSystem viewSystem) {
         viewSystems.add(viewSystem);
+    }
+    
+    /**
+     * Register a new WalletBusyListener
+     */
+    public void registerWalletBusyListener(WalletBusyListener walletBusyListener) {
+        walletBusyListeners.add(walletBusyListener);
     }
 
     public MultiBitModel getModel() {
@@ -254,6 +269,16 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         }
 
         fireDataChanged();
+    }
+    
+    
+    /**
+     * Fire that a wallet has changed its busy state.
+     */
+    public void fireWalletBusyChange(boolean newWalletIsBusy) {
+        for (WalletBusyListener walletBusyListener : walletBusyListeners) {
+            walletBusyListener.walletBusyChange(newWalletIsBusy);
+        }
     }
 
     public Localiser getLocaliser() {

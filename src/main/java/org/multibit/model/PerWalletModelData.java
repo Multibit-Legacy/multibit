@@ -20,7 +20,7 @@ import java.util.List;
 import com.google.bitcoin.core.Wallet;
 
 /**
- * this wrapper class wraps all the data pertaining to a single wallet
+ * This wrapper class wraps all the data pertaining to a single wallet.
  * 
  * @author jim
  * 
@@ -33,26 +33,37 @@ public class PerWalletModelData {
     private List<WalletTableData> walletTableDataList;
 
     /**
-     * the wallet filename used for when a backup is being written to
+     * The wallet filename used for when a backup is being written to.
      */
     private String walletBackupFilename;
 
     /**
-     * the wallet info filename used for when a backup is being written to
+     * The wallet info filename used for when a backup is being written to.
      */
 
     private String walletInfoBackupFilename;
 
     /**
-     * the files that store the PerWalletModelData have been changed by some
-     * other process i.e. NOT this copy of MultiBit
+     * The files that store the PerWalletModelData have been changed by some
+     * other process i.e. NOT this copy of MultiBit.
      */
     private boolean filesHaveBeenChangedByAnotherProcess;
 
     /**
-     * the PerWalletModelData has changed since last been written to disk
+     * The PerWalletModelData has changed since last been written to disk.
      */
     private boolean isDirty;
+    
+    /**
+     * This wallet is currently busy with an operation that affects the private keys.
+     * (Note this is a UI hint rather than a hard lock. Synchronize on wallet.
+     */
+    private boolean busy;
+    
+    /**
+     * The localised name of the operation that is currently operating on the wallets private keys.
+     */
+    private String busyOperation;
     
     public PerWalletModelData() {
         isDirty = false;
@@ -146,5 +157,21 @@ public class PerWalletModelData {
 
     public void setWalletInfoBackupFilename(String walletInfoBackupFilename) {
         this.walletInfoBackupFilename = walletInfoBackupFilename;
+    }
+
+    public boolean isBusy() {
+        return busy;
+    }
+
+    public void setBusy(boolean busy) {
+        this.busy = busy;
+    }
+
+    public String getBusyOperation() {
+        return busyOperation;
+    }
+
+    public void setBusyOperation(String busyOperation) {
+        this.busyOperation = busyOperation;
     }
 }

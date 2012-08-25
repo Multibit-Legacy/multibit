@@ -126,6 +126,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     
     private JButton walletTypeButton;
     
+    private JLabel hourglassLabel;
+    
     private MultiBitLabel filenameLabel;
     private JLabel filenameSeparator;
     private MultiBitLabel walletFilenameLabel;
@@ -214,31 +216,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.LINE_START;
         myRoundedPanel.add(walletDescriptionTextField, constraints);
 
-        // Show details is initially invisible.
-        showDetailLabel = new JLabel();
-        showDetailLabel.setOpaque(false);
-        showDetailLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.DETAIL_PANEL_ON_ICON_FILE));
-        showDetailLabel.setBorder(BorderFactory.createEmptyBorder(DETAILS_TOP_BORDER, DETAILS_LEFT_BORDER, 0, 0));
-        showDetailLabel.setVisible(false);
-        showDetailLabel.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent evt) {
-                expanded = !expanded;
-                setSelected(selected);
-                thisPanel.invalidate();
-                thisPanel.validate();
-                thisPanel.repaint();
-            }
-        });
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
-        constraints.gridy = 2;
-        constraints.weightx = 0.1;
-        constraints.weighty = 0.1;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        myRoundedPanel.add(showDetailLabel, constraints);
-
         // Wallet type icon.
         walletTypeButton = new JButton();
         walletTypeButton.setOpaque(false);
@@ -258,7 +235,48 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         myRoundedPanel.add(walletTypeButton, constraints);
+ 
+        // Hourglass icon.
+        hourglassLabel = new JLabel(ImageLoader.createImageIcon(ImageLoader.HOURGLASS_ICON_FILE));
+        hourglassLabel.setOpaque(false);
+        hourglassLabel.setVisible(perWalletModelData.isBusy());
+        hourglassLabel.setBorder(BorderFactory.createEmptyBorder(WALLET_TYPE_TOP_BORDER, WALLET_TYPE_LEFT_BORDER, 0, 0));
 
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 2;
+        constraints.gridy = 2;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        myRoundedPanel.add(hourglassLabel, constraints);
+
+        // Show details is initially invisible.
+        showDetailLabel = new JLabel();
+        showDetailLabel.setOpaque(false);
+        showDetailLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.DETAIL_PANEL_ON_ICON_FILE));
+        showDetailLabel.setBorder(BorderFactory.createEmptyBorder(DETAILS_TOP_BORDER, DETAILS_LEFT_BORDER, 0, 0));
+        showDetailLabel.setVisible(false);
+        showDetailLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                expanded = !expanded;
+                setSelected(selected);
+                thisPanel.invalidate();
+                thisPanel.validate();
+                thisPanel.repaint();
+            }
+        });
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 2;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        myRoundedPanel.add(showDetailLabel, constraints);
+       
         amountLabel = new BlinkLabel(controller, false);
         amountLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         amountLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
@@ -373,6 +391,18 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         myRoundedPanel.addMouseListener(mouseListener);
     }
 
+    public void setBusy(boolean isBusy) {
+        hourglassLabel.setVisible(isBusy);
+        
+        // Update the tooltip.
+        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+            // Wallet is busy with another operation that may change the private keys - Action is disabled.
+            hourglassLabel.setToolTipText(controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()}));           
+        } else {
+            hourglassLabel.setToolTipText(null);
+        }
+    }
+    
     public void setSelected(boolean selected) {
         this.selected = selected;
 
@@ -491,7 +521,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         if (newAmountText != null && !newAmountText.equals(amountLabel.getText())) {
             amountLabel.blink(newAmountText);
         }
-        
+              
         String encryptionText = "";
         if (perWalletModelData.getWallet() != null) {
             if (perWalletModelData.getWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {

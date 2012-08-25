@@ -30,6 +30,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.model.WalletBusyListener;
 import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletMajorVersion;
 import org.multibit.utils.ImageLoader;
@@ -45,7 +46,7 @@ import com.google.bitcoin.core.EncryptionType;
  * This {@link Action} represents an action to actually create receiving
  * addresses.
  */
-public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction {
+public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction implements WalletBusyListener {
     private static Logger log = LoggerFactory.getLogger(CreateNewReceivingAddressAction.class);
 
     private static final long serialVersionUID = 200152235465875405L;
@@ -66,7 +67,10 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
         this.createNewReceivingAddressDialog = createNewReceivingAddressDialog;
         this.createNewReceivingAddressPanel = createNewReceivingAddressPanel;
         this.walletPassword = walletPassword;
-
+        
+        // This action is a WalletBusyListener
+        controller.registerWalletBusyListener(this);
+        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
 
     /**
@@ -115,8 +119,14 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
         logMessage.setShowInStatusBar(false);
         MessageManager.INSTANCE.addMessage(logMessage);
         
-        createNewReceivingAddressPanel.getCreateNewReceivingAddressSubmitAction().setEnabled(false);
+        // Can no longer cancel as the operation has started.
         createNewReceivingAddressPanel.getCancelButton().setEnabled(false);
+        
+        // Declare that the active wallet is busy with the addReceivingAddress operation
+        controller.getModel().getActivePerWalletModelData().setBusyOperation(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.tooltip"));
+        controller.getModel().getActivePerWalletModelData().setBusy(true);
+        controller.fireWalletBusyChange(true);                   
+
         createNewReceivingAddressesInBackground(createNewReceivingAddressPanel.getNumberOfAddressesToCreate(), encryptNewKeys, 
                 walletPassword.getPassword());
     }
@@ -201,9 +211,6 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                         log.error(longMessage);
                     }
                     
-                    createNewReceivingAddressPanel.getCreateNewReceivingAddressSubmitAction().setEnabled(true);
-                    createNewReceivingAddressPanel.getCancelButton().setEnabled(true);
-
                     if (shortMessage != null) {
                         createNewReceivingAddressPanel.setMessageText(shortMessage);
 
@@ -218,9 +225,17 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                             MessageManager.INSTANCE.addMessage(new Message(longMessage));
                         }
                     }
-                } catch (Exception e) {
+                 } catch (Exception e) {
                     // Not really used but caught so that SwingWorker shuts down cleanly.
                     log.error(e.getClass() + " " + e.getMessage());
+                } finally {
+                    // Can now cancel the operation.
+                    createNewReceivingAddressPanel.getCancelButton().setEnabled(true);
+
+                    // Declare that wallet is no longer busy with the addReceivingAddress operation
+                    controller.getModel().getActivePerWalletModelData().setBusyOperation(null);
+                    controller.getModel().getActivePerWalletModelData().setBusy(false);
+                    controller.fireWalletBusyChange(false);                   
                 }
             }
         };
@@ -228,4 +243,22 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
         worker.execute();
     }
 
+    @Override
+    public void walletBusyChange(boolean newWalletIsBusy) {
+        // Update the enable status of the action to match the wallet busy status.
+        if (newWalletIsBusy) {
+            // Wallet is busy with another operation that may change the private keys - Action is disabled.
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()}));
+            setEnabled(false);           
+        } else {
+            // Enable unless wallet has been modified by another process.
+            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+                putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.tooltip"));
+                setEnabled(true);
+            }
+            
+            // Make sure the cancel button is enabled.
+            createNewReceivingAddressPanel.getCancelButton().setEnabled(true);
+        }
+    }
 }

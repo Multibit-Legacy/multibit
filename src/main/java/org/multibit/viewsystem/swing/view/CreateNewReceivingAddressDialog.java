@@ -35,7 +35,7 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
     private static final long serialVersionUID = 191439652345057705L;
 
     private static final int HEIGHT_DELTA = 40;
-    private static final int WIDTH_DELTA = 120;
+    private static final int WIDTH_DELTA = 160;
  
     private ReceiveBitcoinPanel receiveBitcoinPanel;
 

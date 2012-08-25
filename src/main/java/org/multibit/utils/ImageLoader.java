@@ -50,6 +50,7 @@ public class ImageLoader {
     public static final String EXPORT_PRIVATE_KEYS_ICON_FILE = "/images/exportKey.png";
     public static final String HELP_CONTENTS_BIG_ICON_FILE = "/images/helpContentsBig.png";
     public static final String HELP_CONTENTS_ICON_FILE = "/images/helpContents.png";
+    public static final String HOURGLASS_ICON_FILE = "/images/hourglass.png";
     public static final String IMPORT_PRIVATE_KEYS_ICON_FILE = "/images/importKey.png";
     public static final String LOCK_ICON_FILE = "/images/lock.png";
     public static final String MESSAGES_ICON_FILE = "/images/comment.png";
