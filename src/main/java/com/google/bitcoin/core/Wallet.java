@@ -28,6 +28,7 @@ import org.multibit.crypto.WalletIsAlreadyEncryptedException;
 import org.multibit.model.WalletMajorVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -1848,6 +1849,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         boolean anErrorOccurred = false;
         
         synchronized(keychain) {
+            KeyParameter aesKey = encrypterDecrypter.deriveKey(password);
             for (ECKey key : keychain) {
                 if (key.isEncrypted()) {
                     walletIsAlreadyEncryptedException = new WalletIsAlreadyEncryptedException("Key '" + key.toString() + "' is already encrypted.");
@@ -1858,7 +1860,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
                 // Clone the key before encrypting.
                 // (note that only the EncryptedPrivateKey is deep copied).
                 ECKey clonedECKey = new ECKey(key.getPrivKeyBytes(), new EncryptedPrivateKey(key.getEncryptedPrivateKey()), key.getPubKey(), encrypterDecrypter);
-                clonedECKey.encrypt(password);
+                clonedECKey.encrypt(aesKey);
                 encryptedKeyChain.add(clonedECKey);
             }
         
@@ -1896,6 +1898,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
         boolean anErrorOccurred = false;
         
         synchronized(keychain) {
+            KeyParameter aesKey = encrypterDecrypter.deriveKey(password);
+
             for (ECKey key : keychain) {
                 if (!key.isEncrypted()) {
                     walletIsAlreadyDecryptedException = new WalletIsAlreadyDecryptedException("Key '" + key.toString() + "' is already decrypted.");
@@ -1906,7 +1910,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
                 // Clone the key before decrypting.
                 // (note that only the EncryptedPrivateKey is deep copied).
                 ECKey clonedECKey = new ECKey(new EncryptedPrivateKey(key.getEncryptedPrivateKey()), key.getPubKey(), encrypterDecrypter);
-                clonedECKey.decrypt(password);
+                clonedECKey.decrypt(aesKey);
                 decryptedKeyChain.add(clonedECKey);
             }
         

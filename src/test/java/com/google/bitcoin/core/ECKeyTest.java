@@ -63,7 +63,7 @@ public class ECKeyTest extends TestCase {
         System.out.println("EncryptableECKeyTest - Original private key = " + Utils.bytesToHexString(originalPrivateKeyBytes));
         
         // Encrypt the key.
-        unencryptedKey.encrypt(PASSWORD1);
+        unencryptedKey.encrypt(encrypterDecrypter.deriveKey(PASSWORD1));
         
         // The key should now be encrypted.
         assertTrue("Key is not encrypted but it should be", unencryptedKey.isEncrypted());
@@ -75,7 +75,7 @@ public class ECKeyTest extends TestCase {
         }
         
         // Decrypt the key.
-        unencryptedKey.decrypt(PASSWORD1);
+        unencryptedKey.decrypt(encrypterDecrypter.deriveKey(PASSWORD1));
 
         // The key should be unencrypted
         assertTrue("Key is not unencrypted but it should be", !unencryptedKey.isEncrypted());
@@ -113,7 +113,7 @@ public class ECKeyTest extends TestCase {
         }
         
         // Decrypt the key.
-        encryptedKey.decrypt(PASSWORD1);
+        encryptedKey.decrypt(encrypterDecrypter.deriveKey(PASSWORD1));
 
         // The key should be unencrypted
         assertTrue("Key is not unencrypted but it should be", !encryptedKey.isEncrypted());

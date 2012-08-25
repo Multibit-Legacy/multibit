@@ -28,6 +28,7 @@ import org.spongycastle.crypto.params.ECDomainParameters;
 import org.spongycastle.crypto.params.ECKeyGenerationParameters;
 import org.spongycastle.crypto.params.ECPrivateKeyParameters;
 import org.spongycastle.crypto.params.ECPublicKeyParameters;
+import org.spongycastle.crypto.params.KeyParameter;
 import org.spongycastle.crypto.signers.ECDSASigner;
 
 import java.io.ByteArrayOutputStream;
@@ -419,13 +420,13 @@ public class ECKey implements Serializable, IsMultiBitClass {
     /**
      * Encrypt the private key with the password supplied, using the keys encrypterDecrypter.
      * The plaintext private keys are cleared after encryption.
-     * @param password
+     * @param aesKey the KeyParameter with the AES encryption key
      */
-    public void encrypt(char[] password) {
+    public void encrypt(KeyParameter aesKey) {
         if (encrypterDecrypter == null) {
             throw new IllegalStateException("No encrypterDecrypter has been set for this key and so cannot encrypt");
         }
-        encryptedPrivateKey = encrypterDecrypter.encrypt(getPrivKeyBytes(), encrypterDecrypter.deriveKey(password));
+        encryptedPrivateKey = encrypterDecrypter.encrypt(getPrivKeyBytes(), aesKey);
 
         // Clear the private keys.
         this.priv = BigInteger.ZERO;
@@ -435,15 +436,15 @@ public class ECKey implements Serializable, IsMultiBitClass {
     
     /**
      * Decrypt the private key with the password supplied, using the keys encrypterDecrypter
-     * @param password
+     * @param aesKey The AES key to decrypt the private key
      */
-    public void decrypt(char[] password) {
+    public void decrypt(KeyParameter aesKey) {
         if (encrypterDecrypter == null) {
             throw new IllegalStateException("No encrypterDecrypter has been set for this key and so cannot decrypt");
         }
         
         // Decrypt the private key.
-        byte[] plainTextPrivateKey = encrypterDecrypter.decrypt(encryptedPrivateKey, encrypterDecrypter.deriveKey(password));
+        byte[] plainTextPrivateKey = encrypterDecrypter.decrypt(encryptedPrivateKey, aesKey);
         
         // Set the plaintext key into the private key field.
         this.priv = new BigInteger(1, plainTextPrivateKey);

@@ -40,6 +40,7 @@ import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressDialog;
 import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.crypto.params.KeyParameter;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.EncryptionType;
@@ -154,13 +155,15 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                 
                 final EncrypterDecrypter walletEncrypterDecrypter = finalPerWalletModelData.getWallet().getEncrypterDecrypter();
                     try {
+                        // Derive AES key to use outside of loop - it is the same for all keys in a single wallet.
+                        KeyParameter aesKey = walletEncrypterDecrypter.deriveKey(walletPassword);
                         Collection<ECKey> newKeys = new ArrayList<ECKey>();
                         for (int i = 0; i < numberOfAddressesToCreate; i++) {
                             ECKey newKey;
                             if (encryptNewKeys) {
                                 // Use the wallet EncrypterDescrypter.
                                 newKey = new ECKey(walletEncrypterDecrypter);
-                                newKey.encrypt(walletPassword);
+                                newKey.encrypt(aesKey);
                             } else {
                                 newKey = new ECKey();
                             }
