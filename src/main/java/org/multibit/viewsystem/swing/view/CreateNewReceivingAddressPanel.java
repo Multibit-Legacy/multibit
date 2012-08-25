@@ -4,6 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -14,6 +19,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
 import org.multibit.viewsystem.swing.action.CreateNewReceivingAddressSubmitAction;
+import org.multibit.viewsystem.swing.action.OkBackToParentAction;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
@@ -200,6 +206,25 @@ public class CreateNewReceivingAddressPanel extends JPanel {
         CancelBackToParentAction cancelAction = new CancelBackToParentAction(controller,
                 ImageLoader.createImageIcon(ImageLoader.CROSS_ICON_FILE), createNewReceivingAddressDialog);
         cancelButton = new MultiBitButton(cancelAction, controller);
+        cancelButton.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                // Clear password.
+                if (walletPasswordField != null) {
+                    walletPasswordField.setText("");
+                }
+            }});
+ 
+        if (createNewReceivingAddressDialog != null) {
+            createNewReceivingAddressDialog.addWindowListener(new WindowAdapter(){
+                @Override
+                public void windowClosed(WindowEvent arg0) {
+                    if (walletPasswordField != null) {
+                        walletPasswordField.setText("");
+                    }
+                }
+            });
+        }
         buttonPanel.add(cancelButton);
 
         createNewReceivingAddressSubmitAction = new CreateNewReceivingAddressSubmitAction(controller,
@@ -209,7 +234,7 @@ public class CreateNewReceivingAddressPanel extends JPanel {
 
         messageText = new MultiBitLabel("");
         messageText.setText(" ");
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 3;
         constraints.gridy = 11;
         constraints.weightx = 0.8;
@@ -238,7 +263,7 @@ public class CreateNewReceivingAddressPanel extends JPanel {
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(filler6, constraints);
     }
-
+ 
     public void setMessageText(String message) {
         messageText.setText(message);
     }

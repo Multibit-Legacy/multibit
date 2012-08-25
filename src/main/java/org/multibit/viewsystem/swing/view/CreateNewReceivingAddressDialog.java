@@ -35,9 +35,8 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
     private static final long serialVersionUID = 191439652345057705L;
 
     private static final int HEIGHT_DELTA = 40;
-    private static final int WIDTH_DELTA = 80;
+    private static final int WIDTH_DELTA = 120;
  
-    private MultiBitFrame mainFrame;
     private ReceiveBitcoinPanel receiveBitcoinPanel;
 
     private MultiBitController controller;
@@ -50,7 +49,6 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
     public CreateNewReceivingAddressDialog(MultiBitController controller, MultiBitFrame mainFrame, ReceiveBitcoinPanel receiveBitcoinPanel) {
         super(mainFrame, controller.getLocaliser().getString("createNewReceivingAddressDialog.title"));
         this.controller = controller;
-        this.mainFrame = mainFrame;
         this.receiveBitcoinPanel = receiveBitcoinPanel;
       
         initUI();
@@ -67,7 +65,7 @@ public class CreateNewReceivingAddressDialog extends MultiBitDialog {
             FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         
             int minimumHeight = fontMetrics.getHeight() * 8 + HEIGHT_DELTA;
-            int minimumWidth = Math.max(fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT), fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinConfirmView.message"))) + WIDTH_DELTA;
+            int minimumWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("createNewReceivingAddressDialog.message")), fontMetrics.stringWidth(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.createdSuccessfullyShort", new Object[] { new Integer(100)}))) + WIDTH_DELTA;
             setMinimumSize(new Dimension(minimumWidth, minimumHeight));
             positionDialogRelativeToParent(this, 0.5D, 0.47D);
         } catch (NullPointerException npe) {

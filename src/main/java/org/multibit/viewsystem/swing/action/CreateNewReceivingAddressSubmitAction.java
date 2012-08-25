@@ -19,8 +19,10 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.Action;
 import javax.swing.JPasswordField;
+import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
@@ -101,47 +103,129 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletMajorVersion.PROTOBUF_ENCRYPTED);
             perWalletModelData.setWalletInfo(walletInfo);
         }
-        String addressString = "";
-        try {
-            for (int i = 0; i < createNewReceivingAddressPanel.getNumberOfAddressesToCreate(); i++) {
-                ECKey newKey;
-                if (encryptNewKeys) {
-                    // Use the wallet EncrypterDescrypter.
-                    newKey = new ECKey(perWalletModelData.getWallet().getEncrypterDecrypter());
-                    newKey.encrypt(walletPassword.getPassword());
-                } else {
-                    newKey = new ECKey();
-                }
-                perWalletModelData.getWallet().keychain.add(newKey);
-                addressString = newKey.toAddress(controller.getModel().getNetworkParameters()).toString();
-                walletInfo.addReceivingAddress(new AddressBookData("", addressString), false);
-            }
-        } catch (EncrypterDecrypterException ede) {
-            log.error(ede.getMessage(), ede);
-            createNewReceivingAddressPanel.setMessageText(ede.getMessage());
-        }
+        
+        int numberOfAddressesToCreate = createNewReceivingAddressPanel.getNumberOfAddressesToCreate();
 
-        if (createNewReceivingAddressPanel.getReceiveBitcoinPanel() != null) {
-            createNewReceivingAddressPanel.getReceiveBitcoinPanel().getAddressesTableModel().fireTableDataChanged();
-            createNewReceivingAddressPanel.getReceiveBitcoinPanel().selectRows();
-        }
-        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, addressString);
-        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
-
-        try {
-            controller.getFileHandler().savePerWalletModelData(perWalletModelData, false);
-        } catch (WalletSaveException wse) {
-            log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
-            MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
-        }
-        controller.displayView(controller.getCurrentView());
-        if (createNewReceivingAddressDialog != null) {
-            createNewReceivingAddressDialog.setVisible(false);
-        }
-
-        if (createNewReceivingAddressPanel.getReceiveBitcoinPanel() != null
-                && createNewReceivingAddressPanel.getReceiveBitcoinPanel().getLabelTextArea() != null) {
-            createNewReceivingAddressPanel.getReceiveBitcoinPanel().getLabelTextArea().requestFocusInWindow();
-        }
+        String walletDescription =  controller.getModel().getActiveWalletWalletInfo().getProperty(WalletInfo.DESCRIPTION_PROPERTY);
+        String shortMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.creatingShort", new Object[] { new Integer(numberOfAddressesToCreate)});
+        String longMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.creatingLong", new Object[] { new Integer(numberOfAddressesToCreate), walletDescription});
+        createNewReceivingAddressPanel.setMessageText(shortMessage);
+        MessageManager.INSTANCE.addMessage(new Message(" "));
+        Message logMessage = new Message(longMessage);
+        logMessage.setShowInStatusBar(false);
+        MessageManager.INSTANCE.addMessage(logMessage);
+        
+        createNewReceivingAddressPanel.getCreateNewReceivingAddressSubmitAction().setEnabled(false);
+        createNewReceivingAddressPanel.getCancelButton().setEnabled(false);
+        createNewReceivingAddressesInBackground(createNewReceivingAddressPanel.getNumberOfAddressesToCreate(), encryptNewKeys, 
+                walletPassword.getPassword());
     }
+    
+    /**
+     * Create the new receiving addresses in a background Swing worker thread.
+     */
+    private void createNewReceivingAddressesInBackground(final int numberOfAddressesToCreate, final boolean encryptNewKeys, 
+            final char[] walletPassword) {
+        final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
+
+        SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
+            private String shortMessage = null;
+            private String longMessage = null;
+            private String lastAddressString = null;
+
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                Boolean successMeasure = Boolean.FALSE;
+                
+                EncrypterDecrypter walletEncrypterDecrypter = finalPerWalletModelData.getWallet().getEncrypterDecrypter();
+                synchronized (controller.getModel().getActiveWallet()) {
+                    try {
+                        for (int i = 0; i < numberOfAddressesToCreate; i++) {
+                            ECKey newKey;
+                            if (encryptNewKeys) {
+                                // Use the wallet EncrypterDescrypter.
+                                newKey = new ECKey(walletEncrypterDecrypter);
+                                newKey.encrypt(walletPassword);
+                            } else {
+                                newKey = new ECKey();
+                            }
+                            finalPerWalletModelData.getWallet().keychain.add(newKey);
+                            lastAddressString = newKey.toAddress(controller.getModel().getNetworkParameters()).toString();
+                            finalPerWalletModelData.getWalletInfo().addReceivingAddress(new AddressBookData("", lastAddressString),
+                                    false);
+                        }
+                        successMeasure = Boolean.TRUE;
+                    } catch (EncrypterDecrypterException ede) {
+                        logError(ede);
+                    }
+                }
+                
+                return successMeasure;
+            }
+            
+            private void logError(Exception e) {
+                log.error(e.getClass().getName() + " " + e.getMessage());
+                e.printStackTrace();
+                shortMessage = controller.getLocaliser().getString("createNewReceivingAddressesSubmitAction.failure",
+                        new Object[] { e.getMessage() });
+                longMessage = shortMessage;
+            }
+
+            protected void done() {
+                try {
+                    Boolean wasSuccessful = get();
+ 
+                    String walletDescription =  controller.getModel().getActiveWalletWalletInfo().getProperty(WalletInfo.DESCRIPTION_PROPERTY);
+
+                    if (wasSuccessful) {
+                        shortMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.createdSuccessfullyShort", new Object[] { new Integer(numberOfAddressesToCreate)});
+                        longMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.createdSuccessfullyLong", new Object[] { new Integer(numberOfAddressesToCreate), walletDescription});
+
+                        log.debug(longMessage);
+                        
+                        if (createNewReceivingAddressPanel.getReceiveBitcoinPanel() != null) {
+                            createNewReceivingAddressPanel.getReceiveBitcoinPanel().getAddressesTableModel().fireTableDataChanged();
+                            createNewReceivingAddressPanel.getReceiveBitcoinPanel().selectRows();
+                        }
+                        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, lastAddressString);
+                        controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, "");
+
+                        try {
+                            controller.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
+                        } catch (WalletSaveException wse) {
+                            log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
+                            MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("createNewReceivingAddressesSubmitAction.failure",
+                                    new Object[] { wse.getClass().getCanonicalName() + " " + wse.getMessage() })));
+                        }
+                    } else {
+                        log.error(longMessage);
+                    }
+                    
+                    createNewReceivingAddressPanel.getCreateNewReceivingAddressSubmitAction().setEnabled(true);
+                    createNewReceivingAddressPanel.getCancelButton().setEnabled(true);
+
+                    if (shortMessage != null) {
+                        createNewReceivingAddressPanel.setMessageText(shortMessage);
+
+                         if (createNewReceivingAddressPanel != null && createNewReceivingAddressDialog != null && createNewReceivingAddressDialog.isVisible()) {
+                             // Show short message in dialog, long in messages.
+                            createNewReceivingAddressPanel.setMessageText(shortMessage);
+                            Message logMessage = new Message(longMessage);
+                            logMessage.setShowInStatusBar(false);
+                            MessageManager.INSTANCE.addMessage(logMessage);
+                       } else {
+                            // Show long message on statusbar and in messages.
+                            MessageManager.INSTANCE.addMessage(new Message(longMessage));
+                        }
+                    }
+                } catch (Exception e) {
+                    // Not really used but caught so that SwingWorker shuts down cleanly.
+                    log.error(e.getClass() + " " + e.getMessage());
+                }
+            }
+        };
+        log.debug("Creating receive addresses in background SwingWorker thread");
+        worker.execute();
+    }
+
 }
