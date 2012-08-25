@@ -69,7 +69,7 @@ public class WalletInfoTest extends TestCase {
         walletInfo.put(WalletInfo.DESCRIPTION_PROPERTY, DESCRIPTION_TEST1);
 
         AddressBookData receivingAddress = new AddressBookData(EXAMPLE_RECEIVING_ADDRESS_LABEL, EXAMPLE_RECEIVING_ADDRESS);
-        walletInfo.addReceivingAddress(receivingAddress, false);
+        walletInfo.addReceivingAddress(receivingAddress, false, true);
 
         AddressBookData sendingAddress = new AddressBookData(EXAMPLE_SENDING_ADDRESS_LABEL, EXAMPLE_SENDING_ADDRESS);
         walletInfo.addSendingAddress(sendingAddress);

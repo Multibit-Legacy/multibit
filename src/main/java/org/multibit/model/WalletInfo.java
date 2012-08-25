@@ -170,7 +170,7 @@ public class WalletInfo {
      * @param addToCandidates
      *            - add to the list of candidate receiving addresses
      */
-    public void addReceivingAddress(AddressBookData receivingAddress, boolean addToCandidates) {
+    public void addReceivingAddress(AddressBookData receivingAddress, boolean addToCandidates, boolean checkAlreadyPresent) {
         if (receivingAddress == null) {
             return;
         }
@@ -182,14 +182,18 @@ public class WalletInfo {
             addressesToUse = receivingAddresses;
         }
 
+        
         boolean done = false;
-        // check the address is not already in the set
-        for (AddressBookData addressBookData : addressesToUse) {
-            if (addressBookData.getAddress().equals(receivingAddress.getAddress())) {
-                // just update label
-                addressBookData.setLabel(receivingAddress.getLabel());
-                done = true;
-                break;
+        
+        if (checkAlreadyPresent) {
+            // check the address is not already in the set
+            for (AddressBookData addressBookData : addressesToUse) {
+                if (addressBookData.getAddress().equals(receivingAddress.getAddress())) {
+                    // just update label
+                    addressBookData.setLabel(receivingAddress.getLabel());
+                    done = true;
+                    break;
+                }
             }
         }
 
@@ -444,7 +448,7 @@ public class WalletInfo {
                         String decodedMultiLineColumnThreeValue = decodeURLString(multilineColumnThreeValue);
 
                         if (RECEIVE_ADDRESS_MARKER.equals(previousColumnOne)) {
-                            addReceivingAddress(new AddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo), false);
+                            addReceivingAddress(new AddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo), false, true);
                         } else {
                             if (SEND_ADDRESS_MARKER.equals(previousColumnOne)) {
                                 addSendingAddress(new AddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo));
@@ -477,7 +481,7 @@ public class WalletInfo {
                     }
                     String decodedColumnThreeValue = decodeURLString(columnThree);
                     if (RECEIVE_ADDRESS_MARKER.equals(columnOne)) {
-                        addReceivingAddress(new AddressBookData(decodedColumnThreeValue, columnTwo), false);
+                        addReceivingAddress(new AddressBookData(decodedColumnThreeValue, columnTwo), false, true);
                     } else {
                         if (SEND_ADDRESS_MARKER.equals(columnOne)) {
                             addSendingAddress(new AddressBookData(decodedColumnThreeValue, columnTwo));
@@ -501,7 +505,7 @@ public class WalletInfo {
                 // Add previous multiline column three to model.
                 String decodedMultiLineColumnThreeValue = decodeURLString(multilineColumnThreeValue);
                 if (RECEIVE_ADDRESS_MARKER.equals(previousColumnOne)) {
-                    addReceivingAddress(new AddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo), false);
+                    addReceivingAddress(new AddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo), false, true);
                 } else {
                     if (SEND_ADDRESS_MARKER.equals(previousColumnOne)) {
                         addSendingAddress(new AddressBookData(decodedMultiLineColumnThreeValue, previousColumnTwo));
