@@ -25,6 +25,8 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 public class CreateNewReceivingAddressSubmitActionTest extends TestCase {      
     public static final char[] TEST_PASSWORD1 = "my hovercraft has eels".toCharArray();
     
+    private int TIME_TO_WAIT_FOR_ONE_KEY = 200; // milliseconds
+    
     @Test
     public void testAddReceivingAddressesWithNonEncryptedWallet() throws Exception {       
         // Create MultiBit controller
@@ -44,26 +46,41 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         
         // Execute the createNewAction - by default the createNewDialog should be set to add one key.
         createNewAction.actionPerformed(null);
+        
+        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY);
+        
         assertEquals("Wrong number of keys after addition of default number of keys", 2, controller.getModel().getActiveWallet().getKeychain().size());    
         
         // Add one address by selecting on the combo box.
         createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(1));
         createNewAction.actionPerformed(null);
+        
+        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY);
+
         assertEquals("Wrong number of keys after addition of 1 key", 3, controller.getModel().getActiveWallet().getKeychain().size());
         
         // Add five addresses by selecting on the combo box.
         createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(5));
         createNewAction.actionPerformed(null);
+        
+        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY * 5);
+
         assertEquals("Wrong number of keys after addition of 5 keys", 8, controller.getModel().getActiveWallet().getKeychain().size());   
         
         // Add twenty addresses by selecting on the combo box.
         createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(20));
         createNewAction.actionPerformed(null);
+        
+        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY * 20);
+
         assertEquals("Wrong number of keys after addition of 20 keys", 28, controller.getModel().getActiveWallet().getKeychain().size());  
         
         // Add one hundred addresses by selecting on the combo box.
         createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(100));
         createNewAction.actionPerformed(null);
+
+        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY * 100);
+
         assertEquals("Wrong number of keys after addition of 100 keys", 128, controller.getModel().getActiveWallet().getKeychain().size());    
     }
     
@@ -87,6 +104,9 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         // Execute the createNewAction - by default the createNewDialog sould be set to add one key.
         // However as there is no wallet password supplied it will not add the key.
         createNewAction.actionPerformed(null);
+        
+        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY);
+
         assertEquals("Wrong number of keys after addition of default number of keys with no wallet password", 1, controller.getModel().getActiveWallet().getKeychain().size());    
         
         // Check there is a message that the wallet password is required.
@@ -94,6 +114,9 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         
         // Enter an incorrect password. There should be a message to the user.
         createNewPanel.setWalletPassword("This is the wrong password");
+
+        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY);
+
         createNewAction.actionPerformed(null);
 
         // Check there is a message that the wallet password isincorrect.
@@ -104,12 +127,18 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         
         // The new private key should now add correctly.
         createNewAction.actionPerformed(null);
+
+        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY);
+
         assertEquals("Wrong number of keys after addition of default number of keys with wallet password", 2, controller.getModel().getActiveWallet().getKeychain().size()); 
 
         // Add twenty addresses by selecting on the combo box.
         createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(20));
         createNewPanel.setWalletPassword(new String(TEST_PASSWORD1));
         createNewAction.actionPerformed(null);
+
+        Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY * 40);
+
         assertEquals("Wrong number of keys after addition of 20 keys", 22, controller.getModel().getActiveWallet().getKeychain().size());  
 
         // The added private keys should be encrypted with the same password as the wallet password.

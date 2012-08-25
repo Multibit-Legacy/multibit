@@ -58,6 +58,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
+import org.multibit.model.WalletBusyListener;
 import org.multibit.model.WalletMajorVersion;
 import org.multibit.platform.GenericApplication;
 import org.multibit.utils.ImageLoader;
@@ -69,6 +70,7 @@ import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.MultiBitAction;
+import org.multibit.viewsystem.swing.action.MultiBitWalletBusyAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.ViewFactory;
@@ -91,7 +93,7 @@ import com.google.bitcoin.core.Wallet;
 /*
  * JFrame displaying Swing version of MultiBit
  */
-public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationListener {
+public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationListener, WalletBusyListener {
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitFrame.class);
 
@@ -169,9 +171,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private TickerTablePanel tickerTablePanel;
     
-    private MultiBitAction addPasswordAction;
-    private MultiBitAction changePasswordAction;
-    private MultiBitAction removePasswordAction;
+    private MultiBitWalletBusyAction addPasswordAction;
+    private MultiBitWalletBusyAction changePasswordAction;
+    private MultiBitWalletBusyAction removePasswordAction;
+    
+    private MultiBitWalletBusyAction showImportPrivateKeysAction;
+    private MultiBitWalletBusyAction showExportPrivateKeysAction;
 
     @SuppressWarnings("deprecation")
     public MultiBitFrame(MultiBitController controller, GenericApplication application) {
@@ -213,6 +218,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewFactory = new ViewFactory(controller, this);
 
         initUI();
+        
+        controller.registerWalletBusyListener(this);
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
@@ -575,7 +582,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         fileMenu.addSeparator();
         
         // Add password action.
-        addPasswordAction = new MultiBitAction(controller, ImageLoader.ADD_PASSWORD_ICON_FILE, "addPasswordAction.text",
+        addPasswordAction = new MultiBitWalletBusyAction(controller, ImageLoader.ADD_PASSWORD_ICON_FILE, "addPasswordAction.text",
                 "addPasswordAction.tooltip", "addPasswordAction.mnemonic", View.ADD_PASSWORD_VIEW);
         menuItem = new JMenuItem(addPasswordAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -583,7 +590,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         fileMenu.add(menuItem);
 
         // Change password action.
-        changePasswordAction = new MultiBitAction(controller, ImageLoader.CHANGE_PASSWORD_ICON_FILE, "changePasswordAction.text",
+        changePasswordAction = new MultiBitWalletBusyAction(controller, ImageLoader.CHANGE_PASSWORD_ICON_FILE, "changePasswordAction.text",
                 "changePasswordAction.tooltip", "changePasswordAction.mnemonic", View.CHANGE_PASSWORD_VIEW);
         menuItem = new JMenuItem(changePasswordAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -591,7 +598,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         fileMenu.add(menuItem);
 
         // Remove password action.
-        removePasswordAction = new MultiBitAction(controller, ImageLoader.REMOVE_PASSWORD_ICON_FILE, "removePasswordAction.text",
+        removePasswordAction = new MultiBitWalletBusyAction(controller, ImageLoader.REMOVE_PASSWORD_ICON_FILE, "removePasswordAction.text",
                 "removePasswordAction.tooltip", "removePasswordAction.mnemonic", View.REMOVE_PASSWORD_VIEW);
         menuItem = new JMenuItem(removePasswordAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -726,7 +733,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewMenu.add(showTicker);
 
         // Import private keys.
-        MultiBitAction showImportPrivateKeysAction = new MultiBitAction(controller, ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE,
+        showImportPrivateKeysAction = new MultiBitWalletBusyAction(controller, ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE,
                 "showImportPrivateKeysAction.text", "showImportPrivateKeysAction.tooltip", "showImportPrivateKeysAction.mnemonic",
                 View.SHOW_IMPORT_PRIVATE_KEYS_VIEW);
         menuItem = new JMenuItem(showImportPrivateKeysAction);
@@ -735,7 +742,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         toolsMenu.add(menuItem);
 
         // Export private keys.
-        MultiBitAction showExportPrivateKeysAction = new MultiBitAction(controller, ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE,
+        showExportPrivateKeysAction = new MultiBitWalletBusyAction(controller, ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE,
                 "showExportPrivateKeysAction.text", "showExportPrivateKeysAction.tooltip", "showExportPrivateKeysAction.mnemonic",
                 View.SHOW_EXPORT_PRIVATE_KEYS_VIEW);
         menuItem = new JMenuItem(showExportPrivateKeysAction);
@@ -910,25 +917,40 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }    
     }
     
-    public void updatePasswordMenuItems() {
+
+    @Override
+    public void walletBusyChange(boolean newWalletIsBusy) {
+        updateMenuItemsOnWalletChange();
+    }
+    
+    public void updateMenuItemsOnWalletChange() {
+        showImportPrivateKeysAction.setEnabled(!controller.getModel().getActivePerWalletModelData().isBusy());
+        showExportPrivateKeysAction.setEnabled(!controller.getModel().getActivePerWalletModelData().isBusy());
+
         if (controller.getModel().getActiveWallet() == null) {
             // Cannot do anything password related.
             addPasswordAction.setEnabled(false);
             changePasswordAction.setEnabled(false);
             removePasswordAction.setEnabled(false);
         } else {
-            if (controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+            if (controller.getModel().getActivePerWalletModelData().isBusy()) {
                 addPasswordAction.setEnabled(false);
-                changePasswordAction.setEnabled(true);
-                removePasswordAction.setEnabled(true);
-            } else {
-                if (controller.getModel().getActiveWalletWalletInfo().getWalletMajorVersion() == WalletMajorVersion.SERIALIZED) {
-                    addPasswordAction.setEnabled(false);
-                } else {
-                    addPasswordAction.setEnabled(true);
-                }
                 changePasswordAction.setEnabled(false);
-                removePasswordAction.setEnabled(false);                
+                removePasswordAction.setEnabled(false);
+            } else {
+                if (controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
+                    addPasswordAction.setEnabled(false);
+                    changePasswordAction.setEnabled(true);
+                    removePasswordAction.setEnabled(true);
+                } else {
+                    if (controller.getModel().getActiveWalletWalletInfo().getWalletMajorVersion() == WalletMajorVersion.SERIALIZED) {
+                        addPasswordAction.setEnabled(false);
+                    } else {
+                        addPasswordAction.setEnabled(true);
+                    }
+                    changePasswordAction.setEnabled(false);
+                    removePasswordAction.setEnabled(false);
+                }
             }
         }
     }
@@ -987,7 +1009,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 // Update the password related menu items.
-                updatePasswordMenuItems();
+                updateMenuItemsOnWalletChange();
                 
                 // Update the header.
                 updateHeader();

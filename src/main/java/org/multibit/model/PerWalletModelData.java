@@ -171,7 +171,7 @@ public class PerWalletModelData {
         return busyOperation;
     }
 
-    public void setBusyOperation(String busyOperation) {
+    public void setBusyTask(String busyOperation) {
         this.busyOperation = busyOperation;
     }
 }

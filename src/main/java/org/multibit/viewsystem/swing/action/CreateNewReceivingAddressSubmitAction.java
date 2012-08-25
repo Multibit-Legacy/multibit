@@ -110,27 +110,30 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             perWalletModelData.setWalletInfo(walletInfo);
         }
         
-        int numberOfAddressesToCreate = createNewReceivingAddressPanel.getNumberOfAddressesToCreate();
+        // Double check wallet is not busy then declare that the active wallet is busy with the addReceivingAddresses task
+        if (!perWalletModelData.isBusy()) {
+            perWalletModelData.setBusy(true);
+            perWalletModelData.setBusyTask(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.tooltip"));
 
-        String walletDescription =  controller.getModel().getActiveWalletWalletInfo().getProperty(WalletInfo.DESCRIPTION_PROPERTY);
-        String shortMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.creatingShort", new Object[] { new Integer(numberOfAddressesToCreate)});
-        String longMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.creatingLong", new Object[] { new Integer(numberOfAddressesToCreate), walletDescription});
-        createNewReceivingAddressPanel.setMessageText(shortMessage);
-        MessageManager.INSTANCE.addMessage(new Message(" "));
-        Message logMessage = new Message(longMessage);
-        logMessage.setShowInStatusBar(false);
-        MessageManager.INSTANCE.addMessage(logMessage);
-        
-        // Can no longer cancel as the operation has started.
-        createNewReceivingAddressPanel.getCancelButton().setEnabled(false);
-        
-        // Declare that the active wallet is busy with the addReceivingAddress operation
-        controller.getModel().getActivePerWalletModelData().setBusyOperation(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.tooltip"));
-        controller.getModel().getActivePerWalletModelData().setBusy(true);
-        controller.fireWalletBusyChange(true);                   
+            // Can no longer cancel as the task has started.
+            createNewReceivingAddressPanel.getCancelButton().setEnabled(false);
 
-        createNewReceivingAddressesInBackground(createNewReceivingAddressPanel.getNumberOfAddressesToCreate(), encryptNewKeys, 
+            int numberOfAddressesToCreate = createNewReceivingAddressPanel.getNumberOfAddressesToCreate();
+            
+            String walletDescription =  controller.getModel().getActiveWalletWalletInfo().getProperty(WalletInfo.DESCRIPTION_PROPERTY);
+            String shortMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.creatingShort", new Object[] { new Integer(numberOfAddressesToCreate)});
+            String longMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.creatingLong", new Object[] { new Integer(numberOfAddressesToCreate), walletDescription});
+            createNewReceivingAddressPanel.setMessageText(shortMessage);
+            MessageManager.INSTANCE.addMessage(new Message(" "));
+            Message logMessage = new Message(longMessage);
+            logMessage.setShowInStatusBar(false);
+            MessageManager.INSTANCE.addMessage(logMessage);
+
+            controller.fireWalletBusyChange(true);                                
+
+            createNewReceivingAddressesInBackground(createNewReceivingAddressPanel.getNumberOfAddressesToCreate(), encryptNewKeys, 
                 walletPassword.getPassword());
+        }
     }
     
     /**
@@ -242,7 +245,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                     createNewReceivingAddressPanel.getCancelButton().setEnabled(true);
 
                     // Declare that wallet is no longer busy with the addReceivingAddress operation
-                    finalPerWalletModelData.setBusyOperation(null);
+                    finalPerWalletModelData.setBusyTask(null);
                     finalPerWalletModelData.setBusy(false);
                     controller.fireWalletBusyChange(false);                   
                 }
