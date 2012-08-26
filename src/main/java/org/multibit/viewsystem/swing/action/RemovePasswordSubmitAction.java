@@ -25,6 +25,8 @@ import javax.swing.SwingUtilities;
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.FileHandler;
+import org.multibit.model.PerWalletModelData;
+import org.multibit.model.WalletBusyListener;
 import org.multibit.model.WalletMajorVersion;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.RemovePasswordPanel;
@@ -36,7 +38,7 @@ import com.google.bitcoin.core.Wallet;
 /**
  * This {@link Action} action removes the encryption of private keys in a wallet.
  */
-public class RemovePasswordSubmitAction extends MultiBitSubmitAction {
+public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements WalletBusyListener {
     private static final Logger log = LoggerFactory.getLogger(RemovePasswordSubmitAction.class);
 
     private static final long serialVersionUID = 1923492460598757765L;
@@ -52,6 +54,10 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction {
         super(controller, "removePasswordSubmitAction.text", "removePasswordSubmitAction.tooltip", "removePasswordSubmitAction.mnemonicKey", icon);
         this.removePasswordPanel = removePasswordPanel;
         this.password1 = password1;
+        
+        // This action is a WalletBusyListener
+        controller.registerWalletBusyListener(this);
+        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
 
     /**
@@ -73,17 +79,35 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction {
         if (controller.getModel().getActiveWallet() != null) {
             Wallet wallet = controller.getModel().getActiveWallet();
             if (wallet != null) {
-                try {
-                   wallet.removeEncryption(passwordToUse);
-                   controller.getModel().getActiveWalletWalletInfo().setWalletMajorVersion(WalletMajorVersion.PROTOBUF);
-                   controller.getModel().getActivePerWalletModelData().setDirty(true);
-                   FileHandler fileHandler = new FileHandler(controller);
-                   fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);
-                } catch (EncrypterDecrypterException ede) {
-                    removePasswordPanel.setMessage1(controller.getLocaliser()
-                            .getString("removePasswordPanel.removePasswordFailed", new String[]{ede.getMessage()}));
-                    return;
-                }
+
+                    PerWalletModelData perWalletModelData = null;
+                    try {
+                        // Double check wallet is not busy then declare that the active
+                        // wallet is busy with the task
+                        perWalletModelData = controller.getModel().getActivePerWalletModelData();
+
+                        if (!perWalletModelData.isBusy()) {
+                            perWalletModelData.setBusy(true);
+                            perWalletModelData.setBusyTask(controller.getLocaliser().getString("removePasswordSubmitAction.text"));
+
+                            controller.fireWalletBusyChange(true);
+
+                            wallet.removeEncryption(passwordToUse);
+                            controller.getModel().getActiveWalletWalletInfo().setWalletMajorVersion(WalletMajorVersion.PROTOBUF);
+                            controller.getModel().getActivePerWalletModelData().setDirty(true);
+                            FileHandler fileHandler = new FileHandler(controller);
+                            fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);
+                        }
+                    } catch (EncrypterDecrypterException ede) {
+                        removePasswordPanel.setMessage1(controller.getLocaliser()
+                                .getString("removePasswordPanel.removePasswordFailed", new String[]{ede.getMessage()}));
+                        return;
+                    } finally {
+                        // Declare that wallet is no longer busy with the task.
+                        perWalletModelData.setBusyTask(null);
+                        perWalletModelData.setBusy(false);
+                        controller.fireWalletBusyChange(false);                   
+                    }
             }
         }
         controller.fireDataChanged();
@@ -94,9 +118,22 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction {
             public void run() {
                 removePasswordPanel.clearMessages();
                 removePasswordPanel.clearPasswords();
-                removePasswordPanel.updatePasswordAction();
                 removePasswordPanel.setMessage1(controller.getLocaliser()
                         .getString("removePasswordPanel.removePasswordSuccess")); 
             }});
+    }
+
+    @Override
+    public void walletBusyChange(boolean newWalletIsBusy) {
+        // Update the enable status of the action to match the wallet busy status.
+        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+            // Wallet is busy with another operation that may change the private keys - Action is disabled.
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()}));         
+        } else {
+            // Enable unless wallet has been modified by another process.
+            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+                putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("removePasswordSubmitAction.text"));
+            }
+        }
     }
 }

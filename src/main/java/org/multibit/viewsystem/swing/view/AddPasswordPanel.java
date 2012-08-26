@@ -547,7 +547,7 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
 
-         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
         
         clearMessages();
     }
@@ -663,9 +663,8 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
                 if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
                     addPasswordSubmitAction.putValue(Action.SHORT_DESCRIPTION,
                             controller.getLocaliser().getString("addPasswordSubmitAction.text"));
-                    if (unencryptedWalletType) {
-                        addPasswordSubmitAction.setEnabled(true);
-                    }
+
+                    addPasswordSubmitAction.setEnabled(true);
                 }
             }
         }

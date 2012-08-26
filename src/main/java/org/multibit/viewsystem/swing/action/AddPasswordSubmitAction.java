@@ -140,7 +140,6 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
                 perWalletModelData.setBusy(false);
                 controller.fireWalletBusyChange(false);                   
             }
-
         }
         controller.fireDataChanged();
 
@@ -150,8 +149,7 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
             public void run() {
                 addPasswordPanel.clearMessages();
                 addPasswordPanel.clearPasswords();
-                addPasswordPanel.setMessage1(controller.getLocaliser()
-                        .getString("addPasswordPanel.addPasswordSuccess")); 
+                addPasswordPanel.setMessage1(controller.getLocaliser().getString("addPasswordPanel.addPasswordSuccess")); 
              }});
     }
 

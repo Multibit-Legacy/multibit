@@ -33,6 +33,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -49,7 +50,7 @@ import com.google.bitcoin.core.EncryptionType;
 /**
  * The remove password view.
  */
-public class RemovePasswordPanel extends JPanel implements View {
+public class RemovePasswordPanel extends JPanel implements View, WalletBusyListener {
 
     private static final long serialVersionUID = 444992298432957705L;
 
@@ -83,6 +84,9 @@ public class RemovePasswordPanel extends JPanel implements View {
         this.controller = controller;
 
         initUI();
+        
+        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+        controller.registerWalletBusyListener(this);
     }
 
     @Override
@@ -464,13 +468,9 @@ public class RemovePasswordPanel extends JPanel implements View {
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
 
-        updatePasswordAction();
+        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+
         clearMessages();
-    }
-    
-    public void updatePasswordAction() {
-        boolean enableAction = controller.getModel().getActiveWallet() == null ? false : controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES;
-        removePasswordSubmitAction.setEnabled(enableAction);
     }
 
     public void clearMessages() {
@@ -529,5 +529,37 @@ public class RemovePasswordPanel extends JPanel implements View {
     @Override
     public int getViewId() {
         return View.REMOVE_PASSWORD_VIEW;
+    }
+
+    @Override
+    public void walletBusyChange(boolean newWalletIsBusy) { 
+        boolean unencryptedWalletType = controller.getModel().getActiveWallet() == null ? false : controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.UNENCRYPTED;
+
+        if (unencryptedWalletType) {
+            // Is not and an encrypted wallet so cannot remove a password regardless.
+            removePasswordSubmitAction.putValue(Action.SHORT_DESCRIPTION,
+                    controller.getLocaliser().getString("removePasswordSubmitAction.text"));
+            removePasswordSubmitAction.setEnabled(false);
+        } else {
+            // Update the enable status of the action to match the wallet busy
+            // status.
+            if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+                // Wallet is busy with another operation that may change the
+                // private keys - Action is disabled.
+                removePasswordSubmitAction.putValue(
+                        Action.SHORT_DESCRIPTION,
+                        controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy",
+                                new Object[] { controller.getModel().getActivePerWalletModelData().getBusyOperation() }));
+                removePasswordSubmitAction.setEnabled(false);
+            } else {
+                // Enable unless wallet has been modified by another process.
+                if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+                    removePasswordSubmitAction.putValue(Action.SHORT_DESCRIPTION,
+                            controller.getLocaliser().getString("removePasswordSubmitAction.text"));
+
+                    removePasswordSubmitAction.setEnabled(true);
+                }
+            }
+        }
     }
 }
