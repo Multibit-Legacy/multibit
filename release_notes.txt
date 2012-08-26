@@ -1,10 +1,25 @@
 MultiBit release notes.
 
-20 Aug Version 0.4.7
+27 Aug 2012 Version 0.4.8
++  I18n update. Hebrew added as target language. Lots of new texts.
+
+
+22 Aug 2012 Version 0.5.1alpha
++  All changes added to v0.4.7
++  Encrypted wallets no longer have WrappedWallet message.
++  Ability to cache blocks locally (see configuration.txt).
+
+
+06 Aug 2012 Version 0.5.0alpha
++  Alpha version of encrypted wallet support
++  removed optional merchant menu
+
+
+20 Aug 2012 Version 0.4.7
 +  Sidepanel UI improvements
 +  Less noisy at startup with wallet loading messages
 +  Better error handling with currency ticker
-+  Minor UI enhancements
+
 
 
 30 Jul 2012 Version 0.4.6
@@ -236,12 +251,12 @@ Bug fixes
 +  Not connecting to testnet when multibit.properties setting testOrProductionNetwork = test fixed.
 
 	
-04 Aug 2011.  Version 0.1.1
+4 Aug 2011.  Version 0.1.1
 Initial working version with:
 +  Send and receive bitcoins.
 +  Address book.  
 +  English and Spanish translation with ability to switch languages in a preferences setting.
 
 
-01 Jul 2011.  Version 0.1.1alpha
+1 Jul 2011.  Version 0.1.1alpha
 Non functional version illustrating user interface for review by bitcoinj group.
