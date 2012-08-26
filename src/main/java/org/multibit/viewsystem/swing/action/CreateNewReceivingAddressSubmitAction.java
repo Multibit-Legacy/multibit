@@ -247,7 +247,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                     // Can now cancel the operation.
                     createNewReceivingAddressPanel.getCancelButton().setEnabled(true);
 
-                    // Declare that wallet is no longer busy with the addReceivingAddress operation
+                    // Declare that wallet is no longer busy with the task.
                     finalPerWalletModelData.setBusyTask(null);
                     finalPerWalletModelData.setBusy(false);
                     controller.fireWalletBusyChange(false);                   
@@ -261,7 +261,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
     @Override
     public void walletBusyChange(boolean newWalletIsBusy) {
         // Update the enable status of the action to match the wallet busy status.
-        if (newWalletIsBusy) {
+        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
             // Wallet is busy with another operation that may change the private keys - Action is disabled.
             putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()}));
             setEnabled(false);           

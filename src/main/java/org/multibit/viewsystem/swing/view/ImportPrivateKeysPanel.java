@@ -49,6 +49,7 @@ import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -68,7 +69,7 @@ import com.piuk.blockchain.MyWalletPlainKeyFileFilter;
 /**
  * The import private keys view.
  */
-public class ImportPrivateKeysPanel extends JPanel implements View {
+public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyListener {
 
     private static final long serialVersionUID = 444992294329957705L;
 
@@ -125,7 +126,10 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         outputFilename = "";
 
         initUI();
-
+        
+        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+        controller.registerWalletBusyListener(this);
+        
         enableImportFilePasswordPanel(false);
         passwordField1.setText("");
         passwordField2.setText("");
@@ -737,6 +741,8 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         }
         enableWalletPassword(walletPasswordRequired);
         
+        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
+
         if (outputFilename == null || "".equals(outputFilename)) {
             outputFilenameLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.noFileSelected"));
         }
@@ -775,56 +781,62 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
             fileChooser.setSelectedFile(new File(defaultFileName));
         }
 
-        callingButton.setEnabled(false);
-        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        fileChooser.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        int returnVal = fileChooser.showOpenDialog(mainFrame);
-        mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        callingButton.setEnabled(true);
+        try {
+            callingButton.setEnabled(false);
+            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            fileChooser.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            int returnVal = fileChooser.showOpenDialog(mainFrame);
 
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            numberOfKeysLabel.setText(" ");
-            replayDateLabel.setText(" ");
-            passwordField1.setText("");
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                numberOfKeysLabel.setText(" ");
+                replayDateLabel.setText(" ");
+                passwordField1.setText("");
 
-            File file = fileChooser.getSelectedFile();
-            if (file != null) {
-                outputFilename = file.getAbsolutePath();
-                outputFilenameLabel.setText(outputFilename);
+                File file = fileChooser.getSelectedFile();
+                if (file != null) {
+                    outputFilename = file.getAbsolutePath();
+                    outputFilenameLabel.setText(outputFilename);
 
-                if (multiBitFileChooser.accept(file)) {
-                    try {
-                        String firstLine = readFirstLineInFile(file);
+                    if (multiBitFileChooser.accept(file)) {
+                        try {
+                            String firstLine = readFirstLineInFile(file);
 
-                        if (firstLine != null && firstLine.startsWith(encrypterDecrypter.getOpenSSLMagicText())) {
-                            // File is encrypted.
-                            enableImportFilePasswordPanel(true);
-                            passwordField1.requestFocusInWindow();
-                        } else {
-                            // File is not encrypted.
-                            enableImportFilePasswordPanel(false);
-                            readInImportFileAndUpdateDetails();
+                            if (firstLine != null && firstLine.startsWith(encrypterDecrypter.getOpenSSLMagicText())) {
+                                // File is encrypted.
+                                enableImportFilePasswordPanel(true);
+                                passwordField1.requestFocusInWindow();
+                            } else {
+                                // File is not encrypted.
+                                enableImportFilePasswordPanel(false);
+                                readInImportFileAndUpdateDetails();
+                            }
+                        } catch (IOException e) {
+                            setMessageText(controller.getLocaliser().getString(
+                                    "importPrivateKeysSubmitAction.privateKeysImportFailure",
+                                    new Object[] { e.getClass().getName() + " " + e.getMessage() }));
+                        } catch (EncrypterDecrypterException e) {
+                            // TODO User may not have entered a password yet so
+                            // password incorrect is ok at this stage.
+                            // Other errors indicate a more general problem with
+                            // the
+                            // import.
+                            setMessageText(controller.getLocaliser().getString(
+                                    "importPrivateKeysSubmitAction.privateKeysImportFailure",
+                                    new Object[] { e.getClass().getName() + " " + e.getMessage() }));
                         }
-                    } catch (IOException e) {
-                        setMessageText(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
-                                new Object[] { e.getClass().getName() + " " + e.getMessage() }));
-                    } catch (EncrypterDecrypterException e) {
-                        // TODO User may not have entered a password yet so
-                        // password incorrect is ok at this stage.
-                        // Other errors indicate a more general problem with the
-                        // import.
-                        setMessageText(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
-                                new Object[] { e.getClass().getName() + " " + e.getMessage() }));
+                    } else if (myWalletEncryptedFileChooser.accept(file)) {
+                        enableImportFilePasswordPanel(true);
+                        passwordField1.requestFocusInWindow();
+                    } else if (myWalletPlainFileChooser.accept(file)) {
+                        // File is not encrypted.
+                        enableImportFilePasswordPanel(false);
+                        readInImportFileAndUpdateDetails();
                     }
-                } else if (myWalletEncryptedFileChooser.accept(file)) {
-                    enableImportFilePasswordPanel(true);
-                    passwordField1.requestFocusInWindow();
-                } else if (myWalletPlainFileChooser.accept(file)) {
-                    // File is not encrypted.
-                    enableImportFilePasswordPanel(false);
-                    readInImportFileAndUpdateDetails();
                 }
             }
+        } finally {
+            mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            callingButton.setEnabled(true);
         }
     }
 
@@ -1017,5 +1029,21 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
     
     public boolean isWalletPasswordFieldEnabled() {
         return walletPasswordField.isEnabled();
+    }
+
+    @Override
+    public void walletBusyChange(boolean newWalletIsBusy) {       
+        // Update the enable status of the action to match the wallet busy status.
+        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+            // Wallet is busy with another operation that may change the private keys - Action is disabled.
+            importPrivateKeysSubmitAction.putValue(Action.SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()}));
+            importPrivateKeysSubmitAction.setEnabled(false);           
+        } else {
+            // Enable unless wallet has been modified by another process.
+            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+                importPrivateKeysSubmitAction.putValue(Action.SHORT_DESCRIPTION, controller.getLocaliser().getString("importPrivateKeysSubmitAction.tooltip"));
+                importPrivateKeysSubmitAction.setEnabled(true);
+            }
+        }
     }
 }

@@ -35,10 +35,12 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TimeZone;
 
+import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterOpenSSL;
 import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.crypto.params.KeyParameter;
 
 import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Block;
@@ -333,6 +335,12 @@ public class PrivateKeysHandler {
                     }
                 }
 
+                EncrypterDecrypter walletEncrypterDecrypter = wallet.getEncrypterDecrypter();
+                KeyParameter aesKey = null;
+                if (decryptionRequired) {
+                    aesKey = walletEncrypterDecrypter.deriveKey(walletPassword);
+                }
+                
                 for (ECKey ecKey : keychain) {
                     Date earliestUsageDate = keyToEarliestUsageDateMap.get(ecKey);
                     if (earliestUsageDate == null) {
@@ -345,8 +353,8 @@ public class PrivateKeysHandler {
                     }
                     if (decryptionRequired) {
                         // Create a new decrypted key holding the private key.
-                        ECKey decryptedKey = new ECKey(ecKey.getEncrypterDecrypter().decrypt(ecKey.getEncryptedPrivateKey(),
-                                ecKey.getEncrypterDecrypter().deriveKey(walletPassword)), ecKey.getPubKey());
+                        ECKey decryptedKey = new ECKey(walletEncrypterDecrypter.decrypt(ecKey.getEncryptedPrivateKey(),
+                                aesKey), ecKey.getPubKey());
                         keyAndDates.add(new PrivateKeyAndDate(decryptedKey, earliestUsageDate));
                     } else {
                         keyAndDates.add(new PrivateKeyAndDate(ecKey, earliestUsageDate));
