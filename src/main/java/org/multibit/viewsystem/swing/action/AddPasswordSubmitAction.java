@@ -17,7 +17,6 @@ package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
@@ -29,6 +28,8 @@ import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.crypto.EncrypterDecrypterScrypt;
 import org.multibit.crypto.ScryptParameters;
 import org.multibit.file.FileHandler;
+import org.multibit.model.PerWalletModelData;
+import org.multibit.model.WalletBusyListener;
 import org.multibit.model.WalletMajorVersion;
 import org.multibit.viewsystem.swing.view.AddPasswordPanel;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ import com.google.bitcoin.core.Wallet;
 /**
  * This {@link Action} action encrypts the private keys with the password.
  */
-public class AddPasswordSubmitAction extends MultiBitSubmitAction {
+public class AddPasswordSubmitAction extends MultiBitSubmitAction implements WalletBusyListener {
     private static final Logger log = LoggerFactory.getLogger(AddPasswordSubmitAction.class);
 
     private static final long serialVersionUID = 1923492460598757765L;
@@ -60,6 +61,10 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction {
         this.addPasswordPanel = addPasswordPanel;
         this.password1 = password1;
         this.password2 = password2;
+        
+        // This action is a WalletBusyListener
+        controller.registerWalletBusyListener(this);
+        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
 
     /**
@@ -97,26 +102,45 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction {
                     return;
                 }
             }
-            try {
-                if (wallet.getEncrypterDecrypter() == null) {
-                    byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
-                    controller.getMultiBitService().getSecureRandom().nextBytes(salt);
-                    ScryptParameters scryptParameters = new ScryptParameters(salt);
-                    EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
-                    wallet.setEncrypterDecrypter(encrypterDecrypter);
-                }
 
-                wallet.encrypt(passwordToUse);
-                controller.getModel().getActiveWalletWalletInfo().setWalletMajorVersion(WalletMajorVersion.PROTOBUF_ENCRYPTED);
-                controller.getModel().getActivePerWalletModelData().setDirty(true);
-                FileHandler fileHandler = new FileHandler(controller);
-                fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);
+            PerWalletModelData perWalletModelData = null;
+            try {
+                // Double check wallet is not busy then declare that the active
+                // wallet is busy with the task
+                perWalletModelData = controller.getModel().getActivePerWalletModelData();
+
+                if (!perWalletModelData.isBusy()) {
+                    perWalletModelData.setBusy(true);
+                    perWalletModelData.setBusyTask(controller.getLocaliser().getString("addPasswordSubmitAction.text"));
+
+                    controller.fireWalletBusyChange(true);
+
+                    if (wallet.getEncrypterDecrypter() == null) {
+                        byte[] salt = new byte[ScryptParameters.SALT_LENGTH];
+                        controller.getMultiBitService().getSecureRandom().nextBytes(salt);
+                        ScryptParameters scryptParameters = new ScryptParameters(salt);
+                        EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
+                        wallet.setEncrypterDecrypter(encrypterDecrypter);
+                    }
+
+                    wallet.encrypt(passwordToUse);
+                    controller.getModel().getActiveWalletWalletInfo().setWalletMajorVersion(WalletMajorVersion.PROTOBUF_ENCRYPTED);
+                    controller.getModel().getActivePerWalletModelData().setDirty(true);
+                    FileHandler fileHandler = new FileHandler(controller);
+                    fileHandler.savePerWalletModelData(controller.getModel().getActivePerWalletModelData(), true);
+                }
             } catch (EncrypterDecrypterException ede) {
                 ede.printStackTrace();
-                addPasswordPanel.setMessage1(controller.getLocaliser().getString(
-                "addPasswordPanel.addPasswordFailed", new String[]{ede.getMessage()}));
+                addPasswordPanel.setMessage1(controller.getLocaliser().getString("addPasswordPanel.addPasswordFailed",
+                        new String[] { ede.getMessage() }));
                 return;
+            } finally {
+                // Declare that wallet is no longer busy with the task.
+                perWalletModelData.setBusyTask(null);
+                perWalletModelData.setBusy(false);
+                controller.fireWalletBusyChange(false);                   
             }
+
         }
         controller.fireDataChanged();
 
@@ -126,9 +150,22 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction {
             public void run() {
                 addPasswordPanel.clearMessages();
                 addPasswordPanel.clearPasswords();
-                addPasswordPanel.updatePasswordAction();
                 addPasswordPanel.setMessage1(controller.getLocaliser()
                         .getString("addPasswordPanel.addPasswordSuccess")); 
-            }});
+             }});
+    }
+
+    @Override
+    public void walletBusyChange(boolean newWalletIsBusy) {
+        // Update the enable status of the action to match the wallet busy status.
+        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+            // Wallet is busy with another operation that may change the private keys - Action is disabled.
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()}));         
+        } else {
+            // Enable unless wallet has been modified by another process.
+            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+                putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("addPasswordSubmitAction.text"));
+            }
+        }
     }
 }

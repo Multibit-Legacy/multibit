@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.action;
 
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.ArrayList;
@@ -81,7 +82,9 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         this.passwordField = passwordField1;
         this.passwordField2 = passwordField2;
         
+        // This action is a WalletBusyListener
         controller.registerWalletBusyListener(this);
+        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
 
     /**
@@ -91,8 +94,6 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         if (abort()) {
             return;
         }
-
-        //final ImportPrivateKeysSubmitAction thisAction = this;
 
         String importFilename = importPrivateKeysPanel.getOutputFilename();
         if (importFilename == null || importFilename.equals("")) {
@@ -130,11 +131,12 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
             if (importPrivateKeysPanel.multiBitFileChooser.accept(importFile)) {
 
                 PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
-
+                importPrivateKeysPanel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 Collection<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.readInPrivateKeys(importFile,
                         passwordChar);
 
                 changeWalletBusyAndImportInBackground(privateKeyAndDateArray, walletPasswordField.getPassword());
+                importPrivateKeysPanel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             } else if (importPrivateKeysPanel.myWalletEncryptedFileChooser.accept(importFile)) {
                 String importFileContents = PrivateKeysHandler.readFile(importFile);
 
@@ -183,7 +185,9 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     "importPrivateKeysSubmitAction.privateKeysUnlockFailure", new Object[] { e.getMessage() }));
 
             return;
-        } 
+        } finally {
+            importPrivateKeysPanel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        }
     }
 
     private void changeWalletBusyAndImportInBackground(final Collection<PrivateKeyAndDate> privateKeyAndDateArray,
@@ -325,13 +329,11 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     // Import was successful.
                     uiMessage = finalController.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportSuccess");
 
-                    // Begin blockchain replay - returns quickly - just kicks it
-                    // off.
+                    // Begin blockchain replay - returns quickly - just kicks it off.
                     log.debug("Starting replay from date = " + earliestTransactionDate);
                     if (performReplay) {
                         controller.getMultiBitService().replayBlockChain(earliestTransactionDate);
                         successMeasure = Boolean.TRUE;
-                        statusBarMessage = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
                     }
                 } catch (WalletSaveException wse) {
                     logError(wse);
@@ -366,12 +368,11 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                         finalImportPanel.setMessageText(uiMessage);
                     }
 
-                    MessageManager.INSTANCE.addMessage(new Message(statusBarMessage));
-
                     if (wasSuccessful) {
                         log.debug(statusBarMessage);
                         finalImportPanel.clearPasswords();
                     } else {
+                        MessageManager.INSTANCE.addMessage(new Message(statusBarMessage));
                         log.error(statusBarMessage);
                     }
                 } catch (Exception e) {

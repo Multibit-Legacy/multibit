@@ -881,42 +881,66 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
     private void readInImportFileAndUpdateDetails() {
         // Update number of keys and earliest date.
 
-        File file = new File(outputFilename);
+        try {
+            File file = new File(outputFilename);
 
-        if (multiBitFileChooser.accept(file)) {
-            // Read in contents of file.
-            PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
-            Collection<PrivateKeyAndDate> privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename),
-                    passwordField1.getPassword());
-            numberOfKeysLabel.setText("" + privateKeyAndDates.size());
+            if (multiBitFileChooser.accept(file)) {
+                // Read in contents of file.
+                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
+                Collection<PrivateKeyAndDate> privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename),
+                        passwordField1.getPassword());
+                numberOfKeysLabel.setText("" + privateKeyAndDates.size());
 
-            Date replayDate = privateKeysHandler.calculateReplayDate(privateKeyAndDates, controller.getModel().getActiveWallet());
+                Date replayDate = privateKeysHandler.calculateReplayDate(privateKeyAndDates, controller.getModel()
+                        .getActiveWallet());
 
-            if (replayDate == null) {
-                replayDateLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.thereWereMissingKeyDates"));
-            } else {
-                replayDateLabel.setText(DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale())
-                        .format(replayDate));
-            }
-        } else if (myWalletEncryptedFileChooser.accept(file)) {
-            try {
-                String importFileContents = PrivateKeysHandler.readFile(file);
-
-                String mainPassword = new String(passwordField1.getPassword());
-                String secondPassword = new String(passwordField2.getPassword());
-
-                MyWallet wallet = new MyWallet(importFileContents, mainPassword);
-
-                boolean needSecondPassword = false;
-                if (wallet.isDoubleEncrypted()) {
-                    if ("".equals(secondPassword)) {
-                         needSecondPassword = true;
-                         requestSecondPassword() ;
-                    }
+                if (replayDate == null) {
+                    replayDateLabel.setText(controller.getLocaliser().getString(
+                            "showImportPrivateKeysPanel.thereWereMissingKeyDates"));
+                } else {
+                    replayDateLabel.setText(DateFormat.getDateInstance(DateFormat.MEDIUM, controller.getLocaliser().getLocale())
+                            .format(replayDate));
                 }
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            } else if (myWalletEncryptedFileChooser.accept(file)) {
+                try {
+                    String importFileContents = PrivateKeysHandler.readFile(file);
 
-                if (!needSecondPassword) {
-                    wallet.setTemporySecondPassword(secondPassword);
+                    String mainPassword = new String(passwordField1.getPassword());
+                    String secondPassword = new String(passwordField2.getPassword());
+
+                    MyWallet wallet = new MyWallet(importFileContents, mainPassword);
+
+                    boolean needSecondPassword = false;
+                    if (wallet.isDoubleEncrypted()) {
+                        if ("".equals(secondPassword)) {
+                            needSecondPassword = true;
+                            requestSecondPassword();
+                        }
+                    }
+
+                    if (!needSecondPassword) {
+                        wallet.setTemporySecondPassword(secondPassword);
+
+                        int numberOfKeys = 0;
+                        if (wallet.getBitcoinJWallet() != null && wallet.getBitcoinJWallet().keychain != null) {
+                            numberOfKeys = wallet.getBitcoinJWallet().keychain.size();
+                        }
+                        numberOfKeysLabel.setText("" + numberOfKeys);
+
+                        replayDateLabel.setText(controller.getLocaliser().getString(
+                                "showImportPrivateKeysPanel.thereWereMissingKeyDates"));
+
+                    }
+                } catch (Exception e) {
+                    throw new EncrypterDecrypterException("Error Decrypting Wallet");
+                }
+            } else if (myWalletPlainFileChooser.accept(file)) {
+                try {
+                    String importFileContents = PrivateKeysHandler.readFile(file);
+
+                    MyWallet wallet = new MyWallet(importFileContents);
 
                     int numberOfKeys = 0;
                     if (wallet.getBitcoinJWallet() != null && wallet.getBitcoinJWallet().keychain != null) {
@@ -926,27 +950,12 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
 
                     replayDateLabel.setText(controller.getLocaliser().getString(
                             "showImportPrivateKeysPanel.thereWereMissingKeyDates"));
-
+                } catch (Exception e) {
+                    throw new EncrypterDecrypterException("Error Opening Wallet");
                 }
-            } catch (Exception e) {
-                throw new EncrypterDecrypterException("Error Decrypting Wallet");
             }
-        } else if (myWalletPlainFileChooser.accept(file)) {
-            try {
-                String importFileContents = PrivateKeysHandler.readFile(file);
-
-                MyWallet wallet = new MyWallet(importFileContents);
-
-                int numberOfKeys = 0;
-                if (wallet.getBitcoinJWallet() != null && wallet.getBitcoinJWallet().keychain != null) {
-                    numberOfKeys = wallet.getBitcoinJWallet().keychain.size();
-                }
-                numberOfKeysLabel.setText("" + numberOfKeys);
-
-                replayDateLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.thereWereMissingKeyDates"));
-            } catch (Exception e) {
-                throw new EncrypterDecrypterException("Error Opening Wallet");
-            }
+        } finally {
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
 

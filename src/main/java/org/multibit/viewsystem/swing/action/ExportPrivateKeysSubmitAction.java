@@ -18,29 +18,49 @@ package org.multibit.viewsystem.swing.action;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.crypto.EncrypterDecrypter;
+import org.multibit.crypto.EncrypterDecrypterException;
+import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
+import org.multibit.file.PrivateKeysHandlerException;
 import org.multibit.file.Verification;
+import org.multibit.file.WalletSaveException;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
+import org.multibit.model.PerWalletModelData;
+import org.multibit.model.WalletBusyListener;
+import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.ExportPrivateKeysPanel;
+import org.multibit.viewsystem.swing.view.ImportPrivateKeysPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.crypto.params.KeyParameter;
 import org.spongycastle.util.Arrays;
 
+import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.MultiBitBlockChain;
 import com.google.bitcoin.core.EncryptionType;
+import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.store.BlockStoreException;
 
 /**
  * This {@link Action} exports the active wallets private keys.
  */
-public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
+public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implements WalletBusyListener {
     private static final Logger log = LoggerFactory.getLogger(ExportPrivateKeysSubmitAction.class);
 
     private static final long serialVersionUID = 1923492460598757765L;
@@ -67,6 +87,8 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
         this.exportFilePassword = exportFilePassword;
         this.exportFileRepeatPassword = exportFileRepeatPassword;
         this.mainFrame = mainFrame;
+        
+        controller.registerWalletBusyListener(this);
     }
 
     /**
@@ -76,33 +98,36 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
         if (abort()) {
             return;
         }
-        
+
         exportPrivateKeysPanel.clearMessages();
 
         // See if a wallet password is required and present.
-        if (controller.getModel().getActiveWallet() != null && controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
+        if (controller.getModel().getActiveWallet() != null
+                && controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES
+                && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
             if (walletPassword.getPassword() == null || walletPassword.getPassword().length == 0) {
                 exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
-                "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
+                        "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
                 return;
             }
-            
-            // See if the password is the correct wallet password. 
+
+            // See if the password is the correct wallet password.
             if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
                 // The password supplied is incorrect.
-                exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
+                        "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
                 exportPrivateKeysPanel.setMessage2(" ");
                 return;
             }
         }
-        
+
         // Get the required output file.
         String exportPrivateKeysFilename = exportPrivateKeysPanel.getOutputFilename();
 
         // Check an output file was selected.
         if (exportPrivateKeysFilename == null || "".equals(exportPrivateKeysFilename)) {
             exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
-            "showExportPrivateKeysAction.youMustSelectAnOutputFile"));
+                    "showExportPrivateKeysAction.youMustSelectAnOutputFile"));
             return;
         }
 
@@ -135,47 +160,130 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
             }
         }
 
-        try {
-            // Check on file overwrite.
-            if (exportPrivateKeysFile.exists()) {
-                String yesText = controller.getLocaliser().getString("showOpenUriView.yesText");
-                String noText = controller.getLocaliser().getString("showOpenUriView.noText");
-                String questionText = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwrite", new Object[] {exportPrivateKeysFile.getName()});
-                String questionTitle = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwriteTitle");
-                int selection = JOptionPane.showOptionDialog(mainFrame, questionText, questionTitle,
-                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                        ImageLoader.createImageIcon(ImageLoader.QUESTION_MARK_ICON_FILE), new String[] { yesText, noText }, noText);
-                if (selection != JOptionPane.YES_OPTION) {
-                    return;
+        // Check on file overwrite.
+        if (exportPrivateKeysFile.exists()) {
+            String yesText = controller.getLocaliser().getString("showOpenUriView.yesText");
+            String noText = controller.getLocaliser().getString("showOpenUriView.noText");
+            String questionText = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwrite",
+                    new Object[] { exportPrivateKeysFile.getName() });
+            String questionTitle = controller.getLocaliser().getString("showExportPrivateKeysAction.thisFileExistsOverwriteTitle");
+            int selection = JOptionPane.showOptionDialog(mainFrame, questionText, questionTitle, JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE, ImageLoader.createImageIcon(ImageLoader.QUESTION_MARK_ICON_FILE), new String[] {
+                            yesText, noText }, noText);
+            if (selection != JOptionPane.YES_OPTION) {
+                return;
+            }
+        }
+
+        // Double check wallet is not busy then declare that the active wallet
+        // is busy with the task
+        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+
+        if (!perWalletModelData.isBusy()) {
+            perWalletModelData.setBusy(true);
+            perWalletModelData.setBusyTask(controller.getLocaliser().getString("showExportPrivateKeysAction.text.camel"));
+
+            exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
+                    "exportPrivateKeysSubmitAction.exportingPrivateKeys"));
+            exportPrivateKeysPanel.setMessage2("");
+            
+            controller.fireWalletBusyChange(true);
+
+            exportPrivateKeysInBackground(exportPrivateKeysFile, performEncryptionOfExportFile, exportPasswordToUse,
+                    walletPassword.getPassword());
+        }
+    }
+
+    /**
+     * Export the private keys in a background Swing worker thread.
+     */
+    private void exportPrivateKeysInBackground(final File exportPrivateKeysFile, final boolean performEncryptionOfExportFile,
+            final char[] exportPasswordToUse, final char[] walletPassword) {
+        final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
+        final ExportPrivateKeysPanel finalExportPanel = exportPrivateKeysPanel;
+
+        SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
+            private String uiMessage1 = null;
+            private String uiMessage2 = null;
+
+            @Override
+            protected Boolean doInBackground() throws Exception {
+                Boolean successMeasure = Boolean.FALSE;
+
+                MultiBitBlockChain blockChain = null;
+                if (controller.getMultiBitService() != null) {
+                    blockChain = controller.getMultiBitService().getChain();
+                }
+
+                try {
+                    privateKeysHandler.exportPrivateKeys(exportPrivateKeysFile, controller.getModel().getActivePerWalletModelData()
+                            .getWallet(), blockChain, performEncryptionOfExportFile, exportPasswordToUse, walletPassword);
+
+                    // Success.
+                    uiMessage1 = controller.getLocaliser().getString("showExportPrivateKeysAction.privateKeysExportSuccess");
+
+                    // Perform a verification on the exported file to see if it
+                    // is correct.
+                    Verification verification = privateKeysHandler.verifyExportFile(exportPrivateKeysFile, controller.getModel()
+                            .getActivePerWalletModelData().getWallet(), blockChain, performEncryptionOfExportFile,
+                            exportPasswordToUse, walletPassword);
+                    uiMessage2 = controller.getLocaliser().getString(verification.getMessageKey(), verification.getMessageData());
+                    successMeasure = true;
+                } catch (IOException ioe) {
+                    logError(ioe);
+                }
+
+                return successMeasure;
+            }
+
+            private void logError(Exception e) {
+                log.error(e.getClass().getName() + " " + e.getMessage());
+                e.printStackTrace();
+                uiMessage1 = controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportFailure",
+                        new Object[] { e.getMessage() });
+                uiMessage2 = "";
+
+            }
+
+            protected void done() {
+                try {
+                    Boolean wasSuccessful = get();
+
+                    if (finalExportPanel != null && uiMessage1 != null) {
+                        finalExportPanel.setMessage1(uiMessage1);
+                    }
+
+                    if (finalExportPanel != null && uiMessage2 != null) {
+                        finalExportPanel.setMessage2(uiMessage2);
+                    }
+                } catch (Exception e) {
+                    // Not really used but caught so that SwingWorker shuts down cleanly.
+                    log.error(e.getClass() + " " + e.getMessage());
+                } finally {
+                    // Declare that wallet is no longer busy with the task.
+                    finalPerWalletModelData.setBusyTask(null);
+                    finalPerWalletModelData.setBusy(false);
+                    controller.fireWalletBusyChange(false);
                 }
             }
+        };
+        log.debug("Exporting private keys in background SwingWorker thread");
+        worker.execute();
+    }
 
-            MultiBitBlockChain blockChain = null;
-            if (controller.getMultiBitService() != null) {
-                blockChain = controller.getMultiBitService().getChain();
+    @Override
+    public void walletBusyChange(boolean newWalletIsBusy) {
+        // Update the enable status of the action to match the wallet busy status.
+        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+            // Wallet is busy with another operation that may change the private keys - Action is disabled.
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()}));
+            setEnabled(false);           
+        } else {
+            // Enable unless wallet has been modified by another process.
+            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+                putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("exportPrivateKeysSubmitAction.text"));
+                setEnabled(true);
             }
-            privateKeysHandler.exportPrivateKeys(exportPrivateKeysFile, controller.getModel().getActivePerWalletModelData()
-                    .getWallet(), blockChain, performEncryptionOfExportFile, exportPasswordToUse, walletPassword.getPassword());
-
-            // Success.
-            exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
-                    "showExportPrivateKeysAction.privateKeysExportSuccess"));
-            
-            // Perform a verification on the exported file to see if it is correct.            
-            Verification verification = privateKeysHandler.verifyExportFile(exportPrivateKeysFile, controller.getModel()
-                    .getActivePerWalletModelData().getWallet(), blockChain, performEncryptionOfExportFile,
-                    exportPasswordToUse,  walletPassword.getPassword());
-            String verifyMessage = controller.getLocaliser().getString(verification.getMessageKey(), verification.getMessageData());
-            exportPrivateKeysPanel.setMessage2(verifyMessage);
-            
-            exportPrivateKeysPanel.clearPasswords();
-        } catch (IOException ioe) {
-            log.error(ioe.getClass().getName() + " " + ioe.getMessage());
-
-            // IO failure of some sort.
-            exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
-                    "showExportPrivateKeysAction.privateKeysExportFailure",
-                    new Object[] { ioe.getClass().getName() + " " + ioe.getMessage() }));
         }
     }
 }

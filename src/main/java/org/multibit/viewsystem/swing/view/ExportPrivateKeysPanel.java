@@ -45,6 +45,7 @@ import javax.swing.SwingConstants;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -62,7 +63,7 @@ import com.google.bitcoin.core.EncryptionType;
 /**
  * The export private keys panel.
  */
-public class ExportPrivateKeysPanel extends JPanel implements View {
+public class ExportPrivateKeysPanel extends JPanel implements View, WalletBusyListener {
 
     private static final long serialVersionUID = 444992298119957705L;
 
@@ -116,6 +117,9 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         outputFilename = "";
 
         initUI();
+        
+        controller.registerWalletBusyListener(this);
+        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
         
         boolean walletPasswordRequired = false;
         if (controller.getModel().getActiveWallet() != null && controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES) {
@@ -749,6 +753,8 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
             walletPasswordRequired = true;
         }
         enableWalletPassword(walletPasswordRequired);
+        
+        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
 
         if (outputFilename == null || "".equals(outputFilename)) {
             outputFilename = createDefaultKeyFilename(controller.getModel().getActiveWalletFilename());
@@ -979,5 +985,21 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
 
     public JRadioButton getDoNotPasswordProtect() {
         return doNotPasswordProtect;
+    }
+
+    @Override
+    public void walletBusyChange(boolean newWalletIsBusy) {       
+        // Update the enable status of the action to match the wallet busy status.
+        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+            // Wallet is busy with another operation that may change the private keys - Action is disabled.
+            exportPrivateKeySubmitAction.putValue(Action.SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()}));
+            exportPrivateKeySubmitAction.setEnabled(false);           
+        } else {
+            // Enable unless wallet has been modified by another process.
+            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+                exportPrivateKeySubmitAction.putValue(Action.SHORT_DESCRIPTION, controller.getLocaliser().getString("showExportPrivateKeysAction.tooltip"));
+                exportPrivateKeySubmitAction.setEnabled(true);
+            }
+        }
     }
 }

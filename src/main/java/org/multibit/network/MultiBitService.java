@@ -361,6 +361,8 @@ public class MultiBitService {
     public void replayBlockChain(Date dateToReplayFrom) throws BlockStoreException {
         boolean restartPeerGroup = true;
         
+        MessageManager.INSTANCE.addMessage(new Message (controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay")));
+
         // Work out whether to use CacheManager.
         String useCacheManagerString = controller.getModel().getUserPreference(MultiBitModel.USE_CACHE_MANAGER);
         boolean useCacheManager = false;
