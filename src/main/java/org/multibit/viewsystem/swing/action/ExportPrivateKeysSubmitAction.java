@@ -88,7 +88,9 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         this.exportFileRepeatPassword = exportFileRepeatPassword;
         this.mainFrame = mainFrame;
         
+        // This action is a WalletBusyListener.
         controller.registerWalletBusyListener(this);
+        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
 
     /**

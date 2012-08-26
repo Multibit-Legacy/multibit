@@ -32,6 +32,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.model.WalletBusyListener;
 import org.multibit.model.WalletInfo;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.SendBitcoinConfirmPanel;
@@ -47,7 +48,7 @@ import com.google.bitcoin.core.EncryptionType;
 /**
  * This {@link Action} actually spends bitcoin.
  */
-public class SendBitcoinNowAction extends AbstractAction {
+public class SendBitcoinNowAction extends AbstractAction implements WalletBusyListener {
 
     public Logger log = LoggerFactory.getLogger(SendBitcoinNowAction.class.getName());
 
@@ -84,6 +85,10 @@ public class SendBitcoinNowAction extends AbstractAction {
 
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("sendBitcoinConfirmAction.tooltip"));
         putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("sendBitcoinConfirmAction.mnemonicKey"));
+        
+        // This action is a WalletBusyListener.
+        controller.registerWalletBusyListener(this);
+        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
 
     /**
@@ -137,9 +142,17 @@ public class SendBitcoinNowAction extends AbstractAction {
                 }
             }
             
-            sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
+            // Double check wallet is not busy then declare that the active wallet is busy with the task
+            if (!perWalletModelData.isBusy()) {
+                perWalletModelData.setBusy(true);
+                perWalletModelData.setBusyTask(controller.getLocaliser().getString("sendBitcoinConfirmAction"));
 
-            performSend(perWalletModelData, sendAddress, sendAmount, fee, walletPassword);
+                sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
+                
+                controller.fireWalletBusyChange(true);
+
+                performSend(perWalletModelData, sendAddress, sendAmount, fee, walletPassword);
+            }
         }
     }
 
@@ -195,7 +208,7 @@ public class SendBitcoinNowAction extends AbstractAction {
             log.error(e.getMessage(), e);
             message = e.getMessage();
         } catch (Exception e) {
-            // really trying to catch anything that goes wrong with the send bitcoin
+            // Really trying to catch anything that goes wrong with the send bitcoin.
             log.error(e.getMessage(), e);
             message = e.getMessage();
         } finally {
@@ -232,6 +245,11 @@ public class SendBitcoinNowAction extends AbstractAction {
                 MessageManager.INSTANCE.addMessage(new Message(errorMessage + " " + message));
             }
         }
+        
+        // Declare that wallet is no longer busy with the task.
+        perWalletModelData.setBusyTask(null);
+        perWalletModelData.setBusy(false);
+        controller.fireWalletBusyChange(false);                   
 
         log.debug("firing fireRecreateAllViews...");
         controller.fireRecreateAllViews(false);
@@ -241,5 +259,21 @@ public class SendBitcoinNowAction extends AbstractAction {
     void setTestParameters(boolean useTestParameters, boolean sayTestSendWasSuccessful) {
         this.useTestParameters = useTestParameters;
         this.sayTestSendWasSuccessful = sayTestSendWasSuccessful;
+    }
+
+    @Override
+    public void walletBusyChange(boolean newWalletIsBusy) {
+        // Update the enable status of the action to match the wallet busy status.
+        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+            // Wallet is busy with another operation that may change the private keys - Action is disabled.
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()}));
+            setEnabled(false);           
+        } else {
+            // Enable unless wallet has been modified by another process.
+            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+                putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("sendBitcoinConfirmAction.tooltip"));
+                setEnabled(true);
+            }
+        }
     }
 }

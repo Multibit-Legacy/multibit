@@ -82,7 +82,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         this.passwordField = passwordField1;
         this.passwordField2 = passwordField2;
         
-        // This action is a WalletBusyListener
+        // This action is a WalletBusyListener.
         controller.registerWalletBusyListener(this);
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
