@@ -10,6 +10,7 @@ Tim Molter
 Internationalisation:
 ---------------------
 3phase              - Greek
+anod1               - French
 Arvis Lacis         - Latvian
 Azrael_PT           - Portuguese
 bitcoin.hu          - Hungarian
@@ -22,6 +23,7 @@ Emin Gun Sirer      - Turkish
 ffe                 - Arabic
 finway              - Simplified Chinese
 freemoney           - Spanish, German
+gilgilgil           - Hebrew
 grouver             - Dutch
 GSBank              - French
 guillo.92199        - French
@@ -36,22 +38,30 @@ JeppeJ              - Swedish
 Jonny Heggheim      - Norwegian
 Katya Rowe          - Russian
 Kishor Kumar        - Hindi
+knight22            - French
+Kupsi               - Norwegian
+kyuupichan          - Japanese
+lophie              - Arabic 
 Marx1996xvx         - Polish
 Mats Henricson      - Swedish
 Memory Dealers      - Japanese
 mrmx                - Spanish
 mrvision            - Spanish
+muyuu               - Japanese
 nsnia               - Croatian
 nuntius.marii       - Dutch
 pginvest            - Portuguese
 Piotr Waskiewicz    - Polish
 raymccarthy         - Swedish
 rbreban             - Spanish
+rondo               - French
 spiccioli           - Italian
 techmix             - Persian
 Technomage          - Finnish
+teknomunk           - Japanese
 tesla               - Russian
 Wissam Idrissi      - Arabic
 Wim1441             - Dutch
 XeF6                - Turkish
+Yui_K               - Spanish
 ziomik              - Italian

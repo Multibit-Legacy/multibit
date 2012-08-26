@@ -1,5 +1,9 @@
 MultiBit release notes.
 
+27 Aug 2012 Version 0.4.8
++  I18n update. Hebrew added as target language. Lots of new texts.
+
+
 22 Aug 2012 Version 0.5.1alpha
 +  All changes added to v0.4.7
 +  Encrypted wallets no longer have WrappedWallet message.
