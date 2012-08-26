@@ -24,6 +24,8 @@ import javax.swing.JPasswordField;
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.FileHandler;
+import org.multibit.model.PerWalletModelData;
+import org.multibit.model.WalletBusyListener;
 import org.multibit.viewsystem.swing.view.ChangePasswordPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +36,7 @@ import com.google.bitcoin.core.Wallet;
 /**
  * This {@link Action} action decrypts private keys with the old password and then encrypts the private keys with the new password.
  */
-public class ChangePasswordSubmitAction extends MultiBitSubmitAction {
+public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements WalletBusyListener {
     private static final Logger log = LoggerFactory.getLogger(ChangePasswordSubmitAction.class);
 
     private static final long serialVersionUID = 1923492460598757765L;
@@ -57,10 +59,14 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction {
         this.currentPassword = currentPassword;
         this.newPassword = newPassword;
         this.repeatNewPassword = repeatNewPassword;
+        
+        // This action is a WalletBusyListener.
+        controller.registerWalletBusyListener(this);
+        walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }
 
     /**
-     * Change the wallet password
+     * Change the wallet password.
      */
     public void actionPerformed(ActionEvent e) {
         changePasswordPanel.clearMessages();
@@ -70,23 +76,21 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction {
 
         if (currentPassword.getPassword() == null || currentPassword.getPassword().length == 0) {
             // Notify must enter the current password.
-            changePasswordPanel.setMessage1(controller.getLocaliser()
-                    .getString("changePasswordPanel.enterCurrentPassword"));
+            changePasswordPanel.setMessage1(controller.getLocaliser().getString("changePasswordPanel.enterCurrentPassword"));
             return;
-        } 
+        }
         currentPasswordToUse = currentPassword.getPassword();
 
         // Get the new passwords on the password fields.
         if (newPassword.getPassword() == null || newPassword.getPassword().length == 0) {
             // Notify the user must enter a new password.
-            changePasswordPanel.setMessage1(controller.getLocaliser()
-                    .getString("changePasswordPanel.enterPasswords"));
+            changePasswordPanel.setMessage1(controller.getLocaliser().getString("changePasswordPanel.enterPasswords"));
             return;
         } else {
             if (!Arrays.areEqual(newPassword.getPassword(), repeatNewPassword.getPassword())) {
                 // Notify user passwords are different.
                 changePasswordPanel.setMessage1(controller.getLocaliser().getString(
-                            "showExportPrivateKeysAction.passwordsAreDifferent"));
+                        "showExportPrivateKeysAction.passwordsAreDifferent"));
                 return;
             } else {
                 newPasswordToUse = newPassword.getPassword();
@@ -95,35 +99,75 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction {
 
         Wallet wallet = controller.getModel().getActiveWallet();
         if (wallet != null) {
+            // Double check wallet is not busy then declare that the active
+            // wallet is busy with the task.
+            PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+
+            if (!perWalletModelData.isBusy()) {
+                perWalletModelData.setBusy(true);
+                perWalletModelData.setBusyTask(controller.getLocaliser().getString("changePasswordSubmitAction.text"));
+
+                controller.fireWalletBusyChange(true);
+
                 boolean decryptSuccess = false;
                 try {
                     wallet.decrypt(currentPasswordToUse);
                     decryptSuccess = true;
                 } catch (EncrypterDecrypterException ede) {
-                    // Notify the user that either the decrypt failed
-                    changePasswordPanel.setMessage1(controller.getLocaliser()
-                            .getString("changePasswordPanel.changePasswordFailed", new String[]{ede.getMessage()}));
+                    // Notify the user that the decrypt failed.
+                    changePasswordPanel.setMessage1(controller.getLocaliser().getString("changePasswordPanel.changePasswordFailed",
+                            new String[] { ede.getMessage() }));
+
+                    // Declare that wallet is no longer busy with the task.
+                    perWalletModelData.setBusyTask(null);
+                    perWalletModelData.setBusy(false);
+                    controller.fireWalletBusyChange(false);
+                    
                     return;
                 }
-                
+
                 if (decryptSuccess) {
                     try {
                         wallet.encrypt(newPasswordToUse);
                         FileHandler fileHandler = new FileHandler(controller);
-                        fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);
+                        fileHandler.savePerWalletModelData(controller.getModel().getActivePerWalletModelData(), true);
                     } catch (EncrypterDecrypterException ede) {
                         // Notify the user that either the encrypt failed
-                        changePasswordPanel.setMessage1(controller.getLocaliser()
-                                .getString("changePasswordPanel.changePasswordFailed", new String[]{ede.getMessage()}));
+                        changePasswordPanel.setMessage1(controller.getLocaliser().getString(
+                                "changePasswordPanel.changePasswordFailed", new String[] { ede.getMessage() }));
                         return;
+                    } finally {
+                        // Declare that wallet is no longer busy with the task.
+                        perWalletModelData.setBusyTask(null);
+                        perWalletModelData.setBusy(false);
+                        controller.fireWalletBusyChange(false);
                     }
+                } else {
+                    // Declare that wallet is no longer busy with the task.
+                    perWalletModelData.setBusyTask(null);
+                    perWalletModelData.setBusy(false);
+                    controller.fireWalletBusyChange(false);
                 }
+            }
         }
-        
+
         // Success.
         changePasswordPanel.clearMessages();
         changePasswordPanel.clearPasswords();
-        changePasswordPanel.setMessage1(controller.getLocaliser()
-                .getString("changePasswordPanel.changePasswordSuccess")); 
+        changePasswordPanel.setMessage1(controller.getLocaliser().getString("changePasswordPanel.changePasswordSuccess"));
+    }
+
+    @Override
+    public void walletBusyChange(boolean newWalletIsBusy) {
+        // Update the enable status of the action to match the wallet busy status.
+        if (controller.getModel().getActivePerWalletModelData().isBusy()) {
+            // Wallet is busy with another operation that may change the private keys - Action is disabled.
+            putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy", new Object[]{controller.getModel().getActivePerWalletModelData().getBusyOperation()}));         
+        } else {
+            // Enable unless wallet has been modified by another process.
+            if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+                putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("changePasswordSubmitAction.text"));
+            }
+        }
     }
 }

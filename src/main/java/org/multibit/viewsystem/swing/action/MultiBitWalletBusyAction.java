@@ -59,7 +59,7 @@ public class MultiBitWalletBusyAction extends AbstractAction implements WalletBu
     }
 
     /**
-     * display the view specified
+     * Display the view specified.
      */
     public void actionPerformed(ActionEvent e) {
         controller.displayView(viewToDisplay);

@@ -62,7 +62,7 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
         this.password1 = password1;
         this.password2 = password2;
         
-        // This action is a WalletBusyListener
+        // This action is a WalletBusyListener.
         controller.registerWalletBusyListener(this);
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
     }

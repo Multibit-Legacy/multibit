@@ -536,7 +536,7 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
         boolean unencryptedWalletType = controller.getModel().getActiveWallet() == null ? false : controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.UNENCRYPTED;
 
         if (unencryptedWalletType) {
-            // Is not and an encrypted wallet so cannot remove a password regardless.
+            // Is not an encrypted wallet so cannot remove a password regardless.
             removePasswordSubmitAction.putValue(Action.SHORT_DESCRIPTION,
                     controller.getLocaliser().getString("removePasswordSubmitAction.text"));
             removePasswordSubmitAction.setEnabled(false);
