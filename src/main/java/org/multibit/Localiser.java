@@ -147,13 +147,21 @@ public class Localiser {
     }
 
     public void setLocale(Locale locale) {
-        formatter.setLocale(locale);
-        this.locale = locale;
-
         String propertyFilename = MULTIBIT_RESOURCE_BUNDLE_DIRECTORY + "/" + locale.getLanguage() + "/"
-                + MULTIBIT_RESOURCE_BUNDLE_NAME + PROPERTY_NAME_SUFFIX;
-        String propertyFilenameBase = MULTIBIT_RESOURCE_BUNDLE_DIRECTORY + "/" + FALLBACK_LANGUAGE_CODE + "/"
-                + MULTIBIT_RESOURCE_BUNDLE_NAME + PROPERTY_NAME_SUFFIX;
+        + MULTIBIT_RESOURCE_BUNDLE_NAME + PROPERTY_NAME_SUFFIX;
+String propertyFilenameBase = MULTIBIT_RESOURCE_BUNDLE_DIRECTORY + "/" + FALLBACK_LANGUAGE_CODE + "/"
+        + MULTIBIT_RESOURCE_BUNDLE_NAME + PROPERTY_NAME_SUFFIX;
+
+        if ("he".equals(locale.getLanguage()) || "iw".equals(locale.getLanguage())) {
+            this.locale = new Locale("iw");
+            propertyFilename = MULTIBIT_RESOURCE_BUNDLE_DIRECTORY + "/he/"
+            + MULTIBIT_RESOURCE_BUNDLE_NAME + PROPERTY_NAME_SUFFIX;
+        } else {
+            this.locale = locale;
+        }
+
+        formatter.setLocale(locale);
+
         boolean foundIt = false;
         try {
             InputStream inputStream = Localiser.class.getResourceAsStream(propertyFilename);

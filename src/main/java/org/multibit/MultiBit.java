@@ -137,7 +137,11 @@ public class MultiBit {
                 if (MultiBitModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
                     localiser = new Localiser(Locale.getDefault());
                 } else {
-                    localiser = new Localiser(new Locale(userLanguageCode));
+                    //if ("he".equals(userLanguageCode)) {
+                    //    localiser = new Localiser(new Locale("iw_IL"));
+                    //} else {
+                        localiser = new Localiser(new Locale(userLanguageCode));
+                    //}
                 }
             }
             controller.setLocaliser(localiser);
