@@ -205,8 +205,9 @@ public class ImportPrivateKeysPanel extends JPanel implements View {
         messageLabel = new MultiBitLabel("");
         messageLabel.setOpaque(false);
         messageLabel.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
+        messageLabel.setHorizontalAlignment(JLabel.LEADING);
 
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 5;
         constraints.gridwidth = 3;
