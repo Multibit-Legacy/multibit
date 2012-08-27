@@ -55,6 +55,7 @@ Piotr Waskiewicz    - Polish
 raymccarthy         - Swedish
 rbreban             - Spanish
 rondo               - French
+sasha               - Russian
 spiccioli           - Italian
 techmix             - Persian
 Technomage          - Finnish
