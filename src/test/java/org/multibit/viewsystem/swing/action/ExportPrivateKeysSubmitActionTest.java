@@ -23,6 +23,8 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.multibit.controller.MultiBitController;
+import org.multibit.controller.MultiBitControllerTest;
+import org.multibit.controller.TestWalletBusyListener;
 import org.multibit.crypto.EncryptedPrivateKey;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterException;
@@ -57,6 +59,10 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         // Create a new wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testExportPrivateKeysWithNonEncryptedWallet", false, null);
 
+        // Hook up a wallet busy listener.
+        TestWalletBusyListener walletBusyListener = new TestWalletBusyListener();
+        controller.registerWalletBusyListener(walletBusyListener);
+        
         // Create a new ExportPrivateKeysSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
         ExportPrivateKeysPanel exportPanel = new ExportPrivateKeysPanel(controller, null);
@@ -96,6 +102,9 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
        
         // Execute = this should actually write the encrypted export file.
         exportAction.actionPerformed(null);
+        
+        MultiBitControllerTest.waitForWalletNotBusy(walletBusyListener);
+        
         assertTrue("Encrypted export file does not exist when it should", (new File(outputFilename1)).exists());
         assertEquals("Wrong message1 after encrypted export is good to go", EXPECTED_THE_PRIVATE_KEYS_WERE_EXPORTED, exportPanel.getMessageText1());    
         assertEquals("Wrong message2 after encrypted export is good to go", EXPECTED_THE_EXPORT_FILE_COULD_BE_READ_IN_CORRECTLY, exportPanel.getMessageText2().trim());  
@@ -139,6 +148,9 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
        
         // Execute = this should actually write the unencrypted export file.
         exportAction.actionPerformed(null);
+        
+        MultiBitControllerTest.waitForWalletNotBusy(walletBusyListener);
+        
         assertTrue("Unencrypted export file does not exist when it should", (new File(outputFilename2)).exists());
         assertEquals("Wrong message1 after unencrypted export is good to go", EXPECTED_THE_PRIVATE_KEYS_WERE_EXPORTED, exportPanel.getMessageText1());    
         assertEquals("Wrong message2 after unencrypted export is good to go", EXPECTED_THE_EXPORT_FILE_COULD_BE_READ_IN_CORRECTLY, exportPanel.getMessageText2().trim());  
@@ -157,6 +169,10 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         
         // Create a new encrypted wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testExportPrivateKeysWithNonEncryptedWallet", true, WALLET_PASSWORD);
+
+        // Hook up a wallet busy listener.
+        TestWalletBusyListener walletBusyListener = new TestWalletBusyListener();
+        controller.registerWalletBusyListener(walletBusyListener);
 
         // Remember the private keys for the key - for comparision later.
         // Copy the private key bytes for checking later.
@@ -211,6 +227,9 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
        
         // Execute = this should actually write the encrypted export file.
         exportAction.actionPerformed(null);
+        
+        MultiBitControllerTest.waitForWalletNotBusy(walletBusyListener);
+        
         assertTrue("Encrypted export file does not exist when it should", (new File(outputFilename1)).exists());
         assertEquals("Wrong message1 after encrypted export is good to go", EXPECTED_THE_PRIVATE_KEYS_WERE_EXPORTED, exportPanel.getMessageText1());    
         assertEquals("Wrong message2 after encrypted export is good to go", EXPECTED_THE_EXPORT_FILE_COULD_BE_READ_IN_CORRECTLY, exportPanel.getMessageText2().trim());  
@@ -258,6 +277,9 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
        
         // Execute = this should actually write the unencrypted export file.
         exportAction.actionPerformed(null);
+        
+        MultiBitControllerTest.waitForWalletNotBusy(walletBusyListener);
+        
         assertTrue("Unencrypted export file does not exist when it should", (new File(outputFilename2)).exists());
         assertEquals("Wrong message1 after unencrypted export is good to go", EXPECTED_THE_PRIVATE_KEYS_WERE_EXPORTED, exportPanel.getMessageText1());    
         assertEquals("Wrong message2 after unencrypted export is good to go", EXPECTED_THE_EXPORT_FILE_COULD_BE_READ_IN_CORRECTLY, exportPanel.getMessageText2().trim());  
