@@ -83,7 +83,8 @@ public class ExportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
     private MultiBitLabel messageLabel2;
 
     private String outputFilename;
-
+    private String walletFilenameForChosenOutputFilename;
+    
     private JRadioButton passwordProtect;
     private JRadioButton doNotPasswordProtect;
     private MultiBitLabel doNotPasswordProtectWarningLabel;
@@ -108,13 +109,12 @@ public class ExportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
         this.controller = controller;
         this.mainFrame = mainFrame;
 
-        //setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0),
-        //        BorderFactory.createMatteBorder(1, 0, 1, 0, ColorAndFontConstants.DARK_BACKGROUND_COLOR.darker())));
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         this.controller = controller;
 
         outputFilename = "";
+        walletFilenameForChosenOutputFilename = "";
 
         initUI();
         
@@ -126,7 +126,6 @@ public class ExportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
             walletPasswordRequired = true;
         }
         enableWalletPassword(walletPasswordRequired);
-
     }
 
     @Override
@@ -758,8 +757,10 @@ public class ExportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
         
         walletBusyChange(controller.getModel().getActivePerWalletModelData().isBusy());
 
-        if (outputFilename == null || "".equals(outputFilename)) {
+        if (outputFilename == null || "".equals(outputFilename) || 
+                (walletFilenameForChosenOutputFilename != null && !walletFilenameForChosenOutputFilename.equals(controller.getModel().getActiveWalletFilename()))) {
             outputFilename = createDefaultKeyFilename(controller.getModel().getActiveWalletFilename());
+            walletFilenameForChosenOutputFilename = controller.getModel().getActiveWalletFilename(); 
             outputFilenameLabel.setText(outputFilename);
         }
 
@@ -817,6 +818,9 @@ public class ExportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
                 if (!outputFilename.endsWith("." + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION)) {
                     outputFilename = outputFilename + "." + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION;
                 }
+                
+                walletFilenameForChosenOutputFilename = controller.getModel().getActiveWalletFilename(); 
+
                 outputFilenameLabel.setText(outputFilename);
                 clearMessages();
             }

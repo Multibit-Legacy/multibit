@@ -258,6 +258,12 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     if (finalExportPanel != null && uiMessage2 != null) {
                         finalExportPanel.setMessage2(uiMessage2);
                     }
+                    
+                    // Clear the passwords if the export was successful and the user is still
+                    // looking at the same wallet as at start.
+                    if (wasSuccessful && finalPerWalletModelData.getWalletFilename().equals(controller.getModel().getActiveWalletFilename())) {
+                        finalExportPanel.clearPasswords();
+                    }
                 } catch (Exception e) {
                     // Not really used but caught so that SwingWorker shuts down cleanly.
                     log.error(e.getClass() + " " + e.getMessage());
