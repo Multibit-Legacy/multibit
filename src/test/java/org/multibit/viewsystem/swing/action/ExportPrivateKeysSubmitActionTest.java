@@ -24,7 +24,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.multibit.controller.MultiBitController;
 import org.multibit.controller.MultiBitControllerTest;
-import org.multibit.controller.TestWalletBusyListener;
+import org.multibit.controller.SimpleWalletBusyListener;
 import org.multibit.crypto.EncryptedPrivateKey;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterException;
@@ -60,7 +60,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         ActionTestUtils.createNewActiveWallet(controller, "testExportPrivateKeysWithNonEncryptedWallet", false, null);
 
         // Hook up a wallet busy listener.
-        TestWalletBusyListener walletBusyListener = new TestWalletBusyListener();
+        SimpleWalletBusyListener walletBusyListener = new SimpleWalletBusyListener();
         controller.registerWalletBusyListener(walletBusyListener);
         
         // Create a new ExportPrivateKeysSubmitAction to test.
@@ -171,7 +171,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         ActionTestUtils.createNewActiveWallet(controller, "testExportPrivateKeysWithNonEncryptedWallet", true, WALLET_PASSWORD);
 
         // Hook up a wallet busy listener.
-        TestWalletBusyListener walletBusyListener = new TestWalletBusyListener();
+        SimpleWalletBusyListener walletBusyListener = new SimpleWalletBusyListener();
         controller.registerWalletBusyListener(walletBusyListener);
 
         // Remember the private keys for the key - for comparision later.

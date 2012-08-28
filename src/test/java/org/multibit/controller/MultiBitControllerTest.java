@@ -18,7 +18,6 @@ package org.multibit.controller;
 import junit.framework.TestCase;
 
 import org.junit.Test;
-import org.multibit.model.WalletBusyListener;
 import org.multibit.viewsystem.swing.action.ActionTestUtils;
 
 public class MultiBitControllerTest extends TestCase {     
@@ -33,7 +32,7 @@ public class MultiBitControllerTest extends TestCase {
         // Create a new wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testWalletBusyListener", false, null);
 
-        TestWalletBusyListener testWalletBusyListener = new TestWalletBusyListener();
+        SimpleWalletBusyListener testWalletBusyListener = new SimpleWalletBusyListener();
         
         controller.registerWalletBusyListener(testWalletBusyListener);
         
@@ -50,7 +49,7 @@ public class MultiBitControllerTest extends TestCase {
         assertTrue("Wallet is no longer busy", !testWalletBusyListener.isWalletBusy());
     }
     
-    public static void waitForWalletNotBusy(TestWalletBusyListener walletBusyListener) {
+    public static void waitForWalletNotBusy(SimpleWalletBusyListener walletBusyListener) {
         int timeWaited = 0;
         while (walletBusyListener.isWalletBusy()) {
             try {

@@ -220,7 +220,9 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
         messageLabel.setOpaque(false);
         messageLabel.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
 
-        constraints.fill = GridBagConstraints.NONE;
+        messageLabel.setHorizontalAlignment(JLabel.LEADING);
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 5;
         constraints.gridwidth = 3;
@@ -321,6 +323,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
 
         MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "resetTransactionsPanel.walletFilenameLabel"));
+        
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 6;

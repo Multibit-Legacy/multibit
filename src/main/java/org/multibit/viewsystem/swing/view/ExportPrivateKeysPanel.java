@@ -201,7 +201,8 @@ public class ExportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
         messageLabel1 = new MultiBitLabel("");
         messageLabel1.setOpaque(false);
         messageLabel1.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
-        constraints.fill = GridBagConstraints.NONE;
+        messageLabel1.setHorizontalAlignment(JLabel.LEADING);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 5;
         constraints.gridwidth = 1;
@@ -213,7 +214,8 @@ public class ExportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
         messageLabel2 = new MultiBitLabel("");
         messageLabel2.setOpaque(false);
         messageLabel2.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
-        constraints.fill = GridBagConstraints.NONE;
+        messageLabel2.setHorizontalAlignment(JLabel.LEADING);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 6;
         constraints.gridwidth = 1;

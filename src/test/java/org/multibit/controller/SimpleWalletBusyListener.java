@@ -2,7 +2,7 @@ package org.multibit.controller;
 
 import org.multibit.model.WalletBusyListener;
 
-public class TestWalletBusyListener implements WalletBusyListener {
+public class SimpleWalletBusyListener implements WalletBusyListener {
     boolean walletBusy = false;
 
     @Override
