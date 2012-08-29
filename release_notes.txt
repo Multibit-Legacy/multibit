@@ -1,5 +1,11 @@
 MultiBit release notes.
 
+29 Aug 2012 Version 0.5.2alpha
++  Faster wallet encrypt/ decrypt
++  Background tasks
++  I18n. Lots of new text
+
+
 27 Aug 2012 Version 0.4.8
 +  I18n update. Hebrew added as target language. Lots of new texts.
 

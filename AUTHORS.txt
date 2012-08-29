@@ -20,6 +20,7 @@ D4CH                - Danish
 damnek              - Dutch
 DutchBrat           - Dutch
 Emin Gun Sirer      - Turkish
+Ermo                - Italian
 ffe                 - Arabic
 finway              - Simplified Chinese
 freemoney           - Spanish, German
@@ -61,6 +62,7 @@ techmix             - Persian
 Technomage          - Finnish
 teknomunk           - Japanese
 tesla               - Russian
+viboracecata        - Chinese Simplified
 Wissam Idrissi      - Arabic
 Wim1441             - Dutch
 XeF6                - Turkish
