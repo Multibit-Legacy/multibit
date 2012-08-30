@@ -58,7 +58,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
 /**
- * The export private keys view
+ * The export private keys panel.
  */
 public class ExportPrivateKeysPanel extends JPanel implements View {
 
@@ -75,6 +75,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
     private JFileChooser fileChooser;
 
     private MultiBitLabel outputFilenameLabel;
+    private String walletFilenameForChosenOutputFilename;
 
     private MultiBitLabel messageLabel1;
     private MultiBitLabel messageLabel2;
@@ -107,6 +108,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         this.controller = controller;
 
         outputFilename = "";
+        walletFilenameForChosenOutputFilename = "";
 
         initUI();
     }
@@ -690,8 +692,10 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
         walletFilenameLabel.setText(controller.getModel().getActiveWalletFilename());
         walletDescriptionLabel.setText(controller.getModel().getActivePerWalletModelData().getWalletDescription());
 
-        if (outputFilename == null || "".equals(outputFilename)) {
+        if (outputFilename == null || "".equals(outputFilename) || 
+                (walletFilenameForChosenOutputFilename != null && !walletFilenameForChosenOutputFilename.equals(controller.getModel().getActiveWalletFilename()))) {
             outputFilename = createDefaultKeyFilename(controller.getModel().getActiveWalletFilename());
+            walletFilenameForChosenOutputFilename = controller.getModel().getActiveWalletFilename(); 
             outputFilenameLabel.setText(outputFilename);
         }
 
@@ -737,6 +741,9 @@ public class ExportPrivateKeysPanel extends JPanel implements View {
                 if (!outputFilename.endsWith("." + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION)) {
                     outputFilename = outputFilename + "." + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION;
                 }
+                                
+                walletFilenameForChosenOutputFilename = controller.getModel().getActiveWalletFilename(); 
+
                 outputFilenameLabel.setText(outputFilename);
                 clearMessages();
             }

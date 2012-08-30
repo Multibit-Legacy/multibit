@@ -632,7 +632,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // show messages action
         MultiBitAction showMessagesAction = new MultiBitAction(controller, ImageLoader.MESSAGES_ICON_FILE, "messagesPanel.text",
-                "messagesPanel.title", "messagesPanel.mnemonic", View.MESSAGES_VIEW);
+                "messagesPanel.tooltip", "messagesPanel.mnemonic", View.MESSAGES_VIEW);
         menuItem = new JMenuItem(showMessagesAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
