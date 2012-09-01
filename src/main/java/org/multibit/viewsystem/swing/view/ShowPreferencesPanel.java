@@ -446,7 +446,6 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         renderer.setPreferredSize(preferredSize);
 
         languageComboBox.setRenderer(renderer);
-        //languageComboBox.setBackground(Color.WHITE);
 
         // get the languageCode value stored in the model
         String userLanguageCode = controller.getModel().getUserPreference(MultiBitModel.USER_LANGUAGE_CODE);
@@ -739,7 +738,6 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         int textWidth = Math.max(fontMetrics.stringWidth("CDE/Motif"), fontMetrics.stringWidth("Windows classic"));
         Dimension preferredSize = new Dimension(textWidth + TICKER_COMBO_WIDTH_DELTA, fontMetrics.getHeight() + EXCHANGE_COMBO_HEIGHT_DELTA);
-        //lookAndFeelComboBox.setBackground(Color.WHITE);
         lookAndFeelComboBox.setPreferredSize(preferredSize);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -947,7 +945,6 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         int textWidth = Math.max(fontMetrics.stringWidth(ExchangeData.MT_GOX_EXCHANGE_NAME), fontMetrics.stringWidth("USD"));
         Dimension preferredSize = new Dimension(textWidth + TICKER_COMBO_WIDTH_DELTA, fontMetrics.getHeight() + EXCHANGE_COMBO_HEIGHT_DELTA);
-        //exchangeComboBox1.setBackground(Color.WHITE);
         exchangeComboBox1.setPreferredSize(preferredSize);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -980,7 +977,6 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         }
         currencyComboBox1.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         currencyComboBox1.setOpaque(false);
-        //currencyComboBox1.setBackground(Color.WHITE);
         currencyComboBox1.setPreferredSize(preferredSize);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -1034,7 +1030,6 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         exchangeComboBox2.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         exchangeComboBox2.setOpaque(false);
-        //exchangeComboBox2.setBackground(Color.WHITE);
         exchangeComboBox2.setPreferredSize(preferredSize);
 
         constraints.fill = GridBagConstraints.NONE;
@@ -1067,7 +1062,6 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         currencyComboBox2.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         currencyComboBox2.setOpaque(false);
-        //currencyComboBox2.setBackground(Color.WHITE);
         currencyComboBox2.setPreferredSize(preferredSize);
 
         constraints.fill = GridBagConstraints.NONE;
