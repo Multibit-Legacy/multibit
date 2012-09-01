@@ -22,6 +22,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -58,8 +59,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 
-import com.google.bitcoin.core.Wallet.BalanceType;
 import com.google.bitcoin.core.EncryptionType;
+import com.google.bitcoin.core.Wallet.BalanceType;
 
 public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener {
 
@@ -73,9 +74,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private PerWalletModelData perWalletModelData;
 
     private static final Color BACKGROUND_COLOR_DATA_HAS_CHANGED = new Color(0xff, 0xff, 0xff);
-    private static final int COLOR_DELTA = 12;
+    private static final int COLOR_DELTA = 14;
 
-    private static final int HEIGHT_DELTA = 20;
+    private static final int HEIGHT_DELTA = 22;
     private static final int DETAIL_HEIGHT_DELTA = 4;
     private static final int WIDTH_DELTA = 4;
     private static final int MIN_WIDTH_SCROLLBAR_DELTA = 20;
@@ -103,6 +104,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private static int NUMBER_OF_ROWS_IN_SUMMARY_PANEL = 2;
     private static int NUMBER_OF_ROWS_IN_DETAIL_PANEL = 2;
+    public static int DESCRIPTION_HEIGHT_DELTA = 4;
+    private static int AMOUNT_HEIGHT_DELTA = 4;
 
     private static int DETAIL_PANEL_OUTER_INDENT = 3;
     private static int DETAIL_PANEL_INNER_INDENT = 1;
@@ -157,12 +160,11 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 " ", controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip")});
 
         underlineBorder = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.WHITE);
-        //overlineBorder = BorderFactory.createMatteBorder(1, 0, 0, 0, Color.WHITE);
 
-        normalHeight = NUMBER_OF_ROWS_IN_SUMMARY_PANEL * fontMetrics.getHeight() + HEIGHT_DELTA;
+        normalHeight = NUMBER_OF_ROWS_IN_SUMMARY_PANEL * fontMetrics.getHeight() + DESCRIPTION_HEIGHT_DELTA + AMOUNT_HEIGHT_DELTA + HEIGHT_DELTA;
         normalWidth = calculateNormalWidth(this);
         expandedHeight = (int) ((NUMBER_OF_ROWS_IN_SUMMARY_PANEL + NUMBER_OF_ROWS_IN_DETAIL_PANEL) * fontMetrics.getHeight()
-                + HEIGHT_DELTA + DETAIL_HEIGHT_DELTA);
+                + DESCRIPTION_HEIGHT_DELTA + HEIGHT_DELTA + + AMOUNT_HEIGHT_DELTA + DETAIL_HEIGHT_DELTA);
         detailHeight = (int) ((NUMBER_OF_ROWS_IN_DETAIL_PANEL) * fontMetrics.getHeight() + DETAIL_HEIGHT_DELTA);
 
         // Add contents to myRoundedPanel.
@@ -179,7 +181,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
         inactiveBackGroundColor = new Color(Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getRed() - COLOR_DELTA), Math.max(0,
                 ColorAndFontConstants.BACKGROUND_COLOR.getBlue() - COLOR_DELTA), Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getGreen() - COLOR_DELTA));
-
+        
         GridBagConstraints constraints = new GridBagConstraints();
 
         JLabel filler1 = new JLabel();
@@ -204,14 +206,14 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         walletDescriptionTextField.addActionListener(this);
         walletDescriptionTextField.addFocusListener(this);
         walletDescriptionTextFieldBorder = walletDescriptionTextField.getBorder();
-        walletDescriptionTextField.setOpaque(false);
         walletDescriptionTextField.setDisabledTextColor(Color.BLACK);
+        walletDescriptionTextField.setOpaque(false);
         
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 1;
-        constraints.weightx = 0.92;
-        constraints.weighty = 4;
+        constraints.weightx = 0.88;
+        constraints.weighty = 1;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         myRoundedPanel.add(walletDescriptionTextField, constraints);
@@ -293,19 +295,19 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
         myRoundedPanel.add(amountLabel, constraints);
 
-        JPanel filler4 = new JPanel();
-        filler4.setMinimumSize(BELOW_BASELINE_TRAILING_CORNER_PADDING);
-        filler4.setPreferredSize(BELOW_BASELINE_TRAILING_CORNER_PADDING);
-        filler4.setMaximumSize(BELOW_BASELINE_TRAILING_CORNER_PADDING);
-        filler4.setOpaque(false);
+        JPanel filler5 = new JPanel();
+        filler5.setMinimumSize(BELOW_BASELINE_TRAILING_CORNER_PADDING);
+        filler5.setPreferredSize(BELOW_BASELINE_TRAILING_CORNER_PADDING);
+        filler5.setMaximumSize(BELOW_BASELINE_TRAILING_CORNER_PADDING);
+        filler5.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
+        constraints.gridx = 4;
         constraints.gridy = 4;
         constraints.weightx = 0.02;
         constraints.weighty = 0.02;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
-        myRoundedPanel.add(filler4, constraints);
+        myRoundedPanel.add(filler5, constraints);
 
         // Add myRoundedPanel to myself.
         setLayout(new GridBagLayout());
@@ -430,7 +432,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             }
             
             if (selected) {
-                walletDescriptionTextField.setEnabled(true);
                 walletDescriptionTextField.setForeground(Color.BLACK);
                 if (!walletDescriptionTextField.isEditable()) {
                     walletDescriptionTextField.setEditable(true);
@@ -440,21 +441,22 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 }
 
                 walletDescriptionTextField.setBorder(walletDescriptionTextFieldBorder);
+                walletDescriptionTextField.setOpaque(true);
                 walletDescriptionTextField.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
                 myRoundedPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
                 roundedBottomPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-                
                 myRoundedPanel.repaint();
                 roundedBottomPanel.repaint();
                 showDetailLabel.setVisible(true); 
             } else {
-                walletDescriptionTextField.setEnabled(false);
                 walletDescriptionTextField.setForeground(Color.BLACK);
                 walletDescriptionTextField.setEditable(false);
-                Border border = BorderFactory.createEmptyBorder(5, 7, 5, 5);
+                Insets insets = walletDescriptionTextFieldBorder.getBorderInsets(walletDescriptionTextField);
+                Border border = BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.right);
                 walletDescriptionTextField.setBorder(border);
+                walletDescriptionTextField.setOpaque(false);
                 walletDescriptionTextField.setBackground(inactiveBackGroundColor);
-                myRoundedPanel.setBackground(inactiveBackGroundColor);
+                myRoundedPanel.setBackground(inactiveBackGroundColor);  
                 roundedBottomPanel.setBackground(inactiveBackGroundColor);
 
                 myRoundedPanel.repaint();
@@ -496,8 +498,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private void saveChanges() {
         if (!perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
-            walletDescriptionTextField.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-            walletDescriptionTextField.setForeground(Color.BLACK);
             walletDescriptionTextField.select(0, 0);
             String text = walletDescriptionTextField.getText();
             perWalletModelData.setWalletDescription(text);

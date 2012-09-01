@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -152,7 +153,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
                 .getHeight() + TEXTFIELD_VERTICAL_DELTA));
 
         addressTextField.addKeyListener(new QRCodeKeyListener());
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 1;
         constraints.weightx = 0.1;
@@ -204,7 +205,8 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
 
         JScrollPane labelScrollPane = new JScrollPane(labelTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        labelScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.DARK_BACKGROUND_COLOR));
+        labelScrollPane.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.LIGHT_GRAY));
+        //labelScrollPane.setBorder(BorderFactory.createEmptyBorder());
         labelScrollPane.setOpaque(true);
         labelScrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
@@ -249,7 +251,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
                 + TEXTFIELD_VERTICAL_DELTA));
         amountTextField.addKeyListener(new QRCodeKeyListener());
 
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 5;
         constraints.weightx = 1.0;

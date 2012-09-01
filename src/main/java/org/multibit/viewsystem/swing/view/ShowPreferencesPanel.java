@@ -44,7 +44,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
-import javax.swing.plaf.metal.MetalComboBoxUI;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.ExchangeData;
@@ -80,6 +79,8 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     private static final String A_LONG_LANGUAGE_NAME = "LithuanianXY";
     private static final int LANGUAGE_COMBO_WIDTH_DELTA = 40;
     private static final int COMBO_HEIGHT_DELTA = 5;
+
+    private static final int EXCHANGE_COMBO_HEIGHT_DELTA = 15;
 
     private static final int FEE_TEXT_FIELD_HEIGHT = 30;
     private static final int FEE_TEXT_FIELD_WIDTH = 200;
@@ -426,9 +427,6 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         }
         languageComboBox = new JComboBox(indexArray);
         languageComboBox.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        if (mainFrame.getApplication().isMac()) {
-            languageComboBox.setUI(new MetalComboBoxUI());
-        }
         languageComboBox.setOpaque(false);
         LanguageComboBoxRenderer renderer = new LanguageComboBoxRenderer();
 
@@ -717,26 +715,6 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         GridBagConstraints constraints = new GridBagConstraints();
 
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 3;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        JPanel indent = MultiBitTitledPanel.getIndentPanel(1);
-        tickerPanel.add(indent, constraints);
-
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 1;
-        constraints.gridy = 3;
-        constraints.weightx = 0.3;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        JPanel stent = MultiBitTitledPanel.createStent(stentWidth);
-        tickerPanel.add(stent, constraints);
-
-        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 3;
         constraints.weightx = 0.05;
@@ -795,18 +773,18 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.gridy = 4;
         constraints.weightx = 0.2;
         constraints.weighty = 0.3;
-        constraints.gridwidth = 3;
+        constraints.gridwidth = 4;
         constraints.anchor = GridBagConstraints.LINE_START;
         tickerPanel.add(showTicker, constraints);
 
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 1;
+        constraints.fill = GridBagConstraints.VERTICAL;
+        constraints.gridx = 0;
         constraints.gridy = 5;
         constraints.weightx = 0.2;
         constraints.weighty = 0.3;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        tickerPanel.add(MultiBitTitledPanel.createStent(12, 12), constraints);
+        tickerPanel.add(MultiBitTitledPanel.createStent(1, 12), constraints);
 
         MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
                 controller.getLocaliser().getString("showPreferencesPanel.ticker.columnsToShow"), 6, tickerPanel);
@@ -856,14 +834,14 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.anchor = GridBagConstraints.LINE_START;
         tickerPanel.add(showAsk, constraints);
 
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.VERTICAL;
         constraints.gridx = 1;
         constraints.gridy = 12;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        tickerPanel.add(MultiBitTitledPanel.createStent(12, 12), constraints);
+        tickerPanel.add(MultiBitTitledPanel.createStent(1, 12), constraints);
 
         MultiBitTitledPanel.addLeftJustifiedTextAtIndent(controller.getLocaliser()
                 .getString("showPreferencesPanel.ticker.firstRow"), 13, tickerPanel);
@@ -898,19 +876,16 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         exchangeComboBox1.setSelectedItem(exchangeToUse1);
 
         exchangeComboBox1.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        if (mainFrame.getApplication().isMac()) {
-            exchangeComboBox1.setUI(new MetalComboBoxUI());
-        }
         exchangeComboBox1.setOpaque(false);
 
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         int textWidth = Math.max(fontMetrics.stringWidth(ExchangeData.MT_GOX_EXCHANGE_NAME), fontMetrics.stringWidth("USD"));
-        Dimension preferredSize = new Dimension(textWidth + TICKER_COMBO_WIDTH_DELTA, fontMetrics.getHeight() + COMBO_HEIGHT_DELTA);
+        Dimension preferredSize = new Dimension(textWidth + TICKER_COMBO_WIDTH_DELTA, fontMetrics.getHeight() + EXCHANGE_COMBO_HEIGHT_DELTA);
         exchangeComboBox1.setBackground(Color.WHITE);
         exchangeComboBox1.setPreferredSize(preferredSize);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
+        constraints.gridx = 4;
         constraints.gridy = 14;
         constraints.weightx = 0.8;
         constraints.weighty = 0.6;
@@ -938,15 +913,12 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
             currencyComboBox1.setSelectedItem(originalCurrency1);
         }
         currencyComboBox1.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        if (mainFrame.getApplication().isMac()) {
-            currencyComboBox1.setUI(new MetalComboBoxUI());
-        }
         currencyComboBox1.setOpaque(false);
         currencyComboBox1.setBackground(Color.WHITE);
         currencyComboBox1.setPreferredSize(preferredSize);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
+        constraints.gridx = 4;
         constraints.gridy = 15;
         constraints.weightx = 0.8;
         constraints.weighty = 0.6;
@@ -995,15 +967,12 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         exchangeComboBox2.setSelectedItem(exchangeToUse2);
 
         exchangeComboBox2.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        if (mainFrame.getApplication().isMac()) {
-            exchangeComboBox2.setUI(new MetalComboBoxUI());
-        }
         exchangeComboBox2.setOpaque(false);
         exchangeComboBox2.setBackground(Color.WHITE);
         exchangeComboBox2.setPreferredSize(preferredSize);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
+        constraints.gridx = 4;
         constraints.gridy = 19;
         constraints.weightx = 0.8;
         constraints.weighty = 0.6;
@@ -1031,15 +1000,12 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         }
 
         currencyComboBox2.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        if (mainFrame.getApplication().isMac()) {
-            currencyComboBox2.setUI(new MetalComboBoxUI());
-        }
         currencyComboBox2.setOpaque(false);
         currencyComboBox2.setBackground(Color.WHITE);
         currencyComboBox2.setPreferredSize(preferredSize);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
+        constraints.gridx = 4;
         constraints.gridy = 20;
         constraints.weightx = 0.8;
         constraints.weighty = 0.6;

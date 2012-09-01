@@ -220,6 +220,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         explainTextArea1.setOpaque(false);
         explainTextArea1.setWrapStyleWord(true);
         explainTextArea1.setLineWrap(true);
+        explainTextArea1.setEditable(false);
 
         FontMetrics fontMetrics = getFontMetrics(getFont());
         int preferredWidth = fontMetrics.stringWidth(WelcomePanel.EXAMPLE_TEXT);
@@ -316,6 +317,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         explainTextArea2.setOpaque(false);
         explainTextArea2.setWrapStyleWord(true);
         explainTextArea2.setLineWrap(true);
+        explainTextArea2.setEditable(false);
 
         int height2 = WelcomePanel.calculateHeight(explainText2);
 

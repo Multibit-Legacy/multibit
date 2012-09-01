@@ -16,11 +16,13 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.ArrayList;
 
 import javax.swing.Action;
@@ -30,8 +32,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
@@ -126,7 +130,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
         addressLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel.tooltip"));
         addressLabel.setBorder(BorderFactory.createMatteBorder((int)(TEXTFIELD_VERTICAL_DELTA * 0.5), 0, (int)(TEXTFIELD_VERTICAL_DELTA * 0.5), 0, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
         addressLabel.setHorizontalAlignment(JLabel.TRAILING);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 1;
         constraints.weightx = 1;
@@ -138,11 +142,16 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
 
         FontMetrics fontMetric = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         int longFieldWidth = fontMetric.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT);
-        addressTextArea = new MultiBitTextArea("", 24, 1, controller);
-        addressTextArea.setEditable(false);
-        addressTextArea.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));
+        addressTextField = new MultiBitTextField("", 24, controller);
 
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        //addressTextField = new MultiBitTextArea("", 24, 1, controller);
+        addressTextField.setEditable(false);
+        addressTextField.setOpaque(false);
+        Insets insets = addressTextField.getBorder().getBorderInsets(addressTextField);
+        addressTextField.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.right));
+        addressTextField.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));
+        
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 1;
         constraints.weightx = 0.1;
@@ -150,7 +159,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
         constraints.gridwidth = 3;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        formPanel.add(addressTextArea, constraints);
+        formPanel.add(addressTextField, constraints);
 
         ImageIcon copyIcon = ImageLoader.createImageIcon(ImageLoader.COPY_ICON_FILE);
         CopyReceiveAddressAction copyAddressAction = new CopyReceiveAddressAction(controller, this, copyIcon);
@@ -194,7 +203,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
  
         JScrollPane labelScrollPane = new JScrollPane(labelTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        labelScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.DARK_BACKGROUND_COLOR));
+        labelScrollPane.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.LIGHT_GRAY));
         labelScrollPane.setOpaque(true);
         labelScrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
@@ -240,7 +249,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
                 + TEXTFIELD_VERTICAL_DELTA));
         amountTextField.addKeyListener(new QRCodeKeyListener());
 
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 5;
         constraints.weightx = 1.0;
@@ -351,8 +360,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
     }
 
     public String getReceiveAddress() {
-        if (addressTextArea != null) {
-            return addressTextArea.getText();
+        if (addressTextField != null) {
+            return addressTextField.getText();
         } else {
             return "";
         }
@@ -398,7 +407,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
         }
 
         if (address != null) {
-            addressTextArea.setText(address);
+            addressTextField.setText(address);
         }
         if (label != null) {
             labelTextArea.setText(label);

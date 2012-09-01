@@ -26,7 +26,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +73,8 @@ public class MultiBitModel {
     public static final String USER_LANGUAGE_CODE = "languageCode";
     public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
     
+    public static final String LOOK_AND_FEEL = "lookAndFeel";
+
     // Currency ticker.
     public static final String TICKER_SHOW = "tickerShow";
     public static final String TICKER_COLUMNS_TO_SHOW = "tickerColumnsToShow";
