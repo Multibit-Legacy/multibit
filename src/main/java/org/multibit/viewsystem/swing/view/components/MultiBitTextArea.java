@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view.components;
 
+import javax.swing.BorderFactory;
 import javax.swing.JTextArea;
 
 import org.multibit.controller.MultiBitController;
@@ -26,5 +27,6 @@ public class MultiBitTextArea extends JTextArea {
     public MultiBitTextArea(String text, int height, int width, MultiBitController controller) {
         super(text, height, width);
         setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        setBorder(BorderFactory.createEmptyBorder());
     }
 }

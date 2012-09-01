@@ -81,9 +81,9 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
     private static final int DEFAULT_NUMBER_OF_DAYS = 14;
 
     private final SimpleDateFormat dateFormatter;
-
-    private ResetTransactionsSubmitAction resetTransactionsSubmitAction;
     
+    private ResetTransactionsSubmitAction resetTransactionsSubmitAction;
+
     private JRadioButton resetFromFirstTransactionRadioButton;
     private JRadioButton chooseResetDateRadioButton;
     private JCalendar calendarChooser;
@@ -220,6 +220,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         explainTextArea1.setOpaque(false);
         explainTextArea1.setWrapStyleWord(true);
         explainTextArea1.setLineWrap(true);
+        explainTextArea1.setEditable(false);
 
         FontMetrics fontMetrics = getFontMetrics(getFont());
         int preferredWidth = fontMetrics.stringWidth(WelcomePanel.EXAMPLE_TEXT);
@@ -316,6 +317,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         explainTextArea2.setOpaque(false);
         explainTextArea2.setWrapStyleWord(true);
         explainTextArea2.setLineWrap(true);
+        explainTextArea2.setEditable(false);
 
         int height2 = WelcomePanel.calculateHeight(explainText2);
 
@@ -501,12 +503,12 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
     @Override
     public String getViewTitle() {
-        return controller.getLocaliser().getString("resetTransactionsSubmitAction.text");
+        return controller.getLocaliser().getString("resetTransactionsAction.text");
     }
 
     @Override
     public String getViewTooltip() {
-        return controller.getLocaliser().getString("resetTransactionsSubmitAction.tooltip");
+        return controller.getLocaliser().getString("resetTransactionsAction.tooltip");
     }
 
     @Override
@@ -528,6 +530,10 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         }
     }
 
+    public ResetTransactionsSubmitAction getResetTransactionsSubmitAction() {
+        return resetTransactionsSubmitAction;
+    }
+    
     // ResetTransactionDataProvider methods
     public Date getResetDate() {
         return resetDate;
@@ -539,9 +545,5 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         } else {
             return true;
         }
-    }
-
-    public ResetTransactionsSubmitAction getResetTransactionsSubmitAction() {
-        return resetTransactionsSubmitAction;
     }
 }

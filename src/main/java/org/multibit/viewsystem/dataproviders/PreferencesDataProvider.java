@@ -123,7 +123,8 @@ public interface PreferencesDataProvider extends DataProvider {
     boolean isTickerVisible();
 
     boolean getPreviousShowTicker();
-
-
     boolean getNewShowTicker();
+    
+    String getPreviousLookAndFeel();
+    String getNewLookAndFeel();
 }

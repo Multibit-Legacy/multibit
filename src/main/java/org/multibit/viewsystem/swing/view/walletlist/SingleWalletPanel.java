@@ -34,7 +34,6 @@ import java.io.File;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -72,9 +71,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private PerWalletModelData perWalletModelData;
 
     private static final Color BACKGROUND_COLOR_DATA_HAS_CHANGED = new Color(0xff, 0xff, 0xff);
-    private static final int COLOR_DELTA = 12;
+    private static final int COLOR_DELTA = 14;
 
-    private static final int HEIGHT_DELTA = 20;
+    private static final int HEIGHT_DELTA = 22;
     private static final int DETAIL_HEIGHT_DELTA = 4;
     private static final int WIDTH_DELTA = 4;
     private static final int MIN_WIDTH_SCROLLBAR_DELTA = 20;
@@ -102,6 +101,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private static int NUMBER_OF_ROWS_IN_SUMMARY_PANEL = 2;
     private static int NUMBER_OF_ROWS_IN_DETAIL_PANEL = 3;
+    public static int DESCRIPTION_HEIGHT_DELTA = 4;
+    private static int AMOUNT_HEIGHT_DELTA = 4;
 
     private static int DETAIL_PANEL_OUTER_INDENT = 3;
     private static int DETAIL_PANEL_INNER_INDENT = 1;
@@ -139,10 +140,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         twistyRightIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_RIGHT_ICON_FILE);
         twistyDownIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_DOWN_ICON_FILE);
 
-        normalHeight = NUMBER_OF_ROWS_IN_SUMMARY_PANEL * fontMetrics.getHeight() + HEIGHT_DELTA;
+        normalHeight = NUMBER_OF_ROWS_IN_SUMMARY_PANEL * fontMetrics.getHeight() + DESCRIPTION_HEIGHT_DELTA + AMOUNT_HEIGHT_DELTA + HEIGHT_DELTA;
         normalWidth = calculateNormalWidth(this);
         expandedHeight = (int) ((NUMBER_OF_ROWS_IN_SUMMARY_PANEL + NUMBER_OF_ROWS_IN_DETAIL_PANEL) * fontMetrics.getHeight()
-                + HEIGHT_DELTA + DETAIL_HEIGHT_DELTA);
+                + DESCRIPTION_HEIGHT_DELTA + HEIGHT_DELTA + + AMOUNT_HEIGHT_DELTA + DETAIL_HEIGHT_DELTA);
         detailHeight = (int) ((NUMBER_OF_ROWS_IN_DETAIL_PANEL) * fontMetrics.getHeight() + DETAIL_HEIGHT_DELTA);
 
         // add contents to myRoundedPanel
@@ -187,7 +188,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         walletDescriptionTextField.setOpaque(false);
         walletDescriptionTextField.setDisabledTextColor(Color.BLACK);
         
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 1;
         constraints.weightx = 0.92;
@@ -243,7 +244,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         filler4.setMaximumSize(BELOW_BASELINE_TRAILING_CORNER_PADDING);
         filler4.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 2;
+        constraints.gridx = 4;
         constraints.gridy = 4;
         constraints.weightx = 0.02;
         constraints.weighty = 0.02;
@@ -336,7 +337,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             }
 
             if (selected) {
-                walletDescriptionTextField.setEnabled(true);
                 walletDescriptionTextField.setForeground(Color.BLACK);
                 if (!walletDescriptionTextField.isEditable()) {
                     walletDescriptionTextField.setEditable(true);
@@ -354,7 +354,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 roundedBottomPanel.repaint();
                 twistyLabel.setVisible(true);
             } else {
-                walletDescriptionTextField.setEnabled(false);
                 walletDescriptionTextField.setForeground(Color.BLACK);
                 walletDescriptionTextField.setEditable(false);
                 Border border = BorderFactory.createEmptyBorder(5, 7, 5, 5);

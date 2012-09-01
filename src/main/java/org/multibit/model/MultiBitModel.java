@@ -73,6 +73,8 @@ public class MultiBitModel {
 
     public static final String USER_LANGUAGE_CODE = "languageCode";
     public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
+
+    public static final String LOOK_AND_FEEL = "lookAndFeel";
     
     // Currency ticker.
     public static final String TICKER_SHOW = "tickerShow";

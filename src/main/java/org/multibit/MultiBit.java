@@ -28,6 +28,7 @@ import java.util.Properties;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.multibit.controller.MultiBitController;
@@ -152,16 +153,32 @@ public class MultiBit {
 
             log.debug("Setting look and feel");
             try {
-                // Set System L&F.
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                boolean foundTargetLookAndFeel = false;
+
+                String lookAndFeel = userPreferences.getProperty(MultiBitModel.LOOK_AND_FEEL);
+                
+                if (lookAndFeel != null && lookAndFeel != "") {
+                    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                        //log.debug("Found look and feel : " + info.getName());
+                        if (lookAndFeel.equalsIgnoreCase(info.getName())) {
+                            UIManager.setLookAndFeel(info.getClassName());
+                            foundTargetLookAndFeel = true;
+                            break;
+                        }
+                    }
+                }
+                // Set System look and feel if target not found
+                if (!foundTargetLookAndFeel) {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                }
             } catch (UnsupportedLookAndFeelException e) {
-                // Carry on.
+                // carry on
             } catch (ClassNotFoundException e) {
-                // Carry on.
+                // carry on
             } catch (InstantiationException e) {
-                // Carry on.
+                // carry on
             } catch (IllegalAccessException e) {
-                // Carry on.
+                // carry on
             }
 
             log.debug("Creating views");

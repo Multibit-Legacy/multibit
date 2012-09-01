@@ -21,11 +21,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.OkBackToParentAction;
@@ -44,7 +46,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
     private static final long serialVersionUID = 191499812345057705L;
 
     private static final int HEIGHT_DELTA = 150;
-    private static final int WIDTH_DELTA = 150;
+    private static final int WIDTH_DELTA = 160;
 
     private MultiBitController controller;
 
@@ -178,6 +180,9 @@ public class ValidationErrorDialog extends MultiBitDialog {
             rows++;
         }
 
+        // Spacer row at top and bottom.
+        rows = rows + 2;
+        
         // Tell user validation messages.
         Action availableToSpendHelpAction = new HelpContextAction(controller, null, "validationErrorView.moreHelp",
                 "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText", HelpContentsPanel.HELP_AVAILABLE_TO_SPEND_URL);
@@ -192,21 +197,26 @@ public class ValidationErrorDialog extends MultiBitDialog {
 
         OkBackToParentAction okAction = new OkBackToParentAction(controller, this);
         MultiBitButton okButton = new MultiBitButton(okAction, controller);
+        okButton.setOpaque(true);
+        okButton.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
         Object[] options = {okButton};
         if (controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE).compareTo(controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
             options = new Object[] { okButton, availableToSpendHelpButton};
         }
-        MultiBitTextArea completeMessageTextArea = new MultiBitTextArea(completeMessage, rows, 20, controller);
+        MultiBitTextArea completeMessageTextArea = new MultiBitTextArea("\n" + completeMessage + "\n", rows, 20, controller);
         completeMessageTextArea.setOpaque(false);
+        completeMessageTextArea.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         completeMessageTextArea.setEditable(false);
         completeMessageTextArea.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        completeMessageTextArea.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
 
         JOptionPane optionPane = new JOptionPane(completeMessageTextArea, JOptionPane.ERROR_MESSAGE, JOptionPane.DEFAULT_OPTION,
                 ImageLoader.createImageIcon(ImageLoader.EXCLAMATION_MARK_ICON_FILE), options, options[0]);
 
         add(optionPane);
-
+        optionPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        optionPane.setOpaque(true);
         FontMetrics fontMetrics = optionPane.getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
         int minimumHeight = fontMetrics.getHeight() * rows + HEIGHT_DELTA;

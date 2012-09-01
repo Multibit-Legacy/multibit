@@ -73,6 +73,8 @@ public class WalletListPanel extends JPanel implements View {
 
         walletPanels = new ArrayList<SingleWalletPanel>();
 
+        setOpaque(false);
+
         initUI();
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -126,9 +128,6 @@ public class WalletListPanel extends JPanel implements View {
         //log.debug(" initUI called");
 
         this.removeAll();
-        
-        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-
         setLayout(new BorderLayout());
 
         MultiBitTabbedPane tabbedPane = new MultiBitTabbedPane(controller);
@@ -156,7 +155,7 @@ public class WalletListPanel extends JPanel implements View {
     private JPanel createWalletListPanel() {
         walletListPanel = new JPanel();
         walletListPanel.setLayout(new GridBagLayout());
-        walletListPanel.setOpaque(true);
+        walletListPanel.setOpaque(false);
         walletListPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         walletListPanel.setBorder(BorderFactory.createEmptyBorder());
         walletListPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));

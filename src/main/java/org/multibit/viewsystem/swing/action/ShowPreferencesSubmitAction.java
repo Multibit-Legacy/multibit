@@ -22,13 +22,18 @@ import java.math.BigInteger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
+import org.multibit.viewsystem.swing.view.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 
@@ -43,14 +48,16 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
     private MultiBitController controller;
     private PreferencesDataProvider dataProvider;
+    private JFrame mainFrame;
 
     /**
      * Creates a new {@link ShowPreferencesSubmitAction}.
      */
-    public ShowPreferencesSubmitAction(MultiBitController controller, PreferencesDataProvider dataProvider, Icon icon) {
+    public ShowPreferencesSubmitAction(MultiBitController controller, PreferencesDataProvider dataProvider, Icon icon, JFrame mainFrame) {
         super(controller.getLocaliser().getString("showPreferencesSubmitAction.text"), icon);
         this.controller = controller;
         this.dataProvider = dataProvider;
+        this.mainFrame = mainFrame;
 
         MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
         putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("showPreferencesSubmitAction.tooltip"));
@@ -174,6 +181,19 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 fontHasChanged = true;
             }
         }
+               
+        // Look and feel.
+        boolean lookAndFeelHasChanged = false;
+        String previousLookAndFeel = dataProvider.getPreviousLookAndFeel();
+        String newLookAndFeel = dataProvider.getNewLookAndFeel();
+
+        controller.getModel().setUserPreference(MultiBitModel.LOOK_AND_FEEL, previousLookAndFeel);
+
+        if (newLookAndFeel != null && (!newLookAndFeel.equals(previousLookAndFeel) || !newLookAndFeel.equals(UIManager.getLookAndFeel().getName()))) {
+            controller.getModel().setUserPreference(MultiBitModel.LOOK_AND_FEEL, newLookAndFeel);
+
+            lookAndFeelHasChanged = true;
+        }
 
         // currency ticker
         boolean showTicker = dataProvider.getNewShowTicker();
@@ -279,6 +299,36 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         if (wantToFireDataStructureChanged) {
             // redo everything
             controller.fireDataStructureChanged();
+        }
+                
+        if (lookAndFeelHasChanged) {
+            try {
+                if (ShowPreferencesPanel.SYSTEM_LOOK_AND_FEEL.equals(newLookAndFeel)) {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } else {
+                    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                        if (newLookAndFeel.equalsIgnoreCase(info.getName())) {
+                            UIManager.setLookAndFeel(info.getClassName());
+                            break;
+                        }
+                    }
+                }
+            } catch (ClassNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (UnsupportedLookAndFeelException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            SwingUtilities.updateComponentTreeUI(mainFrame);
+            mainFrame.pack();
         }
 
         // return to the same view

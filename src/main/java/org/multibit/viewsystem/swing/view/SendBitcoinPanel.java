@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -30,6 +31,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
@@ -152,10 +155,10 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
                 .getHeight() + TEXTFIELD_VERTICAL_DELTA));
 
         addressTextField.addKeyListener(new QRCodeKeyListener());
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 1;
-        constraints.weightx = 0.1;
+        constraints.weightx = 1.0;
         constraints.weighty = 0.2;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -198,15 +201,27 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         formPanel.add(labelLabel, constraints);
 
         JTextField aTextField = new JTextField();
-        labelTextArea = new MultiBitTextArea("", 2, 20, controller);
+        labelTextArea = new MultiBitTextArea("", AbstractTradePanel.PREFERRED_NUMBER_OF_LABEL_ROWS, 20, controller);
         labelTextArea.setBorder(aTextField.getBorder());
         labelTextArea.addKeyListener(new QRCodeKeyListener());
 
-        JScrollPane labelScrollPane = new JScrollPane(labelTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+        final JScrollPane labelScrollPane = new JScrollPane(labelTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        labelScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, ColorAndFontConstants.DARK_BACKGROUND_COLOR));
         labelScrollPane.setOpaque(true);
         labelScrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        labelScrollPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1)); 
+        labelScrollPane.getViewport().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                if (labelScrollPane.getVerticalScrollBar().isVisible()) {
+                    labelScrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.LIGHT_GRAY));          
+                } else {
+                    labelScrollPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));              
+                }
+            }
+        });
+        labelScrollPane.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
+                .getHeight() * AbstractTradePanel.PREFERRED_NUMBER_OF_LABEL_ROWS + TEXTFIELD_VERTICAL_DELTA));
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
@@ -249,7 +264,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
                 + TEXTFIELD_VERTICAL_DELTA));
         amountTextField.addKeyListener(new QRCodeKeyListener());
 
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 5;
         constraints.weightx = 1.0;
@@ -393,6 +408,9 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
     @Override
     public void displayView() {
         super.displayView();
+        
+        JTextField aTextField = new JTextField();
+        labelTextArea.setBorder(aTextField.getBorder());
 
         String bringToFront = controller.getModel().getUserPreference(MultiBitModel.BRING_TO_FRONT);
         if (Boolean.TRUE.toString().equals(bringToFront)) {

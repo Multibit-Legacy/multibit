@@ -83,8 +83,6 @@ import org.multibit.viewsystem.dataproviders.CopyQRCodeImageDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
-import org.multibit.viewsystem.swing.action.CreateNewSendingAddressAction;
-import org.multibit.viewsystem.swing.action.DeleteSendingAddressAction;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.PasteSwatchAction;
 import org.multibit.viewsystem.swing.action.ZoomAction;
@@ -127,7 +125,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     private static final int TABLE_BORDER = 3;
 
-    protected static final int PREFERRED_NUMBER_OF_LABEL_ROWS = 3;
+    protected static final int PREFERRED_NUMBER_OF_LABEL_ROWS = 2;
 
     protected MultiBitFrame mainFrame;
 
@@ -144,7 +142,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     protected JTable addressesTable;
 
     protected MultiBitTextField addressTextField;
-    protected MultiBitTextArea addressTextArea;
 
     protected int selectedAddressRowModel;
 
@@ -166,7 +163,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     protected static final int QRCODE_WIDTH = 140;
     protected static final int QRCODE_HEIGHT = 140;
 
-    protected static final int TEXTFIELD_VERTICAL_DELTA = 6;
+    protected static final int TEXTFIELD_VERTICAL_DELTA = 8;
     protected static final int HELP_BUTTON_INDENT = 6;
     protected static final int AMOUNT_BTC_INDENT = 4;
 
@@ -758,9 +755,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                                 rowData.getAddress());
                         controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getLabelConstant(),
                                 rowData.getLabel());
-                        if (addressTextArea != null) {
-                            addressTextArea.setText(rowData.getAddress());
-                        }
                         if (addressTextField != null) {
                             addressTextField.setText(rowData.getAddress());
                         }
@@ -940,14 +934,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     protected void updateQRCodePanel() {
         String address = null;
-        if (isReceiveBitcoin()) {
-            if (addressTextArea != null) {
-                address = addressTextArea.getText();
-            }
-        } else {
-            if (addressTextField != null) {
-                address = addressTextField.getText();
-            }
+        if (addressTextField != null) {
+            address = addressTextField.getText();
         }
         String amount = null;
         if (amountTextField != null) {
@@ -1159,9 +1147,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         /** Handle the key-released event from the text field. */
         public void keyReleased(KeyEvent e) {
             String address = null;
-            if (addressTextArea != null) {
-                address = addressTextArea.getText();
-            }
             if (addressTextField != null) {
                 address = addressTextField.getText();
             }
@@ -1469,8 +1454,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     public String getAddress() {
         if (addressTextField != null) {
             return addressTextField.getText();
-        } else if (addressTextArea != null) {
-            return addressTextArea.getText();
         } else {
             return null;
         }

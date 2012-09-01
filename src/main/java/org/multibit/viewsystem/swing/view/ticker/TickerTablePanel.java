@@ -63,7 +63,7 @@ public class TickerTablePanel extends JPanel {
     private static final String SPACER = "  "; // 2 spaces
 
     private static final int VERTICAL_DELTA_MAC = 0;
-    private static final int VERTICAL_DELTA_NON_MAC = 8;
+    private static final int VERTICAL_DELTA_NON_MAC = 12;
     private static final int HORIZONTAL_DELTA = 30;
     private static final int SCROLLBAR_WIDTH = 20;
     private static final int PER_COLUMN_DELTA = 2;
@@ -136,6 +136,8 @@ public class TickerTablePanel extends JPanel {
         table.getTableHeader().setToolTipText(tickerTooltipText);
         table.getTableHeader().setBorder(BorderFactory.createMatteBorder(1, 1, 0, 0, Color.LIGHT_GRAY));
         table.getTableHeader().setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-1));
+        
+        int tableHeaderVerticalInsets = table.getTableHeader().getInsets().top + table.getTableHeader().getInsets().bottom;
 
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
         JLabel label = (JLabel) renderer;
@@ -176,15 +178,9 @@ public class TickerTablePanel extends JPanel {
             }
         }
 
-        int verticalDelta;
-        int idealHeight;
-        if (mainFrame.getApplication().isMac()) {
-            verticalDelta = VERTICAL_DELTA_MAC;
-            idealHeight = (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta;
-        } else {
-            verticalDelta = VERTICAL_DELTA_NON_MAC;
-            idealHeight = (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta;
-        }
+        int idealHeight =  (fontMetrics.getHeight() + table.getRowMargin()) * tickerTableModel.getRowCount() 
+            + fontMetrics.getHeight() + tableHeaderVerticalInsets + tickerTableModel.getRowCount() + 7;
+
 
         setPreferredSize(new Dimension(tickerWidth, idealHeight));
 
