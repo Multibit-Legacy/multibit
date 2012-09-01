@@ -206,14 +206,14 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         walletDescriptionTextField.addActionListener(this);
         walletDescriptionTextField.addFocusListener(this);
         walletDescriptionTextFieldBorder = walletDescriptionTextField.getBorder();
-        walletDescriptionTextField.setDisabledTextColor(Color.BLACK);
         walletDescriptionTextField.setOpaque(false);
+        walletDescriptionTextField.setDisabledTextColor(Color.BLACK);
         
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 1;
-        constraints.weightx = 0.88;
-        constraints.weighty = 1;
+        constraints.weightx = 0.92;
+        constraints.weighty = 4;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
         myRoundedPanel.add(walletDescriptionTextField, constraints);
@@ -441,7 +441,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 }
 
                 walletDescriptionTextField.setBorder(walletDescriptionTextFieldBorder);
-                walletDescriptionTextField.setOpaque(true);
+                //walletDescriptionTextField.setOpaque(true);
                 walletDescriptionTextField.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
                 myRoundedPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
                 roundedBottomPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
@@ -454,7 +454,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 Insets insets = walletDescriptionTextFieldBorder.getBorderInsets(walletDescriptionTextField);
                 Border border = BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.right);
                 walletDescriptionTextField.setBorder(border);
-                walletDescriptionTextField.setOpaque(false);
+                //walletDescriptionTextField.setOpaque(false);
                 walletDescriptionTextField.setBackground(inactiveBackGroundColor);
                 myRoundedPanel.setBackground(inactiveBackGroundColor);  
                 roundedBottomPanel.setBackground(inactiveBackGroundColor);
