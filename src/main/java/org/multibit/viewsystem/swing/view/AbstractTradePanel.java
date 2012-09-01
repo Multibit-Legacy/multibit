@@ -124,7 +124,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     private static final int TABLE_BORDER = 3;
 
-    protected static final int PREFERRED_NUMBER_OF_LABEL_ROWS = 3;
+    protected static final int PREFERRED_NUMBER_OF_LABEL_ROWS = 2;
 
     protected MultiBitFrame mainFrame;
 
@@ -141,7 +141,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     protected JTable addressesTable;
 
     protected MultiBitTextField addressTextField;
-//    protected MultiBitTextArea addressTextArea;
 
     protected int selectedAddressRowModel;
 
