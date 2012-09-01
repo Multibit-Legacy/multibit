@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
@@ -255,6 +256,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             dividerPosition += SCROLL_BAR_DELTA;
         }
         splitPane.setDividerLocation(dividerPosition);
+//        if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
+//            Component[] components = splitPane.getComponents();
+//            if (components != null) {
+//                for (Component loop : components) {
+//                    if (loop instanceof javax.swing.plaf.basic.BasicSplitPaneDivider) {
+//                        javax.swing.plaf.basic.BasicSplitPaneDivider loop2 = (javax.swing.plaf.basic.BasicSplitPaneDivider)loop;
+//                    }
+//                }
+//            }
+//        }
 
         pack();
 
