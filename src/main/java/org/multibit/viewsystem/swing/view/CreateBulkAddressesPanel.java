@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -128,7 +129,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, CreateBulk
      */
     private JPanel createFileNamePanel(int stentWidth) {
         MultiBitTitledPanel filenamePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-        "createBulkAddressesPanel.filename.title"));
+        "createBulkAddressesPanel.filename.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         
         filenamePanel.setOpaque(false);
         filenamePanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
@@ -214,7 +215,7 @@ public class CreateBulkAddressesPanel extends JPanel implements View, CreateBulk
      */
     private JPanel createNumberOfAddressesPanel(int stentWidth) {
         MultiBitTitledPanel numberOfAddressesPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-        "createBulkAddressesPanel.numberOfAddresses.title"));
+        "createBulkAddressesPanel.numberOfAddresses.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         
         numberOfAddressesPanel.setOpaque(false);
         numberOfAddressesPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);

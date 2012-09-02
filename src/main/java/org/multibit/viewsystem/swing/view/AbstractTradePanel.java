@@ -93,7 +93,6 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
-import org.multibit.viewsystem.swing.view.components.VerticalGradientPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -468,7 +467,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         if (showSidePanel) {
             // show less
-            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.SIDE_PANEL_HIDE_ICON_FILE));
+            if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+                sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.SIDE_PANEL_HIDE_ICON_FILE));
+            } else {
+                sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.SIDE_PANEL_HIDE_RTL_ICON_FILE));
+            }
             sidePanelButton.setText("");
             sidePanelButton.setBorderPainted(false);
             sidePanelButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.showLess.tooltip"));
@@ -478,7 +481,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             sidePanelButton.setHorizontalTextPosition(JLabel.LEFT);
         } else {
             // show more
-            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.SIDE_PANEL_SHOW_ICON_FILE));
+            if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+                sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.SIDE_PANEL_SHOW_ICON_FILE));
+            } else {
+                sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.SIDE_PANEL_SHOW_RTL_ICON_FILE));
+            }
             sidePanelButton.setText("");
             sidePanelButton.setBorderPainted(false);
             sidePanelButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.showMore.tooltip"));
@@ -494,7 +501,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     protected abstract void loadForm();
 
     protected JPanel createAddressesHeaderPanel() {
-        JPanel addressesHeaderPanel = new VerticalGradientPanel();
+        JPanel addressesHeaderPanel = new JPanel();
+        addressesHeaderPanel.setOpaque(false);
+        addressesHeaderPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
         addressesHeaderPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, SystemColor.windowBorder));
         addressesHeaderPanel.setLayout(new GridBagLayout());
@@ -910,6 +919,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         qrCodeScrollPane = new JScrollPane(qrCodeLabel);
         qrCodeScrollPane.setOpaque(true);
         qrCodeScrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        qrCodeScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         qrCodeScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         qrCodeScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         qrCodeScrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -934,6 +944,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     protected void updateQRCodePanel() {
         String address = null;
+        
         if (addressTextField != null) {
             address = addressTextField.getText();
         }

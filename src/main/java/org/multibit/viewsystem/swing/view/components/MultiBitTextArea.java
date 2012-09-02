@@ -15,6 +15,8 @@
  */
 package org.multibit.viewsystem.swing.view.components;
 
+import java.awt.ComponentOrientation;
+
 import javax.swing.BorderFactory;
 import javax.swing.JTextArea;
 
@@ -28,5 +30,6 @@ public class MultiBitTextArea extends JTextArea {
         super(text, height, width);
         setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         setBorder(BorderFactory.createEmptyBorder());
+        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
     }
 }

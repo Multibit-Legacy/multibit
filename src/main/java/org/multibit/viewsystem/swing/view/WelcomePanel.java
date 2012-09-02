@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
@@ -59,10 +60,8 @@ public class WelcomePanel extends JPanel implements View {
         this.controller = controller;
 
         setLayout(new BorderLayout());
-
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-
-        this.controller = controller;
+        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         initUI();
     }
@@ -74,6 +73,7 @@ public class WelcomePanel extends JPanel implements View {
         mainPanel.setMinimumSize(new Dimension(400, 400));
         mainPanel.setLayout(new GridBagLayout());
         mainPanel.setOpaque(false);
+        mainPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -107,7 +107,7 @@ public class WelcomePanel extends JPanel implements View {
         helpButton.setToolTipText(tooltipText);
         helpButton.setHorizontalAlignment(SwingConstants.LEADING);
         helpButton.setBorder(BorderFactory.createEmptyBorder(0, AbstractTradePanel.HELP_BUTTON_INDENT,
-                AbstractTradePanel.HELP_BUTTON_INDENT, 0));
+                AbstractTradePanel.HELP_BUTTON_INDENT, AbstractTradePanel.HELP_BUTTON_INDENT));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 2;
@@ -139,7 +139,7 @@ public class WelcomePanel extends JPanel implements View {
     }
 
     private JPanel createWelcomePanel() {
-        MultiBitTitledPanel welcomePanel = new MultiBitTitledPanel(controller.getLocaliser().getString("welcomePanel.title"));
+        MultiBitTitledPanel welcomePanel = new MultiBitTitledPanel(controller.getLocaliser().getString("welcomePanel.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         welcomePanel.setOpaque(false);
 
         FontMetrics fontMetrics = welcomePanel.getFontMetrics(welcomePanel.getFont());
@@ -286,21 +286,5 @@ public class WelcomePanel extends JPanel implements View {
     @Override
     public int getViewId() {
         return View.WELCOME_VIEW;
-    }
-
-    public String getPreviousCurrency2() {
-        return null;
-    }
-
-    public String getPreviousExchange2() {
-        return null;
-    }
-
-    public boolean getPreviousShowSecondRow() {
-        return false;
-    }
-
-    public String getPreviousCurrency1() {
-        return null;
     }
 }

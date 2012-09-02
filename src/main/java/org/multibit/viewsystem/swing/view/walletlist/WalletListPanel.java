@@ -180,7 +180,10 @@ public class WalletListPanel extends JPanel implements View {
                     outerPanel.setOpaque(false);
                     outerPanel.setBorder(BorderFactory.createEmptyBorder(4, 3, 0, 3));
                     outerPanel.setLayout(new BorderLayout());
+                    outerPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
                     SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, controller, mainFrame);
+                    loopPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
                     outerPanel.add(loopPanel, BorderLayout.CENTER);
                     loopPanel.addMouseListener(new WalletMouseListener());
 

@@ -33,6 +33,7 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.view.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
@@ -326,9 +327,10 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-
+            
+            ColorAndFontConstants.init();
+            controller.fireDataStructureChanged();
             SwingUtilities.updateComponentTreeUI(mainFrame);
-            mainFrame.pack();
         }
 
         // return to the same view

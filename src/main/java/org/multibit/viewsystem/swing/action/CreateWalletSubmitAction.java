@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.action;
 
+import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -84,6 +85,8 @@ public class CreateWalletSubmitAction extends AbstractAction {
             JFileChooser.setDefaultLocale(controller.getLocaliser().getLocale());
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setLocale(controller.getLocaliser().getLocale());
+            fileChooser.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+            
             if (controller.getModel().getActiveWalletFilename() != null) {
                 fileChooser.setCurrentDirectory(new File(controller.getModel().getActiveWalletFilename()));
             }

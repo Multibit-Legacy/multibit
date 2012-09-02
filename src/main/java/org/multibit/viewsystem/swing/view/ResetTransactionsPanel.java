@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
@@ -96,6 +97,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         setLayout(new BorderLayout());
+        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         // default reset date is the beginning of the day 2 weeks ago
         Calendar now = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -117,6 +119,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new GridBagLayout());
         mainPanel.setOpaque(false);
+        mainPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -168,13 +171,14 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
                 HelpContentsPanel.HELP_RESET_BLOCKCHAIN_URL);
         HelpButton helpButton = new HelpButton(helpAction, controller);
         helpButton.setText("");
+        helpButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] { controller.getLocaliser().getString(
                 "multiBitFrame.helpMenuTooltip") });
         helpButton.setToolTipText(tooltipText);
         helpButton.setHorizontalAlignment(SwingConstants.LEADING);
         helpButton.setBorder(BorderFactory.createEmptyBorder(0, AbstractTradePanel.HELP_BUTTON_INDENT,
-                AbstractTradePanel.HELP_BUTTON_INDENT, 0));
+                AbstractTradePanel.HELP_BUTTON_INDENT, AbstractTradePanel.HELP_BUTTON_INDENT));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 5;
@@ -201,13 +205,14 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
+        mainScrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         add(mainScrollPane, BorderLayout.CENTER);
     }
 
     private JPanel createExplainPanel(int stentWidth) {
         MultiBitTitledPanel explainPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "resetTransactionsPanel.explainTitle"));
+                "resetTransactionsPanel.explainTitle"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         explainPanel.setOpaque(false);
 
@@ -217,7 +222,8 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
         String explainText1 = controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text1");
         MultiBitTextArea explainTextArea1 = new MultiBitTextArea(explainText1, 2, 40, controller);
-        explainTextArea1.setOpaque(false);
+        explainTextArea1.setOpaque(true);
+        explainTextArea1.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         explainTextArea1.setWrapStyleWord(true);
         explainTextArea1.setLineWrap(true);
         explainTextArea1.setEditable(false);
@@ -261,6 +267,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
         MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "resetTransactionsPanel.walletFilenameLabel"));
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 6;
@@ -314,7 +321,8 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
         String explainText2 = controller.getLocaliser().getString("resetTransactionsPanel.explainLabel.text2");
         MultiBitTextArea explainTextArea2 = new MultiBitTextArea(explainText2, 2, 40, controller);
-        explainTextArea2.setOpaque(false);
+        explainTextArea2.setOpaque(true);
+        explainTextArea2.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         explainTextArea2.setWrapStyleWord(true);
         explainTextArea2.setLineWrap(true);
         explainTextArea2.setEditable(false);
@@ -342,8 +350,9 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
         FlowLayout flowLayout = new FlowLayout();
-        flowLayout.setAlignment(FlowLayout.RIGHT);
+        flowLayout.setAlignment(FlowLayout.TRAILING);
         buttonPanel.setLayout(flowLayout);
+        buttonPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         resetTransactionsSubmitAction = new ResetTransactionsSubmitAction(controller,
                 ImageLoader.createImageIcon(ImageLoader.RESET_TRANSACTIONS_ICON_FILE), this);
@@ -356,7 +365,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
     private JPanel createResetDatePanel(int stentWidth) {
         // reset date radios
         MultiBitTitledPanel resetDatePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "resetTransactionsPanel.resetDate"));
+                "resetTransactionsPanel.resetDate"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -396,12 +405,14 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         resetFromFirstTransactionRadioButton.setOpaque(false);
         resetFromFirstTransactionRadioButton.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         resetFromFirstTransactionRadioButton.setSelected(true);
+        resetFromFirstTransactionRadioButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         chooseResetDateRadioButton = new JRadioButton(controller.getLocaliser().getString("resetTransactionsPanel.chooseResetDate",
                 new Object[] { dateFormatter.format(resetDate.getTime()) }));
         chooseResetDateRadioButton.setOpaque(false);
         chooseResetDateRadioButton.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         chooseResetDateRadioButton.setSelected(false);
+        chooseResetDateRadioButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         resetDateGroup.add(resetFromFirstTransactionRadioButton);
         resetDateGroup.add(chooseResetDateRadioButton);
@@ -431,6 +442,8 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         Border compoundBorder = BorderFactory.createCompoundBorder(etchedBorder, emptyBorder);
 
         calendarChooser = new JCalendar(resetDate, controller.getLocaliser().getLocale(), true, false);
+        calendarChooser.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
         calendarChooser.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent e) {

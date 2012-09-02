@@ -1,6 +1,7 @@
 package org.multibit.viewsystem.swing;
 
 import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -37,6 +38,8 @@ public class MultiBitTabbedPane extends JTabbedPane {
     public MultiBitTabbedPane(final MultiBitController controller) {
         thisTabbedPane = this;
         this.controller = controller;
+        
+        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         // Create an image icon of the small 'X' for use with a close
         // button on each tab. The png loaded is a 10x10 graphic
@@ -103,6 +106,8 @@ public class MultiBitTabbedPane extends JTabbedPane {
         // Create a panel that represents the tab and ensure that it is
         // transparent.
         JPanel tab = new JPanel(new GridBagLayout());
+        tab.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
         GridBagConstraints constraints = new GridBagConstraints();
 
         tab.setOpaque(false);
@@ -115,6 +120,8 @@ public class MultiBitTabbedPane extends JTabbedPane {
         JLabel tabLabel = new JLabel(title);
         tabLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         tabLabel.setIcon(icon);
+        tabLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
         tabCounter++;
 
         constraints.fill = GridBagConstraints.NONE;
