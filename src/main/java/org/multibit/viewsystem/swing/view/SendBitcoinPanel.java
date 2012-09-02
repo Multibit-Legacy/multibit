@@ -313,7 +313,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
                 controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip") });
         helpButton.setToolTipText(tooltipText);
         helpButton.setHorizontalAlignment(SwingConstants.LEADING);
-        helpButton.setBorder(BorderFactory.createEmptyBorder(0, HELP_BUTTON_INDENT, HELP_BUTTON_INDENT, 2 * HELP_BUTTON_INDENT));
+        helpButton.setBorder(BorderFactory.createEmptyBorder(0, HELP_BUTTON_INDENT, HELP_BUTTON_INDENT, HELP_BUTTON_INDENT));
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 8;
