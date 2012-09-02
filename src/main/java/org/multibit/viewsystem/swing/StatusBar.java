@@ -177,6 +177,8 @@ public class StatusBar extends JPanel implements MessageListener {
         statusLabel.setFocusPainted(false);
         
         statusLabel.setContentAreaFilled(false);
+        statusLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
 
         // show messages action
         MultiBitAction showMessagesAction = new MultiBitAction(controller, null, null,

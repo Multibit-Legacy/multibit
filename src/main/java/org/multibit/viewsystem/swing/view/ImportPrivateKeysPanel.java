@@ -17,6 +17,7 @@ package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -275,7 +276,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
 
     private JPanel createWalletPanel(int stentWidth) {
         MultiBitTitledPanel inputWalletPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "showImportPrivateKeysPanel.wallet.title"));
+                "showImportPrivateKeysPanel.wallet.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -401,7 +402,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
 
     private JPanel createFilenamePanel(int stentWidth) {
         MultiBitTitledPanel outputFilenamePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "showImportPrivateKeysPanel.filename.title"));
+                "showImportPrivateKeysPanel.filename.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         MultiBitTitledPanel.addLeftJustifiedTextAtIndent(" ", 1, outputFilenamePanel);
 
@@ -583,7 +584,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
     private JPanel createPasswordPanel(int stentWidth) {
         // Do/do not password protect radios.
         MultiBitTitledPanel passwordProtectPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "showImportPrivateKeysPanel.password.title"));
+                "showImportPrivateKeysPanel.password.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         GridBagConstraints constraints = new GridBagConstraints();
 
         passwordInfoLabel = MultiBitTitledPanel.addLeftJustifiedTextAtIndent(

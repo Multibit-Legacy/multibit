@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
@@ -139,7 +140,7 @@ public class WelcomePanel extends JPanel implements View {
     }
 
     private JPanel createWelcomePanel() {
-        MultiBitTitledPanel welcomePanel = new MultiBitTitledPanel(controller.getLocaliser().getString("welcomePanel.title"));
+        MultiBitTitledPanel welcomePanel = new MultiBitTitledPanel(controller.getLocaliser().getString("welcomePanel.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         welcomePanel.setOpaque(false);
 
         FontMetrics fontMetrics = welcomePanel.getFontMetrics(welcomePanel.getFont());

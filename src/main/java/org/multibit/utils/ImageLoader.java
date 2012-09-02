@@ -70,7 +70,9 @@ public class ImageLoader {
     public static final String RTL_WALLET_ICON_FILE = "/images/rtl_wallet.png";
     public static final String SEND_BITCOIN_ICON_FILE = "/images/sendOut.png";
     public static final String SIDE_PANEL_SHOW_ICON_FILE = "/images/sidePanelShow.png";
+    public static final String SIDE_PANEL_SHOW_RTL_ICON_FILE = "/images/sidePanelShowRTL.png";
     public static final String SIDE_PANEL_HIDE_ICON_FILE = "/images/sidePanelHide.png";
+    public static final String SIDE_PANEL_HIDE_RTL_ICON_FILE = "/images/sidePanelHideRTL.png";
     public static final String SINGLE_WALLET_ICON_FILE = "/images/singleWallet.png";
     public static final String SHAPE_SQUARE_ICON_FILE = "/images/shapeSquare.png";
     public static final String TICK_ICON_FILE = "/images/tick.png";

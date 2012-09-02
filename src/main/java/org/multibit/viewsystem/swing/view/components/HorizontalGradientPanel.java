@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view.components;
 
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
@@ -28,7 +29,11 @@ public class HorizontalGradientPanel extends JPanel {
 
     private static final long serialVersionUID = 1992327444249499976L;
 
-    public HorizontalGradientPanel() {
+    private static final double PROPORTION_TO_FILL = 0.618; // golden ratio
+    private ComponentOrientation componentOrientation;
+    
+    public HorizontalGradientPanel(ComponentOrientation componentOrientation) {
+        this.componentOrientation = componentOrientation;
         setOpaque(false);
     }
     
@@ -36,9 +41,15 @@ public class HorizontalGradientPanel extends JPanel {
         Graphics2D g2d = (Graphics2D)g;
         Dimension d = this.getSize();
 
-        g2d.setPaint(new GradientPaint(0, 0,  ColorAndFontConstants.BACKGROUND_COLOR,
-            ((int)(d.width * 0.618)), 0, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR, false));
-        g2d.fillRect(0, 0, d.width , d.height);
+        if (ComponentOrientation.LEFT_TO_RIGHT == componentOrientation) {
+            g2d.setPaint(new GradientPaint(0, 0,  ColorAndFontConstants.BACKGROUND_COLOR,
+                    ((int)(d.width * PROPORTION_TO_FILL)), 0, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR, false));           
+        } else {
+            g2d.setPaint(new GradientPaint(((int)(d.width * (1 - PROPORTION_TO_FILL))), 0, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR,
+                    d.width, 0,  ColorAndFontConstants.BACKGROUND_COLOR, false));           
+        }
+
+         g2d.fillRect(0, 0, d.width , d.height);
 
         super.paintComponent(g);
     }

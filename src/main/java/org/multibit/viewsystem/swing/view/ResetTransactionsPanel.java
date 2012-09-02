@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
@@ -207,7 +208,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
     private JPanel createExplainPanel(int stentWidth) {
         MultiBitTitledPanel explainPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "resetTransactionsPanel.explainTitle"));
+                "resetTransactionsPanel.explainTitle"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         explainPanel.setOpaque(false);
 
@@ -356,7 +357,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
     private JPanel createResetDatePanel(int stentWidth) {
         // reset date radios
         MultiBitTitledPanel resetDatePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "resetTransactionsPanel.resetDate"));
+                "resetTransactionsPanel.resetDate"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 

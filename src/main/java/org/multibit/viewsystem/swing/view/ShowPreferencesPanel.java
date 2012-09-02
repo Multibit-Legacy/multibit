@@ -342,7 +342,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     private JPanel createLanguagePanel(int stentWidth) {
         // language radios
         MultiBitTitledPanel languagePanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "showPreferencesPanel.languageTitle"));
+                "showPreferencesPanel.languageTitle"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -495,7 +495,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     }
 
     private JPanel createFeePanel(int stentWidth) {
-        MultiBitTitledPanel feePanel = new MultiBitTitledPanel(controller.getLocaliser().getString("showPreferencesPanel.feeTitle"));
+        MultiBitTitledPanel feePanel = new MultiBitTitledPanel(controller.getLocaliser().getString("showPreferencesPanel.feeTitle"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -588,7 +588,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
     private JPanel createAppearancePanel(int stentWidth) {
         MultiBitTitledPanel appearancePanel= new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "showPreferencesPanel.appearanceTitle"));
+                "showPreferencesPanel.appearanceTitle"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -773,7 +773,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         originalCurrency2 = controller.getModel().getUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY);
 
         MultiBitTitledPanel tickerPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "showPreferencesPanel.ticker.title"));
+                "showPreferencesPanel.ticker.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         GridBagConstraints constraints = new GridBagConstraints();
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -1109,7 +1109,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
     private JPanel createBrowserIntegrationPanel(int stentWidth) {
         MultiBitTitledPanel browserIntegrationPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "showPreferencesPanel.browserIntegrationTitle"));
+                "showPreferencesPanel.browserIntegrationTitle"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 

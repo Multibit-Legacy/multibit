@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -216,7 +217,7 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
 
     private JPanel createWalletPanel(int stentWidth) {
         MultiBitTitledPanel inputWalletPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "showExportPrivateKeysPanel.wallet.title"));
+                "showExportPrivateKeysPanel.wallet.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -322,7 +323,7 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
 
     private JPanel createCurrentPasswordPanel(int stentWidth) {
         MultiBitTitledPanel currentPasswordPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "addPasswordPanel.password.title"));
+                "addPasswordPanel.password.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 

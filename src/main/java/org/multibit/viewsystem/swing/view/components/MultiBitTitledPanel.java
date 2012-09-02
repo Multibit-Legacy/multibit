@@ -1,11 +1,13 @@
 package org.multibit.viewsystem.swing.view.components;
 
 import java.awt.Color;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -33,9 +35,10 @@ public class MultiBitTitledPanel extends JPanel {
 
     public static final int MAXIMUM_NUMBER_OF_COLUMNS = 10;
 
-    public MultiBitTitledPanel(String title) {
+    public MultiBitTitledPanel(String title, ComponentOrientation componentOrientation) {
         setLayout(new GridBagLayout());
         setOpaque(false);
+        setComponentOrientation(componentOrientation);
 
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
         setFont(font);
@@ -45,7 +48,7 @@ public class MultiBitTitledPanel extends JPanel {
         int preferredHeight = (int)(fontMetrics.getHeight() * 1.618);
         int spacerHeight = (int)(fontMetrics.getHeight() * 0.618);
 
-        HorizontalGradientPanel titlePanel = new HorizontalGradientPanel();
+        HorizontalGradientPanel titlePanel = new HorizontalGradientPanel(componentOrientation);
         titlePanel.setLayout(new GridBagLayout());
 
         Font titleFont = FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE);

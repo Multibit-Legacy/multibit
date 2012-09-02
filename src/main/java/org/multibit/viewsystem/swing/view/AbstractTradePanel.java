@@ -467,7 +467,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         if (showSidePanel) {
             // show less
-            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.SIDE_PANEL_HIDE_ICON_FILE));
+            if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+                sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.SIDE_PANEL_HIDE_ICON_FILE));
+            } else {
+                sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.SIDE_PANEL_HIDE_RTL_ICON_FILE));
+            }
             sidePanelButton.setText("");
             sidePanelButton.setBorderPainted(false);
             sidePanelButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.showLess.tooltip"));
@@ -477,7 +481,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             sidePanelButton.setHorizontalTextPosition(JLabel.LEFT);
         } else {
             // show more
-            sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.SIDE_PANEL_SHOW_ICON_FILE));
+            if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+                sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.SIDE_PANEL_SHOW_ICON_FILE));
+            } else {
+                sidePanelButton.setIcon(ImageLoader.createImageIcon(ImageLoader.SIDE_PANEL_SHOW_RTL_ICON_FILE));
+            }
             sidePanelButton.setText("");
             sidePanelButton.setBorderPainted(false);
             sidePanelButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.showMore.tooltip"));
@@ -914,6 +922,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         qrCodeScrollPane = new JScrollPane(qrCodeLabel);
         qrCodeScrollPane.setOpaque(true);
         qrCodeScrollPane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        qrCodeScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         qrCodeScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         qrCodeScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         qrCodeScrollPane.setBorder(BorderFactory.createEmptyBorder());

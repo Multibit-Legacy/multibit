@@ -214,6 +214,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         });
 
         getContentPane().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
         sizeAndCenter();
 
         viewFactory = new ViewFactory(controller, this);
@@ -221,8 +223,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         initUI();
         
         controller.registerWalletBusyListener(this);
-
-        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         recreateAllViews(false);
 
@@ -251,11 +251,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         walletsView.displayView();
 
-        int dividerPosition = SingleWalletPanel.calculateNormalWidth((JComponent) (walletsView)) + WALLET_WIDTH_DELTA;
-        if (((WalletListPanel) walletsView).getScrollPane().isVisible()) {
-            dividerPosition += SCROLL_BAR_DELTA;
-        }
-        splitPane.setDividerLocation(dividerPosition);
+        splitPane.setDividerLocation(calculateDividerPosition());
+        
 //        if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
 //            Component[] components = splitPane.getComponents();
 //            if (components != null) {
@@ -306,6 +303,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.setOpaque(false);
         headerPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         headerPanel.setLayout(new GridBagLayout());
+        headerPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
 
         JPanel balancePanel = createBalancePanel();
         constraints2.fill = GridBagConstraints.BOTH;
@@ -361,10 +360,17 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewTabbedPane.addChangeListener();
 
         // Create a split pane with the two scroll panes in it.
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (JPanel) walletsView, viewTabbedPane);
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, (JPanel) walletsView, viewTabbedPane);
+        } else {
+            splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, viewTabbedPane, (JPanel) walletsView);
+            splitPane.setResizeWeight(1.0);
+        }
+
         splitPane.setOneTouchExpandable(false);
         splitPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SystemColor.windowBorder));
         splitPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        splitPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 1;
@@ -376,11 +382,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.anchor = GridBagConstraints.LINE_START;
         contentPane.add(splitPane, constraints);
 
-        int dividerPosition = SingleWalletPanel.calculateNormalWidth((JComponent) (walletsView)) + WALLET_WIDTH_DELTA;
-        if (((WalletListPanel) walletsView).getScrollPane().isVisible()) {
-            dividerPosition += ((WalletListPanel) walletsView).getScrollPane().getWidth();
-        }
-        splitPane.setDividerLocation(dividerPosition);
+        splitPane.setDividerLocation(calculateDividerPosition());
 
         statusBar = new StatusBar(controller, this);
         statusBar.updateOnlineStatusText(online);
@@ -401,7 +403,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.setMinimumSize(new Dimension(700, HEIGHT_OF_HEADER));
         headerPanel.setPreferredSize(new Dimension(700, HEIGHT_OF_HEADER));
         headerPanel.setOpaque(false);
-
+        headerPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         headerPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -520,11 +522,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * @param contentPane
      */
     private void addMenuBar(GridBagConstraints constraints, Container contentPane) {
-        // Create the menu bar.
-        JMenuBar menuBar = new JMenuBar();
-
         ComponentOrientation componentOrientation = ComponentOrientation.getOrientation(controller.getLocaliser().getLocale());
 
+        // Create the menu bar.
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.setComponentOrientation(componentOrientation);
+        
         // Create the toolBar.
         JPanel toolBarPanel = new JPanel();
         toolBarPanel.setOpaque(false);
@@ -1157,6 +1160,21 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 repaint();
             }
         });
+    }
+    
+    private int calculateDividerPosition() {
+        int dividerPosition = SingleWalletPanel.calculateNormalWidth((JComponent) (walletsView)) + WALLET_WIDTH_DELTA;
+        if (((WalletListPanel) walletsView).getScrollPane().isVisible()) {
+            dividerPosition += SCROLL_BAR_DELTA;
+        }
+        if (ComponentOrientation.RIGHT_TO_LEFT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            int width = getWidth();
+            if (width ==0) {
+                width = (int) this.getPreferredSize().getWidth();
+            }
+            dividerPosition = width - dividerPosition;
+        } 
+        return dividerPosition;
     }
 
     public WalletListPanel getWalletsView() {

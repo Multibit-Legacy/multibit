@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -237,7 +238,7 @@ public class ChangePasswordPanel extends JPanel implements View, WalletBusyListe
 
     private JPanel createWalletPanel(int stentWidth) {
         MultiBitTitledPanel inputWalletPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "showExportPrivateKeysPanel.wallet.title"));
+                "showExportPrivateKeysPanel.wallet.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -343,7 +344,7 @@ public class ChangePasswordPanel extends JPanel implements View, WalletBusyListe
 
     private JPanel createCurrentPasswordPanel(int stentWidth) {
         MultiBitTitledPanel currentPasswordPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "changePasswordPanel.currentPassword.title"));
+                "changePasswordPanel.currentPassword.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -465,7 +466,7 @@ public class ChangePasswordPanel extends JPanel implements View, WalletBusyListe
     }
     private JPanel createNewPasswordPanel(int stentWidth) {
         MultiBitTitledPanel passwordProtectPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "changePasswordPanel.newPassword.title"));
+                "changePasswordPanel.newPassword.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 

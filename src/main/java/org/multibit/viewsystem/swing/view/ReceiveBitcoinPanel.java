@@ -17,6 +17,7 @@ package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
@@ -232,9 +233,9 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
 
         JPanel amountPanel = new JPanel();
         amountPanel.setOpaque(false);
+        amountPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         amountPanel.setLayout(new BorderLayout());
-        //amountPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-        
+       
         MultiBitLabel amountLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel"));
         amountLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel.tooltip"));
         amountLabel.setHorizontalAlignment(JLabel.TRAILING);
@@ -270,8 +271,11 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        amountPanel.add(amountTextField, BorderLayout.WEST);
-        formPanel.add(amountPanel, constraints);
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            amountPanel.add(amountTextField, BorderLayout.WEST);
+        } else {
+            amountPanel.add(amountTextField, BorderLayout.EAST);            
+        }        formPanel.add(amountPanel, constraints);
 
         MultiBitLabel amountUnitLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountUnitLabel"));
         amountUnitLabel.setHorizontalTextPosition(SwingConstants.LEFT);
