@@ -27,15 +27,24 @@ import javax.swing.UIManager;
  *
  */
 public class ColorAndFontConstants {
-    public static final String MULTIBIT_DEFAULT_FONT_NAME =  ((Font)UIManager.get("Label.font")).getFontName();
-    public static final int MULTIBIT_DEFAULT_FONT_STYLE = ((Font)UIManager.get("Label.font")).getStyle();
-    public static final int MULTIBIT_DEFAULT_FONT_SIZE = ((Font)UIManager.get("Label.font")).getSize() + 1;
-    public static final int MULTIBIT_LARGE_FONT_INCREASE = 2;
+    public static String MULTIBIT_DEFAULT_FONT_NAME =  ((Font)UIManager.get("Label.font")).getFontName();
+    public static int MULTIBIT_DEFAULT_FONT_STYLE = ((Font)UIManager.get("Label.font")).getStyle();
+    public static int MULTIBIT_DEFAULT_FONT_SIZE = ((Font)UIManager.get("Label.font")).getSize() + 1;
+    public static int MULTIBIT_LARGE_FONT_INCREASE = 2;
 
-    public static final Color BACKGROUND_COLOR =  (Color) UIManager.get("Label.background");
-    public static final Color VERY_LIGHT_BACKGROUND_COLOR = new Color(251, 251, 254);
-    public static final Color DARK_BACKGROUND_COLOR = BACKGROUND_COLOR.darker();
+    public static Color BACKGROUND_COLOR =  (Color) UIManager.get("Label.background");
+    public static Color VERY_LIGHT_BACKGROUND_COLOR = new Color(251, 251, 254);
+    public static Color DARK_BACKGROUND_COLOR = BACKGROUND_COLOR.darker();
 
     public static Color SELECTION_FOREGROUND_COLOR = SystemColor.textHighlightText;
     public static Color SELECTION_BACKGROUND_COLOR = SystemColor.textHighlight;
+    
+    public static void init() {
+        MULTIBIT_DEFAULT_FONT_NAME =  ((Font)UIManager.get("Label.font")).getFontName();
+        MULTIBIT_DEFAULT_FONT_STYLE = ((Font)UIManager.get("Label.font")).getStyle();
+        MULTIBIT_DEFAULT_FONT_SIZE = ((Font)UIManager.get("Label.font")).getSize() + 1;
+
+        BACKGROUND_COLOR =  (Color) UIManager.get("Label.background");
+        DARK_BACKGROUND_COLOR = BACKGROUND_COLOR.darker();
+    }
 }

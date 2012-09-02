@@ -264,7 +264,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         mainPanel.setOpaque(false);
 
         String[] keys = new String[] { "showPreferencesPanel.feeLabel.text", "fontChooser.fontName", "fontChooser.fontStyle",
-                "fontChooser.fontSize", "showPreferencesPanel.ticker.exchange", "showPreferencesPanel.ticker.currency" };
+                "fontChooser.fontSize", "showPreferencesPanel.ticker.exchange", "showPreferencesPanel.ticker.currency", "showPreferencesPanel.lookAndFeel" };
         int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, this) + STENT_DELTA;
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -587,7 +587,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     }
 
     private JPanel createAppearancePanel(int stentWidth) {
-        MultiBitTitledPanel fontChooserPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
+        MultiBitTitledPanel appearancePanel= new MultiBitTitledPanel(controller.getLocaliser().getString(
                 "showPreferencesPanel.appearanceTitle"));
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -601,17 +601,17 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         JPanel indent = MultiBitTitledPanel.getIndentPanel(1);
-        fontChooserPanel.add(indent, constraints);
+        appearancePanel.add(indent, constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
-        constraints.gridy = 3;
+        constraints.gridy = 4;
         constraints.weightx = 0.3;
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         JPanel stent = MultiBitTitledPanel.createStent(stentWidth);
-        fontChooserPanel.add(stent, constraints);
+        appearancePanel.add(stent, constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
@@ -620,7 +620,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        fontChooserPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
+        appearancePanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
 
         MultiBitLabel fontNameLabel = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontName"));
         constraints.fill = GridBagConstraints.NONE;
@@ -630,7 +630,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
-        fontChooserPanel.add(fontNameLabel, constraints);
+        appearancePanel.add(fontNameLabel, constraints);
 
         fontNameTextLabel = new MultiBitLabel("");
         constraints.fill = GridBagConstraints.NONE;
@@ -640,7 +640,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        fontChooserPanel.add(fontNameTextLabel, constraints);
+        appearancePanel.add(fontNameTextLabel, constraints);
 
         MultiBitLabel fontStyleLabel = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontStyle"));
         constraints.fill = GridBagConstraints.NONE;
@@ -650,7 +650,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
-        fontChooserPanel.add(fontStyleLabel, constraints);
+        appearancePanel.add(fontStyleLabel, constraints);
 
         fontStyleTextLabel = new MultiBitLabel("");
         constraints.fill = GridBagConstraints.NONE;
@@ -660,7 +660,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        fontChooserPanel.add(fontStyleTextLabel, constraints);
+        appearancePanel.add(fontStyleTextLabel, constraints);
 
         MultiBitLabel fontSizeLabel = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontSize"));
         constraints.fill = GridBagConstraints.NONE;
@@ -670,7 +670,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
-        fontChooserPanel.add(fontSizeLabel, constraints);
+        appearancePanel.add(fontSizeLabel, constraints);
 
         fontSizeTextLabel = new MultiBitLabel("");
         constraints.fill = GridBagConstraints.NONE;
@@ -680,7 +680,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        fontChooserPanel.add(fontSizeTextLabel, constraints);
+        appearancePanel.add(fontSizeTextLabel, constraints);
 
         ChooseFontAction chooseFontAction = new ChooseFontAction(controller, this, null);
         MultiBitButton fontChooserButton = new MultiBitButton(chooseFontAction, controller);
@@ -692,7 +692,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        fontChooserPanel.add(fontChooserButton, constraints);
+        appearancePanel.add(fontChooserButton, constraints);
 
         constraints.fill = GridBagConstraints.VERTICAL;
         constraints.gridx = 4;
@@ -701,7 +701,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 0.3;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        fontChooserPanel.add(MultiBitTitledPanel.createStent(1, 18), constraints);
+        appearancePanel.add(MultiBitTitledPanel.createStent(1, 18), constraints);
 
         MultiBitLabel lookAndFeelLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.lookAndFeel"));
         constraints.fill = GridBagConstraints.NONE;
@@ -711,7 +711,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
-        fontChooserPanel.add(lookAndFeelLabel, constraints);
+        appearancePanel.add(lookAndFeelLabel, constraints);
 
         originalLookAndFeel = controller.getModel().getUserPreference(MultiBitModel.LOOK_AND_FEEL);
         LookAndFeelInfo[] lookAndFeels = UIManager.getInstalledLookAndFeels();
@@ -746,7 +746,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 0.6;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        fontChooserPanel.add(lookAndFeelComboBox, constraints);
+        appearancePanel.add(lookAndFeelComboBox, constraints);
 
         JPanel fill1 = new JPanel();
         fill1.setOpaque(false);
@@ -757,9 +757,9 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
-        fontChooserPanel.add(fill1, constraints);
+        appearancePanel.add(fill1, constraints);
 
-        return fontChooserPanel;
+        return appearancePanel;
     }
 
     private JPanel createTickerPanel(int stentWidth) {
@@ -777,7 +777,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         GridBagConstraints constraints = new GridBagConstraints();
 
         constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 2;
+        constraints.gridx = 3;
         constraints.gridy = 3;
         constraints.weightx = 0.05;
         constraints.weighty = 0.3;
@@ -945,6 +945,16 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         Dimension preferredSize = new Dimension(textWidth + TICKER_COMBO_WIDTH_DELTA, fontMetrics.getHeight() + EXCHANGE_COMBO_HEIGHT_DELTA);
         exchangeComboBox1.setPreferredSize(preferredSize);
 
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 14;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 2;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        JPanel stent = MultiBitTitledPanel.createStent(stentWidth);
+        tickerPanel.add(stent, constraints);
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 4;
         constraints.gridy = 14;
@@ -1088,7 +1098,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 5;
         constraints.gridy = 22;
-        constraints.weightx = 1000;
+        constraints.weightx = 20;
         constraints.weighty = 1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
