@@ -6,6 +6,7 @@ package org.multibit.viewsystem.swing.view.components;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -138,14 +139,23 @@ public class JFontChooser extends JComponent {
         int minimumHeight = 12 * fontMetrics.getHeight() + HEIGHT_DELTA;
         setMinimumSize(new Dimension(minimumWidth, minimumHeight));
         setPreferredSize(new Dimension(minimumWidth, minimumHeight));
+        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         JPanel selectPanel = new JPanel();
+        selectPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         selectPanel.setLayout(new BoxLayout(selectPanel, BoxLayout.X_AXIS));
-        selectPanel.add(getFontFamilyPanel());
-        selectPanel.add(getFontStylePanel());
-        selectPanel.add(getFontSizePanel());
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            selectPanel.add(getFontFamilyPanel());
+            selectPanel.add(getFontStylePanel());
+            selectPanel.add(getFontSizePanel());
+        } else {
+            selectPanel.add(getFontSizePanel());            
+            selectPanel.add(getFontStylePanel());
+            selectPanel.add(getFontFamilyPanel());
+        }
 
         JPanel contentsPanel = new JPanel();
+        contentsPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         contentsPanel.setLayout(new GridLayout(2, 1));
         contentsPanel.add(selectPanel, BorderLayout.CENTER);
         contentsPanel.add(getSamplePanel(), BorderLayout.SOUTH);
@@ -164,6 +174,8 @@ public class JFontChooser extends JComponent {
             fontFamilyTextField.getDocument().addDocumentListener(new ListSearchTextFieldDocumentHandler(getFontFamilyList()));
             fontFamilyTextField.setFont(defaultFont);
             fontFamilyTextField.setEditable(false);
+            fontFamilyTextField.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+            fontFamilyTextField.setMinimumSize(new Dimension(1, fontMetrics.getHeight() + 2));
         }
         return fontFamilyTextField;
     }
@@ -176,6 +188,8 @@ public class JFontChooser extends JComponent {
             fontStyleTextField.getDocument().addDocumentListener(new ListSearchTextFieldDocumentHandler(getFontStyleList()));
             fontStyleTextField.setFont(defaultFont);
             fontStyleTextField.setEditable(false);
+            fontStyleTextField.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+            fontStyleTextField.setMinimumSize(new Dimension(1, fontMetrics.getHeight() + 2));
         }
         return fontStyleTextField;
     }
@@ -188,6 +202,8 @@ public class JFontChooser extends JComponent {
             fontSizeTextField.getDocument().addDocumentListener(new ListSearchTextFieldDocumentHandler(getFontSizeList()));
             fontSizeTextField.setFont(defaultFont);
             fontSizeTextField.setEditable(false);
+            fontSizeTextField.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+            fontSizeTextField.setMinimumSize(new Dimension(1, fontMetrics.getHeight() + 2));
         }
         return fontSizeTextField;
     }
@@ -200,6 +216,8 @@ public class JFontChooser extends JComponent {
             fontNameList.setSelectedIndex(0);
             fontNameList.setFont(defaultFont);
             fontNameList.setFocusable(false);
+            fontNameList.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
         }
         return fontNameList;
     }
@@ -212,6 +230,7 @@ public class JFontChooser extends JComponent {
             fontStyleList.setSelectedIndex(0);
             fontStyleList.setFont(defaultFont);
             fontStyleList.setFocusable(false);
+            fontStyleList.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         }
         return fontStyleList;
     }
@@ -224,6 +243,7 @@ public class JFontChooser extends JComponent {
             fontSizeList.setSelectedIndex(0);
             fontSizeList.setFont(defaultFont);
             fontSizeList.setFocusable(false);
+            fontSizeList.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         }
         return fontSizeList;
     }
@@ -568,13 +588,19 @@ public class JFontChooser extends JComponent {
         Frame frame = parent instanceof Frame ? (Frame) parent : (Frame) SwingUtilities.getAncestorOfClass(Frame.class, parent);
         JDialog dialog = new JDialog(frame, controller.getLocaliser().getString("fontChooser.selectFont"), true);
 
+        dialog.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        
         Action okAction = new DialogOKAction(dialog);
         Action cancelAction = new DialogCancelAction(dialog);
 
         MultiBitButton okButton = new MultiBitButton(okAction, controller);
+        okButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        
         MultiBitButton cancelButton = new MultiBitButton(cancelAction, controller);
+        cancelButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         JPanel buttonsPanel = new JPanel();
+        buttonsPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         buttonsPanel.setLayout(new GridLayout(2, 1));
         buttonsPanel.add(okButton);
         buttonsPanel.add(cancelButton);
@@ -587,12 +613,17 @@ public class JFontChooser extends JComponent {
         inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), cancelAction.getValue(Action.DEFAULT));
         inputMap.put(KeyStroke.getKeyStroke("ENTER"), okAction.getValue(Action.DEFAULT));
 
-        JPanel dialogEastPanel = new JPanel();
-        dialogEastPanel.setLayout(new BorderLayout());
-        dialogEastPanel.add(buttonsPanel, BorderLayout.NORTH);
+        JPanel dialogTrailingPanel = new JPanel();
+        dialogTrailingPanel.setLayout(new BorderLayout());
+        dialogTrailingPanel.add(buttonsPanel, BorderLayout.NORTH);
 
         dialog.getContentPane().add(this, BorderLayout.CENTER);
-        dialog.getContentPane().add(dialogEastPanel, BorderLayout.EAST);
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            dialog.getContentPane().add(dialogTrailingPanel, BorderLayout.EAST);
+        } else {
+            dialog.getContentPane().add(dialogTrailingPanel, BorderLayout.WEST);
+            
+        }
         dialog.pack();
         dialog.setLocationRelativeTo(frame);
         return dialog;
@@ -609,10 +640,12 @@ public class JFontChooser extends JComponent {
             fontNamePanel.setLayout(new BorderLayout());
             fontNamePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
             fontNamePanel.setPreferredSize(new Dimension(180, 130));
+            fontNamePanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
             JScrollPane scrollPane = new JScrollPane(getFontFamilyList());
             scrollPane.getVerticalScrollBar().setFocusable(false);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            scrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
             JPanel p = new JPanel();
             p.setLayout(new BorderLayout());
@@ -620,8 +653,9 @@ public class JFontChooser extends JComponent {
             p.add(scrollPane, BorderLayout.CENTER);
 
             MultiBitLabel label = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontName"));
-            label.setHorizontalAlignment(JLabel.LEFT);
-            label.setHorizontalTextPosition(JLabel.LEFT);
+            label.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+            label.setHorizontalAlignment(JLabel.LEADING);
+            label.setHorizontalTextPosition(JLabel.LEADING);
             label.setLabelFor(getFontFamilyTextField());
             label.setDisplayedMnemonic('F');
 
@@ -638,10 +672,12 @@ public class JFontChooser extends JComponent {
             fontStylePanel.setLayout(new BorderLayout());
             fontStylePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
             fontStylePanel.setPreferredSize(new Dimension(140, 130));
+            fontStylePanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
             JScrollPane scrollPane = new JScrollPane(getFontStyleList());
             scrollPane.getVerticalScrollBar().setFocusable(false);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            scrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
             JPanel p = new JPanel();
             p.setLayout(new BorderLayout());
@@ -649,8 +685,9 @@ public class JFontChooser extends JComponent {
             p.add(scrollPane, BorderLayout.CENTER);
 
             MultiBitLabel label = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontStyle"));
-            label.setHorizontalAlignment(JLabel.LEFT);
-            label.setHorizontalTextPosition(JLabel.LEFT);
+            label.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+            label.setHorizontalAlignment(JLabel.LEADING);
+            label.setHorizontalTextPosition(JLabel.LEADING);
             label.setLabelFor(getFontStyleTextField());
             label.setDisplayedMnemonic('Y');
 
@@ -666,10 +703,12 @@ public class JFontChooser extends JComponent {
             fontSizePanel.setLayout(new BorderLayout());
             fontSizePanel.setPreferredSize(new Dimension(70, 130));
             fontSizePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+            fontSizePanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
             JScrollPane scrollPane = new JScrollPane(getFontSizeList());
             scrollPane.getVerticalScrollBar().setFocusable(false);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            scrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
             JPanel p = new JPanel();
             p.setLayout(new BorderLayout());
@@ -677,13 +716,14 @@ public class JFontChooser extends JComponent {
             p.add(scrollPane, BorderLayout.CENTER);
 
             MultiBitLabel label = new MultiBitLabel(controller.getLocaliser().getString("fontChooser.fontSize"));
+            label.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
             Dimension requiredSize = new Dimension(fontMetrics.stringWidth(controller.getLocaliser().getString(
                     "fontChooser.fontSize")), fontMetrics.getHeight());
             label.setMinimumSize(requiredSize);
             label.setMaximumSize(requiredSize);
             label.setPreferredSize(requiredSize);
-            label.setHorizontalAlignment(JLabel.LEFT);
-            label.setHorizontalTextPosition(JLabel.LEFT);
+            label.setHorizontalAlignment(JLabel.LEADING);
+            label.setHorizontalTextPosition(JLabel.LEADING);
             label.setLabelFor(getFontSizeTextField());
             label.setDisplayedMnemonic('S');
 
@@ -704,6 +744,7 @@ public class JFontChooser extends JComponent {
             samplePanel = new JPanel();
             samplePanel.setLayout(new BorderLayout());
             samplePanel.setBorder(border);
+            samplePanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
             samplePanel.add(getSampleTextField(), BorderLayout.CENTER);
         }
@@ -717,6 +758,7 @@ public class JFontChooser extends JComponent {
             sampleText = new JTextField(controller.getLocaliser().getString("fontChooser.sampleText"));
             sampleText.setBorder(lowered);
             sampleText.setPreferredSize(new Dimension(300, 100));
+            sampleText.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         }
         return sampleText;
     }

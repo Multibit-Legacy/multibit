@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.action;
 
+import java.awt.ComponentOrientation;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 
@@ -55,6 +56,7 @@ public class ChooseFontAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         JFontChooser fontChooser = new JFontChooser(controller);
         fontChooser.setSelectedFont(showPreferencesPanel.getSelectedFont());
+
         int result = fontChooser.showDialog(showPreferencesPanel);
         if (result == JFontChooser.OK_OPTION) {
             Font font = fontChooser.getSelectedFont();
