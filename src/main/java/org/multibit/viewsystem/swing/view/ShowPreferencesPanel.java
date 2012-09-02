@@ -701,7 +701,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 0.3;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        appearancePanel.add(MultiBitTitledPanel.createStent(1, 18), constraints);
+        appearancePanel.add(MultiBitTitledPanel.createStent(1,30), constraints);
 
         MultiBitLabel lookAndFeelLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.lookAndFeel"));
         constraints.fill = GridBagConstraints.NONE;
