@@ -744,9 +744,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
 
         statusBar.refreshOnlineStatusText();
-
-        tickerTablePanel =  new TickerTablePanel(this, controller);
-        
+  
         updateHeader();
 
         viewFactory = new ViewFactory(controller, this);
