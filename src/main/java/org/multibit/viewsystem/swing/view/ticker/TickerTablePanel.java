@@ -87,9 +87,8 @@ public class TickerTablePanel extends JPanel {
         createTicker();
     }
 
-    private void createTicker() {
-        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-        //setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
+    private void createTicker() {       
+        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         setLayout(new GridBagLayout());
         setOpaque(true);
         setFocusable(false);
@@ -189,6 +188,7 @@ public class TickerTablePanel extends JPanel {
 
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        scrollPane.getViewport().setOpaque(false);
         scrollPane.getViewport().setPreferredSize(
                 new Dimension(tickerWidth, idealHeight));
         scrollPane.setMinimumSize(new Dimension(tickerWidth, Math.min(idealHeight, MultiBitFrame.HEIGHT_OF_HEADER)));

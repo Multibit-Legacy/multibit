@@ -728,6 +728,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * recreate all views
      */
     public void recreateAllViews(boolean initUI) {
+        ColorAndFontConstants.init();
+        
         // close down current view
         if (controller.getCurrentView() != 0) {
             navigateAwayFromView(controller.getCurrentView());
@@ -743,6 +745,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         statusBar.refreshOnlineStatusText();
 
+        tickerTablePanel =  new TickerTablePanel(this, controller);
+        
         updateHeader();
 
         viewFactory = new ViewFactory(controller, this);
