@@ -1,5 +1,17 @@
 MultiBit release notes.
 
+03 Sep 2012 Version 0.4.9
++  Look and feel added
++  Improved right-to-left layouts
++  I18n: de, es, fr, ko, znCH 100%. sk:98%, nl:97%, ja:88%
+
+
+29 Aug 2012 Version 0.5.2alpha
++  Faster wallet encrypt/ decrypt
++  Background tasks
++  I18n. Lots of new text
+
+
 27 Aug 2012 Version 0.4.8
 +  I18n update. Hebrew added as target language. Lots of new texts.
 
