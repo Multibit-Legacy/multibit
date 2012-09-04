@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.action;
 
+import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -79,6 +80,7 @@ public class OpenWalletAction extends AbstractAction {
             if (fileChooser == null) {
                 fileChooser = new JFileChooser();
                 fileChooser.setLocale(controller.getLocaliser().getLocale());
+                fileChooser.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
                 if (controller.getModel() != null && controller.getModel().getActiveWalletFilename() != null) {
                     fileChooser.setCurrentDirectory(new File(controller.getModel().getActiveWalletFilename()));
@@ -163,7 +165,7 @@ public class OpenWalletAction extends AbstractAction {
                         Message messageMessage = new Message(message);
                         messageMessage.setShowInStatusBar(false);
                         MessageManager.INSTANCE.addMessage(messageMessage);  
-
+                        
                         controller.fireRecreateAllViews(false);
                         controller.fireDataChanged();
                     } else {

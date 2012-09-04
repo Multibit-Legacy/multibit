@@ -74,6 +74,7 @@ public class MultiBitModel {
     public static final String USER_LANGUAGE_IS_DEFAULT = "isDefault";
     
     public static final String LOOK_AND_FEEL = "lookAndFeel";
+    public static final String SEA_GLASS_LOOK_AND_FEEL = "seaglass";
 
     // Currency ticker.
     public static final String TICKER_SHOW = "tickerShow";

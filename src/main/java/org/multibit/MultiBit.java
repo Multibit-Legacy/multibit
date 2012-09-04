@@ -145,19 +145,32 @@ public class MultiBit {
             log.debug("Setting look and feel");
             try {
                 boolean foundTargetLookAndFeel = false;
-
-                String lookAndFeel = userPreferences.getProperty(MultiBitModel.LOOK_AND_FEEL);
                 
-                if (lookAndFeel != null && lookAndFeel != "") {
-                    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                        //log.debug("Found look and feel : " + info.getName());
-                        if (lookAndFeel.equalsIgnoreCase(info.getName())) {
-                            UIManager.setLookAndFeel(info.getClassName());
-                            foundTargetLookAndFeel = true;
-                            break;
-                        }
+                if (!foundTargetLookAndFeel) {
+                    String lookAndFeel = userPreferences.getProperty(MultiBitModel.LOOK_AND_FEEL);
+
+                    if (lookAndFeel != null && lookAndFeel != "") {
+//                        if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(lookAndFeel)) {
+//                            try {
+//                                UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
+//                                foundTargetLookAndFeel = true;
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        } else {
+                            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                                // log.debug("Found look and feel : " +
+                                // info.getName());
+                                if (lookAndFeel.equalsIgnoreCase(info.getName())) {
+                                    UIManager.setLookAndFeel(info.getClassName());
+                                    foundTargetLookAndFeel = true;
+                                    break;
+                                }
+                            }
+//                        }
                     }
                 }
+                
                 // Set System look and feel if target not found
                 if (!foundTargetLookAndFeel) {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

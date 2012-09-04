@@ -27,24 +27,28 @@ import javax.swing.UIManager;
  *
  */
 public class ColorAndFontConstants {
-    public static String MULTIBIT_DEFAULT_FONT_NAME =  ((Font)UIManager.get("Label.font")).getFontName();
-    public static int MULTIBIT_DEFAULT_FONT_STYLE = ((Font)UIManager.get("Label.font")).getStyle();
-    public static int MULTIBIT_DEFAULT_FONT_SIZE = ((Font)UIManager.get("Label.font")).getSize() + 1;
+    public static String MULTIBIT_DEFAULT_FONT_NAME; 
+    public static int MULTIBIT_DEFAULT_FONT_STYLE; 
+    public static int MULTIBIT_DEFAULT_FONT_SIZE;
     public static int MULTIBIT_LARGE_FONT_INCREASE = 2;
 
-    public static Color BACKGROUND_COLOR =  (Color) UIManager.get("Label.background");
+    public static Color BACKGROUND_COLOR;
+    public static Color DARK_BACKGROUND_COLOR;
     public static Color VERY_LIGHT_BACKGROUND_COLOR = new Color(251, 251, 254);
-    public static Color DARK_BACKGROUND_COLOR = BACKGROUND_COLOR.darker();
 
     public static Color SELECTION_FOREGROUND_COLOR = SystemColor.textHighlightText;
     public static Color SELECTION_BACKGROUND_COLOR = SystemColor.textHighlight;
     
+    static {
+        init();
+    }
+    
     public static void init() {
-        MULTIBIT_DEFAULT_FONT_NAME =  ((Font)UIManager.get("Label.font")).getFontName();
-        MULTIBIT_DEFAULT_FONT_STYLE = ((Font)UIManager.get("Label.font")).getStyle();
-        MULTIBIT_DEFAULT_FONT_SIZE = ((Font)UIManager.get("Label.font")).getSize() + 1;
+        MULTIBIT_DEFAULT_FONT_NAME =   UIManager.get("Label.font") == null ? Font.DIALOG : ((Font)UIManager.get("Label.font")).getFontName();
+        MULTIBIT_DEFAULT_FONT_STYLE =  UIManager.get("Label.font") == null ? 0 : ((Font)UIManager.get("Label.font")).getStyle();
+        MULTIBIT_DEFAULT_FONT_SIZE = UIManager.get("Label.font") == null ? 13 : ((Font)UIManager.get("Label.font")).getSize() + 1;
 
-        BACKGROUND_COLOR =  (Color) UIManager.get("Label.background");
+        BACKGROUND_COLOR =  UIManager.get("Label.font") == null ?  new Color(250, 250, 250) : (Color) UIManager.get("Label.background");
         DARK_BACKGROUND_COLOR = BACKGROUND_COLOR.darker();
     }
 }

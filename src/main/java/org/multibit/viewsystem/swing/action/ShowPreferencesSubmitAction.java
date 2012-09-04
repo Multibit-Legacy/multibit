@@ -307,6 +307,8 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             try {
                 if (ShowPreferencesPanel.SYSTEM_LOOK_AND_FEEL.equals(newLookAndFeel)) {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } else if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(newLookAndFeel)) {
+                    UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
                 } else {
                     for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                         if (newLookAndFeel.equalsIgnoreCase(info.getName())) {
@@ -316,16 +318,12 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                     }
                 }
             } catch (ClassNotFoundException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (InstantiationException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (UnsupportedLookAndFeelException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 

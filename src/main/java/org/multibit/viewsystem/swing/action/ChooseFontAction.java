@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2012 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.multibit.viewsystem.swing.view.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.components.JFontChooser;
 
 /**
- * This {@link Action} represents the choose font action
+ * This {@link Action} represents the choose font action.
  */
 public class ChooseFontAction extends AbstractAction {
 
@@ -50,7 +50,7 @@ public class ChooseFontAction extends AbstractAction {
     }
 
     /**
-     * show font chooser dialog
+     * Show font chooser dialog.
      */
     public void actionPerformed(ActionEvent e) {
         JFontChooser fontChooser = new JFontChooser(controller);
@@ -63,6 +63,5 @@ public class ChooseFontAction extends AbstractAction {
             showPreferencesPanel.setSelectedFont(font);
         }
         System.out.println("ChooseFontAction: font is now: " + showPreferencesPanel.getSelectedFont());
-
     }
 }

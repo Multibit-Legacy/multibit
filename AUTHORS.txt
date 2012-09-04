@@ -11,8 +11,11 @@ Internationalisation:
 ---------------------
 3phase              - Greek
 anod1               - French
+AnonX               - Norwegian
 Arvis Lacis         - Latvian
 Azrael_PT           - Portuguese
+Baltar              - Polish
+Beetle              - Russian
 bitcoin.hu          - Hungarian
 bitcoinspot         - Dutch
 corn3               - Portuguese
@@ -36,6 +39,7 @@ ildubbioso          - Italian
 lzsaver             - Russian
 Jan-steenbergen     - Dutch
 JeppeJ              - Swedish
+jesusangel          - Spanish
 Jonny Heggheim      - Norwegian
 Katya Rowe          - Russian
 Kishor Kumar        - Hindi
@@ -46,16 +50,18 @@ lophie              - Arabic
 Marx1996xvx         - Polish
 Mats Henricson      - Swedish
 Memory Dealers      - Japanese
+Moole               - Czech
 mrmx                - Spanish
 mrvision            - Spanish
 muyuu               - Japanese
 nsnia               - Croatian
 nuntius.marii       - Dutch
+okahira             - Chinese Simplified
 pginvest            - Portuguese
 Piotr Waskiewicz    - Polish
 raymccarthy         - Swedish
 rbreban             - Spanish
-rondo               - French
+ronimo              - French
 sasha               - Russian
 spiccioli           - Italian
 techmix             - Persian

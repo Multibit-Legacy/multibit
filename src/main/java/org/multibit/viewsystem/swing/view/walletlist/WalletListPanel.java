@@ -233,6 +233,7 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener 
         CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller, null, mainFrame);
         MultiBitButton createNewWalletButton = new MultiBitButton(createNewWalletAction, controller);
         createNewWalletButton.setText(controller.getLocaliser().getString("crudButton.new"));
+        createNewWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
@@ -247,6 +248,7 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener 
         OpenWalletAction openWalletAction = new OpenWalletAction(controller, null, mainFrame);
         MultiBitButton openWalletButton = new MultiBitButton(openWalletAction, controller);
         openWalletButton.setText(controller.getLocaliser().getString("crudButton.open"));
+        openWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
                
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
@@ -261,6 +263,7 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener 
         DeleteWalletAction deleteWalletAction = new DeleteWalletAction(controller, null, mainFrame);
         MultiBitButton deleteWalletButton = new MultiBitButton(deleteWalletAction, controller);
         deleteWalletButton.setText(controller.getLocaliser().getString("crudButton.delete"));
+        deleteWalletButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;

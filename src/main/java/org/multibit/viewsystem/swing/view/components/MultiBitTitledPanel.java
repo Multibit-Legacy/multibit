@@ -50,6 +50,7 @@ public class MultiBitTitledPanel extends JPanel {
 
         HorizontalGradientPanel titlePanel = new HorizontalGradientPanel(componentOrientation);
         titlePanel.setLayout(new GridBagLayout());
+        titlePanel.setComponentOrientation(componentOrientation);
 
         Font titleFont = FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE);
 

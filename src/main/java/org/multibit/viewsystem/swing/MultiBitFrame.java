@@ -252,17 +252,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         walletsView.displayView();
 
         splitPane.setDividerLocation(calculateDividerPosition());
-        
-//        if (UIManager.getLookAndFeel().getName().equals("Nimbus")) {
-//            Component[] components = splitPane.getComponents();
-//            if (components != null) {
-//                for (Component loop : components) {
-//                    if (loop instanceof javax.swing.plaf.basic.BasicSplitPaneDivider) {
-//                        javax.swing.plaf.basic.BasicSplitPaneDivider loop2 = (javax.swing.plaf.basic.BasicSplitPaneDivider)loop;
-//                    }
-//                }
-//            }
-//        }
 
         pack();
 
@@ -371,6 +360,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         splitPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SystemColor.windowBorder));
         splitPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         splitPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 1;

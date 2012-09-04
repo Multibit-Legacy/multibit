@@ -87,8 +87,8 @@ public class TickerTablePanel extends JPanel {
         createTicker();
     }
 
-    private void createTicker() {
-        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+    private void createTicker() {       
+        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         setLayout(new GridBagLayout());
         setOpaque(true);
         setFocusable(false);
@@ -137,7 +137,7 @@ public class TickerTablePanel extends JPanel {
         table.getTableHeader().setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-1));
         
         int tableHeaderVerticalInsets = table.getTableHeader().getInsets().top + table.getTableHeader().getInsets().bottom;
-        
+
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
         JLabel label = (JLabel) renderer;
         label.setHorizontalAlignment(JLabel.CENTER);
@@ -177,24 +177,18 @@ public class TickerTablePanel extends JPanel {
             }
         }
 
-        int verticalDelta;
         int idealHeight =  (fontMetrics.getHeight() + table.getRowMargin()) * tickerTableModel.getRowCount() 
-                + fontMetrics.getHeight() + tableHeaderVerticalInsets + tickerTableModel.getRowCount() + 7;
-        
-//        if (mainFrame.getApplication().isMac()) {
-//            verticalDelta = VERTICAL_DELTA_MAC;
-//            idealHeight = (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta;
-//        } else {
-//            verticalDelta = VERTICAL_DELTA_NON_MAC;
-//            idealHeight = (2 + fontMetrics.getHeight()) * (tickerTableModel.getRowCount() + 1) + verticalDelta;
-//        }
+            + fontMetrics.getHeight() + tableHeaderVerticalInsets + tickerTableModel.getRowCount() + 7;
+
 
         setPreferredSize(new Dimension(tickerWidth, idealHeight));
 
         JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        scrollPane.getViewport().setOpaque(false);
         scrollPane.getViewport().setPreferredSize(
                 new Dimension(tickerWidth, idealHeight));
         scrollPane.setMinimumSize(new Dimension(tickerWidth, Math.min(idealHeight, MultiBitFrame.HEIGHT_OF_HEADER)));

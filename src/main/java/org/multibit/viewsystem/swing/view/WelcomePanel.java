@@ -60,8 +60,8 @@ public class WelcomePanel extends JPanel implements View {
         this.controller = controller;
 
         setLayout(new BorderLayout());
-
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         this.controller = controller;
 
@@ -75,6 +75,7 @@ public class WelcomePanel extends JPanel implements View {
         mainPanel.setMinimumSize(new Dimension(400, 500));
         mainPanel.setLayout(new GridBagLayout());
         mainPanel.setOpaque(false);
+        mainPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -108,7 +109,7 @@ public class WelcomePanel extends JPanel implements View {
         helpButton.setToolTipText(tooltipText);
         helpButton.setHorizontalAlignment(SwingConstants.LEADING);
         helpButton.setBorder(BorderFactory.createEmptyBorder(0, AbstractTradePanel.HELP_BUTTON_INDENT,
-                AbstractTradePanel.HELP_BUTTON_INDENT, 0));
+                AbstractTradePanel.HELP_BUTTON_INDENT, AbstractTradePanel.HELP_BUTTON_INDENT));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 2;
