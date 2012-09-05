@@ -93,6 +93,8 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         this.controller = controller;
+        
+        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         initUI();
         
@@ -111,6 +113,8 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
         mainPanel.setMinimumSize(new Dimension(550, 160));
         mainPanel.setLayout(new GridBagLayout());
         mainPanel.setOpaque(false);
+        mainPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
 
         String[] keys = new String[] { "resetTransactionsPanel.walletDescriptionLabel",
                 "resetTransactionsPanel.walletFilenameLabel", "showExportPrivateKeysPanel.passwordPrompt",
@@ -162,7 +166,8 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
 
         messageLabel1 = new MultiBitLabel("");
         messageLabel1.setOpaque(false);
-        messageLabel1.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
+        messageLabel1.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 30));
+        messageLabel1.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 4;
@@ -174,7 +179,8 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
 
         messageLabel2 = new MultiBitLabel("");
         messageLabel2.setOpaque(false);
-        messageLabel2.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
+        messageLabel2.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 30));
+        messageLabel2.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 5;
@@ -189,12 +195,13 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
                 HelpContentsPanel.HELP_WALLET_TYPES_URL);
         HelpButton helpButton = new HelpButton(helpAction, controller);
         helpButton.setText("");
+        helpButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] {
                 controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip") });
         helpButton.setToolTipText(tooltipText);
         helpButton.setHorizontalAlignment(SwingConstants.LEADING);
-        helpButton.setBorder(BorderFactory.createEmptyBorder(0, AbstractTradePanel.HELP_BUTTON_INDENT, AbstractTradePanel.HELP_BUTTON_INDENT, 0));
+        helpButton.setBorder(BorderFactory.createEmptyBorder(0, AbstractTradePanel.HELP_BUTTON_INDENT, AbstractTradePanel.HELP_BUTTON_INDENT, AbstractTradePanel.HELP_BUTTON_INDENT));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
         constraints.gridy = 6;
@@ -221,6 +228,7 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
         mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
+        mainScrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         add(mainScrollPane, BorderLayout.CENTER);
     }
@@ -265,6 +273,7 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
   
         MultiBitLabel walletDescriptionLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "resetTransactionsPanel.walletDescriptionLabel"));
+        walletDescriptionLabelLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 5;
@@ -275,6 +284,7 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
         inputWalletPanel.add(walletDescriptionLabelLabel, constraints);
 
         walletDescriptionLabel = new MultiBitLabel(controller.getModel().getActivePerWalletModelData().getWalletDescription());
+        walletDescriptionLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 5;
@@ -286,6 +296,7 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
 
         MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "resetTransactionsPanel.walletFilenameLabel"));
+        walletFilenameLabelLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 6;
@@ -296,6 +307,7 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
         inputWalletPanel.add(walletFilenameLabelLabel, constraints);
 
         walletFilenameLabel = new MultiBitLabel(controller.getModel().getActiveWalletFilename());
+        walletFilenameLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 6;
@@ -379,6 +391,7 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
         passwordProtectPanel.add(filler0, constraints);
 
         MultiBitLabel passwordPromptLabel = new MultiBitLabel("");
+        passwordPromptLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         passwordPromptLabel.setText(controller.getLocaliser().getString("showExportPrivateKeysPanel.passwordPrompt"));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
@@ -392,6 +405,7 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
         passwordField = new JPasswordField(24);
         passwordField.setMinimumSize(new Dimension(200, 20));
         passwordField.addKeyListener(new PasswordListener());
+        passwordField.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 4;
@@ -419,6 +433,7 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
 
         MultiBitLabel repeatPasswordPromptLabel = new MultiBitLabel("");
         repeatPasswordPromptLabel.setText(controller.getLocaliser().getString("showExportPrivateKeysPanel.repeatPasswordPrompt"));
+        repeatPasswordPromptLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 6;
@@ -431,6 +446,7 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
         repeatPasswordField = new JPasswordField(24);
         repeatPasswordField.setMinimumSize(new Dimension(200, 20));
         repeatPasswordField.addKeyListener(new PasswordListener());
+        repeatPasswordField.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 6;
@@ -443,6 +459,7 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
         ImageIcon tickIcon = ImageLoader.createImageIcon(ImageLoader.TICK_ICON_FILE);
         tickLabel = new JLabel(tickIcon);
         tickLabel.setToolTipText(controller.getLocaliser().getString("showExportPrivateKeysPanel.theTwoPasswordsMatch"));
+        tickLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         tickLabel.setVisible(false);
         constraints.fill = GridBagConstraints.NONE;
@@ -473,6 +490,7 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
 
         reminderLabel1 = new MultiBitLabel(controller.getLocaliser().getString("addPasswordPanel.reminder1"));
         reminderLabel1.setFont(reminderLabel1.getFont().deriveFont(Font.BOLD));
+        reminderLabel1.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 8;
@@ -484,6 +502,7 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
         passwordProtectPanel.add(reminderLabel1, constraints);
 
         reminderLabel2 = new MultiBitLabel(controller.getLocaliser().getString("addPasswordPanel.reminder2"));
+        reminderLabel2.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 9;
@@ -495,6 +514,7 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
         passwordProtectPanel.add(reminderLabel2, constraints);
 
         reminderLabel3 = new MultiBitLabel(controller.getLocaliser().getString("addPasswordPanel.reminder3"));
+        reminderLabel3.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 10;
@@ -530,6 +550,7 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
         FlowLayout flowLayout = new FlowLayout();
         flowLayout.setAlignment(FlowLayout.RIGHT);
         buttonPanel.setLayout(flowLayout);
+        buttonPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         /**
          * Create submit action with references to the password fields - this
@@ -538,6 +559,7 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
         addPasswordSubmitAction = new AddPasswordSubmitAction(controller, this,
                 ImageLoader.createImageIcon(ImageLoader.ADD_PASSWORD_ICON_FILE), passwordField, repeatPasswordField);
         MultiBitButton submitButton = new MultiBitButton(addPasswordSubmitAction, controller);
+        submitButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         buttonPanel.add(submitButton);
 
         return buttonPanel;

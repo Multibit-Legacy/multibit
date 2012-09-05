@@ -581,7 +581,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         String filenameString = controller.getLocaliser().getString("resetTransactionsPanel.walletFilenameLabel");
         filenameString = WhitespaceTrimmer.trim(filenameString.replaceAll(":", "")) + " :";
         filenameLabel.setText(filenameString);
-        filenameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        filenameLabel.setHorizontalAlignment(SwingConstants.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 0;
