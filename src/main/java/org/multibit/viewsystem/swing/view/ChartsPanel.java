@@ -188,6 +188,12 @@ public class ChartsPanel extends JPanel implements View {
         // NUMBER_OF_DAYS_TO_LOOK_BACKs data.
         BigInteger balance = BigInteger.ZERO;
 
+        // The previous datums balance.
+        BigInteger previousBalance = BigInteger.ZERO;
+        
+        // The previous datums timepoint.
+        Date previousDate = null;
+        
         long pastInMillis = DateUtils.nowUtc().plusDays(-1 * NUMBER_OF_DAYS_TO_LOOK_BACK).getMillis();
 
         // Create ChartData collection.
@@ -201,11 +207,21 @@ public class ChartsPanel extends JPanel implements View {
                 long loopTimeInMillis = loop.getUpdateTime().getTime();
 
                 if (loopTimeInMillis > pastInMillis) {
-                    // Include this transaction as it is in the last
-                    // NUMBER_OF_DAYS_TO_LOOK_BACK days.
+                    // If the previous transaction was BEFORE the NUMBER_OF_DAYS_TO_LOOK_BACK cutoff, include a data point
+                    // at the beginning of the timewindow at the balance at that time.
+                    if ((previousDate != null) && (previousDate.getTime() <= pastInMillis)) {
+                        // The balance was non-zero.
+                        chartData.add(new ChartData(new Date(pastInMillis), previousBalance));
+                    } else {
+                        // At beginning of time window balance was zero
+                        chartData.add(new ChartData(new Date(pastInMillis), BigInteger.ZERO));
+                    }
+                    // Include this transaction as it is in the last NUMBER_OF_DAYS_TO_LOOK_BACK days.
                     chartData.add(new ChartData(loop.getUpdateTime(), balance));
                 }
 
+                previousBalance = balance;
+                previousDate = loop.getUpdateTime();
             }
         } catch (ScriptException e1) {
             e1.printStackTrace();
