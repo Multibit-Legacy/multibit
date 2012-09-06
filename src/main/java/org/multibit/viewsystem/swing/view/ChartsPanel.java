@@ -200,6 +200,8 @@ public class ChartsPanel extends JPanel implements View {
         Collection<ChartData> chartData = new ArrayList<ChartData>();
 
         try {
+            boolean leftEdgeDataPointAdded = false;
+            
             for (Transaction loop : allTransactions) {
 
                 balance = balance.add(loop.getValue(controller.getModel().getActiveWallet()));
@@ -207,15 +209,21 @@ public class ChartsPanel extends JPanel implements View {
                 long loopTimeInMillis = loop.getUpdateTime().getTime();
 
                 if (loopTimeInMillis > pastInMillis) {
-                    // If the previous transaction was BEFORE the NUMBER_OF_DAYS_TO_LOOK_BACK cutoff, include a data point
-                    // at the beginning of the timewindow at the balance at that time.
-                    if ((previousDate != null) && (previousDate.getTime() <= pastInMillis)) {
-                        // The balance was non-zero.
-                        chartData.add(new ChartData(new Date(pastInMillis), previousBalance));
-                    } else {
-                        // At beginning of time window balance was zero
-                        chartData.add(new ChartData(new Date(pastInMillis), BigInteger.ZERO));
+                    if (!leftEdgeDataPointAdded) {
+                        // If the previous transaction was BEFORE the
+                        // NUMBER_OF_DAYS_TO_LOOK_BACK cutoff, include a datapoint
+                        // at the beginning of the timewindow with the balance at
+                        // that time.
+                        if ((previousDate != null) && (previousDate.getTime() <= pastInMillis)) {
+                            // The balance was non-zero.
+                            chartData.add(new ChartData(new Date(pastInMillis), previousBalance));
+                        } else {
+                            // At beginning of time window balance was zero
+                            chartData.add(new ChartData(new Date(pastInMillis), BigInteger.ZERO));
+                        }
+                        leftEdgeDataPointAdded = true;
                     }
+
                     // Include this transaction as it is in the last NUMBER_OF_DAYS_TO_LOOK_BACK days.
                     chartData.add(new ChartData(loop.getUpdateTime(), balance));
                 }
