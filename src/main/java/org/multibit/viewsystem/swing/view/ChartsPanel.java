@@ -19,6 +19,13 @@ import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -27,36 +34,49 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+
+import com.google.bitcoin.core.ScriptException;
+import com.google.bitcoin.core.Transaction;
 
 /**
  * The Charts view.
  */
 public class ChartsPanel extends JPanel implements View {
     private static final long serialVersionUID = 191352212345998705L;
-  
+
+    private static final int NUMBER_OF_DAYS_TO_LOOK_BACK = 30;
+
     private MultiBitController controller;
-    
-    // dummy label for illustration
+
+    private JPanel mainPanel;
+
+    // Dummy label for example.
     private JLabel walletLabel;
 
-  /**
+    // Formatter for dates.
+    private SimpleDateFormat dateFormatter;
+
+    /**
      * Creates a new {@link ChartsPanel}.
      */
-    public ChartsPanel(MultiBitController controller, MultiBitFrame mainFrame) {        
+    public ChartsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
-        
-        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);        
+
+        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
+        dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
         initUI();
     }
-    
+
     private void initUI() {
-        JPanel mainPanel = new JPanel();
+        mainPanel = new JPanel();
         mainPanel.setLayout(new GridBagLayout());
         mainPanel.setOpaque(false);
         mainPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -88,20 +108,110 @@ public class ChartsPanel extends JPanel implements View {
     private JPanel createChartPanel() {
         JPanel chartPanel = new JPanel();
         chartPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        chartPanel.setLayout(new BorderLayout());
+        chartPanel.setOpaque(false);
+        chartPanel.setLayout(new GridBagLayout());
+
+        GridBagConstraints constraints = new GridBagConstraints();
 
         walletLabel = new JLabel();
         walletLabel.setText(controller.getModel().getActiveWalletFilename());
-        chartPanel.add(walletLabel, BorderLayout.CENTER);
-        
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        chartPanel.add(walletLabel, constraints);
+
+        // Get the last months transaction data.
+        Collection<ChartData> chartDataCollection = getChartData();
+
+        // Dummy presentation - add the data in a label.
+        int count = 1;
+        for (ChartData chartData : chartDataCollection) {
+            constraints.gridy = count;
+            ;
+            JLabel dataLabel = new JLabel();
+            dataLabel.setText(dateFormatter.format(chartData.getDate()) + " "
+                    + controller.getLocaliser().bitcoinValueToString4(chartData.getValue(), false, false));
+            chartPanel.add(dataLabel, constraints);
+
+            count++;
+        }
+
+        // Draw the chart.
+        // TODO
+
         return chartPanel;
     }
-    
+
     /**
-     * Update the chart panel (active wallet may have changed).
+     * Update the chart panel (The active wallet may have changed).
      */
     private void updateChart() {
-        walletLabel.setText(controller.getModel().getActiveWalletFilename());        
+        // Clear the main panel.
+        mainPanel.removeAll();
+
+        // Recreate the chart data and 'draw' it.
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        mainPanel.add(createChartPanel(), constraints);
+    }
+
+    /**
+     * Get the transaction data for the chart
+     */
+    private Collection<ChartData> getChartData() {
+        if (controller.getModel().getActiveWallet() == null) {
+            return new ArrayList<ChartData>();
+        }
+
+        ArrayList<Transaction> allTransactions = new ArrayList<Transaction>(controller.getModel().getActiveWallet()
+                .getTransactions(false, false));
+
+        // Order by date.
+        Collections.sort(allTransactions, new Comparator<Transaction>() {
+            public int compare(Transaction t1, Transaction t2) {
+                return t1.getUpdateTime().compareTo(t2.getUpdateTime());
+            }
+        });
+
+        // Work out balance as running total and filter to just last
+        // NUMBER_OF_DAYS_TO_LOOK_BACKs data.
+        BigInteger balance = BigInteger.ZERO;
+
+        long pastInMillis = DateUtils.nowUtc().plusDays(-1 * NUMBER_OF_DAYS_TO_LOOK_BACK).getMillis();
+
+        // Create ChartData collection.
+        Collection<ChartData> chartData = new ArrayList<ChartData>();
+
+        try {
+            for (Transaction loop : allTransactions) {
+
+                balance = balance.add(loop.getValue(controller.getModel().getActiveWallet()));
+
+                long loopTimeInMillis = loop.getUpdateTime().getTime();
+
+                if (loopTimeInMillis > pastInMillis) {
+                    // Include this transaction as it is in the last
+                    // NUMBER_OF_DAYS_TO_LOOK_BACK days.
+                    chartData.add(new ChartData(loop.getUpdateTime(), balance));
+                }
+
+            }
+        } catch (ScriptException e1) {
+            e1.printStackTrace();
+        }
+
+        return chartData;
     }
 
     @Override
@@ -112,10 +222,10 @@ public class ChartsPanel extends JPanel implements View {
     }
 
     @Override
-    public void displayView() {  
+    public void displayView() {
         updateChart();
     }
-       
+
     @Override
     public Icon getViewIcon() {
         return ImageLoader.createImageIcon(ImageLoader.CHART_LINE_ICON_FILE);
@@ -125,7 +235,7 @@ public class ChartsPanel extends JPanel implements View {
     public String getViewTitle() {
         return controller.getLocaliser().getString("chartsPanelAction.text");
     }
-    
+
     @Override
     public String getViewTooltip() {
         return controller.getLocaliser().getString("chartsPanelAction.tooltip");
@@ -134,5 +244,23 @@ public class ChartsPanel extends JPanel implements View {
     @Override
     public int getViewId() {
         return View.CHARTS_VIEW;
+    }
+
+    class ChartData {
+        private Date date;
+        private BigInteger value;
+
+        public ChartData(Date date, BigInteger value) {
+            this.date = date;
+            this.value = value;
+        }
+
+        public Date getDate() {
+            return date;
+        }
+
+        public BigInteger getValue() {
+            return value;
+        }
     }
 }
