@@ -139,6 +139,11 @@ public class ViewFactory {
             break;
         }
 
+        case View.CHARTS_VIEW: {
+            viewToReturn = new ChartsPanel(controller, mainFrame);
+            break;
+        }
+
         default: {
         }
         }

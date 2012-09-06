@@ -37,6 +37,7 @@ public class ImageLoader {
     public static final String ARROW_RIGHT_ICON_FILE = "/images/arrowRight.png";   
     public static final String CANCEL_ICON_FILE = "/images/cancel.png";
     public static final String CHANGE_PASSWORD_ICON_FILE = "/images/lockChange.png";
+    public static final String CHART_LINE_ICON_FILE = "/images/chartLine.png";
     public static final String CLOSE_TAB_ICON_FILE = "/images/closeTab.png";
     public static final String COPY_ICON_FILE = "/images/copy.png";
     public static final String CREATE_NEW_ICON_FILE = "/images/createNew.png";

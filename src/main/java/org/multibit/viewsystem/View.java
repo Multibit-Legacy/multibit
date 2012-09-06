@@ -49,14 +49,10 @@ public interface View {
     public static final int ADD_PASSWORD_VIEW = 19;
     public static final int CHANGE_PASSWORD_VIEW = 20;
     public static final int REMOVE_PASSWORD_VIEW = 21;
+    public static final int CHARTS_VIEW = 22;
     
     public static final int DEFAULT_VIEW = WELCOME_VIEW;
-   
-    /**
-     * load any required model data
-     */
- //   public void loadForm();
-    
+     
     /**
      * display the view
      */

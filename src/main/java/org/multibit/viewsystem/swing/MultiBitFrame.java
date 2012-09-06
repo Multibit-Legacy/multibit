@@ -656,6 +656,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setComponentOrientation(componentOrientation);
         viewMenu.add(menuItem);
 
+        // View Charts action.
+        MultiBitAction showChartsAction = new MultiBitAction(controller, ImageLoader.CHART_LINE_ICON_FILE,
+                "chartsPanelAction.text", "chartsPanelAction.tooltip", "chartsPanelAction.mnemonic",
+                View.CHARTS_VIEW);
+        menuItem = new JMenuItem(showChartsAction);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        viewMenu.add(menuItem);
+
         // Show messages action.
         MultiBitAction showMessagesAction = new MultiBitAction(controller, ImageLoader.MESSAGES_ICON_FILE, "messagesPanel.text",
                 "messagesPanel.tooltip", "messagesPanel.mnemonic", View.MESSAGES_VIEW);
