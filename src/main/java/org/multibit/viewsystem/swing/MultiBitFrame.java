@@ -783,7 +783,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (View.OPEN_WALLET_VIEW == viewToDisplay) {
             viewToDisplay = View.YOUR_WALLETS_VIEW;
         }
-
+        
+        // Create Bulk addreses obselete - show transactions
+        if (View.CREATE_BULK_ADDRESSES_VIEW == viewToDisplay) {
+            viewToDisplay = View.TRANSACTIONS_VIEW;
+        }
         // show wallets view always on display
         if (View.YOUR_WALLETS_VIEW == viewToDisplay) {
             walletsView.displayView();

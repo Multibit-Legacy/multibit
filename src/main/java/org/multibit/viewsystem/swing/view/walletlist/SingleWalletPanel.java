@@ -61,7 +61,7 @@ import com.google.bitcoin.core.Wallet.BalanceType;
 
 public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener {
 
-    private static final int WIDTH_OF_TEXT_FIELD = 15;
+    private static final int WIDTH_OF_TEXT_FIELD = 12;
 
     private static final long serialVersionUID = -7110340338285836548L;
 
@@ -77,6 +77,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private static final int DETAIL_HEIGHT_DELTA = 4;
     private static final int WIDTH_DELTA = 4;
     private static final int MIN_WIDTH_SCROLLBAR_DELTA = 20;
+    private static final double MINIMUM_WIDTH_SCALE_FACTOR = 0.5;
 
     private static Color inactiveBackGroundColor;
     private Border underlineBorder;
@@ -151,7 +152,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         myRoundedPanel.setLayout(new GridBagLayout());
         myRoundedPanel.setOpaque(false);
         myRoundedPanel.setPreferredSize(new Dimension(normalWidth, normalHeight));
-        myRoundedPanel.setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, normalHeight));
+        myRoundedPanel.setMinimumSize(new Dimension(calculateMinimumWidth(normalWidth), normalHeight));
         myRoundedPanel.setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
 
         setOpaque(true);
@@ -268,7 +269,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         // add detail panel
         detailPanel = createWalletDetailPanel();
         detailPanel.setPreferredSize(new Dimension(normalWidth, detailHeight));
-        detailPanel.setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, detailHeight));
+        detailPanel.setMinimumSize(new Dimension(calculateMinimumWidth(normalWidth), detailHeight));
         detailPanel.setMaximumSize(new Dimension(normalWidth * 2, detailHeight));
 
         constraints2.fill = GridBagConstraints.BOTH;
@@ -304,6 +305,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         FontMetrics fontMetrics = component.getFontMetrics(font);
         return (int) (fontMetrics.getMaxAdvance() * WIDTH_OF_TEXT_FIELD * 0.66 + WIDTH_DELTA);
     }
+    
+    private static int calculateMinimumWidth(int normalWidth) {
+        return (int)Math.max(0, normalWidth * MINIMUM_WIDTH_SCALE_FACTOR - MIN_WIDTH_SCROLLBAR_DELTA);
+    }
 
     @Override
     public void addMouseListener(MouseListener mouseListener) {
@@ -325,14 +330,14 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 twistyLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.twistyDownText"));
                 detailPanel.setVisible(true);
                 setPreferredSize(new Dimension(normalWidth, expandedHeight));
-                setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, expandedHeight));
+                setMinimumSize(new Dimension(calculateMinimumWidth(normalWidth), expandedHeight));
                 setMaximumSize(new Dimension(normalWidth * 2, expandedHeight));
             } else {
                 twistyLabel.setIcon(twistyRightIcon);
                 twistyLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.twistyRightText"));
                 detailPanel.setVisible(false);
                 setPreferredSize(new Dimension(normalWidth, normalHeight));
-                setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, normalHeight));
+                setMinimumSize(new Dimension(calculateMinimumWidth(normalWidth), normalHeight));
                 setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
             }
 
@@ -467,7 +472,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         String filenameString = controller.getLocaliser().getString("resetTransactionsPanel.walletFilenameLabel");
         filenameString = WhitespaceTrimmer.trim(filenameString.replaceAll(":", "")) + " :";
         filenameLabel.setText(filenameString);
-        filenameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        filenameLabel.setHorizontalAlignment(SwingConstants.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 0;

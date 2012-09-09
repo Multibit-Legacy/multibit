@@ -1,5 +1,5 @@
 /**
- * Copyright 2012 Jim Burton
+ * Copyright 2011 John Sample
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,12 +46,12 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
 
     public static final String[] defaultGoodHosts = new String[]{
          "bitseed.xf2.org",             // Jeff Garzik
-         "dnsseed.bluematt.me",         // Matt Corallo
          "seed.bitcoin.sipa.be"         // Pieter Wuille
     };
 
     public static final String[] defaultPossibleHosts = new String[]{
-        "dnsseed.bitcoin.dashjr.org"  // Luke Dashjr
+        "dnsseed.bluematt.me",         // Matt Corallo
+        "dnsseed.bitcoin.dashjr.org"   // Luke Dashjr
     };
 
     /**
@@ -165,4 +165,3 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
     public void shutdown() {
     }
 }
-

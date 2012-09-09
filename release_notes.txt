@@ -1,5 +1,14 @@
 MultiBit release notes.
 
+10 Sep 2012 Version 0.4.10
++ Czech and Indonesian 100% translation added.
+
+
+05 Sep 2012 Version 0.5.3beta
++  Forward port of everything from 0.4.9
++  Czech translation 100% added.
+
+
 03 Sep 2012 Version 0.4.9
 +  Look and feel added
 +  Improved right-to-left layouts

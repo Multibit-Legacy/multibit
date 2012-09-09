@@ -148,33 +148,33 @@ public class MultiBitBlockChainTest {
         assertEquals(chain.getChainHead().getHeader(), b3.cloneAsHeader());
     }
 
-    @Test
-    public void difficultyTransitions() throws Exception {
-        // Add a bunch of blocks in a loop until we reach a difficulty transition point. The unit test params have an
-        // artificially shortened period.
-        Block prev = unitTestParams.genesisBlock;
-        Block.fakeClock = System.currentTimeMillis() / 1000;
-        for (int i = 0; i < unitTestParams.interval - 1; i++) {
-            Block newBlock = prev.createNextBlock(coinbaseTo, Block.fakeClock);
-            assertTrue(chain.add(newBlock));
-            prev = newBlock;
-            // The fake chain should seem to be "fast" for the purposes of difficulty calculations.
-            Block.fakeClock += 2;
-        }
-        // Now add another block that has no difficulty adjustment, it should be rejected.
-        try {
-            chain.add(prev.createNextBlock(coinbaseTo));
-            fail();
-        } catch (VerificationException e) {
-        }
-        // Create a new block with the right difficulty target given our blistering speed relative to the huge amount
-        // of time it's supposed to take (set in the unit test network parameters).
-        Block b = prev.createNextBlock(coinbaseTo, Block.fakeClock);
-        b.setDifficultyTarget(0x201fFFFFL);
-        b.solve();
-        assertTrue(chain.add(b));
-        // Successfully traversed a difficulty transition period.
-    }
+//    @Test
+//    public void difficultyTransitions() throws Exception {
+//        // Add a bunch of blocks in a loop until we reach a difficulty transition point. The unit test params have an
+//        // artificially shortened period.
+//        Block prev = unitTestParams.genesisBlock;
+//        Block.fakeClock = System.currentTimeMillis() / 1000;
+//        for (int i = 0; i < unitTestParams.interval - 1; i++) {
+//            Block newBlock = prev.createNextBlock(coinbaseTo, Block.fakeClock);
+//            assertTrue(chain.add(newBlock));
+//            prev = newBlock;
+//            // The fake chain should seem to be "fast" for the purposes of difficulty calculations.
+//            Block.fakeClock += 2;
+//        }
+//        // Now add another block that has no difficulty adjustment, it should be rejected.
+//        try {
+//            chain.add(prev.createNextBlock(coinbaseTo));
+//            fail();
+//        } catch (VerificationException e) {
+//        }
+//        // Create a new block with the right difficulty target given our blistering speed relative to the huge amount
+//        // of time it's supposed to take (set in the unit test network parameters).
+//        Block b = prev.createNextBlock(coinbaseTo, Block.fakeClock);
+//        b.setDifficultyTarget(0x201fFFFFL);
+//        b.solve();
+//        assertTrue(chain.add(b));
+//        // Successfully traversed a difficulty transition period.
+//    }
 
     @Test
     public void badDifficulty() throws Exception {

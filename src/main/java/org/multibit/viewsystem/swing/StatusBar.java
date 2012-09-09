@@ -154,6 +154,8 @@ public class StatusBar extends JPanel implements MessageListener {
         onlineLabel.setOpaque(true);
 
         onlineLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        onlineLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
         onlineLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent arg0) {
@@ -205,6 +207,7 @@ public class StatusBar extends JPanel implements MessageListener {
         syncProgressBar.setVisible(false);
         syncProgressBar.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         syncProgressBar.setOpaque(true);
+        syncProgressBar.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
        
         JPanel filler = new JPanel();
         filler.setOpaque(true);
