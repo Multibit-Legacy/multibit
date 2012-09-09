@@ -153,8 +153,13 @@ public class Localiser {
                 + MULTIBIT_RESOURCE_BUNDLE_NAME + PROPERTY_NAME_SUFFIX;
 
         if ("he".equals(locale.getLanguage()) || "iw".equals(locale.getLanguage())) {
+            // Hebrew can be he or iw
             this.locale = new Locale("iw");
             propertyFilename = MULTIBIT_RESOURCE_BUNDLE_DIRECTORY + "/he/" + MULTIBIT_RESOURCE_BUNDLE_NAME + PROPERTY_NAME_SUFFIX;
+        } if ("id".equals(locale.getLanguage()) || "in".equals(locale.getLanguage())) {
+            // Indonesian can be id or in
+            this.locale = new Locale("in");
+            propertyFilename = MULTIBIT_RESOURCE_BUNDLE_DIRECTORY + "/id/" + MULTIBIT_RESOURCE_BUNDLE_NAME + PROPERTY_NAME_SUFFIX;
         } else {
             this.locale = locale;
         }
