@@ -59,7 +59,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
     private static final long serialVersionUID = 191352212345998705L;
 
     private static final int NUMBER_OF_DAYS_TO_LOOK_BACK = 30;
-    private static final BigInteger NUMBER_OF_SATOSHI_IN_ONE_BTC = BigInteger.valueOf(100000000);
+    private static final double NUMBER_OF_SATOSHI_IN_ONE_BTC = 100000000;
 
     private MultiBitController controller;
 
@@ -156,7 +156,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
                     System.out.println(chartData.toString());
 
                     xData.add(chartData.getDate());
-                    yData.add(chartData.getValue().divide(NUMBER_OF_SATOSHI_IN_ONE_BTC));
+                    yData.add(chartData.getValue().doubleValue() / NUMBER_OF_SATOSHI_IN_ONE_BTC);
                 }
             }
         }
@@ -281,6 +281,9 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
                 previousBalance = balance;
                 previousDate = loop.getUpdateTime();
             }
+            
+            // Add in the balance at the end of the time window.
+            chartData.add(new ChartData(new Date(DateUtils.nowUtc().getMillis()), balance));
         } catch (com.google.bitcoin.core.ScriptException e1) {
             e1.printStackTrace();
         }
