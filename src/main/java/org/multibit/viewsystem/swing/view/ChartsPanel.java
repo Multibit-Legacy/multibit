@@ -19,6 +19,8 @@ import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,6 +56,7 @@ public class ChartsPanel extends JPanel implements View {
   private static final long serialVersionUID = 191352212345998705L;
 
   private static final int NUMBER_OF_DAYS_TO_LOOK_BACK = 30;
+  private static final BigInteger NUMBER_OF_SATOSHI_IN_ONE_BTC = BigInteger.valueOf(100000000);
 
   private MultiBitController controller;
 
@@ -120,26 +123,41 @@ public class ChartsPanel extends JPanel implements View {
 
     // Get the last month's transaction data.
     Collection<ChartData> chartDataCollection = getChartData();
+    
+    if (chartDataCollection == null || chartDataCollection.size() == 0) {
+        JPanel panelToReturn = new JPanel();
+        panelToReturn.setOpaque(false);
+        return panelToReturn;
+    }
+    
     System.out.println(chartDataCollection.toString());
 
     for (ChartData chartData : chartDataCollection) {
       System.out.println(chartData.toString());
       xData.add(chartData.getDate());
-      yData.add(chartData.getValue());
+      yData.add(chartData.getValue().divide(NUMBER_OF_SATOSHI_IN_ONE_BTC));
     }
 
-    // Customize Chart
-    chart.setChartTitle("Balance Over Last 30 Days");
-    chart.setXAxisTitle("X");
-    chart.setYAxisTitle("Y");
+    // Customize Chart.
+    String xAxisLabel = controller.getLocaliser().getString("walletData.dateText");
+    String balanceLabel = controller.getLocaliser().getString("multiBitFrame.balanceLabel");
+    String chartTitle = controller.getLocaliser().getString("chartsPanelTitle.text", new Object[] {NUMBER_OF_DAYS_TO_LOOK_BACK});
+    
+    chart.setChartTitle(chartTitle);
+    chart.setXAxisTitle(xAxisLabel);
+    chart.setYAxisTitle(balanceLabel);
     chart.setChartGridlinesVisible(false);
     chart.setXAxisTicksVisible(false);
-    chart.setXAxisTitleVisible(false);
+    chart.setXAxisTitleVisible(true);
     chart.setChartLegendVisible(false);
-    Series series = chart.addDateSeries("BTC Balance", xData, yData);
+    Series series = chart.addDateSeries(balanceLabel, xData, yData);
     series.setLineColor(SeriesColor.BLUE);
     series.setMarkerColor(SeriesColor.BLUE);
-    return new XChartJPanel(chart);
+    
+    XChartJPanel chartPanelToReturn = new XChartJPanel(chart);
+    chartPanelToReturn.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+    chartPanelToReturn.setOpaque(false);
+    return chartPanelToReturn;
   }
 
   /**
@@ -303,6 +321,5 @@ public class ChartsPanel extends JPanel implements View {
 
       return "ChartData [date=" + date + ", value=" + value + "]";
     }
-
   }
 }
