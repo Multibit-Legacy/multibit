@@ -19,9 +19,9 @@ import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.math.BigInteger;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +46,8 @@ import com.google.bitcoin.core.Transaction;
 import com.xeiam.xchart.Chart;
 import com.xeiam.xchart.series.Series;
 import com.xeiam.xchart.series.SeriesColor;
+import com.xeiam.xchart.series.SeriesLineStyle;
+import com.xeiam.xchart.series.SeriesMarker;
 import com.xeiam.xchart.swing.XChartJPanel;
 
 /**
@@ -123,37 +125,51 @@ public class ChartsPanel extends JPanel implements View {
 
     // Get the last month's transaction data.
     Collection<ChartData> chartDataCollection = getChartData();
-    
-    if (chartDataCollection == null || chartDataCollection.size() == 0) {
-        JPanel panelToReturn = new JPanel();
-        panelToReturn.setOpaque(false);
-        return panelToReturn;
-    }
-    
-    System.out.println(chartDataCollection.toString());
 
-    for (ChartData chartData : chartDataCollection) {
-      System.out.println(chartData.toString());
-      xData.add(chartData.getDate());
-      yData.add(chartData.getValue().divide(NUMBER_OF_SATOSHI_IN_ONE_BTC));
+    if (chartDataCollection == null || chartDataCollection.size() == 0) {
+
+      // JPanel panelToReturn = new JPanel();
+      // panelToReturn.setOpaque(false);
+      // return panelToReturn;
+
+      DateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+      Date date;
+      for (int i = 1; i <= 10; i++) {
+        try {
+          date = sdf.parse(i + ".10.2008");
+          xData.add(date);
+        } catch (ParseException e) {
+          e.printStackTrace();
+        }
+        yData.add(Math.random() * i);
+      }
+
+    } else {
+      for (ChartData chartData : chartDataCollection) {
+        xData.add(chartData.getDate());
+        yData.add(chartData.getValue().divide(NUMBER_OF_SATOSHI_IN_ONE_BTC));
+      }
+
     }
 
     // Customize Chart.
     String xAxisLabel = controller.getLocaliser().getString("walletData.dateText");
     String balanceLabel = controller.getLocaliser().getString("multiBitFrame.balanceLabel");
-    String chartTitle = controller.getLocaliser().getString("chartsPanelTitle.text", new Object[] {NUMBER_OF_DAYS_TO_LOOK_BACK});
-    
+    String chartTitle = controller.getLocaliser().getString("chartsPanelTitle.text", new Object[] { NUMBER_OF_DAYS_TO_LOOK_BACK });
+
     chart.setChartTitle(chartTitle);
     chart.setXAxisTitle(xAxisLabel);
     chart.setYAxisTitle(balanceLabel);
-    chart.setChartGridlinesVisible(false);
-    chart.setXAxisTicksVisible(false);
+    // chart.setChartGridlinesVisible(false);
+    // chart.setXAxisTicksVisible(false);
     chart.setXAxisTitleVisible(true);
     chart.setChartLegendVisible(false);
     Series series = chart.addDateSeries(balanceLabel, xData, yData);
     series.setLineColor(SeriesColor.BLUE);
     series.setMarkerColor(SeriesColor.BLUE);
-    
+    series.setMarker(SeriesMarker.CIRCLE);
+    series.setLineStyle(SeriesLineStyle.SOLID);
+
     XChartJPanel chartPanelToReturn = new XChartJPanel(chart);
     chartPanelToReturn.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
     chartPanelToReturn.setOpaque(false);
