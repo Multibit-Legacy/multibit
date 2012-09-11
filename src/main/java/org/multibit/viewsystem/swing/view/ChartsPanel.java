@@ -125,7 +125,6 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
      * Create a panel containing the chart to show.
      */
     private JPanel createChartPanel() {
-
         Chart chart = new Chart(this.getWidth(), this.getHeight());
 
         // generates linear data
@@ -154,17 +153,22 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
                 return chartPanel;
             } else {
                 for (ChartData chartData : chartDataCollection) {
+                    System.out.println(chartData.toString());
+
                     xData.add(chartData.getDate());
                     yData.add(chartData.getValue().divide(NUMBER_OF_SATOSHI_IN_ONE_BTC));
                 }
             }
         }
-
+        
         // Customize Chart.
         String xAxisLabel = controller.getLocaliser().getString("walletData.dateText");
-        String balanceLabel = controller.getLocaliser().getString("multiBitFrame.balanceLabel");
+        String currencyUnitSuffix =  " (" + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel") + ")"; 
+        String balanceLabel = controller.getLocaliser().getString("multiBitFrame.balanceLabel") 
+            + currencyUnitSuffix;
+        String unitOfTime = controller.getLocaliser().getString("chartsPanelTitle.days");
         String chartTitle = controller.getLocaliser().getString("chartsPanelTitle.text",
-                new Object[] { NUMBER_OF_DAYS_TO_LOOK_BACK });
+                new Object[] { NUMBER_OF_DAYS_TO_LOOK_BACK, unitOfTime }) + currencyUnitSuffix;
 
         chart.setChartTitle(chartTitle);
         chart.setXAxisTitle(xAxisLabel);
@@ -189,7 +193,6 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
      * Update the chart panel (The active wallet may have changed).
      */
     private void updateChart() {
-
         // Clear the main panel.
         mainPanel.removeAll();
 
@@ -243,7 +246,6 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
         Collection<ChartData> chartData = new ArrayList<ChartData>();
 
         try {
-
             boolean leftEdgeDataPointAdded = false;
 
             for (Transaction loop : allTransactions) {
@@ -272,6 +274,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
 
                     // Include this transaction as it is in the last
                     // NUMBER_OF_DAYS_TO_LOOK_BACK days.
+                    chartData.add(new ChartData(loop.getUpdateTime(), previousBalance));
                     chartData.add(new ChartData(loop.getUpdateTime(), balance));
                 }
 
