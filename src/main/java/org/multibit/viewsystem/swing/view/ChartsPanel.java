@@ -40,251 +40,269 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 
-import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
+import com.xeiam.xchart.Chart;
+import com.xeiam.xchart.series.Series;
+import com.xeiam.xchart.series.SeriesColor;
+import com.xeiam.xchart.swing.XChartJPanel;
 
 /**
  * The Charts view.
  */
 public class ChartsPanel extends JPanel implements View {
-    private static final long serialVersionUID = 191352212345998705L;
 
-    private static final int NUMBER_OF_DAYS_TO_LOOK_BACK = 30;
+  private static final long serialVersionUID = 191352212345998705L;
 
-    private MultiBitController controller;
+  private static final int NUMBER_OF_DAYS_TO_LOOK_BACK = 30;
 
-    private JPanel mainPanel;
+  private MultiBitController controller;
 
-    // Dummy label for example.
-    private JLabel walletLabel;
+  private JPanel mainPanel;
 
-    // Formatter for dates.
-    private SimpleDateFormat dateFormatter;
+  // Dummy label for example.
+  private JLabel walletLabel;
 
-    /**
-     * Creates a new {@link ChartsPanel}.
-     */
-    public ChartsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
-        this.controller = controller;
+  // Formatter for dates.
+  private SimpleDateFormat dateFormatter;
 
-        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+  /**
+   * Creates a new {@link ChartsPanel}.
+   */
+  public ChartsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
 
-        dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
+    this.controller = controller;
 
-        initUI();
+    setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+    applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
+    dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
+
+    initUI();
+  }
+
+  private void initUI() {
+
+    mainPanel = new JPanel();
+    mainPanel.setLayout(new GridBagLayout());
+    mainPanel.setOpaque(false);
+    mainPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
+    GridBagConstraints constraints = new GridBagConstraints();
+
+    constraints.fill = GridBagConstraints.BOTH;
+    constraints.gridx = 0;
+    constraints.gridy = 0;
+    constraints.gridwidth = 1;
+    constraints.weightx = 1;
+    constraints.weighty = 1;
+    constraints.anchor = GridBagConstraints.CENTER;
+    mainPanel.add(createChartPanel(), constraints);
+
+    JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
+    mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+    mainScrollPane.getViewport().setOpaque(true);
+    mainScrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
+    add(mainScrollPane, BorderLayout.CENTER);
+  }
+
+  /**
+   * Create a panel containing the chart to show.
+   */
+  private JPanel createChartPanel() {
+
+    Chart chart = new Chart(this.getWidth(), this.getHeight());
+
+    // generates linear data
+    Collection<Date> xData = new ArrayList<Date>();
+    Collection<Number> yData = new ArrayList<Number>();
+
+    // Get the last month's transaction data.
+    Collection<ChartData> chartDataCollection = getChartData();
+    System.out.println(chartDataCollection.toString());
+
+    for (ChartData chartData : chartDataCollection) {
+      System.out.println(chartData.toString());
+      xData.add(chartData.getDate());
+      yData.add(chartData.getValue());
     }
 
-    private void initUI() {
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new GridBagLayout());
-        mainPanel.setOpaque(false);
-        mainPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+    // Customize Chart
+    chart.setChartTitle("Balance Over Last 30 Days");
+    chart.setXAxisTitle("X");
+    chart.setYAxisTitle("Y");
+    chart.setChartGridlinesVisible(false);
+    chart.setXAxisTicksVisible(false);
+    chart.setXAxisTitleVisible(false);
+    chart.setChartLegendVisible(false);
+    Series series = chart.addDateSeries("BTC Balance", xData, yData);
+    series.setLineColor(SeriesColor.BLUE);
+    series.setMarkerColor(SeriesColor.BLUE);
+    return new XChartJPanel(chart);
+  }
 
-        GridBagConstraints constraints = new GridBagConstraints();
+  /**
+   * Update the chart panel (The active wallet may have changed).
+   */
+  private void updateChart() {
 
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        mainPanel.add(createChartPanel(), constraints);
+    // Clear the main panel.
+    mainPanel.removeAll();
 
-        JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-        mainScrollPane.getViewport().setOpaque(true);
-        mainScrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+    // Recreate the chart data and 'draw' it.
+    GridBagConstraints constraints = new GridBagConstraints();
 
-        add(mainScrollPane, BorderLayout.CENTER);
+    constraints.fill = GridBagConstraints.BOTH;
+    constraints.gridx = 0;
+    constraints.gridy = 0;
+    constraints.gridwidth = 1;
+    constraints.weightx = 1;
+    constraints.weighty = 1;
+    constraints.anchor = GridBagConstraints.CENTER;
+    mainPanel.add(createChartPanel(), constraints);
+  }
+
+  /**
+   * Get the transaction data for the chart
+   */
+  private Collection<ChartData> getChartData() {
+
+    if (controller.getModel().getActiveWallet() == null) {
+      return new ArrayList<ChartData>();
     }
 
-    /**
-     * Create a panel containing the chart to show.
-     */
-    private JPanel createChartPanel() {
-        JPanel chartPanel = new JPanel();
-        chartPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        chartPanel.setOpaque(false);
-        chartPanel.setLayout(new GridBagLayout());
+    ArrayList<Transaction> allTransactions = new ArrayList<Transaction>(controller.getModel().getActiveWallet().getTransactions(false, false));
 
-        GridBagConstraints constraints = new GridBagConstraints();
+    // Order by date.
+    Collections.sort(allTransactions, new Comparator<Transaction>() {
 
-        walletLabel = new JLabel();
-        walletLabel.setText(controller.getModel().getActiveWalletFilename());
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        chartPanel.add(walletLabel, constraints);
+      @Override
+      public int compare(Transaction t1, Transaction t2) {
 
-        // Get the last months transaction data.
-        Collection<ChartData> chartDataCollection = getChartData();
+        return t1.getUpdateTime().compareTo(t2.getUpdateTime());
+      }
+    });
 
-        // Dummy presentation - add the data in a label.
-        int count = 1;
-        for (ChartData chartData : chartDataCollection) {
-            constraints.gridy = count;
-            ;
-            JLabel dataLabel = new JLabel();
-            dataLabel.setText(dateFormatter.format(chartData.getDate()) + " "
-                    + controller.getLocaliser().bitcoinValueToString4(chartData.getValue(), false, false));
-            chartPanel.add(dataLabel, constraints);
+    // Work out balance as running total and filter to just last
+    // NUMBER_OF_DAYS_TO_LOOK_BACKs data.
+    BigInteger balance = BigInteger.ZERO;
 
-            count++;
-        }
+    // The previous datums balance.
+    BigInteger previousBalance = BigInteger.ZERO;
 
-        // Draw the chart.
-        // TODO
+    // The previous datums timepoint.
+    Date previousDate = null;
 
-        return chartPanel;
-    }
+    long pastInMillis = DateUtils.nowUtc().plusDays(-1 * NUMBER_OF_DAYS_TO_LOOK_BACK).getMillis();
 
-    /**
-     * Update the chart panel (The active wallet may have changed).
-     */
-    private void updateChart() {
-        // Clear the main panel.
-        mainPanel.removeAll();
+    // Create ChartData collection.
+    Collection<ChartData> chartData = new ArrayList<ChartData>();
 
-        // Recreate the chart data and 'draw' it.
-        GridBagConstraints constraints = new GridBagConstraints();
+    try {
 
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
-        mainPanel.add(createChartPanel(), constraints);
-    }
+      boolean leftEdgeDataPointAdded = false;
 
-    /**
-     * Get the transaction data for the chart
-     */
-    private Collection<ChartData> getChartData() {
-        if (controller.getModel().getActiveWallet() == null) {
-            return new ArrayList<ChartData>();
-        }
+      for (Transaction loop : allTransactions) {
 
-        ArrayList<Transaction> allTransactions = new ArrayList<Transaction>(controller.getModel().getActiveWallet()
-                .getTransactions(false, false));
+        balance = balance.add(loop.getValue(controller.getModel().getActiveWallet()));
 
-        // Order by date.
-        Collections.sort(allTransactions, new Comparator<Transaction>() {
-            public int compare(Transaction t1, Transaction t2) {
-                return t1.getUpdateTime().compareTo(t2.getUpdateTime());
+        long loopTimeInMillis = loop.getUpdateTime().getTime();
+
+        if (loopTimeInMillis > pastInMillis) {
+          if (!leftEdgeDataPointAdded) {
+            // If the previous transaction was BEFORE the
+            // NUMBER_OF_DAYS_TO_LOOK_BACK cutoff, include a datapoint
+            // at the beginning of the timewindow with the balance at
+            // that time.
+            if ((previousDate != null) && (previousDate.getTime() <= pastInMillis)) {
+              // The balance was non-zero.
+              chartData.add(new ChartData(new Date(pastInMillis), previousBalance));
+            } else {
+              // At beginning of time window balance was zero
+              chartData.add(new ChartData(new Date(pastInMillis), BigInteger.ZERO));
             }
-        });
+            leftEdgeDataPointAdded = true;
+          }
 
-        // Work out balance as running total and filter to just last
-        // NUMBER_OF_DAYS_TO_LOOK_BACKs data.
-        BigInteger balance = BigInteger.ZERO;
-
-        // The previous datums balance.
-        BigInteger previousBalance = BigInteger.ZERO;
-        
-        // The previous datums timepoint.
-        Date previousDate = null;
-        
-        long pastInMillis = DateUtils.nowUtc().plusDays(-1 * NUMBER_OF_DAYS_TO_LOOK_BACK).getMillis();
-
-        // Create ChartData collection.
-        Collection<ChartData> chartData = new ArrayList<ChartData>();
-
-        try {
-            boolean leftEdgeDataPointAdded = false;
-            
-            for (Transaction loop : allTransactions) {
-
-                balance = balance.add(loop.getValue(controller.getModel().getActiveWallet()));
-
-                long loopTimeInMillis = loop.getUpdateTime().getTime();
-
-                if (loopTimeInMillis > pastInMillis) {
-                    if (!leftEdgeDataPointAdded) {
-                        // If the previous transaction was BEFORE the
-                        // NUMBER_OF_DAYS_TO_LOOK_BACK cutoff, include a datapoint
-                        // at the beginning of the timewindow with the balance at
-                        // that time.
-                        if ((previousDate != null) && (previousDate.getTime() <= pastInMillis)) {
-                            // The balance was non-zero.
-                            chartData.add(new ChartData(new Date(pastInMillis), previousBalance));
-                        } else {
-                            // At beginning of time window balance was zero
-                            chartData.add(new ChartData(new Date(pastInMillis), BigInteger.ZERO));
-                        }
-                        leftEdgeDataPointAdded = true;
-                    }
-
-                    // Include this transaction as it is in the last NUMBER_OF_DAYS_TO_LOOK_BACK days.
-                    chartData.add(new ChartData(loop.getUpdateTime(), balance));
-                }
-
-                previousBalance = balance;
-                previousDate = loop.getUpdateTime();
-            }
-        } catch (ScriptException e1) {
-            e1.printStackTrace();
+          // Include this transaction as it is in the last NUMBER_OF_DAYS_TO_LOOK_BACK days.
+          chartData.add(new ChartData(loop.getUpdateTime(), balance));
         }
 
-        return chartData;
+        previousBalance = balance;
+        previousDate = loop.getUpdateTime();
+      }
+    } catch (com.google.bitcoin.core.ScriptException e1) {
+      e1.printStackTrace();
+    }
+
+    return chartData;
+  }
+
+  @Override
+  /**
+   * Release any resources used when user navigates away from this view.
+   */
+  public void navigateAwayFromView() {
+
+  }
+
+  @Override
+  public void displayView() {
+
+    updateChart();
+  }
+
+  @Override
+  public Icon getViewIcon() {
+
+    return ImageLoader.createImageIcon(ImageLoader.CHART_LINE_ICON_FILE);
+  }
+
+  @Override
+  public String getViewTitle() {
+
+    return controller.getLocaliser().getString("chartsPanelAction.text");
+  }
+
+  @Override
+  public String getViewTooltip() {
+
+    return controller.getLocaliser().getString("chartsPanelAction.tooltip");
+  }
+
+  @Override
+  public int getViewId() {
+
+    return View.CHARTS_VIEW;
+  }
+
+  class ChartData {
+
+    private Date date;
+    private BigInteger value;
+
+    public ChartData(Date date, BigInteger value) {
+
+      this.date = date;
+      this.value = value;
+    }
+
+    public Date getDate() {
+
+      return date;
+    }
+
+    public BigInteger getValue() {
+
+      return value;
     }
 
     @Override
-    /**
-     * Release any resources used when user navigates away from this view.
-     */
-    public void navigateAwayFromView() {
+    public String toString() {
+
+      return "ChartData [date=" + date + ", value=" + value + "]";
     }
 
-    @Override
-    public void displayView() {
-        updateChart();
-    }
-
-    @Override
-    public Icon getViewIcon() {
-        return ImageLoader.createImageIcon(ImageLoader.CHART_LINE_ICON_FILE);
-    }
-
-    @Override
-    public String getViewTitle() {
-        return controller.getLocaliser().getString("chartsPanelAction.text");
-    }
-
-    @Override
-    public String getViewTooltip() {
-        return controller.getLocaliser().getString("chartsPanelAction.tooltip");
-    }
-
-    @Override
-    public int getViewId() {
-        return View.CHARTS_VIEW;
-    }
-
-    class ChartData {
-        private Date date;
-        private BigInteger value;
-
-        public ChartData(Date date, BigInteger value) {
-            this.date = date;
-            this.value = value;
-        }
-
-        public Date getDate() {
-            return date;
-        }
-
-        public BigInteger getValue() {
-            return value;
-        }
-    }
+  }
 }
