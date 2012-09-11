@@ -17,14 +17,10 @@ package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-
 import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -37,7 +33,6 @@ import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
