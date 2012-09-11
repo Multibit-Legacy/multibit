@@ -24,7 +24,10 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+
 import java.math.BigInteger;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,6 +52,8 @@ import com.google.bitcoin.core.Transaction;
 import com.xeiam.xchart.Chart;
 import com.xeiam.xchart.series.Series;
 import com.xeiam.xchart.series.SeriesColor;
+import com.xeiam.xchart.series.SeriesLineStyle;
+import com.xeiam.xchart.series.SeriesMarker;
 import com.xeiam.xchart.swing.XChartJPanel;
 
 /**
@@ -70,6 +75,8 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
 
     private Chart chart;
 
+    private boolean generateRandomChart = false;
+
     /**
      * Creates a new {@link ChartsPanel}.
      */
@@ -84,12 +91,11 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
 
         mainFrame.addComponentListener(this);
         addComponentListener(this);
-        
+
         initUI();
     }
 
     private void initUI() {
-
         mainPanel = new JPanel();
         mainPanel.setLayout(new GridBagLayout());
         mainPanel.setOpaque(false);
@@ -104,7 +110,11 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        mainPanel.add(createChartPanel(), constraints);
+
+        // Initially blank.
+        JPanel chartPanel = new JPanel();
+        chartPanel.setOpaque(false);
+        mainPanel.add(chartPanel, constraints);
 
         JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -130,18 +140,29 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
         // Get the last month's transaction data.
         Collection<ChartData> chartDataCollection = getChartData();
 
-        if (chartDataCollection == null || chartDataCollection.size() == 0) {
-            JPanel panelToReturn = new JPanel();
-            panelToReturn.setOpaque(false);
-            return panelToReturn;
-        }
-
-        System.out.println(chartDataCollection.toString());
-
-        for (ChartData chartData : chartDataCollection) {
-            System.out.println(chartData.toString());
-            xData.add(chartData.getDate());
-            yData.add(chartData.getValue().divide(NUMBER_OF_SATOSHI_IN_ONE_BTC));
+        if (generateRandomChart) {
+            DateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+            Date date;
+            for (int i = 1; i <= 10; i++) {
+                try {
+                    date = sdf.parse(i + ".10.2008");
+                    xData.add(date);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                yData.add(Math.random() * i);
+            }
+        } else {
+            if (chartDataCollection == null || chartDataCollection.size() == 0) {
+                JPanel chartPanel = new JPanel();
+                chartPanel.setOpaque(false);
+                return chartPanel;
+            } else {
+                for (ChartData chartData : chartDataCollection) {
+                    xData.add(chartData.getDate());
+                    yData.add(chartData.getValue().divide(NUMBER_OF_SATOSHI_IN_ONE_BTC));
+                }
+            }
         }
 
         // Customize Chart.
@@ -154,12 +175,14 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
         chart.setXAxisTitle(xAxisLabel);
         chart.setYAxisTitle(balanceLabel);
         chart.setChartGridlinesVisible(false);
-        chart.setXAxisTicksVisible(false);
+        chart.setXAxisTicksVisible(true);
         chart.setXAxisTitleVisible(true);
         chart.setChartLegendVisible(false);
         Series series = chart.addDateSeries(balanceLabel, xData, yData);
         series.setLineColor(SeriesColor.BLUE);
         series.setMarkerColor(SeriesColor.BLUE);
+        series.setMarker(SeriesMarker.CIRCLE);
+        series.setLineStyle(SeriesLineStyle.SOLID);
 
         XChartJPanel chartPanelToReturn = new XChartJPanel(chart);
         chartPanelToReturn.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
@@ -192,7 +215,6 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
      * Get the transaction data for the chart
      */
     private Collection<ChartData> getChartData() {
-
         if (controller.getModel().getActiveWallet() == null) {
             return new ArrayList<ChartData>();
         }
