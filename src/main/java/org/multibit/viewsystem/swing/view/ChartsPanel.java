@@ -45,11 +45,11 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 
 import com.google.bitcoin.core.Transaction;
 import com.xeiam.xchart.Chart;
+import com.xeiam.xchart.XChartJPanel;
 import com.xeiam.xchart.series.Series;
 import com.xeiam.xchart.series.SeriesColor;
 import com.xeiam.xchart.series.SeriesLineStyle;
 import com.xeiam.xchart.series.SeriesMarker;
-import com.xeiam.xchart.swing.XChartJPanel;
 
 /**
  * The Charts view.
@@ -91,6 +91,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
     }
 
     private void initUI() {
+
         mainPanel = new JPanel();
         mainPanel.setLayout(new GridBagLayout());
         mainPanel.setOpaque(false);
@@ -111,8 +112,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
         chartPanel.setOpaque(false);
         mainPanel.add(chartPanel, constraints);
 
-        JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
@@ -125,6 +125,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
      * Create a panel containing the chart to show.
      */
     private JPanel createChartPanel() {
+
         Chart chart = new Chart(this.getWidth(), this.getHeight());
 
         // generates linear data
@@ -160,15 +161,13 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
                 }
             }
         }
-        
+
         // Customize Chart.
         String xAxisLabel = controller.getLocaliser().getString("walletData.dateText");
-        String currencyUnitSuffix =  " (" + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel") + ")"; 
-        String balanceLabel = controller.getLocaliser().getString("multiBitFrame.balanceLabel") 
-            + currencyUnitSuffix;
+        String currencyUnitSuffix = " (" + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel") + ")";
+        String balanceLabel = controller.getLocaliser().getString("multiBitFrame.balanceLabel") + currencyUnitSuffix;
         String unitOfTime = controller.getLocaliser().getString("chartsPanelTitle.days");
-        String chartTitle = controller.getLocaliser().getString("chartsPanelTitle.text",
-                new Object[] { NUMBER_OF_DAYS_TO_LOOK_BACK, unitOfTime }) + currencyUnitSuffix;
+        String chartTitle = controller.getLocaliser().getString("chartsPanelTitle.text", new Object[] { NUMBER_OF_DAYS_TO_LOOK_BACK, unitOfTime }) + currencyUnitSuffix;
 
         chart.setChartTitle(chartTitle);
         chart.setXAxisTitle(xAxisLabel);
@@ -193,6 +192,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
      * Update the chart panel (The active wallet may have changed).
      */
     private void updateChart() {
+
         // Clear the main panel.
         mainPanel.removeAll();
 
@@ -213,12 +213,12 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
      * Get the transaction data for the chart
      */
     private Collection<ChartData> getChartData() {
+
         if (controller.getModel().getActiveWallet() == null) {
             return new ArrayList<ChartData>();
         }
 
-        ArrayList<Transaction> allTransactions = new ArrayList<Transaction>(controller.getModel().getActiveWallet()
-                .getTransactions(false, false));
+        ArrayList<Transaction> allTransactions = new ArrayList<Transaction>(controller.getModel().getActiveWallet().getTransactions(false, false));
 
         // Order by date.
         Collections.sort(allTransactions, new Comparator<Transaction>() {
@@ -281,7 +281,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
                 previousBalance = balance;
                 previousDate = loop.getUpdateTime();
             }
-            
+
             // Add in the balance at the end of the time window.
             chartData.add(new ChartData(new Date(DateUtils.nowUtc().getMillis()), balance));
         } catch (com.google.bitcoin.core.ScriptException e1) {
@@ -359,18 +359,22 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
 
     @Override
     public void componentHidden(ComponentEvent arg0) {
+
     }
 
     @Override
     public void componentMoved(ComponentEvent arg0) {
+
     }
 
     @Override
     public void componentResized(ComponentEvent arg0) {
+
         updateChart();
     }
 
     @Override
     public void componentShown(ComponentEvent arg0) {
+
     }
 }
