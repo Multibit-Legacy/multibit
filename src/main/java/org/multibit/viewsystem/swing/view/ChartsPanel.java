@@ -17,6 +17,7 @@ package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ComponentEvent;
@@ -42,6 +43,7 @@ import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 import com.google.bitcoin.core.Transaction;
 import com.xeiam.xchart.Chart;
@@ -79,7 +81,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
 
         this.controller = controller;
 
-        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
@@ -94,7 +96,9 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
 
         mainPanel = new JPanel();
         mainPanel.setLayout(new GridBagLayout());
-        mainPanel.setOpaque(false);
+        mainPanel.setOpaque(true);
+        mainPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+
         mainPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -114,7 +118,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
 
         JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        mainScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
         mainScrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
@@ -150,7 +154,8 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
         } else {
             if (chartDataCollection == null || chartDataCollection.size() == 0) {
                 JPanel chartPanel = new JPanel();
-                chartPanel.setOpaque(false);
+                chartPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+                chartPanel.setOpaque(true);
                 return chartPanel;
             } else {
                 for (ChartData chartData : chartDataCollection) {
@@ -176,6 +181,15 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
         chart.setXAxisTicksVisible(true);
         chart.setXAxisTitleVisible(true);
         chart.setChartLegendVisible(false);
+        
+        chart.setChartBackgroundColor(ColorAndFontConstants.BACKGROUND_COLOR);
+        chart.setChartTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(2));
+        chart.setAxisLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        chart.setChartTickLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        chart.setChartTickLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        
+        chart.setDateFormatter("dd-MM");
+        
         Series series = chart.addDateSeries(balanceLabel, xData, yData);
         series.setLineColor(SeriesColor.BLUE);
         series.setMarkerColor(SeriesColor.BLUE);
@@ -183,8 +197,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
         series.setLineStyle(SeriesLineStyle.SOLID);
 
         XChartJPanel chartPanelToReturn = new XChartJPanel(chart);
-        chartPanelToReturn.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        chartPanelToReturn.setOpaque(false);
+        chartPanelToReturn.setLocale(controller.getLocaliser().getLocale());
         return chartPanelToReturn;
     }
 
