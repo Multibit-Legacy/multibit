@@ -16,6 +16,7 @@
 
 package com.google.bitcoin.core;
 
+import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 import com.google.common.base.Preconditions;
 import org.multibit.IsMultiBitClass;
 import org.slf4j.Logger;
@@ -28,19 +29,18 @@ import java.util.*;
 import static com.google.bitcoin.core.Utils.*;
 
 /**
- * A transaction represents the movement of coins from some addresses to some other addresses. It can also represent
- * the minting of new coins. A Transaction object corresponds to the equivalent in the BitCoin C++ implementation.<p>
+ * <p>A transaction represents the movement of coins from some addresses to some other addresses. It can also represent
+ * the minting of new coins. A Transaction object corresponds to the equivalent in the Bitcoin C++ implementation.</p>
  *
- * It implements TWO serialization protocols - the Bitcoin proprietary format which is identical to the C++
- * implementation and is used for reading/writing transactions to the wire and for hashing. It also implements Java
- * serialization which is used for the wallet. This allows us to easily add extra fields used for our own accounting
- * or UI purposes.<p>
- *     
- * All Bitcoin transactions are at risk of being reversed, though the risk is much less than with traditional payment 
+ * <p>Transactions are the fundamental atoms of Bitcoin and have many powerful features. Read
+ * <a href="http://code.google.com/p/bitcoinj/wiki/WorkingWithTransactions">"Working with transactions"</a> in the
+ * documentation to learn more about how to use this class.</p>
+ *
+ * <p>All Bitcoin transactions are at risk of being reversed, though the risk is much less than with traditional payment
  * systems. Transactions have <i>confidence levels</i>, which help you decide whether to trust a transaction or not.
  * Whether to trust a transaction is something that needs to be decided on a case by case basis - a rule that makes 
  * sense for selling MP3s might not make sense for selling cars, or accepting payments from a family member. If you
- * are building a wallet, how to present confidence to your users is something to consider carefully.
+ * are building a wallet, how to present confidence to your users is something to consider carefully.</p>
  */
 public class Transaction extends ChildMessage implements Serializable, IsMultiBitClass {
     private static final Logger log = LoggerFactory.getLogger(Transaction.class);
@@ -280,13 +280,23 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         if (bestChain && (updatedAt == null || updatedAt.getTime() == 0 || updatedAt.getTime() > blockTime)) {
             updatedAt = new Date(blockTime);
         }
-        
+
         addBlockAppearance(block.getHeader().getHash());
 
         if (bestChain) {
-            // This can cause event listeners on TransactionConfidence to run. After this line completes, the wallets
+            // This can cause event listeners on TransactionConfidence to run. After these lines complete, the wallets
             // state may have changed!
-            getConfidence().setAppearedAtChainHeight(block.getHeight());
+            TransactionConfidence transactionConfidence = getConfidence();
+            transactionConfidence.setAppearedAtChainHeight(block.getHeight());
+
+            // Reset the confidence block depth.
+            transactionConfidence.setDepthInBlocks(0);
+
+            // Reset the work done.
+            transactionConfidence.setWorkDone(BigInteger.ZERO);
+
+            // The transaction is now on the best chain.
+            transactionConfidence.setConfidenceType(ConfidenceType.BUILDING);
         }
     }
 
@@ -299,7 +309,10 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
 
     /** Called by the wallet once a re-org means we don't appear in the best chain anymore. */
     void notifyNotOnBestChain() {
-        getConfidence().setConfidenceType(TransactionConfidence.ConfidenceType.NOT_IN_BEST_CHAIN);
+        TransactionConfidence transactionConfidence = getConfidence();
+        transactionConfidence.setConfidenceType(TransactionConfidence.ConfidenceType.NOT_IN_BEST_CHAIN);
+        transactionConfidence.setDepthInBlocks(0);
+        transactionConfidence.setWorkDone(BigInteger.ZERO);
     }
 
     /**
@@ -314,7 +327,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         // This is tested in WalletTest.
         BigInteger v = BigInteger.ZERO;
         for (TransactionInput input : inputs) {
-            // This input is taking value from an transaction in our wallet. To discover the value,
+            // This input is taking value from a transaction in our wallet. To discover the value,
             // we must find the connected transaction.
             TransactionOutput connected = input.getConnectedOutput(wallet.unspent);
             if (connected == null)
@@ -525,19 +538,31 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      */
     public boolean isCoinBase() {
         maybeParse();
-        return inputs.get(0).isCoinBase();
+        return inputs.size() == 1 && inputs.get(0).isCoinBase();
     }
 
     /**
-     * @return A human readable version of the transaction useful for debugging.
+     * A transaction is mature if it is either a building coinbase tx that is as deep or deeper than the required coinbase depth, or a non-coinbase tx.
+     */
+    public boolean isMature() {
+        if (!isCoinBase())
+            return true;
+
+        if (getConfidence().getConfidenceType() != ConfidenceType.BUILDING)
+            return false;
+
+        return getConfidence().getDepthInBlocks() >= params.getSpendableCoinbaseDepth();
+    }
+
+    /**
+     * A human readable version of the transaction useful for debugging. The format is not guaranteed to be stable.
      */
     public String toString() {
+        // Basic info about the tx.
         StringBuffer s = new StringBuffer();
-        s.append("  ");
-        s.append(getHashAsString());
-        s.append("\n");
+        s.append(String.format("  %s: %s%n", getHashAsString(), getConfidence()));
         if (inputs.size() == 0) {
-            s.append("  INCOMPLETE: No inputs!\n");
+            s.append(String.format("  INCOMPLETE: No inputs!%n"));
             return s.toString();
         }
         if (isCoinBase()) {
@@ -550,29 +575,41 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
                 script = "???";
                 script2 = "???";
             }
-            return "     == COINBASE TXN (scriptSig " + script + ")  (scriptPubKey " + script2 + ")";
+            return "     == COINBASE TXN (scriptSig " + script + ")  (scriptPubKey " + script2 + ")\n";
         }
         for (TransactionInput in : inputs) {
             s.append("     ");
             s.append("from ");
 
             try {
-                s.append(in.getScriptSig().getFromAddress().toString());
+                Script scriptSig = in.getScriptSig();
+                if (scriptSig.chunks.size() == 2)
+                    s.append(scriptSig.getFromAddress().toString());
+                else if (scriptSig.chunks.size() == 1)
+                    s.append("[sig:" + bytesToHexString(scriptSig.getPubKey()) + "]");
+                else
+                    s.append("???");
                 s.append(" / ");
                 s.append(in.getOutpoint().toString());
             } catch (Exception e) {
                 s.append("[exception: ").append(e.getMessage()).append("]");
             }
-            s.append("\n");
+            s.append(String.format("%n"));
         }
         for (TransactionOutput out : outputs) {
             s.append("       ");
             s.append("to ");
             try {
-                Address toAddr = new Address(params, out.getScriptPubKey().getPubKeyHash());
-                s.append(toAddr.toString());
+                Script scriptPubKey = out.getScriptPubKey();
+                if (scriptPubKey.isSentToAddress()) {
+                    s.append(scriptPubKey.getToAddress().toString());
+                } else if (scriptPubKey.isSentToRawPubKey()) {
+                    s.append("[pubkey:");
+                    s.append(bytesToHexString(scriptPubKey.getPubKey()));
+                    s.append("]");
+                }
                 s.append(" ");
-                s.append(bitcoinValueToPlainString(out.getValue()));
+                s.append(bitcoinValueToFriendlyString(out.getValue()));
                 s.append(" BTC");
                 if (!out.isAvailableForSpending()) {
                     s.append(" Spent");
@@ -584,7 +621,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
             } catch (Exception e) {
                 s.append("[exception: ").append(e.getMessage()).append("]");
             }
-            s.append("\n");
+            s.append(String.format("%n"));
         }
         return s.toString();
     }
@@ -614,11 +651,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      */
     public void addOutput(TransactionOutput to) {
         unCache();
-
-        //these could be merged into one but would need parentTransaction to be cast whenever it was accessed.
         to.setParent(this);
-        to.parentTransaction = this;
-
         outputs.add(to);
         adjustLength(to.length);
     }
@@ -628,6 +661,14 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      */
     public void addOutput(BigInteger value, Address address) {
         addOutput(new TransactionOutput(params, this, value, address));
+    }
+
+    /**
+     * Creates an output that pays to the given pubkey directly (no address) with the given value, and adds it to this
+     * transaction.
+     */
+    public void addOutput(BigInteger value, ECKey pubkey) {
+        addOutput(new TransactionOutput(params, this, value, pubkey));
     }
 
     /**
@@ -660,11 +701,10 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
             TransactionInput input = inputs.get(i);
             Preconditions.checkState(input.getScriptBytes().length == 0, "Attempting to sign a non-fresh transaction");
             // Find the signing key we'll need to use.
-            byte[] connectedPubKeyHash = input.getOutpoint().getConnectedPubKeyHash();
-            ECKey key = wallet.findKeyFromPubHash(connectedPubKeyHash);
+            ECKey key = input.getOutpoint().getConnectedKey(wallet);
             // This assert should never fire. If it does, it means the wallet is inconsistent.
             Preconditions.checkNotNull(key, "Transaction exists in wallet that we cannot redeem: %s",
-                                       bytesToHexString(connectedPubKeyHash));
+                                       input.getOutpoint().getHash());
             // Keep the key around for the script creation step below.
             signingKeys[i] = key;
             // The anyoneCanPay feature isn't used at the moment.
@@ -680,19 +720,31 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
                 bos.write(key.sign(hash.getBytes(), decryptBeforeSigning, password));
                 bos.write((hashType.ordinal() + 1) | (anyoneCanPay ? 0x80 : 0));
                 signatures[i] = bos.toByteArray();
+                bos.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);  // Cannot happen.
             }
         }
 
-        // Now we have calculated each signature, go through and create the scripts. Reminder: the script consists of
-        // a signature (over a hash of the transaction) and the complete public key needed to sign for the connected
-        // output.
+        // Now we have calculated each signature, go through and create the scripts. Reminder: the script consists:
+        // 1) For pay-to-address outputs: a signature (over a hash of the simplified transaction) and the complete
+        //    public key needed to sign for the connected output. The output script checks the provided pubkey hashes
+        //    to the address and then checks the signature.
+        // 2) For pay-to-key outputs: just a signature.
         for (int i = 0; i < inputs.size(); i++) {
             TransactionInput input = inputs.get(i);
             Preconditions.checkState(input.getScriptBytes().length == 0);
             ECKey key = signingKeys[i];
-            input.setScriptBytes(Script.createInputScript(signatures[i], key.getPubKey()));
+            Script scriptPubKey = input.getOutpoint().getConnectedOutput().getScriptPubKey();
+            if (scriptPubKey.isSentToAddress()) {
+                input.setScriptBytes(Script.createInputScript(signatures[i], key.getPubKey()));
+            } else if (scriptPubKey.isSentToRawPubKey()) {
+                input.setScriptBytes(Script.createInputScript(signatures[i]));
+            } else {
+                // Should be unreachable - if we don't recognize the type of script we're trying to sign for, we should
+                // have failed above when fetching the key to sign with.
+                throw new RuntimeException("Do not understand script type: " + scriptPubKey);
+            }
         }
 
         // Every input is now complete.
@@ -736,6 +788,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
             // Note that this is NOT reversed to ensure it will be signed correctly. If it were to be printed out
             // however then we would expect that it is IS reversed.
             Sha256Hash hash = new Sha256Hash(doubleDigest(bos.toByteArray()));
+            bos.close();
 
             // Put the transaction back to how we found it.
             for (int i = 0; i < inputs.size(); i++) {
@@ -843,11 +896,21 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      */
     public boolean sent(Wallet wallet) {
         for (TransactionInput in : inputs) {
-            if (in.isMine(wallet)) {
+            if (isTransactionInputMine(in, wallet)) {
                 return true;
             }
         }
         return false;
+    }
+    
+    /** Determine whether the transaction input is in the wallet */
+    public boolean isTransactionInputMine(TransactionInput transactionInput, Wallet wallet) {
+        try {
+            byte[] pubkey = transactionInput.getScriptSig().getPubKey();
+            return wallet.isPubKeyMine(pubkey);
+        } catch (ScriptException e) {
+            return false;
+        }
     }
 
     /**
@@ -857,37 +920,22 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * @return
      */
     public boolean isMine(Wallet wallet) {
-        try {
-            for (TransactionOutput output : this.outputs) {
-                // TODO: Handle more types of outputs, not just regular to
-                // address outputs.
-                if (output.getScriptPubKey().isSentToIP())
-                    continue;
-                // This is not thread safe as a key could be removed between the
-                // call to isMine and receive.
-                if (output.isMine(wallet)) {
-                    return true;
-                }
+        for (TransactionOutput output : this.outputs) {
+            // This is not thread safe as a key could be removed between the
+            // call to isMine and receive.
+            if (output.isMine(wallet)) {
+                return true;
             }
-
-            for (TransactionInput input : this.inputs) {
-                try {
-                    if (input.getScriptSig().isSentToIP())
-                        continue;
-                    // This is not thread safe as a key could be removed between the
-                    // call to isPubKeyMine and receive.
-                    if (input.isMine(wallet)) {
-                        return true;
-                    }
-                } catch (ScriptException e) {
-                    // cannot understand this transaction input - ignore
-                    log.info(e.getMessage());
-                }
-            }
-            return false;
-        } catch (ScriptException e) {
-            throw new RuntimeException(e);
         }
+
+        for (TransactionInput input : this.inputs) {
+            // This is not thread safe as a key could be removed between the
+            // call to isPubKeyMine and receive.
+            if (isTransactionInputMine(input, wallet)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

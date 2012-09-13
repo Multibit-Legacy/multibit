@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.NetworkParameters;
+import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.Sha256Hash;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
@@ -71,22 +75,37 @@ import com.google.protobuf.TextFormat;
  * @author Miron Cuperman
  */
 public class WalletProtobufSerializer implements IsMultiBitClass {
-    private static final String ORG_MULTIBIT_WALLET_PROTECT = "org.multibit.walletProtect";
+    static final String ORG_MULTIBIT_WALLET_PROTECT = "org.multibit.walletProtect";
 
     private static final Logger log = LoggerFactory.getLogger(WalletProtobufSerializer.class);
 
     // Used for de-serialization
     private Map<ByteString, Transaction> txMap;
-    
-    private WalletProtobufSerializer() {
+    private WalletExtensionSerializer helper;
+
+    // Temporary hack for migrating 0.5 wallets to 0.6 wallets. In 0.5 transactions stored the height at which they
+    // appeared in the block chain (for the current best chain) but not the depth. In 0.6 we store both and update
+    // every transaction every time we receive a block, so we need to fill out depth from best chain height.
+    private int chainHeight;
+
+    public WalletProtobufSerializer() {
         txMap = new HashMap<ByteString, Transaction>();
+        helper = new WalletExtensionSerializer();
+    }
+
+    /** 
+     * Set the WalletExtensionSerializer used to create new wallet objects
+     * and handle extensions
+     */
+    public void setWalletExtensionSerializer(WalletExtensionSerializer h) {
+        this.helper = h;
     }
 
     /**
      * Formats the given Wallet to the given output stream in protocol buffer format.
      * Add a mandatory extension so that it will not be loaded by older versions.
      */
-    public static void writeWalletWithMandatoryExtension(Wallet wallet, OutputStream output) throws IOException {
+    public void writeWalletWithMandatoryExtension(Wallet wallet, OutputStream output) throws IOException {
         Protos.Wallet walletProto = walletToProto(wallet);
         Protos.Wallet.Builder walletBuilder = Protos.Wallet.newBuilder(walletProto);
         Protos.Extension.Builder extensionBuilder = Protos.Extension.newBuilder().setId(ORG_MULTIBIT_WALLET_PROTECT).setData(ByteString.copyFrom(new byte[0x01])).setMandatory(true);
@@ -101,7 +120,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
      *     
      * Equivalent to <tt>walletToProto(wallet).writeTo(output);</tt>
      */
-    public static void writeWallet(Wallet wallet, OutputStream output) throws IOException {
+    public void writeWallet(Wallet wallet, OutputStream output) throws IOException {
         Protos.Wallet walletProto = walletToProto(wallet);
         walletProto.writeTo(output);
     }
@@ -113,32 +132,16 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
      * structures anyway, consisting as they do of keys (large random numbers) and {@link Transaction}s which also
      * mostly contain keys and hashes.
      */
-    public static String walletToText(Wallet wallet) {
+    public String walletToText(Wallet wallet) {
         Protos.Wallet walletProto = walletToProto(wallet);
         return TextFormat.printToString(walletProto);
     }
 
     /**
-     * Converts the given wrappedWallet to the object representation of the protocol buffers. This can be modified, or
-     * additional data fields set, before serialization takes place.
-     */
-//    public static Protos.WrappedWallet wrappedWalletToProto(org.multibit.model.WrappedWallet wrappedWallet) {
-//        Protos.WrappedWallet.Builder wrappedWalletBuilder = Protos.WrappedWallet.newBuilder();
-//        Protos.Wallet.Builder protoWalletBuilder = walletToProtoBuilder(wrappedWallet.getWallet());
-//        wrappedWalletBuilder.setWallet(protoWalletBuilder);
-//        
-//        return wrappedWalletBuilder.build();
-//    }
-    
-    /**
      * Converts the given wallet to the object representation of the protocol buffers. This can be modified, or
      * additional data fields set, before serialization takes place.
      */
-    public static Protos.Wallet walletToProto(Wallet wallet) {
-        return walletToProtoBuilder(wallet).build();
-    }
-    
-    private static Protos.Wallet.Builder walletToProtoBuilder(Wallet wallet) {
+    public Protos.Wallet walletToProto(Wallet wallet) {
         Protos.Wallet.Builder walletBuilder = Protos.Wallet.newBuilder();
         walletBuilder.setNetworkIdentifier(wallet.getNetworkParameters().getId());
         for (WalletTransaction wtx : wallet.getWalletTransactions()) {
@@ -150,10 +153,8 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             Protos.Key.Builder buf = Protos.Key.newBuilder().setCreationTimestamp(key.getCreationTimeSeconds() * 1000)
                                                          // .setLabel() TODO
                                                             .setType(Protos.Key.Type.ORIGINAL);
-            if (key.getPrivKeyBytes() != null) {
+            if (key.getPrivKeyBytes() != null)
                 buf.setPrivateKey(ByteString.copyFrom(key.getPrivKeyBytes()));
-            }
-
             
             EncryptedPrivateKey encryptedPrivateKey = key.getEncryptedPrivateKey();
             if (encryptedPrivateKey != null) {
@@ -204,10 +205,14 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         }
         walletBuilder.setMinorVersion(wallet.getMinorVersion());
         
+        Collection<Protos.Extension> extensions = helper.getExtensionsToWrite(wallet);
+        for(Protos.Extension ext : extensions) {
+            walletBuilder.addExtension(ext);
+        }
 
-        return walletBuilder;
+        return walletBuilder.build();
     }
-    
+
     private static Protos.Transaction makeTxProto(WalletTransaction wtx) {
         Transaction tx = wtx.getTransaction();
         Protos.Transaction.Builder txBuilder = Protos.Transaction.newBuilder();
@@ -273,10 +278,22 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         confidenceBuilder.setType(Protos.TransactionConfidence.Type.valueOf(confidence.getConfidenceType().getValue()));
         if (confidence.getConfidenceType() == ConfidenceType.BUILDING) {
             confidenceBuilder.setAppearedAtHeight(confidence.getAppearedAtChainHeight());
+            confidenceBuilder.setDepth(confidence.getDepthInBlocks());
+            if (confidence.getWorkDone() != null) {
+                confidenceBuilder.setWorkDone(confidence.getWorkDone().longValue());
+            }
         }
-        if (confidence.getConfidenceType() == ConfidenceType.OVERRIDDEN_BY_DOUBLE_SPEND) {
+        if (confidence.getConfidenceType() == ConfidenceType.DEAD) {
             Sha256Hash overridingHash = confidence.getOverridingTransaction().getHash();
             confidenceBuilder.setOverridingTransaction(hashToByteString(overridingHash));
+        }
+        for (PeerAddress address : confidence.getBroadcastBy()) {
+            Protos.PeerAddress proto = Protos.PeerAddress.newBuilder()
+                    .setIpAddress(ByteString.copyFrom(address.getAddr().getAddress()))
+                    .setPort(address.getPort())
+                    .setServices(address.getServices().longValue())
+                    .build();
+            confidenceBuilder.addBroadcastBy(proto);
         }
         txBuilder.setConfidence(confidenceBuilder);
     }
@@ -290,22 +307,15 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
     }
 
     /**
-     * Parses a WrappedWallet from the given stream. The stream is expected to contain a binary serialization of a 
-     * {@link Protos.WrappedWallet} object.<p>
-     *  
-     * If the stream is invalid or the serialized wallet contains unsupported features, 
-     * {@link IllegalArgumentException} is thrown.
+     * TEMPORARY API: Used for migrating 0.5 wallets to 0.6 - during deserialization we need to know the chain height
+     * so the depth field of transaction confidence objects can be filled out correctly. Set this before loading a
+     * wallet. It's only used for older wallets that lack the data already.
      *
+     * @param chainHeight
      */
-//    public static org.multibit.model.WrappedWallet readWrappedWallet(InputStream input) throws IOException {
-//        Protos.WrappedWallet wrappedWalletProto = Protos.WrappedWallet.parseFrom(input);
-//
-//        Wallet wallet = parseWalletProto(wrappedWalletProto.getWallet());
-//
-//        org.multibit.model.WrappedWallet wrappedWallet = new org.multibit.model.WrappedWallet(wallet);
-//        
-//        return wrappedWallet;
-//    }
+    public void setChainHeight(int chainHeight) {
+        this.chainHeight = chainHeight;
+    }
 
     /**
      * Parses a wallet from the given stream. The stream is expected to contain a binary serialization of a 
@@ -315,27 +325,21 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
      * {@link IllegalArgumentException} is thrown.
      *
      */
-    public static Wallet readWallet(InputStream input) throws IOException {
-        Protos.Wallet walletProto = Protos.Wallet.parseFrom(input);
+    public Wallet readWallet(InputStream input) throws IOException {
+        // TODO: This method should throw more specific exception types than IllegalArgumentException.
+        Protos.Wallet walletProto = parseToProto(input);
 
         // System.out.println(TextFormat.printToString(walletProto));
-        Wallet wallet = parseWalletProto(walletProto);
-
-        return wallet;
-    }
-    
-    private static Wallet parseWalletProto(Protos.Wallet walletProto) {
-        // TODO: This method should throw more specific exception types than IllegalArgumentException.
-        WalletProtobufSerializer serializer = new WalletProtobufSerializer();
 
         NetworkParameters params = NetworkParameters.fromID(walletProto.getNetworkIdentifier());
+        Wallet wallet = helper.newWallet(params);
         
         // Read the scrypt parameters.
         Protos.ScryptParameters encryptionParameters = walletProto.getEncryptionParameters();
         ScryptParameters scryptParameters = new ScryptParameters(encryptionParameters.getSalt().toByteArray(), (int)encryptionParameters.getN(), encryptionParameters.getR(), encryptionParameters.getP());
         EncrypterDecrypter encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
       
-        Wallet wallet = new Wallet(params, encrypterDecrypter);
+        wallet.setEncrypterDecrypter(encrypterDecrypter);
 
         // Read the WalletType.
         EncryptionType walletType = null;
@@ -387,20 +391,19 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
                              
             }
             ecKey.setCreationTimeSeconds((keyProto.getCreationTimestamp() + 500) / 1000);
-            wallet.addKey(ecKey);           
+            wallet.addKey(ecKey);
         }
         
         wallet.setCurrentlyEncrypted(isWalletCurrentlyEncrypted);
-
-        
+    
         // Read all transactions and insert into the txMap.
         for (Protos.Transaction txProto : walletProto.getTransactionList()) {
-            serializer.readTransaction(txProto, params);
+            readTransaction(txProto, params);
         }
 
         // Update transaction outputs to point to inputs that spend them
         for (Protos.Transaction txProto : walletProto.getTransactionList()) {
-            WalletTransaction wtx = serializer.connectTransactionOutputs(txProto);
+            WalletTransaction wtx = connectTransactionOutputs(txProto);
             wallet.addWalletTransaction(wtx);
         }
         
@@ -412,13 +415,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         }
 
         for (Protos.Extension extProto : walletProto.getExtensionList()) {
-            if (extProto.getMandatory()) {
-                // If the extension is the ORG_MULTIBIT_WALLET_PROTECT then we know about that.
-                // This is a marker extension to prevent earlier versions of multibit loading encrypted wallets.
-                if (!extProto.getId().equals(ORG_MULTIBIT_WALLET_PROTECT)) {
-                    throw new IllegalArgumentException("Did not understand a mandatory extension in the wallet of '" + extProto.getId() + "'");
-                }
-            }
+            helper.readExtension(wallet, extProto);
         }
         
         if (walletProto.hasMajorVersion()) {
@@ -447,6 +444,14 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         return wallet;
     }
 
+    /**
+     * Returns the loaded protocol buffer from the given byte stream. You normally want
+     * {@link Wallet#loadFromFile(java.io.File)} instead - this method is designed for low level work involving the
+     * wallet file format itself.
+     */
+    public static Protos.Wallet parseToProto(InputStream input) throws IOException {
+        return Protos.Wallet.parseFrom(input);
+    }
 
     private void readTransaction(Protos.Transaction txProto, NetworkParameters params) {
         Transaction tx = new Transaction(params);
@@ -544,8 +549,27 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             }
             confidence.setAppearedAtChainHeight(confidenceProto.getAppearedAtHeight());
         }
+        if (confidenceProto.hasDepth()) {
+            if (confidence.getConfidenceType() != ConfidenceType.BUILDING) {
+                log.warn("Have depth but not BUILDING for tx {}", tx.getHashAsString());
+                return;
+            }
+            confidence.setDepthInBlocks(confidenceProto.getDepth());
+        } else {
+            // TEMPORARY CODE FOR MIGRATING 0.5 WALLETS TO 0.6
+            if (chainHeight != 0 && confidenceProto.hasAppearedAtHeight()) {
+                confidence.setDepthInBlocks(chainHeight - confidence.getAppearedAtChainHeight() + 1);
+            }
+        }
+        if (confidenceProto.hasWorkDone()) {
+            if (confidence.getConfidenceType() != ConfidenceType.BUILDING) {
+                log.warn("Have workDone but not BUILDING for tx {}", tx.getHashAsString());
+                return;
+            }
+            confidence.setWorkDone(BigInteger.valueOf(confidenceProto.getWorkDone()));
+        }
         if (confidenceProto.hasOverridingTransaction()) {
-            if (confidence.getConfidenceType() != ConfidenceType.OVERRIDDEN_BY_DOUBLE_SPEND) {
+            if (confidence.getConfidenceType() != ConfidenceType.DEAD) {
                 log.warn("Have overridingTransaction but not OVERRIDDEN for tx {}", tx.getHashAsString());
                 return;
             }
@@ -556,6 +580,18 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
                 return;
             }
             confidence.setOverridingTransaction(overridingTransaction);
+        }
+        for (Protos.PeerAddress proto : confidenceProto.getBroadcastByList()) {
+            InetAddress ip;
+            try {
+                ip = InetAddress.getByAddress(proto.getIpAddress().toByteArray());
+            } catch (UnknownHostException e) {
+                throw new RuntimeException(e);   // IP address is of invalid length.
+            }
+            int port = proto.getPort();
+            PeerAddress address = new PeerAddress(ip, port);
+            address.setServices(BigInteger.valueOf(proto.getServices()));
+            confidence.markBroadcastBy(address);
         }
     }
 }

@@ -31,14 +31,13 @@ public class IsMultiBitClassTest extends TestCase {
 
     @Test
     public void testIsMultiBitClass() throws ClassNotFoundException {
-        checkClass("core.BlockChain");
         checkClass("core.ECKey");
         checkClass("core.Sha256Hash");
         checkClass("core.Transaction");
-        checkClass("core.TransactionInput");
         checkClass("core.TransactionOutput");
         checkClass("core.Wallet");
         checkClass("store.WalletProtobufSerializer");
+        checkClass("store.WalletExtensionSerializer");
     }
 
     private void checkClass(String className) throws ClassNotFoundException {
