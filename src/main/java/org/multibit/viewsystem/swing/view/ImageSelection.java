@@ -63,7 +63,7 @@ public class ImageSelection extends TransferHandler implements Transferable {
             urlFlavor = new DataFlavor("application/x-java-url; class=java.net.URL");
             uriListAsStringFlavor = new DataFlavor("text/uri-list; class=java.lang.String");
             uriListAsReaderFlavor = new DataFlavor("text/uri-list;class=java.io.Reader");
-            flavors = new DataFlavor[] { DataFlavor.imageFlavor, urlFlavor, uriListAsStringFlavor, uriListAsReaderFlavor };
+            flavors = new DataFlavor[] { DataFlavor.imageFlavor, DataFlavor.javaFileListFlavor, urlFlavor, uriListAsStringFlavor, uriListAsReaderFlavor };
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -92,6 +92,7 @@ public class ImageSelection extends TransferHandler implements Transferable {
         return false;
     }
 
+    @Override
     public Transferable createTransferable(JComponent comp) {
         // Clear
         image = null;
@@ -132,11 +133,28 @@ public class ImageSelection extends TransferHandler implements Transferable {
                 java.util.List<File> list = new java.util.LinkedList<File>();
 
                 // write the image to the output stream
-                File swatchFile;
+                File qrCodeFile;
                 try {
-                    swatchFile = File.createTempFile("swatch", ".png");
-                    ImageIO.write(toBufferedImage(image, -1, -1), "png", swatchFile);
-                    list.add(swatchFile);
+                    String suffix = "";
+                    if (abstractTradePanel != null) {
+                        if (abstractTradePanel.getLabel() != null) {
+                            suffix = "-" + abstractTradePanel.getLabel();
+                        }
+                        if (abstractTradePanel.getAddress() != null) {
+                            suffix = suffix + "-" + abstractTradePanel.getAddress();
+                        }
+                        if (abstractTradePanel.getAmount() != null) {
+                            suffix = suffix + "-" + abstractTradePanel.getAmount();
+                        }
+                        
+                        if (suffix.length() > 0) {
+                            suffix = suffix + "-";
+                        }
+                    }
+                     
+                    qrCodeFile = File.createTempFile("qrcode" + suffix, ".png");
+                    ImageIO.write(toBufferedImage(image, -1, -1), "png", qrCodeFile);
+                    list.add(qrCodeFile);
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -146,11 +164,11 @@ public class ImageSelection extends TransferHandler implements Transferable {
             if (uriListAsStringFlavor.equals(flavor)) {
                 log.debug("uriListAsStringFlavor is supported");
                 // write the image to the output stream
-                File swatchFile;
+                File qrcodeFile;
                 try {
-                    swatchFile = File.createTempFile("swatch", ".png");
-                    ImageIO.write(toBufferedImage(image, -1, -1), "png", swatchFile);
-                    return "file://" + swatchFile.getAbsolutePath() + "\r\n";
+                    qrcodeFile = File.createTempFile("qrcode", ".png");
+                    ImageIO.write(toBufferedImage(image, -1, -1), "png", qrcodeFile);
+                    return "file://" + qrcodeFile.getAbsolutePath() + "\r\n";
                  } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -192,6 +210,7 @@ public class ImageSelection extends TransferHandler implements Transferable {
                     return img;
                 }
             }
+            
             if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                 log.debug("javaFileList is supported");
                 java.util.List list = (java.util.List) transferable.getTransferData(DataFlavor.javaFileListFlavor);
