@@ -16,7 +16,9 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.ComponentOrientation;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -62,15 +64,18 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
 
     private static final int NUMBER_OF_DAYS_TO_LOOK_BACK = 30;
     private static final double NUMBER_OF_SATOSHI_IN_ONE_BTC = 100000000;
-
+    
+    private static final int WIDTH_DELTA = 40;
+    private static final int HEIGHT_DELTA = 20;
+    
+    private static final int MINIMUM_WIDTH = 800;
+    private static final int MINIMUM_HEIGHT = 300;
+    
+    private static final String DATE_FORMAT = "dd-MMM";
+    
     private MultiBitController controller;
 
     private JPanel mainPanel;
-
-    // Formatter for dates.
-    private SimpleDateFormat dateFormatter;
-
-    private Chart chart;
 
     private boolean generateRandomChart = false;
 
@@ -81,10 +86,10 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
 
         this.controller = controller;
 
+        setLayout(new BorderLayout());
         setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        setOpaque(true);
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
-        dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
         mainFrame.addComponentListener(this);
         addComponentListener(this);
@@ -93,12 +98,11 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
     }
 
     private void initUI() {
-
         mainPanel = new JPanel();
         mainPanel.setLayout(new GridBagLayout());
         mainPanel.setOpaque(true);
         mainPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-
+ 
         mainPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -113,7 +117,8 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
 
         // Initially blank.
         JPanel chartPanel = new JPanel();
-        chartPanel.setOpaque(false);
+        chartPanel.setOpaque(true);
+        chartPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         mainPanel.add(chartPanel, constraints);
 
         JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -129,9 +134,12 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
      * Create a panel containing the chart to show.
      */
     private JPanel createChartPanel() {
+        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
-        Chart chart = new Chart(this.getWidth(), this.getHeight());
-
+        int chartWidth = Math.max(getWidth() - WIDTH_DELTA, MINIMUM_WIDTH);
+        int chartHeight = Math.max(getHeight() - HEIGHT_DELTA, MINIMUM_HEIGHT);
+        Chart chart = new Chart(chartWidth, chartHeight);
+        
         // generates linear data
         Collection<Date> xData = new ArrayList<Date>();
         Collection<Number> yData = new ArrayList<Number>();
@@ -185,10 +193,9 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
         chart.setChartBackgroundColor(ColorAndFontConstants.BACKGROUND_COLOR);
         chart.setChartTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(2));
         chart.setAxisLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        chart.setChartTickLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        chart.setChartTickLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        chart.setChartTickLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-3));
         
-        chart.setDateFormatter("dd-MM");
+        chart.setDateFormatter(DATE_FORMAT);
         
         Series series = chart.addDateSeries(balanceLabel, xData, yData);
         series.setLineColor(SeriesColor.BLUE);
@@ -197,7 +204,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
         series.setLineStyle(SeriesLineStyle.SOLID);
 
         XChartJPanel chartPanelToReturn = new XChartJPanel(chart);
-        chartPanelToReturn.setLocale(controller.getLocaliser().getLocale());
+        chartPanelToReturn.setMinimumSize(new Dimension(chartWidth, chartHeight));
         return chartPanelToReturn;
     }
 
@@ -205,7 +212,6 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
      * Update the chart panel (The active wallet may have changed).
      */
     private void updateChart() {
-
         // Clear the main panel.
         mainPanel.removeAll();
 
@@ -219,14 +225,18 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.CENTER;
-        mainPanel.add(createChartPanel(), constraints);
+
+        // Recreate chart panel.
+        JPanel chartPanel = createChartPanel();
+        chartPanel.setOpaque(true);
+        chartPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        mainPanel.add(chartPanel, constraints);
     }
 
     /**
      * Get the transaction data for the chart
      */
     private Collection<ChartData> getChartData() {
-
         if (controller.getModel().getActiveWallet() == null) {
             return new ArrayList<ChartData>();
         }
@@ -271,10 +281,8 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
                     if (!leftEdgeDataPointAdded) {
                         // If the previous transaction was BEFORE the
                         // NUMBER_OF_DAYS_TO_LOOK_BACK cutoff, include a
-                        // datapoint
-                        // at the beginning of the timewindow with the balance
-                        // at
-                        // that time.
+                        // datapoint at the beginning of the timewindow with the balance
+                        // at that time.
                         if ((previousDate != null) && (previousDate.getTime() <= pastInMillis)) {
                             // The balance was non-zero.
                             chartData.add(new ChartData(new Date(pastInMillis), previousBalance));
