@@ -277,7 +277,7 @@ public class FileHandler {
                     fileOutputStream = new FileOutputStream(walletFile);
                     
                     // Save as a Wallet message with a mandatory extension to prevent loading by older versions of multibit.
-                    WalletProtobufSerializer.writeWalletWithMandatoryExtension(perWalletModelData.getWallet(), fileOutputStream);
+                    (new WalletProtobufSerializer()).writeWalletWithMandatoryExtension(perWalletModelData.getWallet(), fileOutputStream);
                 } else {
                     throw new WalletVersionException("Cannot save wallet '" + perWalletModelData.getWalletFilename()
                             + "'. Its wallet version is '" + walletInfo.getWalletMajorVersion().toString()

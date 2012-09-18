@@ -60,16 +60,20 @@ import org.slf4j.LoggerFactory;
 public class MultiBit {
     private static final Logger log = LoggerFactory.getLogger(MultiBit.class);
 
+    private static MultiBitController controller = null;
+    
+    public static MultiBitController getController() {
+        return controller;
+    }
+    
     /**
-     * Start multibit user interface.
+     * Start MultiBit user interface.
      * 
      * @param args
      *            String encoding of arguments ([0]= Bitcoin URI)
      */
     public static void main(String args[]) {
         log.info("Starting MultiBit");
-
-        MultiBitController controller = null;
 
         // Enclosing try to enable graceful closure for unexpected errors.
         try {

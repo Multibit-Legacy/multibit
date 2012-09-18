@@ -421,45 +421,34 @@ public class PrivateKeysHandler {
     }
 
     private boolean transactionUsesKey(Transaction transaction, ECKey ecKey) {
-        try {
-            for (TransactionOutput output : transaction.getOutputs()) {
-                // TODO: Handle more types of outputs, not just regular to
-                // address outputs.
-                if (output.getScriptPubKey().isSentToIP())
-                    continue;
-                // This is not thread safe as a key could be removed between the
-                // call to isMine and receive.
-                try {
-                    byte[] pubkeyHash = output.getScriptPubKey().getPubKeyHash();
-                    if (Arrays.equals(ecKey.getPubKeyHash(), pubkeyHash)) {
-                        return true;
-                    }
-                } catch (ScriptException e) {
-                    log.error("Could not parse tx output script: {}", e.toString());
-                    return false;
+        for (TransactionOutput output : transaction.getOutputs()) {
+            // This is not thread safe as a key could be removed between the
+            // call to isMine and receive.
+            try {
+                byte[] pubkeyHash = output.getScriptPubKey().getPubKeyHash();
+                if (Arrays.equals(ecKey.getPubKeyHash(), pubkeyHash)) {
+                    return true;
                 }
+            } catch (ScriptException e) {
+                log.error("Could not parse tx output script: {}", e.toString());
+                return false;
             }
-
-            for (TransactionInput input : transaction.getInputs()) {
-                if (input.getScriptSig().isSentToIP())
-                    continue;
-
-                // This is not thread safe as a key could be removed between the
-                // call to isPubKeyMine and receive.
-                try {
-                    byte[] pubkey = input.getScriptSig().getPubKey();
-                    if (Arrays.equals(ecKey.getPubKey(), pubkey)) {
-                        return true;
-                    }
-                } catch (ScriptException e) {
-                    log.error("Could not parse tx output script: {}", e.toString());
-                    return false;
-                }
-            }
-            return false;
-        } catch (ScriptException e) {
-            throw new PrivateKeysHandlerException("Transaction script was not understandable", e);
         }
+
+        for (TransactionInput input : transaction.getInputs()) {
+            // This is not thread safe as a key could be removed between the
+            // call to isPubKeyMine and receive.
+            try {
+                byte[] pubkey = input.getScriptSig().getPubKey();
+                if (Arrays.equals(ecKey.getPubKey(), pubkey)) {
+                    return true;
+                }
+            } catch (ScriptException e) {
+                log.error("Could not parse tx output script: {}", e.toString());
+                return false;
+            }
+        }
+        return false;
     }
 
     private void processLine(String line, ArrayList<PrivateKeyAndDate> parseResults) {
