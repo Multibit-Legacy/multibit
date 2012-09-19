@@ -175,7 +175,6 @@ public class TransactionOutput extends ChildMessage implements Serializable, IsM
     /**
      * Sets this objects availableForSpending flag to false and the spentBy pointer to the given input.
      * If the input is null, it means this output was signed over to somebody else rather than one of our own keys.
-     * @throws IllegalStateException if the transaction was already marked as spent.
      */
     public void markAsSpent(TransactionInput input) {
         availableForSpending = false;

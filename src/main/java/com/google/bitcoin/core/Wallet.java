@@ -20,6 +20,8 @@ import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 import com.google.bitcoin.core.WalletTransaction.Pool;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.bitcoin.utils.EventListenerInvoker;
+import com.google.common.util.concurrent.ListenableFuture;
+
 import org.multibit.IsMultiBitClass;
 import org.multibit.MultiBit;
 import org.multibit.crypto.EncryptedPrivateKey;
@@ -386,7 +388,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         // between pools.
         EnumSet<Pool> containingPools = getContainingPools(tx);
         if (!containingPools.equals(EnumSet.noneOf(Pool.class))) {
-            log.info("Received tx we already saw in a block or created ourselves: " + tx.getHashAsString());
+            log.debug("Received tx we already saw in a block or created ourselves: " + tx.getHashAsString());
             return;
         }
 
@@ -572,8 +574,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         // in turn allowed to re-enter the Wallet. This means we cannot assume anything about the state of the wallet
         // from now on. The balance just received may already be spent.
 
-        // Mark the tx as appearing in this block so we can find it later after a re-org. This also lets the
-        // transaction update its confidence and timestamp bookkeeping data.
+        // Mark the tx as appearing in this block so we can find it later after a re-org.
         if (block != null) {
             tx.setBlockAppearance(block, bestChain);
             invokeOnTransactionConfidenceChanged(tx);
@@ -603,7 +604,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
                 invokeOnCoinsSent(tx, prevBalance, newBalance);
             }
         }
-        
+
         checkState(isConsistent());
     }
 
@@ -629,7 +630,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
             }
         }
     }
-    
+
     /**
      * Handle when a transaction becomes newly active on the best chain, either due to receiving a new block or a
      * re-org making inactive transactions active.
@@ -1048,6 +1049,78 @@ public class Wallet implements Serializable, IsMultiBitClass {
                 return unspent.size() + spent.size() + pending.size() + inactive.size() + dead.size();
         }
         throw new RuntimeException("Unreachable");
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    //  SEND APIS
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /** A SendResult is returned to you as part of sending coins to a recipient. */
+    public static class SendResult {
+        /** The Bitcoin transaction message that moves the money. */
+        public Transaction tx;
+        /** A future that will complete once the tx message has been successfully broadcast to the network. */
+        public ListenableFuture<Transaction> broadcastComplete;
+    }
+
+    /**
+     * A SendRequest gives the wallet information about precisely how to send money to a recipient or set of recipients.
+     * Static methods are provided to help you create SendRequests and there are a few helper methods on the wallet that
+     * just simplify the most common use cases. You may wish to customize a SendRequest if you want to attach a fee or
+     * modify the change address.
+     */
+    public static class SendRequest {
+        /**
+         * A transaction, probably incomplete, that describes the outline of what you want to do. This typically will
+         * mean it has some outputs to the intended destinations, but no inputs or change address (and therefore no
+         * fees) - the wallet will calculate all that for you and update tx later.
+         */
+        public Transaction tx;
+
+        /**
+         * "Change" means the difference between the value gathered by a transactions inputs (the size of which you
+         * don't really control as it depends on who sent you money), and the value being sent somewhere else. The
+         * change address should be selected from this wallet, normally. <b>If null this will be chosen for you.</b>
+         */
+        public Address changeAddress;
+
+        /**
+         * A transaction can have a fee attached, which is defined as the difference between the input values
+         * and output values. Any value taken in that is not provided to an output can be claimed by a miner. This
+         * is how mining is incentivized in later years of the Bitcoin system when inflation drops. It also provides
+         * a way for people to prioritize their transactions over others and is used as a way to make denial of service
+         * attacks expensive. Some transactions require a fee due to their structure - currently bitcoinj does not
+         * correctly calculate this! As of late 2012 most transactions require no fee.
+         */
+        public BigInteger fee = BigInteger.ZERO;
+
+        // Tracks if this has been passed to wallet.completeTx already: just a safety check.
+        private boolean completed;
+
+        private SendRequest() {}
+
+        public static SendRequest to(Address destination, BigInteger value) {
+            SendRequest req = new Wallet.SendRequest();
+            req.tx = new Transaction(destination.getParameters());
+            req.tx.addOutput(value, destination);
+            return req;
+        }
+
+        public static SendRequest to(NetworkParameters params, ECKey destination, BigInteger value) {
+            SendRequest req = new SendRequest();
+            req.tx = new Transaction(params);
+            req.tx.addOutput(value, destination);
+            return req;
+        }
+
+        /** Simply wraps a pre-built incomplete transaction provided by you. */
+        public static SendRequest forTx(Transaction tx) {
+            SendRequest req = new SendRequest();
+            req.tx = tx;
+            return req;
+        }
     }
 
     /**
@@ -1717,7 +1790,6 @@ public class Wallet implements Serializable, IsMultiBitClass {
         });
         checkState(isConsistent());
     }
-    
 
     /**
      * Subtract the supplied depth and work done from the given transactions.

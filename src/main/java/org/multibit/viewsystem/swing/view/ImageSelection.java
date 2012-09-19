@@ -164,18 +164,18 @@ public class ImageSelection extends TransferHandler implements Transferable {
                     filename = abstractTradePanel.getLabel();
                     areAdding = true;
                 }
+                if (abstractTradePanel.getAmount() != null) {
+                    if (areAdding) {
+                        filename = filename + " - ";
+                    }
+                    filename = filename + abstractTradePanel.getAmount();
+                }
                 if (abstractTradePanel.getAddress() != null) {
                     if (areAdding) {
                         filename = filename + " - ";
                     }
                     filename = filename + abstractTradePanel.getAddress();
                     areAdding = true;
-                }
-                if (abstractTradePanel.getAmount() != null) {
-                    if (areAdding) {
-                        filename = filename + " - ";
-                    }
-                    filename = filename + abstractTradePanel.getAmount();
                 }
             }
 

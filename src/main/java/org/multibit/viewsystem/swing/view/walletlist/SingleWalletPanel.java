@@ -64,7 +64,7 @@ import com.google.bitcoin.core.Wallet.BalanceType;
 
 public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener {
 
-    private static final int WIDTH_OF_TEXT_FIELD = 15;
+    private static final int WIDTH_OF_TEXT_FIELD = 12;
 
     private static final long serialVersionUID = -7110340338285836548L;
 

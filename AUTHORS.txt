@@ -68,7 +68,9 @@ techmix             - Persian
 Technomage          - Finnish
 teknomunk           - Japanese
 tesla               - Russian
+tpantlik            - Czech
 viboracecata        - Chinese Simplified
+welyoe              - Bahasa Indonesia
 Wissam Idrissi      - Arabic
 Wim1441             - Dutch
 XeF6                - Turkish
