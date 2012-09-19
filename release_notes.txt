@@ -5,6 +5,7 @@ MultiBit release notes.
 +  Chart of wallet balance for last 30 days added
 +  Drag ang drop to desktop
 +  Faster bitcoin network connection
++  Fixed tab flicker
 
 
 10 Sep 2012 Version 0.4.10

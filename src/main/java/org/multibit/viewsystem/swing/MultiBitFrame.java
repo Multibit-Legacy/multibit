@@ -180,7 +180,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private MultiBitWalletBusyAction showExportPrivateKeysAction;
 
     @SuppressWarnings("deprecation")
-    public MultiBitFrame(MultiBitController controller, GenericApplication application) {
+    public MultiBitFrame(MultiBitController controller, GenericApplication application, int initialView) {
         this.controller = controller;
         this.model = controller.getModel();
         this.localiser = controller.getLocaliser();
@@ -250,8 +250,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         walletsView.displayView();
 
         splitPane.setDividerLocation(calculateDividerPosition());
-
+        
         pack();
+
+        displayView(initialView);
 
         setVisible(true);
     }
@@ -827,6 +829,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * Display next view on Swing event dispatch thread.
      */
     public void displayView(int viewToDisplay) {
+        log.debug("Displaying view '" + viewToDisplay + "'");
         // Open wallet view obselete - show transactions
         if (View.OPEN_WALLET_VIEW == viewToDisplay) {
             viewToDisplay = View.TRANSACTIONS_VIEW;

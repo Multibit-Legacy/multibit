@@ -154,24 +154,13 @@ public class MultiBit {
                     String lookAndFeel = userPreferences.getProperty(MultiBitModel.LOOK_AND_FEEL);
 
                     if (lookAndFeel != null && lookAndFeel != "") {
-//                        if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(lookAndFeel)) {
-//                            try {
-//                                UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
-//                                foundTargetLookAndFeel = true;
-//                            } catch (Exception e) {
-//                                e.printStackTrace();
-//                            }
-//                        } else {
-                            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                                // log.debug("Found look and feel : " +
-                                // info.getName());
-                                if (lookAndFeel.equalsIgnoreCase(info.getName())) {
-                                    UIManager.setLookAndFeel(info.getClassName());
-                                    foundTargetLookAndFeel = true;
-                                    break;
-                                }
+                        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                            if (lookAndFeel.equalsIgnoreCase(info.getName())) {
+                                UIManager.setLookAndFeel(info.getClassName());
+                                foundTargetLookAndFeel = true;
+                                break;
                             }
-//                        }
+                        }
                     }
                 }
                 
@@ -189,8 +178,8 @@ public class MultiBit {
                 // carry on
             }
 
-            log.debug("Creating views");
-            swingViewSystem = new MultiBitFrame(controller, genericApplication);
+            log.debug("Creating user interface");
+            swingViewSystem = new MultiBitFrame(controller, genericApplication, controller.getCurrentView());
 
             log.debug("Registering with controller");
             controller.registerViewSystem(swingViewSystem);
@@ -199,9 +188,6 @@ public class MultiBit {
             // Create the MultiBitService that connects to the bitcoin network.
             MultiBitService multiBitService = new MultiBitService(controller);
             controller.setMultiBitService(multiBitService);
-
-            // Display the stored view.
-            controller.displayView(controller.getCurrentView());
 
             log.debug("Locating wallets");
             // Find the active wallet filename in the multibit.properties.
