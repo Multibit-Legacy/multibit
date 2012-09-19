@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
@@ -225,8 +224,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         
         controller.registerWalletBusyListener(this);
 
-        recreateAllViews(false);
-
         // Initialise status bar.
         statusBar.initialise();
 
@@ -346,8 +343,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         transactionsOutlinePanel.add((JPanel) transactionsView, BorderLayout.CENTER);
         viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsView.getViewTooltip(),
                 transactionsOutlinePanel);
-
-        viewTabbedPane.addChangeListener();
 
         // Create a split pane with the two scroll panes in it.
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {

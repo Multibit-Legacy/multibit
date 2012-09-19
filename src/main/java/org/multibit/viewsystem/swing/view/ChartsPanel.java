@@ -165,7 +165,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
                 return chartPanel;
             } else {
                 for (ChartData chartData : chartDataCollection) {
-                    System.out.println(chartData.toString());
+                    //System.out.println(chartData.toString());
 
                     xData.add(chartData.getDate());
                     yData.add(chartData.getValue().doubleValue() / NUMBER_OF_SATOSHI_IN_ONE_BTC);
@@ -375,7 +375,6 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
 
         @Override
         public String toString() {
-
             return "ChartData [date=" + date + ", value=" + value + "]";
         }
     }

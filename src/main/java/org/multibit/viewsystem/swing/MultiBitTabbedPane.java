@@ -14,8 +14,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
@@ -47,48 +45,32 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
         // Create a Dimension that can be used to size the close buttons.
         closeButtonSize = new Dimension(closeTabIcon.getIconWidth() + 2, closeTabIcon.getIconHeight() + 2);
-
     }
     
-// This code might get rid of the 'tab flicker' but it does not work yet.
-//    public void setSelectedIndex(int index) {
-//        super.setSelectedIndex(index);
-//        
-//        // Get current tab
-//        JPanel tabComponent = (JPanel) getComponentAt(index);
-//        if (tabComponent != null) {
-//            Component[] childComponents = tabComponent.getComponents();
-//            View selectedView = null;
-//            if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
-//                selectedView = ((View) childComponents[0]);
-//                controller.setCurrentView(selectedView.getViewId());
-//                controller.displayView(selectedView.getViewId());
-//                controller.fireDataChanged();
-//            }
-//        }
-//    }
-
-    public void addChangeListener() {
-        // Register a change listener
-        addChangeListener(new ChangeListener() {
-            // This method is called whenever the selected tab changes
-            public void stateChanged(ChangeEvent evt) {
-                JTabbedPane pane = (JTabbedPane) evt.getSource();
-
-                // Get current tab
-                JPanel tabComponent = (JPanel) pane.getSelectedComponent();
-                if (tabComponent != null) {
-                    Component[] childComponents = tabComponent.getComponents();
-                    View selectedView = null;
-                    if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
-                        selectedView = ((View) childComponents[0]);
-                        controller.setCurrentView(selectedView.getViewId());
-                        controller.displayView(selectedView.getViewId());
-                        controller.fireDataChanged();
-                    }
+    public void setSelectedIndex(int index) {
+        super.setSelectedIndex(index);
+        
+        System.out.println("MultiBitTabbedPane. Selecting tab '" + index + "'" );
+        // Get current tab.
+        JPanel tabComponent = (JPanel) getComponentAt(index);
+        if (tabComponent != null) {
+            Component[] childComponents = tabComponent.getComponents();
+            View selectedView = null;
+            if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
+                selectedView = ((View) childComponents[0]);
+                if (controller.getCurrentView() != 0 && selectedView != null && controller.getCurrentView() == selectedView.getViewId()) {
+                    // We are already displaying the correct tab.
+                    // Just update the contents.
+                    selectedView.displayView();
+                    controller.fireDataChanged();
+                } else {
+                    // Select the new tab, update the content.
+                    controller.setCurrentView(selectedView.getViewId());
+                    selectedView.displayView();
+                    controller.fireDataChanged();
                 }
             }
-        });        
+        }
     }
     
     @Override
@@ -181,8 +163,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
         // Add the tab to the tabbed pane. Note that the first
         // parameter, which would ordinarily be a String that
         // represents the tab title, is null.
-        addTab(null, component);
-        
+        addTab(null, component);      
 
         // Instead of using a String/Icon combination for the tab,
         // use our panel instead.
