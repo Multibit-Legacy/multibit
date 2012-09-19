@@ -48,9 +48,7 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
     private static final Logger log = LoggerFactory.getLogger(MultiBitDnsDiscovery.class);
 
     private static final int SLEEP_PERIOD = 500; // milliseconds
-    private static final int SINGLE_PEER_FOUND_CONNECT_TIME = 10 * 1000; // milliseconds
     private static final int MAXIMUM_CONNECT_TIME = 5 * 60 * 1000; // milliseconds
-
     private static final int MINIMUM_NUMBER_OF_PEERS_TO_FIND = 4;
 
     private String[] hostNames;
@@ -113,8 +111,7 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
         // or we are over the SINGLE_PEER_FOUND_CONNECT_TIME and have found at least one peer.
         int waitTime = 0;
         while (waitTime < MAXIMUM_CONNECT_TIME 
-                && addresses.size() < MINIMUM_NUMBER_OF_PEERS_TO_FIND
-                && (waitTime < SINGLE_PEER_FOUND_CONNECT_TIME || addresses.size() == 0)) {
+                && addresses.size() < MINIMUM_NUMBER_OF_PEERS_TO_FIND) {
             try {
                 log.debug("At time '" + waitTime + "' had found " +  addresses.size() + " peers.");
                 Thread.sleep(SLEEP_PERIOD);

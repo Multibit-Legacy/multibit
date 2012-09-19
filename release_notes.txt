@@ -1,8 +1,19 @@
 MultiBit release notes.
 
+?? Sep 2012 Version 0.5.4beta
++  Update to use bitcoinj version 0.6-SNAPSHOT 
++  Chart of wallet balance for last 30 days added
++  Drag ang drop to desktop
++  Faster bitcoin network connection
+
+
+10 Sep 2012 Version 0.4.10
++  Czech and Indonesian 100% translation added.
+
+
 05 Sep 2012 Version 0.5.3beta
 +  Forward port of everything from 0.4.9
-+  Czech translation 100% added.
++  Czech translation 100% added
 
 
 03 Sep 2012 Version 0.4.9
@@ -18,7 +29,7 @@ MultiBit release notes.
 
 
 27 Aug 2012 Version 0.4.8
-+  I18n update. Hebrew added as target language. Lots of new texts.
++  I18n update. Hebrew added as target language. Lots of new texts
 
 
 22 Aug 2012 Version 0.5.1alpha
@@ -36,7 +47,6 @@ MultiBit release notes.
 +  Sidepanel UI improvements
 +  Less noisy at startup with wallet loading messages
 +  Better error handling with currency ticker
-
 
 
 30 Jul 2012 Version 0.4.6
