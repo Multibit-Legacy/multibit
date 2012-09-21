@@ -56,7 +56,6 @@ import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.crypto.WalletIsAlreadyDecryptedException;
 import org.multibit.crypto.WalletIsAlreadyEncryptedException;
-import org.multibit.file.FileHandler;
 import org.multibit.model.WalletMajorVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -269,7 +268,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * Uses protobuf serialization to save the wallet to the given file. To learn more about this file format, see
      * {@link WalletProtobufSerializer}.
      * 
-     * This method is keep simple as the file saving lifecycle is dealy with in FileHandler.
+     * This method is keep simple as the file saving lifecycle is dealt with in FileHandler.
      */
     public synchronized void saveToFile(File destFile) throws IOException {        
         FileOutputStream stream = null;

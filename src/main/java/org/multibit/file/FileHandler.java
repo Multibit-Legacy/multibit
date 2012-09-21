@@ -161,10 +161,6 @@ public class FileHandler {
      *            force the write of the perWalletModelData     
      */
     public void savePerWalletModelData(PerWalletModelData perWalletModelData, boolean forceWrite) {
-//        log.info("Wallet details for wallet file = " +
-//         perWalletModelData.getWalletFilename() + "\n"
-//         + perWalletModelData.getWallet().toString());
-
         if (perWalletModelData == null || perWalletModelData.getWalletFilename() == null) {
             return;
         }
@@ -483,7 +479,6 @@ public class FileHandler {
         walletInfo.put(MultiBitModel.WALLET_INFO_FILE_SIZE, "" + walletInfoFileSize);
         walletInfo.put(MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED, "" + walletInfoFileLastModified);
 
-        // TODO Fix this - create a toString()
         log.debug("rememberFileSizesAndLastModified: Wallet filename " + walletFilename + " , " + MultiBitModel.WALLET_FILE_SIZE
                 + " " + walletFileSize + " ," + MultiBitModel.WALLET_FILE_LAST_MODIFIED + " " + walletFileLastModified + " ,"
                 + MultiBitModel.WALLET_INFO_FILE_SIZE + " " + walletInfoFileSize + " ,"
