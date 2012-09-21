@@ -207,6 +207,7 @@ public class MultiBit {
                 // If this is missing then there is just the one wallet (old format
                 // properties or user has just started up for the first time).
                 useFastCatchup = true;
+                boolean thereWasAnErrorLoadingTheWallet = false;
 
                 try {
                     // ActiveWalletFilename may be null on first time startup.
@@ -224,17 +225,26 @@ public class MultiBit {
                             new Object[] { activeWalletFilename, e.getMessage() });
                     MessageManager.INSTANCE.addMessage(new Message(message));
                     log.error(message);
+                    thereWasAnErrorLoadingTheWallet = true;
                 } catch (WalletVersionException e) {
                     String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                             new Object[] { activeWalletFilename, e.getMessage() });
                     MessageManager.INSTANCE.addMessage(new Message(message));
                     log.error(message);
+                    thereWasAnErrorLoadingTheWallet = true;
                 } catch (IOException e) {
                     String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                             new Object[] { activeWalletFilename, e.getMessage() });
                     MessageManager.INSTANCE.addMessage(new Message(message));
                     log.error(message);
+                    thereWasAnErrorLoadingTheWallet = true;
                 } finally {
+                    if (thereWasAnErrorLoadingTheWallet) {
+                        // Clear the backup wallet filename - this prevents it being automatically overwritten.
+                        if (controller.getModel().getActiveWalletWalletInfo() != null) {
+                            controller.getModel().getActiveWalletWalletInfo().put(MultiBitModel.WALLET_BACKUP_FILE, "");
+                        }
+                    }
                     if (swingViewSystem instanceof MultiBitFrame) {
                         ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
                         ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
@@ -323,6 +333,8 @@ public class MultiBit {
                     
 
                     if (actualOrderToLoad.size() > 0) {
+                        boolean thereWasAnErrorLoadingTheWallet = false;
+
                         ((MultiBitFrame) swingViewSystem).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                         for (String actualOrder : actualOrderToLoad) {
                             log.debug("Loading wallet from '{}'", actualOrder);
@@ -346,16 +358,29 @@ public class MultiBit {
                                         new Object[] { actualOrder, e.getMessage() }));
                                 MessageManager.INSTANCE.addMessage(message);
                                 log.error(message.getText());
+                                thereWasAnErrorLoadingTheWallet = true;
                             } catch (WalletVersionException e) {
                                 message = new Message(controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                                         new Object[] { actualOrder, e.getMessage() }));
                                 MessageManager.INSTANCE.addMessage(message);
                                 log.error(message.getText());
+                                thereWasAnErrorLoadingTheWallet = true;
                             } catch (IOException e) {
                                 message = new Message(controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                                         new Object[] { actualOrder, e.getMessage() }));
                                 MessageManager.INSTANCE.addMessage(message);
                                 log.error(message.getText());
+                                thereWasAnErrorLoadingTheWallet = true;
+                            }
+                            
+                            if (thereWasAnErrorLoadingTheWallet) {
+                                PerWalletModelData loopData = controller.getModel().getPerWalletModelDataByWalletFilename(actualOrder);
+                                if (loopData != null) {
+                                    // Clear the backup wallet filename - this prevents it being automatically overwritten.
+                                    if (loopData.getWalletInfo() != null) {
+                                        loopData.getWalletInfo().put(MultiBitModel.WALLET_BACKUP_FILE, "");
+                                    }
+                                }
                             }
                         }
                     }

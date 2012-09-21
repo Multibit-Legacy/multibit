@@ -27,9 +27,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncrypterDecrypter;
-import org.multibit.crypto.EncrypterDecrypterScrypt;
-import org.multibit.crypto.ScryptParameters;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
@@ -127,20 +124,21 @@ public class CreateWalletSubmitAction extends AbstractAction {
             return;
         }
 
-        // If the filename has no extension, put on the wallet
-        // extension.
+        // If the filename has no extension, put on the wallet extension.
         if (!newWalletFilename.contains(".")) {
              newWalletFilename = newWalletFilename + "." + MultiBitModel.WALLET_FILE_EXTENSION;
         }
 
         File newWalletFile = new File(newWalletFilename);
+        
+        boolean theWalletWasNotOpenedSuccessfully = false;
 
         try {
             // If file exists, load the existing wallet.
             if (newWalletFile.exists()) {
                 PerWalletModelData perWalletModelData = controller.getFileHandler().loadFromFile(newWalletFile);
                 if (perWalletModelData != null) {
-                    // use the existing wallet
+                    // Use the existing wallet.
                     controller.addWalletFromFilename(newWalletFile.getAbsolutePath());
                     controller.getModel().setActiveWalletByFilename(newWalletFilename);
                     controller.getModel().setUserPreference(MultiBitModel.GRAB_FOCUS_FOR_ACTIVE_WALLET, "true");
@@ -178,21 +176,35 @@ public class CreateWalletSubmitAction extends AbstractAction {
                     new Object[] { newWalletFilename, e.getMessage() });
             log.error(message);
             MessageManager.INSTANCE.addMessage(new Message(message));
+            theWalletWasNotOpenedSuccessfully = true;
         } catch (WalletSaveException e) {
             message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
                     new Object[] { newWalletFilename, e.getMessage() });
             log.error(message);
             MessageManager.INSTANCE.addMessage(new Message(message));
+            theWalletWasNotOpenedSuccessfully = true;
         } catch (WalletVersionException e) {
             message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
                     new Object[] { newWalletFilename, e.getMessage() });
             log.error(message);
             MessageManager.INSTANCE.addMessage(new Message(message));
-        }catch (IOException e) {
+            theWalletWasNotOpenedSuccessfully = true;
+        } catch (IOException e) {
             message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
                     new Object[] { newWalletFilename, e.getMessage() });
             log.error(message);
             MessageManager.INSTANCE.addMessage(new Message(message));
+            theWalletWasNotOpenedSuccessfully = true;
+        }
+        
+        if (theWalletWasNotOpenedSuccessfully) {
+            PerWalletModelData loopData = controller.getModel().getPerWalletModelDataByWalletFilename(newWalletFilename);
+            if (loopData != null) {
+                // Clear the backup wallet filename - this prevents it being automatically overwritten.
+                if (loopData.getWalletInfo() != null) {
+                    loopData.getWalletInfo().put(MultiBitModel.WALLET_BACKUP_FILE, "");
+                }
+            }
         }
     }
 }
