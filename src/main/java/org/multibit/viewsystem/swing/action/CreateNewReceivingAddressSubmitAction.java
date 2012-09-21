@@ -156,7 +156,10 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                 final EncrypterDecrypter walletEncrypterDecrypter = finalPerWalletModelData.getWallet().getEncrypterDecrypter();
                     try {
                         // Derive AES key to use outside of loop - it is the same for all keys in a single wallet.
-                        KeyParameter aesKey = walletEncrypterDecrypter.deriveKey(walletPassword);
+                        KeyParameter aesKey = null;
+                        if (encryptNewKeys) {
+                            aesKey = walletEncrypterDecrypter.deriveKey(walletPassword);
+                        }
                         Collection<ECKey> newKeys = new ArrayList<ECKey>();
                         for (int i = 0; i < numberOfAddressesToCreate; i++) {
                             ECKey newKey;

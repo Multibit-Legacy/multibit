@@ -15,7 +15,9 @@
  */
 package org.multibit.viewsystem.swing.action;
 
+import java.util.List;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.AbstractAction;
@@ -27,7 +29,9 @@ import org.multibit.file.DeleteWalletException;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletVersionException;
+import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
+import org.multibit.model.WalletMajorVersion;
 import org.multibit.viewsystem.swing.view.DeleteWalletConfirmDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,7 +138,35 @@ public class DeleteWalletSubmitAction extends AbstractAction {
      * @throws IOException
      */
     public boolean deleteActiveWallet()  throws DeleteWalletException, WalletVersionException, IOException {
-        return deleteWallet(controller.getModel().getActivePerWalletModelData());
+        boolean newWalletCreated = false;
+        PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
+        
+        WalletMajorVersion walletMajorVersion = perWalletModelData.getWalletInfo().getWalletMajorVersion();
+        String backupFilename = perWalletModelData.getWalletInfo().getProperty(MultiBitModel.WALLET_BACKUP_FILE);
+
+        newWalletCreated = deleteWallet(controller.getModel().getActivePerWalletModelData());
+    
+        if (backupFilename != null || !"".equals(backupFilename)) {
+            if (WalletMajorVersion.PROTOBUF == walletMajorVersion || WalletMajorVersion.PROTOBUF_ENCRYPTED == walletMajorVersion) {
+
+                // Delete the backupFile unless the user has manually opened it.
+                boolean userHasOpenedBackupFile = false;
+                List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
+                if (perWalletModelDataList != null) {
+                    for (PerWalletModelData perWalletModelDataLoop : perWalletModelDataList) {
+                        if ((backupFilename != null && backupFilename.equals(perWalletModelDataLoop.getWalletFilename()))) {
+                            userHasOpenedBackupFile = true;
+                            break;
+                        }
+                    }
+                }
+                if (!userHasOpenedBackupFile) {
+                    FileHandler.secureDelete(new File(backupFilename));
+                }
+            }
+        }
+        
+        return newWalletCreated;
     }
     
     /**

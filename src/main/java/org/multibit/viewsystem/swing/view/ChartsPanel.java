@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -137,6 +138,8 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
         int chartWidth = Math.max(getWidth() - WIDTH_DELTA, MINIMUM_WIDTH);
         int chartHeight = Math.max(getHeight() - HEIGHT_DELTA, MINIMUM_HEIGHT);
         Chart chart = new Chart(chartWidth, chartHeight);
+        Locale locale = controller.getLocaliser().getLocale();
+        chart.setLocale(locale); 
         
         // generates linear data
         Collection<Date> xData = new ArrayList<Date>();
@@ -180,18 +183,18 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
         String unitOfTime = controller.getLocaliser().getString("chartsPanelTitle.days");
         String chartTitle = controller.getLocaliser().getString("chartsPanelTitle.text", new Object[] { NUMBER_OF_DAYS_TO_LOOK_BACK, unitOfTime }) + currencyUnitSuffix;
 
-        chart.setChartTitle(chartTitle);
+        chart.setTitle(chartTitle);
         chart.setXAxisTitle(xAxisLabel);
         chart.setYAxisTitle(balanceLabel);
-        chart.setChartGridlinesVisible(false);
+        chart.setGridlinesVisible(false);
         chart.setXAxisTicksVisible(true);
         chart.setXAxisTitleVisible(true);
-        chart.setChartLegendVisible(false);
+        chart.setLegendVisible(false);
         
-        chart.setChartBackgroundColor(ColorAndFontConstants.BACKGROUND_COLOR);
-        chart.setChartTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(2));
+        chart.setBackgroundColor(ColorAndFontConstants.BACKGROUND_COLOR);
+        chart.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(2));
         chart.setAxisLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        chart.setChartTickLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-3));
+        chart.setTickLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-2));
         
         chart.setDateFormatter(DATE_FORMAT);
         
@@ -202,6 +205,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
         series.setLineStyle(SeriesLineStyle.SOLID);
 
         XChartJPanel chartPanelToReturn = new XChartJPanel(chart);
+        chartPanelToReturn.setLocale(locale);
         chartPanelToReturn.setMinimumSize(new Dimension(chartWidth, chartHeight));
         return chartPanelToReturn;
     }

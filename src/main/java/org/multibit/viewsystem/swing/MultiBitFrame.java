@@ -1165,6 +1165,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (((WalletListPanel) walletsView).getScrollPane().isVisible()) {
             dividerPosition += SCROLL_BAR_DELTA;
         }
+        if (walletsView != null && walletsView.getPreferredSize() != null && walletsView.getPreferredSize().width > dividerPosition) {
+            dividerPosition = walletsView.getPreferredSize().width;
+        }
+        
         if (ComponentOrientation.RIGHT_TO_LEFT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
             int width = getWidth();
             if (width ==0) {

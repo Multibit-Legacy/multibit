@@ -16,11 +16,38 @@
 
 package com.google.bitcoin.core;
 
-import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
-import com.google.bitcoin.core.WalletTransaction.Pool;
-import com.google.bitcoin.store.WalletProtobufSerializer;
-import com.google.bitcoin.utils.EventListenerInvoker;
-import com.google.common.util.concurrent.ListenableFuture;
+import static com.google.bitcoin.core.Utils.bitcoinValueToFriendlyString;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
 
 import org.multibit.IsMultiBitClass;
 import org.multibit.MultiBit;
@@ -29,19 +56,17 @@ import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.crypto.WalletIsAlreadyDecryptedException;
 import org.multibit.crypto.WalletIsAlreadyEncryptedException;
+import org.multibit.file.FileHandler;
 import org.multibit.model.WalletMajorVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
-import java.io.*;
-import java.math.BigInteger;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-
-import static com.google.bitcoin.core.Utils.bitcoinValueToFriendlyString;
-import static com.google.common.base.Preconditions.*;
+import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
+import com.google.bitcoin.core.WalletTransaction.Pool;
+import com.google.bitcoin.store.WalletProtobufSerializer;
+import com.google.bitcoin.utils.EventListenerInvoker;
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * <p>A Wallet stores keys and a record of transactions that send and receive value from those keys. Using these,
@@ -242,16 +267,15 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
     /**
      * Uses protobuf serialization to save the wallet to the given file. To learn more about this file format, see
-     * {@link WalletProtobufSerializer}. Writes out first to a temporary file in the same directory and then renames
-     * once written.
+     * {@link WalletProtobufSerializer}.
+     * 
+     * This method is keep simple as the file saving lifecycle is dealy with in FileHandler.
      */
-    public synchronized void saveToFile(File destFile) throws IOException {
+    public synchronized void saveToFile(File destFile) throws IOException {        
         FileOutputStream stream = null;
-        File temp;
+
         try {
-            File directory = destFile.getAbsoluteFile().getParentFile();
-            temp = File.createTempFile("wallet", null, directory);
-            stream = new FileOutputStream(temp);
+            stream = new FileOutputStream(destFile);
             saveToFileStream(stream);
             // Attempt to force the bits to hit the disk. In reality the OS or hard disk itself may still decide
             // to not write through to physical media for at least a few seconds, but this is the best we can do.
@@ -259,13 +283,6 @@ public class Wallet implements Serializable, IsMultiBitClass {
             stream.getFD().sync();
             stream.close();
             stream = null;
-            if (!temp.renameTo(destFile)) {
-                // Work around an issue on Windows whereby you can't rename over existing files.
-                if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0) {
-                    if (destFile.delete() && temp.renameTo(destFile)) return;  // else fall through.
-                }
-                throw new IOException("Failed to rename " + temp + " to " + destFile);
-            }
         } finally {
             if (stream != null) {
                 stream.close();

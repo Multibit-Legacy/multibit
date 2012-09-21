@@ -157,26 +157,32 @@ public class ImageSelection extends TransferHandler implements Transferable {
         File qrCodeFile = null;
         try {
             // Default name just in case.
-            String filename = "qrcode" + System.currentTimeMillis() + ".png";
+            String filename = "";
             boolean areAdding = false;
             if (abstractTradePanel != null) {
-                if (abstractTradePanel.getLabel() != null) {
+                if (abstractTradePanel.getLabel() != null && !"".equals(abstractTradePanel.getLabel())) {
                     filename = abstractTradePanel.getLabel();
                     areAdding = true;
                 }
-                if (abstractTradePanel.getAmount() != null) {
+                if (abstractTradePanel.getAmount() != null && !"".equals(abstractTradePanel.getAmount())) {
                     if (areAdding) {
                         filename = filename + " - ";
                     }
                     filename = filename + abstractTradePanel.getAmount();
+                    areAdding = true;
                 }
-                if (abstractTradePanel.getAddress() != null) {
+                if (abstractTradePanel.getAddress() != null && !"".equals(abstractTradePanel.getAddress())) {
                     if (areAdding) {
                         filename = filename + " - ";
                     }
                     filename = filename + abstractTradePanel.getAddress();
                     areAdding = true;
                 }
+            }
+            
+            // Default if everything is missing.
+            if ("".equals(filename)) {
+                filename = "qrcode" + System.currentTimeMillis() + ".png";
             }
 
             // Get the temporary directory location.

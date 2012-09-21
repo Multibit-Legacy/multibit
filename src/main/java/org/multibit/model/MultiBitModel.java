@@ -120,7 +120,7 @@ public class MultiBitModel {
 
     // Default fee.
     public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("50000");
-    //Minimum fee.
+    // Minimum fee.
     public static final BigInteger SEND_MINIMUM_FEE = new BigInteger("10000");
 
     public static final String SEND_WAS_SUCCESSFUL = "sendWasSuccessful";
@@ -185,6 +185,9 @@ public class MultiBitModel {
     
     // Whether or not to use the cache manager.
     public static final String USE_CACHE_MANAGER = "useCacheManager";
+    
+    // Wallet backup
+    public static final String WALLET_BACKUP_FILE = "walletBackupFile";
        
     // Main controller class.
     private final MultiBitController controller;

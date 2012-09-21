@@ -86,19 +86,23 @@ public class CreateAndDeleteWalletsTest extends TestCase {
         // create test1 wallet
         CreateWalletSubmitAction createNewWalletAction = new CreateWalletSubmitAction(controller, null, null);     
         createNewWalletAction.createNewWallet(test1WalletPath);
+        Thread.sleep(1000);
         assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
 
         // create test2 wallet
         createNewWalletAction.createNewWallet(test2WalletPath);
+        Thread.sleep(1000);
         assertEquals(2, controller.getModel().getPerWalletModelDataList().size());
 
         // delete the test1wallet
         DeleteWalletSubmitAction deleteWalletSubmitAction = new DeleteWalletSubmitAction(controller, null, null);
         deleteWalletSubmitAction.deleteWallet(test1WalletPath);
+        Thread.sleep(1000);
         assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
 
         // delete the test2wallet - a default one should then be created
         deleteWalletSubmitAction.deleteWallet(test2WalletPath);
+        Thread.sleep(1000);
         assertEquals(1, controller.getModel().getPerWalletModelDataList().size());
     }
 
