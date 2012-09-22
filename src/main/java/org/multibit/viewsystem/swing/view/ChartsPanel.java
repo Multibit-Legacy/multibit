@@ -48,359 +48,364 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 import com.google.bitcoin.core.Transaction;
 import com.xeiam.xchart.Chart;
-import com.xeiam.xchart.XChartJPanel;
-import com.xeiam.xchart.series.Series;
-import com.xeiam.xchart.series.SeriesColor;
-import com.xeiam.xchart.series.SeriesLineStyle;
-import com.xeiam.xchart.series.SeriesMarker;
+import com.xeiam.xchart.Series;
+import com.xeiam.xchart.SeriesColor;
+import com.xeiam.xchart.SeriesLineStyle;
+import com.xeiam.xchart.SeriesMarker;
+import com.xeiam.xchart.XChartPanel;
 
 /**
  * The Charts view.
  */
 public class ChartsPanel extends JPanel implements View, ComponentListener {
 
-    private static final long serialVersionUID = 191352212345998705L;
+  private static final long serialVersionUID = 191352212345998705L;
 
-    private static final int NUMBER_OF_DAYS_TO_LOOK_BACK = 30;
-    private static final double NUMBER_OF_SATOSHI_IN_ONE_BTC = 100000000;
-    
-    private static final int WIDTH_DELTA = 40;
-    private static final int HEIGHT_DELTA = 20;
-    
-    private static final int MINIMUM_WIDTH = 800;
-    private static final int MINIMUM_HEIGHT = 300;
-    
-    private static final String DATE_FORMAT = "dd-MMM";
-    
-    private MultiBitController controller;
+  private static final int NUMBER_OF_DAYS_TO_LOOK_BACK = 30;
+  private static final double NUMBER_OF_SATOSHI_IN_ONE_BTC = 100000000;
 
-    private JPanel mainPanel;
+  private static final int WIDTH_DELTA = 40;
+  private static final int HEIGHT_DELTA = 20;
 
-    private boolean generateRandomChart = false;
+  private static final int MINIMUM_WIDTH = 800;
+  private static final int MINIMUM_HEIGHT = 300;
 
-    /**
-     * Creates a new {@link ChartsPanel}.
-     */
-    public ChartsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
+  private static final String DATE_FORMAT = "dd-MMM";
 
-        this.controller = controller;
+  private MultiBitController controller;
 
-        setLayout(new BorderLayout());
-        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        setOpaque(true);
-        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+  private JPanel mainPanel;
 
-        mainFrame.addComponentListener(this);
-        addComponentListener(this);
+  private boolean generateRandomChart = false;
 
-        initUI();
-    }
+  /**
+   * Creates a new {@link ChartsPanel}.
+   */
+  public ChartsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
 
-    private void initUI() {
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new GridBagLayout());
-        mainPanel.setOpaque(true);
-        mainPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
- 
-        mainPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+    this.controller = controller;
 
-        GridBagConstraints constraints = new GridBagConstraints();
+    setLayout(new BorderLayout());
+    setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+    setOpaque(true);
+    applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
+    mainFrame.addComponentListener(this);
+    addComponentListener(this);
 
-        // Initially blank.
-        JPanel chartPanel = new JPanel();
-        chartPanel.setOpaque(true);
-        chartPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        mainPanel.add(chartPanel, constraints);
+    initUI();
+  }
 
-        JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        mainScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        mainScrollPane.getViewport().setOpaque(true);
-        mainScrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+  private void initUI() {
 
-        add(mainScrollPane, BorderLayout.CENTER);
-    }
+    mainPanel = new JPanel();
+    mainPanel.setLayout(new GridBagLayout());
+    mainPanel.setOpaque(true);
+    mainPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
-    /**
-     * Create a panel containing the chart to show.
-     */
-    private JPanel createChartPanel() {
-        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+    mainPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        int chartWidth = Math.max(getWidth() - WIDTH_DELTA, MINIMUM_WIDTH);
-        int chartHeight = Math.max(getHeight() - HEIGHT_DELTA, MINIMUM_HEIGHT);
-        Chart chart = new Chart(chartWidth, chartHeight);
-        Locale locale = controller.getLocaliser().getLocale();
-        chart.setLocale(locale); 
-        
-        // generates linear data
-        Collection<Date> xData = new ArrayList<Date>();
-        Collection<Number> yData = new ArrayList<Number>();
+    GridBagConstraints constraints = new GridBagConstraints();
 
-        // Get the last month's transaction data.
-        Collection<ChartData> chartDataCollection = getChartData();
+    constraints.fill = GridBagConstraints.BOTH;
+    constraints.gridx = 0;
+    constraints.gridy = 0;
+    constraints.gridwidth = 1;
+    constraints.weightx = 1;
+    constraints.weighty = 1;
+    constraints.anchor = GridBagConstraints.CENTER;
 
-        if (generateRandomChart) {
-            DateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-            Date date;
-            for (int i = 1; i <= 10; i++) {
-                try {
-                    date = sdf.parse(i + ".10.2008");
-                    xData.add(date);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                yData.add(Math.random() * i);
-            }
-        } else {
-            if (chartDataCollection == null || chartDataCollection.size() == 0) {
-                JPanel chartPanel = new JPanel();
-                chartPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-                chartPanel.setOpaque(true);
-                return chartPanel;
-            } else {
-                for (ChartData chartData : chartDataCollection) {
-                    //System.out.println(chartData.toString());
+    // Initially blank.
+    JPanel chartPanel = new JPanel();
+    chartPanel.setOpaque(true);
+    chartPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+    mainPanel.add(chartPanel, constraints);
 
-                    xData.add(chartData.getDate());
-                    yData.add(chartData.getValue().doubleValue() / NUMBER_OF_SATOSHI_IN_ONE_BTC);
-                }
-            }
-        }
+    JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
+    mainScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+    mainScrollPane.getViewport().setOpaque(true);
+    mainScrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
-        // Customize Chart.
-        String xAxisLabel = controller.getLocaliser().getString("walletData.dateText");
-        String currencyUnitSuffix = " (" + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel") + ")";
-        String balanceLabel = controller.getLocaliser().getString("multiBitFrame.balanceLabel") + currencyUnitSuffix;
-        String unitOfTime = controller.getLocaliser().getString("chartsPanelTitle.days");
-        String chartTitle = controller.getLocaliser().getString("chartsPanelTitle.text", new Object[] { NUMBER_OF_DAYS_TO_LOOK_BACK, unitOfTime }) + currencyUnitSuffix;
+    add(mainScrollPane, BorderLayout.CENTER);
+  }
 
-        chart.setTitle(chartTitle);
-        chart.setXAxisTitle(xAxisLabel);
-        chart.setYAxisTitle(balanceLabel);
-        chart.setGridlinesVisible(false);
-        chart.setXAxisTicksVisible(true);
-        chart.setXAxisTitleVisible(true);
-        chart.setLegendVisible(false);
-        
-        chart.setBackgroundColor(ColorAndFontConstants.BACKGROUND_COLOR);
-        chart.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(2));
-        chart.setAxisLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        chart.setTickLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-2));
-        
-        chart.setDateFormatter(DATE_FORMAT);
-        
-        Series series = chart.addDateSeries(balanceLabel, xData, yData);
-        series.setLineColor(SeriesColor.BLUE);
-        series.setMarkerColor(SeriesColor.BLUE);
-        series.setMarker(SeriesMarker.CIRCLE);
-        series.setLineStyle(SeriesLineStyle.SOLID);
+  /**
+   * Create a panel containing the chart to show.
+   */
+  private JPanel createChartPanel() {
 
-        XChartJPanel chartPanelToReturn = new XChartJPanel(chart);
-        chartPanelToReturn.setLocale(locale);
-        chartPanelToReturn.setMinimumSize(new Dimension(chartWidth, chartHeight));
-        return chartPanelToReturn;
-    }
+    setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
-    /**
-     * Update the chart panel (The active wallet may have changed).
-     */
-    private void updateChart() {
-        // Clear the main panel.
-        mainPanel.removeAll();
+    int chartWidth = Math.max(getWidth() - WIDTH_DELTA, MINIMUM_WIDTH);
+    int chartHeight = Math.max(getHeight() - HEIGHT_DELTA, MINIMUM_HEIGHT);
+    Chart chart = new Chart(chartWidth, chartHeight);
+    Locale locale = controller.getLocaliser().getLocale();
+    chart.setLocale(locale);
 
-        // Recreate the chart data and 'draw' it.
-        GridBagConstraints constraints = new GridBagConstraints();
+    // generates linear data
+    Collection<Date> xData = new ArrayList<Date>();
+    Collection<Number> yData = new ArrayList<Number>();
 
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.anchor = GridBagConstraints.CENTER;
+    // Get the last month's transaction data.
+    Collection<ChartData> chartDataCollection = getChartData();
 
-        // Recreate chart panel.
-        JPanel chartPanel = createChartPanel();
-        chartPanel.setOpaque(true);
-        chartPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        mainPanel.add(chartPanel, constraints);
-    }
-
-    /**
-     * Get the transaction data for the chart
-     */
-    private Collection<ChartData> getChartData() {
-        if (controller.getModel().getActiveWallet() == null) {
-            return new ArrayList<ChartData>();
-        }
-
-        ArrayList<Transaction> allTransactions = new ArrayList<Transaction>(controller.getModel().getActiveWallet().getTransactions(false, false));
-
-        // Order by date.
-        Collections.sort(allTransactions, new Comparator<Transaction>() {
-
-            @Override
-            public int compare(Transaction t1, Transaction t2) {
-
-                return t1.getUpdateTime().compareTo(t2.getUpdateTime());
-            }
-        });
-
-        // Work out balance as running total and filter to just last
-        // NUMBER_OF_DAYS_TO_LOOK_BACKs data.
-        BigInteger balance = BigInteger.ZERO;
-
-        // The previous datums balance.
-        BigInteger previousBalance = BigInteger.ZERO;
-
-        // The previous datums timepoint.
-        Date previousDate = null;
-
-        long pastInMillis = DateUtils.nowUtc().plusDays(-1 * NUMBER_OF_DAYS_TO_LOOK_BACK).getMillis();
-
-        // Create ChartData collection.
-        Collection<ChartData> chartData = new ArrayList<ChartData>();
-
+    if (generateRandomChart) {
+      DateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+      Date date;
+      for (int i = 1; i <= 10; i++) {
         try {
-            boolean leftEdgeDataPointAdded = false;
-            
-            if (allTransactions.size() == 0) {
+          date = sdf.parse(i + ".10.2008");
+          xData.add(date);
+        } catch (ParseException e) {
+          e.printStackTrace();
+        }
+        yData.add(Math.random() * i);
+      }
+    } else {
+      if (chartDataCollection == null || chartDataCollection.size() == 0) {
+        JPanel chartPanel = new JPanel();
+        chartPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        chartPanel.setOpaque(true);
+        return chartPanel;
+      } else {
+        for (ChartData chartData : chartDataCollection) {
+          // System.out.println(chartData.toString());
+
+          xData.add(chartData.getDate());
+          yData.add(chartData.getValue().doubleValue() / NUMBER_OF_SATOSHI_IN_ONE_BTC);
+        }
+      }
+    }
+
+    // Customize Chart.
+    String xAxisLabel = controller.getLocaliser().getString("walletData.dateText");
+    String currencyUnitSuffix = " (" + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel") + ")";
+    String balanceLabel = controller.getLocaliser().getString("multiBitFrame.balanceLabel") + currencyUnitSuffix;
+    String unitOfTime = controller.getLocaliser().getString("chartsPanelTitle.days");
+    String chartTitle = controller.getLocaliser().getString("chartsPanelTitle.text", new Object[] { NUMBER_OF_DAYS_TO_LOOK_BACK, unitOfTime }) + currencyUnitSuffix;
+
+    chart.setTitle(chartTitle);
+    chart.setXAxisTitle(xAxisLabel);
+    chart.setYAxisTitle(balanceLabel);
+    chart.setGridlinesVisible(false);
+    chart.setXAxisTicksVisible(true);
+    chart.setXAxisTitleVisible(true);
+    chart.setLegendVisible(false);
+
+    chart.setBackgroundColor(ColorAndFontConstants.BACKGROUND_COLOR);
+    chart.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(2));
+    chart.setAxisLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+    chart.setTickLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-2));
+
+    chart.setDateFormatter(DATE_FORMAT);
+
+    Series series = chart.addDateSeries(balanceLabel, xData, yData);
+    series.setLineColor(SeriesColor.BLUE);
+    series.setMarkerColor(SeriesColor.BLUE);
+    series.setMarker(SeriesMarker.CIRCLE);
+    series.setLineStyle(SeriesLineStyle.SOLID);
+
+    XChartPanel chartPanelToReturn = new XChartPanel(chart);
+    chartPanelToReturn.setLocale(locale);
+    chartPanelToReturn.setMinimumSize(new Dimension(chartWidth, chartHeight));
+    return chartPanelToReturn;
+  }
+
+  /**
+   * Update the chart panel (The active wallet may have changed).
+   */
+  private void updateChart() {
+
+    // Clear the main panel.
+    mainPanel.removeAll();
+
+    // Recreate the chart data and 'draw' it.
+    GridBagConstraints constraints = new GridBagConstraints();
+
+    constraints.fill = GridBagConstraints.BOTH;
+    constraints.gridx = 0;
+    constraints.gridy = 0;
+    constraints.gridwidth = 1;
+    constraints.weightx = 1;
+    constraints.weighty = 1;
+    constraints.anchor = GridBagConstraints.CENTER;
+
+    // Recreate chart panel.
+    JPanel chartPanel = createChartPanel();
+    chartPanel.setOpaque(true);
+    chartPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+    mainPanel.add(chartPanel, constraints);
+  }
+
+  /**
+   * Get the transaction data for the chart
+   */
+  private Collection<ChartData> getChartData() {
+
+    if (controller.getModel().getActiveWallet() == null) {
+      return new ArrayList<ChartData>();
+    }
+
+    ArrayList<Transaction> allTransactions = new ArrayList<Transaction>(controller.getModel().getActiveWallet().getTransactions(false, false));
+
+    // Order by date.
+    Collections.sort(allTransactions, new Comparator<Transaction>() {
+
+      @Override
+      public int compare(Transaction t1, Transaction t2) {
+
+        return t1.getUpdateTime().compareTo(t2.getUpdateTime());
+      }
+    });
+
+    // Work out balance as running total and filter to just last
+    // NUMBER_OF_DAYS_TO_LOOK_BACKs data.
+    BigInteger balance = BigInteger.ZERO;
+
+    // The previous datums balance.
+    BigInteger previousBalance = BigInteger.ZERO;
+
+    // The previous datums timepoint.
+    Date previousDate = null;
+
+    long pastInMillis = DateUtils.nowUtc().plusDays(-1 * NUMBER_OF_DAYS_TO_LOOK_BACK).getMillis();
+
+    // Create ChartData collection.
+    Collection<ChartData> chartData = new ArrayList<ChartData>();
+
+    try {
+      boolean leftEdgeDataPointAdded = false;
+
+      if (allTransactions.size() == 0) {
+        // At beginning of time window balance was zero
+        chartData.add(new ChartData(new Date(pastInMillis), BigInteger.ZERO));
+      } else {
+        for (Transaction loop : allTransactions) {
+          balance = balance.add(loop.getValue(controller.getModel().getActiveWallet()));
+
+          long loopTimeInMillis = loop.getUpdateTime().getTime();
+
+          if (loopTimeInMillis > pastInMillis) {
+            if (!leftEdgeDataPointAdded) {
+              // If the previous transaction was BEFORE the
+              // NUMBER_OF_DAYS_TO_LOOK_BACK cutoff, include a
+              // datapoint at the beginning of the timewindow with the balance
+              // at that time.
+              if ((previousDate != null) && (previousDate.getTime() <= pastInMillis)) {
+                // The balance was non-zero.
+                chartData.add(new ChartData(new Date(pastInMillis), previousBalance));
+              } else {
                 // At beginning of time window balance was zero
-                chartData.add(new ChartData(new Date(pastInMillis), BigInteger.ZERO));  
-            } else {
-                for (Transaction loop : allTransactions) {
-                    balance = balance.add(loop.getValue(controller.getModel().getActiveWallet()));
-    
-                    long loopTimeInMillis = loop.getUpdateTime().getTime();
-    
-                    if (loopTimeInMillis > pastInMillis) {
-                        if (!leftEdgeDataPointAdded) {
-                            // If the previous transaction was BEFORE the
-                            // NUMBER_OF_DAYS_TO_LOOK_BACK cutoff, include a
-                            // datapoint at the beginning of the timewindow with the balance
-                            // at that time.
-                            if ((previousDate != null) && (previousDate.getTime() <= pastInMillis)) {
-                                // The balance was non-zero.
-                                chartData.add(new ChartData(new Date(pastInMillis), previousBalance));
-                            } else {
-                                // At beginning of time window balance was zero
-                                chartData.add(new ChartData(new Date(pastInMillis), BigInteger.ZERO));
-                            }
-                            leftEdgeDataPointAdded = true;
-                        }
-    
-                        // Include this transaction as it is in the last
-                        // NUMBER_OF_DAYS_TO_LOOK_BACK days.
-                        chartData.add(new ChartData(loop.getUpdateTime(), previousBalance));
-                        chartData.add(new ChartData(loop.getUpdateTime(), balance));
-                    }
-    
-                    previousBalance = balance;
-                    previousDate = loop.getUpdateTime();
-                }
+                chartData.add(new ChartData(new Date(pastInMillis), BigInteger.ZERO));
+              }
+              leftEdgeDataPointAdded = true;
             }
 
-            // Add in the balance at the end of the time window.
-            chartData.add(new ChartData(new Date(DateUtils.nowUtc().getMillis()), balance));
-        } catch (com.google.bitcoin.core.ScriptException e1) {
-            e1.printStackTrace();
+            // Include this transaction as it is in the last
+            // NUMBER_OF_DAYS_TO_LOOK_BACK days.
+            chartData.add(new ChartData(loop.getUpdateTime(), previousBalance));
+            chartData.add(new ChartData(loop.getUpdateTime(), balance));
+          }
+
+          previousBalance = balance;
+          previousDate = loop.getUpdateTime();
         }
+      }
 
-        return chartData;
+      // Add in the balance at the end of the time window.
+      chartData.add(new ChartData(new Date(DateUtils.nowUtc().getMillis()), balance));
+    } catch (com.google.bitcoin.core.ScriptException e1) {
+      e1.printStackTrace();
+    }
+
+    return chartData;
+  }
+
+  @Override
+  /**
+   * Release any resources used when user navigates away from this view.
+   */
+  public void navigateAwayFromView() {
+
+  }
+
+  @Override
+  public void displayView() {
+
+    updateChart();
+  }
+
+  @Override
+  public Icon getViewIcon() {
+
+    return ImageLoader.createImageIcon(ImageLoader.CHART_LINE_ICON_FILE);
+  }
+
+  @Override
+  public String getViewTitle() {
+
+    return controller.getLocaliser().getString("chartsPanelAction.text");
+  }
+
+  @Override
+  public String getViewTooltip() {
+
+    return controller.getLocaliser().getString("chartsPanelAction.tooltip");
+  }
+
+  @Override
+  public int getViewId() {
+
+    return View.CHARTS_VIEW;
+  }
+
+  class ChartData {
+
+    private Date date;
+    private BigInteger value;
+
+    public ChartData(Date date, BigInteger value) {
+
+      this.date = date;
+      this.value = value;
+    }
+
+    public Date getDate() {
+
+      return date;
+    }
+
+    public BigInteger getValue() {
+
+      return value;
     }
 
     @Override
-    /**
-     * Release any resources used when user navigates away from this view.
-     */
-    public void navigateAwayFromView() {
+    public String toString() {
 
+      return "ChartData [date=" + date + ", value=" + value + "]";
     }
+  }
 
-    @Override
-    public void displayView() {
+  @Override
+  public void componentHidden(ComponentEvent arg0) {
 
-        updateChart();
-    }
+  }
 
-    @Override
-    public Icon getViewIcon() {
+  @Override
+  public void componentMoved(ComponentEvent arg0) {
 
-        return ImageLoader.createImageIcon(ImageLoader.CHART_LINE_ICON_FILE);
-    }
+  }
 
-    @Override
-    public String getViewTitle() {
+  @Override
+  public void componentResized(ComponentEvent arg0) {
 
-        return controller.getLocaliser().getString("chartsPanelAction.text");
-    }
+    updateChart();
+  }
 
-    @Override
-    public String getViewTooltip() {
+  @Override
+  public void componentShown(ComponentEvent arg0) {
 
-        return controller.getLocaliser().getString("chartsPanelAction.tooltip");
-    }
-
-    @Override
-    public int getViewId() {
-
-        return View.CHARTS_VIEW;
-    }
-
-    class ChartData {
-
-        private Date date;
-        private BigInteger value;
-
-        public ChartData(Date date, BigInteger value) {
-
-            this.date = date;
-            this.value = value;
-        }
-
-        public Date getDate() {
-
-            return date;
-        }
-
-        public BigInteger getValue() {
-
-            return value;
-        }
-
-        @Override
-        public String toString() {
-            return "ChartData [date=" + date + ", value=" + value + "]";
-        }
-    }
-
-    @Override
-    public void componentHidden(ComponentEvent arg0) {
-
-    }
-
-    @Override
-    public void componentMoved(ComponentEvent arg0) {
-
-    }
-
-    @Override
-    public void componentResized(ComponentEvent arg0) {
-
-        updateChart();
-    }
-
-    @Override
-    public void componentShown(ComponentEvent arg0) {
-
-    }
+  }
 }
