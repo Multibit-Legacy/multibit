@@ -168,7 +168,6 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
                     controller.getMultiBitService().replayBlockChain(resetDate);
 
                     successMeasure = Boolean.TRUE;
-                    //message = controller.getLocaliser().getString("resetTransactionsSubmitAction.replaySuccessful");
                 } catch (BlockStoreException e) {
                     message = controller.getLocaliser().getString("resetTransactionsSubmitAction.replayUnsuccessful",
                             new Object[] { e.getMessage() });

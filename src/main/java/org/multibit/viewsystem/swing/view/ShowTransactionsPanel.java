@@ -51,6 +51,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletTableData;
 import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
@@ -61,12 +62,16 @@ import org.multibit.viewsystem.swing.WalletTableModel;
 import org.multibit.viewsystem.swing.action.ShowTransactionDetailsAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 
 public class ShowTransactionsPanel extends JPanel implements View {
     private static final long serialVersionUID = 1235108897887842662L;
+
+    private static final Logger log = LoggerFactory.getLogger(ShowTransactionsPanel.class);
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
@@ -231,8 +236,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
     @Override
     public void displayView() {
-        // log.debug("ShowTransactionsPanel#updateView called on panel " +
-        // System.identityHashCode(this));
+        log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this));
 
         walletTableModel.recreateWalletData();
 
@@ -243,10 +247,12 @@ public class ShowTransactionsPanel extends JPanel implements View {
         table.invalidate();
         table.validate();
         table.repaint();
-
+        
         invalidate();
         validate();
         repaint();
+        
+        //log.debug("Table has " + table.getRowCount() + " rows");
     }
 
     @Override
@@ -302,7 +308,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
                     label.setIcon(null);
                 } else {
                     int numberOfBlocksEmbedded = confidence.getDepthInBlocks();
-                    ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded);
+                    ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded + 1); // + 1 because depth of zero is appearance in top block i.e. one confirmation.
                     label.setIcon(buildingIcon);
                     label.setText("");
                     if (numberOfBlocksEmbedded >= 6) {

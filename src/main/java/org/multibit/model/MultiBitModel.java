@@ -523,10 +523,10 @@ public class MultiBitModel {
                             // The perWalletModelData is marked as dirty.
 
                             // Check to see if the transaction is already in the wallet.
-                            if (loopWallet.getTransaction(transaction.getHash()) == null) {
+                            //if (loopWallet.getTransaction(transaction.getHash()) == null) {
                                 log.debug("processNewCoin is receivingPending");
                                 loopWallet.receivePending(transaction);
-                            }
+                            //}
                             perWalletModelData.setDirty(true);
                             log.debug("Marking wallet '" + perWalletModelData.getWalletFilename() + "' as dirty.");
                             controller.fireDataChanged();

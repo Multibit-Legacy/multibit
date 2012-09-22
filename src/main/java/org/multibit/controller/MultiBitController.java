@@ -572,7 +572,13 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
                         if (loopWallet != null) {
                             if (loopWallet.isTransactionRelevant(transaction, true)) {
                                 // the perWalletModelData is marked as dirty
-                                perWalletModelData.setDirty(true);
+                                if (perWalletModelData.getWalletInfo() != null) {
+                                    synchronized(perWalletModelData.getWalletInfo()) {
+                                        perWalletModelData.setDirty(true);
+                                    }
+                                } else {
+                                    perWalletModelData.setDirty(true);
+                                }
                                 if (loopWallet.getTransaction(transaction.getHash()) == null) {
                                     log.debug("MultiBit adding a new pending transaction for the wallet '"
                                             + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());
@@ -615,7 +621,13 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
                                 if (loopWallet != null) {
                                     if (loopWallet.isTransactionRelevant(transaction, true)) {
                                         // the perWalletModelData is marked as dirty
-                                        perWalletModelData.setDirty(true);
+                                        if (perWalletModelData.getWalletInfo() != null) {
+                                            synchronized(perWalletModelData.getWalletInfo()) {
+                                                perWalletModelData.setDirty(true);
+                                            }
+                                        } else {
+                                            perWalletModelData.setDirty(true);
+                                        }
                                         if (loopWallet.getTransaction(transaction.getHash()) == null) {
                                             log.debug("MultiBit adding a new transaction from a block for the wallet '"
                                                     + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());

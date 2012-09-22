@@ -63,8 +63,7 @@ public class FileChangeTimerTask extends TimerTask {
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopModelData : perWalletModelDataList) {
                 if (controller.getFileHandler() != null) {
-                    // see if the files have been changed by another process
-                    // (non MultiBit)
+                    // See if the files have been changed by another process (non MultiBit).
                     boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(loopModelData);
                     if (haveFilesChanged) {
                         boolean previousFilesHaveBeenChanged = loopModelData.isFilesHaveBeenChangedByAnotherProcess();
@@ -75,7 +74,7 @@ public class FileChangeTimerTask extends TimerTask {
                         }
                     }
 
-                    // see if they are dirty - write out if so
+                    // See if they are dirty - write out if so.
                     if (loopModelData.isDirty()) {
                         log.debug("Saving dirty wallet '" + loopModelData.getWalletFilename() + "'");
                         try {

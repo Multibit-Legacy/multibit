@@ -301,7 +301,6 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener 
                     selectWalletPanelByFilename(selectedWalletPanel.getPerWalletModelData().getWalletFilename());
 
                     controller.fireDataChanged();
-                    controller.displayView(controller.getCurrentView());
                 }
             }
         }

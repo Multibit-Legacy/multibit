@@ -58,7 +58,6 @@ import com.google.bitcoin.store.WalletProtobufSerializer;
  * 
  */
 public class FileHandler {
-
     private static Logger log = LoggerFactory.getLogger(FileHandler.class);
 
     public static final String USER_PROPERTIES_FILE_NAME = "multibit.properties";
@@ -71,8 +70,15 @@ public class FileHandler {
 
     private Date dateForBackupName = null;
     
+    private DateFormat dateFormat;
+    private static SecureRandom random  = new SecureRandom();
+    private WalletProtobufSerializer walletProtobufSerializer;
+    
     public FileHandler(MultiBitController controller) {
         this.controller = controller;
+        
+        dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
+        walletProtobufSerializer = new WalletProtobufSerializer();
     }
 
     public PerWalletModelData loadFromFile(File walletFile) throws WalletLoadException, WalletVersionException {
@@ -294,8 +300,8 @@ public class FileHandler {
                      fileOutputStream = new FileOutputStream(walletFile);
                     
                     // Save as a Wallet message with a mandatory extension to prevent loading by older versions of multibit.
-                     log.debug("ping 5a");
-                    (new WalletProtobufSerializer()).writeWalletWithMandatoryExtension(perWalletModelData.getWallet(), fileOutputStream);
+                    log.debug("ping 5a");
+                    walletProtobufSerializer.writeWalletWithMandatoryExtension(perWalletModelData.getWallet(), fileOutputStream);
                     log.debug("ping 5b");
                 } else {
                     throw new WalletVersionException("Cannot save wallet '" + perWalletModelData.getWalletFilename()
@@ -440,6 +446,10 @@ public class FileHandler {
                 if (haveFilesChanged) {
                     log.debug("Result of check of whether files have changed for wallet filename "
                             + perWalletModelData.getWalletFilename() + " was " + haveFilesChanged + ".");
+                    log.debug(MultiBitModel.WALLET_FILE_SIZE + " " + walletFileSize + " ,"
+                            + MultiBitModel.WALLET_FILE_LAST_MODIFIED + " " + walletFileLastModified + " ,"
+                            + MultiBitModel.WALLET_INFO_FILE_SIZE + " " + walletInfoFileSize + " ,"
+                            + MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED + " " + walletInfoFileLastModified);
                 }
 
                 // Create backup filenames early if the files have changed.
@@ -648,7 +658,6 @@ public class FileHandler {
         if (reusePreviousBackupDate) {
             backupDateToUse = dateForBackupName;
         }
-        DateFormat dateFormat = new SimpleDateFormat(BACKUP_SUFFIX_FORMAT);
         String backupFilename = stem + SEPARATOR + dateFormat.format(backupDateToUse) + suffix;
 
         return backupFilename;
@@ -762,7 +771,6 @@ public class FileHandler {
     public static void secureDelete(File file) throws IOException {
         if (file != null && file.exists()) {
             long length = file.length();
-            SecureRandom random = new SecureRandom();
             RandomAccessFile raf = new RandomAccessFile(file, "rws");
             raf.seek(0);
             raf.getFilePointer();

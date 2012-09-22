@@ -31,6 +31,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Timer;
 
 import javax.swing.Action;
@@ -1003,7 +1004,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
-        //log.debug("Transaction confidence changed for tx " + transaction.toString());
+        // The transaction confidence has changed for a transaction in a wallet so if the
+        // transactions are being shown the view needs updating
+        if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
+            // Tell the current view to update itself.
+            View currentViewView = viewFactory.getView(controller.getCurrentView());
+            if (currentViewView != null) {
+                currentViewView.displayView();
+            }
+        }
+
     }
 
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
@@ -1038,6 +1048,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 if (currentViewView != null) {
                     currentViewView.displayView();
                 }
+                
+                // Tell the tab to refresh (gets round bug on replay for transactions panel)
+                viewTabbedPane.refreshShownTab();
 
                 thisFrame.invalidate();
                 thisFrame.validate();

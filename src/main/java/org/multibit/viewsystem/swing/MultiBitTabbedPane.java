@@ -65,7 +65,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
             View selectedView = null;
             if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
                 selectedView = ((View) childComponents[0]);
-                if (controller.getCurrentView() != 0 && selectedView != null && controller.getCurrentView() == selectedView.getViewId()) {
+                if (selectedView != null && controller.getCurrentView() == selectedView.getViewId()) {
                     // We are already displaying the correct tab.
                     // Just update the contents.
                     selectedView.displayView();
@@ -76,6 +76,21 @@ public class MultiBitTabbedPane extends JTabbedPane {
                     selectedView.displayView();
                     controller.fireDataChanged();
                 }
+            }
+        }
+    }
+    
+    public void refreshShownTab() {
+        // Get current tab.
+        JPanel tabComponent = (JPanel) getSelectedComponent();
+        if (tabComponent != null) {
+            Component[] childComponents = tabComponent.getComponents();
+            View selectedView = null;
+            if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
+                selectedView = ((View) childComponents[0]);
+                if (selectedView != null) {
+                    selectedView.displayView();
+                } 
             }
         }
     }
