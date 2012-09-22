@@ -307,11 +307,11 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
                     previousBalance = balance;
                     previousDate = loop.getUpdateTime();
                 }
-                
-                // If all the datapoints are before the left hand edge, ensure the balance is also added at the left hand edge.
-                if (!leftEdgeDataPointAdded) {
-                    chartData.add(new ChartData(new Date(pastInMillis), balance));
-                }
+            }
+            
+            // If all the datapoints are before the left hand edge, ensure the balance is also added at the left hand edge.
+            if (!leftEdgeDataPointAdded) {
+                chartData.add(new ChartData(new Date(pastInMillis), balance));
             }
 
             // Add in the balance at the end of the time window.
