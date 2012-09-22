@@ -32,6 +32,8 @@ public class MultiBitTabbedPane extends JTabbedPane {
     private MultiBitController controller;
 
     private final MultiBitTabbedPane thisTabbedPane;
+    
+    private static boolean enableUpdates = false;
 
     public MultiBitTabbedPane(final MultiBitController controller) {
         thisTabbedPane = this;
@@ -50,7 +52,12 @@ public class MultiBitTabbedPane extends JTabbedPane {
     public void setSelectedIndex(int index) {
         super.setSelectedIndex(index);
         
-        System.out.println("MultiBitTabbedPane. Selecting tab '" + index + "'" );
+        System.out.println("MultiBitTabbedPane. Selecting tab '" + index + "', enableUpdates = " + enableUpdates );
+        
+        if (!enableUpdates) {
+            return;
+        }
+        
         // Get current tab.
         JPanel tabComponent = (JPanel) getComponentAt(index);
         if (tabComponent != null) {
@@ -169,5 +176,13 @@ public class MultiBitTabbedPane extends JTabbedPane {
         // use our panel instead.
         setTabComponentAt(getTabCount() - 1, tab);
         //tab.setToolTipText(tooltip);
+    }
+
+    public static boolean isEnableUpdates() {
+        return enableUpdates;
+    }
+
+    public static void setEnableUpdates(boolean enableUpdates) {
+        MultiBitTabbedPane.enableUpdates = enableUpdates;
     }
 }

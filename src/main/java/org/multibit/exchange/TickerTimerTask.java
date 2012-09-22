@@ -40,6 +40,8 @@ public class TickerTimerTask extends TimerTask {
 
     public static final int DEFAULT_REPEAT_RATE = 30000; // milliseconds
 
+    public static final int INITIAL_DELAY = 0; // milliseconds
+
     private static Logger log = LoggerFactory.getLogger(TickerTimerTask.class);
 
     private final MultiBitController controller;
@@ -59,8 +61,6 @@ public class TickerTimerTask extends TimerTask {
         this.controller = controller;
         this.mainFrame = mainFrame;
 
-        createExchange();
-
         // set the list of currencies we are interested in
         String currency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
         if (currency1 == null || "".equals(currency1)) {
@@ -73,7 +73,6 @@ public class TickerTimerTask extends TimerTask {
         } else {
             controller.getModel().getExchangeData().setCurrenciesWeAreInterestedIn(new String[] { currency1 });
         }
-
     }
 
     /**

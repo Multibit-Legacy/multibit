@@ -221,7 +221,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         viewFactory = new ViewFactory(controller, this);
 
         initUI();
-        
+
         controller.registerWalletBusyListener(this);
 
         // Initialise status bar.
@@ -233,8 +233,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Initialise the ticker.
         tickerTimer = new Timer();
-        tickerTimer.schedule(new TickerTimerTask(controller, this), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
-        
+        tickerTimer.schedule(new TickerTimerTask(controller, this), TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
+
         estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString4(model.getActiveWalletEstimatedBalance(),
                 true, false));
 
@@ -250,10 +250,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         walletsView.displayView();
 
         splitPane.setDividerLocation(calculateDividerPosition());
-        
-        pack();
-
+ 
+        MultiBitTabbedPane.setEnableUpdates(true);
         displayView(initialView);
+
+        pack();
 
         setVisible(true);
     }
@@ -955,7 +956,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     changePasswordAction.setEnabled(true);
                     removePasswordAction.setEnabled(true);
                 } else {
-                    if (controller.getModel().getActiveWalletWalletInfo().getWalletMajorVersion() == WalletMajorVersion.SERIALIZED) {
+                    if (controller.getModel().getActiveWalletWalletInfo() == null ||
+                            controller.getModel().getActiveWalletWalletInfo().getWalletMajorVersion() == WalletMajorVersion.SERIALIZED) {
                         addPasswordAction.setEnabled(false);
                     } else {
                         addPasswordAction.setEnabled(true);
