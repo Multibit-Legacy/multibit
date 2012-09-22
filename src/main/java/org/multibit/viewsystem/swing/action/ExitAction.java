@@ -63,6 +63,7 @@ public class ExitAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent arg0) {
+        log.debug("exit 1");
         if (mainFrame != null) {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -71,20 +72,25 @@ public class ExitAction extends AbstractAction {
                 }});
            
         }
+        log.debug("exit 2");
 
         // Save all the wallets and put their filenames in the user preferences.
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
                 try {
+                    log.debug("exit 3a");
                     controller.getFileHandler().savePerWalletModelData(loopPerWalletModelData, false);
+                    log.debug("exit 3b");
                 } catch (WalletSaveException wse) {
                     log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
                     MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
                     
                     // Save to backup.
                     try {
+                        log.debug("exit 4a");
                         controller.getFileHandler().backupPerWalletModelData(loopPerWalletModelData, null);
+                        log.debug("exit 4b");
                     } catch (WalletSaveException wse2) {
                         log.error(wse2.getClass().getCanonicalName() + " " + wse2.getMessage());
                         MessageManager.INSTANCE.addMessage(new Message(wse2.getClass().getCanonicalName() + " " + wse2.getMessage()));
@@ -95,17 +101,22 @@ public class ExitAction extends AbstractAction {
                 }
             }
         }
+        log.debug("exit 5");
+
         // Write the user properties.
         log.debug("Saving user preferences ...");
         FileHandler.writeUserPreferences(controller);
+        log.debug("exit 6");
 
         log.debug("Shutting down Bitcoin URI checker ...");
         ApplicationInstanceManager.shutdownSocket();
+        log.debug("exit 7");
 
         // Get rid of main display.
         if (mainFrame != null) {
             mainFrame.setVisible(false);
         }
+        log.debug("exit 8");
 
         if (controller.getMultiBitService() != null && controller.getMultiBitService().getPeerGroup() != null) {
             log.debug("Closing Bitcoin network connection...");
@@ -113,17 +124,24 @@ public class ExitAction extends AbstractAction {
             SwingWorker worker = new SwingWorker() {
                 @Override
                 protected Object doInBackground() throws Exception {
+                    log.debug("exit background-a");
                     controller.getMultiBitService().getPeerGroup().stop();
+                    log.debug("exit background-b");
                     return null; // return not used
                 }
             };
             worker.execute();
         }
+        log.debug("exit 8");
+
 
         if (mainFrame != null) {
             mainFrame.dispose();
         }
+        log.debug("exit 9");
 
         System.exit(0);
+        log.debug("exit 10");
+
     }
 }

@@ -261,6 +261,7 @@ public class FileHandler {
     * 
     **/
     private void saveWalletAndWalletInfo(PerWalletModelData perWalletModelData, String walletFilename, String walletInfoFilename) {
+        log.debug("ping 1");
         File walletFile = new File(walletFilename);
         WalletInfo walletInfo = perWalletModelData.getWalletInfo();
         
@@ -277,19 +278,25 @@ public class FileHandler {
                 }
                 if (WalletMajorVersion.PROTOBUF == walletInfo.getWalletMajorVersion() ||
                         WalletMajorVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletMajorVersion()) {
+                    log.debug("ping 2");
                     newBackupFilename = copyExistingWalletToBackupAndDeleteOriginal(walletFile);
+                    log.debug("ping 3");
                 }
 
                 if (WalletMajorVersion.SERIALIZED == walletInfo.getWalletMajorVersion()) {
                     saveToFileAsSerialised(perWalletModelData.getWallet(), walletFile);
                 } else if (WalletMajorVersion.PROTOBUF == walletInfo.getWalletMajorVersion()) {
                     // Save as a Wallet message.
+                    log.debug("ping 4a");
                     perWalletModelData.getWallet().saveToFile(walletFile);
+                    log.debug("ping 4b");
                 } else if (WalletMajorVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletMajorVersion()) {
                      fileOutputStream = new FileOutputStream(walletFile);
                     
                     // Save as a Wallet message with a mandatory extension to prevent loading by older versions of multibit.
+                     log.debug("ping 5a");
                     (new WalletProtobufSerializer()).writeWalletWithMandatoryExtension(perWalletModelData.getWallet(), fileOutputStream);
+                    log.debug("ping 5b");
                 } else {
                     throw new WalletVersionException("Cannot save wallet '" + perWalletModelData.getWalletFilename()
                             + "'. Its wallet version is '" + walletInfo.getWalletMajorVersion().toString()
@@ -301,6 +308,8 @@ public class FileHandler {
                     perWalletModelData.getWalletInfo().put(MultiBitModel.WALLET_BACKUP_FILE, newBackupFilename);
                     
                     // Delete the oldBackupFile unless the user has manually opened it.
+                    log.debug("ping 6a");
+
                     boolean userHasOpenedBackupFile = false;
                     List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
                     if (perWalletModelDataList != null) {
@@ -313,7 +322,9 @@ public class FileHandler {
                         }
                     }
                     if (!userHasOpenedBackupFile) {
+                        log.debug("ping 6b");
                         secureDelete(oldBackupFile);
+                        log.debug("ping 6c");
                     }
                 }
             }
