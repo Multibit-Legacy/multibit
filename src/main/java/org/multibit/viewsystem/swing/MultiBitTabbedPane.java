@@ -7,13 +7,17 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.ToolTipManager;
+import javax.swing.plaf.TabbedPaneUI;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
@@ -47,6 +51,8 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
         // Create a Dimension that can be used to size the close buttons.
         closeButtonSize = new Dimension(closeTabIcon.getIconWidth() + 2, closeTabIcon.getIconHeight() + 2);
+        
+        ToolTipManager.sharedInstance().registerComponent(this);
     }
     
     public void setSelectedIndex(int index) {
@@ -59,10 +65,11 @@ public class MultiBitTabbedPane extends JTabbedPane {
         }
         
         // Get current tab.
-        JPanel tabComponent = (JPanel) getComponentAt(index);
-        if (tabComponent != null) {
-            Component[] childComponents = tabComponent.getComponents();
-            View selectedView = null;
+        JPanel tabPanelComponent = (JPanel) getComponentAt(index);
+        View selectedView = null;
+        if (tabPanelComponent != null) {
+            Component[] childComponents = tabPanelComponent.getComponents();
+            selectedView = null;
             if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
                 selectedView = ((View) childComponents[0]);
                 if (selectedView != null && controller.getCurrentView() == selectedView.getViewId()) {
@@ -80,6 +87,14 @@ public class MultiBitTabbedPane extends JTabbedPane {
                     controller.fireDataChanged();
                     enableUpdates = true;
                 }
+            }
+        }
+        
+        Component tabComponent = getTabComponentAt(index);
+        if (tabComponent != null && tabComponent instanceof JLabel) {
+            JLabel tabLabel = (JLabel)tabComponent;
+            if (selectedView != null) {
+                tabLabel.setToolTipText(selectedView.getViewTooltip());
             }
         }
     }
@@ -192,8 +207,24 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
         // Instead of using a String/Icon combination for the tab,
         // use our panel instead.
+        ToolTipManager.sharedInstance().unregisterComponent(tab);
         setTabComponentAt(getTabCount() - 1, tab);
         //tab.setToolTipText(tooltip);
+    }
+    
+    @Override
+    public String getToolTipText(MouseEvent e) {
+        int index = ((TabbedPaneUI)ui).tabForCoordinate(this, e.getX(), e.getY());
+
+        if (index != -1) {
+            JComponent selectedTab = (JComponent)getComponentAt(index);
+            Component[] components = selectedTab.getComponents();
+            if (components != null && components.length > 0 && components[0] instanceof View) {
+                return ((View) components[0]).getViewTooltip();
+            }
+        }
+
+        return "";
     }
 
     public static boolean isEnableUpdates() {
