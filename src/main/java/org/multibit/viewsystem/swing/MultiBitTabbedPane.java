@@ -74,13 +74,17 @@ public class MultiBitTabbedPane extends JTabbedPane {
                     // Select the new tab, update the content.
                     controller.setCurrentView(selectedView.getViewId());
                     selectedView.displayView();
+                    
+                    // Fire data change but no need to redisplay the view
+                    enableUpdates = false;
                     controller.fireDataChanged();
+                    enableUpdates = true;
                 }
             }
         }
     }
     
-    public void refreshShownTab() {
+    public View getCurrentlyShownView() {
         // Get current tab.
         JPanel tabComponent = (JPanel) getSelectedComponent();
         if (tabComponent != null) {
@@ -88,11 +92,10 @@ public class MultiBitTabbedPane extends JTabbedPane {
             View selectedView = null;
             if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
                 selectedView = ((View) childComponents[0]);
-                if (selectedView != null) {
-                    selectedView.displayView();
-                } 
+                return selectedView;
             }
         }
+        return null;
     }
     
     @Override

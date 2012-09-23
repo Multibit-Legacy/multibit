@@ -48,11 +48,10 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 import com.google.bitcoin.core.Transaction;
 import com.xeiam.xchart.Chart;
-import com.xeiam.xchart.XChartJPanel;
-import com.xeiam.xchart.series.Series;
-import com.xeiam.xchart.series.SeriesColor;
-import com.xeiam.xchart.series.SeriesLineStyle;
-import com.xeiam.xchart.series.SeriesMarker;
+import com.xeiam.xchart.SeriesColor;
+import com.xeiam.xchart.SeriesLineStyle;
+import com.xeiam.xchart.SeriesMarker;
+import com.xeiam.xchart.XChartPanel;
 
 /**
  * The Charts view.
@@ -198,13 +197,13 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
         
         chart.setDateFormatter(DATE_FORMAT);
         
-        Series series = chart.addDateSeries(balanceLabel, xData, yData);
+        com.xeiam.xchart.Series series = chart.addDateSeries(balanceLabel, xData, yData);
         series.setLineColor(SeriesColor.BLUE);
         series.setMarkerColor(SeriesColor.BLUE);
         series.setMarker(SeriesMarker.CIRCLE);
         series.setLineStyle(SeriesLineStyle.SOLID);
 
-        XChartJPanel chartPanelToReturn = new XChartJPanel(chart);
+        XChartPanel chartPanelToReturn = new XChartPanel(chart);
         chartPanelToReturn.setLocale(locale);
         chartPanelToReturn.setMinimumSize(new Dimension(chartWidth, chartHeight));
         return chartPanelToReturn;
