@@ -308,7 +308,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
                     label.setIcon(null);
                 } else {
                     int numberOfBlocksEmbedded = confidence.getDepthInBlocks();
-                    ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded + 1); // + 1 because depth of zero is appearance in top block i.e. one confirmation.
+                    ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded);
                     label.setIcon(buildingIcon);
                     label.setText("");
                     if (numberOfBlocksEmbedded >= 6) {

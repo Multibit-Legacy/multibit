@@ -39,6 +39,8 @@ import java.util.Properties;
 
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.controller.MultiBitController;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
@@ -86,15 +88,36 @@ public class FileHandler {
             return null;
         }
 
-        String walletFilename = walletFile.getAbsolutePath();
+        String walletFilenameToUse = walletFile.getAbsolutePath();
 
         try {
             // See if the wallet is serialized or protobuf.
             WalletInfo walletInfo;
             if (isWalletSerialised(walletFile)) {
-                walletInfo = new WalletInfo(walletFilename, WalletMajorVersion.SERIALIZED);
+                walletInfo = new WalletInfo(walletFilenameToUse, WalletMajorVersion.SERIALIZED);
             } else {
-                walletInfo = new WalletInfo(walletFilename, WalletMajorVersion.PROTOBUF_ENCRYPTED);
+                walletInfo = new WalletInfo(walletFilenameToUse, WalletMajorVersion.PROTOBUF_ENCRYPTED);
+            }
+            
+            // If the wallet file is missing or empty but the backup file exists load that instead.
+            // This indicates that the write was interrupted (e.g. power loss).
+            boolean saveImmediately = false;
+            if (!walletFile.exists() || walletFile.length() == 0) {
+                String walletBackupFilename =  walletInfo.getProperty(MultiBitModel.WALLET_BACKUP_FILE);
+                if (walletBackupFilename != null && !"".equals(walletBackupFilename)) {
+                    File walletBackupFile = new File(walletBackupFilename);
+                    if (walletBackupFile.exists()) {
+                        // Use the walletBackup.
+                        log.debug("The wallet file '" + walletFile.getAbsolutePath() + "' is empty so using the wallet backup file of '" + walletBackupFile.getAbsolutePath() + "'.");
+                        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("fileHandler.walletIsMissing", new Object[] {walletFile.getAbsolutePath(), walletBackupFile.getAbsolutePath()})));
+                        walletFile = walletBackupFile;
+                        
+                        saveImmediately = true;
+                        
+                        // Wipe the wallet backup property so that the backup file will not be overwritten
+                        walletInfo.put(MultiBitModel.WALLET_BACKUP_FILE, "");                 
+                    }
+                } 
             }
 
             FileInputStream fileInputStream = new FileInputStream(walletFile);
@@ -115,12 +138,16 @@ public class FileHandler {
             }
   
             // Add the new wallet into the model.
-            PerWalletModelData perWalletModelData = controller.getModel().addWallet(wallet, walletFilename);
+            PerWalletModelData perWalletModelData = controller.getModel().addWallet(wallet, walletFilenameToUse);
 
             perWalletModelData.setWalletInfo(walletInfo);
 
+            if (saveImmediately) {
+                savePerWalletModelData(perWalletModelData, true);
+            }
+            
             synchronized (walletInfo) {
-                rememberFileSizesAndLastModified(walletFile, walletInfo);
+                rememberFileSizesAndLastModified(new File(walletFilenameToUse), walletInfo);
                 perWalletModelData.setDirty(false);
             }
 

@@ -58,6 +58,7 @@ import com.google.bitcoin.core.PeerEventListener;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.uri.BitcoinURI;
@@ -297,7 +298,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         onBlocksDownloaded(peer, block, blocksLeft, true);
     }
     
-    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft, boolean checkIfBlockNeedsWriting) {             
+    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft, boolean checkIfBlockNeedsWriting) {  
         // Work out whether to use CacheManager.
         if (!useCacheManagerDetermined) {
             String useCacheManagerString = getModel().getUserPreference(MultiBitModel.USE_CACHE_MANAGER);
@@ -384,6 +385,11 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
+        log.debug("onTransactionConfidenceChanged called for wallet " + System.identityHashCode(wallet) + ", transaction " + transaction.toString());
+        // Set the depth in blocks as this does not seem to get updated anywhere.
+        if (getMultiBitService().getChain() != null && transaction.getConfidence().getConfidenceType() == ConfidenceType.BUILDING) {
+            transaction.getConfidence().setDepthInBlocks(getMultiBitService().getChain().getBestChainHeight() - transaction.getConfidence().getAppearedAtChainHeight() + 1);
+        }
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onTransactionConfidenceChanged(wallet, transaction);
         }
@@ -561,7 +567,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     @Override
-    public void onTransaction(Peer peer, Transaction transaction) {
+    public void onTransaction(Peer peer, Transaction transaction) {        
         // Loop through all the wallets, seeing if the transaction is relevant
         // and adding them as pending if so.
         if (transaction != null) {
