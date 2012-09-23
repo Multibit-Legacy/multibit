@@ -123,6 +123,7 @@
 										**/Protos.class, **/Protos$*.class,
 										**/Sha256Hash.class,
 										**/Transaction.class, **/Transaction$*.class,
+										**/TransactionConfidence.class, **/TransactionConfidence$*.class,
 										**/TransactionOutput.class,
 										**/Wallet.class, **/Wallet$*.class,
 										**/WalletProtobufSerializer.class,

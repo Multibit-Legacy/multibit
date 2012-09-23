@@ -307,7 +307,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
                     label.setText("?");
                     label.setIcon(null);
                 } else {
-                    int numberOfBlocksEmbedded = confidence.getDepthInBlocks();
+                    int numberOfBlocksEmbedded = controller.getMultiBitService().getChain().getBestChainHeight() - confidence.getAppearedAtChainHeight() + 1;
                     ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded);
                     label.setIcon(buildingIcon);
                     label.setText("");

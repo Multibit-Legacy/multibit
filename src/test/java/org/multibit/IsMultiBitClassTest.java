@@ -34,6 +34,7 @@ public class IsMultiBitClassTest extends TestCase {
         checkClass("core.ECKey");
         checkClass("core.Sha256Hash");
         checkClass("core.Transaction");
+        checkClass("core.TransactionConfidence");
         checkClass("core.TransactionOutput");
         checkClass("core.Wallet");
         checkClass("store.WalletProtobufSerializer");
