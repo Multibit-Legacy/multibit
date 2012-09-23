@@ -40,7 +40,7 @@ public class TickerTimerTask extends TimerTask {
 
     public static final int DEFAULT_REPEAT_RATE = 30000; // milliseconds
 
-    public static final int INITIAL_DELAY = 0; // milliseconds
+    public static final int INITIAL_DELAY = 500; // milliseconds
 
     private static Logger log = LoggerFactory.getLogger(TickerTimerTask.class);
 
