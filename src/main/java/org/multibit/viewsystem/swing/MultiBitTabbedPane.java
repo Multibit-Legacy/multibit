@@ -227,7 +227,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
             }
         }
 
-        return "";
+        return null;
     }
 
     public static boolean isEnableUpdates() {

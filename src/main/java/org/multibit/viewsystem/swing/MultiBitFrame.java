@@ -31,7 +31,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigInteger;
-import java.util.List;
 import java.util.Timer;
 
 import javax.swing.Action;

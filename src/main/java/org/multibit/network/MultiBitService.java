@@ -72,9 +72,7 @@ import com.google.bitcoin.store.BlockStoreException;
  * <p>
  * MultiBitService encapsulates the interaction with the bitcoin netork
  * including: o Peers o Block chain download o sending / receiving bitcoins
- * 
- * It is based on the bitcoinj PingService code
- * 
+
  * The testnet can be slow or flaky as it's a shared resource. You can use the
  * <a href="http://sourceforge
  * .net/projects/bitcoin/files/Bitcoin/testnet-in-a-box/">testnet in a box</a>
@@ -127,7 +125,7 @@ public class MultiBitService {
             format.setCalendar(cal);
             genesisBlockCreationDate = format.parse("2009-01-03 18:15:05");
         } catch (ParseException e) {
-            // will never happen
+            // Will never happen.
             e.printStackTrace();
         }
     }
@@ -212,7 +210,7 @@ public class MultiBitService {
                 log.error(e.getMessage(), e);
             }
         } else {
-            // Use DNS for production, IRC for test
+            // Use DNS for production, IRC for test.
             if (useTestNet) {
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
             } else {
@@ -256,7 +254,7 @@ public class MultiBitService {
         }
 
         if (wallet == null || walletFilename == null || walletFilename.equals("") || walletFileIsADirectory) {
-            // use default wallet name - create if does not exist
+            // Use default wallet name - create if does not exist.
             if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
                 walletFilename = getFilePrefix() + WALLET_SUFFIX;
             } else {
@@ -381,7 +379,7 @@ public class MultiBitService {
         Stack<StoredBlock> blockStack = new Stack<StoredBlock>();
 
         if (dateToReplayFrom == null || genesisBlockCreationDate.after(dateToReplayFrom)) {
-            // Go back to the genesis block
+            // Go back to the genesis block.
             if (!useCacheManager) {
                 try {
                     blockChain.setChainHeadClearCachesAndTruncateBlockStore(new StoredBlock(networkParameters.genesisBlock,
@@ -477,7 +475,7 @@ public class MultiBitService {
                         numberOfBlocksGoneBackward++;
                     } catch (BlockStoreException e) {
                         e.printStackTrace();
-                        // we have to stop navigating backwards
+                        // We have to stop navigating backwards.
                         break;
                     }
                 }
