@@ -47,7 +47,7 @@ import com.google.bitcoin.discovery.PeerDiscoveryException;
 public class MultiBitDnsDiscovery implements PeerDiscovery {
     private static final Logger log = LoggerFactory.getLogger(MultiBitDnsDiscovery.class);
 
-    private static final int SLEEP_PERIOD = 500; // milliseconds
+    private static final int SLEEP_PERIOD = 2000; // milliseconds
     private static final int MAXIMUM_CONNECT_TIME = 60 * 1000; // milliseconds
     private static final int MINIMUM_NUMBER_OF_PEERS_TO_FIND = 4;
 
@@ -57,10 +57,10 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
     private final Set<InetSocketAddress> addresses = new HashSet<InetSocketAddress>();
 
     public static final String[] defaultHosts = new String[] { 
-            "bitseed.xf2.org",           // Jeff Garzik
-            "seed.bitcoin.sipa.be",      // Pieter Wuille
-            "dnsseed.bluematt.me",       // Matt Corallo
-            "dnsseed.bitcoin.dashjr.org" // Luke Dashjr
+            "seed.bitcoin.sipa.be",       // Pieter Wuille
+            "dnsseed.bluematt.me",        // Matt Corallo
+            "dnsseed.bitcoin.dashjr.org", // Luke Dashjr
+            "bitseed.xf2.org"             // Jeff Garzik
     };
     
     private boolean canReturnCache = false;
@@ -108,7 +108,6 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
         }
 
         // Wait until we see at least the minimum required addresses 
-        // or we are over the SINGLE_PEER_FOUND_CONNECT_TIME and have found at least one peer.
         int waitTime = 0;
         while (waitTime < MAXIMUM_CONNECT_TIME 
                 && addresses.size() < MINIMUM_NUMBER_OF_PEERS_TO_FIND) {
@@ -130,6 +129,9 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
         
         synchronized(addresses) {
             addressesToReturn = addresses.toArray(new InetSocketAddress[] {});
+//            for (int i = 0; i < addressesToReturn.length; i++) {
+//                log.debug("addressToReturn(" + i + ") = " +  addressesToReturn[i].toString());
+//            }
         }
         return addressesToReturn;
     }

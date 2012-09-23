@@ -322,12 +322,14 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     public void onPeerConnected(Peer peer, int peerCount) {
+        //log.debug("Peer '" + peer.toString() + "' connected . PeerCount = " + peerCount);
         if (peerCount >= 1) {
             setOnlineStatus(StatusEnum.ONLINE);
         }
     }
 
     public void onPeerDisconnected(Peer peer, int peerCount) {
+        //log.debug("Peer '" + peer.toString() + "' disconnected . PeerCount = " + peerCount);
         if (peerCount == 0) {
            setOnlineStatus(StatusEnum.CONNECTING);
         }
