@@ -168,7 +168,10 @@ public class MultiBitTabbedPane extends JTabbedPane {
                     JPanel selectedTab = (JPanel) thisTabbedPane.getSelectedComponent();
                     Component[] components = selectedTab.getComponents();
                     if (components != null && components.length > 0 && components[0] instanceof View) {
-                        controller.displayView(((View) components[0]).getViewId());
+                        View selectedView = (View) components[0];
+                        selectedView.displayView();
+
+                        controller.displayView(selectedView.getViewId());
                     }
                 }
             });

@@ -1,12 +1,14 @@
 MultiBit release notes.
 
-?? Sep 2012 Version 0.5.4beta
-+  Update to use bitcoinj version 0.6-SNAPSHOT 
-+  Chart of wallet balance for last 30 days added
-+  Safer wallet writing in case of sudden power loss
-+  Drag and drop to desktop
+24 Sep 2012 Version 0.5.4beta
 +  Faster bitcoin network connection
-+  Fixed tab flicker
++  Rolling wallet backup to mitigate sudden computer power loss
++  Chart of wallet balance for last 30 days added
++  Drag and drop QR code to desktop
++  Minimised tab flicker
++  Tab title tooltips now working
++  Update to bitcoinj version 0.6-SNAPSHOT 
++  Update to XChart 0.2.0
 
 
 10 Sep 2012 Version 0.4.10
