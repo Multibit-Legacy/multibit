@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.DumpedPrivateKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.Wallet.BalanceType;
 
 /**
  * Functional test to check that Mining Coinbase Transactions can be seen.
@@ -147,9 +148,14 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
                 log.debug("Blocks downloaded =  " + simpleViewSystem.getNumberOfBlocksDownloaded());
             }
 
-            // check new balance on wallet - balance should be at least the
-            // expected (may have later tx too)
-            assertTrue(BALANCE_AFTER_REPLAY.compareTo(controller.getModel().getActiveWallet().getBalance()) <= 0);
+            // Check new balance on wallet - estimated balance should be at least the
+            // expected (may have later tx too).
+
+            log.debug("Mining wallet estimated balance is:\n" + controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED).toString());
+            log.debug("Mining wallet spendable balance is:\n" + controller.getModel().getActiveWallet().getBalance().toString());
+            log.debug("Mining wallet is:\n" + controller.getModel().getActiveWallet().toString());
+            assertTrue("Estimated balance of mining wallet is incorrect", BALANCE_AFTER_REPLAY.compareTo(controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) <= 0);
+            assertTrue("Available balance of mining wallet is incorrect", BigInteger.ZERO.compareTo(controller.getModel().getActiveWallet().getBalance()) == 0);
 
             // tidy up
             multiBitService.getPeerGroup().stop();
