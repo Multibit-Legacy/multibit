@@ -262,31 +262,35 @@ public class TransactionConfidence implements Serializable, IsMultiBitClass {
     @Override
     public synchronized String toString() {
         StringBuilder builder = new StringBuilder();
-        int peers = numBroadcastPeers();
-        if (peers > 0) {
-            builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy") + " ");
-            builder.append(peers);
-            if (peers > 1)
-                builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peers") + ". ");
-            else
-                builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peer") + ". ");
-        }
-        switch (getConfidenceType()) {
+
+        if (MultiBit.getController() != null && MultiBit.getController().getLocaliser() != null) {
+            int peers = numBroadcastPeers();
+            if (peers > 0) {
+                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy") + " ");
+                builder.append(peers);
+                if (peers > 1)
+                    builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peers") + ". ");
+                else
+                    builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peer") + ". ");
+            }
+            switch (getConfidenceType()) {
             case UNKNOWN:
                 builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.unknownConfidenceLevel"));
                 break;
             case DEAD:
                 builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.dead"));
                 break;
-            case NOT_IN_BEST_CHAIN: 
+            case NOT_IN_BEST_CHAIN:
                 builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.sideChain"));
                 break;
             case NOT_SEEN_IN_CHAIN:
                 builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.notSeenInChain"));
                 break;
             case BUILDING:
-                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.appearedInBestChain", new Object[]{getAppearedAtChainHeight()}));
+                builder.append(MultiBit.getController().getLocaliser()
+                        .getString("transactionConfidence.appearedInBestChain", new Object[] { getAppearedAtChainHeight() }));
                 break;
+            }
         }
         return builder.toString();
     }
