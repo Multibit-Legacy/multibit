@@ -73,8 +73,27 @@ public class FileHandler {
     private Date dateForBackupName = null;
     
     private DateFormat dateFormat;
-    private static SecureRandom random  = new SecureRandom();
     private WalletProtobufSerializer walletProtobufSerializer;
+    
+    // Nonsense bytes to fill up deleted files - these have no meaning.
+    private static byte[] NONSENSE_BYTES = new byte[]{(byte)0xF0, (byte)0xA6, (byte)0x55, (byte)0xAA, (byte)0x33, (byte)0x77, (byte)0x33, (byte)0x37,
+                                                                (byte)0x12, (byte)0x34, (byte)0x56, (byte)0x78, (byte)0xC2, (byte)0xB3, (byte)0xA4, (byte)0x9A,
+                                                                (byte)0x30, (byte)0x7F, (byte)0xE5, (byte)0x5A, (byte)0x23, (byte)0x47, (byte)0x13, (byte)0x17,
+                                                                (byte)0x15, (byte)0x32, (byte)0x5C, (byte)0x77, (byte)0xC9, (byte)0x73, (byte)0x04, (byte)0x2D,
+                                                                (byte)0x40, (byte)0x0F, (byte)0xA5, (byte)0xA6, (byte)0x43, (byte)0x77, (byte)0x33, (byte)0x3B,
+                                                                (byte)0x62, (byte)0x34, (byte)0xB6, (byte)0x72, (byte)0x32, (byte)0xB3, (byte)0xA4, (byte)0x4B,
+                                                                (byte)0x80, (byte)0x7F, (byte)0xC5, (byte)0x43, (byte)0x23, (byte)0x47, (byte)0x13, (byte)0xB7,
+                                                                (byte)0xA5, (byte)0x32, (byte)0xDC, (byte)0x79, (byte)0x19, (byte)0xB1, (byte)0x03, (byte)0x9D};
+    
+    private static int BULKING_UP_FACTOR = 16;
+    private static byte[] SECURE_DELETE_FILL_BYTES = new byte[NONSENSE_BYTES.length * BULKING_UP_FACTOR];
+    
+    static {
+        // Make some SECURE_DELETE_FILL_BYTES bytes = x BULKING_UP_FACTOR the NONSENSE just to save write time.
+        for (int i = 0; i < BULKING_UP_FACTOR; i++) {
+            System.arraycopy(NONSENSE_BYTES, 0, SECURE_DELETE_FILL_BYTES, NONSENSE_BYTES.length * i, NONSENSE_BYTES.length);
+        }
+    }
     
     public FileHandler(MultiBitController controller) {
         this.controller = controller;
@@ -802,8 +821,18 @@ public class FileHandler {
         return temp;
     }
 
+    /**
+     * Delete a file with an overwrite of all of the data.
+     * 
+     * Set bit patterns are used rather than random numbers to avoid
+     * a futex_wait_queue_me error on Linux systems (related to /dev/random usage)
+     * 
+     * @param file
+     * @throws IOException
+     */
     public static void secureDelete(File file) throws IOException {
         log.debug("Start of secureDelete");
+        
         RandomAccessFile raf = null;
         if (file != null && file.exists()) {
             try {
@@ -811,12 +840,10 @@ public class FileHandler {
                 raf = new RandomAccessFile(file, "rws");
                 raf.seek(0);
                 raf.getFilePointer();
-                byte[] data = new byte[1024];
                 int pos = 0;
                 while (pos < length) {
-                    random.nextBytes(data);
-                    raf.write(data);
-                    pos += data.length;
+                    raf.write(SECURE_DELETE_FILL_BYTES);
+                    pos += SECURE_DELETE_FILL_BYTES.length;
                 }
             } finally {
                 if (raf != null) {
