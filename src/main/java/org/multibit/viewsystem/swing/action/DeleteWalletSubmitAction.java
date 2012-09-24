@@ -74,12 +74,9 @@ public class DeleteWalletSubmitAction extends AbstractAction {
             // Set the first wallet to be the active wallet.
             PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
             controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
-            controller.fireRecreateAllViews(true);
-            controller.fireDataChanged();
-            
+             
             String confirm2 = newWalletCreated ? controller.getLocaliser().getString("deleteWalletConfirmDialog.newWalletCreated") : " ";
             if (deleteWalletConfirmDialog != null) {
-
                 deleteWalletConfirmDialog.getExplainLabel().setText(" ");
                 deleteWalletConfirmDialog.setDeleteConfirmText(
                     controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeletedOk",
@@ -117,6 +114,9 @@ public class DeleteWalletSubmitAction extends AbstractAction {
             deleteWalletConfirmDialog.getExplainLabel().setText(" ");
             deleteWalletConfirmDialog.setDeleteConfirmText(controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError1"), controller
                     .getLocaliser().getString("deleteWalletConfirmDialog.walletDeleteError2", new Object[] { ioe.getMessage() }));
+        } finally {
+            controller.fireRecreateAllViews(true);
+            controller.fireDataChanged();
         }
     }
     
@@ -146,7 +146,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
 
         newWalletCreated = deleteWallet(controller.getModel().getActivePerWalletModelData());
     
-        if (backupFilename != null || !"".equals(backupFilename)) {
+        if (backupFilename != null && !"".equals(backupFilename)) {
             if (WalletMajorVersion.PROTOBUF == walletMajorVersion || WalletMajorVersion.PROTOBUF_ENCRYPTED == walletMajorVersion) {
 
                 // Delete the backupFile unless the user has manually opened it.
