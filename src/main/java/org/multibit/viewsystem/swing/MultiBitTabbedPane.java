@@ -58,7 +58,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
     public void setSelectedIndex(int index) {
         super.setSelectedIndex(index);
         
-        System.out.println("MultiBitTabbedPane. Selecting tab '" + index + "', enableUpdates = " + enableUpdates );
+        //System.out.println("MultiBitTabbedPane. Selecting tab '" + index + "', enableUpdates = " + enableUpdates );
         
         if (!enableUpdates) {
             return;

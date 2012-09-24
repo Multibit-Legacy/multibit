@@ -23,14 +23,13 @@ import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletInfo;
 import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * TimerTask to detect whether wallet files have been changed by some external
- * process
+ * process and to save dirty files.
  * 
  * @see java.util.Timer
  * @see java.util.TimerTask
@@ -58,6 +57,7 @@ public class FileChangeTimerTask extends TimerTask {
      * When the timer executes, this code is run.
      */
     public void run() {
+        log.debug("Start of FileChangeTimerTask - run");
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
         if (perWalletModelDataList != null) {
@@ -76,9 +76,10 @@ public class FileChangeTimerTask extends TimerTask {
 
                     // See if they are dirty - write out if so.
                     if (loopModelData.isDirty()) {
-                        log.debug("Saving dirty wallet '" + loopModelData.getWalletFilename() + "'");
+                        log.debug("Saving dirty wallet '" + loopModelData.getWalletFilename() + "'...");
                         try {
                             controller.getFileHandler().savePerWalletModelData(loopModelData, false);
+                            log.debug("... done.");
                         } catch (WalletSaveException e) {
                             String message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
                                     new Object[] { loopModelData.getWalletFilename(), e.getMessage() });
@@ -89,10 +90,12 @@ public class FileChangeTimerTask extends TimerTask {
                 }
             }
         }
-
+        
         // refresh the transactions screen
         if (View.TRANSACTIONS_VIEW == controller.getCurrentView()) {
             mainFrame.fireDataChanged();
         }
+        log.debug("End of FileChangeTimerTask - run");
+        
     }
 }

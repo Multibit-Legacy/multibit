@@ -132,16 +132,14 @@ public class ExitAction extends AbstractAction {
             };
             worker.execute();
         }
-        log.debug("exit 8");
-
+        log.debug("exit 9");
 
         if (mainFrame != null) {
             mainFrame.dispose();
         }
-        log.debug("exit 9");
-
-        System.exit(0);
         log.debug("exit 10");
 
+        System.exit(0);
+        log.debug("exit 11");
     }
 }

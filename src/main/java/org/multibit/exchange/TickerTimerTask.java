@@ -106,8 +106,8 @@ public class TickerTimerTask extends TimerTask {
                                 BigMoney last = loopTicker.getLast();
                                 BigMoney bid = loopTicker.getBid();
                                 BigMoney ask = loopTicker.getAsk();
-                                System.out.println("TickerTimerTask - Current exchange rate for " + loopSymbolPair.toString()
-                                        + ": " + last + ", bid = " + bid + ", ask = " + ask);
+                                //System.out.println("TickerTimerTask - Current exchange rate for " + loopSymbolPair.toString()
+                                //        + ": " + last + ", bid = " + bid + ", ask = " + ask);
                                 controller.getModel().getExchangeData().setLastPrice(loopSymbolPair.counterCurrency, last);
                                 controller.getModel().getExchangeData().setLastBid(loopSymbolPair.counterCurrency, bid);
                                 controller.getModel().getExchangeData().setLastAsk(loopSymbolPair.counterCurrency, ask);

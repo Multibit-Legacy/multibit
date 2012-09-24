@@ -313,6 +313,7 @@ public class FileHandler {
                     newBackupFilename = copyExistingWalletToBackupAndDeleteOriginal(walletFile);
                 }
 
+                log.debug("Saving wallet file '" + walletFile.getAbsolutePath() + "' ...");
                 if (WalletMajorVersion.SERIALIZED == walletInfo.getWalletMajorVersion()) {
                     saveToFileAsSerialised(perWalletModelData.getWallet(), walletFile);
                 } else if (WalletMajorVersion.PROTOBUF == walletInfo.getWalletMajorVersion()) {
@@ -328,6 +329,8 @@ public class FileHandler {
                             + "'. Its wallet version is '" + walletInfo.getWalletMajorVersion().toString()
                             + "' but this version of MultiBit does not understand that format.");
                 }
+                log.debug("... done saving wallet file.");
+
                 
                 if (WalletMajorVersion.PROTOBUF == walletInfo.getWalletMajorVersion() ||
                         WalletMajorVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletMajorVersion()) {
@@ -579,7 +582,7 @@ public class FileHandler {
 
         // Write the user preference properties.
         Properties userPreferences = controller.getModel().getAllUserPreferences();
-        OutputStream outputStream;
+        OutputStream outputStream = null;
         try {
             String userPropertiesFilename;
             if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
@@ -597,6 +600,16 @@ public class FileHandler {
             log.error(e.getMessage(), e);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
+        } finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
+                } finally {
+                    outputStream = null;
+                }
+            }
         }
     }
 
@@ -632,8 +645,10 @@ public class FileHandler {
             stream = new FileOutputStream(f);
             saveToFileStreamAsSerialised(wallet, stream);
         } finally {
-            if (stream != null)
+            if (stream != null) {
                 stream.close();
+                stream = null;
+            }
         }
     }
 
@@ -755,11 +770,14 @@ public class FileHandler {
         } finally {
             if (source != null) {
                 source.close();
+                source = null;
             } else if (fileInputStream != null) {
                 fileInputStream.close();
+                fileInputStream = null;
             }
             if (destination != null) {
                 destination.close();
+                destination = null;
             } else if (fileOutputStream != null) {
                 fileOutputStream.close();
             }
@@ -785,20 +803,30 @@ public class FileHandler {
     }
 
     public static void secureDelete(File file) throws IOException {
+        log.debug("Start of secureDelete");
+        RandomAccessFile raf = null;
         if (file != null && file.exists()) {
-            long length = file.length();
-            RandomAccessFile raf = new RandomAccessFile(file, "rws");
-            raf.seek(0);
-            raf.getFilePointer();
-            byte[] data = new byte[64];
-            int pos = 0;
-            while (pos < length) {
-                random.nextBytes(data);
-                raf.write(data);
-                pos += data.length;
+            try {
+                long length = file.length();
+                raf = new RandomAccessFile(file, "rws");
+                raf.seek(0);
+                raf.getFilePointer();
+                byte[] data = new byte[1024];
+                int pos = 0;
+                while (pos < length) {
+                    random.nextBytes(data);
+                    raf.write(data);
+                    pos += data.length;
+                }
+            } finally {
+                if (raf != null) {
+                    raf.close();
+                    raf = null;
+                }
             }
-            raf.close();
-            file.delete();
+            boolean deleteSuccess = file.delete();
+            log.debug("Result of delete of file '" + file.getAbsolutePath() + "' was " + deleteSuccess);
         }
+        log.debug("End of secureDelete");
     }
 }

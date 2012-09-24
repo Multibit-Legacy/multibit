@@ -51,7 +51,6 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletTableData;
 import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
@@ -236,7 +235,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
     @Override
     public void displayView() {
-        log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this));
+        //log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this));
 
         walletTableModel.recreateWalletData();
 
