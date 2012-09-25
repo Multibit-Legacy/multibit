@@ -390,7 +390,6 @@ public class MultiBit {
                 } finally {
                     if (swingViewSystem instanceof MultiBitFrame) {
                         ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
-                        ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
                     }
                     controller.fireDataChanged();
 

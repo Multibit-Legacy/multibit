@@ -35,6 +35,7 @@ import javax.swing.JScrollPane;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
+import org.multibit.network.MultiBitDnsDiscovery;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -44,6 +45,8 @@ import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The wallet list view.
@@ -51,6 +54,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 public class WalletListPanel extends JPanel implements View, WalletBusyListener {
 
     private static final long serialVersionUID = 191352298245057705L;
+
+    private static final Logger log = LoggerFactory.getLogger(WalletListPanel.class);
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;

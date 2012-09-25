@@ -247,8 +247,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         availableBalanceTextButton.setFocusable(false);
 
-        walletsView.displayView();
-
         splitPane.setDividerLocation(calculateDividerPosition());
  
         MultiBitTabbedPane.setEnableUpdates(true);
