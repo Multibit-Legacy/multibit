@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import javax.swing.SwingWorker;
@@ -65,6 +66,7 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
     
     private boolean canReturnCache = false;
     private boolean haveReturnedCurrentCache = false;
+    private Random random;
 
     /**
      * Supports finding peers through DNS A records. Community run DNS entry
@@ -76,6 +78,8 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
     public MultiBitDnsDiscovery(NetworkParameters netParams) {
         this.hostNames = defaultHosts;
         this.netParams = netParams;
+        
+        random = new Random();
     }
 
     public InetSocketAddress[] getPeers() throws PeerDiscoveryException {
@@ -83,7 +87,7 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
             InetSocketAddress[] addressesToReturn;
             
             synchronized(addresses) {
-                addressesToReturn = addresses.toArray(new InetSocketAddress[] {});
+                addressesToReturn = createAddressesArray(addresses);
             }
             haveReturnedCurrentCache = true;
             
@@ -128,14 +132,32 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
         InetSocketAddress[] addressesToReturn;
         
         synchronized(addresses) {
-            addressesToReturn = addresses.toArray(new InetSocketAddress[] {});
-//            for (int i = 0; i < addressesToReturn.length; i++) {
-//                log.debug("addressToReturn(" + i + ") = " +  addressesToReturn[i].toString());
-//            }
+            addressesToReturn = createAddressesArray(addresses);
+            for (int i = 0; i < addressesToReturn.length; i++) {
+                log.debug("addressToReturn(" + i + ") = " +  addressesToReturn[i].toString());
+            }
         }
         return addressesToReturn;
     }
 
+    /**
+     * Create randomised list of peers.
+     */
+    private InetSocketAddress[] createAddressesArray(Set<InetSocketAddress> addresses) {
+        InetSocketAddress[] peersArray = addresses.toArray(new InetSocketAddress[] {});
+        
+        // Randomly swop the first half of the addresses with any other for load balancing across clients.
+        for (int i = 0; i < (int)(peersArray.length *.5); i++) {
+            InetSocketAddress temp = peersArray[i];
+            int randomNumber = random.nextInt(peersArray.length);
+            
+            peersArray[i] = peersArray[randomNumber];
+            peersArray[randomNumber] = temp;
+        }
+        
+        return peersArray;
+    }
+    
     /**
      * Returns the well known discovery host names on the production network.
      */
