@@ -223,7 +223,7 @@ public class DeleteWalletConfirmDialog extends MultiBitDialog {
         constraints2.anchor = GridBagConstraints.LINE_END;
         detailPanel.add(balanceLabel, constraints2);
 
-        balanceText = new MultiBitLabel(controller.getLocaliser().bitcoinValueToString4(
+        balanceText = new MultiBitLabel(controller.getLocaliser().bitcoinValueToString(
                 controller.getModel().getActiveWalletEstimatedBalance(), true, false));
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;

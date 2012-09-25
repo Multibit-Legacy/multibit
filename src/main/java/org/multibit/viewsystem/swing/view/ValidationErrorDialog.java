@@ -162,7 +162,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
             }
             String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
             if (fee == null || fee.equals("")) {
-                fee = controller.getLocaliser().bitcoinValueToString4(MultiBitModel.SEND_FEE_DEFAULT, false, false);
+                fee = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
             }
             String textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage",
                     new String[] { amountValue, fee });

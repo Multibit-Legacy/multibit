@@ -235,13 +235,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         tickerTimer = new Timer();
         tickerTimer.schedule(new TickerTimerTask(controller, this), TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
 
-        estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString4(model.getActiveWalletEstimatedBalance(),
+        estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString(model.getActiveWalletEstimatedBalance(),
                 true, false));
 
         availableBalanceTextButton.setText(controller.getLocaliser().getString(
                 "multiBitFrame.availableToSpend",
                 new Object[] { controller.getLocaliser()
-                        .bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true, false) }));
+                        .bitcoinValueToString(model.getActiveWalletAvailableBalance(), true, false) }));
 
         estimatedBalanceTextLabel.setFocusable(false);
 
@@ -1076,7 +1076,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             setUpdatesStoppedTooltip(estimatedBalanceTextLabel);
             availableBalanceTextButton.setText("");
         } else {
-            estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString4(
+            estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString(
                     controller.getModel().getActiveWalletEstimatedBalance(), true, false));
             estimatedBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
 
@@ -1089,7 +1089,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             } else {
                 availableBalanceTextButton.setText(controller.getLocaliser().getString(
                         "multiBitFrame.availableToSpend",
-                        new Object[] { controller.getLocaliser().bitcoinValueToString4(model.getActiveWalletAvailableBalance(),
+                        new Object[] { controller.getLocaliser().bitcoinValueToString(model.getActiveWalletAvailableBalance(),
                                 true, false) }));
                 availableBalanceTextButton.setEnabled(true);
                 availableBalanceTextButton.setVisible(true);

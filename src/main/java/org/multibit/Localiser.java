@@ -33,11 +33,11 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.Utils;
 
 /**
- * class used for producing localised messages it contains a resource bundle and
- * has some helper functions to do message formatting
+ * Class used for producing localised messages it contains a resource bundle and
+ * has some helper functions to do message formatting.
  * 
- * it also pulls in a file language.properties which lists the number of
- * languages and language codes
+ * It also pulls in a file language.properties which lists the number of
+ * languages and language codes.
  * 
  * @author jim
  * 
@@ -75,8 +75,8 @@ public class Localiser {
     }
 
     /**
-     * create a Localiser using a ResourceBundle based on the specified
-     * 'bundleName' with Locale 'locale'
+     * Create a Localiser using a ResourceBundle based on the specified
+     * 'bundleName' with Locale 'locale'.
      * 
      * @param locale
      */
@@ -97,7 +97,7 @@ public class Localiser {
     }
 
     synchronized public String getString(String key) {
-        // see if it is the number of languages or a language code
+        // See if it is the number of languages or a language code.
         if (languageProperties != null) {
             String toReturn = (String) languageProperties.get(key);
             if (toReturn != null) {
@@ -197,8 +197,7 @@ public class Localiser {
     }
 
     /**
-     * get the version number specified in the version.properties file TODO -
-     * this should probably be somewhere else
+     * Get the version number specified in the version.properties file.
      * 
      * @return
      */
@@ -256,33 +255,6 @@ public class Localiser {
      * Returns the given value in nanocoins as a 0.1234 type string down to 100
      * mikes
      **/
-    public String bitcoinValueToString4(BigInteger value, boolean addUnit, boolean blankZero) {
-        if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
-            return "";
-        }
-
-        boolean negative = value.compareTo(BigInteger.ZERO) < 0;
-        if (negative) {
-            value = value.negate();
-        }
-        BigInteger coins = value.divide(Utils.COIN);
-        BigInteger fraction = value.remainder(Utils.COIN);
-
-        String toReturn = "";
-        if (negative) {
-            toReturn = "-";
-        }
-        toReturn = String.format("%s%d.%04d", negative ? "-" : "", coins.intValue(), fraction.intValue() / 10000);
-        if (addUnit) {
-            toReturn = toReturn + " " + getString("sendBitcoinPanel.amountUnitLabel");
-        }
-        return toReturn;
-    }
-
-    /**
-     * Returns the given value in nanocoins as a number with as many digits as
-     * it needs
-     **/
     public String bitcoinValueToString(BigInteger value, boolean addUnit, boolean blankZero) {
         if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
             return "";
@@ -292,17 +264,15 @@ public class Localiser {
         if (negative) {
             value = value.negate();
         }
-        BigInteger coins = value.divide(Utils.COIN);
-        BigInteger fraction = value.remainder(Utils.COIN);
 
         String toReturn = "";
         if (negative) {
             toReturn = "-";
         }
-        toReturn = toReturn + (coins.floatValue() + ((float) fraction.intValue()) / Utils.COIN.intValue());
+        toReturn = toReturn + Utils.bitcoinValueToPlainString(value);
         if (addUnit) {
             toReturn = toReturn + " " + getString("sendBitcoinPanel.amountUnitLabel");
         }
-        return toReturn;
+        return toReturn;     
     }
 }

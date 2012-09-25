@@ -120,7 +120,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
         sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
         String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
         if (fee == null || fee == "") {
-            fee = controller.getLocaliser().bitcoinValueToString4(MultiBitModel.SEND_FEE_DEFAULT, false, false);
+            fee = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
         }
         sendFee = fee + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
     
