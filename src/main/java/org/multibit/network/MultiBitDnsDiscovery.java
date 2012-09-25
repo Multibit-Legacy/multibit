@@ -133,9 +133,9 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
         
         synchronized(addresses) {
             addressesToReturn = createAddressesArray(addresses);
-            for (int i = 0; i < addressesToReturn.length; i++) {
-                log.debug("addressToReturn(" + i + ") = " +  addressesToReturn[i].toString());
-            }
+//            for (int i = 0; i < addressesToReturn.length; i++) {
+//                log.debug("addressToReturn(" + i + ") = " +  addressesToReturn[i].toString());
+//            }
         }
         return addressesToReturn;
     }
