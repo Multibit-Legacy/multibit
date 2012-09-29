@@ -194,9 +194,6 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
                 if (fileHandler != null) {
                     fileHandler.copyBlockChainFromInstallationDirectory(file.getAbsolutePath(), true);
 
-                    //this.file = new RandomAccessFile(file, "rwd");
-                    //this.channel = this.file.getChannel();
-
                     if (file.exists() && file.length() > 0) {
                         load(file);
                         blockChainLoadedOk = true;
@@ -237,18 +234,15 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
         log.info("Reading block store from {}", file);
         // Open in synchronous mode. See above.
         this.file = new RandomAccessFile(file, "rwd");
-        log.info("Ping 1");
         channel = this.file.getChannel();
         log.info("Reading block store from {}", file);
         
         if (lock == null) {
            lock();
         }
-        log.info("Ping 2");
         try {
             // Read a version byte.
             int version = this.file.read();
-            log.info("Ping 3");
             if (version == -1) {
                 // No such file or the file was empty.
                 close();
