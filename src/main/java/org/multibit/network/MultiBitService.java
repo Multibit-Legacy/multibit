@@ -33,6 +33,7 @@ import java.util.Stack;
 
 import javax.swing.SwingWorker;
 
+import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterScrypt;
@@ -108,8 +109,6 @@ public class MultiBitService {
 
     private ReplayableBlockStore blockStore;
 
-    private boolean useTestNet;
-
     private MultiBitController controller;
 
     private final NetworkParameters networkParameters;
@@ -161,9 +160,8 @@ public class MultiBitService {
                         + filePrefix + BLOCKCHAIN_SUFFIX;
             }
 
-            // Check to see if the user has a blockchain and copy over the
-            // installed one if they do not.
-            controller.getFileHandler().copyBlockChainFromInstallationDirectory(this, blockchainFilename);
+            // Check to see if the user has a blockchain and copy over the sinstalled one if they do not.
+            controller.getFileHandler().copyBlockChainFromInstallationDirectory(blockchainFilename, false);
 
             log.debug("Reading block store '{}' from disk", blockchainFilename);
 
@@ -211,7 +209,7 @@ public class MultiBitService {
             }
         } else {
             // Use DNS for production, IRC for test.
-            if (useTestNet) {
+            if (NetworkParameters.testNet().equals(controller.getModel().getNetworkParameters())){
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
             } else {
                 peerGroup.addPeerDiscovery(new MultiBitDnsDiscovery(networkParameters));
@@ -222,8 +220,10 @@ public class MultiBitService {
         return peerGroup;
     }
 
-    public String getFilePrefix() {
-        return useTestNet ? MULTIBIT_PREFIX + SEPARATOR + TEST_NET_PREFIX : MULTIBIT_PREFIX;
+    public static String getFilePrefix() {
+        MultiBitController controller = MultiBit.getController();
+        MultiBitModel model = controller.getModel();
+        return NetworkParameters.testNet().equals(model.getNetworkParameters()) ? MULTIBIT_PREFIX + SEPARATOR + TEST_NET_PREFIX : MULTIBIT_PREFIX;
     }
 
     /**

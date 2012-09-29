@@ -17,12 +17,14 @@ package org.multibit.functionaltests;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 
 import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
+import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
@@ -59,6 +61,9 @@ public class CreateAndDeleteWalletsTest extends TestCase {
         // create the controller
         controller = new MultiBitController(applicationDataDirectoryLocator);
 
+        assertNotNull("Controller is null", controller);
+        MultiBit.setController(controller);
+        
         // create the model - gets hooked up to controller automatically
         @SuppressWarnings("unused")
         MultiBitModel model = new MultiBitModel(controller);
@@ -126,7 +131,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
         File multibitBlockchain = new File(multiBitDirectoryPath + File.separator + "multibit.blockchain");
         FileHandler.copyFile(new File("./src/main/resources/multibit.blockchain"), multibitBlockchain);
         multibitBlockchain.deleteOnExit();
-
+        
         return multiBitDirectory;
     }
 }

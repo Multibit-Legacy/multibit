@@ -54,6 +54,15 @@ public class WalletTableModel extends AbstractTableModel {
 
         walletData = multiBitModel.createWalletData(controller.getModel().getActiveWalletFilename());
     }
+    
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        if (columnIndex == 3 || columnIndex == 4) {
+            return Number.class;
+        } else {
+            return super.getColumnClass(columnIndex);
+        }
+    }
 
     public int getColumnCount() {
         return WalletTableData.COLUMN_HEADER_KEYS.length;

@@ -67,6 +67,13 @@ public class MultiBit {
     }
     
     /**
+     * Used in testing
+     */
+    public static void setController(MultiBitController controller) {
+        MultiBit.controller = controller;
+    }
+    
+    /**
      * Start MultiBit user interface.
      * 
      * @param args

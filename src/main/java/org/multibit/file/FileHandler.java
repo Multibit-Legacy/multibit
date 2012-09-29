@@ -720,7 +720,7 @@ public class FileHandler {
      * 
      * Thus each user has their own copy of the blockchain.
      */
-    public void copyBlockChainFromInstallationDirectory(MultiBitService multiBitService, String destinationBlockChainFilename)
+    public void copyBlockChainFromInstallationDirectory(String destinationBlockChainFilename, boolean alwaysOverWrite)
             throws IOException {
         if (destinationBlockChainFilename == null) {
             return;
@@ -728,21 +728,28 @@ public class FileHandler {
 
         // See if the block chain in the user's application data directory
         // exists.
-        // It is never overwritten.
         File destinationBlockchain = new File(destinationBlockChainFilename);
-        if (!destinationBlockchain.exists()) {
+
+        if (!destinationBlockchain.exists() || alwaysOverWrite) {
             // Work out the source blockchain (put into the program installation
             // directory by the installer).
             File directory = new File(".");
             String currentWorkingDirectory = directory.getCanonicalPath();
 
-            String filePrefix = multiBitService.getFilePrefix();
+            String filePrefix = MultiBitService.getFilePrefix();
             String blockchainFilename = filePrefix + MultiBitService.BLOCKCHAIN_SUFFIX;
             String sourceBlockchainFilename = currentWorkingDirectory + File.separator + blockchainFilename;
             File sourceBlockchain = new File(sourceBlockchainFilename);
-            if (sourceBlockchain.exists()) {
+            if (sourceBlockchain.exists() && !destinationBlockChainFilename.equals(sourceBlockchainFilename)) {
                 // It should exist since installer puts them in.
                 log.info("Copying blockchain from '" + sourceBlockchainFilename + "' to '" + destinationBlockChainFilename + "'");
+                
+                if (alwaysOverWrite) {
+                    // Delete the existing destinationBlockchain if it exists.
+                    if (destinationBlockchain.exists()) {
+                        destinationBlockchain.delete();
+                    }
+                }
                 long startTime = (DateUtils.nowUtc()).getMillis();
                 copyFile(sourceBlockchain, destinationBlockchain);
                 long stopTime = (DateUtils.nowUtc()).getMillis();
