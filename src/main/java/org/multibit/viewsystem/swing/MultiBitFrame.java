@@ -93,7 +93,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitFrame.class);
 
-    private static final double PROPORTION_OF_SCREEN_TO_FILL = 0.75D;
+    private static final double PROPORTION_OF_VERTICAL_SCREEN_TO_FILL = 0.75D;
+    private static final double PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL = 0.80D;
 
     public static final String EXAMPLE_LONG_FIELD_TEXT = "1JiM1UyTGqpLqgayxTPbWbcdVeoepmY6pK++++";
     public static final int WIDTH_OF_LONG_FIELDS = 300;
@@ -167,7 +168,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private TickerTablePanel tickerTablePanel;
 
     @SuppressWarnings("deprecation")
-    public MultiBitFrame(MultiBitController controller, GenericApplication application) {
+    public MultiBitFrame(MultiBitController controller, GenericApplication application, int initialView) {
         this.controller = controller;
         this.model = controller.getModel();
         this.localiser = controller.getLocaliser();
@@ -209,8 +210,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         initUI();
 
-        recreateAllViews(false);
-
         // Initialise status bar.
         statusBar.initialise();
 
@@ -220,7 +219,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Initialise the ticker.
         tickerTimer = new Timer();
-        tickerTimer.schedule(new TickerTimerTask(controller, this), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
+        tickerTimer.schedule(new TickerTimerTask(controller, this), TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
 
         estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString4(model.getActiveWalletEstimatedBalance(),
                 true, false));
@@ -234,9 +233,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         availableBalanceTextButton.setFocusable(false);
 
-        walletsView.displayView();
-
         splitPane.setDividerLocation(calculateDividerPosition());
+ 
+        MultiBitTabbedPane.setEnableUpdates(true);
+        displayView(initialView);
+
+        pack();
 
         pack();
 
@@ -248,16 +250,17 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     private void sizeAndCenter() {
-        // get the screen size as a java dimension
+        // Get the screen size as a java dimension.
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        int height = (int) (screenSize.height * PROPORTION_OF_SCREEN_TO_FILL);
-        int width = (int) (screenSize.width * PROPORTION_OF_SCREEN_TO_FILL);
+        int height = (int) (screenSize.height * PROPORTION_OF_VERTICAL_SCREEN_TO_FILL);
+        int width = (int) (screenSize.width * PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL);
 
-        // set the jframe height and width
+        // Set the jframe height and width.
         setPreferredSize(new Dimension(width, height));
-        double startPositionRatio = (1 - PROPORTION_OF_SCREEN_TO_FILL) / 2;
-        setLocation((int) (width * startPositionRatio), (int) (height * startPositionRatio));
+        double startVerticalPositionRatio = (1 - PROPORTION_OF_VERTICAL_SCREEN_TO_FILL) / 2;
+        double startHorizontalPositionRatio = (1 - PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL) / 2;
+        setLocation((int) (width * startHorizontalPositionRatio), (int) (height * startVerticalPositionRatio));
     }
 
     private void initUI() {
@@ -328,8 +331,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         transactionsOutlinePanel.add((JPanel) transactionsView, BorderLayout.CENTER);
         viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsView.getViewTooltip(),
                 transactionsOutlinePanel);
-
-        viewTabbedPane.addChangeListener();
 
         // Create a split pane with the two scroll panes in it.
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
@@ -607,6 +608,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 "showTransactionsAction.text", "showTransactionsAction.tooltip", "showTransactionsAction.mnemonic",
                 View.TRANSACTIONS_VIEW);
         menuItem = new JMenuItem(showTransactionsAction);
+        menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        menuItem.setComponentOrientation(componentOrientation);
+        viewMenu.add(menuItem);
+
+        // View Charts action.
+        MultiBitAction showChartsAction = new MultiBitAction(controller, ImageLoader.CHART_LINE_ICON_FILE,
+                "chartsPanelAction.text", "chartsPanelAction.tooltip", "chartsPanelAction.mnemonic",
+                View.CHARTS_VIEW);
+        menuItem = new JMenuItem(showChartsAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
         viewMenu.add(menuItem);
@@ -945,9 +955,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     currentViewView.displayView();
                 }
 
-                thisFrame.invalidate();
-                thisFrame.validate();
-                thisFrame.repaint();
+                // Tell the tab to refresh (gets round bug on replay for transactions panel)
+                View tabbedPaneCurrentView = viewTabbedPane.getCurrentlyShownView();
+                if (tabbedPaneCurrentView != null && System.identityHashCode(tabbedPaneCurrentView) != System.identityHashCode(currentViewView)) {
+                    //log.debug("Tabbed pane is showing " + System.identityHashCode(tabbedPaneCurrentView) + ", ViewFactory has " + System.identityHashCode(currentViewView));
+                    tabbedPaneCurrentView.displayView();
+                }
             }
         });
     }
@@ -1073,6 +1086,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (((WalletListPanel) walletsView).getScrollPane().isVisible()) {
             dividerPosition += SCROLL_BAR_DELTA;
         }
+        if (walletsView != null && walletsView.getPreferredSize() != null && walletsView.getPreferredSize().width > dividerPosition) {
+            dividerPosition = walletsView.getPreferredSize().width;
+        }
+        
         if (ComponentOrientation.RIGHT_TO_LEFT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
             int width = getWidth();
             if (width ==0) {

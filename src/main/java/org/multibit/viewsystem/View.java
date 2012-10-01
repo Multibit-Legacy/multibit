@@ -39,21 +39,20 @@ public interface View {
     public static final int SAVE_WALLET_AS_VIEW = 9;        // obsolete - now done with Swing dialog
     public static final int VALIDATION_ERROR_VIEW = 10;     // obsolete - now done with Swing dialog
     public static final int YOUR_WALLETS_VIEW = 11;
-    public static final int CREATE_BULK_ADDRESSES_VIEW = 12;
+    public static final int CREATE_BULK_ADDRESSES_VIEW = 12;  // obsolete
     public static final int RESET_TRANSACTIONS_VIEW = 13;
     public static final int SHOW_OPEN_URI_DIALOG_VIEW = 14;
     public static final int SHOW_IMPORT_PRIVATE_KEYS_VIEW = 15;
     public static final int SHOW_EXPORT_PRIVATE_KEYS_VIEW = 16;
     public static final int WELCOME_VIEW = 17;
     public static final int MESSAGES_VIEW = 18;
+//    public static final int ADD_PASSWORD_VIEW = 19;
+//    public static final int CHANGE_PASSWORD_VIEW = 20;
+//    public static final int REMOVE_PASSWORD_VIEW = 21;
+    public static final int CHARTS_VIEW = 22;
     
     public static final int DEFAULT_VIEW = WELCOME_VIEW;
-   
-    /**
-     * load any required model data
-     */
- //   public void loadForm();
-    
+     
     /**
      * display the view
      */

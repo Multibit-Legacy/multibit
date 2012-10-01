@@ -63,7 +63,7 @@ public class ImageSelection extends TransferHandler implements Transferable {
             urlFlavor = new DataFlavor("application/x-java-url; class=java.net.URL");
             uriListAsStringFlavor = new DataFlavor("text/uri-list; class=java.lang.String");
             uriListAsReaderFlavor = new DataFlavor("text/uri-list;class=java.io.Reader");
-            flavors = new DataFlavor[] { DataFlavor.imageFlavor, urlFlavor, uriListAsStringFlavor, uriListAsReaderFlavor };
+            flavors = new DataFlavor[] { DataFlavor.imageFlavor, DataFlavor.javaFileListFlavor, urlFlavor, uriListAsStringFlavor, uriListAsReaderFlavor };
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -92,8 +92,9 @@ public class ImageSelection extends TransferHandler implements Transferable {
         return false;
     }
 
+    @Override
     public Transferable createTransferable(JComponent comp) {
-        // Clear
+        // Clear.
         image = null;
 
         if (comp instanceof JLabel) {
@@ -121,7 +122,7 @@ public class ImageSelection extends TransferHandler implements Transferable {
         return false;
     }
 
-    // Transferable
+    // Transferable.
     public Object getTransferData(DataFlavor flavor) {
         if (isDataFlavorSupported(flavor)) {
             if (DataFlavor.imageFlavor.equals(flavor) && image != null && image.getHeight(null) > 0) {
@@ -131,33 +132,71 @@ public class ImageSelection extends TransferHandler implements Transferable {
             if (DataFlavor.javaFileListFlavor.equals(flavor)) {
                 java.util.List<File> list = new java.util.LinkedList<File>();
 
-                // write the image to the output stream
-                File swatchFile;
-                try {
-                    swatchFile = File.createTempFile("swatch", ".png");
-                    ImageIO.write(toBufferedImage(image, -1, -1), "png", swatchFile);
-                    list.add(swatchFile);
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                File qrCodeFile = writeImageToFile();
+                if (qrCodeFile != null) {
+                    list.add(qrCodeFile);
                 }
+
                 return list;
             }
 
             if (uriListAsStringFlavor.equals(flavor)) {
                 log.debug("uriListAsStringFlavor is supported");
-                // write the image to the output stream
-                File swatchFile;
-                try {
-                    swatchFile = File.createTempFile("swatch", ".png");
-                    ImageIO.write(toBufferedImage(image, -1, -1), "png", swatchFile);
-                    return "file://" + swatchFile.getAbsolutePath() + "\r\n";
-                 } catch (IOException e1) {
-                    e1.printStackTrace();
+                File qrCodeFile = writeImageToFile();
+                if (qrCodeFile != null) {
+                    return "file://" + qrCodeFile.getAbsolutePath() + "\r\n";
                 }
             }
 
         }
         return null;
+    }
+    
+    private File writeImageToFile() {
+        // Write the image to the output stream.
+        File qrCodeFile = null;
+        try {
+            // Default name just in case.
+            String filename = "";
+            boolean areAdding = false;
+            if (abstractTradePanel != null) {
+                if (abstractTradePanel.getLabel() != null && !"".equals(abstractTradePanel.getLabel())) {
+                    filename = abstractTradePanel.getLabel();
+                    areAdding = true;
+                }
+                if (abstractTradePanel.getAmount() != null && !"".equals(abstractTradePanel.getAmount())) {
+                    if (areAdding) {
+                        filename = filename + " - ";
+                    }
+                    filename = filename + abstractTradePanel.getAmount();
+                    areAdding = true;
+                }
+                if (abstractTradePanel.getAddress() != null && !"".equals(abstractTradePanel.getAddress())) {
+                    if (areAdding) {
+                        filename = filename + " - ";
+                    }
+                    filename = filename + abstractTradePanel.getAddress();
+                    areAdding = true;
+                }
+            }
+            
+            // Default if everything is missing.
+            if ("".equals(filename)) {
+                filename = "qrcode" + System.currentTimeMillis() + ".png";
+            }
+
+            // Get the temporary directory location.
+            File testFile = File.createTempFile("test", "txt");
+            testFile.deleteOnExit();
+            
+            qrCodeFile = new File(testFile.getParent() + File.separator + filename + ".png");
+            qrCodeFile.deleteOnExit();
+            ImageIO.write(toBufferedImage(image, -1, -1), "png", qrCodeFile);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+
+        return qrCodeFile;
     }
 
     public DataFlavor[] getTransferDataFlavors() {
@@ -184,7 +223,7 @@ public class ImageSelection extends TransferHandler implements Transferable {
     @SuppressWarnings("rawtypes")
     private Image getDropData(Transferable transferable, JComponent label) {
         try {
-            // try to get an image
+            // Try to get an image.
             if (transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
                 log.debug("image flavor is supported");
                 Image img = (Image) transferable.getTransferData(DataFlavor.imageFlavor);
@@ -192,6 +231,7 @@ public class ImageSelection extends TransferHandler implements Transferable {
                     return img;
                 }
             }
+            
             if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                 log.debug("javaFileList is supported");
                 java.util.List list = (java.util.List) transferable.getTransferData(DataFlavor.javaFileListFlavor);
@@ -235,9 +275,9 @@ public class ImageSelection extends TransferHandler implements Transferable {
                 log.debug("uriListAsReaderFlavor is supported");
 
                 BufferedReader read = new BufferedReader(uriListAsReaderFlavor.getReaderForText(transferable));
-                // Remove 'file://' from file name
+                // Remove 'file://' from file name.
                 String fileName = read.readLine().substring(7).replace("%20", " ");
-                // Remove 'localhost' from OS X file names
+                // Remove 'localhost' from OS X file names.
                 if (fileName.substring(0, 9).equals("localhost")) {
                     fileName = fileName.substring(9);
                 }
@@ -307,8 +347,8 @@ public class ImageSelection extends TransferHandler implements Transferable {
         if (height == -1) {
             height = image.getHeight(null);
         }
-        // draw original image to thumbnail image object and
-        // scale it to the new size on-the-fly
+        // Draw original image to thumbnail image object and
+        // scale it to the new size on-the-fly.
         log.debug("toBufferedImage - 2.2, image = {}, width = {}, height = {}", new Object[] {image,width,height});
 
         BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);

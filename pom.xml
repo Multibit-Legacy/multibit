@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.multibit</groupId>
   <artifactId>multibit</artifactId>
-  <version>0.4.10</version>
+  <version>0.4.11</version>
   <name>MultiBit</name>
   <description>A Java Swing client for Bitcoin</description>
   <url>http://www.multibit.org</url>
@@ -48,11 +48,18 @@
       <snapshots/>
       <url>http://nexus.bitcoinj.org/content/repositories/snapshots</url>
     </repository>
-    <repository>
-     <id>xchange-snapshot</id>
-     <snapshots/>
-     <url>http://nexus.bitcoinj.org/content/repositories/snapshots</url>
-   </repository>
+    <!-- xeiam repo -->
+	<repository>
+	  <id>xeiam-release</id>
+	  <releases />
+	  <url>http://nexus.xeiam.com/content/repositories/releases/</url>
+	</repository>
+	<repository>
+	  <id>xeiam-snapshot</id>
+	  <snapshots />
+	  <url>http://nexus.xeiam.com/content/repositories/snapshots/</url>
+	</repository>
+
     <!-- zxing repo -->
     <repository>
       <id>mvn-adamgent</id>
@@ -547,6 +554,11 @@
       <artifactId>xchange-mtgox</artifactId>
       <version>1.0.1</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.xeiam</groupId>
+	  <artifactId>xchart</artifactId>
+	  <version>1.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.izpack</groupId>

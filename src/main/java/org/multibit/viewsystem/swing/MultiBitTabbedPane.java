@@ -7,15 +7,17 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.ToolTipManager;
+import javax.swing.plaf.TabbedPaneUI;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
@@ -34,6 +36,8 @@ public class MultiBitTabbedPane extends JTabbedPane {
     private MultiBitController controller;
 
     private final MultiBitTabbedPane thisTabbedPane;
+    
+    private static boolean enableUpdates = false;
 
     public MultiBitTabbedPane(final MultiBitController controller) {
         thisTabbedPane = this;
@@ -47,48 +51,66 @@ public class MultiBitTabbedPane extends JTabbedPane {
 
         // Create a Dimension that can be used to size the close buttons.
         closeButtonSize = new Dimension(closeTabIcon.getIconWidth() + 2, closeTabIcon.getIconHeight() + 2);
-
+        
+        ToolTipManager.sharedInstance().registerComponent(this);
     }
     
-// This code might get rid of the 'tab flicker' but it does not work yet.
-//    public void setSelectedIndex(int index) {
-//        super.setSelectedIndex(index);
-//        
-//        // Get current tab
-//        JPanel tabComponent = (JPanel) getComponentAt(index);
-//        if (tabComponent != null) {
-//            Component[] childComponents = tabComponent.getComponents();
-//            View selectedView = null;
-//            if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
-//                selectedView = ((View) childComponents[0]);
-//                controller.setCurrentView(selectedView.getViewId());
-//                controller.displayView(selectedView.getViewId());
-//                controller.fireDataChanged();
-//            }
-//        }
-//    }
-
-    public void addChangeListener() {
-        // Register a change listener
-        addChangeListener(new ChangeListener() {
-            // This method is called whenever the selected tab changes
-            public void stateChanged(ChangeEvent evt) {
-                JTabbedPane pane = (JTabbedPane) evt.getSource();
-
-                // Get current tab
-                JPanel tabComponent = (JPanel) pane.getSelectedComponent();
-                if (tabComponent != null) {
-                    Component[] childComponents = tabComponent.getComponents();
-                    View selectedView = null;
-                    if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
-                        selectedView = ((View) childComponents[0]);
-                        controller.setCurrentView(selectedView.getViewId());
-                        controller.displayView(selectedView.getViewId());
-                        controller.fireDataChanged();
-                    }
+    public void setSelectedIndex(int index) {
+        super.setSelectedIndex(index);
+        
+        //System.out.println("MultiBitTabbedPane. Selecting tab '" + index + "', enableUpdates = " + enableUpdates );
+        
+        if (!enableUpdates) {
+            return;
+        }
+        
+        // Get current tab.
+        JPanel tabPanelComponent = (JPanel) getComponentAt(index);
+        View selectedView = null;
+        if (tabPanelComponent != null) {
+            Component[] childComponents = tabPanelComponent.getComponents();
+            selectedView = null;
+            if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
+                selectedView = ((View) childComponents[0]);
+                if (selectedView != null && controller.getCurrentView() == selectedView.getViewId()) {
+                    // We are already displaying the correct tab.
+                    // Just update the contents.
+                    selectedView.displayView();
+                    controller.fireDataChanged();
+                } else {
+                    // Select the new tab, update the content.
+                    controller.setCurrentView(selectedView.getViewId());
+                    selectedView.displayView();
+                    
+                    // Fire data change but no need to redisplay the view
+                    enableUpdates = false;
+                    controller.fireDataChanged();
+                    enableUpdates = true;
                 }
             }
-        });        
+        }
+        
+        Component tabComponent = getTabComponentAt(index);
+        if (tabComponent != null && tabComponent instanceof JLabel) {
+            JLabel tabLabel = (JLabel)tabComponent;
+            if (selectedView != null) {
+                tabLabel.setToolTipText(selectedView.getViewTooltip());
+            }
+        }
+    }
+    
+    public View getCurrentlyShownView() {
+        // Get current tab.
+        JPanel tabComponent = (JPanel) getSelectedComponent();
+        if (tabComponent != null) {
+            Component[] childComponents = tabComponent.getComponents();
+            View selectedView = null;
+            if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
+                selectedView = ((View) childComponents[0]);
+                return selectedView;
+            }
+        }
+        return null;
     }
     
     @Override
@@ -121,7 +143,6 @@ public class MultiBitTabbedPane extends JTabbedPane {
         tabLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         tabLabel.setIcon(icon);
         tabLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
         tabCounter++;
 
         constraints.fill = GridBagConstraints.NONE;
@@ -147,7 +168,10 @@ public class MultiBitTabbedPane extends JTabbedPane {
                     JPanel selectedTab = (JPanel) thisTabbedPane.getSelectedComponent();
                     Component[] components = selectedTab.getComponents();
                     if (components != null && components.length > 0 && components[0] instanceof View) {
-                        controller.displayView(((View) components[0]).getViewId());
+                        View selectedView = (View) components[0];
+                        selectedView.displayView();
+
+                        controller.displayView(selectedView.getViewId());
                     }
                 }
             });
@@ -182,12 +206,35 @@ public class MultiBitTabbedPane extends JTabbedPane {
         // Add the tab to the tabbed pane. Note that the first
         // parameter, which would ordinarily be a String that
         // represents the tab title, is null.
-        addTab(null, component);
-        
+        addTab(null, component);      
 
         // Instead of using a String/Icon combination for the tab,
         // use our panel instead.
+        ToolTipManager.sharedInstance().unregisterComponent(tab);
         setTabComponentAt(getTabCount() - 1, tab);
         //tab.setToolTipText(tooltip);
+    }
+    
+    @Override
+    public String getToolTipText(MouseEvent e) {
+        int index = ((TabbedPaneUI)ui).tabForCoordinate(this, e.getX(), e.getY());
+
+        if (index != -1) {
+            JComponent selectedTab = (JComponent)getComponentAt(index);
+            Component[] components = selectedTab.getComponents();
+            if (components != null && components.length > 0 && components[0] instanceof View) {
+                return ((View) components[0]).getViewTooltip();
+            }
+        }
+
+        return null;
+    }
+
+    public static boolean isEnableUpdates() {
+        return enableUpdates;
+    }
+
+    public static void setEnableUpdates(boolean enableUpdates) {
+        MultiBitTabbedPane.enableUpdates = enableUpdates;
     }
 }

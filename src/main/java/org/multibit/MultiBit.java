@@ -60,6 +60,19 @@ import org.slf4j.LoggerFactory;
 public class MultiBit {
     private static final Logger log = LoggerFactory.getLogger(MultiBit.class);
 
+    private static MultiBitController controller = null;
+    
+    public static MultiBitController getController() {
+        return controller;
+    }
+    
+    /**
+     * Used in testing
+     */
+    public static void setController(MultiBitController controller) {
+        MultiBit.controller = controller;
+    }
+    
     /**
      * Start multibit user interface.
      * 
@@ -182,7 +195,7 @@ public class MultiBit {
             }
 
             log.debug("Creating views");
-            swingViewSystem = new MultiBitFrame(controller, genericApplication);
+            swingViewSystem = new MultiBitFrame(controller, genericApplication, controller.getCurrentView());
 
             log.debug("Registering with controller");
             controller.registerViewSystem(swingViewSystem);

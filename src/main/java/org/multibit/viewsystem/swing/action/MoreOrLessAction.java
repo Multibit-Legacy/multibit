@@ -56,7 +56,7 @@ public class MoreOrLessAction extends AbstractAction {
         boolean showSidePanel = !abstractTradePanel.isShowSidePanel();
         abstractTradePanel.setShowSidePanel(showSidePanel);
         
-        log.debug("showSidePanel = " + showSidePanel);
+        //log.debug("showSidePanel = " + showSidePanel);
 
         // Put it in the user preferences - will then get loaded when view form loads.
         controller.getModel().setUserPreference(MultiBitModel.SHOW_SIDE_PANEL, (new Boolean(showSidePanel)).toString());
