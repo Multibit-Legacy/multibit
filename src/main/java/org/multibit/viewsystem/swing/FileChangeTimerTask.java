@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FileChangeTimerTask extends TimerTask {
 
+    public static final int INITIAL_DELAY = 10000; // milliseconds
     public static final int DEFAULT_REPEAT_RATE = 120000; // milliseconds
 
     private static Logger log = LoggerFactory.getLogger(FileChangeTimerTask.class);

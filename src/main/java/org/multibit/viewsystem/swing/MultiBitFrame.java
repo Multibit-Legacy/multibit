@@ -215,7 +215,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Initialise the file change timer.
         fileChangeTimer = new Timer();
-        fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), 0, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
+        fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), FileChangeTimerTask.INITIAL_DELAY, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
 
         // Initialise the ticker.
         tickerTimer = new Timer();
