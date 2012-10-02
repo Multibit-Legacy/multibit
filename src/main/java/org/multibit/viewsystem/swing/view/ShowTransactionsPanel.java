@@ -170,16 +170,16 @@ public class ShowTransactionsPanel extends JPanel implements View {
         tableColumn.setPreferredWidth(dateWidth);
 
         tableColumn = table.getColumnModel().getColumn(2); // description
-        tableColumn.setPreferredWidth(300);
+        tableColumn.setPreferredWidth(270);
 
         tableColumn = table.getColumnModel().getColumn(3); // debit
         int debitWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.debitText")),
-                fontMetrics.stringWidth("000.0000"));
+                fontMetrics.stringWidth("00.00000000"));
         tableColumn.setPreferredWidth(debitWidth);
 
         tableColumn = table.getColumnModel().getColumn(4); // credit
         int creditWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.creditText")),
-                fontMetrics.stringWidth("000.0000"));
+                fontMetrics.stringWidth("00.00000000"));
         tableColumn.setPreferredWidth(creditWidth);
 
         // row sorter
