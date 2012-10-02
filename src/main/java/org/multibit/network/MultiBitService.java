@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,6 +32,7 @@ import java.util.SimpleTimeZone;
 
 import javax.swing.SwingWorker;
 
+import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandlerException;
 import org.multibit.file.WalletSaveException;
@@ -106,11 +108,13 @@ public class MultiBitService {
 
     private ReplayableBlockStore blockStore;
 
-    private boolean useTestNet;
+ //   private boolean useTestNet;
 
     private MultiBitController controller;
 
     private final NetworkParameters networkParameters;
+    
+    private SecureRandom secureRandom = new SecureRandom();
 
     public static Date genesisBlockCreationDate;
     
@@ -128,30 +132,25 @@ public class MultiBitService {
 
     /**
      * 
-     * @param useTestNet
-     *            true = test net, false = production
      * @param controller
      *            MutliBitController
      */
-    public MultiBitService(boolean useTestNet, MultiBitController controller) {
-        this(useTestNet, controller.getModel().getUserPreference(MultiBitModel.WALLET_FILENAME), controller);
+    public MultiBitService(MultiBitController controller) {
+        this(controller.getModel().getUserPreference(MultiBitModel.WALLET_FILENAME), controller);
     }
 
     /**
      * 
-     * @param useTestNet
-     *            true = test net, false = production
      * @param walletFilename
      *            filename of current wallet
      * @param controller
      *            MutliBitController
      */
-    public MultiBitService(boolean useTestNet, String walletFilename, MultiBitController controller) {
-        this.useTestNet = useTestNet;
+    public MultiBitService(String walletFilename, MultiBitController controller) {
         this.controller = controller;
 
-        networkParameters = useTestNet ? NetworkParameters.testNet() : NetworkParameters.prodNet();
-
+        networkParameters = controller.getModel().getNetworkParameters();
+        
         try {
             // Load the block chain.
             String filePrefix = getFilePrefix();
@@ -162,9 +161,8 @@ public class MultiBitService {
                         + filePrefix + BLOCKCHAIN_SUFFIX;
             }
 
-            // Check to see if the user has a blockchain and copy over the
-            // installed one if they do not.
-            controller.getFileHandler().copyBlockChainFromInstallationDirectory(this, blockchainFilename);
+            // Check to see if the user has a blockchain and copy over the sinstalled one if they do not.
+            controller.getFileHandler().copyBlockChainFromInstallationDirectory(blockchainFilename, false);
 
             log.debug("Reading block store '{}' from disk", blockchainFilename);
 
@@ -212,19 +210,22 @@ public class MultiBitService {
             }
         } else {
             // Use DNS for production, IRC for test.
-            if (useTestNet) {
+            if (NetworkParameters.testNet().equals(controller.getModel().getNetworkParameters())){
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
             } else {
                 peerGroup.addPeerDiscovery(new MultiBitDnsDiscovery(networkParameters));
             }
+
         }
         // Add the controller as a PeerEventListener.
         peerGroup.addEventListener(controller);
         return peerGroup;
     }
 
-    public String getFilePrefix() {
-        return useTestNet ? MULTIBIT_PREFIX + SEPARATOR + TEST_NET_PREFIX : MULTIBIT_PREFIX;
+    public static String getFilePrefix() {
+        MultiBitController controller = MultiBit.getController();
+        MultiBitModel model = controller.getModel();
+        return NetworkParameters.testNet().equals(model.getNetworkParameters()) ? MULTIBIT_PREFIX + SEPARATOR + TEST_NET_PREFIX : MULTIBIT_PREFIX;
     }
 
     /**
@@ -544,11 +545,11 @@ public class MultiBitService {
         return blockChain;
     }
 
-    public NetworkParameters getNetworkParameters() {
-        return networkParameters;
-    }
-
     public ReplayableBlockStore getBlockStore() {
         return blockStore;
     }
+    
+    public SecureRandom getSecureRandom() {
+        return secureRandom;
+    };
 }

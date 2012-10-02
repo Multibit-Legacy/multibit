@@ -154,9 +154,6 @@ public class MultiBitModel {
     public static final String WALLET_INFO_FILE_SIZE = "walletInfoFileSize";
     public static final String WALLET_INFO_FILE_LAST_MODIFIED = "walletInfoFileLastModified";
 
-    // Merchant menu.
-    public static final String SHOW_MERCHANT_MENU = "showMerchantMenu";
-
     // User preference font.
     public static final String FONT = "font";
     public static final String FONT_NAME = "fontName";
@@ -178,6 +175,9 @@ public class MultiBitModel {
     // Wallet migration.
     public static final String LAST_FAILED_MIGRATE_VERSION = "lastFailedMigrateVersion";
     
+    // Wallet backup
+    public static final String WALLET_BACKUP_FILE = "walletBackupFile";
+ 
     // Main controller class.
     private final MultiBitController controller;
 
@@ -630,13 +630,13 @@ public class MultiBitModel {
             if (keyChain != null) {
                 MultiBitService multiBitService = controller.getMultiBitService();
                 if (multiBitService != null) {
-                    NetworkParameters networkParameters = multiBitService.getNetworkParameters();
+                    NetworkParameters networkParameters = getNetworkParameters();
                     if (networkParameters != null) {
                         if (perWalletModelData.getWalletInfo() != null) {
                             // clear the existing receiving addresses
                             perWalletModelData.getWalletInfo().getReceivingAddresses().clear();
                             for (ECKey key : keyChain) {
-                                Address address = key.toAddress(controller.getMultiBitService().getNetworkParameters());
+                                Address address = key.toAddress(getNetworkParameters());
                                 perWalletModelData.getWalletInfo().addReceivingAddressOfKey(address);
                             }
                         }
@@ -691,7 +691,7 @@ public class MultiBitModel {
                 String addressString = "";
 
                 if (controller.getMultiBitService() != null && myOutput != null) {
-                    Address toAddress = new Address(controller.getMultiBitService().getNetworkParameters(), myOutput
+                    Address toAddress = new Address(getNetworkParameters(), myOutput
                             .getScriptPubKey().getPubKeyHash());
                     addressString = toAddress.toString();
                 }
@@ -828,6 +828,18 @@ public class MultiBitModel {
 		this.exchangeData = exchangeData;
 	}
 	
+    public NetworkParameters getNetworkParameters() {
+        // If test or production is not specified, default to production.
+        String testOrProduction = userPreferences.getProperty(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
+        if (testOrProduction == null) {
+            testOrProduction = MultiBitModel.PRODUCTION_NETWORK_VALUE;
+            userPreferences.put(MultiBitModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
+        }
+        boolean useTestNet = MultiBitModel.TEST_NETWORK_VALUE.equals(testOrProduction);
+
+        return useTestNet ? NetworkParameters.testNet() : NetworkParameters.prodNet();
+    }
+    
 	public boolean thereIsNoActiveWallet() {
         return activeWalletModelData == null
                 || "".equals(activeWalletModelData.getWalletFilename()) || activeWalletModelData.getWalletFilename() == null;

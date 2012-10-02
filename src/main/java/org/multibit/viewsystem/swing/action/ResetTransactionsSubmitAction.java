@@ -27,7 +27,6 @@ import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.WalletSaveException;
-import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
@@ -64,13 +63,16 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
         this.resetTransactionsDataProvider = resetTransactionsDataProvider;
     }
 
+
     /**
      * Reset the transactions and replay the blockchain.
      */
     public void actionPerformed(ActionEvent event) {
+        System.out.println("RT Ping 1");
         if (abort()) {
             return;
         }
+        System.out.println("RT Ping 2");
 
         final ResetTransactionsSubmitAction thisAction = this;
         setEnabled(false);
@@ -79,11 +81,13 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
         Date resetDate = resetTransactionsDataProvider.getResetDate();
 
         PerWalletModelData activePerWalletModelData = controller.getModel().getActivePerWalletModelData();
+        System.out.println("RT Ping 3");
 
         Date actualResetDate = null;
 
         if (resetFromFirstTransaction) {
             // Work out the earliest transaction date and save it to the wallet.
+            System.out.println("RT Ping 4");
 
             Date earliestTransactionDate = new Date(DateUtils.nowUtc().getMillis());
             Set<Transaction> allTransactions = activePerWalletModelData.getWallet().getTransactions(true, true);
@@ -98,6 +102,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
                 }
             }
             actualResetDate = earliestTransactionDate;
+            System.out.println("RT Ping 5");
 
             // Look at the earliest key creation time - this is
             // returned in seconds and is converted to milliseconds.
@@ -107,27 +112,37 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
                 earliestTransactionDate = new Date(earliestKeyCreationTime);
                 actualResetDate = earliestTransactionDate;
             }
+            System.out.println("RT Ping 6");
         } else {
+            System.out.println("RT Ping 7");
             actualResetDate = resetDate;
         }
+        System.out.println("RT Ping 8");
 
         // Remove the transactions from the wallet.
         activePerWalletModelData.getWallet().clearTransactions(actualResetDate);
+        System.out.println("RT Ping 9");
 
         // Save the wallet without the transactions.
         try {
             controller.getFileHandler().savePerWalletModelData(activePerWalletModelData, true);
+            System.out.println("RT Ping 10");
+
             controller.getModel().createWalletData(controller.getModel().getActiveWalletFilename());
+            System.out.println("RT Ping 11");
+
             controller.fireRecreateAllViews(false);
+            System.out.println("RT Ping 12");
+
         } catch (WalletSaveException wse) {
             log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
             MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
-        } catch (WalletVersionException wve) {
-            log.error(wve.getClass().getCanonicalName() + " " + wve.getMessage());
-            MessageManager.INSTANCE.addMessage(new Message(wve.getClass().getCanonicalName() + " " + wve.getMessage()));
         }
+        System.out.println("RT Ping 13");
 
         resetTransactionsInBackground(resetFromFirstTransaction, actualResetDate);
+        System.out.println("RT Ping 14");
+
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -143,7 +158,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
     private void resetTransactionsInBackground(final boolean resetFromFirstTransaction, final Date resetDate) {
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
 
-            private String message = null;
+            private String message = "";
 
             @Override
             protected Boolean doInBackground() throws Exception {
@@ -151,29 +166,29 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
 
                 try {
                     controller.getMultiBitService().replayBlockChain(resetDate);
+
                     successMeasure = Boolean.TRUE;
-                    message = controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay");
                 } catch (BlockStoreException e) {
                     message = controller.getLocaliser().getString("resetTransactionsSubmitAction.replayUnsuccessful",
                             new Object[] { e.getMessage() });
-                    ;
                 }
+
                 return successMeasure;
             }
 
             protected void done() {
                 try {
                     Boolean wasSuccessful = get();
-                    if (wasSuccessful) {
+                    if (wasSuccessful != null && wasSuccessful.booleanValue()) {
                         log.debug(message);
-                        MessageManager.INSTANCE.addMessage(new Message(message));
                     } else {
                         log.error(message);
+                    }
+                    if (message != "") {
                         MessageManager.INSTANCE.addMessage(new Message(message));
                     }
                 } catch (Exception e) {
-                    // not really used but caught so that SwingWorker shuts down
-                    // cleanly
+                    // Not really used but caught so that SwingWorker shuts down cleanly.
                     log.error(e.getClass() + " " + e.getMessage());
                 }
             }

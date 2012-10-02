@@ -292,7 +292,6 @@ public class WalletListPanel extends JPanel implements View {
                     selectWalletPanelByFilename(selectedWalletPanel.getPerWalletModelData().getWalletFilename());
 
                     controller.fireDataChanged();
-                    controller.displayView(controller.getCurrentView());
                 }
             }
         }

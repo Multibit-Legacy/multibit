@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * TimerTask to detect whether wallet files have been changed by some external
- * process
+ * process and to save dirty files.
  * 
  * @see java.util.Timer
  * @see java.util.TimerTask
@@ -58,13 +58,13 @@ public class FileChangeTimerTask extends TimerTask {
      * When the timer executes, this code is run.
      */
     public void run() {
+        log.debug("Start of FileChangeTimerTask - run");
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
         if (perWalletModelDataList != null) {
             for (PerWalletModelData loopModelData : perWalletModelDataList) {
                 if (controller.getFileHandler() != null) {
-                    // see if the files have been changed by another process
-                    // (non MultiBit)
+                    // See if the files have been changed by another process (non MultiBit).
                     boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(loopModelData);
                     if (haveFilesChanged) {
                         boolean previousFilesHaveBeenChanged = loopModelData.isFilesHaveBeenChangedByAnotherProcess();
@@ -75,11 +75,12 @@ public class FileChangeTimerTask extends TimerTask {
                         }
                     }
 
-                    // see if they are dirty - write out if so
+                    // See if they are dirty - write out if so.
                     if (loopModelData.isDirty()) {
-                        log.debug("Saving dirty wallet '" + loopModelData.getWalletFilename() + "'");
+                        log.debug("Saving dirty wallet '" + loopModelData.getWalletFilename() + "'...");
                         try {
                             controller.getFileHandler().savePerWalletModelData(loopModelData, false);
+                            log.debug("... done.");
                         } catch (WalletSaveException e) {
                             String message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
                                     new Object[] { loopModelData.getWalletFilename(), e.getMessage() });
@@ -95,10 +96,12 @@ public class FileChangeTimerTask extends TimerTask {
                 }
             }
         }
-
+        
         // refresh the transactions screen
         if (View.TRANSACTIONS_VIEW == controller.getCurrentView()) {
             mainFrame.fireDataChanged();
         }
+        log.debug("End of FileChangeTimerTask - run");
+        
     }
 }

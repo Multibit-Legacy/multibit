@@ -106,8 +106,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction {
             try {
                 if (importPrivateKeysPanel.multiBitFileChooser.accept(importFile)) {
 
-                    PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService()
-                            .getNetworkParameters());
+                    PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
 
                     Collection<PrivateKeyAndDate> privateKeyAndDateArray = privateKeysHandler.readInPrivateKeys(importFile,
                             passwordChar);

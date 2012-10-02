@@ -213,7 +213,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
         };
         rowSorter.setComparator(1, comparator);
 
-        JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+        JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
@@ -573,21 +573,5 @@ public class ShowTransactionsPanel extends JPanel implements View {
     @Override
     public int getViewId() {
         return View.TRANSACTIONS_VIEW;
-    }
-
-    public String getPreviousCurrency2() {
-        return null;
-    }
-
-    public String getPreviousExchange2() {
-        return null;
-    }
-
-    public boolean getPreviousShowSecondRow() {
-        return false;
-    }
-
-    public String getPreviousCurrency1() {
-        return null;
     }
 }

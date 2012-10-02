@@ -511,7 +511,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
                 String addressString = "";
 
                 if (controller.getMultiBitService() != null && myOutput != null) {
-                    Address toAddress = new Address(controller.getMultiBitService().getNetworkParameters(), myOutput
+                    Address toAddress = new Address(controller.getModel().getNetworkParameters(), myOutput
                             .getScriptPubKey().getPubKeyHash());
                     addressString = toAddress.toString();
                 }

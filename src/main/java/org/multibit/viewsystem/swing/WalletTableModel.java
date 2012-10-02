@@ -24,12 +24,16 @@ import javax.swing.table.AbstractTableModel;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletTableData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 
 public class WalletTableModel extends AbstractTableModel {
 
     private static final long serialVersionUID = -937886012854496208L;
+
+    private static final Logger log = LoggerFactory.getLogger(WalletTableModel.class);
 
     private ArrayList<String> headers;
 
@@ -49,6 +53,15 @@ public class WalletTableModel extends AbstractTableModel {
         createHeaders();
 
         walletData = multiBitModel.createWalletData(controller.getModel().getActiveWalletFilename());
+    }
+    
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        if (columnIndex == 3 || columnIndex == 4) {
+            return Number.class;
+        } else {
+            return super.getColumnClass(columnIndex);
+        }
     }
 
     public int getColumnCount() {
@@ -98,14 +111,14 @@ public class WalletTableModel extends AbstractTableModel {
             if (debitAmount == null) {
                 return null;
             } else {
-                return controller.getLocaliser().bitcoinValueToString4(debitAmount, false, true);
+                return controller.getLocaliser().bitcoinValueToString(debitAmount, false, true);
             }
         case 4:
             BigInteger creditAmount = walletDataRow.getCredit();
             if (creditAmount == null) {
                 return null;
             } else {
-                return controller.getLocaliser().bitcoinValueToString4(creditAmount, false, true);
+                return controller.getLocaliser().bitcoinValueToString(creditAmount, false, true);
             }
         default:
             return null;
@@ -113,14 +126,14 @@ public class WalletTableModel extends AbstractTableModel {
     }
 
     /**
-     * table model is read only
+     * Table model is read only.
      */
     public void setValueAt(Object value, int row, int column) {
         throw new UnsupportedOperationException();
     }
 
     public void recreateWalletData() {
-        // recreate the wallet data as the underlying wallet has changed
+        // Recreate the wallet data as the underlying wallet has changed.
         //log.debug("Updating walletTableModel for file '" + controller.getModel().getActiveWalletFilename() + "'");
         walletData = multiBitModel.createWalletData(controller.getModel().getActiveWalletFilename());
         //log.debug("walletTableModel now has " + walletData.size() + " rows");

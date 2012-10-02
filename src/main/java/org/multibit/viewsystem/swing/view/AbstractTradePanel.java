@@ -1264,7 +1264,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             // have illegal embedded spaces - convert to ENCODED_SPACE_CHARACTER
             // i.e be lenient
             String uriString = decodedString.toString().replace(" ", MultiBitController.ENCODED_SPACE_CHARACTER);
-            BitcoinURI bitcoinURI = new BitcoinURI(controller.getMultiBitService().getNetworkParameters(), uriString);
+            BitcoinURI bitcoinURI = new BitcoinURI(controller.getModel().getNetworkParameters(), uriString);
 
             log.debug("SendBitcoinPanel - ping 1");
             Address address = bitcoinURI.getAddress();

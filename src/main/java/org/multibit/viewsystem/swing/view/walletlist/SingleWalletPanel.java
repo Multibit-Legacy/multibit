@@ -226,7 +226,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         amountLabel = new BlinkLabel(controller, false);
         amountLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         amountLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
-        amountLabel.setText(controller.getLocaliser().bitcoinValueToString4(
+        amountLabel.setText(controller.getLocaliser().bitcoinValueToString(
                 perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED), true, false));
         amountLabel.setBlinkEnabled(true);
         constraints.fill = GridBagConstraints.NONE;
@@ -426,7 +426,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
      * update any UI elements from the model (hint that data has changed)
      */
     public void updateFromModel() {
-        String newAmountText = controller.getLocaliser().bitcoinValueToString4(
+        String newAmountText = controller.getLocaliser().bitcoinValueToString(
                 perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED), true, false);
         if (newAmountText != null && !newAmountText.equals(amountLabel.getText())) {
             amountLabel.blink(newAmountText);

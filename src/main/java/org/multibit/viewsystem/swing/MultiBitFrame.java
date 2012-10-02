@@ -221,13 +221,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         tickerTimer = new Timer();
         tickerTimer.schedule(new TickerTimerTask(controller, this), TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
 
-        estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString4(model.getActiveWalletEstimatedBalance(),
+        estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString(model.getActiveWalletEstimatedBalance(),
                 true, false));
 
         availableBalanceTextButton.setText(controller.getLocaliser().getString(
                 "multiBitFrame.availableToSpend",
                 new Object[] { controller.getLocaliser()
-                        .bitcoinValueToString4(model.getActiveWalletAvailableBalance(), true, false) }));
+                        .bitcoinValueToString(model.getActiveWalletAvailableBalance(), true, false) }));
 
         estimatedBalanceTextLabel.setFocusable(false);
 
@@ -237,8 +237,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
  
         MultiBitTabbedPane.setEnableUpdates(true);
         displayView(initialView);
-
-        pack();
 
         pack();
 
@@ -402,10 +400,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         } else {
             walletIconLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.RTL_WALLET_ICON_FILE));
         }
+        int walletIconWidth = 60;
+        int walletIconHeight = HEIGHT_OF_HEADER - 10;
+    
         walletIconLabel.setOpaque(false);
-        walletIconLabel.setMinimumSize(new Dimension(60, HEIGHT_OF_HEADER - 10));
-        walletIconLabel.setMaximumSize(new Dimension(60, HEIGHT_OF_HEADER - 10));
-        walletIconLabel.setPreferredSize(new Dimension(60, HEIGHT_OF_HEADER - 10));
+        walletIconLabel.setMinimumSize(new Dimension(walletIconWidth, walletIconHeight));
+        walletIconLabel.setMaximumSize(new Dimension(walletIconWidth, walletIconHeight));
+        walletIconLabel.setPreferredSize(new Dimension(walletIconWidth, walletIconHeight));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 0;
@@ -745,6 +746,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             navigateAwayFromView(controller.getCurrentView());
         }
 
+        viewFactory = new ViewFactory(controller, this);
+
         if (initUI) {
             this.localiser = controller.getLocaliser();
             Container contentPane = getContentPane();
@@ -756,8 +759,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         statusBar.refreshOnlineStatusText();
   
         updateHeader();
-
-        viewFactory = new ViewFactory(controller, this);
 
         // tell the wallets list to display
         if (walletsView != null) {
@@ -985,7 +986,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             setUpdatesStoppedTooltip(estimatedBalanceTextLabel);
             availableBalanceTextButton.setText("");
         } else {
-            estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString4(
+            estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString(
                     controller.getModel().getActiveWalletEstimatedBalance(), true, false));
             estimatedBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
 
@@ -998,7 +999,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             } else {
                 availableBalanceTextButton.setText(controller.getLocaliser().getString(
                         "multiBitFrame.availableToSpend",
-                        new Object[] { controller.getLocaliser().bitcoinValueToString4(model.getActiveWalletAvailableBalance(),
+                        new Object[] { controller.getLocaliser().bitcoinValueToString(model.getActiveWalletAvailableBalance(),
                                 true, false) }));
                 availableBalanceTextButton.setEnabled(true);
                 availableBalanceTextButton.setVisible(true);

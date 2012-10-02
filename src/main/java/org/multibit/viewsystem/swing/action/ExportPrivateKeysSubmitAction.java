@@ -84,7 +84,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction {
 
         File exportPrivateKeysFile = new File(exportPrivateKeysFilename);
 
-        privateKeysHandler = new PrivateKeysHandler(controller.getMultiBitService().getNetworkParameters());
+        privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
 
         boolean performEncryption = false;
         boolean performVerification = false;

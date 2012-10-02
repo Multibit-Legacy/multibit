@@ -79,8 +79,6 @@ public class MultiBit {
      * @param args    String encoding of arguments ([0]= Bitcoin URI)
      */
     public static void main(String args[]) {
-        MultiBitController controller = null;
-        
         // Enclosing try to enable graceful closure for unexpected errors.
         try {
             log.debug("Starting MultiBit");
@@ -129,15 +127,6 @@ public class MultiBit {
                 }
             });
 
-            // If test or production is not specified, default to production.
-            String testOrProduction = userPreferences.getProperty(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
-            if (testOrProduction == null) {
-                testOrProduction = MultiBitModel.PRODUCTION_NETWORK_VALUE;
-                userPreferences.put(MultiBitModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
-            }
-            boolean useTestNet = MultiBitModel.TEST_NETWORK_VALUE.equals(testOrProduction);
-            log.debug("useTestNet = {}", useTestNet);
-
             Localiser localiser;
             String userLanguageCode = userPreferences.getProperty(MultiBitModel.USER_LANGUAGE_CODE);
             log.debug("userLanguageCode = {}", userLanguageCode);
@@ -151,11 +140,7 @@ public class MultiBit {
                 if (MultiBitModel.USER_LANGUAGE_IS_DEFAULT.equals(userLanguageCode)) {
                     localiser = new Localiser(Locale.getDefault());
                 } else {
-                    //if ("he".equals(userLanguageCode)) {
-                    //    localiser = new Localiser(new Locale("iw_IL"));
-                    //} else {
-                        localiser = new Localiser(new Locale(userLanguageCode));
-                    //}
+                    localiser = new Localiser(new Locale(userLanguageCode));
                 }
             }
             controller.setLocaliser(localiser);
@@ -202,14 +187,8 @@ public class MultiBit {
 
             log.debug("Creating Bitcoin service");
             // Create the MultiBitService that connects to the bitcoin network.
-            MultiBitService multiBitService = new MultiBitService(useTestNet, controller);
+            MultiBitService multiBitService = new MultiBitService(controller);
             controller.setMultiBitService(multiBitService);
-
-            // Display the stored view, unless there are messages from the MultiBitService creation.
-            if (MessageManager.INSTANCE.getMessages().size() > 0) {
-                controller.displayView(View.MESSAGES_VIEW);
-            }
-            controller.displayView(controller.getCurrentView());
 
             log.debug("Locating wallets");
             // Find the active wallet filename in the multibit.properties.
@@ -225,7 +204,8 @@ public class MultiBit {
                 // If this is missing then there is just the one wallet (old format
                 // properties or user has just started up for the first time).
                 useFastCatchup = true;
-            
+                boolean thereWasAnErrorLoadingTheWallet = false;
+
                 try {
                     // ActiveWalletFilename may be null on first time startup.
                     controller.addWalletFromFilename(activeWalletFilename);
@@ -234,29 +214,39 @@ public class MultiBit {
                         activeWalletFilename = perWalletModelDataList.get(0).getWalletFilename();
                         controller.getModel().setActiveWalletByFilename(activeWalletFilename);
                         log.debug("Created/loaded wallet '" + activeWalletFilename + "'");
-                        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("multiBit.createdWallet",
-                            new Object[] { activeWalletFilename })));
+                        MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
+                                "multiBit.createdWallet", new Object[] { activeWalletFilename })));
+                    }
+                } catch (WalletLoadException e) {
+                    String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                            new Object[] { activeWalletFilename, e.getMessage() });
+                    MessageManager.INSTANCE.addMessage(new Message(message));
+                    log.error(message);
+                    thereWasAnErrorLoadingTheWallet = true;
+                } catch (WalletVersionException e) {
+                    String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                            new Object[] { activeWalletFilename, e.getMessage() });
+                    MessageManager.INSTANCE.addMessage(new Message(message));
+                    log.error(message);
+                    thereWasAnErrorLoadingTheWallet = true;
+                } catch (IOException e) {
+                    String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
+                            new Object[] { activeWalletFilename, e.getMessage() });
+                    MessageManager.INSTANCE.addMessage(new Message(message));
+                    log.error(message);
+                    thereWasAnErrorLoadingTheWallet = true;
+                } finally {
+                    if (thereWasAnErrorLoadingTheWallet) {
+                        // Clear the backup wallet filename - this prevents it being automatically overwritten.
+                        if (controller.getModel().getActiveWalletWalletInfo() != null) {
+                            controller.getModel().getActiveWalletWalletInfo().put(MultiBitModel.WALLET_BACKUP_FILE, "");
+                        }
                     }
                     if (swingViewSystem instanceof MultiBitFrame) {
                         ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
                         ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
                     }
                     controller.fireDataChanged();
-                } catch (WalletLoadException e) {
-                    String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                            new Object[] { activeWalletFilename, e.getMessage() });
-                    MessageManager.INSTANCE.addMessage(new Message(message));
-                    log.error(message);
-                } catch (WalletVersionException e) {
-                    String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                            new Object[] { activeWalletFilename, e.getMessage() });
-                    MessageManager.INSTANCE.addMessage(new Message(message));
-                    log.error(message);
-                } catch (IOException e) {
-                    String message = controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
-                            new Object[] { activeWalletFilename, e.getMessage() });
-                    MessageManager.INSTANCE.addMessage(new Message(message));
-                    log.error(message);
                 }
             } else {
                 try {
@@ -266,6 +256,8 @@ public class MultiBit {
                         ((MultiBitFrame) swingViewSystem).setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
                         for (int i = 1; i <= numberOfWallets; i++) {
+                            boolean thereWasAnErrorLoadingTheWallet = false;
+
                             // Load up ith wallet filename.
                             String loopWalletFilename = userPreferences.getProperty(MultiBitModel.WALLET_FILENAME_PREFIX + i);
                             log.debug("Loading wallet from '{}'", loopWalletFilename);
@@ -289,27 +281,42 @@ public class MultiBit {
                                         new Object[] { loopWalletFilename, e.getMessage() }));
                                 MessageManager.INSTANCE.addMessage(message);
                                 log.error(message.getText());
+                                thereWasAnErrorLoadingTheWallet = true;
                             } catch (WalletVersionException e) {
                                 message = new Message( controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                                         new Object[] { loopWalletFilename, e.getMessage() }));
                                 MessageManager.INSTANCE.addMessage(message);
                                 log.error(message.getText());
+                                thereWasAnErrorLoadingTheWallet = true;
                             } catch (IOException e) {
                                 message = new Message( controller.getLocaliser().getString("openWalletSubmitAction.walletNotLoaded",
                                         new Object[] { loopWalletFilename, e.getMessage() }));
                                 MessageManager.INSTANCE.addMessage(message);
                                 log.error(message.getText());
+                                thereWasAnErrorLoadingTheWallet = true;
+                            }
+                            
+                            if (thereWasAnErrorLoadingTheWallet) {
+                                PerWalletModelData loopData = controller.getModel().getPerWalletModelDataByWalletFilename(loopWalletFilename);
+                                if (loopData != null) {
+                                    // Clear the backup wallet filename - this prevents it being automatically overwritten.
+                                    if (loopData.getWalletInfo() != null) {
+                                        loopData.getWalletInfo().put(MultiBitModel.WALLET_BACKUP_FILE, "");
+                                    }
+                                }
                             }
                         }
                     }
+ 
+                } catch (NumberFormatException nfe) {
+                    // Carry on.
+                } finally {
                     if (swingViewSystem instanceof MultiBitFrame) {
                         ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
                         ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
                     }
                     controller.fireDataChanged();
-                } catch (NumberFormatException nfe) {
-                    // Carry on.
-                } finally {
+                    
                     ((MultiBitFrame) swingViewSystem).setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 }
             }

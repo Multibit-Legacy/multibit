@@ -325,7 +325,7 @@ public class MigrateWalletsAction extends AbstractAction {
             if (ecKey != null) {
                 if (!protobufPrivateKeysAsStrings.contains(ecKey.toStringWithPrivate())) {
                     return controller.getLocaliser().getString("migrateWalletsAction.privateKeyWasMissing", 
-                            new Object[] {ecKey.toAddress(controller.getMultiBitService().getNetworkParameters())});
+                            new Object[] {ecKey.toAddress(controller.getModel().getNetworkParameters())});
                 }
             }
         }

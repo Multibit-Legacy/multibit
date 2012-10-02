@@ -177,7 +177,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
 
         if (sendFeeString == null || sendFeeString == "") {
-            sendFeeString = controller.getLocaliser().bitcoinValueToString4(MultiBitModel.SEND_FEE_DEFAULT, false, false);
+            sendFeeString = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
         }
         originalFee = sendFeeString;
         feeTextField.setText(sendFeeString);
@@ -536,7 +536,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         String sendFeeString = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
 
         if (sendFeeString == null || sendFeeString == "") {
-            sendFeeString = controller.getLocaliser().bitcoinValueToString4(MultiBitModel.SEND_FEE_DEFAULT, false, false);
+            sendFeeString = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
         }
         originalFee = sendFeeString;
 
@@ -701,7 +701,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.weighty = 0.3;
         constraints.gridwidth = 3;
         constraints.anchor = GridBagConstraints.LINE_START;
-        appearancePanel.add(MultiBitTitledPanel.createStent(1, 18), constraints);
+        appearancePanel.add(MultiBitTitledPanel.createStent(1, 30), constraints);
 
         MultiBitLabel lookAndFeelLabel = new MultiBitLabel(controller.getLocaliser().getString("showPreferencesPanel.lookAndFeel"));
         constraints.fill = GridBagConstraints.NONE;
@@ -758,7 +758,6 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         appearancePanel.add(fill1, constraints);
-
 
         return appearancePanel;
     }

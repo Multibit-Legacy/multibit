@@ -68,7 +68,7 @@ public class CreateNewReceivingAddressAction extends MultiBitSubmitAction {
         ECKey newKey = new ECKey();
         perWalletModelData.getWallet().keychain.add(newKey);
 
-        String addressString = newKey.toAddress(controller.getMultiBitService().getNetworkParameters()).toString();
+        String addressString = newKey.toAddress(controller.getModel().getNetworkParameters()).toString();
         WalletInfo walletInfo = perWalletModelData.getWalletInfo();
         if (walletInfo == null) {
             walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletVersion.PROTOBUF);

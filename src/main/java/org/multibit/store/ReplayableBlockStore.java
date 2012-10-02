@@ -37,6 +37,9 @@ import java.util.Map;
 import static com.google.common.base.Preconditions.checkState;
 
 import org.multibit.IsMultiBitClass;
+import org.multibit.MultiBit;
+import org.multibit.controller.MultiBitController;
+import org.multibit.file.FileHandler;
 
 import com.google.bitcoin.store.BlockStore;
 import com.google.bitcoin.store.BlockStoreException;
@@ -72,8 +75,7 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
 
         @Override
         protected boolean removeEldestEntry(Map.Entry<Sha256Hash, StoredBlock> entry) {
-            return size() > 2050;    // 200000 Cache the whole blockchain headers to avoid hitting the disk = approx 20MB
-                                     // Minimum effective cache = 2050 = Slightly more than the difficulty transition period.
+            return size() > 2050;  // Slightly more than the difficulty transition period.
         }
     };
     // Use a separate cache to track get() misses. This is to efficiently handle the case of an unconnected block
@@ -167,42 +169,60 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
     public ReplayableBlockStore(NetworkParameters params, File file, boolean alwaysCreateNewStore) throws BlockStoreException {
         this.params = params;
         this.fileName = file.getAbsolutePath();
+        
         if (alwaysCreateNewStore) {
-            createNewStore(params, file);
+            createBlockStore(params, file, false);
         } else {
             try {
                 load(file);
             } catch (Exception e) {
                 log.error("failed to load block store from file", e);
-                createNewStore(params, file);
+                createBlockStore(params, file, true);
             }
         }
     }
 
-    synchronized private void createNewStore(NetworkParameters params, File file) throws BlockStoreException {
+    synchronized private void createBlockStore(NetworkParameters params, File file, boolean copyInstalledBlockChain) throws BlockStoreException {
         // Create a new block store if the file wasn't found or anything went wrong whilst reading.
         clearCaches();
         try {
-            // Set up the genesis block. When we start out fresh, it is by definition the top of the chain.
-            Block genesis = params.genesisBlock.cloneAsHeader();
-            StoredBlock storedGenesis = new StoredBlock(genesis, genesis.getWork(), 0);
+            boolean blockChainLoadedOk = false;
+            if (copyInstalledBlockChain) {
+                // Recopy in the installer blockchain.
+                MultiBitController controller = MultiBit.getController();
+                FileHandler fileHandler = controller.getFileHandler();
+                if (fileHandler != null) {
+                    fileHandler.copyBlockChainFromInstallationDirectory(file.getAbsolutePath(), true);
 
-            // Create fresh or open existing . The d makes writes synchronous.
-            this.file = new RandomAccessFile(file, "rwd");
-            this.channel = this.file.getChannel();
+                    if (file.exists() && file.length() > 0) {
+                        load(file);
+                        blockChainLoadedOk = true;
+                    }
+                }
+            } 
+            
+            if (!blockChainLoadedOk) {
+                // Could not read in the original blockchain and copying in the
+                // installed version failed. Create a new one.
+                if (file.exists()) {
+                    file.delete();
+                }
+                // Set up the genesis block. When we start out fresh, it is by
+                // definition the top of the chain.
+                Block genesis = params.genesisBlock.cloneAsHeader();
+                StoredBlock storedGenesis = new StoredBlock(genesis, genesis.getWork(), 0);
 
-            if (file.exists() && file.length() > 0) {
-                load(file);
-            } else {
+                // Create fresh. The d makes writes synchronous.
+                this.file = new RandomAccessFile(file, "rwd");
+                this.channel = this.file.getChannel();
                 this.file.write(FILE_FORMAT_VERSION);
                 this.chainHead = storedGenesis.getHeader().getHash();
                 this.file.write(this.chainHead.getBytes());
                 put(storedGenesis);
-             }
-            
-            // truncate to just the genesis block
-            setChainHeadAndTruncate(storedGenesis);
-
+              
+                // truncate to just the genesis block
+                setChainHeadAndTruncate(storedGenesis);
+            }
         } catch (VerificationException e1) {
             throw new RuntimeException(e1);  // Cannot happen.
         } catch (IOException e) {
@@ -215,7 +235,11 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
         // Open in synchronous mode. See above.
         this.file = new RandomAccessFile(file, "rwd");
         channel = this.file.getChannel();
-        lock();
+        log.info("Reading block store from {}", file);
+        
+        if (lock == null) {
+           lock();
+        }
         try {
             // Read a version byte.
             int version = this.file.read();
@@ -235,11 +259,20 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
             log.info("Read chain head from disk: {}", this.chainHead);
             channel.position(channel.size() - Record.SIZE);
         } catch (IOException e) {
-            if (this.file != null)
-                this.file.close();
+            if (channel != null) {
+                channel.close();
+            }
+            if (this.file != null) {
+                this.file.close(); 
+            }
             throw e;
         } catch (BlockStoreException e) {
-            this.file.close();
+            if (channel != null) {
+                channel.close();
+            }
+            if (this.file != null) {
+                this.file.close(); 
+            }
             throw e;
         }
     }

@@ -86,8 +86,8 @@ public class QRCodeGenerator {
         try {
             Address decodeAddress = null;
             if (address != null && !"".equals(address) && controller.getMultiBitService() != null
-                    && controller.getMultiBitService().getNetworkParameters() != null) {
-                decodeAddress = new Address(controller.getMultiBitService().getNetworkParameters(), address);
+                    && controller.getModel().getNetworkParameters() != null) {
+                decodeAddress = new Address(controller.getModel().getNetworkParameters(), address);
             }
             if (decodeAddress != null && !"".equals(decodeAddress)) {
                 if (amount != null && !"".equals(amount)) {

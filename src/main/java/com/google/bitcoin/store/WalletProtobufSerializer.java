@@ -59,7 +59,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
     // Used for de-serialization
     private Map<ByteString, Transaction> txMap;
     
-    private WalletProtobufSerializer() {
+    public WalletProtobufSerializer() {
         txMap = new HashMap<ByteString, Transaction>();
     }
 

@@ -182,16 +182,15 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
     /**
      * Uses protobuf serialization to save the wallet to the given file. To learn more about this file format, see
-     * {@link WalletProtobufSerializer}. Writes out first to a temporary file in the same directory and then renames
-     * once written.
+     * {@link WalletProtobufSerializer}.
+     * 
+     * This method is keep simple as the file saving lifecycle is dealt with in FileHandler.
      */
-    public synchronized void saveToFile(File f) throws IOException {
+    public synchronized void saveToFile(File destFile) throws IOException {        
         FileOutputStream stream = null;
-        File temp;
+
         try {
-            File directory = f.getAbsoluteFile().getParentFile();
-            temp = File.createTempFile("wallet", null, directory);
-            stream = new FileOutputStream(temp);
+            stream = new FileOutputStream(destFile);
             saveToFileStream(stream);
             // Attempt to force the bits to hit the disk. In reality the OS or hard disk itself may still decide
             // to not write through to physical media for at least a few seconds, but this is the best we can do.
@@ -199,13 +198,6 @@ public class Wallet implements Serializable, IsMultiBitClass {
             stream.getFD().sync();
             stream.close();
             stream = null;
-            if (!temp.renameTo(f)) {
-                // Work around an issue on Windows whereby you can't rename over existing files.
-                if (System.getProperty("os.name").toLowerCase().indexOf("win") >= 0) {
-                    if (f.delete() && temp.renameTo(f)) return;  // else fall through.
-                }
-                throw new IOException("Failed to rename " + temp + " to " + f);
-            }
         } finally {
             if (stream != null) {
                 stream.close();
