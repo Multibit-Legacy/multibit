@@ -441,6 +441,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         forcer2 = new JPanel();
         forcer2.setOpaque(false);
+        //forcer2.setBorder(BorderFactory.createLineBorder(Color.CYAN));
         forcer2.setMaximumSize(new Dimension((int) (QRCODE_WIDTH * 1.2), 1));
         forcer2.setPreferredSize(new Dimension(QRCODE_WIDTH, 1));
         forcer2.setMinimumSize(new Dimension((int) (QRCODE_WIDTH * 1.0), 1));
@@ -926,6 +927,19 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         qrCodeScrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
 
         panel.add(qrCodeScrollPane, constraints);
+
+        constraints.fill = GridBagConstraints.VERTICAL;
+        constraints.gridx = QR_CODE_LEFT_COLUMN + 6;
+        constraints.gridy = 3;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 5;
+        constraints.gridheight = 3;
+        constraints.anchor = GridBagConstraints.BASELINE;
+        
+        JPanel verticalStent = MultiBitTitledPanel.createStent(1, QRCODE_HEIGHT);
+        //verticalStent.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
+        panel.add(verticalStent, constraints);
 
         createQRCodeButtonPanel(panel, constraints);
     }
