@@ -479,6 +479,11 @@ public class MultiBitModel {
                 public void onTransactionConfidenceChanged(Wallet wallet, Transaction tx) {
                    controller.onTransactionConfidenceChanged(wallet, tx); 
                 }
+
+                @Override
+                public void onKeyAdded(ECKey key) {
+                    controller.onKeyAdded(key);
+                }
             });
         }
 

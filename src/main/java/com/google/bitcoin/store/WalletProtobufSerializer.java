@@ -30,6 +30,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,17 +61,33 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
 
     // Used for de-serialization
     private Map<ByteString, Transaction> txMap;
-    
+    private WalletExtensionSerializer helper;
+
+    // Temporary hack for migrating 0.5 wallets to 0.6 wallets. In 0.5 transactions stored the height at which they
+    // appeared in the block chain (for the current best chain) but not the depth. In 0.6 we store both and update
+    // every transaction every time we receive a block, so we need to fill out depth from best chain height.
+    private int chainHeight;
+
     public WalletProtobufSerializer() {
         txMap = new HashMap<ByteString, Transaction>();
+        helper = new WalletExtensionSerializer();
     }
+
+    /** 
+     * Set the WalletExtensionSerializer used to create new wallet objects
+     * and handle extensions
+     */
+    public void setWalletExtensionSerializer(WalletExtensionSerializer h) {
+        this.helper = h;
+    }
+
 
     /**
      * Formats the given wallet (transactions and keys) to the given output stream in protocol buffer format.<p>
      *     
      * Equivalent to <tt>walletToProto(wallet).writeTo(output);</tt>
      */
-    public static void writeWallet(Wallet wallet, OutputStream output) throws IOException {
+    public void writeWallet(Wallet wallet, OutputStream output) throws IOException {
         Protos.Wallet walletProto = walletToProto(wallet);
         walletProto.writeTo(output);
     }
@@ -80,7 +99,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
      * structures anyway, consisting as they do of keys (large random numbers) and {@link Transaction}s which also
      * mostly contain keys and hashes.
      */
-    public static String walletToText(Wallet wallet) {
+    public String walletToText(Wallet wallet) {
         Protos.Wallet walletProto = walletToProto(wallet);
         return TextFormat.printToString(walletProto);
     }
@@ -89,7 +108,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
      * Converts the given wallet to the object representation of the protocol buffers. This can be modified, or
      * additional data fields set, before serialization takes place.
      */
-    public static Protos.Wallet walletToProto(Wallet wallet) {
+    public Protos.Wallet walletToProto(Wallet wallet) {
         Protos.Wallet.Builder walletBuilder = Protos.Wallet.newBuilder();
         walletBuilder.setNetworkIdentifier(wallet.getNetworkParameters().getId());
         for (WalletTransaction wtx : wallet.getWalletTransactions()) {
@@ -115,9 +134,14 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             walletBuilder.setLastSeenBlockHash(hashToByteString(lastSeenBlockHash));
         }
 
+        Collection<Protos.Extension> extensions = helper.getExtensionsToWrite(wallet);
+        for(Protos.Extension ext : extensions) {
+            walletBuilder.addExtension(ext);
+        }
+        
         return walletBuilder.build();
     }
-    
+
     private static Protos.Transaction makeTxProto(WalletTransaction wtx) {
         Transaction tx = wtx.getTransaction();
         Protos.Transaction.Builder txBuilder = Protos.Transaction.newBuilder();
@@ -183,10 +207,22 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         confidenceBuilder.setType(Protos.TransactionConfidence.Type.valueOf(confidence.getConfidenceType().getValue()));
         if (confidence.getConfidenceType() == ConfidenceType.BUILDING) {
             confidenceBuilder.setAppearedAtHeight(confidence.getAppearedAtChainHeight());
+            confidenceBuilder.setDepth(confidence.getDepthInBlocks());
+            if (confidence.getWorkDone() != null) {
+                confidenceBuilder.setWorkDone(confidence.getWorkDone().longValue());
+            }
         }
-        if (confidence.getConfidenceType() == ConfidenceType.OVERRIDDEN_BY_DOUBLE_SPEND) {
+        if (confidence.getConfidenceType() == ConfidenceType.DEAD) {
             Sha256Hash overridingHash = confidence.getOverridingTransaction().getHash();
             confidenceBuilder.setOverridingTransaction(hashToByteString(overridingHash));
+        }
+        for (PeerAddress address : confidence.getBroadcastBy()) {
+            Protos.PeerAddress proto = Protos.PeerAddress.newBuilder()
+                    .setIpAddress(ByteString.copyFrom(address.getAddr().getAddress()))
+                    .setPort(address.getPort())
+                    .setServices(address.getServices().longValue())
+                    .build();
+            confidenceBuilder.addBroadcastBy(proto);
         }
         txBuilder.setConfidence(confidenceBuilder);
     }
@@ -200,6 +236,17 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
     }
 
     /**
+     * TEMPORARY API: Used for migrating 0.5 wallets to 0.6 - during deserialization we need to know the chain height
+     * so the depth field of transaction confidence objects can be filled out correctly. Set this before loading a
+     * wallet. It's only used for older wallets that lack the data already.
+     *
+     * @param chainHeight
+     */
+    public void setChainHeight(int chainHeight) {
+        this.chainHeight = chainHeight;
+    }
+
+    /**
      * Parses a wallet from the given stream. The stream is expected to contain a binary serialization of a 
      * {@link Protos.Wallet} object.<p>
      *     
@@ -207,15 +254,14 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
      * {@link IllegalArgumentException} is thrown.
      *
      */
-    public static Wallet readWallet(InputStream input) throws IOException {
+    public Wallet readWallet(InputStream input) throws IOException {
         // TODO: This method should throw more specific exception types than IllegalArgumentException.
-        WalletProtobufSerializer serializer = new WalletProtobufSerializer();
-        Protos.Wallet walletProto = Protos.Wallet.parseFrom(input);
+        Protos.Wallet walletProto = parseToProto(input);
 
         // System.out.println(TextFormat.printToString(walletProto));
 
         NetworkParameters params = NetworkParameters.fromID(walletProto.getNetworkIdentifier());
-        Wallet wallet = new Wallet(params);
+        Wallet wallet = helper.newWallet(params);
         
         // Read all keys
         for (Protos.Key keyProto : walletProto.getKeyList()) {
@@ -234,12 +280,12 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         
         // Read all transactions and insert into the txMap.
         for (Protos.Transaction txProto : walletProto.getTransactionList()) {
-            serializer.readTransaction(txProto, params);
+            readTransaction(txProto, params);
         }
 
         // Update transaction outputs to point to inputs that spend them
         for (Protos.Transaction txProto : walletProto.getTransactionList()) {
-            WalletTransaction wtx = serializer.connectTransactionOutputs(txProto);
+            WalletTransaction wtx = connectTransactionOutputs(txProto);
             wallet.addWalletTransaction(wtx);
         }
         
@@ -251,14 +297,20 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         }
 
         for (Protos.Extension extProto : walletProto.getExtensionList()) {
-            if (extProto.getMandatory()) {
-                throw new IllegalArgumentException("Did not understand a mandatory extension in the wallet");
-            }
+            helper.readExtension(wallet, extProto);
         }
         
         return wallet;
     }
 
+    /**
+     * Returns the loaded protocol buffer from the given byte stream. You normally want
+     * {@link Wallet#loadFromFile(java.io.File)} instead - this method is designed for low level work involving the
+     * wallet file format itself.
+     */
+    public static Protos.Wallet parseToProto(InputStream input) throws IOException {
+        return Protos.Wallet.parseFrom(input);
+    }
 
     private void readTransaction(Protos.Transaction txProto, NetworkParameters params) {
         Transaction tx = new Transaction(params);
@@ -310,6 +362,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
                 log.debug("Wallet contained duplicate transaction %s, using the second and newer one", byteStringToHash(txProto.getHash()));
             }
         }
+        
         txMap.put(txProto.getHash(), tx);
     }
 
@@ -356,8 +409,27 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             }
             confidence.setAppearedAtChainHeight(confidenceProto.getAppearedAtHeight());
         }
+        if (confidenceProto.hasDepth()) {
+            if (confidence.getConfidenceType() != ConfidenceType.BUILDING) {
+                log.warn("Have depth but not BUILDING for tx {}", tx.getHashAsString());
+                return;
+            }
+            confidence.setDepthInBlocks(confidenceProto.getDepth());
+        } else {
+            // TEMPORARY CODE FOR MIGRATING 0.5 WALLETS TO 0.6
+            if (chainHeight != 0 && confidenceProto.hasAppearedAtHeight()) {
+                confidence.setDepthInBlocks(chainHeight - confidence.getAppearedAtChainHeight() + 1);
+            }
+        }
+        if (confidenceProto.hasWorkDone()) {
+            if (confidence.getConfidenceType() != ConfidenceType.BUILDING) {
+                log.warn("Have workDone but not BUILDING for tx {}", tx.getHashAsString());
+                return;
+            }
+            confidence.setWorkDone(BigInteger.valueOf(confidenceProto.getWorkDone()));
+        }
         if (confidenceProto.hasOverridingTransaction()) {
-            if (confidence.getConfidenceType() != ConfidenceType.OVERRIDDEN_BY_DOUBLE_SPEND) {
+            if (confidence.getConfidenceType() != ConfidenceType.DEAD) {
                 log.warn("Have overridingTransaction but not OVERRIDDEN for tx {}", tx.getHashAsString());
                 return;
             }
@@ -368,6 +440,18 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
                 return;
             }
             confidence.setOverridingTransaction(overridingTransaction);
+        }
+        for (Protos.PeerAddress proto : confidenceProto.getBroadcastByList()) {
+            InetAddress ip;
+            try {
+                ip = InetAddress.getByAddress(proto.getIpAddress().toByteArray());
+            } catch (UnknownHostException e) {
+                throw new RuntimeException(e);   // IP address is of invalid length.
+            }
+            int port = proto.getPort();
+            PeerAddress address = new PeerAddress(ip, port);
+            address.setServices(BigInteger.valueOf(proto.getServices()));
+            confidence.markBroadcastBy(address);
         }
     }
 }

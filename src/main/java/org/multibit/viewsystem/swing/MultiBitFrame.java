@@ -83,6 +83,7 @@ import org.simplericity.macify.eawt.ApplicationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 
@@ -924,6 +925,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
         //log.debug("Transaction confidence changed for tx " + transaction.toString());
+    }
+    
+
+    @Override
+    public void onKeyAdded(ECKey key) {
+        log.debug("Key added " + key.toString());
     }
 
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {

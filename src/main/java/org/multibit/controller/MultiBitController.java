@@ -49,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Block;
+import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.GetDataMessage;
 import com.google.bitcoin.core.Message;
 import com.google.bitcoin.core.Peer;
@@ -345,6 +346,10 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             viewSystem.onTransactionConfidenceChanged(wallet, transaction);
         }
         checkForDirtyWallets(transaction);
+    }
+
+    public void onKeyAdded(ECKey ecKey) {
+        log.debug("Key added : " + ecKey.toString());
     }
 
     public void onReorganise(Wallet wallet) {

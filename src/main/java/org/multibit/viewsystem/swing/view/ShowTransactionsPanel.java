@@ -300,7 +300,8 @@ public class ShowTransactionsPanel extends JPanel implements View {
                     label.setText("?");
                     label.setIcon(null);
                 } else {
-                    int numberOfBlocksEmbedded = confidence.getDepthInBlocks(controller.getMultiBitService().getChain());
+                    //int numberOfBlocksEmbedded = confidence.getDepthInBlocks(controller.getMultiBitService().getChain());
+                    int numberOfBlocksEmbedded = confidence.getDepthInBlocks();
                     ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded);
                     label.setIcon(buildingIcon);
                     label.setText("");
@@ -327,7 +328,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
                 // label.setText("NSIBC");
                 break;
             }
-            case OVERRIDDEN_BY_DOUBLE_SPEND: {
+            case DEAD: {
                 label.setIcon(null);
                 label.setText("DS");
                 break;

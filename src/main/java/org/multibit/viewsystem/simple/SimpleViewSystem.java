@@ -6,6 +6,7 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
 import org.multibit.viewsystem.ViewSystem;
 
+import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 
@@ -42,6 +43,12 @@ public class SimpleViewSystem implements ViewSystem {
 
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
         System.out.println("SIMPLE. Confidence changed for wallet: " + wallet.hashCode() + ", transaction:\n" + transaction.toString());
+    }
+    
+
+    @Override
+    public void onKeyAdded(ECKey key) {
+        System.out.println("SIMPLE. Key added: " + key.toString());
     }
 
     @Override
