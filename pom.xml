@@ -124,6 +124,7 @@
                   <!-- excludes classes that are duplicated in multibit -->
                   <excludes> **/Sha256Hash.class,
                     **/Transaction.class, **/Transaction$*.class,
+                    **/TransactionConfidence.class, **/TransactionConfidence$*.class,
                     **/TransactionInput.class, **/TransactionInput$*.class,
                     **/Wallet.class, **/Wallet$*.class,
                     **/WalletExtensionSerializer.class,

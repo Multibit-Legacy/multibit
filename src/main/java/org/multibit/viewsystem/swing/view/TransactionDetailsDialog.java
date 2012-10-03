@@ -52,6 +52,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
+import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +77,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     private static final Logger log = LoggerFactory.getLogger(TransactionDetailsDialog.class);
 
     private static final int HEIGHT_DELTA = 125;
-    private static final int WIDTH_DELTA = 330;
+    private static final int WIDTH_DELTA = 360;
+    private static final int FIELD_SEPARATION = 12;
 
     private MultiBitController controller;
     private WalletTableData rowTableData;
@@ -172,7 +174,6 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.anchor = GridBagConstraints.LINE_END;
         detailPanel.add(confidenceLabel, constraints);
 
-        JLabel filler1 = new JLabel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 0;
@@ -180,7 +181,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        detailPanel.add(filler1, constraints);
+        detailPanel.add(MultiBitTitledPanel.createStent(FIELD_SEPARATION), constraints);
 
         confidenceText = new MultiBitLabel("");
         confidenceText.setText(createStatusText(rowTableData.getTransaction()));

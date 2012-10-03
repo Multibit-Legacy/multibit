@@ -165,7 +165,7 @@ public class StatusBar extends JPanel implements MessageListener {
                         if (finalController.getMultiBitService().getChain().getChainHead() != null) {
                             blockHeight = finalController.getMultiBitService().getChain().getChainHead().getHeight();
                             onlineLabel.setToolTipText(finalController.getLocaliser().getString("multiBitFrame.numberOfBlocks",
-                                    new Object[] { "" + blockHeight }));
+                                    new Object[] { blockHeight }));
                         }
                     }
                 }
