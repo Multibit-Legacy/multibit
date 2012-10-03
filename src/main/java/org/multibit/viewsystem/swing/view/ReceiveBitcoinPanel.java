@@ -48,6 +48,7 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyReceiveAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewReceivingAddressAction;
+import org.multibit.viewsystem.swing.action.DeleteSendingAddressAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.MoreOrLessAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
@@ -86,7 +87,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
     
     @Override
     protected Action getDeleteAddressAction() {
-        return null;
+        // Return a delete sending address action - it gets turned into a stent
+        return new DeleteSendingAddressAction(controller, mainFrame, null);
     }
 
     @Override

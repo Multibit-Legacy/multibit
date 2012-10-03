@@ -532,7 +532,20 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         int offset = 0;
         deleteAddressAction = getDeleteAddressAction();
-        if (deleteAddressAction != null) {
+        if (isReceiveBitcoin()) {
+            // Put in a stent
+            MultiBitButton dummyDeleteButton = new MultiBitButton(deleteAddressAction, controller);
+            JPanel deleteButtonStent = MultiBitTitledPanel.createStent(dummyDeleteButton.getPreferredSize().width, dummyDeleteButton.getPreferredSize().height);
+            offset = 1;
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.gridx = 2;
+            constraints.gridy = 0;
+            constraints.gridwidth = 1;
+            constraints.weightx = 0.1;
+            constraints.weighty = 1;
+            constraints.anchor = GridBagConstraints.LINE_START;
+            addressesHeaderPanel.add(deleteButtonStent, constraints);
+        } else {
             deleteButton = new MultiBitButton(deleteAddressAction, controller);
             offset = 1;
             constraints.fill = GridBagConstraints.NONE;
@@ -543,6 +556,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             constraints.weighty = 1;
             constraints.anchor = GridBagConstraints.LINE_START;
             addressesHeaderPanel.add(deleteButton, constraints);
+
+            
         }
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -574,7 +589,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints.gridx = 4;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
-        constraints.weightx = 25;
+        constraints.weightx = 1000;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         addressesHeaderPanel.add(filler2, constraints);
