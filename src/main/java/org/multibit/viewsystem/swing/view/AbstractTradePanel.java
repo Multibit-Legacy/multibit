@@ -124,7 +124,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     private static final int TABLE_BORDER = 3;
 
-    protected static final int PREFERRED_NUMBER_OF_LABEL_ROWS = 2;
+    protected static final int PREFERRED_NUMBER_OF_LABEL_ROWS = 4;
 
     protected MultiBitFrame mainFrame;
 
@@ -162,7 +162,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     protected static final int QRCODE_WIDTH = 140;
     protected static final int QRCODE_HEIGHT = 140;
 
-    protected static final int TEXTFIELD_VERTICAL_DELTA = 8;
+    protected static final int TEXTFIELD_VERTICAL_DELTA = 10;
     protected static final int HELP_BUTTON_INDENT = 6;
     protected static final int AMOUNT_BTC_INDENT = 4;
 

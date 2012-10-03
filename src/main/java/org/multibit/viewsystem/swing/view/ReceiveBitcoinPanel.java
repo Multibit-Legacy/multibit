@@ -218,15 +218,15 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
             }
         });
         labelScrollPane.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
-                .getHeight() * AbstractTradePanel.PREFERRED_NUMBER_OF_LABEL_ROWS + TEXTFIELD_VERTICAL_DELTA));
+                .getHeight() * AbstractTradePanel.PREFERRED_NUMBER_OF_LABEL_ROWS + TEXTFIELD_VERTICAL_DELTA + 6));
         labelScrollPane.setPreferredSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
-                .getHeight() * AbstractTradePanel.PREFERRED_NUMBER_OF_LABEL_ROWS + TEXTFIELD_VERTICAL_DELTA));
+                .getHeight() * AbstractTradePanel.PREFERRED_NUMBER_OF_LABEL_ROWS + TEXTFIELD_VERTICAL_DELTA + 6));
 
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
         constraints.gridy = 3;
         constraints.weightx = 0.6;
-        constraints.weighty = 2.0;
+        constraints.weighty = 1.0;
         constraints.gridwidth = 4;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -264,7 +264,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
                 + TEXTFIELD_VERTICAL_DELTA));
         amountTextField.addKeyListener(new QRCodeKeyListener());
 
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
         constraints.gridy = 5;
         constraints.weightx = 1.0;
