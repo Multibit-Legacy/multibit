@@ -1,7 +1,35 @@
 MultiBit release notes.
 
+04 Oct 2012 Version 0.4.11
+
+User interface
++  8 decimal places of BTC now shown
++  Chart of wallet balance for last 30 days added
++  Drag and drop QR code to desktop
++  Slovenian 100% added
++  Various UI tidyups
+
+System
++  Faster bitcoin network connection
++  Rolling wallet backup to mitigate sudden power loss
++  Automatic recopy of installer blockchain if required
++  Update to bitcoinj version 0.6
++  Update to XChart 0.2.0
+
+
+24 Sep 2012 Version 0.5.4beta
++  Faster bitcoin network connection
++  Rolling wallet backup to mitigate sudden power loss
++  Chart of wallet balance for last 30 days added
++  Drag and drop QR code to desktop
++  Eliminated tab flicker
++  Tab title tooltips now show ok
++  Update to bitcoinj version 0.6-SNAPSHOT
++  Update to XChart 0.2.0
+
+
 10 Sep 2012 Version 0.4.10
-+ Czech and Indonesian 100% translation added.
++  Czech and Indonesian 100% translation added.
 
 
 05 Sep 2012 Version 0.5.3beta
