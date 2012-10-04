@@ -118,6 +118,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
     protected void populateLocalisationMap() {
         localisationKeyConstantToKeyMap.put(ADDRESSES_TITLE, "sendBitcoinPanel.sendingAddressesTitle");
         localisationKeyConstantToKeyMap.put(CREATE_NEW_TOOLTIP, "createOrEditAddressAction.createSending.tooltip");
+        localisationKeyConstantToKeyMap.put(DELETE_TOOLTIP, "deleteSendingAddressSubmitAction.tooltip");
     }
 
     protected JPanel createFormPanel(JPanel formPanel, GridBagConstraints constraints) {

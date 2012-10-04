@@ -200,6 +200,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     protected String ADDRESSES_TITLE = "addressesTitle";
     protected String CREATE_NEW_TOOLTIP = "createNewTooltip";
+    protected String DELETE_TOOLTIP = "deleteTooltip";
 
     public AbstractTradePanel(MultiBitFrame mainFrame, MultiBitController controller) {
         this.mainFrame = mainFrame;
@@ -1146,6 +1147,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                 createNewButton.setEnabled(false);
                 mainFrame.setUpdatesStoppedTooltip(createNewButton);
             }
+            if (deleteButton != null) {
+                deleteButton.setEnabled(false);
+                mainFrame.setUpdatesStoppedTooltip(deleteButton);
+            }
             if (pasteSwatchButton != null) {
                 pasteSwatchButton.setEnabled(false);
                 mainFrame.setUpdatesStoppedTooltip(pasteSwatchButton);
@@ -1160,6 +1165,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             if (createNewButton != null) {
                 createNewButton.setEnabled(true);
                 createNewButton.setToolTipText(getLocalisationString(CREATE_NEW_TOOLTIP, null));
+            }
+            if (deleteButton != null) {
+                deleteButton.setEnabled(true);
+                deleteButton.setToolTipText(getLocalisationString(DELETE_TOOLTIP, null));
             }
             if (pasteSwatchButton != null) {
                 pasteSwatchButton.setEnabled(true);
