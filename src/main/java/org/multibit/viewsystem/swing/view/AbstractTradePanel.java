@@ -124,7 +124,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     private static final int TABLE_BORDER = 3;
 
-    protected static final int PREFERRED_NUMBER_OF_LABEL_ROWS = 4;
+    protected static final int PREFERRED_NUMBER_OF_LABEL_ROWS = 3;
 
     protected MultiBitFrame mainFrame;
 
@@ -365,7 +365,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.CENTER;
         panel.add(
-                MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS, fontMetrics.getHeight()),
+                MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS, separatorSize),
                 constraints);
 
         constraints.fill = GridBagConstraints.BOTH;

@@ -21,6 +21,7 @@ bitcoinspot         - Dutch
 corn3               - Portuguese
 D4CH                - Danish
 damnek              - Dutch
+druhy               - Slovak
 DutchBrat           - Dutch
 Emin Gun Sirer      - Turkish
 Ermo                - Italian
