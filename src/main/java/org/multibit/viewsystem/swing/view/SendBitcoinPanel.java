@@ -154,9 +154,13 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         addressTextField.setHorizontalAlignment(JTextField.LEADING);
         addressTextField.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
                 .getHeight() + TEXTFIELD_VERTICAL_DELTA));
+        addressTextField.setPreferredSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
+                .getHeight() + TEXTFIELD_VERTICAL_DELTA));
+        addressTextField.setMaximumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
+                .getHeight() + TEXTFIELD_VERTICAL_DELTA));
 
         addressTextField.addKeyListener(new QRCodeKeyListener());
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
         constraints.gridy = 1;
         constraints.weightx = 1.0;

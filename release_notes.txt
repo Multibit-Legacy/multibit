@@ -1,6 +1,6 @@
 MultiBit release notes.
 
-04 Oct 2012 Version 0.4.11
+05 Oct 2012 Version 0.4.11
 
 User interface
 +  8 decimal places of BTC now shown

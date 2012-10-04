@@ -36,6 +36,7 @@ guy46               - Portuguese
 haritosh            - Hindi
 HostFat             - Italian
 ildubbioso          - Italian
+Ipaboo              - Greek
 lzsaver             - Russian
 Jan-steenbergen     - Dutch
 JeppeJ              - Swedish
@@ -47,10 +48,12 @@ knight22            - French
 Kupsi               - Norwegian
 kyuupichan          - Japanese
 lophie              - Arabic 
+majdom              - Polish
+mazi                - Slovenian
 Marx1996xvx         - Polish
 Mats Henricson      - Swedish
 Memory Dealers      - Japanese
-Moole               - Czech
+moole               - Czech
 mrmx                - Spanish
 mrvision            - Spanish
 muyuu               - Japanese
@@ -67,6 +70,7 @@ spiccioli           - Italian
 techmix             - Persian
 Technomage          - Finnish
 teknomunk           - Japanese
+tengo               - Russian
 tesla               - Russian
 tpantlik            - Czech
 viboracecata        - Chinese Simplified
