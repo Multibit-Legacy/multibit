@@ -283,7 +283,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     }
 
     protected void initUI() {
-        setMinimumSize(new Dimension(550, 220));
+        setMinimumSize(new Dimension(550, 180));
         setLayout(new GridBagLayout());
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
