@@ -20,11 +20,16 @@ import javax.swing.ToolTipManager;
 import javax.swing.plaf.TabbedPaneUI;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MultiBitTabbedPane extends JTabbedPane {
+
+    private static final Logger log = LoggerFactory.getLogger(MultiBitTabbedPane.class);
 
     private static final long serialVersionUID = 6530125716859367873L;
 
@@ -57,45 +62,51 @@ public class MultiBitTabbedPane extends JTabbedPane {
     
     public void setSelectedIndex(int index) {
         super.setSelectedIndex(index);
-        
-        //System.out.println("MultiBitTabbedPane. Selecting tab '" + index + "', enableUpdates = " + enableUpdates );
-        
+
+        // System.out.println("MultiBitTabbedPane. Selecting tab '" + index +
+        // "', enableUpdates = " + enableUpdates );
+
         if (!enableUpdates) {
             return;
         }
-        
-        // Get current tab.
-        JPanel tabPanelComponent = (JPanel) getComponentAt(index);
-        View selectedView = null;
-        if (tabPanelComponent != null) {
-            Component[] childComponents = tabPanelComponent.getComponents();
-            selectedView = null;
-            if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
-                selectedView = ((View) childComponents[0]);
-                if (selectedView != null && controller.getCurrentView() == selectedView.getViewId()) {
-                    // We are already displaying the correct tab.
-                    // Just update the contents.
-                    selectedView.displayView();
-                    controller.fireDataChanged();
-                } else {
-                    // Select the new tab, update the content.
-                    controller.setCurrentView(selectedView.getViewId());
-                    selectedView.displayView();
-                    
-                    // Fire data change but no need to redisplay the view
-                    enableUpdates = false;
-                    controller.fireDataChanged();
-                    enableUpdates = true;
+
+        try {
+            // Get current tab.
+            JPanel tabPanelComponent = (JPanel) getComponentAt(index);
+            View selectedView = null;
+            if (tabPanelComponent != null) {
+                Component[] childComponents = tabPanelComponent.getComponents();
+                selectedView = null;
+                if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
+                    selectedView = ((View) childComponents[0]);
+                    if (selectedView != null && controller.getCurrentView() == selectedView.getViewId()) {
+                        // We are already displaying the correct tab.
+                        // Just update the contents.
+                        selectedView.displayView();
+                        controller.fireDataChanged();
+                    } else {
+                        // Select the new tab, update the content.
+                        controller.setCurrentView(selectedView.getViewId());
+                        selectedView.displayView();
+
+                        // Fire data change but no need to redisplay the view
+                        enableUpdates = false;
+                        controller.fireDataChanged();
+                        enableUpdates = true;
+                    }
                 }
             }
-        }
-        
-        Component tabComponent = getTabComponentAt(index);
-        if (tabComponent != null && tabComponent instanceof JLabel) {
-            JLabel tabLabel = (JLabel)tabComponent;
-            if (selectedView != null) {
-                tabLabel.setToolTipText(selectedView.getViewTooltip());
+
+            Component tabComponent = getTabComponentAt(index);
+            if (tabComponent != null && tabComponent instanceof JLabel) {
+                JLabel tabLabel = (JLabel) tabComponent;
+                if (selectedView != null) {
+                    tabLabel.setToolTipText(selectedView.getViewTooltip());
+                }
             }
+        } catch (Exception e) {
+            // Do not let errors percolate out of tab display.
+            log.error(e.getClass().getName() + " " + e.getMessage());
         }
     }
     
