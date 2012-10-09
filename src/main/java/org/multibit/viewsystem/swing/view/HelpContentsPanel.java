@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Dimension;
 
@@ -131,7 +132,11 @@ public class HelpContentsPanel extends JPanel implements View {
     
     @Override
     public Icon getViewIcon() {
-        return ImageLoader.createImageIcon(ImageLoader.HELP_CONTENTS_ICON_FILE);
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            return ImageLoader.createImageIcon(ImageLoader.HELP_CONTENTS_ICON_FILE);
+        } else {
+            return ImageLoader.createImageIcon(ImageLoader.HELP_CONTENTS_RTL_ICON_FILE);
+        }
     }
 
     @Override

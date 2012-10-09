@@ -41,6 +41,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
+import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletVersion;
@@ -112,10 +113,11 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private boolean selected = false;
 
-    private static final int TWISTY_LEFT_BORDER = 8;
+    private static final int TWISTY_LEFT_OR_RIGHT_BORDER = 8;
     private static final int TWISTY_TOP_BORDER = 3;
 
     private JLabel twistyLabel;
+    private Icon twistyLeftIcon;
     private Icon twistyRightIcon;
     private Icon twistyDownIcon;
     
@@ -130,7 +132,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         this.controller = controller;
         this.mainFrame = mainFrame;
         thisPanel = this;
-
+                
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
         FontMetrics fontMetrics = getFontMetrics(font);
 
@@ -138,6 +140,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         expanded = false;
         selected = false;
 
+        twistyLeftIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_LEFT_ICON_FILE);
         twistyRightIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_RIGHT_ICON_FILE);
         twistyDownIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_DOWN_ICON_FILE);
 
@@ -202,7 +205,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         twistyLabel = new JLabel();
         twistyLabel.setOpaque(false);
         twistyLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.TWISTY_DOWN_ICON_FILE));
-        twistyLabel.setBorder(BorderFactory.createEmptyBorder(TWISTY_TOP_BORDER, TWISTY_LEFT_BORDER, 0, 0));
+        twistyLabel.setBorder(BorderFactory.createEmptyBorder(TWISTY_TOP_BORDER, TWISTY_LEFT_OR_RIGHT_BORDER, 0, TWISTY_LEFT_OR_RIGHT_BORDER));
         twistyLabel.setVisible(false);
         twistyLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
@@ -307,7 +310,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     }
     
     private static int calculateMinimumWidth(int normalWidth) {
-        return (int)Math.max(0, normalWidth * MINIMUM_WIDTH_SCALE_FACTOR - MIN_WIDTH_SCROLLBAR_DELTA);
+        return (int)Math.max(0, normalWidth * MINIMUM_WIDTH_SCALE_FACTOR - MIN_WIDTH_SCROLLBAR_DELTA);            
     }
 
     @Override
@@ -333,7 +336,11 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 setMinimumSize(new Dimension(calculateMinimumWidth(normalWidth), expandedHeight));
                 setMaximumSize(new Dimension(normalWidth * 2, expandedHeight));
             } else {
-                twistyLabel.setIcon(twistyRightIcon);
+                if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()) == ComponentOrientation.LEFT_TO_RIGHT) {
+                    twistyLabel.setIcon(twistyRightIcon);
+                } else {
+                    twistyLabel.setIcon(twistyLeftIcon);                    
+                }
                 twistyLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.twistyRightText"));
                 detailPanel.setVisible(false);
                 setPreferredSize(new Dimension(normalWidth, normalHeight));
@@ -456,6 +463,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         roundedBottomPanel = new RoundedBottomPanel(controller.getLocaliser().getLocale());
         roundedBottomPanel.setOpaque(true);
         roundedBottomPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        roundedBottomPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
         roundedBottomPanel.setLayout(new GridBagLayout());
 
         JPanel innerDetailPanel = new JPanel();
@@ -470,7 +479,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         filenameLabel.setBorder(underlineBorder);
 
         String filenameString = controller.getLocaliser().getString("resetTransactionsPanel.walletFilenameLabel");
-        filenameString = WhitespaceTrimmer.trim(filenameString.replaceAll(":", "")) + " :";
+        filenameString = WhitespaceTrimmer.trim(filenameString.replaceAll(":", "")) + " : ";
         filenameLabel.setText(filenameString);
         filenameLabel.setHorizontalAlignment(SwingConstants.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -524,7 +533,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 walletVersion.getLocalisationKey(), walletVersion.getLocalisationKey(), HelpContentsPanel.HELP_WALLET_FORMATS_URL);
 
         MultiBitButton walletFormatLabel = new HelpButton(walletFormatHelpAction, controller);
-        walletFormatLabel.setText(controller.getLocaliser().getString("singleWalletPanel.walletFormat.text"));
+        String walletFormatString = WhitespaceTrimmer.trim(controller.getLocaliser().getString("singleWalletPanel.walletFormat.text").replaceAll(":", "")) + " : ";
+        walletFormatLabel.setText(walletFormatString);
         walletFormatLabel.setBorder(BorderFactory.createEmptyBorder());
         walletFormatLabel.setContentAreaFilled(false);
         walletFormatLabel.setHorizontalAlignment(SwingConstants.LEADING);
@@ -579,9 +589,11 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         walletFormatLabel.setToolTipText(tooltipText);
 
         MultiBitLabel walletTypeLabel = new MultiBitLabel("");
-        walletTypeLabel.setText(controller.getLocaliser().getString("singleWalletPanel.type"));
+        String walletTypeString = WhitespaceTrimmer.trim(controller.getLocaliser().getString("singleWalletPanel.type").replaceAll(":", "")) + " : ";
+
+        walletTypeLabel.setText(walletTypeString);
         walletTypeLabel.setBorder(overlineBorder);
-        walletTypeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        walletTypeLabel.setHorizontalAlignment(SwingConstants.TRAILING);
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;

@@ -100,9 +100,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final String EXAMPLE_LONG_FIELD_TEXT = "1JiM1UyTGqpLqgayxTPbWbcdVeoepmY6pK++++";
     public static final int WIDTH_OF_LONG_FIELDS = 300;
     public static final int WIDTH_OF_AMOUNT_FIELD = 150;
-    public static final int WALLET_WIDTH_DELTA = 30;
+    public static final int WALLET_WIDTH_DELTA = 20;
 
-    private static final int SCROLL_BAR_DELTA = 20;
+    public static final int SCROLL_BAR_DELTA = 20;
 
     public static final int HEIGHT_OF_HEADER = 64;
 
@@ -234,7 +234,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         availableBalanceTextButton.setFocusable(false);
 
-        splitPane.setDividerLocation(calculateDividerPosition());
+        calculateDividerPosition();
  
         MultiBitTabbedPane.setEnableUpdates(true);
         displayView(initialView);
@@ -242,6 +242,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         pack();
 
         setVisible(true);
+
     }
 
     public GenericApplication getApplication() {
@@ -342,7 +343,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         splitPane.setOneTouchExpandable(false);
         splitPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SystemColor.windowBorder));
         splitPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        splitPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -355,7 +355,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.anchor = GridBagConstraints.LINE_START;
         contentPane.add(splitPane, constraints);
 
-        splitPane.setDividerLocation(calculateDividerPosition());
+        calculateDividerPosition();
+        
+        // Cannot get the RTL wallets drawing nicely so switch off adjustment.
+        splitPane.setEnabled(ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         statusBar = new StatusBar(controller, this);
         statusBar.updateOnlineStatusText(online);
@@ -587,9 +590,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         helpMenu.add(menuItem);
 
         // show help contents action
-        MultiBitAction showHelpContentsAction = new MultiBitAction(controller, ImageLoader.HELP_CONTENTS_ICON_FILE,
+        MultiBitAction showHelpContentsAction;
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            showHelpContentsAction = new MultiBitAction(controller, ImageLoader.HELP_CONTENTS_ICON_FILE,
                 "showHelpContentsAction.text", "showHelpContentsAction.tooltip", "showHelpContentsAction.mnemonic",
                 View.HELP_CONTENTS_VIEW);
+        } else {
+            showHelpContentsAction = new MultiBitAction(controller, ImageLoader.HELP_CONTENTS_RTL_ICON_FILE,
+                    "showHelpContentsAction.text", "showHelpContentsAction.tooltip", "showHelpContentsAction.mnemonic",
+                    View.HELP_CONTENTS_VIEW);
+        }
         menuItem = new JMenuItem(showHelpContentsAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -1089,9 +1099,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         });
     }
     
-    private int calculateDividerPosition() {
+    public void calculateDividerPosition() {
         int dividerPosition = SingleWalletPanel.calculateNormalWidth((JComponent) (walletsView)) + WALLET_WIDTH_DELTA;
-        if (((WalletListPanel) walletsView).getScrollPane().isVisible()) {
+        if (((WalletListPanel) walletsView).getScrollPane().getVerticalScrollBar().isVisible()) {
             dividerPosition += SCROLL_BAR_DELTA;
         }
         if (walletsView != null && walletsView.getPreferredSize() != null && walletsView.getPreferredSize().width > dividerPosition) {
@@ -1100,12 +1110,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         
         if (ComponentOrientation.RIGHT_TO_LEFT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
             int width = getWidth();
-            if (width ==0) {
+            if (width == 0) {
                 width = (int) this.getPreferredSize().getWidth();
             }
-            dividerPosition = width - dividerPosition;
+            dividerPosition = width - dividerPosition - WalletListPanel.LEFT_BORDER - WalletListPanel.RIGHT_BORDER - 2;
         } 
-        return dividerPosition;
+        splitPane.setEnabled(true);
+        splitPane.setDividerLocation(dividerPosition);
+        splitPane.setEnabled(false);
     }
 
     public WalletListPanel getWalletsView() {
@@ -1121,5 +1133,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public TickerTablePanel getTickerTablePanel() {
         return tickerTablePanel;
+    }
+
+    public JSplitPane getSplitPane() {
+        return splitPane;
     }
 }

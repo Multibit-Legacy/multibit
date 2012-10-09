@@ -103,7 +103,8 @@ public class StatusBar extends JPanel implements MessageListener {
     
     private static final double TOLERANCE = 0.0000001;
 
-    public static final int ONLINE_LABEL_DELTA = 10;
+    public static final int ONLINE_LABEL_WIDTH_DELTA = 10;
+    public static final int ONLINE_LABEL_HEIGHT_DELTA = 8;
 
     private MultiBitLabel onlineLabel;
     private MultiBitButton statusLabel;
@@ -142,9 +143,6 @@ public class StatusBar extends JPanel implements MessageListener {
         setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         setOpaque(true);
         setBorder(BorderFactory.createMatteBorder(2, 0, 2, 0, ColorAndFontConstants.BACKGROUND_COLOR));
-
-        setMaximumSize(new Dimension(A_LARGE_NUMBER_OF_PIXELS, STATUSBAR_HEIGHT));
-        setMaximumSize(new Dimension(A_SMALL_NUMBER_OF_PIXELS, STATUSBAR_HEIGHT));
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
@@ -199,7 +197,14 @@ public class StatusBar extends JPanel implements MessageListener {
                         getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
                                 controller.getLocaliser().getString("multiBitFrame.errorText"))
                         )
-                + ONLINE_LABEL_DELTA;
+                + ONLINE_LABEL_WIDTH_DELTA;
+
+        int onlineHeight = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + ONLINE_LABEL_HEIGHT_DELTA;
+
+        onlineLabel.setPreferredSize(new Dimension(onlineWidth, onlineHeight));
+        int statusBarHeight = Math.max(STATUSBAR_HEIGHT, onlineHeight);
+        setMaximumSize(new Dimension(A_LARGE_NUMBER_OF_PIXELS, statusBarHeight));
+        setMaximumSize(new Dimension(A_SMALL_NUMBER_OF_PIXELS, statusBarHeight));
 
         syncProgressBar = new JProgressBar(0, 100);
         syncProgressBar.setValue(0);

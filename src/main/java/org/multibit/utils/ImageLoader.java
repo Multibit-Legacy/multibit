@@ -38,7 +38,9 @@ public class ImageLoader {
     public static final String EXCLAMATION_MARK_ICON_FILE = "/images/exclamationMark.png";
     public static final String EXPORT_PRIVATE_KEYS_ICON_FILE = "/images/exportKey.png";
     public static final String HELP_CONTENTS_BIG_ICON_FILE = "/images/helpContentsBig.png";
+    public static final String HELP_CONTENTS_BIG_RTL_ICON_FILE = "/images/helpContentsBigRTL.png";
     public static final String HELP_CONTENTS_ICON_FILE = "/images/helpContents.png";
+    public static final String HELP_CONTENTS_RTL_ICON_FILE = "/images/helpContentsRTL.png";
     public static final String IMPORT_PRIVATE_KEYS_ICON_FILE = "/images/importKey.png";
     public static final String MESSAGES_ICON_FILE = "/images/comment.png";
     public static final String MONEY_ICON_FILE = "/images/money.png";
@@ -59,8 +61,9 @@ public class ImageLoader {
     public static final String SIDE_PANEL_HIDE_RTL_ICON_FILE = "/images/sidePanelHideRTL.png";
     public static final String TICK_ICON_FILE = "/images/tick.png";
     public static final String TRANSACTIONS_ICON_FILE = "/images/transactions.png";
-    public static final String TWISTY_RIGHT_ICON_FILE = "/images/twistyRight.png";
     public static final String TWISTY_DOWN_ICON_FILE = "/images/twistyDown.png";
+    public static final String TWISTY_LEFT_ICON_FILE = "/images/twistyLeft.png";
+    public static final String TWISTY_RIGHT_ICON_FILE = "/images/twistyRight.png";
     public static final String UNDO_ICON_FILE = "/images/undo.png";
     public static final String WALLET_ICON_FILE = "/images/wallet.png";
     public static final String WELCOME_ICON_FILE = "/images/welcome.png";
