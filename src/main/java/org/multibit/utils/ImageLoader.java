@@ -57,7 +57,7 @@ public class ImageLoader {
     public static final String SEND_BITCOIN_ICON_FILE = "/images/sendOut.png";
     public static final String SHAPE_TRIANGLE_ICON_FILE = "/images/shapeTriangle.png";
     public static final String SHAPE_SQUARE_ICON_FILE = "/images/shapeSquare.png";
-    public static final String SHAPE_HEPTAGON_ICON_FILE = "/images/shapeHeptagon.png";
+    public static final String SHAPE_PENTAGON_ICON_FILE = "/images/shapePentagon.png";
     public static final String SHAPE_HEXAGON_ICON_FILE = "/images/shapeHexagon.png";
     public static final String SIDE_PANEL_SHOW_ICON_FILE = "/images/sidePanelShow.png";
     public static final String SIDE_PANEL_SHOW_RTL_ICON_FILE = "/images/sidePanelShowRTL.png";
