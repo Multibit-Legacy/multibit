@@ -162,8 +162,15 @@ public class StatusBar extends JPanel implements MessageListener {
                     if (finalController.getMultiBitService().getChain() != null) {
                         if (finalController.getMultiBitService().getChain().getChainHead() != null) {
                             blockHeight = finalController.getMultiBitService().getChain().getChainHead().getHeight();
-                            onlineLabel.setToolTipText(finalController.getLocaliser().getString("multiBitFrame.numberOfBlocks",
-                                    new Object[] { blockHeight }));
+                            int numberOfPeers = 0;
+                            if ( finalController.getMultiBitService().getPeerGroup() != null && finalController.getMultiBitService().getPeerGroup().getConnectedPeers() != null) {
+                                numberOfPeers = finalController.getMultiBitService().getPeerGroup().getConnectedPeers().size();
+                            }
+                            onlineLabel.setToolTipText(HelpContentsPanel.createMultilineTooltipText(new String[] {
+                                    finalController.getLocaliser().getString("multiBitFrame.numberOfBlocks",
+                                            new Object[] { blockHeight }),
+                                            finalController.getLocaliser().getString("multiBitFrame.connectedTo",
+                                                    new Object[] { numberOfPeers })}));
                         }
                     }
                 }

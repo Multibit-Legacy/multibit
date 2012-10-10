@@ -342,6 +342,8 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
+        log.debug("Firing confidence change in onTransactionConfidenceChanged.");
+        
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onTransactionConfidenceChanged(wallet, transaction);
         }
@@ -535,7 +537,11 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
                         Wallet loopWallet = perWalletModelData.getWallet();
                         if (loopWallet != null) {
                             if (loopWallet.isTransactionRelevant(transaction, true)) {
-                                // the perWalletModelData is marked as dirty
+                                // Fire the transaction confidence changed.
+                                log.debug("Firing confidence change in MultiBitController.onTransaction");
+                                onTransactionConfidenceChanged(loopWallet, transaction);
+                                
+                                // The perWalletModelData is marked as dirty
                                 perWalletModelData.setDirty(true);
                                 if (loopWallet.getTransaction(transaction.getHash()) == null) {
                                     log.debug("MultiBit adding a new pending transaction for the wallet '"

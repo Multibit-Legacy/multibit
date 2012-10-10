@@ -934,15 +934,21 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
-        //log.debug("Transaction confidence changed for tx " + transaction.toString());
-        
-        // If viewing transactions, refresh the screen.
-        if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
-            View currentViewView = viewFactory.getView(controller.getCurrentView());
-            if (currentViewView != null) {
-                currentViewView.displayView();
+         SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                // If viewing transactions, refresh the screen so that transaction confidence icons can update.
+                if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
+                    View currentViewView = viewFactory.getView(controller.getCurrentView());
+                    if (currentViewView != null) {
+                        currentViewView.displayView();
+                        
+                        invalidate();
+                        validate();
+                        repaint();
+                    }
+                }
             }
-        }
+        });
     }
     
 
