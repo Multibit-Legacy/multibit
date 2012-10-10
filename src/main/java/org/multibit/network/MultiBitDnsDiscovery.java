@@ -48,7 +48,7 @@ import com.google.bitcoin.discovery.PeerDiscoveryException;
 public class MultiBitDnsDiscovery implements PeerDiscovery {
     private static final Logger log = LoggerFactory.getLogger(MultiBitDnsDiscovery.class);
 
-    private static final int SLEEP_PERIOD = 2000; // milliseconds
+    private static final int SLEEP_PERIOD = 3000; // milliseconds
     private static final int MAXIMUM_CONNECT_TIME = 60 * 1000; // milliseconds
     private static final int MINIMUM_NUMBER_OF_PEERS_TO_FIND = 4;
 

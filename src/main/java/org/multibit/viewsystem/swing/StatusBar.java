@@ -44,7 +44,9 @@ import java.awt.Insets;
 import java.awt.LayoutManager2;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Locale;
@@ -82,6 +84,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.bitcoin.core.Block;
 
 /**
  * StatusBar. <BR>
@@ -127,7 +131,9 @@ public class StatusBar extends JPanel implements MessageListener {
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
     
-    private JProgressBar syncProgressBar;   
+    private JProgressBar syncProgressBar; 
+    
+    private SimpleDateFormat dateFormatter;
 
     /**
      * Construct a new StatusBar
@@ -147,6 +153,9 @@ public class StatusBar extends JPanel implements MessageListener {
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         final MultiBitController finalController = controller;
+        
+        dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
+
         onlineLabel = new MultiBitLabel("");
         onlineLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         onlineLabel.setOpaque(true);
@@ -162,6 +171,8 @@ public class StatusBar extends JPanel implements MessageListener {
                     if (finalController.getMultiBitService().getChain() != null) {
                         if (finalController.getMultiBitService().getChain().getChainHead() != null) {
                             blockHeight = finalController.getMultiBitService().getChain().getChainHead().getHeight();
+                            Block blockHeader = finalController.getMultiBitService().getChain().getChainHead().getHeader();
+                            Date blockTime = blockHeader.getTime();
                             int numberOfPeers = 0;
                             if ( finalController.getMultiBitService().getPeerGroup() != null && finalController.getMultiBitService().getPeerGroup().getConnectedPeers() != null) {
                                 numberOfPeers = finalController.getMultiBitService().getPeerGroup().getConnectedPeers().size();
@@ -169,6 +180,8 @@ public class StatusBar extends JPanel implements MessageListener {
                             onlineLabel.setToolTipText(HelpContentsPanel.createMultilineTooltipText(new String[] {
                                     finalController.getLocaliser().getString("multiBitFrame.numberOfBlocks",
                                             new Object[] { blockHeight }),
+                                            finalController.getLocaliser().getString("multiBitFrame.blockDate",
+                                                    new Object[] { dateFormatter.format(blockTime) }),
                                             finalController.getLocaliser().getString("multiBitFrame.connectedTo",
                                                     new Object[] { numberOfPeers })}));
                         }
