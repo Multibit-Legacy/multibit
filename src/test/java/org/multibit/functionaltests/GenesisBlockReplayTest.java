@@ -26,6 +26,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.multibit.ApplicationDataDirectoryLocator;
 import org.multibit.Constants;
+import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
@@ -71,6 +72,7 @@ public class GenesisBlockReplayTest extends TestCase {
 
             // Create the controller.
             final MultiBitController controller = new MultiBitController(applicationDataDirectoryLocator);
+            MultiBit.setController(controller);
 
             // Create the model - gets hooked up to controller automatically.
             @SuppressWarnings("unused")

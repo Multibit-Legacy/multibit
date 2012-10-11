@@ -149,11 +149,30 @@ public class MultiBitService {
     public MultiBitService(String walletFilename, MultiBitController controller) {
         this.controller = controller;
 
+        if (controller == null) {
+            throw new IllegalStateException("controller cannot be null");
+        }
+
+        if (controller.getModel() == null) {
+            throw new IllegalStateException("controller.getModel() cannot be null");
+        }
+        
+        if (controller.getApplicationDataDirectoryLocator() == null) {
+            throw new IllegalStateException("controller.getApplicationDataDirectoryLocator() cannot be null");
+        }
+        
+        if (controller.getFileHandler() == null) {
+            throw new IllegalStateException("controller.getFileHandler() cannot be null");
+        }
+        
         networkParameters = controller.getModel().getNetworkParameters();
+        log.debug("Network parameters = " + networkParameters);
         
         try {
             // Load the block chain.
             String filePrefix = getFilePrefix();
+            log.debug("filePrefix = " + filePrefix);
+            
             if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
                 blockchainFilename = filePrefix + BLOCKCHAIN_SUFFIX;
             } else {
