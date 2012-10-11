@@ -1,5 +1,12 @@
 MultiBit release notes.
 
+11 Oct 2012 Versin 0.4.12
++ Farsi/ Persian translation 100%
++ Online/ connecting tooltip now shows date of last block and number of connected peers.
++ Transaction icon visualises propagation of transaction across peers.
++ Various code hardening/ extra logging.
+
+
 05 Oct 2012 Version 0.4.11
 
 User interface

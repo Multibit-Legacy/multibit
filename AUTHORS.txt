@@ -41,6 +41,7 @@ Ipaboo              - Greek
 lzsaver             - Russian
 Jan-steenbergen     - Dutch
 JeppeJ              - Swedish
+JeromeS             - Arabic
 jesusangel          - Spanish
 Jonny Heggheim      - Norwegian
 Katya Rowe          - Russian
@@ -54,6 +55,7 @@ mazi                - Slovenian
 Marx1996xvx         - Polish
 Mats Henricson      - Swedish
 Memory Dealers      - Japanese
+mohammad_rafigh     - Persian
 moole               - Czech
 mrmx                - Spanish
 mrvision            - Spanish
@@ -68,6 +70,7 @@ rbreban             - Spanish
 ronimo              - French
 sasha               - Russian
 spiccioli           - Italian
+stlucifer           - Hindi
 techmix             - Persian
 Technomage          - Finnish
 teknomunk           - Japanese
