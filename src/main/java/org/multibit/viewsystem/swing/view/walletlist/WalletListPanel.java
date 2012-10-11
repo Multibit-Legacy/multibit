@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.view.walletlist;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -119,6 +120,8 @@ public class WalletListPanel extends JPanel implements View, ComponentListener {
             selectWalletPanelByFilename(activePerModelData.getWalletFilename());
         }
         
+        setPreferredSizes();
+        
         invalidate();
         revalidate();
         repaint();
@@ -173,11 +176,28 @@ public class WalletListPanel extends JPanel implements View, ComponentListener {
  
         add(tabbedPane, BorderLayout.CENTER);
         
-        int preferredWidth = Math.max(SingleWalletPanel.calculateNormalWidth(this) + LEFT_BORDER + RIGHT_BORDER, buttonPanel.getPreferredSize().width);
-        if (scrollPane.getVerticalScrollBar().isVisible()) {
-            preferredWidth -= MultiBitFrame.SCROLL_BAR_DELTA;
-        }
-        walletListPanel.setPreferredSize(new Dimension(preferredWidth, walletListPanel.getPreferredSize().height));
+        setPreferredSizes();
+
+    }
+    
+    private void setPreferredSizes() {
+//        // Try to fix scroll bar for RTL.
+//        if (ComponentOrientation.RIGHT_TO_LEFT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+//            int preferredWidth = Math.max(SingleWalletPanel.calculateNormalWidth(this) + LEFT_BORDER + RIGHT_BORDER,
+//                    buttonPanel.getPreferredSize().width);
+//            if (scrollPane.getVerticalScrollBar().isVisible()) {
+//                preferredWidth -= MultiBitFrame.SCROLL_BAR_DELTA;
+//            }
+//            int totalHeight = 0;
+//            for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
+//                if (buttonPanel != null) {
+//                        loopSingleWalletPanel.setPreferredSize(new Dimension(preferredWidth, loopSingleWalletPanel
+//                                .getPreferredSize().height));
+//                }
+//                totalHeight += loopSingleWalletPanel.getPreferredSize().height;
+//            }
+//            walletListPanel.setPreferredSize(new Dimension(preferredWidth, totalHeight));
+//        }        
     }
 
     private JPanel createWalletListPanel() {
@@ -185,7 +205,6 @@ public class WalletListPanel extends JPanel implements View, ComponentListener {
         walletListPanel.setLayout(new GridBagLayout());
         walletListPanel.setOpaque(false);
         walletListPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-        //walletListPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 
         // get the wallets from the model
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
@@ -394,6 +413,8 @@ public class WalletListPanel extends JPanel implements View, ComponentListener {
 
         walletListPanel.setPreferredSize(new Dimension(preferredWalletWidth, walletListPanel.getPreferredSize().height));
         mainFrame.calculateDividerPosition();
+        
+        setPreferredSizes();
     }
 
     @Override

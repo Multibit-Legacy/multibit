@@ -104,7 +104,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
                     tabLabel.setToolTipText(selectedView.getViewTooltip());
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // Do not let errors percolate out of tab display.
             log.error(e.getClass().getName() + " " + e.getMessage());
         }

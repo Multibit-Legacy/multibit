@@ -189,20 +189,22 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
                     new Object[] { NUMBER_OF_DAYS_TO_LOOK_BACK, unitOfTime })
                     + currencyUnitSuffix;
 
-            chart.setTitle(chartTitle);
-            chart.setXAxisTitle(xAxisLabel);
-            chart.setYAxisTitle(balanceLabel);
             chart.setGridlinesVisible(false);
             chart.setXAxisTicksVisible(true);
-            chart.setXAxisTitleVisible(true);
             chart.setLegendVisible(false);
-
+            
             chart.setBackgroundColor(ColorAndFontConstants.BACKGROUND_COLOR);
             chart.setTitleFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(2));
             chart.setAxisLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
             chart.setTickLabelsFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(-2));
-
             chart.setDateFormatter(DATE_FORMAT);
+
+            chart.setTitle(chartTitle);
+            chart.setXAxisTitle(xAxisLabel);
+
+            // Commented out as causes graph not to render.
+            //chart.setYAxisTitleVisible(true);
+            //chart.setYAxisTitle(balanceLabel);
 
             com.xeiam.xchart.Series series = chart.addDateSeries(balanceLabel, xData, yData);
             series.setLineColor(SeriesColor.BLUE);

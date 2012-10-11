@@ -1127,7 +1127,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             if (width == 0) {
                 width = (int) this.getPreferredSize().getWidth();
             }
-            dividerPosition = width - dividerPosition - WalletListPanel.LEFT_BORDER - WalletListPanel.RIGHT_BORDER - 2;
+            dividerPosition = width - dividerPosition; // - WalletListPanel.LEFT_BORDER - WalletListPanel.RIGHT_BORDER - 2;
         } 
         splitPane.setEnabled(true);
         splitPane.setDividerLocation(dividerPosition);

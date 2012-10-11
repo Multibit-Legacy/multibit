@@ -62,6 +62,7 @@ public enum FontSizer {
         }
 
         Font font = new Font(fontName, fontStyle, unadjustedFontSize);
+        //Font font = new Font(Font.SANS_SERIF, Font.BOLD, 12);
         return font;
     }
     

@@ -155,8 +155,13 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         myRoundedPanel.setLayout(new GridBagLayout());
         myRoundedPanel.setOpaque(false);
         myRoundedPanel.setPreferredSize(new Dimension(normalWidth, normalHeight));
-        myRoundedPanel.setMinimumSize(new Dimension(calculateMinimumWidth(normalWidth), normalHeight));
-        myRoundedPanel.setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            myRoundedPanel.setMinimumSize(new Dimension(calculateMinimumWidth(normalWidth), normalHeight));
+        } else {
+            myRoundedPanel.setMinimumSize(new Dimension(normalWidth, normalHeight));
+        }
+
+         myRoundedPanel.setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
 
         setOpaque(true);
         setFocusable(true);
@@ -306,11 +311,15 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     public static int calculateNormalWidth(JComponent component) {
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
         FontMetrics fontMetrics = component.getFontMetrics(font);
-        return (int) (fontMetrics.getMaxAdvance() * WIDTH_OF_TEXT_FIELD * 0.66 + WIDTH_DELTA);
+        return (int) (fontMetrics.getMaxAdvance() * WIDTH_OF_TEXT_FIELD * 0.75 + WIDTH_DELTA);
     }
     
-    private static int calculateMinimumWidth(int normalWidth) {
-        return (int)Math.max(0, normalWidth * MINIMUM_WIDTH_SCALE_FACTOR - MIN_WIDTH_SCROLLBAR_DELTA);            
+    private int calculateMinimumWidth(int normalWidth) {
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            return (int)Math.max(0, normalWidth * MINIMUM_WIDTH_SCALE_FACTOR - MIN_WIDTH_SCROLLBAR_DELTA);            
+        } else {
+            return normalWidth;
+        }
     }
 
     @Override
@@ -333,7 +342,11 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 twistyLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.twistyDownText"));
                 detailPanel.setVisible(true);
                 setPreferredSize(new Dimension(normalWidth, expandedHeight));
-                setMinimumSize(new Dimension(calculateMinimumWidth(normalWidth), expandedHeight));
+                if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+                    setMinimumSize(new Dimension(calculateMinimumWidth(normalWidth), expandedHeight));
+                } else {
+                    setMinimumSize(new Dimension(normalWidth, expandedHeight));
+                }
                 setMaximumSize(new Dimension(normalWidth * 2, expandedHeight));
             } else {
                 if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()) == ComponentOrientation.LEFT_TO_RIGHT) {
@@ -344,7 +357,11 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 twistyLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.twistyRightText"));
                 detailPanel.setVisible(false);
                 setPreferredSize(new Dimension(normalWidth, normalHeight));
-                setMinimumSize(new Dimension(calculateMinimumWidth(normalWidth), normalHeight));
+                if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+                    setMinimumSize(new Dimension(calculateMinimumWidth(normalWidth), normalHeight));
+                } else {
+                    setMinimumSize(new Dimension(normalWidth, normalHeight));                    
+                }
                 setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
             }
 
