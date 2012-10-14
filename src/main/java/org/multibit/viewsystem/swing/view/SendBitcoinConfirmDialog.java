@@ -171,7 +171,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints.weightx = 0.5;
         constraints.weighty = 0.2;
         constraints.gridwidth = 1;
-        constraints.gridheight = 7;
+        constraints.gridheight = 5;
         constraints.anchor = GridBagConstraints.CENTER;
         JLabel bigIconLabel = new JLabel(bigIcon);
         mainPanel.add(bigIconLabel, constraints);
