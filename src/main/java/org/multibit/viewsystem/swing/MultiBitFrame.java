@@ -70,6 +70,7 @@ import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.SendBitcoinConfirmDialog;
 import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -933,7 +934,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         recreateAllViews(false);
     }
 
-    public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
+    public void onTransactionConfidenceChanged(Wallet wallet, final Transaction transaction) {
          SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 // If viewing transactions, refresh the screen so that transaction confidence icons can update.
@@ -947,6 +948,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         repaint();
                     }
                 }
+                SendBitcoinConfirmDialog.updateTransactionConfidence(transaction);
             }
         });
     }

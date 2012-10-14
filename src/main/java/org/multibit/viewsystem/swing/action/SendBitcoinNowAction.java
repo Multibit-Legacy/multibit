@@ -52,6 +52,8 @@ public class SendBitcoinNowAction extends AbstractAction {
 
     private MultiBitController controller;
     private SendBitcoinConfirmDialog sendBitcoinConfirmView;
+    
+    private Transaction transaction;
 
     private final static int MAX_LENGTH_OF_ERROR_MESSAGE = 70;
 
@@ -117,7 +119,7 @@ public class SendBitcoinNowAction extends AbstractAction {
         try {
             log.debug("Sending from wallet " + perWalletModelData.getWalletFilename() + ", amount = " + sendAmount + ", fee = "
                     + fee + " to address = " + sendAddress);
-            Transaction transaction = controller.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee);
+            transaction = controller.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee);
             if (transaction == null) {
                 // a null transaction returned indicates there was not
                 // enough money (in spite of our validation)
@@ -175,5 +177,9 @@ public class SendBitcoinNowAction extends AbstractAction {
         log.debug("firing fireRecreateAllViews...");
         controller.fireRecreateAllViews(false);
         log.debug("firing fireRecreateAllViews...done");
+    }
+
+    public Transaction getTransaction() {
+        return transaction;
     }
 }

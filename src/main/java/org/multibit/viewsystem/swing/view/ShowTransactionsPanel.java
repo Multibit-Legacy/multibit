@@ -83,7 +83,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
     private static final int MINIMUM_ICON_HEIGHT = 18;
 
-    private static final String PROGRESS_0_ICON_FILE = "/images/circleProgress0.png";
+    public static final String PROGRESS_0_ICON_FILE = "/images/circleProgress0.png";
     private static final String PROGRESS_1_ICON_FILE = "/images/circleProgress1.png";
     private static final String PROGRESS_2_ICON_FILE = "/images/circleProgress2.png";
     private static final String PROGRESS_3_ICON_FILE = "/images/circleProgress3.png";

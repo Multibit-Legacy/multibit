@@ -26,6 +26,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
@@ -39,6 +40,9 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.TransactionConfidence;
+
 /**
  * The send bitcoin confirm dialog
  */
@@ -46,7 +50,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
 
     private static final long serialVersionUID = 191435612345057705L;
 
-    private static final int HEIGHT_DELTA = 125;
+    private static final int HEIGHT_DELTA = 150;
     private static final int WIDTH_DELTA = 250;
     
     private MultiBitFrame mainFrame;
@@ -57,16 +61,34 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
     private MultiBitLabel sendLabelText;
     private MultiBitLabel sendAmountText;
     private MultiBitLabel sendFeeText;
-
+    
     private String sendAddress;
     private String sendLabel;
     private String sendAmount;
     private String sendFee;
 
-    private MultiBitLabel confirmText1, confirmText2;
-    
+    private MultiBitLabel confirmText1;
+    private MultiBitLabel confirmText2;
+       
     private MultiBitButton sendButton;
     private MultiBitButton cancelButton;
+    private SendBitcoinNowAction sendBitcoinNowAction;
+    
+    private static SendBitcoinConfirmDialog thisDialog = null;
+    
+    private static ImageIcon shapeTriangleIcon;
+    private static ImageIcon shapeSquareIcon;
+    private static ImageIcon shapeHeptagonIcon;
+    private static ImageIcon shapeHexagonIcon;
+    private static ImageIcon progress0Icon;
+    
+    static {
+        shapeTriangleIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_TRIANGLE_ICON_FILE);
+        shapeSquareIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_SQUARE_ICON_FILE);
+        shapeHeptagonIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_PENTAGON_ICON_FILE);
+        shapeHexagonIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_HEXAGON_ICON_FILE);
+        progress0Icon = ImageLoader.createImageIcon(ShowTransactionsPanel.PROGRESS_0_ICON_FILE);
+    }
 
     /**
      * Creates a new {@link SendBitcoinConfirmDialog}.
@@ -85,6 +107,8 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         
         cancelButton.requestFocusInWindow();
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        
+        thisDialog = this;
     }
 
     /**
@@ -93,7 +117,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
     public void initUI() {
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         
-        int minimumHeight = fontMetrics.getHeight() * 8 + HEIGHT_DELTA;
+        int minimumHeight = fontMetrics.getHeight() * 10 + HEIGHT_DELTA;
         int minimumWidth = Math.max(fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT), fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinConfirmView.message"))) + WIDTH_DELTA;
         setMinimumSize(new Dimension(minimumWidth, minimumHeight));
         positionDialogRelativeToParent(this, 0.5D, 0.47D);
@@ -147,7 +171,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints.weightx = 0.5;
         constraints.weighty = 0.2;
         constraints.gridwidth = 1;
-        constraints.gridheight = 5;
+        constraints.gridheight = 7;
         constraints.anchor = GridBagConstraints.CENTER;
         JLabel bigIconLabel = new JLabel(bigIcon);
         mainPanel.add(bigIconLabel, constraints);
@@ -186,6 +210,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints2.weightx = 0.3;
         constraints2.weighty = 0.1;
         constraints2.gridwidth = 1;
+        constraints2.gridheight = 1;
         constraints2.anchor = GridBagConstraints.LINE_END;
         detailPanel.add(sendAddressLabel, constraints2);
 
@@ -286,6 +311,16 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints2.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(sendFeeText, constraints2);
      
+        JLabel filler3 = new JLabel();
+        constraints2.fill = GridBagConstraints.HORIZONTAL;
+        constraints2.gridx = 0;
+        constraints2.gridy = 5;
+        constraints2.weightx = 0.05;
+        constraints2.weighty = 0.05;
+        constraints2.gridwidth = 1;
+        constraints2.anchor = GridBagConstraints.LINE_START;
+        detailPanel.add(filler3, constraints2);
+     
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
         constraints.fill = GridBagConstraints.NONE;
@@ -302,7 +337,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         cancelButton = new MultiBitButton(cancelAction, controller);
         buttonPanel.add(cancelButton);
 
-        SendBitcoinNowAction sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this, ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
+        sendBitcoinNowAction = new SendBitcoinNowAction(mainFrame, controller, this, ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE));
         sendButton = new MultiBitButton(sendBitcoinNowAction, controller);
         buttonPanel.add(sendButton);
 
@@ -317,7 +352,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints.anchor = GridBagConstraints.LINE_END;
         mainPanel.add(confirmText1, constraints);
         
-        JLabel filler3 = new JLabel();
+        JLabel filler4 = new JLabel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 5;
         constraints.gridy = 8;
@@ -325,7 +360,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        mainPanel.add(filler3, constraints);
+        mainPanel.add(filler4, constraints);
 
         confirmText2 = new MultiBitLabel(" ");
         constraints.fill = GridBagConstraints.NONE;
@@ -337,7 +372,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints.anchor = GridBagConstraints.LINE_END;
         mainPanel.add(confirmText2, constraints);
         
-        JLabel filler4 = new JLabel();
+        JLabel filler5 = new JLabel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 5;
         constraints.gridy = 9;
@@ -345,7 +380,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        mainPanel.add(filler4, constraints);
+        mainPanel.add(filler5, constraints);
     }
 
     public void setSendConfirmText(String confirm1, String confirm2) {
@@ -357,4 +392,71 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         
         cancelButton.setVisible(false);
     }
+    
+    public static void updateTransactionConfidence(Transaction transactionWithChangedConfidence) {
+        if (transactionWithChangedConfidence == null) {
+            return;
+        }
+        if (thisDialog != null) {
+            MultiBitLabel confirmText2 = thisDialog.getConfirmText2();
+            if (confirmText2 != null) {
+                if (thisDialog.getSendBitcoinNowAction() != null) {
+                    Transaction sentTransaction = thisDialog.getSendBitcoinNowAction().getTransaction();
+                    if (sentTransaction != null && sentTransaction.getHash().equals(transactionWithChangedConfidence.getHash())) {
+                        confirmText2.setText(thisDialog.getConfidenceToolTip(transactionWithChangedConfidence.getConfidence()));
+                        confirmText2.setIcon(thisDialog.getConfidenceIcon(transactionWithChangedConfidence.getConfidence()));        
+                    }
+                }
+            }
+        }
+    }
+    
+    private String getConfidenceToolTip(TransactionConfidence confidence) {
+        if (confidence != null && confidence.getBroadcastBy() != null) {
+            int peers = confidence.getBroadcastBy().size();
+            StringBuilder builder = new StringBuilder();
+            if (peers > 0) {
+                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy") + " ");
+                builder.append(peers);
+                if (peers > 1)
+                    builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peers") + ".");
+                else
+                    builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peer") + ".");
+            }
+            
+            return builder.toString();           
+        } else {
+            return "";
+        }
+    }
+    
+    private ImageIcon getConfidenceIcon(TransactionConfidence confidence) {
+        // By default return a triangle which indicates the least known.
+        ImageIcon iconToReturn = shapeTriangleIcon;
+        
+        if (confidence != null && confidence.getBroadcastBy() != null) {
+            int numberOfPeers = confidence.getBroadcastBy().size();
+            if (numberOfPeers >= 4) {
+                return progress0Icon;
+            } else {
+                switch (numberOfPeers) {
+                case 0 : iconToReturn = shapeTriangleIcon; break;
+                case 1 : iconToReturn = shapeSquareIcon; break;
+                case 2 : iconToReturn = shapeHeptagonIcon; break;
+                case 3 : iconToReturn = shapeHexagonIcon; break;
+                default:
+                    iconToReturn = shapeTriangleIcon; 
+                }
+            }
+        }
+        return iconToReturn;
+    }
+
+    public SendBitcoinNowAction getSendBitcoinNowAction() {
+        return sendBitcoinNowAction;
+    }
+
+    public MultiBitLabel getConfirmText2() {
+        return confirmText2;
+    }  
 }
