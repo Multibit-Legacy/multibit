@@ -219,11 +219,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         localisationKeyConstantToKeyMap = new HashMap<String, String>();
         populateLocalisationMap();
 
-        String showSidePanelText = controller.getModel().getUserPreference(MultiBitModel.SHOW_SIDE_PANEL);
-        if (Boolean.TRUE.toString().equals(showSidePanelText)) {
-            showSidePanel = true;
-        }
-
         initUI();
 
         labelTextArea.requestFocusInWindow();
@@ -288,7 +283,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         String showSidePanelText = controller.getModel().getUserPreference(MultiBitModel.SHOW_SIDE_PANEL);
-        if (Boolean.TRUE.toString().equals(showSidePanelText)) {
+        if (!Boolean.FALSE.toString().equals(showSidePanelText)) {
             showSidePanel = true;
         }
 
@@ -690,6 +685,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -941,6 +938,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         qrCodeScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         qrCodeScrollPane.setBorder(BorderFactory.createEmptyBorder());
         qrCodeScrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
+        qrCodeScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        qrCodeScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+
 
         panel.add(qrCodeScrollPane, constraints);
 

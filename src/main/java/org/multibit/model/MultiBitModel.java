@@ -76,6 +76,8 @@ public class MultiBitModel {
 
     public static final String LOOK_AND_FEEL = "lookAndFeel";
     
+    public static final int SCROLL_INCREMENT = 12;
+    
     // Currency ticker.
     public static final String TICKER_SHOW = "tickerShow";
     public static final String TICKER_COLUMNS_TO_SHOW = "tickerColumnsToShow";

@@ -41,6 +41,7 @@ import javax.swing.JScrollPane;
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
+import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletTableData;
 import org.multibit.utils.ImageLoader;
@@ -337,6 +338,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         labelScrollPane.setOpaque(true);
         labelScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         labelScrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        labelScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        labelScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 5;
@@ -375,6 +378,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailScrollPane.setOpaque(true);
         detailScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         detailScrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        detailScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        detailScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
 
         detailPanel.add(detailScrollPane, constraints);
 

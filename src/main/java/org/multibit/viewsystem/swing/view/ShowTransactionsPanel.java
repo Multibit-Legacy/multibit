@@ -52,6 +52,7 @@ import javax.swing.table.TableRowSorter;
 
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletTableData;
 import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
@@ -219,6 +220,8 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
