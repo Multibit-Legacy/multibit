@@ -493,22 +493,24 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
     }
 
     private String getConfidenceToolTip(TransactionConfidence confidence) {
+        int peers = 0;
         if (confidence != null && confidence.getBroadcastBy() != null) {
-            int peers = confidence.getBroadcastBy().size();
-            StringBuilder builder = new StringBuilder();
-            if (peers > 0) {
-                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy") + " ");
-                builder.append(peers);
-                if (peers > 1)
-                    builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peers") + ".");
-                else
-                    builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peer") + ".");
-            }
-
-            return builder.toString();
-        } else {
-            return "";
+            peers = confidence.getBroadcastBy().size();
         }
+        StringBuilder builder = new StringBuilder();
+        if (peers == 0) {
+            builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenByUnknownNumberOfPeers"));
+        } else {
+            builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy") + " ");
+            builder.append(peers);
+            if (peers > 1)
+                builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peers") + ".");
+            else
+                builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peer") + ".");
+        }
+
+        return builder.toString();
+
     }
 
     private ImageIcon getConfidenceIcon(TransactionConfidence confidence) {
