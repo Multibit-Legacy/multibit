@@ -164,6 +164,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private Timer fileChangeTimer;
 
     private Timer tickerTimer;
+    private TickerTimerTask tickerTimerTask;
 
     private JPanel headerPanel;
 
@@ -221,7 +222,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Initialise the ticker.
         tickerTimer = new Timer();
-        tickerTimer.schedule(new TickerTimerTask(controller, this), TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
+        tickerTimerTask = new TickerTimerTask(controller, this);
+        tickerTimer.schedule(tickerTimerTask, TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
 
         estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString(model.getActiveWalletEstimatedBalance(),
                 true, false));
@@ -1153,5 +1155,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public JSplitPane getSplitPane() {
         return splitPane;
+    }
+
+    public TickerTimerTask getTickerTimerTask() {
+        return tickerTimerTask;
     }
 }

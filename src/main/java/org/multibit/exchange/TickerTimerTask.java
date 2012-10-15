@@ -79,38 +79,43 @@ public class TickerTimerTask extends TimerTask {
     public void run() {
         try {
             // Create exchange.
-            if (mtGox == null) {
-                log.debug("mtGox is null ... creating exchange ...");
-                createExchange();
-                log.debug("... done. mtGox exchange = " + mtGox);
+            synchronized(this) {
+                if (mtGox == null) {
+                    log.debug("mtGox is null ... creating exchange ...");
+                    createExchange();
+                    log.debug("... done. mtGox exchange = " + mtGox);
+                }
             }
             
             if (marketDataService != null) {
                 if (exchangeSymbols != null) {
-                    for (CurrencyPair loopSymbolPair : exchangeSymbols) {
-                        // get symbol ticker if it is one of the currencies we
-                        // are interested in
-                        // (this is to save hitting the server for ever currency
-                        boolean getItFromTheServer = false;
-                        String[] currenciesWeAreInterestedIn = controller.getModel().getExchangeData()
-                                .getCurrenciesWeAreInterestedIn();
-                        if (currenciesWeAreInterestedIn != null) {
-                            for (int i = 0; i < currenciesWeAreInterestedIn.length; i++) {
-                                if (loopSymbolPair.counterCurrency.equals(currenciesWeAreInterestedIn[i])) {
-                                    getItFromTheServer = true;
-                                    break;
+                    // Only get data from server if ticker is being shown.
+                    if (Boolean.TRUE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW))) {
+                        for (CurrencyPair loopSymbolPair : exchangeSymbols) {
+                            // Get symbol ticker if it is one of the currencies
+                            // we are interested in.
+                            // (This is to save hitting the server for ever currency).
+                            boolean getItFromTheServer = false;
+                            String[] currenciesWeAreInterestedIn = controller.getModel().getExchangeData()
+                                    .getCurrenciesWeAreInterestedIn();
+                            if (currenciesWeAreInterestedIn != null) {
+                                for (int i = 0; i < currenciesWeAreInterestedIn.length; i++) {
+                                    if (loopSymbolPair.counterCurrency.equals(currenciesWeAreInterestedIn[i])) {
+                                        getItFromTheServer = true;
+                                        break;
+                                    }
                                 }
-                            }
-                            if (getItFromTheServer) {
-                                Ticker loopTicker = marketDataService.getTicker(loopSymbolPair.baseCurrency,loopSymbolPair.counterCurrency);
-                                BigMoney last = loopTicker.getLast();
-                                BigMoney bid = loopTicker.getBid();
-                                BigMoney ask = loopTicker.getAsk();
-                                //log.debug("TickerTimerTask - Current exchange rate for " + loopSymbolPair.toString()
-                                //        + ": " + last + ", bid = " + bid + ", ask = " + ask);
-                                controller.getModel().getExchangeData().setLastPrice(loopSymbolPair.counterCurrency, last);
-                                controller.getModel().getExchangeData().setLastBid(loopSymbolPair.counterCurrency, bid);
-                                controller.getModel().getExchangeData().setLastAsk(loopSymbolPair.counterCurrency, ask);
+                                if (getItFromTheServer) {
+                                    Ticker loopTicker = marketDataService.getTicker(loopSymbolPair.baseCurrency,
+                                            loopSymbolPair.counterCurrency);
+                                    BigMoney last = loopTicker.getLast();
+                                    BigMoney bid = loopTicker.getBid();
+                                    BigMoney ask = loopTicker.getAsk();
+
+                                    controller.getModel().getExchangeData().setLastPrice(loopSymbolPair.counterCurrency, last);
+                                    controller.getModel().getExchangeData().setLastBid(loopSymbolPair.counterCurrency, bid);
+                                    controller.getModel().getExchangeData().setLastAsk(loopSymbolPair.counterCurrency, ask);
+                                }
                             }
                         }
                     }
@@ -127,11 +132,11 @@ public class TickerTimerTask extends TimerTask {
         }
     }
     
-    private void createExchange() {
+    public void createExchange() {
         try {
-            // Demonstrate the public market data service
+            // Demonstrate the public market data service.
             // Use the factory to get the version 1 MtGox exchange API using default
-            // settings
+            // settings.
 
             mtGox = ExchangeFactory.INSTANCE.createExchange("com.xeiam.xchange.mtgox.v1.MtGoxExchange");
             log.debug("mtGox = " + mtGox);
@@ -160,5 +165,9 @@ public class TickerTimerTask extends TimerTask {
         } catch (NullPointerException e) {
             log.error(e.getClass().getName() + " " + e.getMessage());
         }
+    }
+
+    public Exchange getMtGox() {
+        return mtGox;
     }
 }

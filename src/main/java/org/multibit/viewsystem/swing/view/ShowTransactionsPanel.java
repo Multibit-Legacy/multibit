@@ -442,18 +442,25 @@ public class ShowTransactionsPanel extends JPanel implements View {
             // By default return a triangle which indicates the least known.
             ImageIcon iconToReturn = shapeTriangleIcon;
             
-            if (confidence != null && confidence.getBroadcastBy() != null) {
-                int numberOfPeers = confidence.getBroadcastBy().size();
-                if (numberOfPeers >= 4) {
+            
+            if (confidence != null) {
+                if (confidence.getConfidenceType() == ConfidenceType.BUILDING) {
                     return progress0Icon;
-                } else {
-                    switch (numberOfPeers) {
-                    case 0 : iconToReturn = shapeTriangleIcon; break;
-                    case 1 : iconToReturn = shapeSquareIcon; break;
-                    case 2 : iconToReturn = shapeHeptagonIcon; break;
-                    case 3 : iconToReturn = shapeHexagonIcon; break;
-                    default:
-                        iconToReturn = shapeTriangleIcon; 
+                }
+            
+                if (confidence.getBroadcastBy() != null) {
+                    int numberOfPeers = confidence.getBroadcastBy().size();
+                    if (numberOfPeers >= 4) {
+                        return progress0Icon;
+                    } else {
+                        switch (numberOfPeers) {
+                        case 0 : iconToReturn = shapeTriangleIcon; break;
+                        case 1 : iconToReturn = shapeSquareIcon; break;
+                        case 2 : iconToReturn = shapeHeptagonIcon; break;
+                        case 3 : iconToReturn = shapeHexagonIcon; break;
+                        default:
+                            iconToReturn = shapeTriangleIcon; 
+                        }
                     }
                 }
             }
