@@ -45,6 +45,7 @@ import org.multibit.platform.listener.GenericQuitResponse;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
+import org.multibit.viewsystem.swing.view.SendBitcoinConfirmDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -286,6 +287,10 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         if (peerCount >= 1) {
             setOnlineStatus(StatusEnum.ONLINE);
         }
+        if (getModel() != null) {
+            getModel().setNumberOfConnectedPeers(peerCount);
+        }   
+        SendBitcoinConfirmDialog.updateDialog(null);
     }
 
     public void onPeerDisconnected(Peer peer, int peerCount) {
@@ -293,6 +298,10 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         if (peerCount == 0) {
            setOnlineStatus(StatusEnum.CONNECTING);
         }
+        if (getModel() != null) {
+            getModel().setNumberOfConnectedPeers(peerCount);
+        } 
+        SendBitcoinConfirmDialog.updateDialog(null);
     }
 
     public void setOnlineStatus(StatusEnum statusEnum) {

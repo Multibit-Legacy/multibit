@@ -101,6 +101,8 @@ public class MultiBitModel {
     public static final String SHOW_SIDE_PANEL = "showSidePanel";
     public static final String DISPLAY_AS_SWATCH = "displayAsSwatch";
     public static final String DISPLAY_AS_QR_CODE = "displayAsQRcode";
+    
+    public static final int MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED = 1;
 
     // Open bitcoin URI.
     public static final String OPEN_URI_SHOW_DIALOG = "openUriShowDialog";
@@ -204,6 +206,13 @@ public class MultiBitModel {
      */
     private ExchangeData exchangeData = new ExchangeData(); // new up an empty ExchangeData object
   
+    public static final int UNKNOWN_NUMBER_OF_CONNECTD_PEERS = -1;
+    
+    /**
+     * The number of peers connected.
+     */
+    private int numberOfConnectedPeers = UNKNOWN_NUMBER_OF_CONNECTD_PEERS;
+    
     public MultiBitModel(MultiBitController controller) {
         this(controller, new Properties());
     }
@@ -848,5 +857,13 @@ public class MultiBitModel {
 	public boolean thereIsNoActiveWallet() {
         return activeWalletModelData == null
                 || "".equals(activeWalletModelData.getWalletFilename()) || activeWalletModelData.getWalletFilename() == null;
-	}    
+	}
+
+    public int getNumberOfConnectedPeers() {
+        return numberOfConnectedPeers;
+    }
+
+    public void setNumberOfConnectedPeers(int numberOfConnectedPeers) {
+        this.numberOfConnectedPeers = numberOfConnectedPeers;
+    }    
 }

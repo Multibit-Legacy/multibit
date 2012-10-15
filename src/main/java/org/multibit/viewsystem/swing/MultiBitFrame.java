@@ -948,7 +948,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         repaint();
                     }
                 }
-                SendBitcoinConfirmDialog.updateTransactionConfidence(transaction);
+                SendBitcoinConfirmDialog.updateDialog(transaction);
             }
         });
     }
