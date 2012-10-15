@@ -213,8 +213,10 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             }
         }
         if (confidence.getConfidenceType() == ConfidenceType.DEAD) {
-            Sha256Hash overridingHash = confidence.getOverridingTransaction().getHash();
-            confidenceBuilder.setOverridingTransaction(hashToByteString(overridingHash));
+            if (confidence.getOverridingTransaction() != null) {
+                Sha256Hash overridingHash = confidence.getOverridingTransaction().getHash();
+                confidenceBuilder.setOverridingTransaction(hashToByteString(overridingHash));
+            }
         }
         for (PeerAddress address : confidence.getBroadcastBy()) {
             Protos.PeerAddress proto = Protos.PeerAddress.newBuilder()
