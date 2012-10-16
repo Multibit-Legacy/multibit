@@ -46,6 +46,8 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Transaction;
 import com.xeiam.xchart.Chart;
@@ -58,6 +60,8 @@ import com.xeiam.xchart.XChartPanel;
  * The Charts view.
  */
 public class ChartsPanel extends JPanel implements View, ComponentListener {
+
+    private Logger log = LoggerFactory.getLogger(ChartsPanel.class);
 
     private static final long serialVersionUID = 191352212345998705L;
 
@@ -165,16 +169,14 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
                 }
             } else {
                 if (chartDataCollection == null || chartDataCollection.size() == 0) {
-                    System.out.println("chartDataCollection is null or empty");
+                    log.debug("chartDataCollection is null or empty");
 
                     JPanel chartPanel = new JPanel();
                     chartPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
                     chartPanel.setOpaque(true);
                     return chartPanel;
                 } else {
-                    for (ChartData chartData : chartDataCollection) {
-                        //System.out.println(chartData.toString());
-
+                    for (ChartData chartData : chartDataCollection)  {
                         if (chartData != null && chartData.getDate() != null && chartData.getValue() != null) {
                             xData.add(chartData.getDate());
                             yData.add(chartData.getValue().doubleValue() / NUMBER_OF_SATOSHI_IN_ONE_BTC);

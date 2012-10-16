@@ -20,7 +20,6 @@ import javax.swing.ToolTipManager;
 import javax.swing.plaf.TabbedPaneUI;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -62,9 +61,6 @@ public class MultiBitTabbedPane extends JTabbedPane {
     
     public void setSelectedIndex(int index) {
         super.setSelectedIndex(index);
-
-        // System.out.println("MultiBitTabbedPane. Selecting tab '" + index +
-        // "', enableUpdates = " + enableUpdates );
 
         if (!enableUpdates) {
             return;

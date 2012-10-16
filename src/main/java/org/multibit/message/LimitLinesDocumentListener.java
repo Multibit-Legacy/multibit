@@ -4,6 +4,10 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
 
+import org.multibit.controller.MultiBitController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  *  A class to control the maximum number of lines to be stored in a Document
  *
@@ -18,6 +22,8 @@ import javax.swing.text.*;
 public class LimitLinesDocumentListener implements DocumentListener {
     private int maximumLines;
     private boolean isRemoveFromStart;
+
+    private Logger log = LoggerFactory.getLogger(LimitLinesDocumentListener.class);
 
     /*
      * Specify the number of lines to be stored in the Document. Extra lines
@@ -104,7 +110,7 @@ public class LimitLinesDocumentListener implements DocumentListener {
         try {
             document.remove(0, end);
         } catch (BadLocationException ble) {
-            System.out.println(ble);
+            log.debug(ble.getClass().getName() + " " + ble.getMessage());
         }
     }
 
@@ -122,7 +128,7 @@ public class LimitLinesDocumentListener implements DocumentListener {
         try {
             document.remove(start - 1, end - start);
         } catch (BadLocationException ble) {
-            System.out.println(ble);
+            log.debug(ble.getClass().getName() + " " + ble.getMessage());
         }
     }
 }

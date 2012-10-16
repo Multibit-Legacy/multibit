@@ -15,7 +15,6 @@
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.ComponentOrientation;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 
@@ -26,6 +25,8 @@ import javax.swing.ImageIcon;
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.view.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.components.JFontChooser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This {@link Action} represents the choose font action
@@ -36,6 +37,8 @@ public class ChooseFontAction extends AbstractAction {
 
     private MultiBitController controller;
     private ShowPreferencesPanel showPreferencesPanel;
+
+    private Logger log = LoggerFactory.getLogger(ChooseFontAction.class);
 
     /**
      * Creates a new {@link ChooseFontAction}.
@@ -60,7 +63,7 @@ public class ChooseFontAction extends AbstractAction {
         int result = fontChooser.showDialog(showPreferencesPanel);
         if (result == JFontChooser.OK_OPTION) {
             Font font = fontChooser.getSelectedFont();
-            System.out.println("Selected Font : " + font);
+            log.debug("Selected Font : " + font);
             showPreferencesPanel.setSelectedFont(font);
         }
     }
