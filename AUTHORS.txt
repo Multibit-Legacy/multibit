@@ -21,7 +21,7 @@ bitcoinspot         - Dutch
 corn3               - Portuguese
 D4CH                - Danish
 damnek              - Dutch
-druhy               - Slovak
+druhy               - Slovak, French, German
 DutchBrat           - Dutch
 Emin Gun Sirer      - Turkish
 Ermo                - Italian
@@ -35,6 +35,7 @@ guillo.92199        - French
 gulaschkanone       - German
 guy46               - Portuguese
 haritosh            - Hindi
+Hiera               - Polish
 HostFat             - Italian
 ildubbioso          - Italian
 Ipaboo              - Greek
@@ -67,6 +68,7 @@ pginvest            - Portuguese
 Piotr Waskiewicz    - Polish
 raymccarthy         - Swedish
 rbreban             - Spanish
+robsned             - Hindi
 ronimo              - French
 sasha               - Russian
 spiccioli           - Italian

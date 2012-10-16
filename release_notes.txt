@@ -1,5 +1,14 @@
 MultiBit release notes.
 
+17 Oct 2012 Version 0.4.13
++ Send confirm dialog shows peer propagation
++ Reset blockchain and transactions bug fix
++ Charts panel bug fix
++ Mouse scroll wheel bug fix (hopefully)
++ Fix for currencies disappearing in currency ticker
++ Side panel now shown by default for new users
+
+
 11 Oct 2012 Version 0.4.12
 + Farsi/ Persian translation 100%
 + Online/ connecting tooltip now shows date of last block and number of connected peers.
