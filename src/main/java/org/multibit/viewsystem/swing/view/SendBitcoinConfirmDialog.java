@@ -440,7 +440,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
 
             @Override
             public void run() {
-                if (thisDialog != null) {
+                if (thisDialog != null && thisDialog.isVisible()) {
                     MultiBitModel model = MultiBit.getController().getModel();
                     if (model != null) {
                         boolean enableSend = false;

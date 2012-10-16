@@ -77,8 +77,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
 
     private static final Logger log = LoggerFactory.getLogger(TransactionDetailsDialog.class);
 
-    private static final int HEIGHT_DELTA = 125;
-    private static final int WIDTH_DELTA = 360;
+    private static final int HEIGHT_DELTA = 150;
+    private static final int WIDTH_DELTA = 440;
     private static final int FIELD_SEPARATION = 12;
 
     private MultiBitController controller;

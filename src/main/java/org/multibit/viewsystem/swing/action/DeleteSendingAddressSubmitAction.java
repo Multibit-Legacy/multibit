@@ -49,7 +49,7 @@ public class DeleteSendingAddressSubmitAction extends MultiBitSubmitAction {
      */
     public DeleteSendingAddressSubmitAction(MultiBitController controller, SendBitcoinPanel sendBitcoinPanel, DeleteSendingAddressConfirmDialog deleteSendingAddressConfirmDialog) {
         super(controller, "deleteSendingAddressSubmitAction.text", "deleteSendingAddressSubmitAction.tooltip",
-                "deleteSendingAddressSubmitAction.mnemonicKey", ImageLoader.createImageIcon(ImageLoader.CROSS_ICON_FILE));
+                "deleteSendingAddressSubmitAction.mnemonicKey", ImageLoader.createImageIcon(ImageLoader.DELETE_ADDRESS_ICON_FILE));
         this.sendBitcoinPanel = sendBitcoinPanel;
         this.deleteSendingAddressConfirmDialog = deleteSendingAddressConfirmDialog;
     }
