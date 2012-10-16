@@ -276,17 +276,12 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
-            amountPanel.add(amountTextField, BorderLayout.WEST);
-        } else {
-            amountPanel.add(amountTextField, BorderLayout.EAST);            
-        }
+        amountPanel.add(amountTextField, BorderLayout.LINE_START);
         formPanel.add(amountPanel, constraints);
 
         MultiBitLabel amountUnitLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountUnitLabel"));
-        amountUnitLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        amountUnitLabel.setHorizontalTextPosition(SwingConstants.LEADING);
         amountUnitLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel.tooltip"));
-        //amountUnitLabel.setBorder(BorderFactory.createLineBorder(Color.CYAN));
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 3;
         constraints.gridy = 5;
@@ -296,13 +291,24 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
 
+        JPanel filler2 = new JPanel();
+        filler2.setOpaque(false);
+        
         JPanel amountUnitLabelPanel = new JPanel();
         amountUnitLabelPanel.setOpaque(false);
         amountUnitLabelPanel.setLayout(new BorderLayout());
-        amountUnitLabelPanel.add(MultiBitTitledPanel.createStent(AbstractTradePanel.AMOUNT_BTC_INDENT), BorderLayout.WEST);
-        amountUnitLabelPanel.add(amountUnitLabel, BorderLayout.CENTER);
+        
+        JPanel amountUnitLabelPanel2 = new JPanel();
+        amountUnitLabelPanel2.setOpaque(false);
+        amountUnitLabelPanel2.setLayout(new BorderLayout());
+        
+        amountUnitLabelPanel.add(amountUnitLabel, BorderLayout.LINE_START);
+        amountUnitLabelPanel.add(filler2, BorderLayout.CENTER);
+        amountUnitLabelPanel2.add(MultiBitTitledPanel.createStent(AbstractTradePanel.AMOUNT_BTC_INDENT), BorderLayout.LINE_START);
 
-        amountPanel.add(amountUnitLabelPanel, BorderLayout.CENTER);
+        amountUnitLabelPanel2.add(amountUnitLabelPanel, BorderLayout.CENTER);
+
+        amountPanel.add(amountUnitLabelPanel2, BorderLayout.CENTER);
 
         Action helpAction;
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {

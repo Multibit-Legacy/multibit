@@ -4,6 +4,7 @@ MultiBit release notes.
 + Send confirm dialog shows peer propagation
 + Reset blockchain and transactions bug fix
 + Charts panel bug fix
++ Default fee set to 0.001 BTC
 + Mouse scroll wheel bug fix (hopefully)
 + Fix for currencies disappearing in currency ticker
 + Side panel now shown by default for new users
