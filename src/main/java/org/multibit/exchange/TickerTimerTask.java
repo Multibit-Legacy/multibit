@@ -90,7 +90,7 @@ public class TickerTimerTask extends TimerTask {
             if (marketDataService != null) {
                 if (exchangeSymbols != null) {
                     // Only get data from server if ticker is being shown.
-                    if (Boolean.TRUE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW))) {
+                    if (!Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW))) {
                         for (CurrencyPair loopSymbolPair : exchangeSymbols) {
                             // Get symbol ticker if it is one of the currencies
                             // we are interested in.
