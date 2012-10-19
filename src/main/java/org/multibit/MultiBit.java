@@ -109,7 +109,7 @@ public class MultiBit {
             }
             if (!ApplicationInstanceManager.registerInstance(rawURI)) {
                 // instance already running.
-                System.out.println("Another instance of MultiBit is already running.  Exiting.");
+                log.debug("Another instance of MultiBit is already running.  Exiting.");
                 System.exit(0);
             }
 
@@ -117,7 +117,7 @@ public class MultiBit {
             ApplicationInstanceManager.setApplicationInstanceListener(new ApplicationInstanceListener() {
                 public void newInstanceCreated(String rawURI) {
                     final String finalRawUri = rawURI;
-                    System.out.println("New instance of MultiBit detected...");
+                    log.debug("New instance of MultiBit detected...");
                     Runnable doProcessCommandLine = new Runnable() {
                         public void run() {
                             processCommandLineURI(finalController, finalRawUri);

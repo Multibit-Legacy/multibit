@@ -64,7 +64,6 @@ import org.slf4j.LoggerFactory;
  *   if (result == JFontChooser.OK_OPTION)
  *   {
  *   	Font font = fontChooser.getSelectedFont(); 
- *   	System.out.println("Selected Font : " + font);
  * }
  * 
  * <pre>

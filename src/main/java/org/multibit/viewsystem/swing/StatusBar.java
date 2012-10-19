@@ -44,7 +44,9 @@ import java.awt.Insets;
 import java.awt.LayoutManager2;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Locale;
@@ -83,6 +85,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.Block;
+
 /**
  * StatusBar. <BR>
  * A status bar is made of multiple zones. A zone can be any JComponent.
@@ -103,7 +107,8 @@ public class StatusBar extends JPanel implements MessageListener {
     
     private static final double TOLERANCE = 0.0000001;
 
-    public static final int ONLINE_LABEL_DELTA = 10;
+    public static final int ONLINE_LABEL_WIDTH_DELTA = 10;
+    public static final int ONLINE_LABEL_HEIGHT_DELTA = 8;
 
     private MultiBitLabel onlineLabel;
     private MultiBitButton statusLabel;
@@ -126,7 +131,9 @@ public class StatusBar extends JPanel implements MessageListener {
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
     
-    private JProgressBar syncProgressBar;   
+    private JProgressBar syncProgressBar; 
+    
+    private SimpleDateFormat dateFormatter;
 
     /**
      * Construct a new StatusBar
@@ -143,12 +150,12 @@ public class StatusBar extends JPanel implements MessageListener {
         setOpaque(true);
         setBorder(BorderFactory.createMatteBorder(2, 0, 2, 0, ColorAndFontConstants.BACKGROUND_COLOR));
 
-        setMaximumSize(new Dimension(A_LARGE_NUMBER_OF_PIXELS, STATUSBAR_HEIGHT));
-        setMaximumSize(new Dimension(A_SMALL_NUMBER_OF_PIXELS, STATUSBAR_HEIGHT));
-
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         final MultiBitController finalController = controller;
+        
+        dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
+
         onlineLabel = new MultiBitLabel("");
         onlineLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         onlineLabel.setOpaque(true);
@@ -164,8 +171,19 @@ public class StatusBar extends JPanel implements MessageListener {
                     if (finalController.getMultiBitService().getChain() != null) {
                         if (finalController.getMultiBitService().getChain().getChainHead() != null) {
                             blockHeight = finalController.getMultiBitService().getChain().getChainHead().getHeight();
-                            onlineLabel.setToolTipText(finalController.getLocaliser().getString("multiBitFrame.numberOfBlocks",
-                                    new Object[] { "" + blockHeight }));
+                            Block blockHeader = finalController.getMultiBitService().getChain().getChainHead().getHeader();
+                            Date blockTime = blockHeader.getTime();
+                            int numberOfPeers = 0;
+                            if ( finalController.getMultiBitService().getPeerGroup() != null && finalController.getMultiBitService().getPeerGroup().getConnectedPeers() != null) {
+                                numberOfPeers = finalController.getMultiBitService().getPeerGroup().getConnectedPeers().size();
+                            }
+                            onlineLabel.setToolTipText(HelpContentsPanel.createMultilineTooltipText(new String[] {
+                                    finalController.getLocaliser().getString("multiBitFrame.numberOfBlocks",
+                                            new Object[] { blockHeight }),
+                                            finalController.getLocaliser().getString("multiBitFrame.blockDate",
+                                                    new Object[] { dateFormatter.format(blockTime) }),
+                                            finalController.getLocaliser().getString("multiBitFrame.connectedTo",
+                                                    new Object[] { numberOfPeers })}));
                         }
                     }
                 }
@@ -177,10 +195,9 @@ public class StatusBar extends JPanel implements MessageListener {
         statusLabel.setOpaque(true);
         statusLabel.setBorderPainted(false);
         statusLabel.setFocusPainted(false);
-        
+
         statusLabel.setContentAreaFilled(false);
         statusLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
 
         // show messages action
         MultiBitAction showMessagesAction = new MultiBitAction(controller, null, null,
@@ -200,7 +217,14 @@ public class StatusBar extends JPanel implements MessageListener {
                         getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).stringWidth(
                                 controller.getLocaliser().getString("multiBitFrame.errorText"))
                         )
-                + ONLINE_LABEL_DELTA;
+                + ONLINE_LABEL_WIDTH_DELTA;
+
+        int onlineHeight = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + ONLINE_LABEL_HEIGHT_DELTA;
+
+        onlineLabel.setPreferredSize(new Dimension(onlineWidth, onlineHeight));
+        int statusBarHeight = Math.max(STATUSBAR_HEIGHT, onlineHeight);
+        setMaximumSize(new Dimension(A_LARGE_NUMBER_OF_PIXELS, statusBarHeight));
+        setMaximumSize(new Dimension(A_SMALL_NUMBER_OF_PIXELS, statusBarHeight));
 
         syncProgressBar = new JProgressBar(0, 100);
         syncProgressBar.setValue(0);
@@ -308,7 +332,7 @@ public class StatusBar extends JPanel implements MessageListener {
         if (newMessage == null || !newMessage.isShowInStatusBar()) {
             return;
         }
- 
+        
         if (newMessage.getPercentComplete() == Message.NOT_RELEVANT_PERCENTAGE_COMPLETE) {
             updateStatusLabel(newMessage.getText(), newMessage.isClearAutomatically());
         } else {

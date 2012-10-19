@@ -466,7 +466,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
         constraints.weightx = 0.8;
         constraints.weighty = 0.15;
         constraints.gridwidth = 6;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.anchor = GridBagConstraints.LINE_END;
         mainPanel.add(confirmText1, constraints);
         
         JLabel filler3 = new JLabel();
@@ -486,7 +486,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
         constraints.weightx = 0.8;
         constraints.weighty = 0.15;
         constraints.gridwidth = 6;
-        constraints.anchor = GridBagConstraints.LINE_START;
+        constraints.anchor = GridBagConstraints.LINE_END;
         mainPanel.add(confirmText2, constraints);
         
         JLabel filler6 = new JLabel();

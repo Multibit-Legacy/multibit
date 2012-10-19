@@ -52,16 +52,14 @@ public class TickerTimerTask extends TimerTask {
     private List<CurrencyPair> exchangeSymbols;
 
     /**
-     * Constructs the object, sets the string to be output in function run()
-     * 
-     * @param str
+     * Constructs the object, sets the string to be output in function run().
      */
     public TickerTimerTask(MultiBitController controller, MultiBitFrame mainFrame) {
     	
         this.controller = controller;
         this.mainFrame = mainFrame;
 
-        // set the list of currencies we are interested in
+        // set the list of currencies we are interested in.
         String currency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
         if (currency1 == null || "".equals(currency1)) {
             currency1 = TickerTableModel.DEFAULT_CURRENCY;
@@ -75,42 +73,50 @@ public class TickerTimerTask extends TimerTask {
         }
     }
 
+
     /**
      * When the timer executes, this code is run.
      */
     public void run() {
         try {
-            // Create exchange if failure in constructor.
-            if (mtGox == null) {
-                createExchange();
+            // Create exchange.
+            synchronized(this) {
+                if (mtGox == null) {
+                    log.debug("mtGox is null ... creating exchange ...");
+                    createExchange();
+                    log.debug("... done. mtGox exchange = " + mtGox);
+                }
             }
             
             if (marketDataService != null) {
                 if (exchangeSymbols != null) {
-                    for (CurrencyPair loopSymbolPair : exchangeSymbols) {
-                        // get symbol ticker if it is one of the currencies we
-                        // are interested in
-                        // (this is to save hitting the server for ever currency
-                        boolean getItFromTheServer = false;
-                        String[] currenciesWeAreInterestedIn = controller.getModel().getExchangeData()
-                                .getCurrenciesWeAreInterestedIn();
-                        if (currenciesWeAreInterestedIn != null) {
-                            for (int i = 0; i < currenciesWeAreInterestedIn.length; i++) {
-                                if (loopSymbolPair.counterCurrency.equals(currenciesWeAreInterestedIn[i])) {
-                                    getItFromTheServer = true;
-                                    break;
+                    // Only get data from server if ticker is being shown.
+                    if (!Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW))) {
+                        for (CurrencyPair loopSymbolPair : exchangeSymbols) {
+                            // Get symbol ticker if it is one of the currencies
+                            // we are interested in.
+                            // (This is to save hitting the server for ever currency).
+                            boolean getItFromTheServer = false;
+                            String[] currenciesWeAreInterestedIn = controller.getModel().getExchangeData()
+                                    .getCurrenciesWeAreInterestedIn();
+                            if (currenciesWeAreInterestedIn != null) {
+                                for (int i = 0; i < currenciesWeAreInterestedIn.length; i++) {
+                                    if (loopSymbolPair.counterCurrency.equals(currenciesWeAreInterestedIn[i])) {
+                                        getItFromTheServer = true;
+                                        break;
+                                    }
                                 }
-                            }
-                            if (getItFromTheServer) {
-                                Ticker loopTicker = marketDataService.getTicker(loopSymbolPair.baseCurrency,loopSymbolPair.counterCurrency);
-                                BigMoney last = loopTicker.getLast();
-                                BigMoney bid = loopTicker.getBid();
-                                BigMoney ask = loopTicker.getAsk();
-                                //System.out.println("TickerTimerTask - Current exchange rate for " + loopSymbolPair.toString()
-                                //        + ": " + last + ", bid = " + bid + ", ask = " + ask);
-                                controller.getModel().getExchangeData().setLastPrice(loopSymbolPair.counterCurrency, last);
-                                controller.getModel().getExchangeData().setLastBid(loopSymbolPair.counterCurrency, bid);
-                                controller.getModel().getExchangeData().setLastAsk(loopSymbolPair.counterCurrency, ask);
+                                if (getItFromTheServer) {
+                                    Ticker loopTicker = marketDataService.getTicker(loopSymbolPair.baseCurrency,
+                                            loopSymbolPair.counterCurrency);
+                                    BigMoney last = loopTicker.getLast();
+                                    BigMoney bid = loopTicker.getBid();
+                                    BigMoney ask = loopTicker.getAsk();
+
+                                    controller.getModel().getExchangeData().setLastPrice(loopSymbolPair.counterCurrency, last);
+                                    controller.getModel().getExchangeData().setLastBid(loopSymbolPair.counterCurrency, bid);
+                                    controller.getModel().getExchangeData().setLastAsk(loopSymbolPair.counterCurrency, ask);
+                                }
                             }
                         }
                     }
@@ -119,7 +125,7 @@ public class TickerTimerTask extends TimerTask {
                 mainFrame.fireExchangeDataChanged();
             }
         } catch (Exception e) {
-            // stop any xchange errors percolating out
+            // Stop any xchange errors percolating out.
             log.error(e.getClass().getName() + " " + e.getMessage());
             if (e.getCause() != null)  {
                 log.error(e.getCause().getClass().getName() + " " + e.getCause().getMessage());                
@@ -127,19 +133,22 @@ public class TickerTimerTask extends TimerTask {
         }
     }
     
-    private void createExchange() {
+    public void createExchange() {
         try {
-            // Demonstrate the public market data service
+            // Demonstrate the public market data service.
             // Use the factory to get the version 1 MtGox exchange API using default
-            // settings
+            // settings.
 
             mtGox = ExchangeFactory.INSTANCE.createExchange("com.xeiam.xchange.mtgox.v1.MtGoxExchange");
+            log.debug("mtGox = " + mtGox);
             
-            // Interested in the public market data feed (no authentication)
+            // Interested in the public market data feed (no authentication).
             marketDataService = mtGox.getPollingMarketDataService();
+            log.debug("marketDataService = " + marketDataService);
 
-            // get the list of available currencies
+            // Get the list of available currencies.
             exchangeSymbols = marketDataService.getExchangeSymbols();
+            log.debug("exchangeSymbols = " + exchangeSymbols);
 
             if (exchangeSymbols != null) {
                 String[] availableCurrencies = new String[exchangeSymbols.size()];
@@ -151,9 +160,15 @@ public class TickerTimerTask extends TimerTask {
                         .setAvailableCurrenciesForExchange(ExchangeData.MT_GOX_EXCHANGE_NAME, availableCurrencies);
             }
         } catch (NoClassDefFoundError e) {
-            // probably xchange is not on classpath - ticker will not run
-            // but error should not spread out from here to rest of MultiBit
+            // Probably xchange is not on classpath - ticker will not run
+            // but error should not spread out from here to rest of MultiBit.
+            log.error(e.getClass().getName() + " " + e.getMessage());
+        } catch (NullPointerException e) {
             log.error(e.getClass().getName() + " " + e.getMessage());
         }
+    }
+
+    public Exchange getMtGox() {
+        return mtGox;
     }
 }

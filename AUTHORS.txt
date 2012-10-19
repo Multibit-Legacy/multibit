@@ -21,6 +21,7 @@ bitcoinspot         - Dutch
 corn3               - Portuguese
 D4CH                - Danish
 damnek              - Dutch
+druhy               - Slovak, French, German
 DutchBrat           - Dutch
 Emin Gun Sirer      - Turkish
 Ermo                - Italian
@@ -34,11 +35,14 @@ guillo.92199        - French
 gulaschkanone       - German
 guy46               - Portuguese
 haritosh            - Hindi
+Hiera               - Polish
 HostFat             - Italian
 ildubbioso          - Italian
+Ipaboo              - Greek
 lzsaver             - Russian
 Jan-steenbergen     - Dutch
 JeppeJ              - Swedish
+JeromeS             - Arabic
 jesusangel          - Spanish
 Jonny Heggheim      - Norwegian
 Katya Rowe          - Russian
@@ -47,10 +51,13 @@ knight22            - French
 Kupsi               - Norwegian
 kyuupichan          - Japanese
 lophie              - Arabic 
+majdom              - Polish
+mazi                - Slovenian
 Marx1996xvx         - Polish
 Mats Henricson      - Swedish
 Memory Dealers      - Japanese
-Moole               - Czech
+mohammad_rafigh     - Persian
+moole               - Czech
 mrmx                - Spanish
 mrvision            - Spanish
 muyuu               - Japanese
@@ -61,12 +68,15 @@ pginvest            - Portuguese
 Piotr Waskiewicz    - Polish
 raymccarthy         - Swedish
 rbreban             - Spanish
+robsned             - Hindi
 ronimo              - French
 sasha               - Russian
 spiccioli           - Italian
+stlucifer           - Hindi
 techmix             - Persian
 Technomage          - Finnish
 teknomunk           - Japanese
+tengo               - Russian
 tesla               - Russian
 tpantlik            - Czech
 viboracecata        - Chinese Simplified

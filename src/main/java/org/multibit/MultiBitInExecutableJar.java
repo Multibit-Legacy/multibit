@@ -102,10 +102,12 @@ public class MultiBitInExecutableJar {
 
             fileStream = new PrintStream(new FileOutputStream(consoleOutputFilename, true));
 
-            // Redirecting console output to file
-            System.setOut(fileStream);
-            // Redirecting runtime exceptions to file
-            System.setErr(fileStream);
+            if (fileStream != null) {
+                // Redirecting console output to file
+                System.setOut(fileStream);
+                // Redirecting runtime exceptions to file
+                System.setErr(fileStream);
+            }
         } catch (FileNotFoundException e) {
             if (log != null) {
                 log.error("Error in IO Redirection", e);

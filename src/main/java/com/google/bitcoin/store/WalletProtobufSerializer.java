@@ -329,8 +329,6 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
         // TODO: This method should throw more specific exception types than IllegalArgumentException.
         Protos.Wallet walletProto = parseToProto(input);
 
-        // System.out.println(TextFormat.printToString(walletProto));
-
         NetworkParameters params = NetworkParameters.fromID(walletProto.getNetworkIdentifier());
         Wallet wallet = helper.newWallet(params);
         

@@ -1,5 +1,46 @@
 MultiBit release notes.
 
+Versino 0.5.5beta
++ Forward port of everything from 0.4.14
+
+Version 0.4.14
++ Fix for chart balance not matching wallet balance
++ Transaction display update speed up
+
+17 Oct 2012 Version 0.4.13
++ Send confirm dialog shows peer propagation
++ Reset blockchain and transactions bug fix
++ Charts panel bug fix
++ Default fee set to 0.001 BTC
++ Mouse scroll wheel bug fix (hopefully)
++ Fix for currencies disappearing in currency ticker
++ Side panel now shown by default for new users
+
+
+11 Oct 2012 Version 0.4.12
++ Farsi/ Persian translation 100%
++ Online/ connecting tooltip now shows date of last block and number of connected peers.
++ Transaction icon visualises propagation of transaction across peers.
++ Various code hardening/ extra logging.
+
+
+05 Oct 2012 Version 0.4.11
+
+User interface
++  8 decimal places of BTC now shown
++  Chart of wallet balance for last 30 days added
++  Drag and drop QR code to desktop
++  Slovenian 100% added
++  Various UI tidyups
+
+System
++  Faster bitcoin network connection
++  Rolling wallet backup to mitigate sudden power loss
++  Automatic recopy of installer blockchain if required
++  Update to bitcoinj version 0.6
++  Update to XChart 0.2.0
+
+
 24 Sep 2012 Version 0.5.4beta
 +  Faster bitcoin network connection
 +  Rolling wallet backup to mitigate sudden power loss
@@ -7,7 +48,7 @@ MultiBit release notes.
 +  Drag and drop QR code to desktop
 +  Eliminated tab flicker
 +  Tab title tooltips now show ok
-+  Update to bitcoinj version 0.6-SNAPSHOT 
++  Update to bitcoinj version 0.6-SNAPSHOT
 +  Update to XChart 0.2.0
 
 
@@ -17,7 +58,7 @@ MultiBit release notes.
 
 05 Sep 2012 Version 0.5.3beta
 +  Forward port of everything from 0.4.9
-+  Czech translation 100% added
++  Czech translation 100% added.
 
 
 03 Sep 2012 Version 0.4.9
@@ -33,7 +74,7 @@ MultiBit release notes.
 
 
 27 Aug 2012 Version 0.4.8
-+  I18n update. Hebrew added as target language. Lots of new texts
++  I18n update. Hebrew added as target language. Lots of new texts.
 
 
 22 Aug 2012 Version 0.5.1alpha
@@ -51,6 +92,7 @@ MultiBit release notes.
 +  Sidepanel UI improvements
 +  Less noisy at startup with wallet loading messages
 +  Better error handling with currency ticker
+
 
 
 30 Jul 2012 Version 0.4.6

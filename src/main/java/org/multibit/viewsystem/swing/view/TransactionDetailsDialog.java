@@ -41,6 +41,7 @@ import javax.swing.JScrollPane;
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
+import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletTableData;
 import org.multibit.utils.ImageLoader;
@@ -52,6 +53,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
+import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,8 +77,9 @@ public class TransactionDetailsDialog extends MultiBitDialog {
 
     private static final Logger log = LoggerFactory.getLogger(TransactionDetailsDialog.class);
 
-    private static final int HEIGHT_DELTA = 125;
-    private static final int WIDTH_DELTA = 330;
+    private static final int HEIGHT_DELTA = 150;
+    private static final int WIDTH_DELTA = 440;
+    private static final int FIELD_SEPARATION = 12;
 
     private MultiBitController controller;
     private WalletTableData rowTableData;
@@ -172,7 +175,6 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.anchor = GridBagConstraints.LINE_END;
         detailPanel.add(confidenceLabel, constraints);
 
-        JLabel filler1 = new JLabel();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 1;
         constraints.gridy = 0;
@@ -180,7 +182,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        detailPanel.add(filler1, constraints);
+        detailPanel.add(MultiBitTitledPanel.createStent(FIELD_SEPARATION), constraints);
 
         confidenceText = new MultiBitLabel("");
         confidenceText.setText(createStatusText(rowTableData.getTransaction()));
@@ -336,6 +338,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         labelScrollPane.setOpaque(true);
         labelScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         labelScrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        labelScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        labelScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 5;
@@ -374,6 +378,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailScrollPane.setOpaque(true);
         detailScrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         detailScrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        detailScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        detailScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
 
         detailPanel.add(detailScrollPane, constraints);
 

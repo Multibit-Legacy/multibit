@@ -104,7 +104,7 @@ public class LimitLinesDocumentListener implements DocumentListener {
         try {
             document.remove(0, end);
         } catch (BadLocationException ble) {
-            System.out.println(ble);
+            ble.printStackTrace();
         }
     }
 
@@ -122,7 +122,7 @@ public class LimitLinesDocumentListener implements DocumentListener {
         try {
             document.remove(start - 1, end - start);
         } catch (BadLocationException ble) {
-            System.out.println(ble);
+            ble.printStackTrace();
         }
     }
 }

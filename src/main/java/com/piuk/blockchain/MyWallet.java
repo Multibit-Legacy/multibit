@@ -348,8 +348,6 @@ public class MyWallet {
 		try {
 			return (Map<String, Object>) mapper.readValue(payload, typeRef);
 		} catch (Exception e) {
-			System.out.println(payload + " " + e.getLocalizedMessage());
-
 			throw e;
 		}
 	}
