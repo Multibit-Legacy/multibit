@@ -28,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
+import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
@@ -43,6 +44,8 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
 import com.google.bitcoin.core.EncryptionType;
+import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.TransactionConfidence;
 
 /**
  * The send bitcoin confirm panel.
@@ -68,7 +71,8 @@ public class SendBitcoinConfirmPanel extends JPanel {
     private String sendAmount;
     private String sendFee;
 
-    private MultiBitLabel confirmText1, confirmText2;
+    private MultiBitLabel confirmText1;
+    private MultiBitLabel confirmText2;
     
     private SendBitcoinNowAction sendBitcoinNowAction;
     private MultiBitButton sendButton;
@@ -76,6 +80,22 @@ public class SendBitcoinConfirmPanel extends JPanel {
     
     private JPasswordField walletPasswordField;
     private MultiBitLabel walletPasswordPromptLabel;
+    
+    private static SendBitcoinConfirmPanel thisPanel = null;
+
+    private static ImageIcon shapeTriangleIcon;
+    private static ImageIcon shapeSquareIcon;
+    private static ImageIcon shapeHeptagonIcon;
+    private static ImageIcon shapeHexagonIcon;
+    private static ImageIcon progress0Icon;
+
+    static {
+        shapeTriangleIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_TRIANGLE_ICON_FILE);
+        shapeSquareIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_SQUARE_ICON_FILE);
+        shapeHeptagonIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_PENTAGON_ICON_FILE);
+        shapeHexagonIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_HEXAGON_ICON_FILE);
+        progress0Icon = ImageLoader.createImageIcon(ShowTransactionsPanel.PROGRESS_0_ICON_FILE);
+    }
 
     /**
      * Creates a new {@link SendBitcoinConfirmPanel}.
@@ -86,6 +106,8 @@ public class SendBitcoinConfirmPanel extends JPanel {
         this.mainFrame = mainFrame;
         this.sendBitcoinConfirmDialog = sendBitcoinConfirmDialog;
         
+        thisPanel = this;
+
         initUI();
         
         cancelButton.requestFocusInWindow();
@@ -476,8 +498,42 @@ public class SendBitcoinConfirmPanel extends JPanel {
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(filler6, constraints);
+        
+        enableSendAccordingToNumberOfConnectedPeers();
     }
 
+    private void enableSendAccordingToNumberOfConnectedPeers() {
+        boolean enableSend = false;
+
+        MultiBitModel model = controller.getModel();
+        if (model != null) {
+            if (thisPanel.sendBitcoinNowAction != null) {
+                if (model.getNumberOfConnectedPeers() < MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
+                    // Disable send button
+                    enableSend = false;
+                } else if (model.getNumberOfConnectedPeers() >= MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
+                    // Enable send button
+                    enableSend = true;
+                }
+                thisPanel.sendBitcoinNowAction.setEnabled(enableSend);
+            }
+        }
+        
+        if (sendBitcoinNowAction != null) {
+            sendBitcoinNowAction.setEnabled(enableSend);
+            if (enableSend) {
+                if (confirmText1 != null) {
+                    if (controller.getLocaliser().getString("sendBitcoinConfirmView.multibitMustBeOnline").equals(confirmText1)){
+                        confirmText1.setText(" ");
+                    }
+                }
+            } else {
+                if (confirmText1 != null) {
+                    confirmText1.setText(controller.getLocaliser().getString("sendBitcoinConfirmView.multibitMustBeOnline"));
+                }
+            }
+        }
+    }
     public void setMessageText(final String message1, final String message2) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -505,6 +561,114 @@ public class SendBitcoinConfirmPanel extends JPanel {
         cancelButton.setVisible(false);
     }
     
+    public static void updatePanel(final Transaction transactionWithChangedConfidence) {
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                if (thisPanel != null && thisPanel.isVisible()) {
+                    MultiBitModel model = MultiBit.getController().getModel();
+                    if (model != null) {
+                        boolean enableSend = false;
+                        if (thisPanel.sendBitcoinNowAction != null) {
+                            if (model.getNumberOfConnectedPeers() < MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
+                                // Disable send button
+                                enableSend = false;
+                            } else if (model.getNumberOfConnectedPeers() >= MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
+                                // Enable send button
+                                enableSend = true;
+                            }
+                            thisPanel.sendBitcoinNowAction.setEnabled(enableSend);
+                        }
+
+                        MultiBitLabel confirmText1 = thisPanel.confirmText1;
+                        if (enableSend) {
+                            if (confirmText1 != null) {
+                                if (MultiBit.getController().getLocaliser()
+                                        .getString("sendBitcoinConfirmView.multibitMustBeOnline").equals(confirmText1.getText())) {
+                                    confirmText1.setText(" ");
+                                }
+                            }
+                        } else {
+                            if (confirmText1 != null) {
+                                confirmText1.setText(MultiBit.getController().getLocaliser()
+                                        .getString("sendBitcoinConfirmView.multibitMustBeOnline"));
+                            }
+                        }
+                    }
+
+                    if (transactionWithChangedConfidence == null) {
+                        return;
+                    }
+
+                    MultiBitLabel confirmText2 = thisPanel.getConfirmText2();
+                    if (confirmText2 != null) {
+                        if (thisPanel.getSendBitcoinNowAction() != null) {
+                            Transaction sentTransaction = thisPanel.getSendBitcoinNowAction().getTransaction();
+                            if (sentTransaction != null
+                                    && sentTransaction.getHash().equals(transactionWithChangedConfidence.getHash())) {
+                                confirmText2.setText(thisPanel.getConfidenceToolTip(transactionWithChangedConfidence
+                                        .getConfidence()));
+                                confirmText2.setIcon(thisPanel.getConfidenceIcon(transactionWithChangedConfidence.getConfidence()));
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private String getConfidenceToolTip(TransactionConfidence confidence) {
+        int peers = 0;
+        if (confidence != null && confidence.getBroadcastBy() != null) {
+            peers = confidence.getBroadcastBy().size();
+        }
+        StringBuilder builder = new StringBuilder();
+        if (peers == 0) {
+            builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenByUnknownNumberOfPeers"));
+        } else {
+            builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy") + " ");
+            builder.append(peers);
+            if (peers > 1)
+                builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peers") + ".");
+            else
+                builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peer") + ".");
+        }
+
+        return builder.toString();
+
+    }
+
+    private ImageIcon getConfidenceIcon(TransactionConfidence confidence) {
+        // By default return a triangle which indicates the least known.
+        ImageIcon iconToReturn = shapeTriangleIcon;
+
+        if (confidence != null && confidence.getBroadcastBy() != null) {
+            int numberOfPeers = confidence.getBroadcastBy().size();
+            if (numberOfPeers >= 4) {
+                return progress0Icon;
+            } else {
+                switch (numberOfPeers) {
+                case 0:
+                    iconToReturn = shapeTriangleIcon;
+                    break;
+                case 1:
+                    iconToReturn = shapeSquareIcon;
+                    break;
+                case 2:
+                    iconToReturn = shapeHeptagonIcon;
+                    break;
+                case 3:
+                    iconToReturn = shapeHexagonIcon;
+                    break;
+                default:
+                    iconToReturn = shapeTriangleIcon;
+                }
+            }
+        }
+        return iconToReturn;
+    }
+    
     public MultiBitButton getCancelButton() {
         return cancelButton;
     }
@@ -528,5 +692,9 @@ public class SendBitcoinConfirmPanel extends JPanel {
     
     public boolean isWalletPasswordFieldEnabled() {
         return walletPasswordField.isEnabled();
+    }
+
+    public MultiBitLabel getConfirmText2() {
+        return confirmText2;
     }
 }

@@ -15,12 +15,6 @@
  */
 package org.multibit.utils;
 
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.util.Random;
-
 import javax.swing.ImageIcon;
 
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -44,13 +38,16 @@ public class ImageLoader {
     public static final String CROSS_ICON_FILE = "/images/cross.png";
     public static final String DELETE_WALLET_ICON_FILE = "/images/deleteWallet.png";
     public static final String DELETE_ADDRESS_ICON_FILE = "/images/book_open_delete.png";
-    public static final String DETAIL_PANEL_ON_ICON_FILE = "/images/twistyDown.png";
-    public static final String DETAIL_PANEL_OFF_ICON_FILE = "/images/twistyRight.png";
+    public static final String TWISTY_DOWN_ICON_FILE = "/images/twistyDown.png";
+    public static final String TWISTY_LEFT_ICON_FILE = "/images/twistyLeft.png";
+    public static final String TWISTY_RIGHT_ICON_FILE = "/images/twistyRight.png";
     public static final String EXCHANGES_ICON_FILE = "/images/exchanges.png";
     public static final String EXCLAMATION_MARK_ICON_FILE = "/images/exclamationMark.png";
     public static final String EXPORT_PRIVATE_KEYS_ICON_FILE = "/images/exportKey.png";
     public static final String HELP_CONTENTS_BIG_ICON_FILE = "/images/helpContentsBig.png";
+    public static final String HELP_CONTENTS_BIG_RTL_ICON_FILE = "/images/helpContentsBigRTL.png";
     public static final String HELP_CONTENTS_ICON_FILE = "/images/helpContents.png";
+    public static final String HELP_CONTENTS_RTL_ICON_FILE = "/images/helpContentsRTL.png";
     public static final String HOURGLASS_ICON_FILE = "/images/hourglass.png";
     public static final String IMPORT_PRIVATE_KEYS_ICON_FILE = "/images/importKey.png";
     public static final String LOCK_ICON_FILE = "/images/lock.png";
@@ -70,12 +67,15 @@ public class ImageLoader {
     public static final String RESET_TRANSACTIONS_ICON_FILE = "/images/resetTransactions.png";
     public static final String RTL_WALLET_ICON_FILE = "/images/rtl_wallet.png";
     public static final String SEND_BITCOIN_ICON_FILE = "/images/sendOut.png";
+    public static final String SHAPE_TRIANGLE_ICON_FILE = "/images/shapeTriangle.png";
+    public static final String SHAPE_SQUARE_ICON_FILE = "/images/shapeSquare.png";
+    public static final String SHAPE_PENTAGON_ICON_FILE = "/images/shapePentagon.png";
+    public static final String SHAPE_HEXAGON_ICON_FILE = "/images/shapeHexagon.png";
     public static final String SIDE_PANEL_SHOW_ICON_FILE = "/images/sidePanelShow.png";
     public static final String SIDE_PANEL_SHOW_RTL_ICON_FILE = "/images/sidePanelShowRTL.png";
     public static final String SIDE_PANEL_HIDE_ICON_FILE = "/images/sidePanelHide.png";
     public static final String SIDE_PANEL_HIDE_RTL_ICON_FILE = "/images/sidePanelHideRTL.png";
     public static final String SINGLE_WALLET_ICON_FILE = "/images/singleWallet.png";
-    public static final String SHAPE_SQUARE_ICON_FILE = "/images/shapeSquare.png";
     public static final String TICK_ICON_FILE = "/images/tick.png";
     public static final String TRANSACTIONS_ICON_FILE = "/images/transactions.png";
     public static final String UNDO_ICON_FILE = "/images/undo.png";

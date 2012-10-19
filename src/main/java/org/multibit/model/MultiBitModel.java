@@ -109,6 +109,8 @@ public class MultiBitModel {
     public static final String SHOW_SIDE_PANEL = "showSidePanel";
     public static final String DISPLAY_AS_SWATCH = "displayAsSwatch";
     public static final String DISPLAY_AS_QR_CODE = "displayAsQRcode";
+    
+    public static final int MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED = 1;
 
     // Open bitcoin URI.
     public static final String OPEN_URI_SHOW_DIALOG = "openUriShowDialog";
@@ -119,7 +121,7 @@ public class MultiBitModel {
     public static final String BRING_TO_FRONT = "bringToFront";
 
     // Default fee.
-    public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("50000");
+    public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("100000");
     // Minimum fee.
     public static final BigInteger SEND_MINIMUM_FEE = new BigInteger("10000");
 
@@ -214,6 +216,14 @@ public class MultiBitModel {
      * Holds exchange Data.
      */
     private ExchangeData exchangeData = new ExchangeData();
+
+    public static final int UNKNOWN_NUMBER_OF_CONNECTD_PEERS = -1;
+    
+    /**
+     * The number of peers connected.
+     */
+    private int numberOfConnectedPeers = UNKNOWN_NUMBER_OF_CONNECTD_PEERS;
+    
   
     public MultiBitModel(MultiBitController controller) {
         this(controller, new Properties());
@@ -493,6 +503,7 @@ public class MultiBitModel {
                 
                 @Override
                 public void onKeyAdded(ECKey key) {        
+                    controller.onKeyAdded(key);
                 }
             });
         }
@@ -501,45 +512,6 @@ public class MultiBitModel {
         createAddressBookReceivingAddresses(walletFilename);
 
         return newPerWalletModelData;
-    }
-
-    /**
-     * Process a new coin.
-     * 
-     * @param wallet
-     * @param transaction
-     */
-    public void processNewCoin(Wallet wallet, Transaction transaction) {
-        // Loop through all the wallets, updating them as required with the new transaction.
-        log.debug("processNewCoin is processing transaction " + transaction.toString());
-        try {
-            java.util.List<PerWalletModelData> perWalletModelDataList = getPerWalletModelDataList();
-
-            if (perWalletModelDataList != null) {
-                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
-                    try {
-                        Wallet loopWallet = perWalletModelData.getWallet();
-                        if (loopWallet.isTransactionRelevant(transaction, true)) {
-                            // The perWalletModelData is marked as dirty.
-
-                            // Check to see if the transaction is already in the wallet.
-                            //if (loopWallet.getTransaction(transaction.getHash()) == null) {
-                                log.debug("processNewCoin is receivingPending");
-                                loopWallet.receivePending(transaction);
-                            //}
-                            perWalletModelData.setDirty(true);
-                            log.debug("Marking wallet '" + perWalletModelData.getWalletFilename() + "' as dirty.");
-                            controller.fireDataChanged();
-                        }
-                    } catch (VerificationException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        } catch (ScriptException e) {
-            // If we didn't understand the scriptSig, just log it
-            log.error(e.getMessage(), e);
-        }
     }
     
     /**
@@ -836,7 +808,7 @@ public class MultiBitModel {
 
 	public void setExchangeData(ExchangeData exchangeData) {
 		this.exchangeData = exchangeData;
-	}  
+	}
 	
 	public NetworkParameters getNetworkParameters() {
         // If test or production is not specified, default to production.
@@ -853,5 +825,13 @@ public class MultiBitModel {
     public boolean thereIsNoActiveWallet() {
         return activeWalletModelData == null
                 || "".equals(activeWalletModelData.getWalletFilename()) || activeWalletModelData.getWalletFilename() == null;
+    }
+
+    public int getNumberOfConnectedPeers() {
+        return numberOfConnectedPeers;
+    }
+
+    public void setNumberOfConnectedPeers(int numberOfConnectedPeers) {
+        this.numberOfConnectedPeers = numberOfConnectedPeers;
     }    
 }

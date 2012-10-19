@@ -47,10 +47,12 @@ import org.multibit.platform.listener.GenericQuitResponse;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
+import org.multibit.viewsystem.swing.view.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Block;
+import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.GetDataMessage;
 import com.google.bitcoin.core.Message;
 import com.google.bitcoin.core.Peer;
@@ -327,13 +329,20 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         if (peerCount >= 1) {
             setOnlineStatus(StatusEnum.ONLINE);
         }
-    }
+        if (getModel() != null) {
+            getModel().setNumberOfConnectedPeers(peerCount);
+        }   
+        SendBitcoinConfirmPanel.updatePanel(null);    }
 
     public void onPeerDisconnected(Peer peer, int peerCount) {
         //log.debug("Peer '" + peer.toString() + "' disconnected . PeerCount = " + peerCount);
         if (peerCount == 0) {
            setOnlineStatus(StatusEnum.CONNECTING);
         }
+        if (getModel() != null) {
+            getModel().setNumberOfConnectedPeers(peerCount);
+        } 
+        SendBitcoinConfirmPanel.updatePanel(null);
     }
 
     public void setOnlineStatus(StatusEnum statusEnum) {
@@ -367,25 +376,20 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        // update the model
-        getModel().processNewCoin(wallet, transaction);
-
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
         }
     }
 
     public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        // Update the model.
-        getModel().processNewCoin(wallet, transaction);
-
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onCoinsSent(wallet, transaction, prevBalance, newBalance);
         }
     }
 
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
-        log.debug("onTransactionConfidenceChanged called for wallet " + System.identityHashCode(wallet) + ", transaction " + transaction.toString());
+        log.debug("Firing confidence change in onTransactionConfidenceChanged.");
+        
         // Set the depth in blocks as this does not seem to get updated anywhere.
         if (getMultiBitService().getChain() != null && transaction.getConfidence().getConfidenceType() == ConfidenceType.BUILDING) {
             transaction.getConfidence().setDepthInBlocks(getMultiBitService().getChain().getBestChainHeight() - transaction.getConfidence().getAppearedAtChainHeight() + 1);
@@ -394,6 +398,10 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             viewSystem.onTransactionConfidenceChanged(wallet, transaction);
         }
         checkForDirtyWallets(transaction);
+    }
+
+    public void onKeyAdded(ECKey ecKey) {
+        log.debug("Key added : " + ecKey.toString());
     }
 
     public void onReorganise(Wallet wallet) {
@@ -568,40 +576,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
 
     @Override
     public void onTransaction(Peer peer, Transaction transaction) {        
-        // Loop through all the wallets, seeing if the transaction is relevant
-        // and adding them as pending if so.
-        if (transaction != null) {
-            try {
-                java.util.List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
-
-                if (perWalletModelDataList != null) {
-                    for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
-                        Wallet loopWallet = perWalletModelData.getWallet();
-                        if (loopWallet != null) {
-                            if (loopWallet.isTransactionRelevant(transaction, true)) {
-                                // the perWalletModelData is marked as dirty
-                                if (perWalletModelData.getWalletInfo() != null) {
-                                    synchronized(perWalletModelData.getWalletInfo()) {
-                                        perWalletModelData.setDirty(true);
-                                    }
-                                } else {
-                                    perWalletModelData.setDirty(true);
-                                }
-                                if (loopWallet.getTransaction(transaction.getHash()) == null) {
-                                    log.debug("MultiBit adding a new pending transaction for the wallet '"
-                                            + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());
-                                    loopWallet.receivePending(transaction);
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (ScriptException e) {
-                log.error(e.getMessage(), e);
-            } catch (VerificationException e) {
-                log.error(e.getMessage(), e);
-            }
-        }
     }
 
     @Override

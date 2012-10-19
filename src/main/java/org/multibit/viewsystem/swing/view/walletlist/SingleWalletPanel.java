@@ -151,8 +151,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         expanded = false;
         selected = false;
 
-        detailsPanelOffIcon = ImageLoader.createImageIcon(ImageLoader.DETAIL_PANEL_OFF_ICON_FILE);
-        detailsPanelOnIcon = ImageLoader.createImageIcon(ImageLoader.DETAIL_PANEL_ON_ICON_FILE);
+        detailsPanelOffIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_RIGHT_ICON_FILE);
+        detailsPanelOnIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_DOWN_ICON_FILE);
         
         unencryptedTooltip = HelpContentsPanel.createMultilineTooltipText(new String[] {controller.getLocaliser().getString("singleWalletPanel.unencrypted.tooltip"),
                 " ", controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip")});
@@ -257,7 +257,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         // Show details is initially invisible.
         showDetailLabel = new JLabel();
         showDetailLabel.setOpaque(false);
-        showDetailLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.DETAIL_PANEL_ON_ICON_FILE));
+        showDetailLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.TWISTY_DOWN_ICON_FILE));
         showDetailLabel.setBorder(BorderFactory.createEmptyBorder(DETAILS_TOP_BORDER, DETAILS_LEFT_BORDER, 0, 0));
         showDetailLabel.setVisible(false);
         showDetailLabel.addMouseListener(new MouseAdapter() {

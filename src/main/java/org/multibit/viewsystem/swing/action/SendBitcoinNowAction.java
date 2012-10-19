@@ -69,6 +69,8 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
      * Boolean to indicate that the "send was successful" or not (when useTestParameters = true). 
      */
     private boolean sayTestSendWasSuccessful = false;
+      
+    private Transaction transaction;
     
 
     /**
@@ -184,7 +186,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
                     log.debug("Using test parameters - saying send failed");  
                 }
             } else {
-                Transaction transaction = controller.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee, decryptBeforeSigning, walletPassword);
+                transaction = controller.getMultiBitService().sendCoins(perWalletModelData, sendAddress, sendAmount, fee, decryptBeforeSigning, walletPassword);
                 if (transaction == null) {
                     // a null transaction returned indicates there was not
                     // enough money (in spite of our validation)
@@ -254,6 +256,10 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
         log.debug("firing fireRecreateAllViews...");
         controller.fireRecreateAllViews(false);
         log.debug("firing fireRecreateAllViews...done");
+    }
+    
+    public Transaction getTransaction() {
+        return transaction;
     }
     
     void setTestParameters(boolean useTestParameters, boolean sayTestSendWasSuccessful) {
