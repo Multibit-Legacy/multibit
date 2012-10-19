@@ -505,46 +505,6 @@ public class MultiBitModel {
     }
 
     /**
-     * Process a new coin
-     * 
-     * @param wallet
-     * @param transaction
-     */
-    public void processNewCoin(Wallet wallet, Transaction transaction) {
-        // loop through all the wallets, updating them as required with the new
-        // transaction
-        log.debug("processNewCoin is processing transaction " + transaction.toString());
-        try {
-            java.util.List<PerWalletModelData> perWalletModelDataList = getPerWalletModelDataList();
-
-            if (perWalletModelDataList != null) {
-                for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
-                    try {
-                        Wallet loopWallet = perWalletModelData.getWallet();
-                        if (loopWallet.isTransactionRelevant(transaction, true)) {
-                            // the perWalletModelData is marked as dirty
-
-                            // check to see if the transaction is already in the
-                            // wallet
-                            if (loopWallet.getTransaction(transaction.getHash()) == null) {
-                                log.debug("processNewCoin is receivingPending");
-                                loopWallet.receivePending(transaction);
-                            }
-                            perWalletModelData.setDirty(true);
-                            log.debug("Marking wallet '" + perWalletModelData.getWalletFilename() + "' as dirty.");
-                            controller.fireDataChanged();
-                        }
-                    } catch (VerificationException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        } catch (ScriptException e) {
-            // If we didn't understand the scriptSig, just log it
-            log.error(e.getMessage(), e);
-        }
-    }
-    /**
      * get the active wallet filename
      * 
      * 

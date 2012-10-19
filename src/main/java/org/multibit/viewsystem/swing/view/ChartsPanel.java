@@ -354,6 +354,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
 
             // Add in the balance at the end of the time window.
             chartData.add(new ChartData(new Date(DateUtils.nowUtc().getMillis()), balance));
+            log.debug("Last transaction date = " + previousDate + ", chart balance = " + balance + ", wallet balance = " + controller.getModel().getActiveWallet().getBalance());
         } catch (com.google.bitcoin.core.ScriptException e1) {
             e1.printStackTrace();
         }

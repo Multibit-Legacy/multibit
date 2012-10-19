@@ -1,5 +1,9 @@
 MultiBit release notes.
 
+Version 0.4.14
++ Fix for chart balance not matching wallet balance
++ Transaction display update speed up
+
 17 Oct 2012 Version 0.4.13
 + Send confirm dialog shows peer propagation
 + Reset blockchain and transactions bug fix
