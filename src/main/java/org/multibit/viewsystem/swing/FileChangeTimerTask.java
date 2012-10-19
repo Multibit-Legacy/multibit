@@ -20,6 +20,7 @@ import java.util.TimerTask;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.WalletSaveException;
+import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FileChangeTimerTask extends TimerTask {
 
+    public static final int INITIAL_DELAY = 10000; // milliseconds
     public static final int DEFAULT_REPEAT_RATE = 120000; // milliseconds
 
     private static Logger log = LoggerFactory.getLogger(FileChangeTimerTask.class);
@@ -81,6 +83,11 @@ public class FileChangeTimerTask extends TimerTask {
                             controller.getFileHandler().savePerWalletModelData(loopModelData, false);
                             log.debug("... done.");
                         } catch (WalletSaveException e) {
+                            String message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
+                                    new Object[] { loopModelData.getWalletFilename(), e.getMessage() });
+                            log.error(message);
+                            MessageManager.INSTANCE.addMessage(new Message(message));
+                        } catch (WalletVersionException e) {
                             String message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
                                     new Object[] { loopModelData.getWalletFilename(), e.getMessage() });
                             log.error(message);

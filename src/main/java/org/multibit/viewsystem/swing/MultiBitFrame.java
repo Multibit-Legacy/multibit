@@ -73,6 +73,7 @@ import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.action.MultiBitWalletBusyAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.SendBitcoinConfirmPanel;
 import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -106,7 +107,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final int WIDTH_OF_AMOUNT_FIELD = 150;
     public static final int WALLET_WIDTH_DELTA = 30;
 
-    private static final int SCROLL_BAR_DELTA = 20;
+    public static final int SCROLL_BAR_DELTA = 20;
 
     public static final int HEIGHT_OF_HEADER = 64;
 
@@ -167,6 +168,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private Timer fileChangeTimer;
 
     private Timer tickerTimer;
+    private TickerTimerTask tickerTimerTask;
 
     private JPanel headerPanel;
 
@@ -229,11 +231,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Initialise the file change timer.
         fileChangeTimer = new Timer();
-        fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), 0, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
+        fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), FileChangeTimerTask.INITIAL_DELAY, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
 
-        // Initialise the ticker.
+         // Initialise the ticker.
         tickerTimer = new Timer();
-        tickerTimer.schedule(new TickerTimerTask(controller, this), TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
+        tickerTimerTask = new TickerTimerTask(controller, this);
+        tickerTimer.schedule(tickerTimerTask, TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
 
         estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString(model.getActiveWalletEstimatedBalance(),
                 true, false));
@@ -247,7 +250,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         availableBalanceTextButton.setFocusable(false);
 
-        splitPane.setDividerLocation(calculateDividerPosition());
+        calculateDividerPosition();
  
         MultiBitTabbedPane.setEnableUpdates(true);
         displayView(initialView);
@@ -292,7 +295,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         headerPanel.setLayout(new GridBagLayout());
         headerPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
 
         JPanel balancePanel = createBalancePanel();
         constraints2.fill = GridBagConstraints.BOTH;
@@ -356,7 +358,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         splitPane.setOneTouchExpandable(false);
         splitPane.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, SystemColor.windowBorder));
         splitPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        splitPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -369,7 +370,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.anchor = GridBagConstraints.LINE_START;
         contentPane.add(splitPane, constraints);
 
-        splitPane.setDividerLocation(calculateDividerPosition());
+        calculateDividerPosition();
+        
+        // Cannot get the RTL wallets drawing nicely so switch off adjustment.
+        splitPane.setEnabled(ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         statusBar = new StatusBar(controller, this);
         statusBar.updateOnlineStatusText(online);
@@ -625,10 +629,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         menuItem.setComponentOrientation(componentOrientation);
         helpMenu.add(menuItem);
 
-        // Show help contents action.
-        MultiBitAction showHelpContentsAction = new MultiBitAction(controller, ImageLoader.HELP_CONTENTS_ICON_FILE,
+        MultiBitAction showHelpContentsAction;
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            showHelpContentsAction = new MultiBitAction(controller, ImageLoader.HELP_CONTENTS_ICON_FILE,
                 "showHelpContentsAction.text", "showHelpContentsAction.tooltip", "showHelpContentsAction.mnemonic",
                 View.HELP_CONTENTS_VIEW);
+        } else {
+            showHelpContentsAction = new MultiBitAction(controller, ImageLoader.HELP_CONTENTS_RTL_ICON_FILE,
+                    "showHelpContentsAction.text", "showHelpContentsAction.tooltip", "showHelpContentsAction.mnemonic",
+                    View.HELP_CONTENTS_VIEW);
+        }
         menuItem = new JMenuItem(showHelpContentsAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -985,10 +995,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     @Override
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+        fireDataChanged();
     }
 
     @Override
     public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
+        fireDataChanged();
     }
 
     /**
@@ -1000,17 +1012,23 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         recreateAllViews(false);
     }
 
-    public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
-        // The transaction confidence has changed for a transaction in a wallet so if the
-        // transactions are being shown the view needs updating
-        if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
-            // Tell the current view to update itself.
-            View currentViewView = viewFactory.getView(controller.getCurrentView());
-            if (currentViewView != null) {
-                currentViewView.displayView();
+    public void onTransactionConfidenceChanged(Wallet wallet, final Transaction transaction) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                // If viewing transactions, refresh the screen so that transaction confidence icons can update.
+                if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
+                    View currentViewView = viewFactory.getView(controller.getCurrentView());
+                    if (currentViewView != null) {
+                        currentViewView.displayView();
+                        
+                        invalidate();
+                        validate();
+                        repaint();
+                    }
+                }
+                SendBitcoinConfirmPanel.updatePanel(transaction);
             }
-        }
-
+        });
     }
 
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
@@ -1172,9 +1190,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         });
     }
     
-    private int calculateDividerPosition() {
+    public void calculateDividerPosition() {
         int dividerPosition = SingleWalletPanel.calculateNormalWidth((JComponent) (walletsView)) + WALLET_WIDTH_DELTA;
-        if (((WalletListPanel) walletsView).getScrollPane().isVisible()) {
+        if (((WalletListPanel) walletsView).getScrollPane().getVerticalScrollBar().isVisible()) {
             dividerPosition += SCROLL_BAR_DELTA;
         }
         if (walletsView != null && walletsView.getPreferredSize() != null && walletsView.getPreferredSize().width > dividerPosition) {
@@ -1183,12 +1201,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         
         if (ComponentOrientation.RIGHT_TO_LEFT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
             int width = getWidth();
-            if (width ==0) {
+            if (width == 0) {
                 width = (int) this.getPreferredSize().getWidth();
             }
-            dividerPosition = width - dividerPosition;
+            dividerPosition = width - dividerPosition; // - WalletListPanel.LEFT_BORDER - WalletListPanel.RIGHT_BORDER - 2;
         } 
-        return dividerPosition;
+        splitPane.setEnabled(true);
+        splitPane.setDividerLocation(dividerPosition);
+        splitPane.setEnabled(false);
     }
 
     public WalletListPanel getWalletsView() {
@@ -1208,5 +1228,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public TickerTablePanel getTickerTablePanel() {
         return tickerTablePanel;
+    }
+
+    public JSplitPane getSplitPane() {
+        return splitPane;
+    }
+
+    public TickerTimerTask getTickerTimerTask() {
+        return tickerTimerTask;
     }
 }

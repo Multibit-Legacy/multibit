@@ -50,7 +50,9 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletTableData;
 import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
@@ -86,7 +88,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
     private static final int MINIMUM_ICON_HEIGHT = 18;
 
-    private static final String PROGRESS_0_ICON_FILE = "/images/circleProgress0.png";
+    public static final String PROGRESS_0_ICON_FILE = "/images/circleProgress0.png";
     private static final String PROGRESS_1_ICON_FILE = "/images/circleProgress1.png";
     private static final String PROGRESS_2_ICON_FILE = "/images/circleProgress2.png";
     private static final String PROGRESS_3_ICON_FILE = "/images/circleProgress3.png";
@@ -178,12 +180,12 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
         tableColumn = table.getColumnModel().getColumn(3); // debit
         int debitWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.debitText")),
-                fontMetrics.stringWidth("000.0000"));
+                fontMetrics.stringWidth("00.00000000"));
         tableColumn.setPreferredWidth(debitWidth);
 
         tableColumn = table.getColumnModel().getColumn(4); // credit
         int creditWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.creditText")),
-                fontMetrics.stringWidth("000.0000"));
+                fontMetrics.stringWidth("00.00000000"));
         tableColumn.setPreferredWidth(creditWidth);
 
         // row sorter
@@ -222,6 +224,8 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -267,6 +271,10 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
         JLabel label = new JLabel();
 
+        ImageIcon shapeTriangleIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_TRIANGLE_ICON_FILE);
+        ImageIcon shapeSquareIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_SQUARE_ICON_FILE);
+        ImageIcon shapeHeptagonIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_PENTAGON_ICON_FILE);
+        ImageIcon shapeHexagonIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_HEXAGON_ICON_FILE);
         ImageIcon tickIcon = ImageLoader.createImageIcon(TICK_ICON_FILE);
         ImageIcon progress0Icon = ImageLoader.createImageIcon(PROGRESS_0_ICON_FILE);
         ImageIcon progress1Icon = ImageLoader.createImageIcon(PROGRESS_1_ICON_FILE);
@@ -307,7 +315,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
                     label.setIcon(null);
                 } else {
                     int numberOfBlocksEmbedded = controller.getMultiBitService().getChain().getBestChainHeight() - confidence.getAppearedAtChainHeight() + 1;
-                    ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded);
+                    ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded, confidence);
                     label.setIcon(buildingIcon);
                     label.setText("");
                     if (numberOfBlocksEmbedded >= 6) {
@@ -319,17 +327,18 @@ public class ShowTransactionsPanel extends JPanel implements View {
                 break;
             }
             case NOT_SEEN_IN_CHAIN: {
-                label.setIcon(progress0Icon);
+                label.setIcon(getConfidenceIcon(confidence));
                 label.setText("");
-                label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.notConfirmed"));
+                
+                label.setToolTipText(getConfidenceToolTip(confidence) );
 
                 // label.setText("NSIC");
                 break;
             }
             case NOT_IN_BEST_CHAIN: {
-                label.setIcon(progress0Icon);
+                label.setIcon(getConfidenceIcon(confidence));
                 label.setText("");
-                label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.notConfirmed"));
+                label.setToolTipText(getConfidenceToolTip(confidence) );
                 // label.setText("NSIBC");
                 break;
             }
@@ -359,7 +368,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
             return label;
         }
 
-        private ImageIcon getBuildingIcon(int numberOfBlocksEmbedded) {
+        private ImageIcon getBuildingIcon(int numberOfBlocksEmbedded, TransactionConfidence confidence) {
             if (numberOfBlocksEmbedded < 0) {
                 numberOfBlocksEmbedded = 0;
             }
@@ -371,7 +380,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
             switch (numberOfBlocksEmbedded) {
             case 0: {
-                return progress0Icon;
+                return getConfidenceIcon(confidence);
             }
             case 1: {
                 if (isLeftToRight) {
@@ -412,9 +421,60 @@ public class ShowTransactionsPanel extends JPanel implements View {
                 return tickIcon;
             }
             default:
-                return progress0Icon;
+                return getConfidenceIcon(confidence);
             }
         }
+        
+        private String getConfidenceToolTip(TransactionConfidence confidence) {
+            int peers = 0;
+            if (confidence != null && confidence.getBroadcastBy() != null) {
+                peers = confidence.getBroadcastBy().size();
+            }
+            StringBuilder builder = new StringBuilder();
+            if (peers == 0) {
+                builder.append(MultiBit.getController().getLocaliser()
+                        .getString("transactionConfidence.seenByUnknownNumberOfPeers"));
+            } else {
+                builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenBy") + " ");
+                builder.append(peers);
+                if (peers > 1)
+                    builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peers") + ". ");
+                else
+                    builder.append(" " + MultiBit.getController().getLocaliser().getString("transactionConfidence.peer") + ". ");
+            }
+
+            return HelpContentsPanel.createMultilineTooltipText(new String[] {
+                    controller.getLocaliser().getString("multiBitFrame.status.notConfirmed") + ".", builder.toString() });
+        }
+        
+        private ImageIcon getConfidenceIcon(TransactionConfidence confidence) {
+            // By default return a triangle which indicates the least known.
+            ImageIcon iconToReturn = shapeTriangleIcon;
+            
+            
+            if (confidence != null) {
+                if (confidence.getConfidenceType() == ConfidenceType.BUILDING) {
+                    return progress0Icon;
+                }
+            
+                if (confidence.getBroadcastBy() != null) {
+                    int numberOfPeers = confidence.getBroadcastBy().size();
+                    if (numberOfPeers >= 4) {
+                        return progress0Icon;
+                    } else {
+                        switch (numberOfPeers) {
+                        case 0 : iconToReturn = shapeTriangleIcon; break;
+                        case 1 : iconToReturn = shapeSquareIcon; break;
+                        case 2 : iconToReturn = shapeHeptagonIcon; break;
+                        case 3 : iconToReturn = shapeHexagonIcon; break;
+                        default:
+                            iconToReturn = shapeTriangleIcon; 
+                        }
+                    }
+                }
+            }
+            return iconToReturn;
+        }    
     }
 
     class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
