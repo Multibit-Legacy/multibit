@@ -228,9 +228,16 @@ public class ExportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(messageLabel2, constraints);
 
-        Action helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
-                "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
-                HelpContentsPanel.HELP_EXPORTING_PRIVATE_KEYS_URL);
+        Action helpAction;
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
+                    "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
+                    HelpContentsPanel.HELP_EXPORTING_PRIVATE_KEYS_URL);
+        } else {
+            helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_RTL_ICON_FILE,
+                    "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
+                    HelpContentsPanel.HELP_EXPORTING_PRIVATE_KEYS_URL);
+        }
         HelpButton helpButton = new HelpButton(helpAction, controller);
         helpButton.setText("");
 
@@ -269,6 +276,8 @@ public class ExportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
         mainScrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
 
         add(mainScrollPane, BorderLayout.CENTER);
     }

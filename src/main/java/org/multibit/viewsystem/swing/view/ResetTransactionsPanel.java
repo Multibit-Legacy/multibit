@@ -44,6 +44,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.ResetTransactionsDataProvider;
@@ -166,9 +167,17 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         constraints.anchor = GridBagConstraints.CENTER;
         mainPanel.add(filler1, constraints);
 
-        Action helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
-                "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
-                HelpContentsPanel.HELP_RESET_BLOCKCHAIN_URL);
+        Action helpAction;
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
+                    "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
+                    HelpContentsPanel.HELP_RESET_BLOCKCHAIN_URL);
+        } else {
+            helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_RTL_ICON_FILE,
+                    "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
+                    HelpContentsPanel.HELP_RESET_BLOCKCHAIN_URL);
+        }       
+        
         HelpButton helpButton = new HelpButton(helpAction, controller);
         helpButton.setText("");
         helpButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -206,6 +215,8 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
         mainScrollPane.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
 
         add(mainScrollPane, BorderLayout.CENTER);
     }
@@ -267,6 +278,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
         MultiBitLabel walletFilenameLabelLabel = new MultiBitLabel(controller.getLocaliser().getString(
                 "resetTransactionsPanel.walletFilenameLabel"));
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 6;
@@ -442,6 +454,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
         calendarChooser = new JCalendar(resetDate, controller.getLocaliser().getLocale(), true, false);
         calendarChooser.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
         calendarChooser.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent e) {

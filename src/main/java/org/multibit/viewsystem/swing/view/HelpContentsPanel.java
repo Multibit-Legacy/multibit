@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Dimension;
 
@@ -28,6 +29,7 @@ import javax.swing.SwingUtilities;
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
+import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -86,6 +88,8 @@ public class HelpContentsPanel extends JPanel implements View {
                 JScrollPane scrollPane = new JScrollPane(browser);
                 scrollPane.setPreferredSize(new Dimension(800, 400));
                 scrollPane.setBorder(BorderFactory.createEmptyBorder());
+                scrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+                scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
                 add(scrollPane, BorderLayout.CENTER);          
             }
             
@@ -132,7 +136,11 @@ public class HelpContentsPanel extends JPanel implements View {
     
     @Override
     public Icon getViewIcon() {
-        return ImageLoader.createImageIcon(ImageLoader.HELP_CONTENTS_ICON_FILE);
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            return ImageLoader.createImageIcon(ImageLoader.HELP_CONTENTS_ICON_FILE);
+        } else {
+            return ImageLoader.createImageIcon(ImageLoader.HELP_CONTENTS_RTL_ICON_FILE);
+        }
     }
 
     @Override

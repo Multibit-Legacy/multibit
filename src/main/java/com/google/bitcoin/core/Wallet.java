@@ -302,7 +302,6 @@ public class Wallet implements Serializable, IsMultiBitClass {
         return params;
     }
 
-
     /**
      * Returns a wallet deserialized from the given file.
      */
@@ -315,8 +314,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         }
     }
     
-    public boolean isConsistent() {
-        
+    public boolean isConsistent() {        
         // Seems overzealous so switch off for now.
         return true;
     }
@@ -473,6 +471,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
                 || tx.getValueSentToMe(this).compareTo(BigInteger.ZERO) > 0
                 || (includeDoubleSpending && (findDoubleSpendAgainstPending(tx) != null));
     }
+    
 
     /**
      * Checks if "tx" is spending any inputs of pending transactions. Not a general check, but it can work even if
@@ -1981,6 +1980,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
     }
 
     private void removeEntriesAfterDate(Map<Sha256Hash, Transaction> pool, Date fromDate) {
+        log.debug("Wallet#removeEntriesAfterDate - Removing transactions later than " + fromDate.toString());
         Set<Entry<Sha256Hash, Transaction>> loopEntries = pool.entrySet();
         Iterator<Entry<Sha256Hash, Transaction>> iterator = loopEntries.iterator();
         while(iterator.hasNext()) {
@@ -1989,18 +1989,19 @@ public class Wallet implements Serializable, IsMultiBitClass {
                 Date updateTime = member.getValue().getUpdateTime();
                 if (updateTime != null && updateTime.after(fromDate)) {
                     iterator.remove();
+                    log.debug("Wallet#removeEntriesAfterDate - Removed tx.1 " + member.getValue());
                     continue;
                 }
                 
                 // if no updateTime remove them
                 if (updateTime == null || updateTime.getTime() == 0) {
                     iterator.remove();
+                    log.debug("Removed tx.2 " + member.getValue());
                     continue;                    
                 }
             }
         }
     }
- 
 
     public EncryptionType getEncryptionType() {
         if (encryptionType == null) {

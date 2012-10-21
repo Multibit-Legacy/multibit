@@ -48,6 +48,7 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.TickerTimerTask;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
@@ -331,6 +332,8 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
+        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
 
         add(mainScrollPane, BorderLayout.CENTER);
 
@@ -977,13 +980,30 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         tickerPanel.add(currencyLabel1, constraints);
-
+        
+        // Make sure the exchange has initialised the list of currencies.
+        if (mainFrame != null && mainFrame.getTickerTimerTask() != null) {
+            TickerTimerTask tickerTimerTask = mainFrame.getTickerTimerTask();
+            synchronized(tickerTimerTask) {
+                if (tickerTimerTask.getMtGox() == null) {
+                    tickerTimerTask.createExchange();
+                }
+            }
+            
+        }
+        
         currencyComboBox1 = new JComboBox(controller.getModel().getExchangeData()
                 .getAvailableCurrenciesForExchange(exchangeToUse1));
         if (originalCurrency1 == null | "".equals(originalCurrency1)) {
             currencyComboBox1.setSelectedItem(ExchangeData.DEFAULT_CURRENCY);
         } else {
             currencyComboBox1.setSelectedItem(originalCurrency1);
+            // The currency may have disappeared if the exchange has removed it.
+            // Add it back in, otherwise currency choice is lost.
+            if (!originalCurrency1.equals(((String)currencyComboBox1.getSelectedItem()))) {
+                currencyComboBox1.addItem(originalCurrency1);
+                currencyComboBox1.setSelectedItem(originalCurrency1);
+            }
         }
         currencyComboBox1.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         currencyComboBox1.setOpaque(false);
@@ -1068,6 +1088,12 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
             currencyComboBox2.setSelectedItem(ExchangeData.DEFAULT_CURRENCY);
         } else {
             currencyComboBox2.setSelectedItem(originalCurrency2);
+            // The currency may have disappeared if the exchange has removed it.
+            // Add it back in, otherwise currency choice is lost.
+            if (!originalCurrency2.equals(((String)currencyComboBox2.getSelectedItem()))) {
+                currencyComboBox2.addItem(originalCurrency2);
+                currencyComboBox2.setSelectedItem(originalCurrency2);
+            }
         }
 
         currencyComboBox2.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());

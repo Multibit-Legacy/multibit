@@ -48,6 +48,7 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopyReceiveAddressAction;
 import org.multibit.viewsystem.swing.action.CreateNewReceivingAddressAction;
+import org.multibit.viewsystem.swing.action.DeleteSendingAddressAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.MoreOrLessAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
@@ -86,7 +87,8 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
     
     @Override
     protected Action getDeleteAddressAction() {
-        return null;
+        // Return a delete sending address action - it gets turned into a stent
+        return new DeleteSendingAddressAction(controller, mainFrame, null);
     }
  
     @Override
@@ -220,12 +222,18 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
         labelScrollPane.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
                 .getHeight() * AbstractTradePanel.PREFERRED_NUMBER_OF_LABEL_ROWS + TEXTFIELD_VERTICAL_DELTA));
 
+        labelScrollPane.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
+                .getHeight() * AbstractTradePanel.PREFERRED_NUMBER_OF_LABEL_ROWS + TEXTFIELD_VERTICAL_DELTA + 6));
+        labelScrollPane.setPreferredSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
+                .getHeight() * AbstractTradePanel.PREFERRED_NUMBER_OF_LABEL_ROWS + TEXTFIELD_VERTICAL_DELTA + 6));
+        labelScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        labelScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
 
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
         constraints.gridy = 3;
         constraints.weightx = 0.6;
-        constraints.weighty = 2.0;
+        constraints.weighty = 1.0;
         constraints.gridwidth = 4;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
@@ -263,7 +271,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
                 + TEXTFIELD_VERTICAL_DELTA));
         amountTextField.addKeyListener(new QRCodeKeyListener());
 
-        constraints.fill = GridBagConstraints.BOTH;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
         constraints.gridy = 5;
         constraints.weightx = 1.0;
@@ -271,16 +279,12 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
-            amountPanel.add(amountTextField, BorderLayout.WEST);
-        } else {
-            amountPanel.add(amountTextField, BorderLayout.EAST);            
-        }        formPanel.add(amountPanel, constraints);
-
+        amountPanel.add(amountTextField, BorderLayout.LINE_START);
+        formPanel.add(amountPanel, constraints);
+        
         MultiBitLabel amountUnitLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountUnitLabel"));
-        amountUnitLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+        amountUnitLabel.setHorizontalTextPosition(SwingConstants.LEADING);
         amountUnitLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel.tooltip"));
-        //amountUnitLabel.setBorder(BorderFactory.createLineBorder(Color.CYAN));
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 3;
         constraints.gridy = 5;
@@ -290,17 +294,35 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
 
+        JPanel filler2 = new JPanel();
+        filler2.setOpaque(false);
+        
         JPanel amountUnitLabelPanel = new JPanel();
         amountUnitLabelPanel.setOpaque(false);
         amountUnitLabelPanel.setLayout(new BorderLayout());
-        amountUnitLabelPanel.add(MultiBitTitledPanel.createStent(AbstractTradePanel.AMOUNT_BTC_INDENT), BorderLayout.WEST);
-        amountUnitLabelPanel.add(amountUnitLabel, BorderLayout.CENTER);
+        
+        JPanel amountUnitLabelPanel2 = new JPanel();
+        amountUnitLabelPanel2.setOpaque(false);
+        amountUnitLabelPanel2.setLayout(new BorderLayout());
+        
+        amountUnitLabelPanel.add(amountUnitLabel, BorderLayout.LINE_START);
+        amountUnitLabelPanel.add(filler2, BorderLayout.CENTER);
+        amountUnitLabelPanel2.add(MultiBitTitledPanel.createStent(AbstractTradePanel.AMOUNT_BTC_INDENT), BorderLayout.LINE_START);
 
-        amountPanel.add(amountUnitLabelPanel, BorderLayout.CENTER);
+        amountUnitLabelPanel2.add(amountUnitLabelPanel, BorderLayout.CENTER);
 
-        Action helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
-                "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
-                HelpContentsPanel.HELP_RECEIVING_URL);
+        amountPanel.add(amountUnitLabelPanel2, BorderLayout.CENTER);
+
+        Action helpAction;
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
+                    "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
+                    HelpContentsPanel.HELP_RECEIVING_URL);
+        } else {
+            helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_RTL_ICON_FILE,
+                    "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
+                    HelpContentsPanel.HELP_RECEIVING_URL);
+        }
         HelpButton helpButton = new HelpButton(helpAction, controller);
         helpButton.setText("");
  

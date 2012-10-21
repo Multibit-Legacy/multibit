@@ -17,9 +17,12 @@ package org.multibit.viewsystem.swing.view.walletlist;
 
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.SystemColor;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -51,7 +54,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The wallet list view.
  */
-public class WalletListPanel extends JPanel implements View, WalletBusyListener {
+public class WalletListPanel extends JPanel implements View, WalletBusyListener, ComponentListener {
 
     private static final long serialVersionUID = 191352298245057705L;
 
@@ -60,10 +63,18 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
 
+    private MultiBitTabbedPane tabbedPane;
+    private JPanel tabPanel;
     private JPanel walletListPanel;
     private ArrayList<SingleWalletPanel> walletPanels;
+    private JPanel buttonPanel;
+
 
     private JScrollPane scrollPane;
+    
+    private static final int TOP_BORDER = 4;
+    public static final int LEFT_BORDER = 3;
+    public static final int RIGHT_BORDER = 3;
 
     public JScrollPane getScrollPane() {
         return scrollPane;
@@ -80,10 +91,10 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener 
         walletPanels = new ArrayList<SingleWalletPanel>();
 
         setOpaque(false);
- 
-        initUI();
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
+        initUI();
         
         controller.registerWalletBusyListener(this);
     }
@@ -93,6 +104,14 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener 
         if (walletPanels != null) {
             synchronized(walletPanels) {
                 for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
+                    if (buttonPanel != null) {
+                        int buttonPanelPreferredWidth = buttonPanel.getPreferredSize().width;
+                        int loopPanelPreferredWidth = loopSingleWalletPanel.getPreferredSize().width;
+                        if (buttonPanelPreferredWidth > loopPanelPreferredWidth) {
+                            loopSingleWalletPanel.setPreferredSize(new Dimension(buttonPanelPreferredWidth, loopSingleWalletPanel
+                                    .getPreferredSize().height));
+                        }
+                    }
                     // Make sure the totals displayed and encryption status are correct.
                     loopSingleWalletPanel.updateFromModel();
                     loopSingleWalletPanel.invalidate();
@@ -110,6 +129,8 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener 
             selectWalletPanelByFilename(activePerModelData.getWalletFilename());
         }
 
+        setPreferredSizes();
+        
         invalidate();
         revalidate();
         repaint();
@@ -142,8 +163,10 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener 
         this.removeAll();
         setLayout(new BorderLayout());
 
-        MultiBitTabbedPane tabbedPane = new MultiBitTabbedPane(controller);
-        JPanel tabPanel = new JPanel(new BorderLayout());
+        tabbedPane = new MultiBitTabbedPane(controller);
+        tabPanel = new JPanel(new BorderLayout());
+
+        buttonPanel = createButtonPanel();
 
         createWalletListPanel();
         scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -162,7 +185,29 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener 
                 tabPanel);
  
         add(tabbedPane, BorderLayout.CENTER);
+        
+        setPreferredSizes();
     }
+
+    private void setPreferredSizes() {
+//      // Try to fix scroll bar for RTL.
+//      if (ComponentOrientation.RIGHT_TO_LEFT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+//          int preferredWidth = Math.max(SingleWalletPanel.calculateNormalWidth(this) + LEFT_BORDER + RIGHT_BORDER,
+//                  buttonPanel.getPreferredSize().width);
+//          if (scrollPane.getVerticalScrollBar().isVisible()) {
+//              preferredWidth -= MultiBitFrame.SCROLL_BAR_DELTA;
+//          }
+//          int totalHeight = 0;
+//          for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
+//              if (buttonPanel != null) {
+//                      loopSingleWalletPanel.setPreferredSize(new Dimension(preferredWidth, loopSingleWalletPanel
+//                              .getPreferredSize().height));
+//              }
+//              totalHeight += loopSingleWalletPanel.getPreferredSize().height;
+//          }
+//          walletListPanel.setPreferredSize(new Dimension(preferredWidth, totalHeight));
+//      }        
+  }
 
     private JPanel createWalletListPanel() {
         walletListPanel = new JPanel();
@@ -176,30 +221,48 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener 
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
         GridBagConstraints constraints = new GridBagConstraints();
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        constraints.weightx = 1.0;
+        constraints.weightx = 10.0;
         constraints.weighty = 1.0;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.CENTER;
 
         if (perWalletModelDataList != null) {
-            synchronized(walletPanels) {
+            synchronized (walletPanels) {
                 for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
                     if (loopPerWalletModelData.getWallet() != null) {
                         JPanel outerPanel = new JPanel();
                         outerPanel.setOpaque(false);
-                        outerPanel.setBorder(BorderFactory.createEmptyBorder(4, 3, 0, 3));
-                        outerPanel.setLayout(new BorderLayout());
-                        outerPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-                        SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, controller, mainFrame);
-                        loopPanel.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+                        outerPanel.setBorder(BorderFactory.createEmptyBorder(TOP_BORDER, LEFT_BORDER, 0, RIGHT_BORDER));
+                        outerPanel.setLayout(new GridBagLayout());
 
-                        outerPanel.add(loopPanel, BorderLayout.CENTER);
+                        GridBagConstraints constraints2 = new GridBagConstraints();
+                        constraints2.fill = GridBagConstraints.BOTH;
+                        constraints2.gridx = 0;
+                        constraints2.gridy = 0;
+                        constraints2.weightx = 1.0;
+                        constraints2.weighty = 1.0;
+                        constraints2.gridwidth = 1;
+                        constraints2.gridheight = 1;
+                        constraints2.anchor = GridBagConstraints.CENTER;
+
+                        SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, controller, mainFrame);
+                        loopPanel.setComponentOrientation(ComponentOrientation
+                                .getOrientation(controller.getLocaliser().getLocale()));
+
+                        int buttonPanelPreferredWidth = buttonPanel.getPreferredSize().width;
+                        int loopPanelPreferredWidth = loopPanel.getPreferredSize().width;
+                        if (buttonPanelPreferredWidth > loopPanelPreferredWidth) {
+                            loopPanel
+                                    .setPreferredSize(new Dimension(buttonPanelPreferredWidth, loopPanel.getPreferredSize().height));
+                        }
+
+                        outerPanel.add(loopPanel, constraints2);
                         loopPanel.addMouseListener(new WalletMouseListener());
-    
+
                         walletListPanel.add(outerPanel, constraints);
                         walletPanels.add(loopPanel);
                         constraints.gridy = constraints.gridy + 1;
@@ -347,20 +410,29 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener 
         return View.YOUR_WALLETS_VIEW;
     }
 
-    public String getPreviousCurrency2() {
-        return null;
+    @Override
+    public void componentHidden(ComponentEvent arg0) {        
     }
 
-    public String getPreviousExchange2() {
-        return null;
+    @Override
+    public void componentMoved(ComponentEvent arg0) {   
     }
 
-    public boolean getPreviousShowSecondRow() {
-        return false;
+    @Override
+    public void componentResized(ComponentEvent arg0) {
+        int preferredWalletWidth = SingleWalletPanel.calculateNormalWidth(this) + LEFT_BORDER + RIGHT_BORDER + 4;
+        if (scrollPane.getVerticalScrollBar().isVisible()) {
+            preferredWalletWidth -= MultiBitFrame.SCROLL_BAR_DELTA;
+        }         
+
+        walletListPanel.setPreferredSize(new Dimension(preferredWalletWidth, walletListPanel.getPreferredSize().height));
+        mainFrame.calculateDividerPosition();
+        
+        setPreferredSizes();
     }
 
-    public String getPreviousCurrency1() {
-        return null;
+    @Override
+    public void componentShown(ComponentEvent arg0) {
     }
 
     @Override

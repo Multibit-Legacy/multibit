@@ -80,6 +80,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private static final int DETAIL_HEIGHT_DELTA = 4;
     private static final int WIDTH_DELTA = 4;
     private static final int MIN_WIDTH_SCROLLBAR_DELTA = 20;
+    private static final double MINIMUM_WIDTH_SCALE_FACTOR = 0.5;
 
     private static Color inactiveBackGroundColor;
     private Border underlineBorder;
@@ -124,6 +125,14 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private Icon detailsPanelOffIcon;
     private Icon detailsPanelOnIcon;
      
+    private static final int TWISTY_LEFT_OR_RIGHT_BORDER = 8;
+    private static final int TWISTY_TOP_BORDER = 3;
+
+    private JLabel twistyLabel;
+    private Icon twistyLeftIcon;
+    private Icon twistyRightIcon;
+    private Icon twistyDownIcon;
+    
     private String unencryptedTooltip = "";
     private String encryptedTooltip = "";
     
@@ -154,6 +163,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         detailsPanelOffIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_RIGHT_ICON_FILE);
         detailsPanelOnIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_DOWN_ICON_FILE);
         
+        twistyLeftIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_LEFT_ICON_FILE);
+        twistyRightIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_RIGHT_ICON_FILE);
+        twistyDownIcon = ImageLoader.createImageIcon(ImageLoader.TWISTY_DOWN_ICON_FILE);
+
         unencryptedTooltip = HelpContentsPanel.createMultilineTooltipText(new String[] {controller.getLocaliser().getString("singleWalletPanel.unencrypted.tooltip"),
                 " ", controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip")});
         encryptedTooltip = HelpContentsPanel.createMultilineTooltipText(new String[] {controller.getLocaliser().getString("singleWalletPanel.encrypted.tooltip"), 
@@ -172,8 +185,13 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         myRoundedPanel.setLayout(new GridBagLayout());
         myRoundedPanel.setOpaque(false);
         myRoundedPanel.setPreferredSize(new Dimension(normalWidth, normalHeight));
-        myRoundedPanel.setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, normalHeight));
-        myRoundedPanel.setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            myRoundedPanel.setMinimumSize(new Dimension(calculateMinimumWidth(normalWidth), normalHeight));
+        } else {
+            myRoundedPanel.setMinimumSize(new Dimension(normalWidth, normalHeight));
+        }
+
+         myRoundedPanel.setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
 
         setOpaque(true);
         setFocusable(true);
@@ -254,14 +272,14 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.LINE_START;
         myRoundedPanel.add(hourglassLabel, constraints);
 
-        // Show details is initially invisible.
-        showDetailLabel = new JLabel();
-        showDetailLabel.setOpaque(false);
-        showDetailLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.TWISTY_DOWN_ICON_FILE));
-        showDetailLabel.setBorder(BorderFactory.createEmptyBorder(DETAILS_TOP_BORDER, DETAILS_LEFT_BORDER, 0, 0));
-        showDetailLabel.setVisible(false);
-        showDetailLabel.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent evt) {
+        // Twisty is initially invisible.
+        twistyLabel = new JLabel();
+        twistyLabel.setOpaque(false);
+        twistyLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.TWISTY_DOWN_ICON_FILE));
+        twistyLabel.setBorder(BorderFactory.createEmptyBorder(TWISTY_TOP_BORDER, TWISTY_LEFT_OR_RIGHT_BORDER, 0, TWISTY_LEFT_OR_RIGHT_BORDER));
+        twistyLabel.setVisible(false);
+        twistyLabel.addMouseListener(new MouseAdapter() {
+             public void mouseClicked(MouseEvent evt) {
                 expanded = !expanded;
                 setSelected(selected);
                 thisPanel.invalidate();
@@ -277,7 +295,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        myRoundedPanel.add(showDetailLabel, constraints);
+        myRoundedPanel.add(twistyLabel, constraints);
        
         amountLabel = new BlinkLabel(controller, false);
         amountLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
@@ -381,9 +399,17 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     public static int calculateNormalWidth(JComponent component) {
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
         FontMetrics fontMetrics = component.getFontMetrics(font);
-        return (int) (fontMetrics.getMaxAdvance() * WIDTH_OF_TEXT_FIELD * 0.66 + WIDTH_DELTA);
+        return (int) (fontMetrics.getMaxAdvance() * WIDTH_OF_TEXT_FIELD * 0.75 + WIDTH_DELTA);
     }
-
+    
+    private int calculateMinimumWidth(int normalWidth) {
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            return (int)Math.max(0, normalWidth * MINIMUM_WIDTH_SCALE_FACTOR - MIN_WIDTH_SCROLLBAR_DELTA);            
+        } else {
+            return normalWidth;
+        }
+    }
+    
     @Override
     public void addMouseListener(MouseListener mouseListener) {
         super.addMouseListener(mouseListener);
@@ -412,56 +438,62 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         roundedBottomPanel.setSelected(selected);
         if (!perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
             if (expanded) {
-                showDetailLabel.setIcon(detailsPanelOnIcon);
-                showDetailLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.twistyDownText"));
+                twistyLabel.setIcon(twistyDownIcon);
+                twistyLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.twistyDownText"));
                 detailPanel.setVisible(true);
                 setPreferredSize(new Dimension(normalWidth, expandedHeight));
-                setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, expandedHeight));
+                if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+                    setMinimumSize(new Dimension(calculateMinimumWidth(normalWidth), expandedHeight));
+                } else {
+                    setMinimumSize(new Dimension(normalWidth, expandedHeight));
+                }
                 setMaximumSize(new Dimension(normalWidth * 2, expandedHeight));
             } else {
-                showDetailLabel.setIcon(detailsPanelOffIcon);
-                showDetailLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.twistyRightText"));
+                if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()) == ComponentOrientation.LEFT_TO_RIGHT) {
+                    twistyLabel.setIcon(twistyRightIcon);
+                } else {
+                    twistyLabel.setIcon(twistyLeftIcon);                    
+                }
+                twistyLabel.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.twistyRightText"));
                 detailPanel.setVisible(false);
                 setPreferredSize(new Dimension(normalWidth, normalHeight));
-                setMinimumSize(new Dimension(normalWidth - MIN_WIDTH_SCROLLBAR_DELTA, normalHeight));
+                if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+                    setMinimumSize(new Dimension(calculateMinimumWidth(normalWidth), normalHeight));
+                } else {
+                    setMinimumSize(new Dimension(normalWidth, normalHeight));                    
+                }
                 setMaximumSize(new Dimension(normalWidth * 2, normalHeight));
             }
 
-            if (perWalletModelData.getWallet() != null) {
-                setIconForWalletType(perWalletModelData.getWallet().getEncryptionType(), walletTypeButton);
-            }
-            
             if (selected) {
                 walletDescriptionTextField.setForeground(Color.BLACK);
                 if (!walletDescriptionTextField.isEditable()) {
                     walletDescriptionTextField.setEditable(true);
-                    // May not have the caret quite right.
-                    // Send the focus to the panel.
+                    // may not have the caret quite right
+                    // send the focus to the panel
                     requestFocusInWindow();
                 }
 
                 walletDescriptionTextField.setBorder(walletDescriptionTextFieldBorder);
-                //walletDescriptionTextField.setOpaque(true);
                 walletDescriptionTextField.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
                 myRoundedPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
                 roundedBottomPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+                
                 myRoundedPanel.repaint();
                 roundedBottomPanel.repaint();
-                showDetailLabel.setVisible(true); 
+                twistyLabel.setVisible(true);
             } else {
                 walletDescriptionTextField.setForeground(Color.BLACK);
                 walletDescriptionTextField.setEditable(false);
-                Insets insets = walletDescriptionTextFieldBorder.getBorderInsets(walletDescriptionTextField);
-                Border border = BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.right);
+                Border border = BorderFactory.createEmptyBorder(5, 7, 5, 5);
                 walletDescriptionTextField.setBorder(border);
-                //walletDescriptionTextField.setOpaque(false);
                 walletDescriptionTextField.setBackground(inactiveBackGroundColor);
-                myRoundedPanel.setBackground(inactiveBackGroundColor);  
+                myRoundedPanel.setBackground(inactiveBackGroundColor);
                 roundedBottomPanel.setBackground(inactiveBackGroundColor);
 
                 myRoundedPanel.repaint();
                 roundedBottomPanel.repaint();
-                showDetailLabel.setVisible(false);
+                twistyLabel.setVisible(false);
             }
         }
     }
@@ -498,6 +530,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
 
     private void saveChanges() {
         if (!perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
+            walletDescriptionTextField.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+            walletDescriptionTextField.setForeground(Color.BLACK);
+
             walletDescriptionTextField.select(0, 0);
             String text = walletDescriptionTextField.getText();
             perWalletModelData.setWalletDescription(text);
@@ -566,6 +601,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         roundedBottomPanel.setOpaque(true);
         roundedBottomPanel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         roundedBottomPanel.setLayout(new GridBagLayout());
+        roundedBottomPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         JPanel innerDetailPanel = new JPanel();
         innerDetailPanel.setOpaque(false);
@@ -579,7 +615,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         filenameLabel.setBorder(underlineBorder);
 
         String filenameString = controller.getLocaliser().getString("resetTransactionsPanel.walletFilenameLabel");
-        filenameString = WhitespaceTrimmer.trim(filenameString.replaceAll(":", "")) + " :";
+        filenameString = WhitespaceTrimmer.trim(filenameString.replaceAll(":", "")) + " : ";
         filenameLabel.setText(filenameString);
         filenameLabel.setHorizontalAlignment(SwingConstants.TRAILING);
         constraints.fill = GridBagConstraints.HORIZONTAL;

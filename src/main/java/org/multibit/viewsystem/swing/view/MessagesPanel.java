@@ -32,8 +32,8 @@ import org.multibit.message.LimitLinesDocumentListener;
 import org.multibit.message.Message;
 import org.multibit.message.MessageListener;
 import org.multibit.message.MessageManager;
+import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
-import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -76,6 +76,8 @@ public class MessagesPanel extends JPanel implements View, MessageListener {
         mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
+        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
 
         add(mainScrollPane, BorderLayout.CENTER);
 

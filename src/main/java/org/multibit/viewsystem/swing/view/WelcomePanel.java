@@ -31,6 +31,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -62,8 +63,6 @@ public class WelcomePanel extends JPanel implements View {
         setLayout(new BorderLayout());
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
-        this.controller = controller;
 
         initUI();
     }
@@ -98,9 +97,16 @@ public class WelcomePanel extends JPanel implements View {
         constraints.anchor = GridBagConstraints.CENTER;
         mainPanel.add(MultiBitTitledPanel.createStent(12, 12), constraints);
 
-        Action helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
+        Action helpAction;
+        if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
+            helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
                 "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
                 HelpContentsPanel.HELP_CONTENTS_URL);
+        } else {
+            helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_RTL_ICON_FILE,
+                    "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
+                    HelpContentsPanel.HELP_CONTENTS_URL);
+        }
         HelpButton helpButton = new HelpButton(helpAction, controller);
         helpButton.setText("");
 
@@ -136,6 +142,8 @@ public class WelcomePanel extends JPanel implements View {
         mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
+        mainScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
 
         add(mainScrollPane, BorderLayout.CENTER);
     }

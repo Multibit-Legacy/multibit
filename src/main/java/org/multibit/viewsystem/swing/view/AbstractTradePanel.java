@@ -124,7 +124,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     private static final int TABLE_BORDER = 3;
 
-    protected static final int PREFERRED_NUMBER_OF_LABEL_ROWS = 2;
+    protected static final int PREFERRED_NUMBER_OF_LABEL_ROWS = 3;
 
     protected MultiBitFrame mainFrame;
 
@@ -162,7 +162,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     protected static final int QRCODE_WIDTH = 140;
     protected static final int QRCODE_HEIGHT = 140;
 
-    protected static final int TEXTFIELD_VERTICAL_DELTA = 8;
+    protected static final int TEXTFIELD_VERTICAL_DELTA = 16;
     protected static final int HELP_BUTTON_INDENT = 6;
     protected static final int AMOUNT_BTC_INDENT = 4;
 
@@ -200,6 +200,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     protected String ADDRESSES_TITLE = "addressesTitle";
     protected String CREATE_NEW_TOOLTIP = "createNewTooltip";
+    protected String DELETE_TOOLTIP = "deleteTooltip";
 
     public AbstractTradePanel(MultiBitFrame mainFrame, MultiBitController controller) {
         this.mainFrame = mainFrame;
@@ -217,11 +218,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         localisationKeyConstantToKeyMap = new HashMap<String, String>();
         populateLocalisationMap();
-
-        String showSidePanelText = controller.getModel().getUserPreference(MultiBitModel.SHOW_SIDE_PANEL);
-        if (Boolean.TRUE.toString().equals(showSidePanelText)) {
-            showSidePanel = true;
-        }
 
         initUI();
 
@@ -287,7 +283,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
         String showSidePanelText = controller.getModel().getUserPreference(MultiBitModel.SHOW_SIDE_PANEL);
-        if (Boolean.TRUE.toString().equals(showSidePanelText)) {
+        if (!Boolean.FALSE.toString().equals(showSidePanelText)) {
             showSidePanel = true;
         }
 
@@ -364,7 +360,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.CENTER;
         panel.add(
-                MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS, fontMetrics.getHeight()),
+                MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS, separatorSize),
                 constraints);
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -531,7 +527,20 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         int offset = 0;
         deleteAddressAction = getDeleteAddressAction();
-        if (deleteAddressAction != null) {
+        if (isReceiveBitcoin()) {
+            // Put in a stent
+            MultiBitButton dummyDeleteButton = new MultiBitButton(deleteAddressAction, controller);
+            JPanel deleteButtonStent = MultiBitTitledPanel.createStent(dummyDeleteButton.getPreferredSize().width, dummyDeleteButton.getPreferredSize().height);
+            offset = 1;
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.gridx = 2;
+            constraints.gridy = 0;
+            constraints.gridwidth = 1;
+            constraints.weightx = 0.1;
+            constraints.weighty = 1;
+            constraints.anchor = GridBagConstraints.LINE_START;
+            addressesHeaderPanel.add(deleteButtonStent, constraints);
+        } else {
             deleteButton = new MultiBitButton(deleteAddressAction, controller);
             offset = 1;
             constraints.fill = GridBagConstraints.NONE;
@@ -542,6 +551,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             constraints.weighty = 1;
             constraints.anchor = GridBagConstraints.LINE_START;
             addressesHeaderPanel.add(deleteButton, constraints);
+
+            
         }
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -573,7 +584,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints.gridx = 4;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
-        constraints.weightx = 25;
+        constraints.weightx = 1000;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         addressesHeaderPanel.add(filler2, constraints);
@@ -673,6 +684,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -764,9 +777,6 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                                 rowData.getAddress());
                         controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getLabelConstant(),
                                 rowData.getLabel());
-//                        if (addressTextArea != null) {
-//                            addressTextArea.setText(rowData.getAddress());
-//                        }
                         if (addressTextField != null) {
                             addressTextField.setText(rowData.getAddress());
                         }
@@ -927,8 +937,23 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         qrCodeScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         qrCodeScrollPane.setBorder(BorderFactory.createEmptyBorder());
         qrCodeScrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
+        qrCodeScrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        qrCodeScrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
 
         panel.add(qrCodeScrollPane, constraints);
+
+        constraints.fill = GridBagConstraints.VERTICAL;
+        constraints.gridx = QR_CODE_LEFT_COLUMN + 6;
+        constraints.gridy = 3;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 5;
+        constraints.gridheight = 3;
+        constraints.anchor = GridBagConstraints.BASELINE;
+        
+        JPanel verticalStent = MultiBitTitledPanel.createStent(1, QRCODE_HEIGHT);
+        //verticalStent.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
+        panel.add(verticalStent, constraints);
 
         createQRCodeButtonPanel(panel, constraints);
     }
@@ -1120,6 +1145,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                 createNewButton.setEnabled(false);
                 mainFrame.setUpdatesStoppedTooltip(createNewButton);
             }
+            if (deleteButton != null) {
+                deleteButton.setEnabled(false);
+                mainFrame.setUpdatesStoppedTooltip(deleteButton);
+            }
             if (pasteSwatchButton != null) {
                 pasteSwatchButton.setEnabled(false);
                 mainFrame.setUpdatesStoppedTooltip(pasteSwatchButton);
@@ -1134,6 +1163,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             if (createNewButton != null) {
                 createNewButton.setEnabled(true);
                 createNewButton.setToolTipText(getLocalisationString(CREATE_NEW_TOOLTIP, null));
+            }
+            if (deleteButton != null) {
+                deleteButton.setEnabled(true);
+                deleteButton.setToolTipText(getLocalisationString(DELETE_TOOLTIP, null));
             }
             if (pasteSwatchButton != null) {
                 pasteSwatchButton.setEnabled(true);
