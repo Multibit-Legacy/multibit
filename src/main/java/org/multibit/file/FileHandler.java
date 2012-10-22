@@ -29,7 +29,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
-import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,6 +49,7 @@ import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 
@@ -306,7 +306,7 @@ public class FileHandler {
 
    /**
     * To protect the wallet data, the write is in steps:
-    * 1) Create a backup file called <wallet file name>.<random number>.bak and copy the original wallet to that
+    * 1) Create a backup file called <wallet file name>-<yyyymmddhhmmss>.wallet and copy the original wallet to that
     * 2) Write the new wallet to the walletFilename
     * 3) Delete the old backup file
     * 4) Make the backup file in step 1) the new backup file
@@ -335,18 +335,43 @@ public class FileHandler {
                 log.debug("Saving wallet file '" + walletFile.getAbsolutePath() + "' ...");
                 if (WalletMajorVersion.SERIALIZED == walletInfo.getWalletMajorVersion()) {
                     saveToFileAsSerialised(perWalletModelData.getWallet(), walletFile);
-                } else if (WalletMajorVersion.PROTOBUF == walletInfo.getWalletMajorVersion()) {
-                    // Save as a Wallet message.
-                    perWalletModelData.getWallet().saveToFile(walletFile);
-                } else if (WalletMajorVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletMajorVersion()) {
-                     fileOutputStream = new FileOutputStream(walletFile);
-                    
-                    // Save as a Wallet message with a mandatory extension to prevent loading by older versions of multibit.
-                    walletProtobufSerializer.writeWalletWithMandatoryExtension(perWalletModelData.getWallet(), fileOutputStream);
                 } else {
-                    throw new WalletVersionException("Cannot save wallet '" + perWalletModelData.getWalletFilename()
-                            + "'. Its wallet version is '" + walletInfo.getWalletMajorVersion().toString()
-                            + "' but this version of MultiBit does not understand that format.");
+                    // See if there are any encrypted private keys - if there
+                    // are the wallet will be saved
+                    // as encrypted and the version set to PROTOBUF_ENCRYPTED.
+                    boolean walletIsActuallyEncrypted = false;
+                    Wallet wallet = perWalletModelData.getWallet();
+                    if (wallet.isCurrentlyEncrypted()) {
+                        walletIsActuallyEncrypted = true;
+                    } else {
+                        // Check all the keys individually.
+                        for (ECKey key : wallet.getKeychain()) {
+                            if (key.isEncrypted()) {
+                                walletIsActuallyEncrypted = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (walletIsActuallyEncrypted) {
+                        walletInfo.setWalletMajorVersion(WalletMajorVersion.PROTOBUF_ENCRYPTED);
+                    }
+
+                    if (WalletMajorVersion.PROTOBUF == walletInfo.getWalletMajorVersion()) {
+                        // Save as a Wallet message.
+                        perWalletModelData.getWallet().saveToFile(walletFile);
+                    } else if (WalletMajorVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletMajorVersion()) {
+                        fileOutputStream = new FileOutputStream(walletFile);
+
+                        // Save as a Wallet message with a mandatory extension
+                        // to prevent loading by older versions of multibit.
+                        walletProtobufSerializer
+                                .writeWalletWithMandatoryExtension(perWalletModelData.getWallet(), fileOutputStream);
+                    } else {
+                        throw new WalletVersionException("Cannot save wallet '" + perWalletModelData.getWalletFilename()
+                                + "'. Its wallet version is '" + walletInfo.getWalletMajorVersion().toString()
+                                + "' but this version of MultiBit does not understand that format.");
+                    }
                 }
                 log.debug("... done saving wallet file.");
 
