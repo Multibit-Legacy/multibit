@@ -16,6 +16,8 @@
 package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -26,6 +28,7 @@ import javax.swing.SwingWorker;
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterException;
+import org.multibit.file.FileHandler;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -58,7 +61,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
     private CreateNewReceivingAddressPanel createNewReceivingAddressPanel;
 
     private JPasswordField walletPassword;
-
+    
     /**
      * Creates a new {@link CreateNewReceivingAddressSubmitAction}.
      */
@@ -148,11 +151,14 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             private String shortMessage = null;
             private String longMessage = null;
             private String lastAddressString = null;
+            private File privateKeysBackupFile = null;
 
             @Override
             protected Boolean doInBackground() throws Exception {
                 Boolean successMeasure = Boolean.FALSE;
                 
+                privateKeysBackupFile = null;
+
                 final EncrypterDecrypter walletEncrypterDecrypter = finalPerWalletModelData.getWallet().getEncrypterDecrypter();
                     try {
                         // Derive AES key to use outside of loop - it is the same for all keys in a single wallet.
@@ -173,6 +179,8 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                             newKeys.add(newKey);
                         }
                         
+                        FileHandler fileHandler = new FileHandler(controller);
+                        
                         synchronized (finalPerWalletModelData.getWallet()) {
                             finalPerWalletModelData.getWallet().keychain.addAll(newKeys);
                         }
@@ -183,9 +191,14 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                             finalPerWalletModelData.getWalletInfo().addReceivingAddress(new AddressBookData("", lastAddressString),
                                 false, false);
                         }
+                        
+                        privateKeysBackupFile = fileHandler.backupPrivateKeys(walletPassword);
+
                         successMeasure = Boolean.TRUE;
                     } catch (EncrypterDecrypterException ede) {
                         logError(ede);
+                    } catch (IOException io) {
+                        logError(io);
                     }
                 
                 return successMeasure;
@@ -208,6 +221,9 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                     if (wasSuccessful) {
                         shortMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.createdSuccessfullyShort", new Object[] { new Integer(numberOfAddressesToCreate)});
                         longMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.createdSuccessfullyLong", new Object[] { new Integer(numberOfAddressesToCreate), walletDescription});
+                        if (privateKeysBackupFile != null) {
+                            longMessage = longMessage + ".\n" + controller.getLocaliser().getString("changePasswordPanel.keysBackupSuccess", new Object[] { privateKeysBackupFile.getCanonicalPath() });
+                        }
 
                         log.debug(longMessage);
                         

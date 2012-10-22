@@ -269,11 +269,11 @@ public class FileHandler {
             }
 
             if (walletBackupFilename == null) {
-                walletBackupFilename = createBackupFilename(new File(perWalletModelData.getWalletFilename()), true, false);
+                walletBackupFilename = createBackupFilename(new File(perWalletModelData.getWalletFilename()), true, false, null);
                 perWalletModelData.setWalletBackupFilename(walletBackupFilename);
 
                 walletInfoBackupFilename = createBackupFilename(
-                        new File(WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename())), false, true);
+                        new File(WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename())), false, true, null);
                 perWalletModelData.setWalletInfoBackupFilename(walletInfoBackupFilename);
             }
 
@@ -388,9 +388,23 @@ public class FileHandler {
         walletInfo.writeToFile(walletInfoFilename, walletInfo.getWalletMajorVersion());
     }
     
+    /**
+     * Backup the private keys of the active wallet to a file with name <wallet name>-yyyymmddhhmmss.key
+     * @param newPasswordToUse
+     * @return
+     */
+    public File backupPrivateKeys(char[] newPasswordToUse) throws IOException {
+        // Save a backup copy of the private keys, encrypted with the newPasswordToUse.
+        PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
+        String privateKeysBackupFilename = createBackupFilename(new File(controller.getModel().getActiveWalletFilename()), false, false, MultiBitModel.PRIVATE_KEY_FILE_EXTENSION);
+        File privateKeysBackupFile = new File(privateKeysBackupFilename);
+        privateKeysHandler.exportPrivateKeys(privateKeysBackupFile, controller.getModel().getActiveWallet(), controller.getMultiBitService().getChain(), true, newPasswordToUse, newPasswordToUse);
+        return privateKeysBackupFile;
+    }
+    
     private String copyExistingWalletToBackupAndDeleteOriginal(File walletFile) throws IOException {
         // Create a backup file called <wallet filename>.<random number>.bak
-        String newWalletBackupFilename = createBackupFilename(walletFile, false, false);
+        String newWalletBackupFilename = createBackupFilename(walletFile, false, false, null);
         File newWalletBackupFile = new File(newWalletBackupFilename);
         if (walletFile != null && walletFile.exists()) {
             FileHandler.copyFile(walletFile, newWalletBackupFile);
@@ -494,10 +508,10 @@ public class FileHandler {
                 // (It is then available in the tooltip).
                 if (haveFilesChanged && perWalletModelData.getWalletBackupFilename() == null) {
                     try {
-                        perWalletModelData.setWalletBackupFilename(createBackupFilename(walletFile, true, false));
+                        perWalletModelData.setWalletBackupFilename(createBackupFilename(walletFile, true, false, null));
 
                         perWalletModelData.setWalletInfoBackupFilename(createBackupFilename(
-                                new File(WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename())), false, true));
+                                new File(WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename())), false, true, null));
                     } catch (IOException e) {
                         log.error(e.getMessage(), e);
                     }
@@ -685,20 +699,26 @@ public class FileHandler {
      * backup file: filename-yyyymmddhhmmss.suffix
      * 
      * @param file
+     * @param saveBackupDate - save the backup date for use later
      * @param reusePreviousBackupDate
      *            Reuse the previously created backup date so that wallet and
      *            wallet info names match
+     * @param suffixToUse the suffix text to use
      * @return
      * @throws IOException
      */
-    private String createBackupFilename(File file, boolean saveBackupDate, boolean reusePreviousBackupDate) throws IOException {
+    public String createBackupFilename(File file, boolean saveBackupDate, boolean reusePreviousBackupDate, String suffixToUse) throws IOException {
         String filename = file.getAbsolutePath();
 
         // Find suffix.
         int suffixSeparator = filename.lastIndexOf(".");
         String stem = filename.substring(0, suffixSeparator);
-        String suffix = filename.substring(suffixSeparator); // Includes
-                                                             // separating dot.
+        String suffix;
+        if (suffixToUse != null) {
+            suffix = "." + suffixToUse;
+        } else {
+            suffix = filename.substring(suffixSeparator); // Includes separating dot.
+        }                                                
         Date backupDateToUse = new Date();
         
         if (saveBackupDate) {

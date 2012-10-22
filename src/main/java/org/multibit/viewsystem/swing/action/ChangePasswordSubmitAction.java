@@ -16,14 +16,19 @@
 package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
+import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.FileHandler;
+import org.multibit.file.PrivateKeysHandler;
+import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.viewsystem.swing.view.ChangePasswordPanel;
@@ -48,6 +53,8 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
     private JPasswordField newPassword;
 
     private JPasswordField repeatNewPassword;
+    
+    private File privateKeysBackupFile;
 
     /**
      * Creates a new {@link ChangePasswordSubmitAction}.
@@ -70,6 +77,7 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
      */
     public void actionPerformed(ActionEvent e) {
         changePasswordPanel.clearMessages();
+        privateKeysBackupFile = null;
 
         char[] newPasswordToUse = null;
         char[] currentPasswordToUse = null;
@@ -131,10 +139,17 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
                         wallet.encrypt(newPasswordToUse);
                         FileHandler fileHandler = new FileHandler(controller);
                         fileHandler.savePerWalletModelData(controller.getModel().getActivePerWalletModelData(), true);
+                        
+                        privateKeysBackupFile = fileHandler.backupPrivateKeys(newPasswordToUse);
                     } catch (EncrypterDecrypterException ede) {
-                        // Notify the user that either the encrypt failed
+                        // Notify the user that the encrypt failed.
                         changePasswordPanel.setMessage1(controller.getLocaliser().getString(
                                 "changePasswordPanel.changePasswordFailed", new String[] { ede.getMessage() }));
+                        return;
+                    } catch (IOException ede) {
+                        // Notify the user that the private key backup failed.
+                        changePasswordPanel.setMessage2(controller.getLocaliser().getString(
+                                "changePasswordPanel.keysBackupFailed", new String[] { ede.getMessage() }));
                         return;
                     } finally {
                         // Declare that wallet is no longer busy with the task.
@@ -152,9 +167,22 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
         }
 
         // Success.
-        changePasswordPanel.clearMessages();
-        changePasswordPanel.clearPasswords();
-        changePasswordPanel.setMessage1(controller.getLocaliser().getString("changePasswordPanel.changePasswordSuccess"));
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                changePasswordPanel.clearMessages();
+                changePasswordPanel.clearPasswords();
+                changePasswordPanel.setMessage1(controller.getLocaliser().getString("changePasswordPanel.changePasswordSuccess"));
+                if (privateKeysBackupFile != null) {
+                    try {
+                        changePasswordPanel.setMessage2(controller.getLocaliser().getString(
+                                "changePasswordPanel.keysBackupSuccess", new Object[] { privateKeysBackupFile.getCanonicalPath() }));
+                    } catch (IOException e1) {
+                        log.debug(e1.getClass().getCanonicalName() + " " + e1.getMessage());
+                    }
+                }
+            }
+        });
     }
 
     @Override

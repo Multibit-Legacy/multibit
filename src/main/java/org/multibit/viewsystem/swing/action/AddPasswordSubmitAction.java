@@ -16,6 +16,8 @@
 package org.multibit.viewsystem.swing.action;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -51,6 +53,8 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
     private JPasswordField password1;
 
     private JPasswordField password2;
+    
+    private File privateKeysBackupFile;
 
     /**
      * Creates a new {@link AddPasswordSubmitAction}.
@@ -72,6 +76,7 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
      */
     public void actionPerformed(ActionEvent e) {
         addPasswordPanel.clearMessages();
+        privateKeysBackupFile = null;
 
         char[] passwordToUse = null;
 
@@ -128,11 +133,19 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
                     controller.getModel().getActivePerWalletModelData().setDirty(true);
                     FileHandler fileHandler = new FileHandler(controller);
                     fileHandler.savePerWalletModelData(controller.getModel().getActivePerWalletModelData(), true);
+
+                    privateKeysBackupFile = fileHandler.backupPrivateKeys(passwordToUse);
+
                 }
             } catch (EncrypterDecrypterException ede) {
                 ede.printStackTrace();
                 addPasswordPanel.setMessage1(controller.getLocaliser().getString("addPasswordPanel.addPasswordFailed",
                         new String[] { ede.getMessage() }));
+                return;
+            } catch (IOException ede) {
+                // Notify the user that the private key backup failed.
+                addPasswordPanel.setMessage2(controller.getLocaliser().getString(
+                        "changePasswordPanel.keysBackupFailed", new String[] { ede.getMessage() }));
                 return;
             } finally {
                 // Declare that wallet is no longer busy with the task.
@@ -150,6 +163,14 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
                 addPasswordPanel.clearMessages();
                 addPasswordPanel.clearPasswords();
                 addPasswordPanel.setMessage1(controller.getLocaliser().getString("addPasswordPanel.addPasswordSuccess")); 
+                
+                if (privateKeysBackupFile != null) {
+                    try {
+                        addPasswordPanel.setMessage2(controller.getLocaliser().getString("changePasswordPanel.keysBackupSuccess", new Object[]{privateKeysBackupFile.getCanonicalPath()}));
+                    } catch (IOException e1) {
+                        log.debug(e1.getClass().getCanonicalName() + " " + e1.getMessage());
+                    }
+                }
              }});
     }
 
