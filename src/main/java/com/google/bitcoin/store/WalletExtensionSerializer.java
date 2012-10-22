@@ -36,9 +36,15 @@ public class WalletExtensionSerializer implements IsMultiBitClass {
 
     public void readExtension(Wallet wallet, Protos.Extension extProto) {
         if (extProto.getMandatory()) {
-            // If the extension is the ORG_MULTIBIT_WALLET_PROTECT then we know about that.
+            // If the extension is the ORG_MULTIBIT_WALLET_PROTECT or ORG_MULTIBIT_WALLET_PROTECT_2 then we know about that.
             // This is a marker extension to prevent earlier versions of multibit loading encrypted wallets.
-            if (!extProto.getId().equals(WalletProtobufSerializer.ORG_MULTIBIT_WALLET_PROTECT)) {
+            
+            // Unfortunately I merged the recognition of the ORG_MULTIBIT_WALLET_PROTECT mandatory extension into the v0.4 code
+            // so it could load encrypted wallets mistakenly.
+            
+            // Hence the v0.5 code now writes ORG_MULTIBIT_WALLET_PROTECT_2.
+            if (!(extProto.getId().equals(WalletProtobufSerializer.ORG_MULTIBIT_WALLET_PROTECT) || 
+                    extProto.getId().equals(WalletProtobufSerializer.ORG_MULTIBIT_WALLET_PROTECT_2))) {
                 throw new IllegalArgumentException("Did not understand a mandatory extension in the wallet of '" + extProto.getId() + "'");
             }
         }

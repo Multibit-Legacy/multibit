@@ -75,7 +75,12 @@ import com.google.protobuf.TextFormat;
  * @author Miron Cuperman
  */
 public class WalletProtobufSerializer implements IsMultiBitClass {
+    // Early version of name-value value for use in protecting encrypted wallets from being loaded
+    // into earlier versions of MultiBit. Unfortunately I merged this into the v0.4 code by mistake.
+    // @deprecated replaced by ORG_MULTIBIT_WALLET_PROTECT_2
     static final String ORG_MULTIBIT_WALLET_PROTECT = "org.multibit.walletProtect";
+
+    static final String ORG_MULTIBIT_WALLET_PROTECT_2 = "org.multibit.walletProtect.2";
 
     private static final Logger log = LoggerFactory.getLogger(WalletProtobufSerializer.class);
 
@@ -108,7 +113,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
     public void writeWalletWithMandatoryExtension(Wallet wallet, OutputStream output) throws IOException {
         Protos.Wallet walletProto = walletToProto(wallet);
         Protos.Wallet.Builder walletBuilder = Protos.Wallet.newBuilder(walletProto);
-        Protos.Extension.Builder extensionBuilder = Protos.Extension.newBuilder().setId(ORG_MULTIBIT_WALLET_PROTECT).setData(ByteString.copyFrom(new byte[0x01])).setMandatory(true);
+        Protos.Extension.Builder extensionBuilder = Protos.Extension.newBuilder().setId(ORG_MULTIBIT_WALLET_PROTECT_2).setData(ByteString.copyFrom(new byte[0x01])).setMandatory(true);
         walletBuilder.addExtension(extensionBuilder);
         
         Protos.Wallet walletProtoWithMandatory = walletBuilder.build();
