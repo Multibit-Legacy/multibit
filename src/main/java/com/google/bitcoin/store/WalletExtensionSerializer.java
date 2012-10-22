@@ -45,7 +45,9 @@ public class WalletExtensionSerializer implements IsMultiBitClass {
                 throw new IllegalArgumentException("Did not understand a mandatory extension in the wallet of '" + extProto.getId() + "'");
             }
         }
-
+        
+        // DO NOT MERGE ORG_MULTIBIT_WALLET_PROTECT_2 CODE IN HERE !
+        // Version 0.4.x MultiBit should never read encrypted wallets !
     }
 
     /**
