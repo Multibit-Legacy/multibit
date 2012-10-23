@@ -207,7 +207,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
             chart.setTitle(chartTitle);
             chart.setXAxisTitle(xAxisLabel);
 
-            // Commented out as causes graph not to render.
+            // Commented out as causes graph not to render in version 0.2.0.
             //chart.setYAxisTitleVisible(true);
             //chart.setYAxisTitle(balanceLabel);
 

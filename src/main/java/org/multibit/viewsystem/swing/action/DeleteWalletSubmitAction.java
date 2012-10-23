@@ -81,7 +81,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
                 deleteWalletConfirmDialog.setDeleteConfirmText(
                     controller.getLocaliser().getString("deleteWalletConfirmDialog.walletDeletedOk",
                             new Object[] { walletDescription }), confirm2 );
-            }
+            }            
          } catch (WalletLoadException wle) {
              log.error(wle.getClass().getName() + " " + wle.getMessage());
              if (wle.getCause() != null) {
@@ -193,6 +193,13 @@ public class DeleteWalletSubmitAction extends AbstractAction {
         // Set the first wallet to be the active wallet.
         PerWalletModelData firstPerWalletModelData = controller.getModel().getPerWalletModelDataList().get(0);
         controller.getModel().setActiveWalletByFilename(firstPerWalletModelData.getWalletFilename());
+        
+        fileHandler.savePerWalletModelData(firstPerWalletModelData, true);
+        
+        // Save the user properties to disk.
+        FileHandler.writeUserPreferences(controller);
+        log.debug("User preferences with old wallet deleted were written successfully");
+
         controller.fireRecreateAllViews(true);
         controller.fireDataChanged();
         

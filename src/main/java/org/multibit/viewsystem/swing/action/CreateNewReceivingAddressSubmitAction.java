@@ -53,7 +53,7 @@ import com.google.bitcoin.core.EncryptionType;
  * addresses.
  */
 public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction implements WalletBusyListener {
-    private static Logger log = LoggerFactory.getLogger(CreateNewReceivingAddressAction.class);
+    private static Logger log = LoggerFactory.getLogger(CreateNewReceivingAddressSubmitAction.class);
 
     private static final long serialVersionUID = 200152235465875405L;
 
@@ -179,7 +179,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                             newKeys.add(newKey);
                         }
                         
-                        FileHandler fileHandler = new FileHandler(controller);
+                        FileHandler fileHandler = controller.getFileHandler();
                         
                         synchronized (finalPerWalletModelData.getWallet()) {
                             finalPerWalletModelData.getWallet().keychain.addAll(newKeys);
@@ -214,26 +214,35 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
 
             protected void done() {
                 try {
+                    log.debug("ping 1");
                     Boolean wasSuccessful = get();
  
-                    String walletDescription =  finalPerWalletModelData.getWalletInfo().getProperty(WalletInfo.DESCRIPTION_PROPERTY);
-
+                    String walletDescription =  "";
+                    if (finalPerWalletModelData != null && finalPerWalletModelData.getWalletInfo() != null) {
+                        walletDescription = finalPerWalletModelData.getWalletInfo().getProperty(WalletInfo.DESCRIPTION_PROPERTY);
+                    }
+                    log.debug("ping 2");
+                    
                     if (wasSuccessful) {
                         shortMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.createdSuccessfullyShort", new Object[] { new Integer(numberOfAddressesToCreate)});
                         longMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.createdSuccessfullyLong", new Object[] { new Integer(numberOfAddressesToCreate), walletDescription});
                         if (privateKeysBackupFile != null) {
                             longMessage = longMessage + ".\n" + controller.getLocaliser().getString("changePasswordPanel.keysBackupSuccess", new Object[] { privateKeysBackupFile.getCanonicalPath() });
                         }
-
+                        log.debug("ping 3");
+                        
                         log.debug(longMessage);
                         
                         if (createNewReceivingAddressPanel.getReceiveBitcoinPanel() != null) {
                             createNewReceivingAddressPanel.getReceiveBitcoinPanel().getAddressesTableModel().fireTableDataChanged();
                             createNewReceivingAddressPanel.getReceiveBitcoinPanel().selectRows();
                         }
+                        log.debug("ping 4");
+                        
                         finalPerWalletModelData.getWalletInfo().put(MultiBitModel.RECEIVE_ADDRESS, lastAddressString);
                         finalPerWalletModelData.getWalletInfo().put(MultiBitModel.RECEIVE_LABEL, "");
-
+                        log.debug("ping 5");
+                        
                         try {
                             controller.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
                         } catch (WalletSaveException wse) {
@@ -241,13 +250,16 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                             MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("createNewReceivingAddressesSubmitAction.failure",
                                     new Object[] { wse.getClass().getCanonicalName() + " " + wse.getMessage() })));
                         }
+                        log.debug("ping 6");
+                        
                     } else {
                         log.error(longMessage);
                     }
                     
                     if (shortMessage != null) {
                         createNewReceivingAddressPanel.setMessageText(shortMessage);
-
+                        log.debug("ping 7");
+                        
                          if (createNewReceivingAddressPanel != null && createNewReceivingAddressDialog != null && createNewReceivingAddressDialog.isVisible()) {
                              // Show short message in dialog, long in messages.
                             createNewReceivingAddressPanel.setMessageText(shortMessage);
@@ -263,6 +275,8 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                     // Not really used but caught so that SwingWorker shuts down cleanly.
                     log.error(e.getClass() + " " + e.getMessage());
                 } finally {
+                    log.debug("ping 8");
+                    
                     // Can now cancel the operation.
                     createNewReceivingAddressPanel.getCancelButton().setEnabled(true);
 

@@ -671,7 +671,7 @@
 		</staging.linux.dir>
 
 		<!-- Version of BitCoinJ to use (multiple uses) -->
-		<bitcoinj.version>0.6-SNAPSHOT</bitcoinj.version>
+		<bitcoinj.version>0.6</bitcoinj.version>
 
 		<!-- Version of spongycastle to use -->
 		<sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>
