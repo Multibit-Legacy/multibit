@@ -8,7 +8,6 @@ MultiBit release notes.
 + Update to bitcoinj version 0.6
 
 
-
 17 Oct 2012 Version 0.4.13
 + Send confirm dialog shows peer propagation
 + Reset blockchain and transactions bug fix
