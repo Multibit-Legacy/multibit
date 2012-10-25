@@ -1,18 +1,18 @@
 MultiBit release notes.
 
-Versino 0.5.5beta
-+ Forward port of everything from 0.4.14
+25 Oct 2012 Version 0.5.5beta
++ New encrypted wallet format - NOT backwards compatible
++ Fix for bug where encrypted wallets could be opened as unencrypted
++ Automatic backup of private keys on wallet encryption/ change password/ create new private keys.
++ Forward port of everything from 0.4.13
 
-Version 0.4.14
-+ Fix for chart balance not matching wallet balance
-+ Transaction display update speed up
 
 17 Oct 2012 Version 0.4.13
 + Send confirm dialog shows peer propagation
 + Reset blockchain and transactions bug fix
 + Charts panel bug fix
 + Default fee set to 0.001 BTC
-+ Mouse scroll wheel bug fix (hopefully)
++ Mouse scroll wheel bug fix§
 + Fix for currencies disappearing in currency ticker
 + Side panel now shown by default for new users
 

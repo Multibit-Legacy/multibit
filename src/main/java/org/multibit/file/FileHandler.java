@@ -49,6 +49,7 @@ import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.store.WalletProtobufSerializer;
@@ -425,14 +426,19 @@ public class FileHandler {
         if (passwordToUse != null && passwordToUse.length > 0) {
             if (controller.getModel() != null
                     && controller.getModel().getActiveWalletWalletInfo() != null
-                    && controller.getModel().getActiveWalletWalletInfo().getWalletMajorVersion() == WalletMajorVersion.PROTOBUF_ENCRYPTED) {
+                    && controller.getModel().getActiveWalletWalletInfo().getWalletMajorVersion() == WalletMajorVersion.PROTOBUF_ENCRYPTED
+                    && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
                 // Save a backup copy of the private keys, encrypted with the newPasswordToUse.
                 PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
                 String privateKeysBackupFilename = createBackupFilename(new File(controller.getModel().getActiveWalletFilename()),
                         false, false, MultiBitModel.PRIVATE_KEY_FILE_EXTENSION);
                 privateKeysBackupFile = new File(privateKeysBackupFilename);
-                privateKeysHandler.exportPrivateKeys(privateKeysBackupFile, controller.getModel().getActiveWallet(), controller
-                        .getMultiBitService().getChain(), true, passwordToUse, passwordToUse);
+                BlockChain blockChain = null;
+                if (controller.getMultiBitService() != null) {
+                    blockChain = controller.getMultiBitService() .getChain();
+                }
+                
+                privateKeysHandler.exportPrivateKeys(privateKeysBackupFile, controller.getModel().getActiveWallet(), blockChain, true, passwordToUse, passwordToUse);
             } else {
                 log.debug("Wallet '" + controller.getModel().getActiveWalletFilename()
                         + "' private keys not backed up as not PROTOBUF_ENCRYPTED");

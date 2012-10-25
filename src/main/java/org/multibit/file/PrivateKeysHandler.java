@@ -97,7 +97,7 @@ public class PrivateKeysHandler {
         if (!performEncryptionOfExportFile) {
             outputHeaderComment(outputStringBuffer);
         }
-
+        
         // Get the wallet's private keys and output them.
         Collection<PrivateKeyAndDate> keyAndDates = createKeyAndDates(wallet, blockChain, walletPassword);
         outputKeys(outputStringBuffer, keyAndDates);
@@ -105,14 +105,14 @@ public class PrivateKeysHandler {
         if (!performEncryptionOfExportFile) {
             outputFooterComment(outputStringBuffer);
         }
-
+        
         String keyOutputText = outputStringBuffer.toString();
 
         if (performEncryptionOfExportFile) {
             EncrypterDecrypterOpenSSL encrypter = new EncrypterDecrypterOpenSSL();
             keyOutputText = encrypter.encrypt(keyOutputText, exportPassword);
         }
-
+        
         FileWriter fileWriter = null;
         PrintWriter printWriter = null;
         try {
@@ -257,10 +257,10 @@ public class PrivateKeysHandler {
     }
 
     private Collection<PrivateKeyAndDate> createKeyAndDates(Wallet wallet, BlockChain blockChain, char[] walletPassword) {
-        // Determine if keys need to be decrypted.
+       // Determine if keys need to be decrypted.
         boolean decryptionRequired = false;
 
-        ArrayList<ECKey> keychain = wallet.keychain;
+        ArrayList<ECKey> keychain = wallet.getKeychain();
         Collection<PrivateKeyAndDate> keyAndDates = new ArrayList<PrivateKeyAndDate>();
 
         synchronized (keychain) {

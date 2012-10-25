@@ -75,5 +75,8 @@ public class ActionTestUtils {
          if (encrypt) {
              loadedPerWalletModelData.getWallet().encrypt(walletPassword);
          }
+         
+         controller.getModel().setActiveWalletByFilename(loadedPerWalletModelData.getWalletFilename());
+         
      }
 }

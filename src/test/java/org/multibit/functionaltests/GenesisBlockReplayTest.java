@@ -113,11 +113,13 @@ public class GenesisBlockReplayTest extends TestCase {
             assertNotNull("No multiBitService after replay", multiBitService);
             assertNotNull("No blockStore after replay",  multiBitService.getBlockStore());
             assertNotNull("No blockStore file after replay",  multiBitService.getBlockStore().getFile());
-            assertTrue(BLOCKSIZE_AFTER_REPLAY <=  multiBitService.getBlockStore().getFile().length());
+            assertTrue("Block size is too short", BLOCKSIZE_AFTER_REPLAY <=  multiBitService.getBlockStore().getFile().length());
 
             // Tidy up.
             try {
-                multiBitService.getPeerGroup().stop();
+                if (multiBitService.getPeerGroup() != null) {
+                    multiBitService.getPeerGroup().stop();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

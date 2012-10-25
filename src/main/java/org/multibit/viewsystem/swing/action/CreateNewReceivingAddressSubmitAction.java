@@ -63,6 +63,11 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
     private JPasswordField walletPassword;
     
     /**
+     * The last private keys backup file used - used in testing.
+     */
+    private File lastPrivateKeysBackupFile;
+    
+    /**
      * Creates a new {@link CreateNewReceivingAddressSubmitAction}.
      */
     public CreateNewReceivingAddressSubmitAction(MultiBitController controller,
@@ -73,6 +78,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
         this.createNewReceivingAddressDialog = createNewReceivingAddressDialog;
         this.createNewReceivingAddressPanel = createNewReceivingAddressPanel;
         this.walletPassword = walletPassword;
+        this.lastPrivateKeysBackupFile = null;
         
         // This action is a WalletBusyListener
         controller.registerWalletBusyListener(this);
@@ -89,6 +95,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
 
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         boolean encryptNewKeys = false;
+        
         if (controller.getModel().getActiveWallet() != null) {
             if (controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
                 if (walletPassword.getPassword() == null || walletPassword.getPassword().length == 0) {
@@ -136,7 +143,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             controller.fireWalletBusyChange(true);                                
 
             createNewReceivingAddressesInBackground(createNewReceivingAddressPanel.getNumberOfAddressesToCreate(), encryptNewKeys, 
-                walletPassword.getPassword());
+                walletPassword.getPassword(), this);
         }
     }
     
@@ -144,7 +151,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
      * Create the new receiving addresses in a background Swing worker thread.
      */
     private void createNewReceivingAddressesInBackground(final int numberOfAddressesToCreate, final boolean encryptNewKeys, 
-            final char[] walletPassword) {
+            final char[] walletPassword, final CreateNewReceivingAddressSubmitAction thisAction) {
         final PerWalletModelData finalPerWalletModelData = controller.getModel().getActivePerWalletModelData();
 
         SwingWorker<Boolean, Void> worker = new SwingWorker<Boolean, Void>() {
@@ -193,6 +200,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                         }
                         
                         privateKeysBackupFile = fileHandler.backupPrivateKeys(walletPassword);
+                        thisAction.setLastPrivateKeysBackupFile(privateKeysBackupFile);
 
                         successMeasure = Boolean.TRUE;
                     } catch (EncrypterDecrypterException ede) {
@@ -214,14 +222,12 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
 
             protected void done() {
                 try {
-                    log.debug("ping 1");
                     Boolean wasSuccessful = get();
  
                     String walletDescription =  "";
                     if (finalPerWalletModelData != null && finalPerWalletModelData.getWalletInfo() != null) {
                         walletDescription = finalPerWalletModelData.getWalletInfo().getProperty(WalletInfo.DESCRIPTION_PROPERTY);
                     }
-                    log.debug("ping 2");
                     
                     if (wasSuccessful) {
                         shortMessage = controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.createdSuccessfullyShort", new Object[] { new Integer(numberOfAddressesToCreate)});
@@ -229,7 +235,6 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                         if (privateKeysBackupFile != null) {
                             longMessage = longMessage + ".\n" + controller.getLocaliser().getString("changePasswordPanel.keysBackupSuccess", new Object[] { privateKeysBackupFile.getCanonicalPath() });
                         }
-                        log.debug("ping 3");
                         
                         log.debug(longMessage);
                         
@@ -237,11 +242,9 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                             createNewReceivingAddressPanel.getReceiveBitcoinPanel().getAddressesTableModel().fireTableDataChanged();
                             createNewReceivingAddressPanel.getReceiveBitcoinPanel().selectRows();
                         }
-                        log.debug("ping 4");
                         
                         finalPerWalletModelData.getWalletInfo().put(MultiBitModel.RECEIVE_ADDRESS, lastAddressString);
                         finalPerWalletModelData.getWalletInfo().put(MultiBitModel.RECEIVE_LABEL, "");
-                        log.debug("ping 5");
                         
                         try {
                             controller.getFileHandler().savePerWalletModelData(finalPerWalletModelData, false);
@@ -249,17 +252,13 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                             log.error(wse.getClass().getCanonicalName() + " " + wse.getMessage());
                             MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString("createNewReceivingAddressesSubmitAction.failure",
                                     new Object[] { wse.getClass().getCanonicalName() + " " + wse.getMessage() })));
-                        }
-                        log.debug("ping 6");
-                        
+                        }   
                     } else {
                         log.error(longMessage);
                     }
                     
                     if (shortMessage != null) {
-                        createNewReceivingAddressPanel.setMessageText(shortMessage);
-                        log.debug("ping 7");
-                        
+                        createNewReceivingAddressPanel.setMessageText(shortMessage);           
                          if (createNewReceivingAddressPanel != null && createNewReceivingAddressDialog != null && createNewReceivingAddressDialog.isVisible()) {
                              // Show short message in dialog, long in messages.
                             createNewReceivingAddressPanel.setMessageText(shortMessage);
@@ -275,8 +274,6 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                     // Not really used but caught so that SwingWorker shuts down cleanly.
                     log.error(e.getClass() + " " + e.getMessage());
                 } finally {
-                    log.debug("ping 8");
-                    
                     // Can now cancel the operation.
                     createNewReceivingAddressPanel.getCancelButton().setEnabled(true);
 
@@ -308,5 +305,13 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
             // Make sure the cancel button is enabled.
             createNewReceivingAddressPanel.getCancelButton().setEnabled(true);
         }
+    }
+
+    public File getLastPrivateKeysBackupFile() {
+        return lastPrivateKeysBackupFile;
+    }
+
+    public void setLastPrivateKeysBackupFile(File lastPrivateKeysBackupFile) {
+        this.lastPrivateKeysBackupFile = lastPrivateKeysBackupFile;
     }
 }

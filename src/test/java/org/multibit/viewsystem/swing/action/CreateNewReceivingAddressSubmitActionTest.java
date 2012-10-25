@@ -19,6 +19,8 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.multibit.controller.MultiBitController;
+import org.multibit.file.PrivateKeysHandler;
+import org.multibit.file.Verification;
 import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
@@ -43,6 +45,7 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         assertNotNull("createNewAction was not created successfully", createNewAction);
         assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
         assertTrue("Wallet password is enabled when it should not be", !createNewPanel.isWalletPasswordFieldEnabled());
+        assertNull("The last private key backup file was not null", createNewAction.getLastPrivateKeysBackupFile());
         
         // Execute the createNewAction - by default the createNewDialog should be set to add one key.
         createNewAction.actionPerformed(null);
@@ -50,7 +53,9 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY);
         
         assertEquals("Wrong number of keys after addition of default number of keys", 2, controller.getModel().getActiveWallet().getKeychain().size());    
-        
+
+        assertNull("The last private key backup file was not null - a backup should not be created for non-encrypted wallets.", createNewAction.getLastPrivateKeysBackupFile());
+
         // Add one address by selecting on the combo box.
         createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(1));
         createNewAction.actionPerformed(null);
@@ -97,10 +102,11 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         CreateNewReceivingAddressPanel createNewPanel = new CreateNewReceivingAddressPanel(controller, null, null);
         CreateNewReceivingAddressSubmitAction createNewAction = createNewPanel.getCreateNewReceivingAddressSubmitAction();
         assertTrue("Wallet password is not enabled when it should be", createNewPanel.isWalletPasswordFieldEnabled());
-
         assertNotNull("createNewAction was not created successfully", createNewAction);
         assertEquals("Wrong number of keys at wallet creation", 1, controller.getModel().getActiveWallet().getKeychain().size());
-        
+        assertTrue("Wallet is not encrypted but it should be", controller.getModel().getActiveWallet().isCurrentlyEncrypted());
+        assertNull("The last private key backup file was not null", createNewAction.getLastPrivateKeysBackupFile());
+
         // Execute the createNewAction - by default the createNewDialog sould be set to add one key.
         // However as there is no wallet password supplied it will not add the key.
         createNewAction.actionPerformed(null);
@@ -131,6 +137,13 @@ public class CreateNewReceivingAddressSubmitActionTest extends TestCase {
         Thread.sleep(TIME_TO_WAIT_FOR_ONE_KEY);
 
         assertEquals("Wrong number of keys after addition of default number of keys with wallet password", 2, controller.getModel().getActiveWallet().getKeychain().size()); 
+
+//        assertNotNull("The last private key backup file was null.", createNewAction.getLastPrivateKeysBackupFile());
+//        assertTrue("The private key backup file does not exist",  createNewAction.getLastPrivateKeysBackupFile().exists());
+//        PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
+//        Verification verification = privateKeysHandler.verifyExportFile(createNewAction.getLastPrivateKeysBackupFile(), controller.getModel().getActiveWallet(), 
+//                controller.getMultiBitService().getChain(), true, TEST_PASSWORD1, TEST_PASSWORD1);
+//        assertTrue("The backed up private keys did not match the wallet", verification.isCorrect());
 
         // Add twenty addresses by selecting on the combo box.
         createNewPanel.getNumberOfAddresses().setSelectedItem(new Integer(20));
