@@ -3,6 +3,7 @@ MultiBit release notes.
 25 Oct 2012 Version 0.5.5beta
 + New encrypted wallet format - NOT backwards compatible
 + Fix for bug where encrypted wallets could be opened as unencrypted
++ Arabic translation 100% 
 + Automatic backup of private keys on wallet encryption/ change password/ create new private keys.
 + Forward port of everything from 0.4.13
 + Update to bitcoinj version 0.6
