@@ -575,7 +575,42 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     @Override
-    public void onTransaction(Peer peer, Transaction transaction) {        
+    public void onTransaction(Peer peer, Transaction transaction) { 
+        // Loop through all the wallets, seeing if the transaction is relevant
+        // and adding them as pending if so.
+        // (As of 25 Oct 2012, intrawallet zero confirmation tx are not seen if this code is removed)
+        if (transaction != null) {
+            try {
+                java.util.List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
+
+                if (perWalletModelDataList != null) {
+                    for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                        Wallet loopWallet = perWalletModelData.getWallet();
+                        if (loopWallet != null) {
+                            if (loopWallet.isTransactionRelevant(transaction, true)) {
+                                // The perWalletModelData is marked as dirty.
+                                if (perWalletModelData.getWalletInfo() != null) {
+                                    synchronized(perWalletModelData.getWalletInfo()) {
+                                        perWalletModelData.setDirty(true);
+                                    }
+                                } else {
+                                    perWalletModelData.setDirty(true);
+                                }
+                                if (loopWallet.getTransaction(transaction.getHash()) == null) {
+                                    log.debug("MultiBit adding a new pending transaction for the wallet '"
+                                            + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());
+                                    loopWallet.receivePending(transaction);
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (ScriptException e) {
+                log.error(e.getMessage(), e);
+            } catch (VerificationException e) {
+                log.error(e.getMessage(), e);
+            }
+        }
     }
 
     @Override
