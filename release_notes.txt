@@ -5,6 +5,8 @@ MultiBit release notes.
 + Fix for bug where encrypted wallets could be opened as unencrypted
 + Automatic backup of private keys on wallet encryption/ change password/ create new private keys.
 + Forward port of everything from 0.4.13
++ Update to bitcoinj version 0.6
+
 
 
 17 Oct 2012 Version 0.4.13
@@ -12,7 +14,7 @@ MultiBit release notes.
 + Reset blockchain and transactions bug fix
 + Charts panel bug fix
 + Default fee set to 0.001 BTC
-+ Mouse scroll wheel bug fix§
++ Mouse scroll wheel bug fix
 + Fix for currencies disappearing in currency ticker
 + Side panel now shown by default for new users
 
