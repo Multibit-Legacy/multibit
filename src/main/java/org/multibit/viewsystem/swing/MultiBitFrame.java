@@ -1137,7 +1137,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         } 
         splitPane.setEnabled(true);
         splitPane.setDividerLocation(dividerPosition);
-        splitPane.setEnabled(false);
+        splitPane.setEnabled(ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
     }
 
     public WalletListPanel getWalletsView() {
