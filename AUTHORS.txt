@@ -24,6 +24,7 @@ damnek              - Dutch
 druhy               - Slovak, French, German
 DutchBrat           - Dutch
 Emin Gun Sirer      - Turkish
+eqawasmi            - Arabic
 Ermo                - Italian
 ffe                 - Arabic
 finway              - Simplified Chinese
@@ -55,6 +56,7 @@ majdom              - Polish
 mazi                - Slovenian
 Marx1996xvx         - Polish
 Mats Henricson      - Swedish
+MBH                 - Arabic
 Memory Dealers      - Japanese
 mohammad_rafigh     - Persian
 moole               - Czech
@@ -70,6 +72,7 @@ raymccarthy         - Swedish
 rbreban             - Spanish
 robsned             - Hindi
 ronimo              - French
+samer               - Arabic
 sasha               - Russian
 spiccioli           - Italian
 stlucifer           - Hindi
