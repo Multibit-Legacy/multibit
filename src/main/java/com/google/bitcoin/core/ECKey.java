@@ -66,7 +66,7 @@ public class ECKey implements Serializable, IsMultiBitClass {
     // The two parts of the key. If "priv" is set, "pub" can always be calculated. If "pub" is set but not "priv", we
     // can only verify signatures not make them.
     // TODO: Redesign this class to use consistent internals and more efficient serialization.
-    protected BigInteger priv;
+    private BigInteger priv;
     private byte[] pub;
     // Creation time of the key in seconds since the epoch, or zero if the key was deserialized from a version that did
     // not have this field.
