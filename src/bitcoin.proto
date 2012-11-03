@@ -222,4 +222,3 @@ message Wallet {
 
   repeated Extension extension = 10; 
 } // end of Wallet
-
