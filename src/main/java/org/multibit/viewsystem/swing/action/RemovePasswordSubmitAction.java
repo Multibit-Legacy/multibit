@@ -23,7 +23,7 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncrypterDecrypterException;
+import com.google.bitcoin.crypto.EncrypterDecrypterException;
 import org.multibit.file.FileHandler;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;

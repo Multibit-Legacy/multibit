@@ -1237,4 +1237,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public TickerTimerTask getTickerTimerTask() {
         return tickerTimerTask;
     }
+
+    @Override
+    public void onWalletChanged(Wallet wallet) {
+        // TODO 
+    }
 }

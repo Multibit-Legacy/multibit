@@ -22,10 +22,10 @@ import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.crypto.EncryptedPrivateKey;
-import org.multibit.crypto.EncrypterDecrypter;
-import org.multibit.crypto.EncrypterDecrypterScrypt;
-import org.multibit.crypto.ScryptParameters;
+import com.google.bitcoin.crypto.EncryptedPrivateKey;
+import com.google.bitcoin.crypto.EncrypterDecrypter;
+import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
+import com.google.bitcoin.crypto.ScryptParameters;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Utils;

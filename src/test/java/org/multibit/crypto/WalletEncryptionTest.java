@@ -27,6 +27,9 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.EncryptionType;
+import com.google.bitcoin.crypto.EncrypterDecrypter;
+import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
+import com.google.bitcoin.crypto.ScryptParameters;
 import com.google.bitcoin.utils.BriefLogFormatter;
 
 public class WalletEncryptionTest extends TestCase {

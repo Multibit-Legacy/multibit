@@ -18,9 +18,6 @@ package org.multibit.viewsystem.swing.action;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -29,33 +26,19 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingWorker;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncrypterDecrypter;
-import org.multibit.crypto.EncrypterDecrypterException;
-import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
-import org.multibit.file.PrivateKeysHandlerException;
 import org.multibit.file.Verification;
-import org.multibit.file.WalletSaveException;
-import org.multibit.message.Message;
-import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
-import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.ExportPrivateKeysPanel;
-import org.multibit.viewsystem.swing.view.ImportPrivateKeysPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spongycastle.crypto.params.KeyParameter;
 import org.spongycastle.util.Arrays;
 
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.MultiBitBlockChain;
 import com.google.bitcoin.core.EncryptionType;
-import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.store.BlockStoreException;
+import com.google.bitcoin.core.MultiBitBlockChain;
 
 /**
  * This {@link Action} exports the active wallets private keys.

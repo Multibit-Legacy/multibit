@@ -51,11 +51,11 @@ import java.util.concurrent.ExecutionException;
 
 import org.multibit.IsMultiBitClass;
 import org.multibit.MultiBit;
-import org.multibit.crypto.EncryptedPrivateKey;
-import org.multibit.crypto.EncrypterDecrypter;
-import org.multibit.crypto.EncrypterDecrypterException;
-import org.multibit.crypto.WalletIsAlreadyDecryptedException;
-import org.multibit.crypto.WalletIsAlreadyEncryptedException;
+import com.google.bitcoin.crypto.EncryptedPrivateKey;
+import com.google.bitcoin.crypto.EncrypterDecrypter;
+import com.google.bitcoin.crypto.EncrypterDecrypterException;
+import com.google.bitcoin.crypto.WalletIsAlreadyDecryptedException;
+import com.google.bitcoin.crypto.WalletIsAlreadyEncryptedException;
 import org.multibit.model.WalletMajorVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1938,9 +1938,6 @@ public class Wallet implements Serializable, IsMultiBitClass {
                     } catch (VerificationException e) {
                         log.warn("Received broadcast transaction that does not validate: {}", t);
                         log.warn("VerificationException caught", e);
-                    } catch (ScriptException e) {
-                        log.warn("Received broadcast transaction with not understood scripts: {}", t);
-                        log.warn("ScriptException caught", e);
                     }
                 }
             };

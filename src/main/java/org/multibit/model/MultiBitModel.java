@@ -508,6 +508,11 @@ public class MultiBitModel {
                 public void onKeyAdded(ECKey key) {        
                     controller.onKeyAdded(key);
                 }
+
+                @Override
+                public void onWalletChanged(Wallet wallet) {
+                    controller.onWalletChanged(wallet);
+                }
             });
         }
 

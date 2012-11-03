@@ -35,9 +35,9 @@ import javax.swing.SwingWorker;
 
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncrypterDecrypter;
-import org.multibit.crypto.EncrypterDecrypterScrypt;
-import org.multibit.crypto.ScryptParameters;
+import com.google.bitcoin.crypto.EncrypterDecrypter;
+import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
+import com.google.bitcoin.crypto.ScryptParameters;
 import org.multibit.file.FileHandlerException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.file.WalletVersionException;

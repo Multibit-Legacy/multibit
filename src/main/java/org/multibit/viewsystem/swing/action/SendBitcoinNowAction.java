@@ -25,7 +25,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncrypterDecrypterException;
+import com.google.bitcoin.crypto.EncrypterDecrypterException;
 import org.multibit.file.WalletSaveException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;

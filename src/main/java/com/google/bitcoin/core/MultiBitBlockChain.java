@@ -53,10 +53,11 @@ public class MultiBitBlockChain extends BlockChain {
 
         }
         
-        // this synchronized probably needs to enclude the truncate
-        synchronized (chainHeadLock) {
-            this.chainHead = chainHead;
-        }
+        super.setChainHead(chainHead);
+//        // this synchronized probably needs to enclude the truncate
+//        synchronized (chainHeadLock) {
+//            this.chainHead = chainHead;
+//        }
     }
 
 }

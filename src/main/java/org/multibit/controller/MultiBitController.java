@@ -386,6 +386,10 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             viewSystem.onCoinsSent(wallet, transaction, prevBalance, newBalance);
         }
     }
+    
+    public void onWalletChanged(Wallet wallet) {
+        // TODO
+    }
 
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
         log.debug("Firing confidence change in onTransactionConfidenceChanged.");

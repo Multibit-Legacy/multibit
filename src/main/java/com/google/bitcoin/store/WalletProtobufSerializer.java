@@ -29,10 +29,10 @@ import java.util.Map;
 
 import org.bitcoinj.wallet.Protos;
 import org.multibit.IsMultiBitClass;
-import org.multibit.crypto.EncryptedPrivateKey;
-import org.multibit.crypto.EncrypterDecrypter;
-import org.multibit.crypto.EncrypterDecrypterScrypt;
-import org.multibit.crypto.ScryptParameters;
+import com.google.bitcoin.crypto.EncryptedPrivateKey;
+import com.google.bitcoin.crypto.EncrypterDecrypter;
+import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
+import com.google.bitcoin.crypto.ScryptParameters;
 import org.multibit.file.WalletVersionException;
 import org.multibit.model.WalletMajorVersion;
 import org.slf4j.Logger;
@@ -241,7 +241,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
                 .setTransactionOutPointHash(hashToByteString(input.getOutpoint().getHash()))
                 .setTransactionOutPointIndex((int) input.getOutpoint().getIndex());
             if (input.hasSequence()) {
-                inputBuilder.setSequence((int)input.getSequence());
+                inputBuilder.setSequence((int)input.getSequenceNumber());
             }
             txBuilder.addTransactionInput(inputBuilder);
         }
@@ -479,7 +479,7 @@ public class WalletProtobufSerializer implements IsMultiBitClass {
             );
             TransactionInput input = new TransactionInput(params, tx, scriptBytes, outpoint);
             if (transactionInput.hasSequence()) {
-                input.setSequence(transactionInput.getSequence());
+                input.setSequenceNumber(transactionInput.getSequence());
             }
             tx.addInput(input);
         }

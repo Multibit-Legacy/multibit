@@ -88,4 +88,9 @@ public class SimpleViewSystem implements ViewSystem {
     @Override
     public void onKeyAdded(ECKey key) {        
     }
+
+    @Override
+    public void onWalletChanged(Wallet wallet) {
+        System.out.println("SIMPLE. onWalletChanged");        
+    }
 }

@@ -35,7 +35,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TimeZone;
 
-import org.multibit.crypto.EncrypterDecrypter;
+import com.google.bitcoin.crypto.EncrypterDecrypter;
 import org.multibit.crypto.EncrypterDecrypterOpenSSL;
 import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;

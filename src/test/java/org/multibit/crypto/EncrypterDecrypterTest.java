@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.crypto.EncrypterDecrypterException;
 
 public class EncrypterDecrypterTest extends TestCase {
 

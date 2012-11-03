@@ -25,10 +25,7 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.crypto.EncrypterDecrypterException;
 import org.multibit.file.FileHandler;
-import org.multibit.file.PrivateKeysHandler;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.viewsystem.swing.view.ChangePasswordPanel;
@@ -37,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.EncrypterDecrypterException;
 
 /**
  * This {@link Action} action decrypts private keys with the old password and then encrypts the private keys with the new password.
