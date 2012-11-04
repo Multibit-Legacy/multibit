@@ -40,7 +40,7 @@ import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
 import com.google.bitcoin.crypto.ScryptParameters;
 import org.multibit.file.FileHandlerException;
 import org.multibit.file.WalletSaveException;
-import org.multibit.file.WalletVersionException;
+import com.google.bitcoin.core.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;

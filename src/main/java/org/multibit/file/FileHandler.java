@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.BlockChain;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.WalletVersionException;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 
 /**

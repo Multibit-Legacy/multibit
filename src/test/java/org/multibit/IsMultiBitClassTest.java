@@ -36,7 +36,6 @@ public class IsMultiBitClassTest extends TestCase {
         checkClass("core.TransactionConfidence");
         checkClass("core.TransactionOutput");
         checkClass("core.Wallet");
-        checkClass("store.WalletProtobufSerializer");
         checkClass("store.WalletExtensionSerializer");
     }
 

@@ -135,7 +135,6 @@
 										**/TransactionConfidence.class, **/TransactionConfidence$*.class,
 										**/TransactionOutput.class,
 										**/Wallet.class, **/Wallet$*.class,
-										**/WalletProtobufSerializer.class,
 										**/WalletExtensionSerializer.class
 									</excludes>
 								</artifactItem>
