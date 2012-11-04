@@ -35,6 +35,8 @@ import java.util.StringTokenizer;
 
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletSaveException;
+
+import com.google.bitcoin.core.WalletMajorVersion;
 import com.google.bitcoin.core.WalletVersionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

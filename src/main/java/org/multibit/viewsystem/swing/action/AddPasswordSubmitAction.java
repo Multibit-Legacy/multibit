@@ -32,7 +32,7 @@ import com.google.bitcoin.crypto.ScryptParameters;
 import org.multibit.file.FileHandler;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
-import org.multibit.model.WalletMajorVersion;
+import com.google.bitcoin.core.WalletMajorVersion;
 import org.multibit.viewsystem.swing.view.AddPasswordPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

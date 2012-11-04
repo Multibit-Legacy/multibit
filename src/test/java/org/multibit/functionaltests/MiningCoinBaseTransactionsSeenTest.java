@@ -33,7 +33,7 @@ import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
-import org.multibit.model.WalletMajorVersion;
+import com.google.bitcoin.core.WalletMajorVersion;
 import org.multibit.network.MultiBitService;
 import org.multibit.viewsystem.simple.SimpleViewSystem;
 import org.slf4j.Logger;

@@ -27,7 +27,7 @@ import com.google.bitcoin.crypto.EncrypterDecrypterException;
 import org.multibit.file.FileHandler;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
-import org.multibit.model.WalletMajorVersion;
+import com.google.bitcoin.core.WalletMajorVersion;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.RemovePasswordPanel;
 import org.slf4j.Logger;

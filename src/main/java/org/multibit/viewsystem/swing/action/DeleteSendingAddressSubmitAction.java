@@ -24,7 +24,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
-import org.multibit.model.WalletMajorVersion;
+import com.google.bitcoin.core.WalletMajorVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.view.AddressBookTableModel;
 import org.multibit.viewsystem.swing.view.DeleteSendingAddressConfirmDialog;

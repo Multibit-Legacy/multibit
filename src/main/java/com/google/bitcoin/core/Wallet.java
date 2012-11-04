@@ -56,7 +56,7 @@ import com.google.bitcoin.crypto.EncrypterDecrypter;
 import com.google.bitcoin.crypto.EncrypterDecrypterException;
 import com.google.bitcoin.crypto.WalletIsAlreadyDecryptedException;
 import com.google.bitcoin.crypto.WalletIsAlreadyEncryptedException;
-import org.multibit.model.WalletMajorVersion;
+import com.google.bitcoin.core.WalletMajorVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -1376,8 +1376,11 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * If {@link Wallet#autosaveToFile(java.io.File, long, java.util.concurrent.TimeUnit, com.google.bitcoin.core.Wallet.AutosaveEventListener)}
      * has been called.
      */
-    public synchronized void addKey(final ECKey key) {
-        checkArgument(!keychain.contains(key), "Key already present");
+    public synchronized boolean addKey(final ECKey key) {
+        if (keychain.contains(key)) {
+            return false;
+        }
+        
         keychain.add(key);
         EventListenerInvoker.invoke(eventListeners, new EventListenerInvoker<WalletEventListener>() {
             @Override
@@ -1385,6 +1388,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
                 listener.onKeyAdded(key);
             }
         });
+        return true;
     }
 
     /**

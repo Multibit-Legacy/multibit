@@ -45,7 +45,8 @@ import javax.swing.border.Border;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.model.WalletMajorVersion;
+import com.google.bitcoin.core.WalletMajorVersion;
+
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;

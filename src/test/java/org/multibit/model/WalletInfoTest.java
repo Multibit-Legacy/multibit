@@ -25,6 +25,8 @@ import org.multibit.Constants;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 
+import com.google.bitcoin.core.WalletMajorVersion;
+
 public class WalletInfoTest extends TestCase {
     public static final String WALLET_TESTDATA_DIRECTORY = "wallets";
 
