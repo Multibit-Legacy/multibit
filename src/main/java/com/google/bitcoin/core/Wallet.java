@@ -839,7 +839,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         checkArgument(!pending.containsKey(tx.getHash()), "commitTx called on the same transaction twice");
         log.info("commitTx of {}", tx.getHashAsString());
         BigInteger balance = getBalance();
-        tx.updatedAt = Utils.now();
+        tx.setUpdateTime(Utils.now());
         // Mark the outputs we're spending as spent so we won't try and use them in future creations. This will also
         // move any transactions that are now fully spent to the spent map so we can skip them when creating future
         // spends.
