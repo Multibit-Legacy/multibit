@@ -65,6 +65,7 @@ import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 import com.google.bitcoin.core.WalletTransaction.Pool;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.bitcoin.utils.EventListenerInvoker;
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
 
 /**
@@ -182,7 +183,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
     final Map<Sha256Hash, Transaction> dead;
 
     /**
-     * A list of public/private EC keys owned by this user.
+     * A list of public/private EC keys owned by this user. Access it using addKey[s], hasKey[s] and findPubKeyFromHash.
      */
     public final ArrayList<ECKey> keychain;
 
@@ -196,7 +197,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
     private transient ArrayList<WalletEventListener> eventListeners;
 
     /**
-     * The type of encryption used in the wallet
+     * The type of encryption used in the wallet.
      */
     private EncryptionType encryptionType;
        
@@ -204,21 +205,21 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * Whether the wallet has all its keys encrypted (currentlyEncrypted = true) or not.
      */
     private boolean currentlyEncrypted;
-    
-    /**
-     * The wallet major version
-     */
-    WalletMajorVersion majorVersion;
-    
-    /** 
-     * The wallet minor version
-     */
-    private int minorVersion;
-    
+
     /**
      * The encrypterDecrypter for the wallet.
      */
     private EncrypterDecrypter encrypterDecrypter;
+
+    /**
+     * The wallet major version.
+     */
+    WalletMajorVersion majorVersion;
+    
+    /** 
+     * The wallet minor version.
+     */
+    private int minorVersion;
 
     // A listener that relays confidence changes from the transaction confidence object to the wallet event listener,
     // as a convenience to API users so they don't have to register on every transaction themselves.
@@ -239,18 +240,28 @@ public class Wallet implements Serializable, IsMultiBitClass {
         createTransientState();
     }
 
+    public Wallet(NetworkParameters params, EncrypterDecrypter encrypterDecrypter) {
+        this(params);
+        this.encrypterDecrypter = encrypterDecrypter;
+    }
+
     private void createTransientState() {
         eventListeners = new ArrayList<WalletEventListener>();
         txConfidenceListener = new TransactionConfidence.Listener() {
             public void onConfidenceChanged(Transaction tx) {
                 invokeOnTransactionConfidenceChanged(tx);
+                // Many onWalletChanged events will not occur because they are suppressed, eg, because:
+                //   - we are inside a re-org
+                //   - we are in the middle of processing a block
+                //   - the confidence is changing because a new best block was accepted
+                // It will run in cases like:
+                //   - the tx is pending and another peer announced it
+                //   - the tx is pending and was killed by a detected double spend that was not in a block
+                // The latter case cannot happen today because we won't hear about it, but in future this may
+                // become more common if conflict notices are implemented.
+                invokeOnWalletChanged();
             }
         };
-    }
-
-    public Wallet(NetworkParameters params, EncrypterDecrypter encrypterDecrypter) {
-        this(params);
-        this.encrypterDecrypter = encrypterDecrypter;
     }
     
     public NetworkParameters getNetworkParameters() {
@@ -380,7 +391,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * block might change which chain is best causing a reorganize. A re-org can totally change our balance!
      */
     public synchronized void receiveFromBlock(Transaction tx, StoredBlock block,
-                                       BlockChain.NewBlockType blockType) throws VerificationException, ScriptException {
+                                       BlockChain.NewBlockType blockType) throws VerificationException {
         receive(tx, block, blockType, false);
     }
 
@@ -393,9 +404,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
      *
      * @param tx
      * @throws VerificationException
-     * @throws ScriptException
      */
-    public synchronized void receivePending(Transaction tx) throws VerificationException, ScriptException {
+    public synchronized void receivePending(Transaction tx) throws VerificationException {
         // Can run in a peer thread.
 
         // Ignore it if we already know about this transaction. Receiving a pending transaction never moves it
@@ -471,7 +481,6 @@ public class Wallet implements Serializable, IsMultiBitClass {
                 || tx.getValueSentToMe(this).compareTo(BigInteger.ZERO) > 0
                 || (includeDoubleSpending && (findDoubleSpendAgainstPending(tx) != null));
     }
-    
 
     /**
      * Checks if "tx" is spending any inputs of pending transactions. Not a general check, but it can work even if
@@ -497,7 +506,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
     private synchronized void receive(Transaction tx, StoredBlock block,
                                       BlockChain.NewBlockType blockType,
-                                      boolean reorg) throws VerificationException, ScriptException {
+                                      boolean reorg) throws VerificationException {
         // Runs in a peer thread.
         BigInteger prevBalance = getBalance();
 
@@ -857,6 +866,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
                 invokeOnCoinsReceived(tx, balance, newBalance);
             if (valueSentFromMe.compareTo(BigInteger.ZERO) > 0)
                 invokeOnCoinsSent(tx, balance, newBalance);
+
+            invokeOnWalletChanged();
         } catch (ScriptException e) {
             // Cannot happen as we just created this transaction ourselves.
             throw new RuntimeException(e);
@@ -1404,6 +1415,11 @@ public class Wallet implements Serializable, IsMultiBitClass {
         return null;
     }
 
+    /** Returns true if the given key is in the wallet, false otherwise. Currently an O(N) operation. */
+    public boolean hasKey(ECKey key) {
+        return keychain.contains(key);
+    }
+
     /**
      * Returns true if this wallet contains a public key which hashes to the given hash.
      */
@@ -1887,6 +1903,21 @@ public class Wallet implements Serializable, IsMultiBitClass {
             @Override
             public void invoke(WalletEventListener listener) {
                 listener.onTransactionConfidenceChanged(Wallet.this, tx);
+            }
+        });
+    }
+
+    private int onWalletChangedSuppressions;
+    private synchronized void invokeOnWalletChanged() {
+        // Don't invoke the callback in some circumstances, eg, whilst we are re-organizing or fiddling with
+        // transactions due to a new block arriving. It will be called later instead.
+        Preconditions.checkState(onWalletChangedSuppressions >= 0);
+        if (onWalletChangedSuppressions > 0) return;
+        // Call with the wallet locked.
+        EventListenerInvoker.invoke(eventListeners, new EventListenerInvoker<WalletEventListener>() {
+            @Override
+            public void invoke(WalletEventListener listener) {
+                listener.onWalletChanged(Wallet.this);
             }
         });
     }
