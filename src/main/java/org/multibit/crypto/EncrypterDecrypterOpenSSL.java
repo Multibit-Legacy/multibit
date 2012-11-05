@@ -17,6 +17,7 @@ package org.multibit.crypto;
 
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Base64;
 import org.spongycastle.crypto.BufferedBlockCipher;
@@ -288,6 +289,25 @@ public class EncrypterDecrypterOpenSSL {
      */
     public String getOpenSSLMagicText() {
         return openSSLMagicText;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.hashCode(openSSLSaltedBytes);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof EncrypterDecrypterOpenSSL))
+            return false;
+        return true;
     }
 
 }

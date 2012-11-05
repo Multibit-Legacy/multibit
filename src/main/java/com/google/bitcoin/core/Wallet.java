@@ -16,32 +16,56 @@
 
 package com.google.bitcoin.core;
 
+import static com.google.bitcoin.core.Utils.bitcoinValueToFriendlyString;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+
 import org.multibit.IsMultiBitClass;
 import org.multibit.MultiBit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.spongycastle.crypto.params.KeyParameter;
+
+import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
+import com.google.bitcoin.core.WalletTransaction.Pool;
 import com.google.bitcoin.crypto.EncryptedPrivateKey;
 import com.google.bitcoin.crypto.EncrypterDecrypter;
 import com.google.bitcoin.crypto.EncrypterDecrypterException;
 import com.google.bitcoin.crypto.WalletIsAlreadyDecryptedException;
 import com.google.bitcoin.crypto.WalletIsAlreadyEncryptedException;
-import com.google.bitcoin.core.WalletMajorVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.spongycastle.crypto.params.KeyParameter;
-
-import java.io.*;
-import java.math.BigInteger;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
-
-import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
-import com.google.bitcoin.core.WalletTransaction.Pool;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.bitcoin.utils.EventListenerInvoker;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
-import static com.google.bitcoin.core.Utils.bitcoinValueToFriendlyString;
-import static com.google.common.base.Preconditions.*;
 
 // To do list:
 //
@@ -1401,21 +1425,45 @@ public class Wallet implements Serializable, IsMultiBitClass {
     /**
      * Adds the given ECKey to the wallet. There is currently no way to delete keys (that would result in coin loss).
      * If {@link Wallet#autosaveToFile(java.io.File, long, java.util.concurrent.TimeUnit, com.google.bitcoin.core.Wallet.AutosaveEventListener)}
-     * has been called.
+     * has been called, triggers an auto save bypassing the normal coalescing delay and event handlers.
+     * If the key already exists in the wallet, does nothing and returns false.
      */
     public synchronized boolean addKey(final ECKey key) {
-        if (keychain.contains(key)) {
-            return false;
-        }
-        
-        keychain.add(key);
-        EventListenerInvoker.invoke(eventListeners, new EventListenerInvoker<WalletEventListener>() {
-            @Override
-            public void invoke(WalletEventListener listener) {
-                listener.onKeyAdded(key);
+        return addKeys(Lists.newArrayList(key)) == 1;
+    }
+
+    /**
+     * Adds the given keys to the wallet. There is currently no way to delete keys (that would result in coin loss).
+     * If {@link Wallet#autosaveToFile(java.io.File, long, java.util.concurrent.TimeUnit, com.google.bitcoin.core.Wallet.AutosaveEventListener)}
+     * has been called, triggers an auto save bypassing the normal coalescing delay and event handlers.
+     * Returns the number of keys added, after duplicates are ignored. The onKeyAdded event will be called for each key
+     * in the list that was not already present.
+     */
+    public synchronized int addKeys(final List<ECKey> keys) {
+        // TODO: Consider making keys a sorted list or hashset so membership testing is faster.
+        int added = 0;
+        for (final ECKey key : keys) {
+            if (keychain.contains(key)) continue;
+            
+            // If the key has no EncrypterDecrypter then the Wallet's is set into it.
+            if (key.getEncrypterDecrypter() == null) {
+                key.setEncrypterDecrypter(getEncrypterDecrypter());
+            } else {
+                // If the key has an EncrypterDecrypter that does not match the Wallet's then it is not added.
+                // This is done because only one EncrypterDecrypter is stored per Wallet and hence the keys must be homogenous.
+                if (!key.getEncrypterDecrypter().equals(getEncrypterDecrypter())) continue;
             }
-        });
-        return true;
+            
+            keychain.add(key);
+            EventListenerInvoker.invoke(eventListeners, new EventListenerInvoker<WalletEventListener>() {
+                @Override
+                public void invoke(WalletEventListener listener) {
+                    listener.onKeyAdded(key);
+                }
+            });
+            added++;
+        }
+        return added;
     }
 
     /**
