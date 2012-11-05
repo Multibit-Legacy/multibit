@@ -263,7 +263,7 @@ public class FileHandlerTest extends TestCase {
         System.arraycopy(newKey.getPrivKeyBytes(), 0, originalPrivateKeyBytes2, 0, 32);
         System.out.println("EncryptableECKeyTest - Original private key 2 = " + Utils.bytesToHexString(originalPrivateKeyBytes2));
 
-        newWallet.encrypt(WALLET_PASSWORD);
+        newWallet.encrypt(newWallet.getEncrypterDecrypter().deriveKey(WALLET_PASSWORD));
         
         PerWalletModelData perWalletModelData = new PerWalletModelData();
         WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletMajorVersion.PROTOBUF_ENCRYPTED);
@@ -316,7 +316,7 @@ public class FileHandlerTest extends TestCase {
         }
         
         // Decrypt the reborn wallet.
-        perWalletModelDataReborn.getWallet().decrypt(WALLET_PASSWORD);
+        perWalletModelDataReborn.getWallet().decrypt(perWalletModelDataReborn.getWallet().getEncrypterDecrypter().deriveKey(WALLET_PASSWORD));
 
         // Get the keys out the reborn wallet and check that all the keys match.
         ArrayList<ECKey> rebornKeys = perWalletModelDataReborn.getWallet().getKeychain();
@@ -358,7 +358,7 @@ public class FileHandlerTest extends TestCase {
         ECKey newKey = new ECKey();
         newWallet.keychain.add(newKey);
 
-        newWallet.encrypt(WALLET_PASSWORD);
+        newWallet.encrypt(newWallet.getEncrypterDecrypter().deriveKey(WALLET_PASSWORD));
         
         PerWalletModelData perWalletModelData = new PerWalletModelData();
         WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletMajorVersion.PROTOBUF_ENCRYPTED);
@@ -415,7 +415,7 @@ public class FileHandlerTest extends TestCase {
         ECKey newKey = new ECKey();
         newWallet.keychain.add(newKey);
 
-        newWallet.encrypt(WALLET_PASSWORD);
+        newWallet.encrypt(newWallet.getEncrypterDecrypter().deriveKey(WALLET_PASSWORD));
         
         PerWalletModelData perWalletModelData = new PerWalletModelData();
         WalletInfo walletInfo = new WalletInfo(newWalletFilename, WalletMajorVersion.PROTOBUF_ENCRYPTED);

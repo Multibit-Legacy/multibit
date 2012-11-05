@@ -31,6 +31,8 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.spongycastle.crypto.params.KeyParameter;
+
 import com.google.bitcoin.crypto.EncrypterDecrypter;
 import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
 import com.google.bitcoin.crypto.ScryptParameters;
@@ -51,6 +53,9 @@ public class WalletTest {
     private static char[] PASSWORD1 = "my helicopter contains eels".toCharArray();
     private static char[] WRONG_PASSWORD = "nothing noone nobody nowhere".toCharArray();
     
+    private KeyParameter aesKey;
+    private KeyParameter wrongAesKey;
+    
     private SecureRandom secureRandom = new SecureRandom();
     
     @Before
@@ -68,6 +73,9 @@ public class WalletTest {
 
         wallet.addKey(myKey);
         encryptedWallet.addKey(myKey);
+        
+        aesKey = encrypterDecrypter.deriveKey(PASSWORD1);
+        wrongAesKey = encrypterDecrypter.deriveKey(WRONG_PASSWORD);
         
         blockStore = new MemoryBlockStore(params);
 
@@ -622,7 +630,7 @@ public class WalletTest {
         assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong.1", !encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(PASSWORD1));
         
         // Encrypt wallet.
-        encryptedWallet.encrypt(PASSWORD1);
+        encryptedWallet.encrypt(aesKey);
 
         // Wallet should now be of type WalletType.UNENCRYPTED and currently encrypted.
         assertTrue("Wallet is not an encrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
@@ -635,7 +643,7 @@ public class WalletTest {
         assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with incorrect password.3", !encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(WRONG_PASSWORD));
 
         // Decrypt wallet.
-        encryptedWallet.decrypt(PASSWORD1);
+        encryptedWallet.decrypt(aesKey);
         
         // Wallet should now be of type WalletType.ENCRYPTED and not currently encrypted.
         assertTrue("Wallet is not an encrypted wallet", encryptedWallet.getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES);
@@ -649,7 +657,7 @@ public class WalletTest {
         assertTrue("checkPasswordCanDecryptFirstPrivateKey result is wrong with incorrect password.5", !encryptedWallet.checkPasswordCanDecryptFirstPrivateKey(WRONG_PASSWORD));
 
         // Remove the wallet encryption entirely.
-        encryptedWallet.removeEncryption(PASSWORD1);
+        encryptedWallet.removeEncryption(aesKey);
 
         // Wallet should now be of type WalletType.UNENCRYPTED and not currently encrypted.
         assertTrue("Wallet is not an unencrypted wallet", wallet.getEncryptionType() == EncryptionType.UNENCRYPTED);

@@ -203,7 +203,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         assertTrue("Wallet is not encrypted when it should be",  controller.getModel().getActiveWallet().isCurrentlyEncrypted());
         
         // Decrypt wallet to enable private key comparision
-        controller.getModel().getActiveWallet().decrypt(WALLET_PASSWORD);
+        controller.getModel().getActiveWallet().decrypt(controller.getModel().getActiveWallet().getEncrypterDecrypter().deriveKey(WALLET_PASSWORD));
         
         // Check every key on the expected list is now on the wallet.
         checkEveryExpectedKeyIsPresent(controller);
@@ -273,7 +273,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         assertTrue("Wallet is not encrypted when it should be",  controller.getModel().getActiveWallet().isCurrentlyEncrypted());
         
         // Decrypt wallet to enable private key comparision.
-        controller.getModel().getActiveWallet().decrypt(WALLET_PASSWORD);
+        controller.getModel().getActiveWallet().decrypt(controller.getModel().getActiveWallet().getEncrypterDecrypter().deriveKey(WALLET_PASSWORD));
         
         // Check every key on the expected list is now on the wallet.
         checkEveryExpectedKeyIsPresent(controller);

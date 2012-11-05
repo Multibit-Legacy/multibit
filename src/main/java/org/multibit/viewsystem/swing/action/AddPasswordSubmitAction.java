@@ -128,7 +128,7 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
                         wallet.setEncrypterDecrypter(encrypterDecrypter);
                     }
 
-                    wallet.encrypt(passwordToUse);
+                    wallet.encrypt(wallet.getEncrypterDecrypter().deriveKey(passwordToUse));
                     controller.getModel().getActiveWalletWalletInfo().setWalletMajorVersion(WalletMajorVersion.PROTOBUF_ENCRYPTED);
                     controller.getModel().getActivePerWalletModelData().setDirty(true);
                     FileHandler fileHandler = new FileHandler(controller);

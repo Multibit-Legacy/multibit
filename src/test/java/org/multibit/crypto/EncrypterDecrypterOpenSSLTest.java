@@ -32,9 +32,9 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.crypto.EncrypterDecrypterException;
 
-public class EncrypterDecrypterTest extends TestCase {
+public class EncrypterDecrypterOpenSSLTest extends TestCase {
 
-    private static final Logger log = LoggerFactory.getLogger(EncrypterDecrypterTest.class);
+    private static final Logger log = LoggerFactory.getLogger(EncrypterDecrypterOpenSSLTest.class);
 
     private static final String TEST_STRING1 = "The quick brown fox jumps over the lazy dog. 01234567890 !@#$%^&*()-=[]{};':|`~,./<>?";
    

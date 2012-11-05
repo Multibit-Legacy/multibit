@@ -73,7 +73,7 @@ public class ActionTestUtils {
          PerWalletModelData loadedPerWalletModelData = fileHandler.loadFromFile(new File(walletFile));
              
          if (encrypt) {
-             loadedPerWalletModelData.getWallet().encrypt(walletPassword);
+             loadedPerWalletModelData.getWallet().encrypt(encrypterDecrypter.deriveKey(walletPassword));
          }
          
          controller.getModel().setActiveWalletByFilename(loadedPerWalletModelData.getWalletFilename());

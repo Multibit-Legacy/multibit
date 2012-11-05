@@ -51,6 +51,7 @@ import com.google.bitcoin.core.WalletMajorVersion;
 import org.multibit.store.ReplayableBlockStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.crypto.params.KeyParameter;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.AddressFormatException;
@@ -626,8 +627,12 @@ public class MultiBitService {
         Address sendAddress = new Address(networkParameters, sendAddressString);
 
         log.debug("MultiBitService#sendCoins - Just about to send coins");
+        KeyParameter aesKey = null;
+        if (perWalletModelData.getWallet().getEncrypterDecrypter() != null) {
+            aesKey = perWalletModelData.getWallet().getEncrypterDecrypter().deriveKey(password);
+        }
         Transaction sendTransaction = perWalletModelData.getWallet().sendCoinsAsync(peerGroup, sendAddress,
-                Utils.toNanoCoins(amount), fee, decryptBeforeSigning, password);
+                Utils.toNanoCoins(amount), fee, decryptBeforeSigning, aesKey);
         log.debug("MultiBitService#sendCoins - Sent coins has completed");
 
         assert sendTransaction != null; 
