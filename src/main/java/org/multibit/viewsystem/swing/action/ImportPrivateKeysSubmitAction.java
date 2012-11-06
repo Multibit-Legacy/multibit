@@ -105,7 +105,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
             // No import file - nothing to do.
             importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
                     "importPrivateKeysSubmitAction.privateKeysNothingToDo"));
-            importPrivateKeysPanel.setMessageText1(" ");
+            importPrivateKeysPanel.setMessageText2(" ");
             return;
         }
 
