@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.action;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -68,6 +69,8 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
     private boolean performReplay = true;
 
+    private File privateKeysBackupFile;
+
     private static final long NUMBER_OF_MILLISECONDS_IN_A_SECOND = 1000;
 
     /**
@@ -91,6 +94,8 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
      * Import the private keys and replay the blockchain.
      */
     public void actionPerformed(ActionEvent event) {
+        privateKeysBackupFile = null;
+
         if (abort()) {
             return;
         }
@@ -98,8 +103,9 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         String importFilename = importPrivateKeysPanel.getOutputFilename();
         if (importFilename == null || importFilename.equals("")) {
             // No import file - nothing to do.
-            importPrivateKeysPanel.setMessageText(controller.getLocaliser().getString(
+            importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
                     "importPrivateKeysSubmitAction.privateKeysNothingToDo"));
+            importPrivateKeysPanel.setMessageText1(" ");
             return;
         }
 
@@ -107,16 +113,18 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
         if (controller.getModel().getActiveWallet() != null
                 && controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
             if (walletPasswordField.getPassword() == null || walletPasswordField.getPassword().length == 0) {
-                importPrivateKeysPanel.setMessageText(controller.getLocaliser().getString(
+                importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
                         "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
+                importPrivateKeysPanel.setMessageText2(" ");
                 return;
             }
 
             // See if the password is the correct wallet password.
             if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPasswordField.getPassword())) {
                 // The password supplied is incorrect.
-                importPrivateKeysPanel.setMessageText(controller.getLocaliser().getString(
+                importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
                         "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                importPrivateKeysPanel.setMessageText2(" ");
                 return;
             }
         }
@@ -181,9 +189,9 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
             log.error(e.getClass().getName() + " " + e.getMessage());
             setEnabled(true);
 
-            importPrivateKeysPanel.setMessageText(controller.getLocaliser().getString(
+            importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
                     "importPrivateKeysSubmitAction.privateKeysUnlockFailure", new Object[] { e.getMessage() }));
-
+            importPrivateKeysPanel.setMessageText2(" ");
             return;
         } finally {
             importPrivateKeysPanel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -200,8 +208,9 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
             perWalletModelData.setBusy(true);
             perWalletModelData.setBusyTask(controller.getLocaliser().getString("importPrivateKeysSubmitAction.text"));
 
-            importPrivateKeysPanel.setMessageText(controller.getLocaliser().getString(
+            importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
                     "importPrivateKeysSubmitAction.importingPrivateKeys"));
+            importPrivateKeysPanel.setMessageText2(" ");
 
             controller.fireWalletBusyChange(true);
 
@@ -329,6 +338,8 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     // Import was successful.
                     uiMessage = finalController.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysImportSuccess");
 
+                    privateKeysBackupFile = controller.getFileHandler().backupPrivateKeys(walletPassword);
+
                     // Begin blockchain replay - returns quickly - just kicks it off.
                     log.debug("Starting replay from date = " + earliestTransactionDate);
                     if (performReplay) {
@@ -365,7 +376,17 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                     Boolean wasSuccessful = get();
 
                     if (finalImportPanel != null && uiMessage != null) {
-                        finalImportPanel.setMessageText(uiMessage);
+                        finalImportPanel.setMessageText1(uiMessage);
+                    }
+                    
+                    if (privateKeysBackupFile != null) {
+                        try {
+                            finalImportPanel.setMessageText2(controller.getLocaliser().getString(
+                                    "changePasswordPanel.keysBackupSuccess",
+                                    new Object[] { privateKeysBackupFile.getCanonicalPath() }));
+                        } catch (IOException e1) {
+                            log.debug(e1.getClass().getCanonicalName() + " " + e1.getMessage());
+                        }
                     }
 
                     if (wasSuccessful) {

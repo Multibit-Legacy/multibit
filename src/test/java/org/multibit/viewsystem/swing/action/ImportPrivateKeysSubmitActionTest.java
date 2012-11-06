@@ -65,7 +65,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
 
          // Execute - this is with an unencrypted wallet and default settings.
         importAction.actionPerformed(null);
-        assertEquals("Wrong message after default import execute", EXPECTED_NO_IMPORT_FILE_WAS_CHOSEN, importPanel.getMessageText());    
+        assertEquals("Wrong message after default import execute", EXPECTED_NO_IMPORT_FILE_WAS_CHOSEN, importPanel.getMessageText1());    
         
         // Set the input file name - this is an unencrypted key export file.
         File directory = new File(".");
@@ -81,11 +81,11 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         importAction.actionPerformed(null);
         
         // The import is on on its own thread so it may or may not have completed straight after the action is performed.
-        assertTrue("Wrong message after unencrypted import is good to go", EXPECTED_IMPORTING_PRIVATE_KEYS.equals(importPanel.getMessageText()) || EXPECTED_IMPORTED_PRIVATE_KEYS.equals(importPanel.getMessageText()));    
+        assertTrue("Wrong message after unencrypted import is good to go", EXPECTED_IMPORTING_PRIVATE_KEYS.equals(importPanel.getMessageText1()) || EXPECTED_IMPORTED_PRIVATE_KEYS.equals(importPanel.getMessageText1()));    
 
         // Wait a while and the message should be that it has completed the import
         Thread.sleep(DELAY_TO_COMPLETE_IMPORT);
-        assertEquals("Wrong message after unencrypted import should have completed", EXPECTED_IMPORTED_PRIVATE_KEYS, importPanel.getMessageText());    
+        assertEquals("Wrong message after unencrypted import should have completed", EXPECTED_IMPORTED_PRIVATE_KEYS, importPanel.getMessageText1());    
               
         // Check every key on the expected list is now on the wallet.
         checkEveryExpectedKeyIsPresent(controller);
@@ -113,7 +113,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         
          // Execute - this is with an unencrypted wallet and default settings.
         importAction.actionPerformed(null);
-        assertEquals("Wrong message after default import execute", EXPECTED_NO_IMPORT_FILE_WAS_CHOSEN, importPanel.getMessageText());    
+        assertEquals("Wrong message after default import execute", EXPECTED_NO_IMPORT_FILE_WAS_CHOSEN, importPanel.getMessageText1());    
         
         // Set the input file name - this is an encrypted key export file.
         File directory = new File(".");
@@ -127,7 +127,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
  
         // Execute - this should now complain that it could not decrypt the encrypted key export file.
         importAction.actionPerformed(null);
-        assertEquals("Wrong message after no password set execute", EXPECTED_PRIVATE_KEY_UNLOCK_FAILED, importPanel.getMessageText());     
+        assertEquals("Wrong message after no password set execute", EXPECTED_PRIVATE_KEY_UNLOCK_FAILED, importPanel.getMessageText1());     
  
         // Set the import file password.
         importPanel.setImportFilePassword(PrivateKeysHandlerTest.ENCRYPTED_TEST1_PASSWORD);
@@ -136,11 +136,11 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         importAction.actionPerformed(null);
         
         // The import is on on its own thread so it may or may not have completed straight after the action is performed.
-        assertTrue("Wrong message after encrypted import is good to go", EXPECTED_IMPORTING_PRIVATE_KEYS.equals(importPanel.getMessageText()) || EXPECTED_IMPORTED_PRIVATE_KEYS.equals(importPanel.getMessageText()));    
+        assertTrue("Wrong message after encrypted import is good to go", EXPECTED_IMPORTING_PRIVATE_KEYS.equals(importPanel.getMessageText1()) || EXPECTED_IMPORTED_PRIVATE_KEYS.equals(importPanel.getMessageText1()));    
 
         // Wait a while and the message should be that it has completed the import
         Thread.sleep(DELAY_TO_COMPLETE_IMPORT);
-        assertEquals("Wrong message after encrypted import is good to go", EXPECTED_IMPORTED_PRIVATE_KEYS, importPanel.getMessageText());    
+        assertEquals("Wrong message after encrypted import is good to go", EXPECTED_IMPORTED_PRIVATE_KEYS, importPanel.getMessageText1());    
                
         // Check every key on the expected list is now on the wallet.
         checkEveryExpectedKeyIsPresent(controller);
@@ -170,7 +170,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
 
          // Execute - this is with an encrypted wallet and default settings.
         importAction.actionPerformed(null);
-        assertEquals("Wrong message1 after default export execute", EXPECTED_NO_IMPORT_FILE_WAS_CHOSEN, importPanel.getMessageText());     
+        assertEquals("Wrong message1 after default export execute", EXPECTED_NO_IMPORT_FILE_WAS_CHOSEN, importPanel.getMessageText1());     
       
         // Set the input file name - this is an unencrypted key export file.
         File directory = new File(".");
@@ -185,7 +185,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         // Execute - this is with an encrypted wallet but no wallet password set.
         importAction.actionPerformed(null);
  
-        assertEquals("Wrong message after default import execute", EXPECTED_ENTER_THE_WALLET_PASSWORD, importPanel.getMessageText());    
+        assertEquals("Wrong message after default import execute", EXPECTED_ENTER_THE_WALLET_PASSWORD, importPanel.getMessageText1());    
         
         // Set the wallet password.
         importPanel.setWalletPassword(WALLET_PASSWORD);
@@ -194,11 +194,11 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         importAction.actionPerformed(null);
         
         // The import is on on its own thread so it may or may not have completed straight after the action is performed.
-        assertTrue("Wrong message after unencrypted import is good to go", EXPECTED_IMPORTING_PRIVATE_KEYS.equals(importPanel.getMessageText()) || EXPECTED_IMPORTED_PRIVATE_KEYS.equals(importPanel.getMessageText()));    
+        assertTrue("Wrong message after unencrypted import is good to go", EXPECTED_IMPORTING_PRIVATE_KEYS.equals(importPanel.getMessageText1()) || EXPECTED_IMPORTED_PRIVATE_KEYS.equals(importPanel.getMessageText1()));    
 
         // Wait a while and the message should be that it has completed the import
         Thread.sleep(DELAY_TO_COMPLETE_IMPORT);
-        assertEquals("Wrong message after unencrypted import should have completed", EXPECTED_IMPORTED_PRIVATE_KEYS, importPanel.getMessageText());    
+        assertEquals("Wrong message after unencrypted import should have completed", EXPECTED_IMPORTED_PRIVATE_KEYS, importPanel.getMessageText1());    
               
         assertTrue("Wallet is not encrypted when it should be",  controller.getModel().getActiveWallet().isCurrentlyEncrypted());
         
@@ -233,7 +233,7 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         
          // Execute - this is with an encrypted wallet and default settings.
         importAction.actionPerformed(null);
-        assertEquals("Wrong message after default import execute", EXPECTED_NO_IMPORT_FILE_WAS_CHOSEN, importPanel.getMessageText());    
+        assertEquals("Wrong message after default import execute", EXPECTED_NO_IMPORT_FILE_WAS_CHOSEN, importPanel.getMessageText1());    
         
         // Set the input file name - this is an encrypted key export file.
         File directory = new File(".");
@@ -248,14 +248,14 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         // Execute - this is with an encrypted wallet but no wallet password set.
         importAction.actionPerformed(null);
  
-        assertEquals("Wrong message after default import execute", EXPECTED_ENTER_THE_WALLET_PASSWORD, importPanel.getMessageText());    
+        assertEquals("Wrong message after default import execute", EXPECTED_ENTER_THE_WALLET_PASSWORD, importPanel.getMessageText1());    
         
         // Set the wallet password.
         importPanel.setWalletPassword(WALLET_PASSWORD);
 
         // Execute - this should now complain that it could not decrypt the encrypted key export file.
         importAction.actionPerformed(null);
-        assertEquals("Wrong message after no password set execute", EXPECTED_PRIVATE_KEY_UNLOCK_FAILED, importPanel.getMessageText());     
+        assertEquals("Wrong message after no password set execute", EXPECTED_PRIVATE_KEY_UNLOCK_FAILED, importPanel.getMessageText1());     
  
         // Set the import file password.
         importPanel.setImportFilePassword(PrivateKeysHandlerTest.ENCRYPTED_TEST1_PASSWORD);
@@ -264,11 +264,11 @@ public class ImportPrivateKeysSubmitActionTest extends TestCase {
         importAction.actionPerformed(null);
         
         // The import is on on its own thread so it may or may not have completed straight after the action is performed.
-        assertTrue("Wrong message after encrypted import is good to go", EXPECTED_IMPORTING_PRIVATE_KEYS.equals(importPanel.getMessageText()) || EXPECTED_IMPORTED_PRIVATE_KEYS.equals(importPanel.getMessageText()));    
+        assertTrue("Wrong message after encrypted import is good to go", EXPECTED_IMPORTING_PRIVATE_KEYS.equals(importPanel.getMessageText1()) || EXPECTED_IMPORTED_PRIVATE_KEYS.equals(importPanel.getMessageText1()));    
 
         // Wait a while and the message should be that it has completed the import
         Thread.sleep(DELAY_TO_COMPLETE_IMPORT);
-        assertEquals("Wrong message after encrypted import is good to go", EXPECTED_IMPORTED_PRIVATE_KEYS, importPanel.getMessageText());    
+        assertEquals("Wrong message after encrypted import is good to go", EXPECTED_IMPORTED_PRIVATE_KEYS, importPanel.getMessageText1());    
              
         assertTrue("Wallet is not encrypted when it should be",  controller.getModel().getActiveWallet().isCurrentlyEncrypted());
         

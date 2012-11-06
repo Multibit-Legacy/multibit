@@ -88,7 +88,8 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
 
     private MultiBitLabel outputFilenameLabel;
 
-    private MultiBitLabel messageLabel;
+    private MultiBitLabel messageLabel1;
+    private MultiBitLabel messageLabel2;
 
     private String outputFilename;
 
@@ -219,11 +220,11 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
         JPanel buttonPanel = createButtonPanel();
         mainPanel.add(buttonPanel, constraints);
 
-        messageLabel = new MultiBitLabel("");
-        messageLabel.setOpaque(false);
-        messageLabel.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
-        messageLabel.setHorizontalAlignment(JLabel.LEADING);
-        messageLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        messageLabel1 = new MultiBitLabel("");
+        messageLabel1.setOpaque(false);
+        messageLabel1.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
+        messageLabel1.setHorizontalAlignment(JLabel.LEADING);
+        messageLabel1.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
@@ -232,7 +233,22 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
         constraints.weightx = 1;
         constraints.weighty = 0.06;
         constraints.anchor = GridBagConstraints.LINE_START;
-        mainPanel.add(messageLabel, constraints);
+        mainPanel.add(messageLabel1, constraints);
+
+        messageLabel2 = new MultiBitLabel("");
+        messageLabel2.setOpaque(false);
+        messageLabel2.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 0));
+        messageLabel2.setHorizontalAlignment(JLabel.LEADING);
+        messageLabel2.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 0;
+        constraints.gridy = 6;
+        constraints.gridwidth = 3;
+        constraints.weightx = 1;
+        constraints.weighty = 0.06;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(messageLabel2, constraints);
 
         Action helpAction;
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
@@ -257,7 +273,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 6;
+        constraints.gridy = 7;
         constraints.weightx = 1;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -269,7 +285,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
         filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 7;
+        constraints.gridy = 8;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 100;
@@ -277,7 +293,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
         mainPanel.add(filler2, constraints);
 
         JScrollPane mainScrollPane = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
         mainScrollPane.getViewport().setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         mainScrollPane.getViewport().setOpaque(true);
@@ -718,11 +734,11 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
         unlockButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                setMessageText(" ");
+                setMessageText1(" ");
                 try {
                     readInImportFileAndUpdateDetails();
                 } catch (EncrypterDecrypterException ede) {
-                    setMessageText(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysUnlockFailure",
+                    setMessageText1(controller.getLocaliser().getString("importPrivateKeysSubmitAction.privateKeysUnlockFailure",
                             new Object[] { ede.getMessage() }));
                 }
             }
@@ -788,7 +804,8 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
             outputFilenameLabel.setText(controller.getLocaliser().getString("showImportPrivateKeysPanel.noFileSelected"));
         }
         
-        messageLabel.setText(" ");
+        messageLabel1.setText(" ");
+        messageLabel2.setText(" ");
     }
 
     @Override
@@ -853,7 +870,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
                                 readInImportFileAndUpdateDetails();
                             }
                         } catch (IOException e) {
-                            setMessageText(controller.getLocaliser().getString(
+                            setMessageText1(controller.getLocaliser().getString(
                                     "importPrivateKeysSubmitAction.privateKeysImportFailure",
                                     new Object[] { e.getClass().getName() + " " + e.getMessage() }));
                         } catch (EncrypterDecrypterException e) {
@@ -862,7 +879,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
                             // Other errors indicate a more general problem with
                             // the
                             // import.
-                            setMessageText(controller.getLocaliser().getString(
+                            setMessageText1(controller.getLocaliser().getString(
                                     "importPrivateKeysSubmitAction.privateKeysImportFailure",
                                     new Object[] { e.getClass().getName() + " " + e.getMessage() }));
                         }
@@ -1003,7 +1020,7 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
 
     public void requestSecondPassword() {
         enableSecondPasswordPanel(true);
-        setMessageText(controller.getLocaliser().getString("importPrivateKeysSubmitAction.enterTheSecondPassword"));
+        setMessageText1(controller.getLocaliser().getString("importPrivateKeysSubmitAction.enterTheSecondPassword"));
     }
 
     public String getOutputFilename() {
@@ -1018,19 +1035,34 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
         }
     }
 
-    public void setMessageText(String message) {
-        if (messageLabel != null) {
-            messageLabel.setText(message);
+    public void setMessageText1(String message1) {
+        if (messageLabel1 != null) {
+            messageLabel1.setText(message1);
         }
     }
 
-    public String getMessageText() {
-        if (messageLabel != null) {
-            return messageLabel.getText();
+    public String getMessageText1() {
+        if (messageLabel1 != null) {
+            return messageLabel1.getText();
         } else {
             return "";
         }
     }
+
+    public void setMessageText2(String message2) {
+        if (messageLabel2 != null) {
+            messageLabel2.setText(message2);
+        }
+    }
+
+    public String getMessageText2() {
+        if (messageLabel2 != null) {
+            return messageLabel2.getText();
+        } else {
+            return "";
+        }
+    }
+
     private String readFirstLineInFile(File file) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(file));
         return reader.readLine();
