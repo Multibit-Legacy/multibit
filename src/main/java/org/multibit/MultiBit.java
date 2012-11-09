@@ -82,7 +82,15 @@ public class MultiBit {
         // Enclosing try to enable graceful closure for unexpected errors.
         try {
             log.debug("Starting MultiBit");
-
+            
+            // Set any bespoke system properties
+            try {
+                // Fix for Windows / Java 7 / VPN bug.
+                System.setProperty("java.net.preferIPv4Stack", "true");
+            } catch (SecurityException se) {
+                log.error(se.getClass().getName() + " " + se.getMessage());
+            }
+            
             ViewSystem swingViewSystem = null;
 
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
