@@ -15,10 +15,12 @@
  */
 package org.multibit.exchange;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.TimerTask;
 
 import org.joda.money.BigMoney;
+import org.joda.money.CurrencyUnit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
@@ -95,14 +97,18 @@ public class TickerTimerTask extends TimerTask {
                         for (CurrencyPair loopSymbolPair : exchangeSymbols) {
                             // Get symbol ticker if it is one of the currencies
                             // we are interested in.
-                            // (This is to save hitting the server for ever currency).
+                            // (This is to save hitting the server for every currency).
                             boolean getItFromTheServer = false;
                             String[] currenciesWeAreInterestedIn = controller.getModel().getExchangeData()
                                     .getCurrenciesWeAreInterestedIn();
+                            
+                            String currencyConverterCurrency = currenciesWeAreInterestedIn[0];
+                            
                             if (currenciesWeAreInterestedIn != null) {
                                 for (int i = 0; i < currenciesWeAreInterestedIn.length; i++) {
                                     if (loopSymbolPair.counterCurrency.equals(currenciesWeAreInterestedIn[i])) {
                                         getItFromTheServer = true;
+                                        
                                         break;
                                     }
                                 }
@@ -116,6 +122,12 @@ public class TickerTimerTask extends TimerTask {
                                     controller.getModel().getExchangeData().setLastPrice(loopSymbolPair.counterCurrency, last);
                                     controller.getModel().getExchangeData().setLastBid(loopSymbolPair.counterCurrency, bid);
                                     controller.getModel().getExchangeData().setLastAsk(loopSymbolPair.counterCurrency, ask);
+                                    
+                                    if (currencyConverterCurrency.equals(loopSymbolPair.counterCurrency)) {
+                                        // Put the exchange rate into the currency converter.
+                                        CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(currencyConverterCurrency));
+                                        CurrencyConverter.INSTANCE.setRate(last.getAmount());
+                                    }
                                 }
                             }
                         }

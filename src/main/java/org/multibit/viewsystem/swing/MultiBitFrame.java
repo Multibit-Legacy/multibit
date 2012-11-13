@@ -50,8 +50,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
+import org.joda.money.Money;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -1081,6 +1083,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 tickerTablePanel.update();
+                updateHeader();
             }
         });
     }
@@ -1094,8 +1097,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             setUpdatesStoppedTooltip(estimatedBalanceTextLabel);
             availableBalanceTextButton.setText("");
         } else {
-            estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString(
-                    controller.getModel().getActiveWalletEstimatedBalance(), true, false));
+            BigInteger estimatedBalance = controller.getModel().getActiveWalletEstimatedBalance();
+            String estimatedBalanceText = controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false);
+            if (CurrencyConverter.INSTANCE.getRate() != null) {
+                Money fiat = CurrencyConverter.INSTANCE.convertToFiat(estimatedBalance);
+                estimatedBalanceText = estimatedBalanceText + " (" + CurrencyConverter.INSTANCE.getMoneyAsString(fiat) + ")";
+            }
+            estimatedBalanceTextLabel.setText(estimatedBalanceText);
             estimatedBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
 
             if (model.getActiveWalletAvailableBalance() != null
