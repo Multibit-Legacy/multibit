@@ -127,4 +127,8 @@ public interface PreferencesDataProvider extends DataProvider {
     
     String getPreviousLookAndFeel();
     String getNewLookAndFeel();
+
+
+    boolean getNewShowBitcoinConvertedToFiat();
+    boolean getPreviousShowBitcoinConvertedToFiat();
 }

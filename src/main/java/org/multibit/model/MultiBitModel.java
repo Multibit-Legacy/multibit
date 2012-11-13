@@ -40,7 +40,6 @@ import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionInput;
 import com.google.bitcoin.core.TransactionOutput;
-import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.BalanceType;
 import com.google.bitcoin.core.WalletEventListener;
@@ -77,7 +76,6 @@ public class MultiBitModel {
     public static final String SEA_GLASS_LOOK_AND_FEEL = "seaglass";
     
     public static final int SCROLL_INCREMENT = 12;
-
 
     // Currency ticker.
     public static final String TICKER_SHOW = "tickerShow";
@@ -125,6 +123,7 @@ public class MultiBitModel {
 
     // Default fee.
     public static final BigInteger SEND_FEE_DEFAULT = new BigInteger("100000");
+    
     // Minimum fee.
     public static final BigInteger SEND_MINIMUM_FEE = new BigInteger("10000");
 
@@ -191,9 +190,16 @@ public class MultiBitModel {
     // Whether or not to use the cache manager.
     public static final String USE_CACHE_MANAGER = "useCacheManager";
     
-    // Wallet backup
+    // Wallet backup.
     public static final String WALLET_BACKUP_FILE = "walletBackupFile";
        
+    // Currency support.
+    public static final String SHOW_BITCOIN_CONVERTED_TO_FIAT = "showBitcoinConvertedToFiat";   // boolean
+    public static final String USE_LAST_AS_EXCHANGE_RATE = "useLastAsExchangeRate";             // boolean
+    public static final String USE_BID_AS_EXCHANGE_RATE = "useBidAsExchangeRate";               // boolean
+    public static final String USE_ASK_AS_EXCHANGE_RATE = "useAskAsExchangeRate";               // boolean
+    public static final String SHOW_BTC_IN_WALLET_PANEL = "showBTCinWalletPanel";               // boolean
+    
     // Main controller class.
     private final MultiBitController controller;
 

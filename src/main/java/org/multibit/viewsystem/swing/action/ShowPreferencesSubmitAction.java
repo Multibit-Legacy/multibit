@@ -199,27 +199,31 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
         // Currency ticker.
         boolean showTicker = dataProvider.getNewShowTicker();
+        boolean showBitcoinConvertedToFiat = dataProvider.getNewShowBitcoinConvertedToFiat();
         boolean showCurrency = dataProvider.getNewShowCurrency();
         boolean showRate = dataProvider.getNewShowRate();
         boolean showBid = dataProvider.getNewShowBid();
         boolean showAsk = dataProvider.getNewShowAsk();
         boolean showExchange = dataProvider.getNewShowExchange();
 
-        if (dataProvider.getPreviousShowCurrency() != dataProvider.getNewShowCurrency()) {
+        if (dataProvider.getPreviousShowCurrency() != showCurrency) {
             wantToFireDataStructureChanged = true;
-        } else if (dataProvider.getPreviousShowTicker() != dataProvider.getNewShowTicker() || dataProvider.getNewShowTicker() != dataProvider.isTickerVisible()) {
+        } else if (dataProvider.getPreviousShowBitcoinConvertedToFiat() != showBitcoinConvertedToFiat) {
             wantToFireDataStructureChanged = true;
-        } else if (dataProvider.getPreviousShowRate() != dataProvider.getNewShowRate()) {
+        } else if (dataProvider.getPreviousShowTicker() != showTicker || showTicker != dataProvider.isTickerVisible()) {
             wantToFireDataStructureChanged = true;
-        } else if (dataProvider.getPreviousShowBid() != dataProvider.getNewShowBid()) {
+        } else if (dataProvider.getPreviousShowRate() != showRate) {
             wantToFireDataStructureChanged = true;
-        } else if (dataProvider.getPreviousShowAsk() != dataProvider.getNewShowAsk()) {
+        } else if (dataProvider.getPreviousShowBid() != showBid) {
             wantToFireDataStructureChanged = true;
-        } else if (dataProvider.getPreviousShowExchange() != dataProvider.getNewShowExchange()) {
+        } else if (dataProvider.getPreviousShowAsk() != showAsk) {
+            wantToFireDataStructureChanged = true;
+        } else if (dataProvider.getPreviousShowExchange() != showExchange) {
             wantToFireDataStructureChanged = true;
         }
 
         controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, new Boolean(showTicker).toString());
+        controller.getModel().setUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT, new Boolean(showBitcoinConvertedToFiat).toString());
         
         String columnsToShow = "";
         if (showCurrency)
@@ -335,9 +339,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         // Return to the same view.
         controller.displayView(controller.getCurrentView());
         if (feeValidationError) {
-
             MessageManager.INSTANCE.addMessage(new Message(updateStatusText));
-            
         } else {
             // Clear any previous validation error.
             MessageManager.INSTANCE.addMessage(new Message(" "));
