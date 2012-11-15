@@ -3,6 +3,9 @@ package org.multibit.exchange;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.Locale;
 
 import org.joda.money.CurrencyUnit;
@@ -18,6 +21,8 @@ public enum CurrencyConverter {
     INSTANCE;
 
     private MultiBitController controller;
+    
+    private Collection<CurrencyConverterListener> listeners;
     
     public static final BigInteger NUMBER_OF_SATOSHI_IN_ONE_BITCOIN = BigInteger.valueOf(100000000); // 8 zeros
    
@@ -47,7 +52,9 @@ public enum CurrencyConverter {
         rate = null;
         
         BITCOIN_CURRENCY_UNIT = CurrencyUnit.of("BTC");
-        System.out.println("BTC currency unit d.p.= " + BITCOIN_CURRENCY_UNIT.getDecimalPlaces());
+        
+        // Setup listeners
+        listeners = new ArrayList<CurrencyConverterListener>();
     }
 
     /**
@@ -72,6 +79,11 @@ public enum CurrencyConverter {
     }
 
     public void setCurrencyUnit(CurrencyUnit currencyUnit) {
+        // If this is a new currency, blank the rate.
+        // Thus you should set the currency unit first.
+        if (this.currencyUnit != null && !this.currencyUnit.equals(currencyUnit)) {
+            rate = null;
+        }
         this.currencyUnit = currencyUnit;
     }
 
@@ -80,7 +92,14 @@ public enum CurrencyConverter {
     }
 
     public void setRate(BigDecimal rate) {
+        boolean fireFoundInsteadOfUpdated = (rate== null);
         this.rate = rate;
+        
+        if (fireFoundInsteadOfUpdated) {
+            notifyFoundExchangeRate();
+        } else {
+            notifyUpdatedExchangeRate();
+        }
     }
     
     private MoneyFormatter getMoneyFormatter() {
@@ -99,20 +118,33 @@ public enum CurrencyConverter {
         return result;
     }
     
-//    private void test() {
-//    CurrencyUnit canadianFrench = CurrencyUnit.getInstance(Locale.CANADA_FRENCH);
-//    CurrencyUnit canadianEnglish = CurrencyUnit.getInstance(Locale.CANADA);
-//
-//    MoneyFormatter canadianFrenchFormat = new MoneyFormatterBuilder().
-//            appendAmount(MoneyAmountStyle.ASCII_DECIMAL_COMMA_GROUP3_DOT).
-//            appendLiteral(" $").
-//            toFormatter();
-//    MoneyFormatter canadianEnglishFormat = new MoneyFormatterBuilder().
-//            appendLiteral("$").
-//            appendAmount(MoneyAmountStyle.ASCII_DECIMAL_POINT_GROUP3_COMMA).
-//            toFormatter();
-//
-//    System.out.println(canadianFrenchFormat.print(Money.of(canadianFrench, 123456789.99)));
-//    System.out.println(canadianEnglishFormat.print(Money.of(canadianEnglish, 123456789.99)));
-//    }
+    public void addCurrencyConverterListener(CurrencyConverterListener listener) {
+        if (listeners == null) {
+            throw new IllegalStateException("You need to initialise the CurrencyConverter first");
+        }
+        listeners.add(listener);
+    }
+    
+    public void removeCurrencyConverterListener(CurrencyConverterListener listener) {
+        if (listeners == null) {
+            throw new IllegalStateException("You need to initialise the CurrencyConverter first");
+        }
+        listeners.remove(listener);
+    }
+    
+    private void notifyFoundExchangeRate() {
+        if (listeners != null) {
+            for (CurrencyConverterListener listener : listeners) {
+                listener.foundExchangeRate(new ExchangeRate(currencyUnit, rate, new Date()));
+            }
+        }
+    }
+    
+    private void notifyUpdatedExchangeRate() {
+        if (listeners != null) {
+            for (CurrencyConverterListener listener : listeners) {
+                listener.updatedExchangeRate(new ExchangeRate(currencyUnit, rate, new Date()));
+            }
+        }
+    }
 }

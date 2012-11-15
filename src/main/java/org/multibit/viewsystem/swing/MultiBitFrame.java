@@ -54,6 +54,8 @@ import org.joda.money.Money;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
+import org.multibit.exchange.CurrencyConverterListener;
+import org.multibit.exchange.ExchangeRate;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -97,7 +99,7 @@ import com.google.bitcoin.core.Wallet;
 /*
  * JFrame displaying Swing version of MultiBit
  */
-public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationListener, WalletBusyListener {
+public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationListener, WalletBusyListener, CurrencyConverterListener {
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitFrame.class);
 
@@ -240,21 +242,26 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         tickerTimerTask = new TickerTimerTask(controller, this);
         tickerTimer.schedule(tickerTimerTask, TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
 
-        estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString(model.getActiveWalletEstimatedBalance(),
-                true, false));
-
-        availableBalanceTextButton.setText(controller.getLocaliser().getString(
-                "multiBitFrame.availableToSpend",
-                new Object[] { controller.getLocaliser()
-                        .bitcoinValueToString(model.getActiveWalletAvailableBalance(), true, false) }));
+//        estimatedBalanceTextLabel.setText(controller.getLocaliser().getString("multiBitFrame.balanceLabel") + " : " + controller.getLocaliser().bitcoinValueToString(model.getActiveWalletEstimatedBalance(),
+//                true, false));
+//
+//        availableBalanceTextButton.setText(controller.getLocaliser().getString(
+//                "multiBitFrame.availableToSpend",
+//                new Object[] { controller.getLocaliser()
+//                        .bitcoinValueToString(model.getActiveWalletAvailableBalance(), true, false) }));
 
         estimatedBalanceTextLabel.setFocusable(false);
 
         availableBalanceTextButton.setFocusable(false);
+        
+        updateHeader();
 
         calculateDividerPosition();
  
         MultiBitTabbedPane.setEnableUpdates(true);
+        
+        CurrencyConverter.INSTANCE.addCurrencyConverterListener(this);
+        
         displayView(initialView);
 
         pack();
@@ -1098,10 +1105,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             availableBalanceTextButton.setText("");
         } else {
             BigInteger estimatedBalance = controller.getModel().getActiveWalletEstimatedBalance();
-            String estimatedBalanceText = controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false);
+            String estimatedBalanceText = controller.getLocaliser().getString("multiBitFrame.balanceLabel") + " : " + controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false);
             if (CurrencyConverter.INSTANCE.getRate() != null) {
                 Money fiat = CurrencyConverter.INSTANCE.convertToFiat(estimatedBalance);
-                estimatedBalanceText = estimatedBalanceText + " (" + CurrencyConverter.INSTANCE.getMoneyAsString(fiat) + ")";
+                estimatedBalanceText = estimatedBalanceText + "  (" + CurrencyConverter.INSTANCE.getMoneyAsString(fiat) + ")";
             }
             estimatedBalanceTextLabel.setText(estimatedBalanceText);
             estimatedBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
@@ -1249,5 +1256,21 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     public void onWalletChanged(Wallet wallet) {
         // TODO 
+    }
+
+    @Override
+    public void lostExchangeRate(ExchangeRate exchangeRate) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void foundExchangeRate(ExchangeRate exchangeRate) {
+        updateHeader();
+    }
+
+    @Override
+    public void updatedExchangeRate(ExchangeRate exchangeRate) {
+        updateHeader();
     }
 }
