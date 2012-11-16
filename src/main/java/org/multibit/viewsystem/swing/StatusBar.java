@@ -277,9 +277,13 @@ public class StatusBar extends JPanel implements MessageListener {
                 if (finalStatusEnum == StatusEnum.ONLINE) {
                     onlineLabel.setForeground(new Color(0, 100, 0));
                     if (mainFrame != null) {
-                        BlinkLabel estimatedBalanceTextLabel = mainFrame.getEstimatedBalanceTextLabel();
-                        if (estimatedBalanceTextLabel != null) {
-                            estimatedBalanceTextLabel.setBlinkEnabled(true);
+                        BlinkLabel estimatedBalanceBTCLabel = mainFrame.getEstimatedBalanceBTCLabel();
+                        if (estimatedBalanceBTCLabel != null) {
+                            estimatedBalanceBTCLabel.setBlinkEnabled(true);
+                        }
+                        BlinkLabel estimatedBalanceFiatLabel = mainFrame.getEstimatedBalanceFiatLabel();
+                        if (estimatedBalanceFiatLabel != null) {
+                            estimatedBalanceFiatLabel.setBlinkEnabled(true);
                         }
                     }
                 } else {

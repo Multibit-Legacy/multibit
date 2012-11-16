@@ -30,7 +30,7 @@ public class ColorAndFontConstants {
     public static String MULTIBIT_DEFAULT_FONT_NAME; 
     public static int MULTIBIT_DEFAULT_FONT_STYLE; 
     public static int MULTIBIT_DEFAULT_FONT_SIZE;
-    public static int MULTIBIT_LARGE_FONT_INCREASE = 2;
+    public static int MULTIBIT_LARGE_FONT_INCREASE = 1;
 
     public static Color BACKGROUND_COLOR;
     public static Color DARK_BACKGROUND_COLOR;
