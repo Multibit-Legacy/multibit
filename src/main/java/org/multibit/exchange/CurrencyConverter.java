@@ -6,18 +6,17 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.SwingUtilities;
 
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
-import org.joda.money.format.MoneyAmountStyle;
 import org.joda.money.format.MoneyFormatter;
 import org.joda.money.format.MoneyFormatterBuilder;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 
 public enum CurrencyConverter {
@@ -38,9 +37,14 @@ public enum CurrencyConverter {
     private CurrencyUnit currencyUnit = CurrencyUnit.of(TickerTableModel.DEFAULT_CURRENCY);
 
     /**
-     * The exchange rate i.e the value of 1 BTC in the currency
+     * The exchange rate i.e the value of 1 BTC in the currency.
      */
     private BigDecimal rate;
+    
+    /**
+     * Map of currency code to currency info.
+     */
+    private Map<String, CurrencyInfo> currencyCodeToInfoMap;
     
     public void initialise(MultiBitController controller) {
         this.controller = controller;
@@ -58,6 +62,26 @@ public enum CurrencyConverter {
         
         // Setup listeners
         listeners = new ArrayList<CurrencyConverterListener>();
+        
+        // Initialise currency info map.
+        currencyCodeToInfoMap = new HashMap<String, CurrencyInfo>();
+        currencyCodeToInfoMap.put("USD", new CurrencyInfo("USD", "$", true));
+        currencyCodeToInfoMap.put("AUD", new CurrencyInfo("AUD", "AU$", true));
+        currencyCodeToInfoMap.put("CAD", new CurrencyInfo("CAD", "CA$", true));
+        currencyCodeToInfoMap.put("NZD", new CurrencyInfo("NZD", "NZ$", true));
+        currencyCodeToInfoMap.put("SGD", new CurrencyInfo("SGD", "SG$", true));
+        currencyCodeToInfoMap.put("HKD", new CurrencyInfo("HKD", "HK$", true));
+
+        currencyCodeToInfoMap.put("GBP", new CurrencyInfo("GBP", "£", true));
+        currencyCodeToInfoMap.put("EUR", new CurrencyInfo("EUR", "\u20AC", true));
+        currencyCodeToInfoMap.put("CHF", new CurrencyInfo("CHF", "Fr.", true));
+        currencyCodeToInfoMap.put("JPY", new CurrencyInfo("JPY", "\u00A5", true));
+        currencyCodeToInfoMap.put("CNY", new CurrencyInfo("CNY", "\u5143", false));
+        currencyCodeToInfoMap.put("RUB", new CurrencyInfo("RUB", "\u0440\u0443\u0431", false));
+        currencyCodeToInfoMap.put("SEK", new CurrencyInfo("SEK", "\u006B\u0072", true));
+        currencyCodeToInfoMap.put("DKK", new CurrencyInfo("DKK", "\u006B\u0072.", true));
+        currencyCodeToInfoMap.put("THB", new CurrencyInfo("THB", "\u0E3F", true));
+        currencyCodeToInfoMap.put("PLN", new CurrencyInfo("PLN", "\u007A\u0142", false));
     }
 
     /**
@@ -114,37 +138,23 @@ public enum CurrencyConverter {
         
         // Suffix currency codes.
         String currencyCode = currencyUnit.getCurrencyCode();
-        if ("CNY".equals(currencyCode) || "PLN".equals(currencyCode)  || "RUB".equals(currencyCode)) {
-            // Postfix currency code.
-            moneyFormatter = new MoneyFormatterBuilder().appendAmount()
-            .appendCurrencyCode().toFormatter();
-        } else {
-            // Prefix currency code.
-            moneyFormatter = new MoneyFormatterBuilder().appendCurrencyCode()
-        .appendAmount().toFormatter();
+        CurrencyInfo currencyInfo = currencyCodeToInfoMap.get(currencyCode);
+        if (currencyInfo == null) {
+            currencyInfo = new CurrencyInfo(currencyCode, currencyCode, true);
         }
+        if (currencyInfo.isPrefix()) {
+            // Prefix currency code.
+            moneyFormatter = new MoneyFormatterBuilder().appendLiteral(currencyInfo.getCurrencySymbol()).appendAmount().toFormatter();
+        } else {
+             // Postfix currency code.
+             moneyFormatter = new MoneyFormatterBuilder().appendAmount().appendLiteral(currencyInfo.getCurrencySymbol()).toFormatter();
+         }
         return moneyFormatter;
     }
     
     public String getMoneyAsString(Money money) {
         MoneyFormatter moneyFormatter = getMoneyFormatter();
         String result = moneyFormatter.print(money);
-        result = result.replaceAll("USD", "\\$");
-        result = result.replaceAll("CAD", "CA\\$");
-        result = result.replaceAll("AUD", "AU\\$");
-        result = result.replaceAll("NZD", "NZ\\$");
-        result = result.replaceAll("SGD", "SG\\$");
-        result = result.replaceAll("HKD", "HK\\$");
-        result = result.replaceAll("GBP", "£");
-        result = result.replaceAll("EUR", "\u20AC");
-        result = result.replaceAll("CHF", "Fr.");
-        result = result.replaceAll("JPY", "\u00A5");
-        result = result.replaceAll("CNY", "\u5143");
-        result = result.replaceAll("RUB", "\u0440\u0443\u0431");
-        result = result.replaceAll("SEK", "\u006B\u0072");
-        result = result.replaceAll("DKK", "\u006B\u0072.");
-        result = result.replaceAll("THB", "\u0E3F");
-        result = result.replaceAll("PLN", "\u007A\u0142");
         return result;
     }
     
