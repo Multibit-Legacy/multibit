@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.swing.SwingUtilities;
+
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
 import org.joda.money.format.MoneyAmountStyle;
@@ -15,6 +17,7 @@ import org.joda.money.format.MoneyFormatter;
 import org.joda.money.format.MoneyFormatterBuilder;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
+import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 
 public enum CurrencyConverter {
@@ -74,6 +77,10 @@ public enum CurrencyConverter {
         }
     }
     
+    public boolean isShowingFiat() {
+        return !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
+    }
+    
     public CurrencyUnit getCurrencyUnit() {
         return currencyUnit;
     }
@@ -103,8 +110,19 @@ public enum CurrencyConverter {
     }
     
     private MoneyFormatter getMoneyFormatter() {
-        MoneyFormatter moneyFormatter = new MoneyFormatterBuilder().appendCurrencyCode()
+        MoneyFormatter moneyFormatter;
+        
+        // Suffix currency codes.
+        String currencyCode = currencyUnit.getCurrencyCode();
+        if ("CNY".equals(currencyCode) || "PLN".equals(currencyCode)  || "RUB".equals(currencyCode)) {
+            // Postfix currency code.
+            moneyFormatter = new MoneyFormatterBuilder().appendAmount()
+            .appendCurrencyCode().toFormatter();
+        } else {
+            // Prefix currency code.
+            moneyFormatter = new MoneyFormatterBuilder().appendCurrencyCode()
         .appendAmount().toFormatter();
+        }
         return moneyFormatter;
     }
     
@@ -112,9 +130,21 @@ public enum CurrencyConverter {
         MoneyFormatter moneyFormatter = getMoneyFormatter();
         String result = moneyFormatter.print(money);
         result = result.replaceAll("USD", "\\$");
+        result = result.replaceAll("CAD", "CA\\$");
+        result = result.replaceAll("AUD", "AU\\$");
+        result = result.replaceAll("NZD", "NZ\\$");
+        result = result.replaceAll("SGD", "SG\\$");
+        result = result.replaceAll("HKD", "HK\\$");
         result = result.replaceAll("GBP", "£");
         result = result.replaceAll("EUR", "\u20AC");
-               
+        result = result.replaceAll("CHF", "Fr.");
+        result = result.replaceAll("JPY", "\u00A5");
+        result = result.replaceAll("CNY", "\u5143");
+        result = result.replaceAll("RUB", "\u0440\u0443\u0431");
+        result = result.replaceAll("SEK", "\u006B\u0072");
+        result = result.replaceAll("DKK", "\u006B\u0072.");
+        result = result.replaceAll("THB", "\u0E3F");
+        result = result.replaceAll("PLN", "\u007A\u0142");
         return result;
     }
     
@@ -133,18 +163,26 @@ public enum CurrencyConverter {
     }
     
     private void notifyFoundExchangeRate() {
-        if (listeners != null) {
-            for (CurrencyConverterListener listener : listeners) {
-                listener.foundExchangeRate(new ExchangeRate(currencyUnit, rate, new Date()));
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                if (listeners != null) {
+                    for (CurrencyConverterListener listener : listeners) {
+                        listener.foundExchangeRate(new ExchangeRate(currencyUnit, rate, new Date()));
+                    }
+                }
             }
-        }
+        });
     }
     
     private void notifyUpdatedExchangeRate() {
-        if (listeners != null) {
-            for (CurrencyConverterListener listener : listeners) {
-                listener.updatedExchangeRate(new ExchangeRate(currencyUnit, rate, new Date()));
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                if (listeners != null) {
+                    for (CurrencyConverterListener listener : listeners) {
+                        listener.updatedExchangeRate(new ExchangeRate(currencyUnit, rate, new Date()));
+                    }
+                }
             }
-        }
+        });
     }
 }

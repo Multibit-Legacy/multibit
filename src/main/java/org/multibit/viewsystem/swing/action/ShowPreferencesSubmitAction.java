@@ -18,6 +18,7 @@ package org.multibit.viewsystem.swing.action;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.math.BigInteger;
+import java.util.Timer;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -29,11 +30,13 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
+import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
@@ -49,12 +52,12 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
     private MultiBitController controller;
     private PreferencesDataProvider dataProvider;
-    private JFrame mainFrame;
+    private MultiBitFrame mainFrame;
 
     /**
      * Creates a new {@link ShowPreferencesSubmitAction}.
      */
-    public ShowPreferencesSubmitAction(MultiBitController controller, PreferencesDataProvider dataProvider, Icon icon, JFrame mainFrame) {
+    public ShowPreferencesSubmitAction(MultiBitController controller, PreferencesDataProvider dataProvider, Icon icon, MultiBitFrame mainFrame) {
         super(controller.getLocaliser().getString("showPreferencesSubmitAction.text"), icon);
         this.controller = controller;
         this.dataProvider = dataProvider;
@@ -206,20 +209,27 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         boolean showAsk = dataProvider.getNewShowAsk();
         boolean showExchange = dataProvider.getNewShowExchange();
 
+        boolean restartTickerTimer = false;
+        
         if (dataProvider.getPreviousShowCurrency() != showCurrency) {
             wantToFireDataStructureChanged = true;
+            restartTickerTimer = true;
         } else if (dataProvider.getPreviousShowBitcoinConvertedToFiat() != showBitcoinConvertedToFiat) {
             wantToFireDataStructureChanged = true;
         } else if (dataProvider.getPreviousShowTicker() != showTicker || showTicker != dataProvider.isTickerVisible()) {
             wantToFireDataStructureChanged = true;
         } else if (dataProvider.getPreviousShowRate() != showRate) {
             wantToFireDataStructureChanged = true;
+            restartTickerTimer = true;
         } else if (dataProvider.getPreviousShowBid() != showBid) {
             wantToFireDataStructureChanged = true;
+            restartTickerTimer = true;
         } else if (dataProvider.getPreviousShowAsk() != showAsk) {
             wantToFireDataStructureChanged = true;
+            restartTickerTimer = true;
         } else if (dataProvider.getPreviousShowExchange() != showExchange) {
             wantToFireDataStructureChanged = true;
+            restartTickerTimer = true;
         }
 
         controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, new Boolean(showTicker).toString());
@@ -250,6 +260,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         if (newExchange1 != null && !newExchange1.equals(previousExchange1)) {
             controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_EXCHANGE, newExchange1);
             wantToFireDataStructureChanged = true;
+            restartTickerTimer = true;
         }
 
         String previousCurrency1 = dataProvider.getPreviousCurrency1();
@@ -257,6 +268,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         if (newCurrency1 != null && !newCurrency1.equals(previousCurrency1)) {
             controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, newCurrency1);
             wantToFireDataStructureChanged = true;
+            restartTickerTimer = true;
         }
 
         String previousShowSecondRow = new Boolean(dataProvider.getPreviousShowSecondRow()).toString();
@@ -265,6 +277,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             // New show second row is set on model.
             controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW_SECOND_ROW, newShowSecondRow);
             wantToFireDataStructureChanged = true;
+            restartTickerTimer = true;
         }
 
         String previousExchange2 = dataProvider.getPreviousExchange2();
@@ -272,6 +285,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         if (newExchange2 != null && !newExchange2.equals(previousExchange2)) {
             controller.getModel().setUserPreference(MultiBitModel.TICKER_SECOND_ROW_EXCHANGE, newExchange2);
             wantToFireDataStructureChanged = true;
+            restartTickerTimer = true;
         }
 
         String previousCurrency2 = dataProvider.getPreviousCurrency2();
@@ -279,6 +293,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         if (newCurrency2 != null && !newCurrency2.equals(previousCurrency2)) {
             controller.getModel().setUserPreference(MultiBitModel.TICKER_SECOND_ROW_CURRENCY, newCurrency2);
             wantToFireDataStructureChanged = true;
+            restartTickerTimer = true;
         }
 
         // Set on the model the currencies we are interested in - only these get
@@ -292,6 +307,17 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         // Can undo.
         controller.getModel().setUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES, "true");
 
+        if (restartTickerTimer) {
+            // Cancel any existing timer.
+            if (mainFrame.getTickerTimer() != null) {
+                mainFrame.getTickerTimer().cancel();
+            }
+            // Start ticker timer.
+            Timer tickerTimer = new Timer();
+            mainFrame.setTickerTimer(tickerTimer);
+            tickerTimer.schedule(new TickerTimerTask(controller, mainFrame), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
+        }
+        
         if (fontHasChanged) {
             Font newFont = dataProvider.getSelectedFont();
             FontSizer.INSTANCE.initialise(controller);

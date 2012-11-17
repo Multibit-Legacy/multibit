@@ -413,52 +413,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         headerPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         headerPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
-
-        JLabel filler1 = new JLabel();
-        filler1.setMinimumSize(new Dimension(20, 20));
-        filler1.setMaximumSize(new Dimension(20, 20));
-        filler1.setPreferredSize(new Dimension(20, 20));
-        filler1.setOpaque(false);
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 0.01;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 2;
-
-        constraints.anchor = GridBagConstraints.LINE_START;
-        //headerPanel.add(filler1, constraints);
-
-        JLabel walletIconLabel = new JLabel();
-        if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
-            walletIconLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.WALLET_ICON_FILE));
-        } else {
-            walletIconLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.RTL_WALLET_ICON_FILE));
-        }
-        int walletIconWidth = 60;
-        int walletIconHeight = HEIGHT_OF_HEADER - 10;
-    
-        walletIconLabel.setOpaque(false);
-        walletIconLabel.setMinimumSize(new Dimension(walletIconWidth, walletIconHeight));
-        walletIconLabel.setMaximumSize(new Dimension(walletIconWidth, walletIconHeight));
-        walletIconLabel.setPreferredSize(new Dimension(walletIconWidth, walletIconHeight));
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.weightx = 0.01;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 3;
-
-        constraints.anchor = GridBagConstraints.LINE_START;
-
-        //headerPanel.add(walletIconLabel, constraints);
-
-        constraints.gridx = 2;
-        constraints.gridy = 0;
-        constraints.weightx = 0.01;
-        constraints.weighty = 0.6;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        //headerPanel.add(MultiBitTitledPanel.createStent(10), constraints);
-
         
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -507,7 +461,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.weightx = 0.01;
         constraints.weighty = 0.6;
         constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(MultiBitTitledPanel.createStent(8), constraints);
+        headerPanel.add(MultiBitTitledPanel.createStent(12), constraints);
 
         estimatedBalanceBTCLabel = new BlinkLabel(controller, true);
         estimatedBalanceBTCLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
@@ -533,7 +487,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.weightx = 0.01;
         constraints.weighty = 0.6;
         constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(MultiBitTitledPanel.createStent(8), constraints);
+        headerPanel.add(MultiBitTitledPanel.createStent(12), constraints);
 
         constraints.gridx = 7;
         constraints.gridy = 1;
@@ -907,12 +861,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         tickerTablePanel.setVisible(false);
                         controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, Boolean.FALSE.toString());
                         showTicker.setText(controller.getLocaliser().getString("multiBitFrame.ticker.show.text"));
-                        tickerTimer.cancel();
                     } else {
                         tickerTablePanel.setVisible(true);
                         controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, Boolean.TRUE.toString());
                         showTicker.setText(controller.getLocaliser().getString("multiBitFrame.ticker.hide.text"));
-                        // start ticker timer
+                        // Cancel any existing timer.
+                        if (tickerTimer != null) {
+                            tickerTimer.cancel();
+                        }
+                        // Start ticker timer.
                         tickerTimer = new Timer();
                         tickerTimer.schedule(new TickerTimerTask(controller, thisFrame), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
                     }
@@ -1271,7 +1228,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         } else {
             BigInteger estimatedBalance = controller.getModel().getActiveWalletEstimatedBalance();
             estimatedBalanceBTCLabel.setText(controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false));
-            if (CurrencyConverter.INSTANCE.getRate() != null) {
+            if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
                 Money fiat = CurrencyConverter.INSTANCE.convertToFiat(estimatedBalance);
                 estimatedBalanceFiatLabel.setText("(" + CurrencyConverter.INSTANCE.getMoneyAsString(fiat) + ")");
             }
@@ -1289,7 +1246,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             } else {
                 BigInteger availableToSpend = model.getActiveWalletAvailableBalance();
                 availableBalanceBTCButton.setText( controller.getLocaliser().bitcoinValueToString(availableToSpend, true, false));
-                if (CurrencyConverter.INSTANCE.getRate() != null) {
+                if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
                     Money fiat = CurrencyConverter.INSTANCE.convertToFiat(model.getActiveWalletAvailableBalance());
                     availableBalanceFiatButton.setText("(" + CurrencyConverter.INSTANCE.getMoneyAsString(fiat) + ")");
                 } else {
@@ -1424,10 +1381,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         return splitPane;
     }
 
-    public TickerTimerTask getTickerTimerTask() {
-        return tickerTimerTask;
-    }
-
     @Override
     public void onWalletChanged(Wallet wallet) {
         // TODO 
@@ -1435,8 +1388,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     @Override
     public void lostExchangeRate(ExchangeRate exchangeRate) {
-        // TODO Auto-generated method stub
-        
+        // TODO Auto-generated method stub    
     }
 
     @Override
@@ -1447,5 +1399,17 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     public void updatedExchangeRate(ExchangeRate exchangeRate) {
         updateHeader();
+    }
+
+    public Timer getTickerTimer() {
+        return tickerTimer;
+    }
+
+    public void setTickerTimer(Timer tickerTimer) {
+        this.tickerTimer = tickerTimer;
+    }
+    
+    public TickerTimerTask getTickerTimerTask() {
+        return tickerTimerTask;
     }
 }
