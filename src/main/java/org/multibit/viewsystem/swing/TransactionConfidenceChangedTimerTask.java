@@ -2,6 +2,8 @@ package org.multibit.viewsystem.swing;
 
 import java.util.TimerTask;
 
+import javax.swing.SwingUtilities;
+
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.view.ViewFactory;
@@ -23,17 +25,22 @@ public class TransactionConfidenceChangedTimerTask extends TimerTask {
     
     @Override
     public void run() {
-        // If viewing transactions, refresh the screen so that transaction confidence icons can update.
-        if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
-            View currentViewView = viewFactory.getView(controller.getCurrentView());
-            if (currentViewView != null) {
-                currentViewView.displayView();
-                
-                mainFrame.invalidate();
-                mainFrame.validate();
-                mainFrame.repaint();
-            }
-        }
         isTransactionConfidenceChangedTimerRunning = Boolean.FALSE;
+
+        // If viewing transactions, refresh the screen so that transaction confidence icons can update.
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
+                    View currentViewView = viewFactory.getView(controller.getCurrentView());
+                    if (currentViewView != null) {
+                        currentViewView.displayView();
+                        
+                        mainFrame.invalidate();
+                        mainFrame.validate();
+                        mainFrame.repaint();
+                    }
+                }
+            }
+        });
     }
 }

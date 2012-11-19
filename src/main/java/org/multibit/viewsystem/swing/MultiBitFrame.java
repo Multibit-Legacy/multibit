@@ -119,7 +119,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public static final int HEIGHT_OF_HEADER = 70;
 
-    public static final int ON_TRANSACTION_CONFIDENCE_CHANGE_DELAY = 200;
+    public static final int ON_TRANSACTION_CONFIDENCE_CHANGE_DELAY = 333;
     
     private StatusBar statusBar;
     private StatusEnum online = StatusEnum.CONNECTING;
