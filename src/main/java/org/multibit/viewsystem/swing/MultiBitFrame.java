@@ -34,6 +34,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigInteger;
 import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -118,6 +119,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public static final int HEIGHT_OF_HEADER = 70;
 
+    public static final int ON_TRANSACTION_CONFIDENCE_CHANGE_DELAY = 200;
+    
     private StatusBar statusBar;
     private StatusEnum online = StatusEnum.CONNECTING;
     public static final String SEPARATOR = " - ";
@@ -176,6 +179,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      */
     private MultiBitTabbedPane viewTabbedPane;
 
+    private Boolean onTransactionConfidenceChangedTimerIsRunning = Boolean.FALSE;
+    
     public Logger logger = LoggerFactory.getLogger(MultiBitFrame.class.getName());
 
     private ViewFactory viewFactory;
@@ -1142,15 +1147,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void onTransactionConfidenceChanged(Wallet wallet, final Transaction transaction) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                // If viewing transactions, refresh the screen so that transaction confidence icons can update.
-                if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
-                    View currentViewView = viewFactory.getView(controller.getCurrentView());
-                    if (currentViewView != null) {
-                        currentViewView.displayView();
-                        
-                        invalidate();
-                        validate();
-                        repaint();
+                synchronized(onTransactionConfidenceChangedTimerIsRunning) {
+                    if (onTransactionConfidenceChangedTimerIsRunning) {
+                        // Transaction confidence change does not fire redraw - this will happen when the timer fires.
+                    } else {
+                        Timer onTransactionConfidenceChangeTimer = new Timer();
+                        onTransactionConfidenceChangeTimer.schedule(new TransactionConfidenceChangedTimerTask(controller, thisFrame, onTransactionConfidenceChangedTimerIsRunning, viewFactory), ON_TRANSACTION_CONFIDENCE_CHANGE_DELAY);
+                        onTransactionConfidenceChangedTimerIsRunning = Boolean.TRUE;
                     }
                 }
                 SendBitcoinConfirmPanel.updatePanel(transaction);

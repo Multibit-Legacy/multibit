@@ -367,7 +367,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             try {
                 if (loopPerWalletModelData.getWallet().isTransactionRelevant(transaction, true)) {
                     loopPerWalletModelData.setDirty(true);
-                    log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
+                    //log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
                 }
             } catch (ScriptException e) {
                 log.debug(e.getMessage());
@@ -392,7 +392,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
-        log.debug("Firing confidence change in onTransactionConfidenceChanged.");
+        //log.debug("Firing confidence change in onTransactionConfidenceChanged.");
         
         // Set the depth in blocks as this does not seem to get updated anywhere.
         if (getMultiBitService().getChain() != null && transaction.getConfidence().getConfidenceType() == ConfidenceType.BUILDING) {
