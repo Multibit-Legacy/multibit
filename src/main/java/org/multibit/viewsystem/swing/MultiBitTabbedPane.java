@@ -219,7 +219,6 @@ public class MultiBitTabbedPane extends JTabbedPane {
         // use our panel instead.
         ToolTipManager.sharedInstance().unregisterComponent(tab);
         setTabComponentAt(getTabCount() - 1, tab);
-        //tab.setToolTipText(tooltip);
     }
     
     @Override

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -59,6 +60,7 @@ import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.UpdateTransactionsTimerTask;
 import org.multibit.viewsystem.swing.WalletTableModel;
 import org.multibit.viewsystem.swing.action.ShowTransactionDetailsAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -102,11 +104,23 @@ public class ShowTransactionsPanel extends JPanel implements View {
     private static final String TICK_ICON_FILE = "/images/tick.png";
 
     private int selectedRow = -1;
+    
+    public static final int UPDATE_TRANSACTIONS_DELAY_TIME = 333; // milliseconds
 
+    /**
+     * Timer used to condense multiple updates
+     */
+    private static Timer updateTransactionsTimer;
+
+    private static UpdateTransactionsTimerTask updateTransactionsTimerTask;
+    
     public ShowTransactionsPanel(MultiBitFrame mainFrame, MultiBitController controller) {
         this.controller = controller;
         this.mainFrame = mainFrame;
 
+        updateTransactionsTimerTask = new UpdateTransactionsTimerTask(controller, this, mainFrame);
+        updateTransactionsTimer = new Timer();
+        updateTransactionsTimer.scheduleAtFixedRate(updateTransactionsTimerTask, UPDATE_TRANSACTIONS_DELAY_TIME, UPDATE_TRANSACTIONS_DELAY_TIME);
         initUI();
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -114,6 +128,14 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
     private void initUI() {
         createWalletPanel();
+    }
+    
+    public static void updateTransactions() {
+        if (updateTransactionsTimerTask != null) {
+            synchronized(updateTransactionsTimerTask) {
+                updateTransactionsTimerTask.setUpdateTransactions(true);                
+            }
+        }
     }
 
     private void createWalletPanel() {
@@ -239,7 +261,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
     @Override
     public void displayView() {
-        //log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this));
+        log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this));
 
         walletTableModel.recreateWalletData();
 

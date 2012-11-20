@@ -34,7 +34,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigInteger;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -66,7 +65,6 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
 import org.multibit.model.WalletBusyListener;
-import com.google.bitcoin.core.WalletMajorVersion;
 import org.multibit.platform.GenericApplication;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
@@ -81,6 +79,7 @@ import org.multibit.viewsystem.swing.action.MultiBitWalletBusyAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.SendBitcoinConfirmPanel;
+import org.multibit.viewsystem.swing.view.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -99,6 +98,7 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.WalletMajorVersion;
 
 /*
  * JFrame displaying Swing version of MultiBit
@@ -119,7 +119,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public static final int HEIGHT_OF_HEADER = 70;
 
-    public static final int ON_TRANSACTION_CONFIDENCE_CHANGE_DELAY = 333;
+    public static final int ON_TRANSACTION_CONFIDENCE_CHANGE_DELAY = 50;
     
     private StatusBar statusBar;
     private StatusEnum online = StatusEnum.CONNECTING;
@@ -179,8 +179,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      */
     private MultiBitTabbedPane viewTabbedPane;
 
-    private Boolean onTransactionConfidenceChangedTimerIsRunning = Boolean.FALSE;
-    
     public Logger logger = LoggerFactory.getLogger(MultiBitFrame.class.getName());
 
     private ViewFactory viewFactory;
@@ -930,6 +928,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             this.localiser = controller.getLocaliser();
             Container contentPane = getContentPane();
             contentPane.removeAll();
+            viewTabbedPane.removeAll();
+            viewFactory.initialise();
             initUI();
             applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         }
@@ -937,9 +937,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         statusBar.refreshOnlineStatusText();
 
         updateHeader();
-
-        viewFactory = new ViewFactory(controller, this);
-
+        
         // Tell the wallets list to display.
         if (walletsView != null) {
             walletsView.initUI();
@@ -1115,14 +1113,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * This typically comes in from a Peer so is 'SwingUtilitied' to get the request on the Swing event thread
      */
     public void blockDownloaded() {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                // Update transaction screen in case status bars have changed.
-                if (View.TRANSACTIONS_VIEW == controller.getCurrentView()) {
-                    thisFrame.fireDataChanged();
-                }
-            }
-        });
+        // Update transaction screen in case status bars have changed.
+        if (View.TRANSACTIONS_VIEW == controller.getCurrentView()) {
+            ShowTransactionsPanel.updateTransactions();
+        }
     }
 
     @Override
@@ -1145,20 +1139,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     public void onTransactionConfidenceChanged(Wallet wallet, final Transaction transaction) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                synchronized(onTransactionConfidenceChangedTimerIsRunning) {
-                    if (onTransactionConfidenceChangedTimerIsRunning) {
-                        // Transaction confidence change does not fire redraw - this will happen when the timer fires.
-                    } else {
-                        Timer onTransactionConfidenceChangeTimer = new Timer();
-                        onTransactionConfidenceChangeTimer.schedule(new TransactionConfidenceChangedTimerTask(controller, thisFrame, onTransactionConfidenceChangedTimerIsRunning, viewFactory), ON_TRANSACTION_CONFIDENCE_CHANGE_DELAY);
-                        onTransactionConfidenceChangedTimerIsRunning = Boolean.TRUE;
-                    }
-                }
-                SendBitcoinConfirmPanel.updatePanel(transaction);
-            }
-        });
+        ShowTransactionsPanel.updateTransactions();
     }
 
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
