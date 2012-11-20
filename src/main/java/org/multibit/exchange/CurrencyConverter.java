@@ -3,16 +3,20 @@ package org.multibit.exchange;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.swing.SwingUtilities;
 
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
+import org.joda.money.format.MoneyAmountStyle;
 import org.joda.money.format.MoneyFormatter;
 import org.joda.money.format.MoneyFormatterBuilder;
 import org.multibit.controller.MultiBitController;
@@ -142,12 +146,22 @@ public enum CurrencyConverter {
         if (currencyInfo == null) {
             currencyInfo = new CurrencyInfo(currencyCode, currencyCode, true);
         }
+
+        DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
+        char separator = formatter.getDecimalFormatSymbols().getDecimalSeparator();
+        MoneyAmountStyle moneyAmountStyle;
+        if ('.' == separator) {
+            moneyAmountStyle = MoneyAmountStyle.ASCII_DECIMAL_POINT_GROUP3_COMMA;
+        } else {
+            moneyAmountStyle = MoneyAmountStyle.ASCII_DECIMAL_COMMA_GROUP3_DOT;
+        }
+        
         if (currencyInfo.isPrefix()) {
             // Prefix currency code.
-            moneyFormatter = new MoneyFormatterBuilder().appendLiteral(currencyInfo.getCurrencySymbol()).appendAmount().toFormatter();
+            moneyFormatter = new MoneyFormatterBuilder().appendLiteral(currencyInfo.getCurrencySymbol()).appendAmount(moneyAmountStyle).toFormatter(controller.getLocaliser().getLocale());
         } else {
              // Postfix currency code.
-             moneyFormatter = new MoneyFormatterBuilder().appendAmount().appendLiteral(currencyInfo.getCurrencySymbol()).toFormatter();
+             moneyFormatter = new MoneyFormatterBuilder().appendAmount(moneyAmountStyle).appendLiteral(currencyInfo.getCurrencySymbol()).toFormatter(controller.getLocaliser().getLocale());
          }
         return moneyFormatter;
     }
