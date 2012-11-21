@@ -183,8 +183,15 @@ public enum CurrencyConverter {
             return "";
         }
         MoneyFormatter moneyFormatter = getMoneyFormatter(addCurrencySymbol);
-        String result = moneyFormatter.print(money);
-        return result;
+        
+        DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
+        char groupingSeparator = formatter.getDecimalFormatSymbols().getGroupingSeparator();
+
+        String toReturn =  moneyFormatter.print(money);
+        
+        // Get rid of negative sign followed by thousand separator
+        toReturn = toReturn.replaceAll("-" + groupingSeparator, "-");
+        return toReturn;
     }
     
     public void addCurrencyConverterListener(CurrencyConverterListener listener) {

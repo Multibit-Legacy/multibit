@@ -72,6 +72,8 @@ public class Localiser {
     private final static String MISSING_RESOURCE_TEXT = "Missing resource : ";
     
     private NumberFormat numberFormat;
+    
+    public static final int NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN = 8;
 
     /**
      * Localiser hardwired to English - mainly for testing
@@ -102,6 +104,7 @@ public class Localiser {
         setLocale(locale);
         
         numberFormat = NumberFormat.getInstance(locale);
+        numberFormat.setMaximumFractionDigits(NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN);
     }
 
     synchronized public String getString(String key) {

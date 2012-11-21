@@ -23,13 +23,14 @@ import java.util.Timer;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
 
+import org.joda.money.CurrencyUnit;
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -267,6 +268,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         String newCurrency1 = dataProvider.getNewCurrency1();
         if (newCurrency1 != null && !newCurrency1.equals(previousCurrency1)) {
             controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, newCurrency1);
+            CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(newCurrency1));
             wantToFireDataStructureChanged = true;
             restartTickerTimer = true;
         }

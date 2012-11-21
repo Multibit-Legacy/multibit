@@ -54,6 +54,8 @@ import javax.swing.table.TableRowSorter;
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
+import org.multibit.exchange.CurrencyConverterListener;
+import org.multibit.exchange.ExchangeRate;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletTableData;
 import org.multibit.utils.DateUtils;
@@ -72,7 +74,7 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 
-public class ShowTransactionsPanel extends JPanel implements View {
+public class ShowTransactionsPanel extends JPanel implements View, CurrencyConverterListener {
     private static final long serialVersionUID = 1235108897887842662L;
 
     private static final Logger log = LoggerFactory.getLogger(ShowTransactionsPanel.class);
@@ -125,6 +127,8 @@ public class ShowTransactionsPanel extends JPanel implements View {
         initUI();
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        
+        CurrencyConverter.INSTANCE.addCurrencyConverterListener(this);
     }
 
     private void initUI() {
@@ -202,13 +206,13 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
         tableColumn = table.getColumnModel().getColumn(3); // amount (BTC)
         int amountBTCWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel") + " (BTC)"),
-                fontMetrics.stringWidth("00.00000000"));
+                fontMetrics.stringWidth("000.00000000"));
         tableColumn.setPreferredWidth(amountBTCWidth);
 
         if (CurrencyConverter.INSTANCE.isShowingFiat()) {
             tableColumn = table.getColumnModel().getColumn(4); // amount (fiat)
             int amountFiatWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel") + " (USD)"),
-                    fontMetrics.stringWidth("00.00000000"));
+                    fontMetrics.stringWidth("000.00000000"));
             tableColumn.setPreferredWidth(amountFiatWidth);
            
             table.getColumnModel().getColumn(4).setCellRenderer(new TrailingJustifiedRenderer());
@@ -680,5 +684,20 @@ public class ShowTransactionsPanel extends JPanel implements View {
     @Override
     public int getViewId() {
         return View.TRANSACTIONS_VIEW;
+    }
+
+    @Override
+    public void lostExchangeRate(ExchangeRate exchangeRate) {
+        // TODO Auto-generated method stub    
+    }
+
+    @Override
+    public void foundExchangeRate(ExchangeRate exchangeRate) {
+        initUI();
+    }
+
+    @Override
+    public void updatedExchangeRate(ExchangeRate exchangeRate) {
+        ShowTransactionsPanel.updateTransactions();
     }
 }
