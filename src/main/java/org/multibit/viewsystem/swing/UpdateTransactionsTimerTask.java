@@ -43,7 +43,6 @@ public class UpdateTransactionsTimerTask extends TimerTask {
 
                 if (updateThisTime) {
                     if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
-                        System.out.println("Refreshing transactions");
                         transactionsPanel.displayView();
 
                         mainFrame.invalidate();

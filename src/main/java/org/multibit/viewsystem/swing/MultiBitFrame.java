@@ -968,7 +968,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * Display next view on Swing event dispatch thread.
      */
     public void displayView(int viewToDisplay) {
-        log.debug("Displaying view '" + viewToDisplay + "'");
+        //log.debug("Displaying view '" + viewToDisplay + "'");
         // Open wallet view obselete - show transactions
         if (View.OPEN_WALLET_VIEW == viewToDisplay) {
             viewToDisplay = View.TRANSACTIONS_VIEW;

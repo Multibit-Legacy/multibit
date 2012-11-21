@@ -261,7 +261,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
     @Override
     public void displayView() {
-        log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this));
+        //log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this));
 
         walletTableModel.recreateWalletData();
 
