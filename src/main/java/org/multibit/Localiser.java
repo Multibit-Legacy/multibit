@@ -258,7 +258,7 @@ public class Localiser {
         }
                 
         BigDecimal valueInBTC = new BigDecimal(value).divide(new BigDecimal(Utils.COIN));
-        toReturn = numberFormat.format(valueInBTC.doubleValue());
+        toReturn = toReturn + numberFormat.format(valueInBTC.doubleValue());
 
         if (addUnit) {
             toReturn = toReturn + " " + getString("sendBitcoinPanel.amountUnitLabel");

@@ -137,7 +137,7 @@ public enum CurrencyConverter {
         }
     }
     
-    private MoneyFormatter getMoneyFormatter() {
+    private MoneyFormatter getMoneyFormatter(boolean addCurrencySymbol) {
         MoneyFormatter moneyFormatter;
         
         // Suffix currency codes.
@@ -158,16 +158,31 @@ public enum CurrencyConverter {
         
         if (currencyInfo.isPrefix()) {
             // Prefix currency code.
-            moneyFormatter = new MoneyFormatterBuilder().appendLiteral(currencyInfo.getCurrencySymbol()).appendAmount(moneyAmountStyle).toFormatter(controller.getLocaliser().getLocale());
+            if (addCurrencySymbol) {
+                moneyFormatter = new MoneyFormatterBuilder().appendLiteral(currencyInfo.getCurrencySymbol()).appendAmount(moneyAmountStyle).toFormatter(controller.getLocaliser().getLocale());
+            } else {
+                moneyFormatter = new MoneyFormatterBuilder().appendAmount(moneyAmountStyle).toFormatter(controller.getLocaliser().getLocale());
+            }
         } else {
              // Postfix currency code.
-             moneyFormatter = new MoneyFormatterBuilder().appendAmount(moneyAmountStyle).appendLiteral(currencyInfo.getCurrencySymbol()).toFormatter(controller.getLocaliser().getLocale());
-         }
+            if (addCurrencySymbol) {
+                moneyFormatter = new MoneyFormatterBuilder().appendAmount(moneyAmountStyle).appendLiteral(currencyInfo.getCurrencySymbol()).toFormatter(controller.getLocaliser().getLocale());
+            } else {
+                moneyFormatter = new MoneyFormatterBuilder().appendAmount(moneyAmountStyle).toFormatter(controller.getLocaliser().getLocale());
+            }
+        }
         return moneyFormatter;
     }
     
     public String getMoneyAsString(Money money) {
-        MoneyFormatter moneyFormatter = getMoneyFormatter();
+        return getMoneyAsString(money, true);
+    }
+    
+    public String getMoneyAsString(Money money, boolean addCurrencySymbol) {
+        if (money == null) {
+            return "";
+        }
+        MoneyFormatter moneyFormatter = getMoneyFormatter(addCurrencySymbol);
         String result = moneyFormatter.print(money);
         return result;
     }
@@ -208,5 +223,9 @@ public enum CurrencyConverter {
                 }
             }
         });
+    }
+
+    public Map<String, CurrencyInfo> getCurrencyCodeToInfoMap() {
+        return currencyCodeToInfoMap;
     }
 }

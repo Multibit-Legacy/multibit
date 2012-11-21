@@ -53,6 +53,7 @@ import javax.swing.table.TableRowSorter;
 
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletTableData;
 import org.multibit.utils.DateUtils;
@@ -181,9 +182,8 @@ public class ShowTransactionsPanel extends JPanel implements View {
             table.getColumnModel().getColumn(2).setCellRenderer(new TrailingJustifiedRenderer());
         }
 
-        // credit and debit trailing justified
+        // Amount trailing justified.
         table.getColumnModel().getColumn(3).setCellRenderer(new TrailingJustifiedRenderer());
-        table.getColumnModel().getColumn(4).setCellRenderer(new TrailingJustifiedRenderer());
 
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         TableColumn tableColumn = table.getColumnModel().getColumn(0); // status
@@ -200,15 +200,19 @@ public class ShowTransactionsPanel extends JPanel implements View {
         tableColumn = table.getColumnModel().getColumn(2); // description
         tableColumn.setPreferredWidth(300);
 
-        tableColumn = table.getColumnModel().getColumn(3); // debit
-        int debitWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.debitText")),
+        tableColumn = table.getColumnModel().getColumn(3); // amount (BTC)
+        int amountBTCWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel") + " (BTC)"),
                 fontMetrics.stringWidth("00.00000000"));
-        tableColumn.setPreferredWidth(debitWidth);
+        tableColumn.setPreferredWidth(amountBTCWidth);
 
-        tableColumn = table.getColumnModel().getColumn(4); // credit
-        int creditWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.creditText")),
-                fontMetrics.stringWidth("00.00000000"));
-        tableColumn.setPreferredWidth(creditWidth);
+        if (CurrencyConverter.INSTANCE.isShowingFiat()) {
+            tableColumn = table.getColumnModel().getColumn(4); // amount (fiat)
+            int amountFiatWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel") + " (USD)"),
+                    fontMetrics.stringWidth("00.00000000"));
+            tableColumn.setPreferredWidth(amountFiatWidth);
+           
+            table.getColumnModel().getColumn(4).setCellRenderer(new TrailingJustifiedRenderer());
+        }
 
         // row sorter
         rowSorter = new TableRowSorter<TableModel>(table.getModel());
@@ -512,15 +516,30 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
             label.setText(value + SPACER);
 
+            if ((value + "").indexOf("-") > -1) {
+                // debit
+                if (isSelected) {
+                    label.setForeground(ColorAndFontConstants.SELECTION_DEBIT_FOREGROUND_COLOR);
+                } else {
+                    label.setForeground(ColorAndFontConstants.DEBIT_FOREGROUND_COLOR);                    
+                }
+            } else {
+                // debit
+                if (isSelected) {
+                    label.setForeground(ColorAndFontConstants.SELECTION_CREDIT_FOREGROUND_COLOR); 
+                } else {
+                    label.setForeground(ColorAndFontConstants.CREDIT_FOREGROUND_COLOR);                     
+                }
+            }
             if (isSelected) {
                 selectedRow = row;
                 label.setBackground(table.getSelectionBackground());
-                label.setForeground(table.getSelectionForeground());
+                //label.setForeground(table.getSelectionForeground());
             } else {
                 Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
                         : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
-                label.setForeground(table.getForeground());
+                //label.setForeground(table.getForeground());
             }
 
             return label;
