@@ -393,7 +393,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         calculateDividerPosition();
         
         // Cannot get the RTL wallets drawing nicely so switch off adjustment.
-        splitPane.setEnabled(ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        splitPane.setEnabled(ComponentOrientation.LEFT_TO_RIGHT.equals(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())));
 
         statusBar = new StatusBar(controller, this);
         statusBar.updateOnlineStatusText(online);
@@ -1341,7 +1341,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         } 
         splitPane.setEnabled(true);
         splitPane.setDividerLocation(dividerPosition);
-        splitPane.setEnabled(false);
+        splitPane.setEnabled(ComponentOrientation.LEFT_TO_RIGHT.equals(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())));
     }
 
     public WalletListPanel getWalletsView() {

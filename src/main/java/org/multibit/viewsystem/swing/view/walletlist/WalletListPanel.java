@@ -36,6 +36,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
+import org.multibit.exchange.CurrencyConverterListener;
+import org.multibit.exchange.ExchangeRate;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.network.MultiBitDnsDiscovery;
@@ -54,7 +57,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The wallet list view.
  */
-public class WalletListPanel extends JPanel implements View, WalletBusyListener, ComponentListener {
+public class WalletListPanel extends JPanel implements View, WalletBusyListener, ComponentListener, CurrencyConverterListener {
 
     private static final long serialVersionUID = 191352298245057705L;
 
@@ -97,6 +100,8 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
         initUI();
         
         controller.registerWalletBusyListener(this);
+        
+        CurrencyConverter.INSTANCE.addCurrencyConverterListener(this);
     }
 
     @Override
@@ -107,6 +112,8 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
     public void displayView(boolean blinkEnabled) {
         if (walletPanels != null) {
             synchronized(walletPanels) {
+                int amountFiatLabelSize = 0;
+                
                 for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
                     if (buttonPanel != null) {
                         int buttonPanelPreferredWidth = buttonPanel.getPreferredSize().width;
@@ -118,10 +125,17 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
                     }
                     // Make sure the totals displayed and encryption status are correct.
                     loopSingleWalletPanel.updateFromModel(blinkEnabled);
-                    loopSingleWalletPanel.invalidate();
-                    loopSingleWalletPanel.revalidate();
-                    loopSingleWalletPanel.repaint();
+                    
+                    amountFiatLabelSize = Math.max(amountFiatLabelSize, loopSingleWalletPanel.getFiatLabelWidth());
+                    System.out.println("amountFiatLabelSize = " + amountFiatLabelSize);
                 }
+                
+                for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
+                    loopSingleWalletPanel.setFiatLabelWidth(amountFiatLabelSize + 10);
+                }
+                invalidate();
+                revalidate();
+                repaint();
             }
         }
         
@@ -448,5 +462,21 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
             loopSingleWalletPanel.revalidate();
             loopSingleWalletPanel.repaint();
         }
+    }
+
+    @Override
+    public void lostExchangeRate(ExchangeRate exchangeRate) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void foundExchangeRate(ExchangeRate exchangeRate) {
+        displayView(false);
+    }
+
+    @Override
+    public void updatedExchangeRate(ExchangeRate exchangeRate) {
+        displayView(false);
     }
 }

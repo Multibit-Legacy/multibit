@@ -178,6 +178,7 @@ public class Localiser {
         formatter.setLocale(locale);
 
         numberFormat = NumberFormat.getInstance(locale);
+        numberFormat.setMaximumFractionDigits(NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN);
 
         boolean foundIt = false;
         try {

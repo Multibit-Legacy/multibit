@@ -67,7 +67,7 @@ import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.Wallet.BalanceType;
 import com.google.bitcoin.core.WalletMajorVersion;
 
-public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener, CurrencyConverterListener {
+public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener {
 
     private static final int WIDTH_OF_TEXT_FIELD = 12;
 
@@ -93,7 +93,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private Border walletDescriptionTextFieldBorder;
     private MultiBitButton walletFormatButton;
     
-    private BlinkLabel amountLabel;
+    private BlinkLabel amountLabelBTC;
+    private BlinkLabel amountLabelFiat;
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
@@ -149,21 +150,20 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private JLabel filenameSeparator;
     private MultiBitLabel walletFilenameLabel;
     private JLabel walletTypeText;
+    
+    private FontMetrics fontMetrics;
 
     private final SingleWalletPanel thisPanel;
-    
-    private final WalletListPanel walletListPanel;
-       
+          
     public SingleWalletPanel(PerWalletModelData perWalletModelData, final MultiBitController controller, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
         this.perWalletModelData = perWalletModelData;
         this.controller = controller;
         this.mainFrame = mainFrame;
-        this.walletListPanel = walletListPanel;
        
         thisPanel = this;
 
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
-        FontMetrics fontMetrics = getFontMetrics(font);
+        fontMetrics = getFontMetrics(font);
 
         // By default not expanded, not selected.
         expanded = false;
@@ -232,6 +232,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         walletDescriptionTextField.setFocusable(true);
         walletDescriptionTextField.addActionListener(this);
         walletDescriptionTextField.addFocusListener(this);
+        //walletDescriptionTextField.setBorder(BorderFactory.createLineBorder(Color.CYAN));
         walletDescriptionTextFieldBorder = walletDescriptionTextField.getBorder();
         walletDescriptionTextField.setOpaque(false);
         walletDescriptionTextField.setDisabledTextColor(Color.BLACK);
@@ -239,9 +240,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
         constraints.gridy = 1;
-        constraints.weightx = 0.92;
+        constraints.weightx = 1000;
         constraints.weighty = 4;
-        constraints.gridwidth = 3;
+        constraints.gridwidth = 6;
+        constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         myRoundedPanel.add(walletDescriptionTextField, constraints);
 
@@ -299,41 +301,57 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 2;
-        constraints.weightx = 0.1;
+        constraints.weightx = 0.01;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         myRoundedPanel.add(twistyLabel, constraints);
        
-        amountLabel = new BlinkLabel(controller, false);
-        amountLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
-        amountLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
-        amountLabel.setBlinkEnabled(true);
-        amountLabel.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent evt) {
-                if (CurrencyConverter.INSTANCE.isShowingFiat()) {
-                    String showBTCInWalletPanelString = controller.getModel().getUserPreference(MultiBitModel.SHOW_BTC_IN_WALLET_PANEL);
-                    boolean showBTCInWalletPanel = !Boolean.FALSE.toString().equals(showBTCInWalletPanelString);
-                    
-                    // Toggle it.
-                    showBTCInWalletPanel = !showBTCInWalletPanel;
-                    controller.getModel().setUserPreference(MultiBitModel.SHOW_BTC_IN_WALLET_PANEL, (new Boolean(showBTCInWalletPanel)).toString());
-                    
-                    walletListPanel.displayView(false);
-                }
-           }
-       });
+        amountLabelBTC = new BlinkLabel(controller, false);
+        amountLabelBTC.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        amountLabelBTC.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 3));
+        //amountLabelBTC.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+        amountLabelBTC.setBlinkEnabled(true);
+        amountLabelBTC.setHorizontalAlignment(JLabel.TRAILING);
+
+        amountLabelFiat = new BlinkLabel(controller, false);
+        amountLabelFiat.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+        amountLabelFiat.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 3));
+        //amountLabelFiat.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+        amountLabelFiat.setBlinkEnabled(true);
+        amountLabelFiat.setHorizontalAlignment(JLabel.TRAILING);
+
+        JPanel filler6 = new JPanel();
+        filler6.setOpaque(false);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 4;
+        constraints.gridy = 2;
+        constraints.weightx = 1000;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        myRoundedPanel.add(filler6, constraints);
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 3;
+        constraints.gridx = 5;
         constraints.gridy = 2;
-        constraints.weightx = 100;
+        constraints.weightx = 1;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.BELOW_BASELINE_TRAILING;
-        myRoundedPanel.add(amountLabel, constraints);
+        constraints.anchor = GridBagConstraints.LINE_END;
+        myRoundedPanel.add(amountLabelBTC, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 6;
+        constraints.gridy = 2;
+        constraints.weightx = 1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        myRoundedPanel.add(amountLabelFiat, constraints);
 
         JPanel filler5 = new JPanel();
         filler5.setMinimumSize(BELOW_BASELINE_TRAILING_CORNER_PADDING);
@@ -394,9 +412,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         setSelected(false);
-        
-        CurrencyConverter.INSTANCE.addCurrencyConverterListener(this);
-        
+             
         updateFromModel(false);
     }
 
@@ -425,7 +441,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     public static int calculateNormalWidth(JComponent component) {
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
         FontMetrics fontMetrics = component.getFontMetrics(font);
-        return (int) (fontMetrics.getMaxAdvance() * WIDTH_OF_TEXT_FIELD * 0.75 + WIDTH_DELTA);
+        return (int) (fontMetrics.getMaxAdvance() * WIDTH_OF_TEXT_FIELD + WIDTH_DELTA);
     }
     
     private int calculateMinimumWidth(int normalWidth) {
@@ -440,7 +456,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     public void addMouseListener(MouseListener mouseListener) {
         super.addMouseListener(mouseListener);
         walletDescriptionTextField.addMouseListener(mouseListener);
-        amountLabel.addMouseListener(mouseListener);
+        amountLabelBTC.addMouseListener(mouseListener);
+        amountLabelFiat.addMouseListener(mouseListener);
         detailPanel.addMouseListener(mouseListener);
         myRoundedPanel.addMouseListener(mouseListener);
     }
@@ -576,25 +593,29 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     /**
      * Update any UI elements from the model (hint that data has changed).
      */
-    public void updateFromModel(boolean blinkEnabled) {
-        String newAmountText;
+    public void updateFromModel(boolean blinkEnabled) {   
+        BigInteger estimatedBalance = perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED);
+        String balanceTextToShowBTC = controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false);
+        String balanceTextToShowFiat = "";
+        if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
+            Money fiat = CurrencyConverter.INSTANCE.convertToFiat(estimatedBalance);
+            balanceTextToShowFiat = "(" + CurrencyConverter.INSTANCE.getMoneyAsString(fiat) + ")";
+        }
         
-        String showBTCInWalletPanelString = controller.getModel().getUserPreference(MultiBitModel.SHOW_BTC_IN_WALLET_PANEL);
-        boolean showBTCInWalletPanel = !Boolean.FALSE.toString().equals(showBTCInWalletPanelString);
-       
-        if (CurrencyConverter.INSTANCE.isShowingFiat() && !showBTCInWalletPanel && CurrencyConverter.INSTANCE.getRate() != null) {
-            Money fiat = CurrencyConverter.INSTANCE.convertToFiat(perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED));
-            newAmountText = CurrencyConverter.INSTANCE.getMoneyAsString(fiat);
+        if (amountLabelBTC != null && amountLabelBTC.getText() != null && !"".equals(amountLabelBTC.getText()) && !balanceTextToShowBTC.equals(amountLabelBTC.getText()) && blinkEnabled) {
+            amountLabelBTC.blink(balanceTextToShowBTC);
+            amountLabelFiat.blink(balanceTextToShowFiat);
         } else {
-            newAmountText = controller.getLocaliser().bitcoinValueToString(
-                    perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED), true, false);
+            amountLabelBTC.setText(balanceTextToShowBTC);
+            amountLabelFiat.setText(balanceTextToShowFiat);
         }
-
-        if (newAmountText != null && amountLabel.getText() != null && !"".equals(amountLabel.getText()) && !newAmountText.equals(amountLabel.getText()) && blinkEnabled) {
-            amountLabel.blink(newAmountText);
-        } else {
-            amountLabel.setText(newAmountText);
-        }
+        
+        amountLabelFiat.invalidate();
+        amountLabelFiat.validate();
+        amountLabelFiat.repaint();
+        invalidate();
+        validate();
+        repaint();
               
         String encryptionText = "";
         if (perWalletModelData.getWallet() != null) {
@@ -626,12 +647,12 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             mainFrame.setUpdatesStoppedTooltip(walletDescriptionTextField);
             walletDescriptionTextField.setEnabled(false);
             walletDescriptionTextField.setEditable(false);
-            amountLabel.setText("");
-            amountLabel.setEnabled(false);
+            amountLabelBTC.setText("");
+            amountLabelBTC.setEnabled(false);
+            amountLabelFiat.setText("");
+            amountLabelFiat.setEnabled(false);
             walletTypeButton.setEnabled(false);
         }
-        
-        updateBalanceTooltip();
     }
 
     /**
@@ -880,50 +901,19 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         return outerPanel;
     }
 
-    @Override
-    public void lostExchangeRate(ExchangeRate exchangeRate) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void foundExchangeRate(ExchangeRate exchangeRate) {
-        updateFromModel(false);
-    }
-
-    @Override
-    public void updatedExchangeRate(ExchangeRate exchangeRate) {
-        updateFromModel(false);
+    public int getFiatLabelWidth() {
+        return fontMetrics.stringWidth(amountLabelFiat.getText());
     }
     
-    private void updateBalanceTooltip() {
-        if (CurrencyConverter.INSTANCE.isShowingFiat()) {
-            BigInteger estimatedBalance = perWalletModelData.getWallet().getBalance(
-                    BalanceType.ESTIMATED);
-            String balanceTextToShow;
-            
-            String showBTCInWalletPanelString = controller.getModel().getUserPreference(MultiBitModel.SHOW_BTC_IN_WALLET_PANEL);
-            boolean showBTCInWalletPanel = !Boolean.FALSE.toString().equals(showBTCInWalletPanelString);
-
-            if (showBTCInWalletPanel) {
-                if (CurrencyConverter.INSTANCE.getRate() == null) {
-                    balanceTextToShow = controller.getLocaliser().getString("singleWalletPanel.noExchangeRateIsAvailable");
-                } else {
-                    Money fiat = CurrencyConverter.INSTANCE.convertToFiat(estimatedBalance);
-                    balanceTextToShow = CurrencyConverter.INSTANCE.getMoneyAsString(fiat);
-                }   
-            } else {
-                // Show amount in BTC
-                balanceTextToShow = controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false);
-            }
-            String amountTooltip = HelpContentsPanel.createMultilineTooltipText(new String[] { balanceTextToShow, " ",
-                    controller.getLocaliser().getString("singleWalletPanel.clickToSwap") });
-
-            if (amountLabel != null) {
-                amountLabel.setToolTipText(amountTooltip);
-            }
-        } else {
-            amountLabel.setToolTipText(null);
-        }
+    public void setFiatLabelWidth(int fiatLabelMinimumWidth) {
+        amountLabelFiat.setMinimumSize(new Dimension(fiatLabelMinimumWidth, amountLabelFiat.getMinimumSize().height));
+        amountLabelFiat.setPreferredSize(new Dimension(fiatLabelMinimumWidth, amountLabelFiat.getPreferredSize().height));
+        amountLabelFiat.setMaximumSize(new Dimension(fiatLabelMinimumWidth, amountLabelFiat.getMaximumSize().height));
+        amountLabelFiat.invalidate();
+        amountLabelFiat.validate();
+        amountLabelFiat.repaint();
+        invalidate();
+        validate();
+        repaint();
     }
 }
