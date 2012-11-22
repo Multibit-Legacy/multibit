@@ -265,8 +265,7 @@ public class StatusBar extends JPanel implements MessageListener {
     /**
      * update online status text with new value
      * 
-     * @param isOnline
-     *            True if online, false if offline
+     * @param statusEnum
      */
     public void updateOnlineStatusText(StatusEnum statusEnum) {
         this.statusEnum = statusEnum;
@@ -292,11 +291,32 @@ public class StatusBar extends JPanel implements MessageListener {
                 onlineLabel.setText(onlineStatus);
                 if (finalStatusEnum == StatusEnum.ERROR) {
                     // Set tooltip to look at Messages view
-                    String toolTip = HelpContentsPanel.createMultilineTooltipText(
-                            new String[] {controller.getLocaliser().getString("multiBitFrame.statusBar.error1"), 
-                                    controller.getLocaliser().getString("multiBitFrame.statusBar.error2")});
+                    String toolTip = HelpContentsPanel.createMultilineTooltipText(new String[] {
+                            controller.getLocaliser().getString("multiBitFrame.statusBar.error1"),
+                            controller.getLocaliser().getString("multiBitFrame.statusBar.error2") });
                     onlineLabel.setToolTipText(toolTip);
                 }
+
+                // Highlight the border of the online status according to how
+                // many peers are connected
+//                int peerCount = controller.getModel().getNumberOfConnectedPeers();
+//                switch (peerCount) {
+//                case 0:
+//                    onlineLabel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 2, 1, 1), BorderFactory.createMatteBorder(1, 1, 1, 1, Color.LIGHT_GRAY)));
+//                    break;
+//                case 1:
+//                    onlineLabel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 1, 1), BorderFactory.createMatteBorder(2, 1, 1, 1, Color.BLACK)));
+//                    break;
+//                case 2:
+//                    onlineLabel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 1, 0), BorderFactory.createMatteBorder(2, 1, 1, 2, Color.BLACK)));
+//                   break;
+//                case 3:
+//                     onlineLabel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0), BorderFactory.createMatteBorder(2, 1, 2, 2, Color.BLACK)));
+//                    break;
+//                default:
+//                    // 4 or more
+//                    onlineLabel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 1, 0, 0), BorderFactory.createMatteBorder(2, 2, 2, 2, Color.LIGHT_GRAY)));
+//                }
             }
         });
     }

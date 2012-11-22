@@ -78,6 +78,7 @@ import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.action.MultiBitWalletBusyAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.SendBitcoinConfirmDialog;
 import org.multibit.viewsystem.swing.view.SendBitcoinConfirmPanel;
 import org.multibit.viewsystem.swing.view.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.ViewFactory;
@@ -1140,6 +1141,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public void onTransactionConfidenceChanged(Wallet wallet, final Transaction transaction) {
         ShowTransactionsPanel.updateTransactions();
+        SendBitcoinConfirmPanel.updatePanel(transaction);
     }
 
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {

@@ -534,6 +534,18 @@ public class SendBitcoinConfirmPanel extends JPanel {
             }
         }
     }
+    
+    public void setMessageText(final String message1) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                confirmText1.setText(message1);
+            }});
+        invalidate();
+        validate();
+        repaint();
+    }    
+    
     public void setMessageText(final String message1, final String message2) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -613,6 +625,10 @@ public class SendBitcoinConfirmPanel extends JPanel {
                             }
                         }
                     }
+                    
+                    thisPanel.invalidate();
+                    thisPanel.validate();
+                    thisPanel.repaint();
                 }
             }
         });
@@ -623,7 +639,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
         if (confidence != null && confidence.getBroadcastBy() != null) {
             peers = confidence.getBroadcastBy().size();
         }
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder("");
         if (peers == 0) {
             builder.append(MultiBit.getController().getLocaliser().getString("transactionConfidence.seenByUnknownNumberOfPeers"));
         } else {
