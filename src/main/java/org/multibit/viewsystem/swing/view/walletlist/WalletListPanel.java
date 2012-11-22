@@ -101,6 +101,10 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
 
     @Override
     public void displayView() {
+        displayView(true);
+    }
+    
+    public void displayView(boolean blinkEnabled) {
         if (walletPanels != null) {
             synchronized(walletPanels) {
                 for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
@@ -113,7 +117,7 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
                         }
                     }
                     // Make sure the totals displayed and encryption status are correct.
-                    loopSingleWalletPanel.updateFromModel();
+                    loopSingleWalletPanel.updateFromModel(blinkEnabled);
                     loopSingleWalletPanel.invalidate();
                     loopSingleWalletPanel.revalidate();
                     loopSingleWalletPanel.repaint();
@@ -140,7 +144,7 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
         if (walletPanels != null) {
             synchronized(walletPanels) {
                 for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
-                    loopSingleWalletPanel.updateFromModel();
+                    loopSingleWalletPanel.updateFromModel(false);
                     if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename() != null) {
                         if (loopSingleWalletPanel.getPerWalletModelData().getWalletFilename().equals(filename)) {
                             loopSingleWalletPanel.setSelected(true);
@@ -249,7 +253,7 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
                         constraints2.gridheight = 1;
                         constraints2.anchor = GridBagConstraints.CENTER;
 
-                        SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, controller, mainFrame);
+                        SingleWalletPanel loopPanel = new SingleWalletPanel(loopPerWalletModelData, controller, mainFrame, this);
                         loopPanel.setComponentOrientation(ComponentOrientation
                                 .getOrientation(controller.getLocaliser().getLocale()));
 

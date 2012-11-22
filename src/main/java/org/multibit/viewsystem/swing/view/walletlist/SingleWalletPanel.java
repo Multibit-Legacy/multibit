@@ -22,7 +22,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -31,6 +30,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.math.BigInteger;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -43,10 +43,13 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
+import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
+import org.multibit.exchange.CurrencyConverterListener;
+import org.multibit.exchange.ExchangeRate;
+import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
-import com.google.bitcoin.core.WalletMajorVersion;
-
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -62,8 +65,9 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 
 import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.Wallet.BalanceType;
+import com.google.bitcoin.core.WalletMajorVersion;
 
-public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener {
+public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener, CurrencyConverterListener {
 
     private static final int WIDTH_OF_TEXT_FIELD = 12;
 
@@ -147,11 +151,15 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     private JLabel walletTypeText;
 
     private final SingleWalletPanel thisPanel;
-
-    public SingleWalletPanel(PerWalletModelData perWalletModelData, MultiBitController controller, MultiBitFrame mainFrame) {
+    
+    private final WalletListPanel walletListPanel;
+       
+    public SingleWalletPanel(PerWalletModelData perWalletModelData, final MultiBitController controller, MultiBitFrame mainFrame, final WalletListPanel walletListPanel) {
         this.perWalletModelData = perWalletModelData;
         this.controller = controller;
         this.mainFrame = mainFrame;
+        this.walletListPanel = walletListPanel;
+       
         thisPanel = this;
 
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
@@ -280,7 +288,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         twistyLabel.setBorder(BorderFactory.createEmptyBorder(TWISTY_TOP_BORDER, TWISTY_LEFT_OR_RIGHT_BORDER, 0, TWISTY_LEFT_OR_RIGHT_BORDER));
         twistyLabel.setVisible(false);
         twistyLabel.addMouseListener(new MouseAdapter() {
-             public void mouseClicked(MouseEvent evt) {
+            public void mouseClicked(MouseEvent evt) {
                 expanded = !expanded;
                 setSelected(selected);
                 thisPanel.invalidate();
@@ -301,9 +309,22 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         amountLabel = new BlinkLabel(controller, false);
         amountLabel.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         amountLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
-        amountLabel.setText(controller.getLocaliser().bitcoinValueToString(
-                perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED), true, false));
         amountLabel.setBlinkEnabled(true);
+        amountLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                if (CurrencyConverter.INSTANCE.isShowingFiat()) {
+                    String showBTCInWalletPanelString = controller.getModel().getUserPreference(MultiBitModel.SHOW_BTC_IN_WALLET_PANEL);
+                    boolean showBTCInWalletPanel = !Boolean.FALSE.toString().equals(showBTCInWalletPanelString);
+                    
+                    // Toggle it.
+                    showBTCInWalletPanel = !showBTCInWalletPanel;
+                    controller.getModel().setUserPreference(MultiBitModel.SHOW_BTC_IN_WALLET_PANEL, (new Boolean(showBTCInWalletPanel)).toString());
+                    
+                    walletListPanel.displayView(false);
+                }
+           }
+       });
+
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 2;
@@ -373,6 +394,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         setSelected(false);
+        
+        CurrencyConverter.INSTANCE.addCurrencyConverterListener(this);
+        
+        updateFromModel(false);
     }
 
     public void setIconForWalletType(EncryptionType walletType, JButton button) {
@@ -551,11 +576,24 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     /**
      * Update any UI elements from the model (hint that data has changed).
      */
-    public void updateFromModel() {
-        String newAmountText = controller.getLocaliser().bitcoinValueToString(
-                perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED), true, false);
-        if (newAmountText != null && !newAmountText.equals(amountLabel.getText())) {
+    public void updateFromModel(boolean blinkEnabled) {
+        String newAmountText;
+        
+        String showBTCInWalletPanelString = controller.getModel().getUserPreference(MultiBitModel.SHOW_BTC_IN_WALLET_PANEL);
+        boolean showBTCInWalletPanel = !Boolean.FALSE.toString().equals(showBTCInWalletPanelString);
+       
+        if (CurrencyConverter.INSTANCE.isShowingFiat() && !showBTCInWalletPanel && CurrencyConverter.INSTANCE.getRate() != null) {
+            Money fiat = CurrencyConverter.INSTANCE.convertToFiat(perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED));
+            newAmountText = CurrencyConverter.INSTANCE.getMoneyAsString(fiat);
+        } else {
+            newAmountText = controller.getLocaliser().bitcoinValueToString(
+                    perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED), true, false);
+        }
+
+        if (newAmountText != null && amountLabel.getText() != null && !"".equals(amountLabel.getText()) && !newAmountText.equals(amountLabel.getText()) && blinkEnabled) {
             amountLabel.blink(newAmountText);
+        } else {
+            amountLabel.setText(newAmountText);
         }
               
         String encryptionText = "";
@@ -592,6 +630,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             amountLabel.setEnabled(false);
             walletTypeButton.setEnabled(false);
         }
+        
+        updateBalanceTooltip();
     }
 
     /**
@@ -838,5 +878,52 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         roundedBottomPanel.add(innerPadBottom, constraints3);
 
         return outerPanel;
+    }
+
+    @Override
+    public void lostExchangeRate(ExchangeRate exchangeRate) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void foundExchangeRate(ExchangeRate exchangeRate) {
+        updateFromModel(false);
+    }
+
+    @Override
+    public void updatedExchangeRate(ExchangeRate exchangeRate) {
+        updateFromModel(false);
+    }
+    
+    private void updateBalanceTooltip() {
+        if (CurrencyConverter.INSTANCE.isShowingFiat()) {
+            BigInteger estimatedBalance = perWalletModelData.getWallet().getBalance(
+                    BalanceType.ESTIMATED);
+            String balanceTextToShow;
+            
+            String showBTCInWalletPanelString = controller.getModel().getUserPreference(MultiBitModel.SHOW_BTC_IN_WALLET_PANEL);
+            boolean showBTCInWalletPanel = !Boolean.FALSE.toString().equals(showBTCInWalletPanelString);
+
+            if (showBTCInWalletPanel) {
+                if (CurrencyConverter.INSTANCE.getRate() == null) {
+                    balanceTextToShow = controller.getLocaliser().getString("singleWalletPanel.noExchangeRateIsAvailable");
+                } else {
+                    Money fiat = CurrencyConverter.INSTANCE.convertToFiat(estimatedBalance);
+                    balanceTextToShow = CurrencyConverter.INSTANCE.getMoneyAsString(fiat);
+                }   
+            } else {
+                // Show amount in BTC
+                balanceTextToShow = controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false);
+            }
+            String amountTooltip = HelpContentsPanel.createMultilineTooltipText(new String[] { balanceTextToShow, " ",
+                    controller.getLocaliser().getString("singleWalletPanel.clickToSwap") });
+
+            if (amountLabel != null) {
+                amountLabel.setToolTipText(amountTooltip);
+            }
+        } else {
+            amountLabel.setToolTipText(null);
+        }
     }
 }
