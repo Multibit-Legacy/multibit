@@ -1199,7 +1199,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         });
     }
 
-    private void updateHeader() {
+    void updateHeader() {
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
             // Files have been changed by another process - blank totals

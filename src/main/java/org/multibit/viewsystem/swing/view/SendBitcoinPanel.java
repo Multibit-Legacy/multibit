@@ -15,7 +15,6 @@
  */
 package org.multibit.viewsystem.swing.view;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
@@ -243,11 +242,6 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(labelScrollPane, constraints);
 
-        JPanel amountPanel = new JPanel();
-        amountPanel.setOpaque(false);
-        amountPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        amountPanel.setLayout(new BorderLayout());
-
         MultiBitLabel amountLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel"));
         amountLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel.tooltip"));
         amountLabel.setHorizontalAlignment(JLabel.TRAILING);
@@ -261,61 +255,16 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(amountLabel, constraints);
 
-        amountTextField = new MultiBitTextField("", 10, controller);
-        amountTextField.setHorizontalAlignment(JTextField.TRAILING);
-        amountTextField.setMinimumSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
-                FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
-                + TEXTFIELD_VERTICAL_DELTA));
-        amountTextField.setPreferredSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
-                FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
-                + TEXTFIELD_VERTICAL_DELTA));
-        amountTextField.setMaximumSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
-                FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
-                + TEXTFIELD_VERTICAL_DELTA));
-        amountTextField.addKeyListener(new QRCodeKeyListener());
-
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        JPanel amountPanel = createAmountPanel();
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 5;
-        constraints.weightx = 1.0;
-        constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        amountPanel.add(amountTextField, BorderLayout.LINE_START);
-
-        formPanel.add(amountPanel, constraints);
-
-        MultiBitLabel amountUnitLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"));
-        amountUnitLabel.setHorizontalTextPosition(SwingConstants.LEADING);
-        amountUnitLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel.tooltip"));
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 3;
-        constraints.gridy = 5;
         constraints.weightx = 0.1;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
+        constraints.weighty = 0.20;
         constraints.anchor = GridBagConstraints.LINE_START;
-
-        JPanel filler2 = new JPanel();
-        filler2.setOpaque(false);
-        
-        JPanel amountUnitLabelPanel = new JPanel();
-        amountUnitLabelPanel.setOpaque(false);
-        amountUnitLabelPanel.setLayout(new BorderLayout());
-        
-        JPanel amountUnitLabelPanel2 = new JPanel();
-        amountUnitLabelPanel2.setOpaque(false);
-        amountUnitLabelPanel2.setLayout(new BorderLayout());
-        
-        amountUnitLabelPanel.add(amountUnitLabel, BorderLayout.LINE_START);
-        amountUnitLabelPanel.add(filler2, BorderLayout.CENTER);
-        amountUnitLabelPanel2.add(MultiBitTitledPanel.createStent(AbstractTradePanel.AMOUNT_BTC_INDENT), BorderLayout.LINE_START);
-
-        amountUnitLabelPanel2.add(amountUnitLabelPanel, BorderLayout.CENTER);
-
-        amountPanel.add(amountUnitLabelPanel2, BorderLayout.CENTER);
+        formPanel.add(amountPanel, constraints);
 
         Action helpAction;
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
@@ -407,9 +356,9 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
             labelTextArea.setText("");
         }
         if (amount != null) {
-            amountTextField.setText(amount);
+            amountBTCTextField.setText(amount);
         } else {
-            amountTextField.setText("");
+            amountBTCTextField.setText("");
         }
 
         // if there is a pending 'handleopenURI' that needs pasting into the

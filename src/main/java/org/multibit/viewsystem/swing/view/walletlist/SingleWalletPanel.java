@@ -327,7 +327,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 4;
         constraints.gridy = 2;
-        constraints.weightx = 1000;
+        constraints.weightx = 10000;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_END;

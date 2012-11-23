@@ -42,12 +42,12 @@ public class UpdateTransactionsTimerTask extends TimerTask {
                 }
 
                 if (updateThisTime) {
+                    mainFrame.updateHeader();
                     if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
                         transactionsPanel.displayView();
-
-                        mainFrame.invalidate();
-                        mainFrame.validate();
                     }
+                    mainFrame.invalidate();
+                    mainFrame.validate();
                 }
             }
         });

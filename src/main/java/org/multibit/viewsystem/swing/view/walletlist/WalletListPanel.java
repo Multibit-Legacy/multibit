@@ -127,7 +127,6 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
                     loopSingleWalletPanel.updateFromModel(blinkEnabled);
                     
                     amountFiatLabelSize = Math.max(amountFiatLabelSize, loopSingleWalletPanel.getFiatLabelWidth());
-                    System.out.println("amountFiatLabelSize = " + amountFiatLabelSize);
                 }
                 
                 for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
