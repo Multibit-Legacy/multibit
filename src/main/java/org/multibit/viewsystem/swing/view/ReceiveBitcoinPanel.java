@@ -39,6 +39,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.ExchangeRate;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletInfo;
@@ -503,5 +504,5 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
     @Override
     public void checkDeleteSendingEnabled() {
         // Not used on receive bitcoin panel.
-    }   
+    }
 }

@@ -5,6 +5,8 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -22,9 +24,14 @@ import org.joda.money.format.MoneyFormatterBuilder;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public enum CurrencyConverter {
     INSTANCE;
+
+    
+    private static final Logger log = LoggerFactory.getLogger(CurrencyConverter.class);
 
     private MultiBitController controller;
     
@@ -102,6 +109,30 @@ public enum CurrencyConverter {
             Money fiatAmount = bitcoin.convertedTo(currencyUnit, rate.divide(new BigDecimal(CurrencyConverter.NUMBER_OF_SATOSHI_IN_ONE_BITCOIN)), RoundingMode.HALF_EVEN);
             
             return fiatAmount;
+        }
+    }
+    
+    /**
+     * Convert a number of satoshis to fiat
+     * @param bitcoinAmount in satoshis
+     * @return equivalent fiat amount
+     */
+    public Money convertToBTC(String fiat) {
+        if (rate == null || rate.equals(BigDecimal.ZERO)) {
+            return null;
+        } else {    
+            Money btcAmount = null;
+            
+            DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
+            formatter.setParseBigDecimal(true);
+            try {
+                BigDecimal parsedFiat = (BigDecimal)formatter.parse(fiat);
+                Money fiatMoney = Money.of(currencyUnit, parsedFiat);
+                btcAmount = fiatMoney.convertedTo(BITCOIN_CURRENCY_UNIT, new BigDecimal(NUMBER_OF_SATOSHI_IN_ONE_BITCOIN).divide(rate, BITCOIN_CURRENCY_UNIT.getDecimalPlaces() + 2, RoundingMode.HALF_EVEN), RoundingMode.HALF_EVEN);
+            } catch (ParseException pe) {
+                log.debug(pe.toString());
+            }
+            return btcAmount;
         }
     }
     
