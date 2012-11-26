@@ -142,6 +142,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     protected MultiBitTextField amountBTCTextField;
     protected MultiBitTextField amountFiatTextField;
+    protected MultiBitLabel amountEqualsLabel;
     protected MultiBitLabel amountUnitFiatLabel;
 
     protected JPanel upperPanel;
@@ -1181,9 +1182,9 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints2.anchor = GridBagConstraints.CENTER;
         amountPanel.add(amountUnitBTCLabel, constraints2);
 
-        MultiBitLabel equalsLabel = new MultiBitLabel("   =   "); // 3 spaces either side
-        equalsLabel.setHorizontalTextPosition(SwingConstants.CENTER);
-        equalsLabel.setFocusable(false);
+        amountEqualsLabel = new MultiBitLabel("   =   "); // 3 spaces either side
+        amountEqualsLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+        amountEqualsLabel.setFocusable(false);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
         constraints2.gridy = 0;
@@ -1192,7 +1193,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints2.gridwidth = 1;
         constraints2.gridheight = 1;
         constraints2.anchor = GridBagConstraints.CENTER;
-        amountPanel.add(equalsLabel, constraints2);
+        amountPanel.add(amountEqualsLabel, constraints2);
+        amountPanel.add(MultiBitTitledPanel.createStent(amountEqualsLabel.getPreferredSize().width, amountEqualsLabel.getPreferredSize().height), constraints2);
 
         amountFiatTextField = new MultiBitTextField("", 10, controller);
         amountFiatTextField.setHorizontalAlignment(JTextField.TRAILING);
@@ -1217,9 +1219,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints2.gridheight = 1;
         constraints2.anchor = GridBagConstraints.LINE_START;
         amountPanel.add(amountFiatTextField, constraints2);
+        amountPanel.add(MultiBitTitledPanel.createStent(amountFiatTextField.getPreferredSize().width, amountFiatTextField.getPreferredSize().height), constraints2);
 
         CurrencyInfo currencyInfo = CurrencyConverter.INSTANCE.getCurrencyCodeToInfoMap().get(CurrencyConverter.INSTANCE.getCurrencyUnit().getCurrencyCode());
-        MultiBitLabel amountUnitFiatLabel = new MultiBitLabel("");
+        amountUnitFiatLabel = new MultiBitLabel("");
         int fiatCurrencySymbolPosition = 3;   // Prefix is default.
         if (currencyInfo != null) {
             amountUnitFiatLabel.setText(currencyInfo.getCurrencySymbol());
@@ -1238,7 +1241,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints2.gridheight = 1;
         constraints2.anchor = GridBagConstraints.LINE_START;
         amountPanel.add(amountUnitFiatLabel, constraints2);  
-        
+        amountPanel.add(MultiBitTitledPanel.createStent(amountUnitFiatLabel.getPreferredSize().width, amountUnitFiatLabel.getPreferredSize().height), constraints2);
         return amountPanel;
     }
     
@@ -1258,7 +1261,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             mainFrame.setUpdatesStoppedTooltip(amountBTCTextField);
             amountBTCTextField.setEditable(false);
             amountBTCTextField.setEnabled(false);
-
+            if (amountFiatTextField != null) {
+                amountFiatTextField.setEditable(false);
+                amountFiatTextField.setEnabled(false);
+            }
+            
             if (createNewButton != null) {
                 createNewButton.setEnabled(false);
                 mainFrame.setUpdatesStoppedTooltip(createNewButton);
@@ -1278,6 +1285,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             amountBTCTextField.setToolTipText(null);
             amountBTCTextField.setEditable(true);
             amountBTCTextField.setEnabled(true);
+            if (amountFiatTextField != null) {
+                amountFiatTextField.setToolTipText(null);
+                amountFiatTextField.setEditable(true);
+                amountFiatTextField.setEnabled(true);
+            }
             if (createNewButton != null) {
                 createNewButton.setEnabled(true);
                 createNewButton.setToolTipText(getLocalisationString(CREATE_NEW_TOOLTIP, null));
@@ -1292,7 +1304,21 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             }
         }
         
-        updateFiatAmount(amountBTCTextField.getText());
+        if (CurrencyConverter.INSTANCE.isShowingFiat()) {
+            if (amountFiatTextField != null) {
+                
+                amountFiatTextField.setVisible(true);
+                amountEqualsLabel.setVisible(true);
+                amountUnitFiatLabel.setVisible(true);
+            }
+            updateFiatAmount(amountBTCTextField.getText());
+        } else {
+            if (amountFiatTextField != null) {
+                amountFiatTextField.setVisible(false);
+                amountEqualsLabel.setVisible(false);
+                amountUnitFiatLabel.setVisible(false);
+            }
+        }
         updateQRCodePanel();
         displaySidePanel();
     }
@@ -1398,7 +1424,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
             try {
                 Money fiat = CurrencyConverter.INSTANCE.convertToFiat(Utils.toNanoCoins(amountInBTC));
-                String fiatText = CurrencyConverter.INSTANCE.getMoneyAsString(fiat, false);
+                String fiatText = CurrencyConverter.INSTANCE.getMoneyAsString(fiat, false, false);
                 if (amountFiatTextField != null) {
                     amountFiatTextField.setText(fiatText);
                 }

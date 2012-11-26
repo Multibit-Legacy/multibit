@@ -218,10 +218,10 @@ public enum CurrencyConverter {
     }
     
     public String getMoneyAsString(Money money) {
-        return getMoneyAsString(money, true);
+        return getMoneyAsString(money, true, false);
     }
     
-    public String getMoneyAsString(Money money, boolean addCurrencySymbol) {
+    public String getMoneyAsString(Money money, boolean addCurrencySymbol, boolean addParenthesis) {
         if (money == null) {
             return "";
         }
@@ -234,6 +234,10 @@ public enum CurrencyConverter {
         
         // Get rid of negative sign followed by thousand separator
         toReturn = toReturn.replaceAll("-" + groupingSeparator, "-");
+        
+        if (addParenthesis) {
+            toReturn = "  (" + toReturn + ")";
+        }
         return toReturn;
     }
     

@@ -146,11 +146,11 @@ public class SendBitcoinConfirmPanel extends JPanel {
         sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
         sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
 
-        if (dataProvider != null) {
+        if (dataProvider != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
             String sendAmountFiat = dataProvider.getAmountFiat();
             if (sendAmountFiat != null && !"".equals(sendAmountFiat)) {
                 Money sendAmountFiatAsMoney = CurrencyConverter.INSTANCE.convertToMoney(sendAmountFiat);
-                sendAmount = sendAmount + " (" + CurrencyConverter.INSTANCE.getMoneyAsString(sendAmountFiatAsMoney, true) + ")";
+                sendAmount = sendAmount + CurrencyConverter.INSTANCE.getMoneyAsString(sendAmountFiatAsMoney, true, true);
             }
         }
         String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
@@ -161,9 +161,11 @@ public class SendBitcoinConfirmPanel extends JPanel {
         sendFee = fee + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
 
         // Work out what the fee is in fiat.
-        Money feeAsFiatAsMoney = CurrencyConverter.INSTANCE.convertToFiat(Utils.toNanoCoins(fee));
-        if (feeAsFiatAsMoney != null) {
-            sendFee = sendFee + " (" + CurrencyConverter.INSTANCE.getMoneyAsString(feeAsFiatAsMoney, true) + ")";
+        if (CurrencyConverter.INSTANCE.isShowingFiat()) {
+            Money feeAsFiatAsMoney = CurrencyConverter.INSTANCE.convertToFiat(Utils.toNanoCoins(fee));
+            if (feeAsFiatAsMoney != null) {
+                sendFee = sendFee + CurrencyConverter.INSTANCE.getMoneyAsString(feeAsFiatAsMoney, true, true);
+            }
         }
     
         GridBagConstraints constraints = new GridBagConstraints();

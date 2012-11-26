@@ -127,13 +127,13 @@ public class WalletTableModel extends AbstractTableModel {
             if (walletDataRow.getDebit() != null  && walletDataRow.getDebit().compareTo(BigInteger.ZERO) > 0) {
                 Money debitAmountFiat = CurrencyConverter.INSTANCE.convertToFiat(walletDataRow.getDebit());
                 if (debitAmountFiat != null) {
-                    return CurrencyConverter.INSTANCE.getMoneyAsString(debitAmountFiat.negated(), false);
+                    return CurrencyConverter.INSTANCE.getMoneyAsString(debitAmountFiat.negated(), false, false);
                 }
             }
 
             Money creditAmountFiat = CurrencyConverter.INSTANCE.convertToFiat(walletDataRow.getCredit());
             if (creditAmountFiat != null) {
-                return CurrencyConverter.INSTANCE.getMoneyAsString(creditAmountFiat, false);
+                return CurrencyConverter.INSTANCE.getMoneyAsString(creditAmountFiat, false, false);
             }
             
             return "";
@@ -151,9 +151,7 @@ public class WalletTableModel extends AbstractTableModel {
 
     public void recreateWalletData() {
         // Recreate the wallet data as the underlying wallet has changed.
-        //log.debug("Updating walletTableModel for file '" + controller.getModel().getActiveWalletFilename() + "'");
         walletData = multiBitModel.createWalletData(controller.getModel().getActiveWalletFilename());
-        //log.debug("walletTableModel now has " + walletData.size() + " rows");
         fireTableDataChanged();
     }
 
