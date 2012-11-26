@@ -28,10 +28,13 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
+import org.joda.money.Money;
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.dataproviders.BitcoinFormDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
@@ -46,6 +49,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
+import com.google.bitcoin.core.Utils;
 
 /**
  * The send bitcoin confirm panel.
@@ -82,6 +86,8 @@ public class SendBitcoinConfirmPanel extends JPanel {
     private MultiBitLabel walletPasswordPromptLabel;
     
     private static SendBitcoinConfirmPanel thisPanel = null;
+    
+    private BitcoinFormDataProvider dataProvider;
 
     private static ImageIcon shapeTriangleIcon;
     private static ImageIcon shapeSquareIcon;
@@ -100,11 +106,12 @@ public class SendBitcoinConfirmPanel extends JPanel {
     /**
      * Creates a new {@link SendBitcoinConfirmPanel}.
      */
-    public SendBitcoinConfirmPanel(MultiBitController controller, MultiBitFrame mainFrame, MultiBitDialog sendBitcoinConfirmDialog) {
+    public SendBitcoinConfirmPanel(MultiBitController controller, MultiBitFrame mainFrame, MultiBitDialog sendBitcoinConfirmDialog, BitcoinFormDataProvider dataProvider) {
         super();
         this.controller = controller;
         this.mainFrame = mainFrame;
         this.sendBitcoinConfirmDialog = sendBitcoinConfirmDialog;
+        this.dataProvider = dataProvider;
         
         thisPanel = this;
 
@@ -118,8 +125,6 @@ public class SendBitcoinConfirmPanel extends JPanel {
      * Initialise bitcoin confirm panel.
      */
     public void initUI() {
-        FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
-        
         JPanel mainPanel = new JPanel();
         mainPanel.setOpaque(false);
         
@@ -140,11 +145,26 @@ public class SendBitcoinConfirmPanel extends JPanel {
         sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
         sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
         sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
+
+        if (dataProvider != null) {
+            String sendAmountFiat = dataProvider.getAmountFiat();
+            if (sendAmountFiat != null && !"".equals(sendAmountFiat)) {
+                Money sendAmountFiatAsMoney = CurrencyConverter.INSTANCE.convertToMoney(sendAmountFiat);
+                sendAmount = sendAmount + " (" + CurrencyConverter.INSTANCE.getMoneyAsString(sendAmountFiatAsMoney, true) + ")";
+            }
+        }
         String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
         if (fee == null || fee == "") {
             fee = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
         }
+
         sendFee = fee + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
+
+        // Work out what the fee is in fiat.
+        Money feeAsFiatAsMoney = CurrencyConverter.INSTANCE.convertToFiat(Utils.toNanoCoins(fee));
+        if (feeAsFiatAsMoney != null) {
+            sendFee = sendFee + " (" + CurrencyConverter.INSTANCE.getMoneyAsString(feeAsFiatAsMoney, true) + ")";
+        }
     
         GridBagConstraints constraints = new GridBagConstraints();
 

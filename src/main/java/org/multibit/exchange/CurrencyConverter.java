@@ -112,11 +112,6 @@ public enum CurrencyConverter {
         }
     }
     
-    /**
-     * Convert a number of satoshis to fiat
-     * @param bitcoinAmount in satoshis
-     * @return equivalent fiat amount
-     */
     public Money convertToBTC(String fiat) {
         if (rate == null || rate.equals(BigDecimal.ZERO)) {
             return null;
@@ -133,6 +128,23 @@ public enum CurrencyConverter {
                 log.debug(pe.toString());
             }
             return btcAmount;
+        }
+    }
+    
+    public Money convertToMoney(String fiat) {
+        if (rate == null || rate.equals(BigDecimal.ZERO)) {
+            return null;
+        } else {    
+            DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
+            formatter.setParseBigDecimal(true);
+            try {
+                BigDecimal parsedFiat = (BigDecimal)formatter.parse(fiat);
+                Money fiatMoney = Money.of(currencyUnit, parsedFiat);
+                return fiatMoney;
+            } catch (ParseException pe) {
+                log.debug(pe.toString());
+            }
+            return null;
         }
     }
     

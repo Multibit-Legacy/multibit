@@ -49,7 +49,7 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
 
         // Create a new SendBitcoinNowSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
-        SendBitcoinConfirmPanel sendBitcoinConfirmPanel= new SendBitcoinConfirmPanel(controller, null, null);
+        SendBitcoinConfirmPanel sendBitcoinConfirmPanel= new SendBitcoinConfirmPanel(controller, null, null, null);
         SendBitcoinNowAction sendBitcoinNowAction = sendBitcoinConfirmPanel.getSendBitcoinNowAction();
 
         assertNotNull("sendBitcoinNowAction was not created successfully", sendBitcoinNowAction);
@@ -97,7 +97,7 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
 
         // Create a new SendBitcoinNowSubmitAction to test.
         FontSizer.INSTANCE.initialise(controller);
-        SendBitcoinConfirmPanel sendBitcoinConfirmPanel= new SendBitcoinConfirmPanel(controller, null, null);
+        SendBitcoinConfirmPanel sendBitcoinConfirmPanel= new SendBitcoinConfirmPanel(controller, null, null, null);
         SendBitcoinNowAction sendBitcoinNowAction = sendBitcoinConfirmPanel.getSendBitcoinNowAction();
 
         assertNotNull("sendBitcoinNowAction was not created successfully", sendBitcoinNowAction);

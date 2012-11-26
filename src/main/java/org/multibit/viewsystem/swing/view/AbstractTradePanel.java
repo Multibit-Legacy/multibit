@@ -1398,7 +1398,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
             try {
                 Money fiat = CurrencyConverter.INSTANCE.convertToFiat(Utils.toNanoCoins(amountInBTC));
-                amountFiatTextField.setText(CurrencyConverter.INSTANCE.getMoneyAsString(fiat, false));
+                String fiatText = CurrencyConverter.INSTANCE.getMoneyAsString(fiat, false);
+                if (amountFiatTextField != null) {
+                    amountFiatTextField.setText(fiatText);
+                }
             } catch (NumberFormatException nfe) {
                 log.debug(nfe.getClass().getName() + " " + nfe.getMessage());
             }
@@ -1720,6 +1723,15 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     public String getAmount() {
        if (amountBTCTextField != null) {
            return amountBTCTextField.getText();
+       } else {
+           return null;
+       }
+    }
+
+    @Override
+    public String getAmountFiat() {
+       if (amountFiatTextField != null) {
+           return amountFiatTextField.getText();
        } else {
            return null;
        }
