@@ -599,7 +599,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         String balanceTextToShowFiat = "";
         if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
             Money fiat = CurrencyConverter.INSTANCE.convertToFiat(estimatedBalance);
-            balanceTextToShowFiat = "(" + CurrencyConverter.INSTANCE.getMoneyAsString(fiat) + ")";
+            balanceTextToShowFiat = "(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")";
         }
         
         if (amountLabelBTC != null && amountLabelBTC.getText() != null && !"".equals(amountLabelBTC.getText()) && !balanceTextToShowBTC.equals(amountLabelBTC.getText()) && blinkEnabled) {

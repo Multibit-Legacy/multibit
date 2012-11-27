@@ -79,7 +79,7 @@ public class CurrencyConverterTest extends TestCase {
         assertEquals("Wrong currency", "USD", converted.getCurrencyUnit().getCurrencyCode());
         assertEquals("Wrong amount", "5.00", converted.getAmount().toString());
         
-        String result = converter.getMoneyAsString(converted);
+        String result = converter.getFiatAsLocalisedString(converted);
         assertEquals("Wrong result after formatting", "$5.00", result);
     }
     
@@ -94,10 +94,10 @@ public class CurrencyConverterTest extends TestCase {
         // Initialise - will pick up currency of interest.
         converter.initialise(controller);
 
-        String result = converter.getMoneyAsString(Money.parse("GBP 1.23"));
+        String result = converter.getFiatAsLocalisedString(Money.parse("GBP 1.23"));
         assertEquals("Wrong GBP formatting", "£1.23", result);
         
-        result = converter.getMoneyAsString(Money.parse("EUR 1.23"));
+        result = converter.getFiatAsLocalisedString(Money.parse("EUR 1.23"));
         assertEquals("Wrong EURO formatting", "\u20AC1.23", result);
     }
 }

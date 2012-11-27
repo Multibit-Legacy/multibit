@@ -127,13 +127,13 @@ public class WalletTableModel extends AbstractTableModel {
             if (walletDataRow.getDebit() != null  && walletDataRow.getDebit().compareTo(BigInteger.ZERO) > 0) {
                 Money debitAmountFiat = CurrencyConverter.INSTANCE.convertToFiat(walletDataRow.getDebit());
                 if (debitAmountFiat != null) {
-                    return CurrencyConverter.INSTANCE.getMoneyAsString(debitAmountFiat.negated(), false, false);
+                    return CurrencyConverter.INSTANCE.getFiatAsLocalisedString(debitAmountFiat.negated(), false, false);
                 }
             }
 
             Money creditAmountFiat = CurrencyConverter.INSTANCE.convertToFiat(walletDataRow.getCredit());
             if (creditAmountFiat != null) {
-                return CurrencyConverter.INSTANCE.getMoneyAsString(creditAmountFiat, false, false);
+                return CurrencyConverter.INSTANCE.getFiatAsLocalisedString(creditAmountFiat, false, false);
             }
             
             return "";

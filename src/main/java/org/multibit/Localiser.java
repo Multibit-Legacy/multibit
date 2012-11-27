@@ -72,6 +72,7 @@ public class Localiser {
     private final static String MISSING_RESOURCE_TEXT = "Missing resource : ";
     
     private NumberFormat numberFormat;
+    private NumberFormat numberFormatNotLocalised;
     
     public static final int NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN = 8;
 
@@ -105,6 +106,8 @@ public class Localiser {
         
         numberFormat = NumberFormat.getInstance(locale);
         numberFormat.setMaximumFractionDigits(NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN);
+        numberFormatNotLocalised = NumberFormat.getInstance(Locale.ENGLISH);
+        numberFormatNotLocalised.setMaximumFractionDigits(NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN);
     }
 
     synchronized public String getString(String key) {
@@ -240,7 +243,8 @@ public class Localiser {
 
 
     /**
-     * Returns the given value in nanocoins as a 0.12345678 type string 
+     * Returns the given value in nanocoins as a 0.12345678 type string.
+     * This function is localised. 
      **/
     public String bitcoinValueToString(BigInteger value, boolean addUnit, boolean blankZero) {
         if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
@@ -263,6 +267,37 @@ public class Localiser {
                 
         BigDecimal valueInBTC = new BigDecimal(value).divide(new BigDecimal(Utils.COIN));
         toReturn = toReturn + numberFormat.format(valueInBTC.doubleValue());
+
+        if (addUnit) {
+            toReturn = toReturn + " " + getString("sendBitcoinPanel.amountUnitLabel");
+        }
+        return toReturn;     
+    }
+    /**
+     * Returns the given value in nanocoins as a 0.12345678 type string.
+     * This function is NOT localised. 
+     **/
+    public String bitcoinValueToStringNotLocalised(BigInteger value, boolean addUnit, boolean blankZero) {
+        if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
+            return "";
+        }
+
+        boolean negative = value.compareTo(BigInteger.ZERO) < 0;
+        if (negative) {
+            value = value.negate();
+        }
+
+        String toReturn = "";
+        if (negative) {
+            toReturn = "-";
+        }
+        
+        if (value == null) {
+            throw new IllegalArgumentException("Value cannot be null");
+        }
+                
+        BigDecimal valueInBTC = new BigDecimal(value).divide(new BigDecimal(Utils.COIN));
+        toReturn = toReturn + numberFormatNotLocalised.format(valueInBTC.doubleValue());
 
         if (addUnit) {
             toReturn = toReturn + " " + getString("sendBitcoinPanel.amountUnitLabel");

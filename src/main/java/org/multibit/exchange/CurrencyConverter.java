@@ -38,6 +38,7 @@ public enum CurrencyConverter {
     private Collection<CurrencyConverterListener> listeners;
     
     public static final BigInteger NUMBER_OF_SATOSHI_IN_ONE_BITCOIN = BigInteger.valueOf(100000000); // 8 zeros
+    public static final int NUMBER_OF_DECIMAL_POINTS_IN_A_BITCOIN = 8;
    
     // This is the Bitcoin currency unit, denominated in satoshi with 0 decimal places.
     private static CurrencyUnit BITCOIN_CURRENCY_UNIT;
@@ -217,11 +218,11 @@ public enum CurrencyConverter {
         return moneyFormatter;
     }
     
-    public String getMoneyAsString(Money money) {
-        return getMoneyAsString(money, true, false);
+    public String getFiatAsLocalisedString(Money money) {
+        return getFiatAsLocalisedString(money, true, false);
     }
     
-    public String getMoneyAsString(Money money, boolean addCurrencySymbol, boolean addParenthesis) {
+    public String getFiatAsLocalisedString(Money money, boolean addCurrencySymbol, boolean addParenthesis) {
         if (money == null) {
             return "";
         }
@@ -239,6 +240,59 @@ public enum CurrencyConverter {
             toReturn = "  (" + toReturn + ")";
         }
         return toReturn;
+    }
+    
+    public String getBTCAsLocalisedString(Money btcMoney) {
+        DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
+        formatter.setMaximumFractionDigits(NUMBER_OF_DECIMAL_POINTS_IN_A_BITCOIN);
+        String btcString = formatter.format(btcMoney.getAmount().divide(new BigDecimal(NUMBER_OF_SATOSHI_IN_ONE_BITCOIN)));
+        return btcString;
+    }
+    
+    /**
+     * Parse a localised string and returns a Money denominated in Satoshi
+     * @param btcString
+     * @return
+     */
+    public Money parseToBTC(String btcString) {
+        if (btcString == null || btcString.equals("")) {
+            return null;
+        }
+        
+        Money btcAmount = null;
+        
+        DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
+        formatter.setParseBigDecimal(true);
+        try {
+            BigDecimal parsedBTC = ((BigDecimal)formatter.parse(btcString)).movePointRight(NUMBER_OF_DECIMAL_POINTS_IN_A_BITCOIN);
+            btcAmount = Money.of(BITCOIN_CURRENCY_UNIT, parsedBTC);
+         } catch (ParseException pe) {
+            log.debug(pe.toString());
+        }
+        return btcAmount;
+    }
+    
+    /**
+     * Parse a non localised string and returns a Money denominated in Satoshi
+     * @param btcString
+     * @return
+     */
+    public Money parseToBTCNotLocalised(String btcString) {
+        if (btcString == null || btcString.equals("")) {
+            return null;
+        }
+        
+        Money btcAmount = null;
+        
+        DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(Locale.ENGLISH);
+        formatter.setParseBigDecimal(true);
+        try {
+            BigDecimal parsedBTC = ((BigDecimal)formatter.parse(btcString)).movePointRight(NUMBER_OF_DECIMAL_POINTS_IN_A_BITCOIN);
+            btcAmount = Money.of(BITCOIN_CURRENCY_UNIT, parsedBTC);
+         } catch (ParseException pe) {
+            log.debug(pe.toString());
+        }
+        return btcAmount;
     }
     
     public void addCurrencyConverterListener(CurrencyConverterListener listener) {

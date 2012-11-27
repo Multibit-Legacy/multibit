@@ -150,7 +150,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
             String sendAmountFiat = dataProvider.getAmountFiat();
             if (sendAmountFiat != null && !"".equals(sendAmountFiat)) {
                 Money sendAmountFiatAsMoney = CurrencyConverter.INSTANCE.convertToMoney(sendAmountFiat);
-                sendAmount = sendAmount + CurrencyConverter.INSTANCE.getMoneyAsString(sendAmountFiatAsMoney, true, true);
+                sendAmount = sendAmount + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(sendAmountFiatAsMoney, true, true);
             }
         }
         String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
@@ -164,7 +164,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
         if (CurrencyConverter.INSTANCE.isShowingFiat()) {
             Money feeAsFiatAsMoney = CurrencyConverter.INSTANCE.convertToFiat(Utils.toNanoCoins(fee));
             if (feeAsFiatAsMoney != null) {
-                sendFee = sendFee + CurrencyConverter.INSTANCE.getMoneyAsString(feeAsFiatAsMoney, true, true);
+                sendFee = sendFee + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(feeAsFiatAsMoney, true, true);
             }
         }
     

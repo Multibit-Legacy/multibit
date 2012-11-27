@@ -337,6 +337,12 @@ public class MultiBitModel {
      * @return
      */
     public void setActiveWalletPreference(String key, String value) {
+        if (MultiBitModel.SEND_AMOUNT.equals(key)) {
+            if (value.indexOf(",") > -1) {
+                boolean bad = true;
+                bad = !bad;
+            }
+        }
         if (activeWalletModelData.getWalletInfo() != null && value != null) {
             activeWalletModelData.getWalletInfo().put(key, value);
             activeWalletModelData.setDirty(true);

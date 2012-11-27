@@ -35,6 +35,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
@@ -343,7 +344,18 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         // get the current address, label and amount from the model
         String address = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
         String label = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
-        String amount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
+        String amountNotLocalised = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
+
+        if (amountBTCTextField != null) {
+            parsedAmountBTC = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amountNotLocalised);
+            
+            if (parsedAmountBTC != null && parsedAmountBTC.getAmount() != null) {
+                String amountLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(parsedAmountBTC);
+                amountBTCTextField.setText(amountLocalised);
+            } else {
+                amountBTCTextField.setText("");
+            }
+        }
 
         if (address != null) {
             addressTextField.setText(address);
@@ -355,11 +367,6 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         } else {
             labelTextArea.setText("");
         }
-        if (amount != null) {
-            amountBTCTextField.setText(amount);
-        } else {
-            amountBTCTextField.setText("");
-        }
 
         // if there is a pending 'handleopenURI' that needs pasting into the
         // send form, do it
@@ -367,7 +374,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         if (Boolean.TRUE.toString().equalsIgnoreCase(performPasteNow)) {
             try {
                 Address decodeAddress = new Address(controller.getModel().getNetworkParameters(), address);
-                processDecodedString(com.google.bitcoin.uri.BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amount), label, null), null);
+                processDecodedString(com.google.bitcoin.uri.BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amountNotLocalised), label, null), null);
                 controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
                 sendButton.requestFocusInWindow();
 
