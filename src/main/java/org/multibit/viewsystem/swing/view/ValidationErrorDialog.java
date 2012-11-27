@@ -189,17 +189,23 @@ public class ValidationErrorDialog extends MultiBitDialog {
                 textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage2",
                         new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });
             }
-            // There is an extra "BTC." in the translations - remove.
-            textToAdd = textToAdd.replaceAll("BTC\\.", "\\.");
-            
-            String[] lines = textToAdd.split("\n");
+            // There is an extra "BTC." in the translations - remove and add a return.
+            textToAdd = textToAdd.replaceAll("BTC\\.", "\\.\\\\n");
+             
+            String[] lines = textToAdd.split("\\\\n");
             for (int i = 0; i < lines.length; i++) {
                 if (lines[i] != null && lines[i].length() > longestRow.length()) {
                     longestRow = lines[i];
                 }
+                if (lines[i] != null && lines[i].length() > 0) {
+                    if (i == 0) {
+                        completeMessage = completeMessage + lines[i];
+                    } else {
+                        completeMessage = completeMessage + "\n" + lines[i];
+                    }
+                    rows++;
+                }
             }
-            completeMessage = completeMessage + textToAdd;
-            rows++;
         }
 
         // Spacer row at top and bottom.
