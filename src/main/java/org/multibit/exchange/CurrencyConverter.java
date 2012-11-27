@@ -39,9 +39,12 @@ public enum CurrencyConverter {
     
     public static final BigInteger NUMBER_OF_SATOSHI_IN_ONE_BITCOIN = BigInteger.valueOf(100000000); // 8 zeros
     public static final int NUMBER_OF_DECIMAL_POINTS_IN_A_BITCOIN = 8;
+    
+    // Extra digits used in calculation.
+    public static final int ADDITIONAL_CALCULATION_DIGITS = 16;
    
     // This is the Bitcoin currency unit, denominated in satoshi with 0 decimal places.
-    private static CurrencyUnit BITCOIN_CURRENCY_UNIT;
+    public static CurrencyUnit BITCOIN_CURRENCY_UNIT  = CurrencyUnit.of("BTC");
     
     /**
      * The currency unit for the currency being converted.
@@ -57,20 +60,22 @@ public enum CurrencyConverter {
      * Map of currency code to currency info.
      */
     private Map<String, CurrencyInfo> currencyCodeToInfoMap;
-    
+
     public void initialise(MultiBitController controller) {
-        this.controller = controller;
-        
         // Initialise conversion currency.
-        String currency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
-        if (currency1 != null && !"".equals(currency1)) {
-            currencyUnit = CurrencyUnit.of(currency1);
-        }
+        String currencyCode = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
+        initialise(controller, currencyCode);
+    }
+    
+    public void initialise(MultiBitController controller, String currencyCode) {
+
+       this.controller = controller;
         
+       if (currencyCode != null && !"".equals(currencyCode)) {
+           currencyUnit = CurrencyUnit.of(currencyCode);
+       }         
         // Exchange rate is unknown.
         rate = null;
-        
-        BITCOIN_CURRENCY_UNIT = CurrencyUnit.of("BTC");
         
         // Setup listeners
         listeners = new ArrayList<CurrencyConverterListener>();
@@ -121,13 +126,19 @@ public enum CurrencyConverter {
             
             DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
             formatter.setParseBigDecimal(true);
+            
+            // Convert spaces to non breakable space.
+            fiat = fiat.replaceAll(" ", "\u00A0");
+
             try {
                 BigDecimal parsedFiat = (BigDecimal)formatter.parse(fiat);
                 Money fiatMoney = Money.of(currencyUnit, parsedFiat);
-                btcAmount = fiatMoney.convertedTo(BITCOIN_CURRENCY_UNIT, new BigDecimal(NUMBER_OF_SATOSHI_IN_ONE_BITCOIN).divide(rate, BITCOIN_CURRENCY_UNIT.getDecimalPlaces() + 2, RoundingMode.HALF_EVEN), RoundingMode.HALF_EVEN);
+                btcAmount = fiatMoney.convertedTo(BITCOIN_CURRENCY_UNIT, new BigDecimal(NUMBER_OF_SATOSHI_IN_ONE_BITCOIN).divide(rate, BITCOIN_CURRENCY_UNIT.getDecimalPlaces() + ADDITIONAL_CALCULATION_DIGITS, RoundingMode.HALF_EVEN), RoundingMode.HALF_EVEN);
             } catch (ParseException pe) {
                 log.debug(pe.toString());
             }
+            log.debug("For locale " + controller.getLocaliser().getLocale().toString() +  ", '" + fiat + "' fiat converts to " + btcAmount);
+
             return btcAmount;
         }
     }
@@ -138,6 +149,10 @@ public enum CurrencyConverter {
         } else {    
             DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
             formatter.setParseBigDecimal(true);
+            
+            // Convert spaces to non breakable space.
+            fiat = fiat.replaceAll(" ", "\u00A0");
+
             try {
                 BigDecimal parsedFiat = (BigDecimal)formatter.parse(fiat);
                 Money fiatMoney = Money.of(currencyUnit, parsedFiat);
@@ -192,12 +207,30 @@ public enum CurrencyConverter {
         }
 
         DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
-        char separator = formatter.getDecimalFormatSymbols().getDecimalSeparator();
+        char decimalSeparator = formatter.getDecimalFormatSymbols().getDecimalSeparator();
+        char groupingSeparator = formatter.getDecimalFormatSymbols().getGroupingSeparator();
         MoneyAmountStyle moneyAmountStyle;
-        if ('.' == separator) {
-            moneyAmountStyle = MoneyAmountStyle.ASCII_DECIMAL_POINT_GROUP3_COMMA;
+        if ('.' == decimalSeparator) {
+            if (',' == groupingSeparator) {
+                moneyAmountStyle = MoneyAmountStyle.ASCII_DECIMAL_POINT_GROUP3_COMMA;
+            } else if (' ' == groupingSeparator || '\u00A0' == groupingSeparator) {
+                moneyAmountStyle = MoneyAmountStyle.ASCII_DECIMAL_POINT_GROUP3_SPACE;
+            } else {
+                moneyAmountStyle = MoneyAmountStyle.ASCII_DECIMAL_POINT_NO_GROUPING;
+            }
         } else {
-            moneyAmountStyle = MoneyAmountStyle.ASCII_DECIMAL_COMMA_GROUP3_DOT;
+            if (',' == decimalSeparator) {
+                if ('.' == groupingSeparator) {
+                    moneyAmountStyle = MoneyAmountStyle.ASCII_DECIMAL_COMMA_GROUP3_DOT;
+                } else if (' ' == groupingSeparator || '\u00A0' == groupingSeparator) {
+                    moneyAmountStyle = MoneyAmountStyle.ASCII_DECIMAL_COMMA_GROUP3_SPACE;
+                } else {
+                    moneyAmountStyle = MoneyAmountStyle.ASCII_DECIMAL_COMMA_NO_GROUPING;
+                }
+            } else {
+                // Do not really know - keep it simple.
+                moneyAmountStyle = MoneyAmountStyle.ASCII_DECIMAL_POINT_NO_GROUPING;                
+            }
         }
         
         if (currencyInfo.isPrefix()) {
@@ -259,21 +292,7 @@ public enum CurrencyConverter {
      * @return
      */
     public Money parseToBTC(String btcString) {
-        if (btcString == null || btcString.equals("")) {
-            return null;
-        }
-        
-        Money btcAmount = null;
-        
-        DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
-        formatter.setParseBigDecimal(true);
-        try {
-            BigDecimal parsedBTC = ((BigDecimal)formatter.parse(btcString)).movePointRight(NUMBER_OF_DECIMAL_POINTS_IN_A_BITCOIN);
-            btcAmount = Money.of(BITCOIN_CURRENCY_UNIT, parsedBTC);
-         } catch (ParseException pe) {
-            log.debug(pe.toString());
-        }
-        return btcAmount;
+        return parseToBTC(btcString, controller.getLocaliser().getLocale());
     }
     
     /**
@@ -282,16 +301,24 @@ public enum CurrencyConverter {
      * @return
      */
     public Money parseToBTCNotLocalised(String btcString) {
+        return parseToBTC(btcString, Locale.ENGLISH);
+    }
+
+    private Money parseToBTC(String btcString, Locale locale) {
         if (btcString == null || btcString.equals("")) {
             return null;
         }
         
+        // Convert spaces to non breakable space.
+        btcString = btcString.replaceAll(" ", "\u00A0");
+        
         Money btcAmount = null;
         
-        DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(Locale.ENGLISH);
+        DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(locale);
         formatter.setParseBigDecimal(true);
         try {
             BigDecimal parsedBTC = ((BigDecimal)formatter.parse(btcString)).movePointRight(NUMBER_OF_DECIMAL_POINTS_IN_A_BITCOIN);
+            log.debug("For locale " + controller.getLocaliser().getLocale().toString() +  ", '" + btcString + "' parses to " + parsedBTC.toPlainString());
             btcAmount = Money.of(BITCOIN_CURRENCY_UNIT, parsedBTC);
          } catch (ParseException pe) {
             log.debug(pe.toString());

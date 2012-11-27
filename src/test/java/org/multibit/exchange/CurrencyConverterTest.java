@@ -91,13 +91,108 @@ public class CurrencyConverterTest extends TestCase {
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
-        // Initialise - will pick up currency of interest.
-        converter.initialise(controller);
+        converter.initialise(controller, "GBP");
 
         String result = converter.getFiatAsLocalisedString(Money.parse("GBP 1.23"));
         assertEquals("Wrong GBP formatting", "£1.23", result);
-        
+
+        converter.initialise(controller, "EUR");
+
         result = converter.getFiatAsLocalisedString(Money.parse("EUR 1.23"));
         assertEquals("Wrong EURO formatting", "\u20AC1.23", result);
+    }
+    
+    @Test 
+    public void testGetBTCAsLocalisedStringEnglish() throws Exception {
+        MultiBitController controller = new MultiBitController();
+        
+        Localiser localiser = new Localiser(Locale.ENGLISH);
+        controller.setLocaliser(localiser);
+        
+        @SuppressWarnings("unused")
+        MultiBitModel model = new MultiBitModel(controller);
+        
+        CurrencyConverter converter = CurrencyConverter.INSTANCE;
+
+        converter.initialise(controller, "GBP");
+
+        BigDecimal testBTCAmount = BigDecimal.valueOf(123456789L);
+        String result = converter.getBTCAsLocalisedString(Money.of(CurrencyConverter.BITCOIN_CURRENCY_UNIT, testBTCAmount));
+        assertEquals("Wrong BTC localised value.1", "1.23456789", result);
+
+        Money parsedBTC = CurrencyConverter.INSTANCE.parseToBTC(result);
+        assertEquals(testBTCAmount, parsedBTC.getAmount());
+ 
+        testBTCAmount = BigDecimal.valueOf(1234567890123L);
+        result = converter.getBTCAsLocalisedString(Money.of(CurrencyConverter.BITCOIN_CURRENCY_UNIT, testBTCAmount));
+        assertEquals("Wrong BTC localised value.2", "12,345.67890123", result);
+        
+        parsedBTC = CurrencyConverter.INSTANCE.parseToBTC(result);
+        assertEquals(testBTCAmount, parsedBTC.getAmount());
+    }
+    
+    @Test 
+    public void testGetBTCAsLocalisedStringGerman() throws Exception {
+        MultiBitController controller = new MultiBitController();
+        
+        Localiser localiser = new Localiser(Locale.GERMAN);
+        controller.setLocaliser(localiser);
+        
+        @SuppressWarnings("unused")
+        MultiBitModel model = new MultiBitModel(controller);
+        
+        CurrencyConverter converter = CurrencyConverter.INSTANCE;
+
+        converter.initialise(controller, "EUR");
+
+        
+        BigDecimal testBTCAmount = BigDecimal.valueOf(123456789L);
+        String result = converter.getBTCAsLocalisedString(Money.of(CurrencyConverter.BITCOIN_CURRENCY_UNIT, testBTCAmount));
+        assertEquals("Wrong BTC localised value.1", "1,23456789", result);
+
+        Money parsedBTC = CurrencyConverter.INSTANCE.parseToBTC(result);
+        assertEquals(testBTCAmount, parsedBTC.getAmount());
+        
+        
+        testBTCAmount = BigDecimal.valueOf(1234567890123L);
+        result = converter.getBTCAsLocalisedString(Money.of(CurrencyConverter.BITCOIN_CURRENCY_UNIT, testBTCAmount));
+        assertEquals("Wrong BTC localised value.2", "12.345,67890123", result);
+        
+        parsedBTC = CurrencyConverter.INSTANCE.parseToBTC(result);
+        assertEquals(testBTCAmount, parsedBTC.getAmount());
+    }
+    
+    @Test 
+    public void testGetBTCAsLocalisedStringFrench() throws Exception {
+        MultiBitController controller = new MultiBitController();
+        
+        Localiser localiser = new Localiser(Locale.FRENCH);
+        controller.setLocaliser(localiser);
+        
+        @SuppressWarnings("unused")
+        MultiBitModel model = new MultiBitModel(controller);
+        
+        CurrencyConverter converter = CurrencyConverter.INSTANCE;
+
+        converter.initialise(controller, "EUR");
+
+        BigDecimal testBTCAmount = BigDecimal.valueOf(123456789L);
+        String result = converter.getBTCAsLocalisedString(Money.of(CurrencyConverter.BITCOIN_CURRENCY_UNIT, testBTCAmount));
+        assertEquals("Wrong BTC localised value.1", "1,23456789", result);
+
+        Money parsedBTC = CurrencyConverter.INSTANCE.parseToBTC(result);
+        assertEquals(testBTCAmount, parsedBTC.getAmount());
+        
+
+        testBTCAmount = BigDecimal.valueOf(1234567890123L);
+        result = converter.getBTCAsLocalisedString(Money.of(CurrencyConverter.BITCOIN_CURRENCY_UNIT, testBTCAmount));
+        assertEquals("Wrong BTC localised value.2", "12\u00A0345,67890123", result);
+        
+        parsedBTC = CurrencyConverter.INSTANCE.parseToBTC(result);
+        assertEquals(testBTCAmount, parsedBTC.getAmount());
+
+        parsedBTC = CurrencyConverter.INSTANCE.parseToBTC("12 345,67890123"); // Space rather than nonbreakable space
+        assertEquals(testBTCAmount, parsedBTC.getAmount());
+
     }
 }

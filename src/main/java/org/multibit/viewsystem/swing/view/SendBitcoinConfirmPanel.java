@@ -72,8 +72,6 @@ public class SendBitcoinConfirmPanel extends JPanel {
 
     private String sendAddress;
     private String sendLabel;
-    private String sendAmount;
-    private String sendFee;
 
     private MultiBitLabel confirmText1;
     private MultiBitLabel confirmText2;
@@ -144,13 +142,21 @@ public class SendBitcoinConfirmPanel extends JPanel {
         // Get the data out of the wallet preferences.
         sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
         sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
-        sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
+        String sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
 
+        String sendAmountLocalised = "";
+        if (sendAmount != null && !"".equals(sendAmount)) {
+            Money parsedAmountBTC = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendAmount);
+            
+            if (parsedAmountBTC != null && parsedAmountBTC.getAmount() != null) {
+                sendAmountLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(parsedAmountBTC);
+            }
+        }
         if (dataProvider != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
             String sendAmountFiat = dataProvider.getAmountFiat();
             if (sendAmountFiat != null && !"".equals(sendAmountFiat)) {
                 Money sendAmountFiatAsMoney = CurrencyConverter.INSTANCE.convertToMoney(sendAmountFiat);
-                sendAmount = sendAmount + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(sendAmountFiatAsMoney, true, true);
+                sendAmountLocalised = sendAmountLocalised + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(sendAmountFiatAsMoney, true, true);
             }
         }
         String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
@@ -158,13 +164,19 @@ public class SendBitcoinConfirmPanel extends JPanel {
             fee = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
         }
 
-        sendFee = fee + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
-
+        String sendFeeLocalised = "";
+        if (fee != null && !"".equals(fee)) {
+            Money parsedFeeBTC = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(fee);
+            
+            if (parsedFeeBTC != null && parsedFeeBTC.getAmount() != null) {
+                sendFeeLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(parsedFeeBTC);
+            }
+        }
         // Work out what the fee is in fiat.
         if (CurrencyConverter.INSTANCE.isShowingFiat()) {
             Money feeAsFiatAsMoney = CurrencyConverter.INSTANCE.convertToFiat(Utils.toNanoCoins(fee));
             if (feeAsFiatAsMoney != null) {
-                sendFee = sendFee + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(feeAsFiatAsMoney, true, true);
+                sendFeeLocalised = sendFeeLocalised + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(feeAsFiatAsMoney, true, true);
             }
         }
     
@@ -326,7 +338,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
         detailPanel.add(sendAmountLabel, constraints2);
 
         sendAmountText = new MultiBitLabel("");
-        sendAmountText.setText(sendAmount);
+        sendAmountText.setText(sendAmountLocalised);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
         constraints2.gridy = 3;
@@ -348,7 +360,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
         detailPanel.add(sendFeeLabel, constraints2);
 
         sendFeeText = new MultiBitLabel("");
-        sendFeeText.setText(sendFee);
+        sendFeeText.setText(sendFeeLocalised);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
         constraints2.gridy = 4;

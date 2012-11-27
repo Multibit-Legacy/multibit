@@ -146,7 +146,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
                 completeMessage = completeMessage + "\n";
             }
             String textToAdd = controller.getLocaliser().getString("validationErrorView.amountInvalidMessage",
-                    new String[] { amountPlusConversionToFiat });
+                    new String[] { amountValue });
             if (textToAdd.length() > longestRow.length()) {
                 longestRow = textToAdd;
             }
