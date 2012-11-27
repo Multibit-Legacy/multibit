@@ -24,7 +24,9 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 
+import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -70,7 +72,16 @@ public class ValidationErrorDialog extends MultiBitDialog {
         // Get the data out of the user preferences.
         String addressValue = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE);
         String amountValue = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_VALUE);
-
+        
+        String amountPlusConversionToFiat = amountValue;
+        if (amountValue != null && !"".equals(amountValue)) {
+            if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
+                Money fiat = CurrencyConverter.INSTANCE.convertToFiat(CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amountValue)
+                        .getAmount().toBigInteger());
+                amountPlusConversionToFiat = amountPlusConversionToFiat + " BTC" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat, true, true);
+            }
+        }
+        
         // Invalid address.
         String addressIsInvalid = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID);
         boolean addressIsInvalidBoolean = false;
@@ -135,7 +146,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
                 completeMessage = completeMessage + "\n";
             }
             String textToAdd = controller.getLocaliser().getString("validationErrorView.amountInvalidMessage",
-                    new String[] { amountValue });
+                    new String[] { amountPlusConversionToFiat });
             if (textToAdd.length() > longestRow.length()) {
                 longestRow = textToAdd;
             }
@@ -164,12 +175,23 @@ public class ValidationErrorDialog extends MultiBitDialog {
             if (fee == null || fee.equals("")) {
                 fee = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
             }
+            String feePlusConversionToFiat = fee;
+            if (fee != null && !"".equals(fee)) {
+                if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
+                    Money fiat = CurrencyConverter.INSTANCE.convertToFiat(CurrencyConverter.INSTANCE.parseToBTCNotLocalised(fee)
+                            .getAmount().toBigInteger());
+                    feePlusConversionToFiat = feePlusConversionToFiat + " BTC" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat, true, true);
+                }
+            }
             String textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage",
-                    new String[] { amountValue, fee });
+                    new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });
             if (controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE).compareTo(controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
                 textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage2",
-                        new String[] { amountValue, fee });
+                        new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });
             }
+            // There is an extra "BTC." in the translations - remove.
+            textToAdd = textToAdd.replaceAll("BTC\\.", "\\.");
+            
             String[] lines = textToAdd.split("\n");
             for (int i = 0; i < lines.length; i++) {
                 if (lines[i] != null && lines[i].length() > longestRow.length()) {

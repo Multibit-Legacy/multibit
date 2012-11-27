@@ -538,12 +538,10 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             if (isSelected) {
                 selectedRow = row;
                 label.setBackground(table.getSelectionBackground());
-                //label.setForeground(table.getSelectionForeground());
             } else {
                 Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
                         : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
-                //label.setForeground(table.getForeground());
             }
 
             return label;

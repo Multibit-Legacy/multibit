@@ -229,11 +229,15 @@ public enum CurrencyConverter {
         MoneyFormatter moneyFormatter = getMoneyFormatter(addCurrencySymbol);
         
         DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
-        char groupingSeparator = formatter.getDecimalFormatSymbols().getGroupingSeparator();
+        String groupingSeparator = String.valueOf(formatter.getDecimalFormatSymbols().getGroupingSeparator());
 
         String toReturn =  moneyFormatter.print(money);
         
         // Get rid of negative sign followed by thousand separator
+        if (".".equals(groupingSeparator)) {
+             // Escape regex.
+            groupingSeparator = "\\.";
+        }
         toReturn = toReturn.replaceAll("-" + groupingSeparator, "-");
         
         if (addParenthesis) {
