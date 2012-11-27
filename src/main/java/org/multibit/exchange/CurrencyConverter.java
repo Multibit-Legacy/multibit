@@ -135,7 +135,9 @@ public enum CurrencyConverter {
                 Money fiatMoney = Money.of(currencyUnit, parsedFiat);
                 btcAmount = fiatMoney.convertedTo(BITCOIN_CURRENCY_UNIT, new BigDecimal(NUMBER_OF_SATOSHI_IN_ONE_BITCOIN).divide(rate, BITCOIN_CURRENCY_UNIT.getDecimalPlaces() + ADDITIONAL_CALCULATION_DIGITS, RoundingMode.HALF_EVEN), RoundingMode.HALF_EVEN);
             } catch (ParseException pe) {
-                log.debug(pe.toString());
+                log.debug(pe.getClass().getName() + " "  + pe.getMessage());
+            } catch (ArithmeticException ae) {
+                log.debug(ae.getClass().getName() + " "  + ae.getMessage());
             }
             log.debug("For locale " + controller.getLocaliser().getLocale().toString() +  ", '" + fiat + "' fiat converts to " + btcAmount);
 
@@ -320,8 +322,10 @@ public enum CurrencyConverter {
             BigDecimal parsedBTC = ((BigDecimal)formatter.parse(btcString)).movePointRight(NUMBER_OF_DECIMAL_POINTS_IN_A_BITCOIN);
             log.debug("For locale " + controller.getLocaliser().getLocale().toString() +  ", '" + btcString + "' parses to " + parsedBTC.toPlainString());
             btcAmount = Money.of(BITCOIN_CURRENCY_UNIT, parsedBTC);
-         } catch (ParseException pe) {
-            log.debug(pe.toString());
+        } catch (ParseException pe) {
+            log.debug(pe.getClass().getName() + " " + pe.getMessage());
+        } catch (ArithmeticException ae) {
+            log.debug(ae.getClass().getName() + " " + ae.getMessage());
         }
         return btcAmount;
     }

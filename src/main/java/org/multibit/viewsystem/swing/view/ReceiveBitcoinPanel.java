@@ -56,6 +56,7 @@ import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
+import org.multibit.viewsystem.swing.view.components.MultiBitFormattedTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
@@ -259,18 +260,18 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
         constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(amountLabel, constraints);
 
-        amountBTCTextField = new MultiBitTextField("", 10, controller);
-        amountBTCTextField.setHorizontalAlignment(JTextField.TRAILING);
-        amountBTCTextField.setMinimumSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
+        amountBTCFormattedTextField = new MultiBitFormattedTextField("", 10, controller, null);
+        amountBTCFormattedTextField.setHorizontalAlignment(JTextField.TRAILING);
+        amountBTCFormattedTextField.setMinimumSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
                 FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
                 + TEXTFIELD_VERTICAL_DELTA));
-        amountBTCTextField.setPreferredSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
+        amountBTCFormattedTextField.setPreferredSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
                 FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
                 + TEXTFIELD_VERTICAL_DELTA));
-        amountBTCTextField.setMaximumSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
+        amountBTCFormattedTextField.setMaximumSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
                 FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
                 + TEXTFIELD_VERTICAL_DELTA));
-        amountBTCTextField.addKeyListener(new QRCodeKeyListener());
+        amountBTCFormattedTextField.addKeyListener(new QRCodeKeyListener());
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 2;
@@ -280,7 +281,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        amountPanel.add(amountBTCTextField, BorderLayout.LINE_START);
+        amountPanel.add(amountBTCFormattedTextField, BorderLayout.LINE_START);
         formPanel.add(amountPanel, constraints);
         
         MultiBitLabel amountUnitLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountUnitLabel"));
@@ -384,16 +385,16 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
 
             labelTextArea.setEditable(false);
             labelTextArea.setEnabled(false);
-            mainFrame.setUpdatesStoppedTooltip(amountBTCTextField);
-            amountBTCTextField.setEditable(false);
-            amountBTCTextField.setEnabled(false);
+            mainFrame.setUpdatesStoppedTooltip(amountBTCFormattedTextField);
+            amountBTCFormattedTextField.setEditable(false);
+            amountBTCFormattedTextField.setEnabled(false);
         } else {
             labelTextArea.setToolTipText(null);
             labelTextArea.setEditable(true);
             labelTextArea.setEnabled(true);
-            amountBTCTextField.setToolTipText(null);
-            amountBTCTextField.setEditable(true);
-            amountBTCTextField.setEnabled(true);
+            amountBTCFormattedTextField.setToolTipText(null);
+            amountBTCFormattedTextField.setEditable(true);
+            amountBTCFormattedTextField.setEnabled(true);
         }
 
         return formPanel;
@@ -453,7 +454,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
             labelTextArea.setText(label);
         }
         if (amount != null) {
-            amountBTCTextField.setText(amount);
+            amountBTCFormattedTextField.setText(amount);
         }
     }
 
