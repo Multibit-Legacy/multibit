@@ -360,19 +360,19 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         String label = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
         String amountNotLocalised = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
 
-        if (amountBTCFormattedTextField != null) {
+        if (amountBTCTextField != null) {
             CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amountNotLocalised);
             
             if (converterResult.isBtcMoneyValid()) {
                 parsedAmountBTC = converterResult.getBtcMoney();
                 String amountLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
-                amountBTCFormattedTextField.setText(amountLocalised);
+                amountBTCTextField.setText(amountLocalised);
                 if (notificationLabel != null) {
                     notificationLabel.setText("");
                 }
             } else {
                 parsedAmountBTC = null;
-                amountBTCFormattedTextField.setText("");
+                amountBTCTextField.setText("");
                 if (notificationLabel != null) {
                     notificationLabel.setText(converterResult.getBtcMessage());
                 }
