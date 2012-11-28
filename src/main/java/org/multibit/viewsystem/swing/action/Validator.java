@@ -20,6 +20,7 @@ import java.math.BigInteger;
 import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
+import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.MultiBitModel;
 
 import com.google.bitcoin.core.Address;
@@ -79,6 +80,8 @@ public class Validator {
         Boolean amountIsMissing = Boolean.FALSE;
         Boolean amountIsNegativeOrZero = Boolean.FALSE;
 
+        CurrencyConverterResult converterResult = null;
+
         // See if the amount is missing.
         if (amount == null || "".equals(amount)) {
             amountIsMissing = Boolean.TRUE;
@@ -86,17 +89,11 @@ public class Validator {
         } else {
             // See if the amount is a parsable BTC amount.
             Money parsedAmountBTC = null;
-            try {
-                parsedAmountBTC = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amount);
-                if (parsedAmountBTC == null) {
-                    amountIsMissing = Boolean.TRUE;
-                    amountValidatesOk = Boolean.FALSE;
-                }
-            } catch (NumberFormatException nfe) {
-                amountValidatesOk = Boolean.FALSE;
-                amountIsInvalid = Boolean.TRUE;
-            } catch (ArithmeticException ae) {
-                amountValidatesOk = Boolean.FALSE;
+
+            converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amount);
+            if (converterResult.isBtcMoneyValid()) {
+                parsedAmountBTC = converterResult.getBtcMoney();
+            } else {
                 amountIsInvalid = Boolean.TRUE;
             }
 

@@ -155,7 +155,7 @@ public class MultiBit {
             MultiBitModel model = new MultiBitModel(controller, userPreferences);
 
             // Initialise currency converter.
-            CurrencyConverter.INSTANCE.initialise(finalController, null);
+            CurrencyConverter.INSTANCE.initialise(finalController);
             
             log.debug("Setting look and feel");
             try {

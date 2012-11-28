@@ -32,6 +32,7 @@ import org.joda.money.Money;
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
+import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.dataproviders.BitcoinFormDataProvider;
@@ -146,17 +147,19 @@ public class SendBitcoinConfirmPanel extends JPanel {
 
         String sendAmountLocalised = "";
         if (sendAmount != null && !"".equals(sendAmount)) {
-            Money parsedAmountBTC = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendAmount);
+            CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendAmount);
             
-            if (parsedAmountBTC != null && parsedAmountBTC.getAmount() != null) {
-                sendAmountLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(parsedAmountBTC);
+            if (converterResult.isBtcMoneyValid()) {
+                sendAmountLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
             }
         }
         if (dataProvider != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
             String sendAmountFiat = dataProvider.getAmountFiat();
             if (sendAmountFiat != null && !"".equals(sendAmountFiat)) {
-                Money sendAmountFiatAsMoney = CurrencyConverter.INSTANCE.parseToFiat(sendAmountFiat);
-                sendAmountLocalised = sendAmountLocalised + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(sendAmountFiatAsMoney, true, true);
+                CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToFiat(sendAmountFiat);
+                if (converterResult.isFiatMoneyValid()) {
+                sendAmountLocalised = sendAmountLocalised + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(converterResult.getFiatMoney(), true, true);
+                }
             }
         }
         String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
@@ -166,10 +169,10 @@ public class SendBitcoinConfirmPanel extends JPanel {
 
         String sendFeeLocalised = "";
         if (fee != null && !"".equals(fee)) {
-            Money parsedFeeBTC = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(fee);
+            CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(fee);
             
-            if (parsedFeeBTC != null && parsedFeeBTC.getAmount() != null) {
-                sendFeeLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(parsedFeeBTC);
+            if (converterResult.isBtcMoneyValid()) {
+                sendFeeLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
             }
         }
         // Work out what the fee is in fiat.

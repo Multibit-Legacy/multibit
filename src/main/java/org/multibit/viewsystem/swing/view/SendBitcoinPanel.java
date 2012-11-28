@@ -15,7 +15,6 @@
  */
 package org.multibit.viewsystem.swing.view;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
@@ -37,6 +36,7 @@ import javax.swing.event.ChangeListener;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
+import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
@@ -268,7 +268,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(amountPanel, constraints);
 
-        JLabel notificationLabel = new MultiBitLabel("");
+        notificationLabel = new MultiBitLabel("");
         notificationLabel.setForeground(Color.RED);
         //notificationLabel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
         constraints.fill = GridBagConstraints.BOTH;
@@ -280,7 +280,6 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         constraints.weighty = 0.1;
         constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
         formPanel.add(notificationLabel, constraints);
-        CurrencyConverter.INSTANCE.setNotificationLabel(notificationLabel);
         
         Action helpAction;
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
@@ -362,13 +361,21 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         String amountNotLocalised = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
 
         if (amountBTCFormattedTextField != null) {
-            parsedAmountBTC = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amountNotLocalised);
+            CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amountNotLocalised);
             
-            if (parsedAmountBTC != null && parsedAmountBTC.getAmount() != null) {
-                String amountLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(parsedAmountBTC);
+            if (converterResult.isBtcMoneyValid()) {
+                parsedAmountBTC = converterResult.getBtcMoney();
+                String amountLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
                 amountBTCFormattedTextField.setText(amountLocalised);
+                if (notificationLabel != null) {
+                    notificationLabel.setText("");
+                }
             } else {
+                parsedAmountBTC = null;
                 amountBTCFormattedTextField.setText("");
+                if (notificationLabel != null) {
+                    notificationLabel.setText(converterResult.getBtcMessage());
+                }
             }
         }
 

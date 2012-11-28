@@ -57,6 +57,7 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -71,6 +72,7 @@ import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
+import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.exchange.CurrencyInfo;
 import org.multibit.exchange.ExchangeRate;
 import org.multibit.message.Message;
@@ -147,6 +149,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     
     protected Money parsedAmountBTC = null;
     protected Money parsedAmountFiat = null;
+    protected JLabel notificationLabel;
 
     protected JPanel upperPanel;
 
@@ -999,9 +1002,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         }
         String amount = null;
         if (amountBTCFormattedTextField != null) {
-            parsedAmountBTC = CurrencyConverter.INSTANCE.parseToBTC(amountBTCFormattedTextField.getText());
-            
-            if (parsedAmountBTC != null && parsedAmountBTC.getAmount() != null) {
+            CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCFormattedTextField.getText());
+            if (converterResult.isBtcMoneyValid()) {
                 amount = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false, false);
             }
         }
@@ -1326,7 +1328,18 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                 amountUnitFiatLabel.setVisible(true);
             }
             if (amountBTCFormattedTextField != null) {
-                parsedAmountBTC = CurrencyConverter.INSTANCE.parseToBTC(amountBTCFormattedTextField.getText());
+                CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCFormattedTextField.getText());
+                if (converterResult.isBtcMoneyValid()) {
+                    parsedAmountBTC = converterResult.getBtcMoney();
+                    if (notificationLabel != null) {
+                        notificationLabel.setText("");
+                    } 
+                } else {
+                    parsedAmountBTC = null;
+                    if (notificationLabel != null) {
+                        notificationLabel.setText(converterResult.getBtcMessage());
+                    } 
+                } 
             }
             updateFiatAmount();
         } else {
@@ -1362,10 +1375,19 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             }
             String amount = "";
             if (amountBTCFormattedTextField != null) {
-                parsedAmountBTC = CurrencyConverter.INSTANCE.parseToBTC(amountBTCFormattedTextField.getText());
+                CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCFormattedTextField.getText());
                 
-                if (parsedAmountBTC != null && parsedAmountBTC.getAmount() != null) {
+                if (converterResult.isBtcMoneyValid()) {
+                    parsedAmountBTC = converterResult.getBtcMoney();
                     amount = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false, false);
+                    if (notificationLabel != null) {
+                        notificationLabel.setText("");
+                    }
+                } else {
+                    parsedAmountBTC = null;
+                    if (notificationLabel != null) {
+                        notificationLabel.setText(converterResult.getBtcMessage());
+                    }
                 }
             }
             String label = labelTextArea.getText();
@@ -1410,29 +1432,28 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             }
             String amount = "";
             
-            boolean parseFailure = false;
             if (amountBTCFormattedTextField != null) {
-                try {
-                    parsedAmountBTC = CurrencyConverter.INSTANCE.parseToBTC(amountBTCFormattedTextField.getText());
-                } catch (ArithmeticException ae) {
-                    // Too many digits specified for currency.
-                    parseFailure = true;
-                }
+                CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCFormattedTextField.getText());
                 
-                if (parsedAmountBTC != null && parsedAmountBTC.getAmount() != null) {
+                if (converterResult.isBtcMoneyValid()) {
+                    parsedAmountBTC = converterResult.getBtcMoney();
                     amount = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false, false);
+                    if (notificationLabel != null) {
+                        notificationLabel.setText("");
+                    }
+                    
+                    String label = labelTextArea.getText();
+                    controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAmountConstant(), amount);
+                    controller.getModel().getActivePerWalletModelData().setDirty(true);
+
+                    updateFiatAmount();
+                    displayQRCode(address, amount, label);
+                } else {
+                    parsedAmountBTC = null;
+                    if (notificationLabel != null) {
+                        notificationLabel.setText(converterResult.getBtcMessage());
+                    }                    
                 }
-            }
-
-            if (parseFailure) {
-                e.consume();
-            } else {
-                String label = labelTextArea.getText();
-                controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAmountConstant(), amount);
-                controller.getModel().getActivePerWalletModelData().setDirty(true);
-
-                updateFiatAmount();
-                displayQRCode(address, amount, label);
             }
         }
     }
@@ -1485,17 +1506,38 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     }
 
     protected String updateBTCAmount(String amountFiat) {
-        parsedAmountBTC = CurrencyConverter.INSTANCE.convertFromFiatToBTC(amountFiat);
-        if (parsedAmountBTC != null) {
+        CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.convertFromFiatToBTC(amountFiat);
+        if (converterResult.isFiatMoneyValid() && converterResult.isBtcMoneyValid()) {
+            parsedAmountBTC = converterResult.getBtcMoney();
             String amountBTCAsString = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false,
                     false);
             controller.getModel().setActiveWalletPreference(thisAbstractTradePanel.getAmountConstant(), amountBTCAsString);
             controller.getModel().getActivePerWalletModelData().setDirty(true);
 
             amountBTCFormattedTextField.setText(CurrencyConverter.INSTANCE.getBTCAsLocalisedString(parsedAmountBTC));
+            if (notificationLabel != null) {
+                notificationLabel.setText("");
+            }
             return amountBTCAsString;
         } else {
+            parsedAmountBTC = null;
             amountBTCFormattedTextField.setText("");
+            if (notificationLabel != null) {
+                String message = "";
+                if (!converterResult.isFiatMoneyValid()) {
+                    message = converterResult.getFiatMessage();
+                    if (message == null) {
+                        message = "";
+                    }
+                }
+                if (!converterResult.isBtcMoneyValid() && converterResult.getBtcMessage() != null) {
+                    if (message.length() > 0) {
+                        message = message + ". ";
+                    }
+                    message = message + converterResult.getBtcMessage();
+                }
+                notificationLabel.setText(message);
+            }
             return null;
         }
     }
@@ -1590,11 +1632,17 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             String amountString = "";
             String amountStringLocalised = "";
             if (amountBTCFormattedTextField != null) {
-                parsedAmountBTC = CurrencyConverter.INSTANCE.parseToBTC(amountBTCFormattedTextField.getText());
+                CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCFormattedTextField.getText());
                 
-                if (parsedAmountBTC != null && parsedAmountBTC.getAmount() != null) {
+                if (converterResult.isBtcMoneyValid()) {
+                    parsedAmountBTC = converterResult.getBtcMoney();
                     amountString = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false, false);
                     amountStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(parsedAmountBTC);
+                } else {
+                    parsedAmountBTC = null;
+                    if (notificationLabel != null) {
+                        notificationLabel.setText(converterResult.getBtcMessage());
+                    }
                 }
             }
             if (bitcoinURI.getAmount() != null) {
@@ -1687,9 +1735,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         String address = controller.getModel().getActiveWalletPreference(getAddressConstant());
         String amount = "";
         if (amountBTCFormattedTextField != null) {
-            parsedAmountBTC = CurrencyConverter.INSTANCE.parseToBTC(amountBTCFormattedTextField.getText());
+            CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCFormattedTextField.getText());
             
-            if (parsedAmountBTC != null && parsedAmountBTC.getAmount() != null) {
+            if (converterResult.isBtcMoneyValid()) {
+                parsedAmountBTC = converterResult.getBtcMoney();
                 amount = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false, false);
             }
         }
@@ -1816,10 +1865,10 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
     public String getAmount() {
         String amount = null;
         if (amountBTCFormattedTextField != null) {
-            parsedAmountBTC = CurrencyConverter.INSTANCE.parseToBTC(amountBTCFormattedTextField.getText());
+            CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCFormattedTextField.getText());
             
-            if (parsedAmountBTC != null && parsedAmountBTC.getAmount() != null) {
-                amount = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false, false);
+            if (converterResult.isBtcMoneyValid()) {
+                amount = controller.getLocaliser().bitcoinValueToStringNotLocalised(converterResult.getBtcMoney().getAmount().toBigInteger(), false, false);
             }
         }
        return amount;
@@ -1858,9 +1907,19 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     @Override
     public void updatedExchangeRate(ExchangeRate exchangeRate) {
-        if (amountBTCFormattedTextField != null) {
-            parsedAmountBTC = CurrencyConverter.INSTANCE.parseToBTC(amountBTCFormattedTextField.getText());
-        }
-        updateFiatAmount();
+        SwingUtilities.invokeLater(new Runnable(){
+
+            @Override
+            public void run() {
+                if (amountBTCFormattedTextField != null) {
+                    CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCFormattedTextField.getText());
+                    if (converterResult.isBtcMoneyValid()) {
+                        parsedAmountBTC = converterResult.getBtcMoney();
+                    } else {
+                        parsedAmountBTC = null;
+                    }
+                }
+                updateFiatAmount();
+            }});
     }   
 }

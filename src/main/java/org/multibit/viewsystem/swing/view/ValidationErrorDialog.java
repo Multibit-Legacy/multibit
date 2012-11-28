@@ -77,7 +77,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
         if (amountValue != null && !"".equals(amountValue)) {
             if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
                 Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amountValue)
-                        .getAmount().toBigInteger());
+                        .getBtcMoney().getAmount().toBigInteger());
                 amountPlusConversionToFiat = amountPlusConversionToFiat + " BTC" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat, true, true);
             }
         }
@@ -179,7 +179,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
             if (fee != null && !"".equals(fee)) {
                 if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
                     Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(CurrencyConverter.INSTANCE.parseToBTCNotLocalised(fee)
-                            .getAmount().toBigInteger());
+                            .getBtcMoney().getAmount().toBigInteger());
                     feePlusConversionToFiat = feePlusConversionToFiat + " BTC" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat, true, true);
                 }
             }
