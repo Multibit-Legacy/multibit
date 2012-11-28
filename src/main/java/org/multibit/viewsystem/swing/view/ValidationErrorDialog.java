@@ -76,7 +76,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
         String amountPlusConversionToFiat = amountValue;
         if (amountValue != null && !"".equals(amountValue)) {
             if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
-                Money fiat = CurrencyConverter.INSTANCE.convertToFiat(CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amountValue)
+                Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amountValue)
                         .getAmount().toBigInteger());
                 amountPlusConversionToFiat = amountPlusConversionToFiat + " BTC" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat, true, true);
             }
@@ -178,7 +178,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
             String feePlusConversionToFiat = fee;
             if (fee != null && !"".equals(fee)) {
                 if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
-                    Money fiat = CurrencyConverter.INSTANCE.convertToFiat(CurrencyConverter.INSTANCE.parseToBTCNotLocalised(fee)
+                    Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(CurrencyConverter.INSTANCE.parseToBTCNotLocalised(fee)
                             .getAmount().toBigInteger());
                     feePlusConversionToFiat = feePlusConversionToFiat + " BTC" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat, true, true);
                 }

@@ -87,7 +87,7 @@ public class Validator {
             // See if the amount is a parsable BTC amount.
             Money parsedAmountBTC = null;
             try {
-                parsedAmountBTC = CurrencyConverter.INSTANCE.parseToBTC(amount);
+                parsedAmountBTC = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amount);
                 if (parsedAmountBTC == null) {
                     amountIsMissing = Boolean.TRUE;
                     amountValidatesOk = Boolean.FALSE;

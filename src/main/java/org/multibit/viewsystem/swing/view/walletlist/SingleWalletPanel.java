@@ -598,7 +598,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         String balanceTextToShowBTC = controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false);
         String balanceTextToShowFiat = "";
         if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
-            Money fiat = CurrencyConverter.INSTANCE.convertToFiat(estimatedBalance);
+            Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(estimatedBalance);
             balanceTextToShowFiat = "(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")";
         }
         

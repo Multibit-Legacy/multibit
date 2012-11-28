@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,6 +12,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import org.joda.money.CurrencyUnit;
@@ -22,6 +21,8 @@ import org.joda.money.format.MoneyAmountStyle;
 import org.joda.money.format.MoneyFormatter;
 import org.joda.money.format.MoneyFormatterBuilder;
 import org.multibit.controller.MultiBitController;
+import org.multibit.message.Message;
+import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 import org.slf4j.Logger;
@@ -57,19 +58,24 @@ public enum CurrencyConverter {
     private BigDecimal rate;
     
     /**
+     * A label onto which to put error messages
+     */
+    private JLabel notificationLabel;
+    
+    /**
      * Map of currency code to currency info.
      */
     private Map<String, CurrencyInfo> currencyCodeToInfoMap;
 
-    public void initialise(MultiBitController controller) {
+    public void initialise(MultiBitController controller, JLabel notificationLabel) {
         // Initialise conversion currency.
         String currencyCode = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
-        initialise(controller, currencyCode);
+        initialise(controller, currencyCode, notificationLabel);
     }
     
-    public void initialise(MultiBitController controller, String currencyCode) {
-
+    public void initialise(MultiBitController controller, String currencyCode, JLabel notificationLabel) {
        this.controller = controller;
+       this.notificationLabel = notificationLabel;
         
        if (currencyCode != null && !"".equals(currencyCode)) {
            currencyUnit = CurrencyUnit.of(currencyCode);
@@ -89,7 +95,7 @@ public enum CurrencyConverter {
         currencyCodeToInfoMap.put("SGD", new CurrencyInfo("SGD", "SG$", true));
         currencyCodeToInfoMap.put("HKD", new CurrencyInfo("HKD", "HK$", true));
 
-        currencyCodeToInfoMap.put("GBP", new CurrencyInfo("GBP", "£", true));
+        currencyCodeToInfoMap.put("GBP", new CurrencyInfo("GBP", "\u00A3", true));
         currencyCodeToInfoMap.put("EUR", new CurrencyInfo("EUR", "\u20AC", true));
         currencyCodeToInfoMap.put("CHF", new CurrencyInfo("CHF", "Fr.", true));
         currencyCodeToInfoMap.put("JPY", new CurrencyInfo("JPY", "\u00A5", true));
@@ -106,7 +112,7 @@ public enum CurrencyConverter {
      * @param bitcoinAmount in satoshis
      * @return equivalent fiat amount
      */
-    public Money convertToFiat(BigInteger bitcoinAmountInSatoshi) {
+    public Money convertFromBTCToFiat(BigInteger bitcoinAmountInSatoshi) {
         if (rate == null) {
             return null;
         } else {
@@ -118,10 +124,15 @@ public enum CurrencyConverter {
         }
     }
     
-    public Money convertToBTC(String fiat) {
+    public Money convertFromFiatToBTC(String fiat) {
         if (rate == null || rate.equals(BigDecimal.ZERO)) {
             return null;
-        } else {    
+        } else {  
+            
+            if (fiat == null || fiat.trim().equals("")) {
+                return null;    
+            }
+            
             Money btcAmount = null;
             
             DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
@@ -134,67 +145,23 @@ public enum CurrencyConverter {
                 BigDecimal parsedFiat = (BigDecimal)formatter.parse(fiat);
                 Money fiatMoney = Money.of(currencyUnit, parsedFiat);
                 btcAmount = fiatMoney.convertedTo(BITCOIN_CURRENCY_UNIT, new BigDecimal(NUMBER_OF_SATOSHI_IN_ONE_BITCOIN).divide(rate, BITCOIN_CURRENCY_UNIT.getDecimalPlaces() + ADDITIONAL_CALCULATION_DIGITS, RoundingMode.HALF_EVEN), RoundingMode.HALF_EVEN);
+                setNotification("");
             } catch (ParseException pe) {
-                log.debug(pe.getClass().getName() + " "  + pe.getMessage());
+                log.debug("convertFromFiatToBTC: " + pe.getClass().getName() + " "  + pe.getMessage());
+                setNotification(controller.getLocaliser().getString("currencyConverter.couldNotUnderstandAmount",
+                        new Object[]{fiat}));
             } catch (ArithmeticException ae) {
-                log.debug(ae.getClass().getName() + " "  + ae.getMessage());
+                log.debug("convertFromFiatToBTC: " + ae.getClass().getName() + " "  + ae.getMessage());
+                String currencyString = currencyUnit.getCurrencyCode();
+                if (currencyCodeToInfoMap.get(currencyString) != null) {
+                    currencyString = currencyCodeToInfoMap.get(currencyString).getCurrencySymbol();
+                }
+                setNotification(controller.getLocaliser().getString("currencyConverter.fiatCanOnlyHaveSetDecimalPlaces",
+                        new Object[]{currencyString, currencyUnit.getDecimalPlaces()}));
             }
             log.debug("For locale " + controller.getLocaliser().getLocale().toString() +  ", '" + fiat + "' fiat converts to " + btcAmount);
 
             return btcAmount;
-        }
-    }
-    
-    public Money convertToMoney(String fiat) {
-        if (rate == null || rate.equals(BigDecimal.ZERO)) {
-            return null;
-        } else {    
-            DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
-            formatter.setParseBigDecimal(true);
-            
-            // Convert spaces to non breakable space.
-            fiat = fiat.replaceAll(" ", "\u00A0");
-
-            try {
-                BigDecimal parsedFiat = (BigDecimal)formatter.parse(fiat);
-                Money fiatMoney = Money.of(currencyUnit, parsedFiat);
-                return fiatMoney;
-            } catch (ParseException pe) {
-                log.debug(pe.toString());
-            }
-            return null;
-        }
-    }
-    
-    public boolean isShowingFiat() {
-        return !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
-    }
-    
-    public CurrencyUnit getCurrencyUnit() {
-        return currencyUnit;
-    }
-
-    public void setCurrencyUnit(CurrencyUnit currencyUnit) {
-        // If this is a new currency, blank the rate.
-        // Thus you should set the currency unit first.
-        if (this.currencyUnit != null && !this.currencyUnit.equals(currencyUnit)) {
-            rate = null;
-        }
-        this.currencyUnit = currencyUnit;
-    }
-
-    public BigDecimal getRate() {
-        return rate;
-    }
-
-    public void setRate(BigDecimal rate) {
-        boolean fireFoundInsteadOfUpdated = (rate== null);
-        this.rate = rate;
-        
-        if (fireFoundInsteadOfUpdated) {
-            notifyFoundExchangeRate();
-        } else {
-            notifyUpdatedExchangeRate();
         }
     }
     
@@ -288,6 +255,34 @@ public enum CurrencyConverter {
         return btcString;
     }
     
+    public Money parseToFiat(String fiat) {
+        DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
+        formatter.setParseBigDecimal(true);
+
+        // Convert spaces to non breakable space.
+        fiat = fiat.replaceAll(" ", "\u00A0");
+
+        try {
+            BigDecimal parsedFiat = (BigDecimal) formatter.parse(fiat);
+            Money fiatMoney = Money.of(currencyUnit, parsedFiat);
+            setNotification("");
+            return fiatMoney;
+        } catch (ParseException pe) {
+            log.debug("convertToMoney: " + pe.getClass().getName() + " " + pe.getMessage());
+            setNotification(controller.getLocaliser().getString("currencyConverter.couldNotUnderstandAmount",
+                    new Object[]{fiat}));
+        } catch (ArithmeticException ae) {
+            log.debug("convertToMoney: " + ae.getClass().getName() + " " + ae.getMessage());
+            String currencyString = currencyUnit.getCurrencyCode();
+            if (currencyCodeToInfoMap.get(currencyString) != null) {
+                currencyString = currencyCodeToInfoMap.get(currencyString).getCurrencySymbol();
+            }
+            setNotification(controller.getLocaliser().getString("currencyConverter.fiatCanOnlyHaveSetDecimalPlaces",
+                    new Object[]{currencyString, currencyUnit.getDecimalPlaces()}));
+        }
+        return null;
+    }
+    
     /**
      * Parse a localised string and returns a Money denominated in Satoshi
      * @param btcString
@@ -322,12 +317,48 @@ public enum CurrencyConverter {
             BigDecimal parsedBTC = ((BigDecimal)formatter.parse(btcString)).movePointRight(NUMBER_OF_DECIMAL_POINTS_IN_A_BITCOIN);
             log.debug("For locale " + controller.getLocaliser().getLocale().toString() +  ", '" + btcString + "' parses to " + parsedBTC.toPlainString());
             btcAmount = Money.of(BITCOIN_CURRENCY_UNIT, parsedBTC);
+            setNotification("");
         } catch (ParseException pe) {
-            log.debug(pe.getClass().getName() + " " + pe.getMessage());
+            log.debug("parseToBTC: " + pe.getClass().getName() + " " + pe.getMessage());
+            setNotification(controller.getLocaliser().getString("currencyConverter.couldNotUnderstandAmount",
+                    new Object[]{btcString}));
         } catch (ArithmeticException ae) {
-            log.debug(ae.getClass().getName() + " " + ae.getMessage());
+            log.debug("parseToBTC: " + ae.getClass().getName() + " " + ae.getMessage());
+            setNotification(controller.getLocaliser().getString("currencyConverter.btcCanOnlyHaveEightDecimalPlaces"));
         }
         return btcAmount;
+    }
+    
+    public boolean isShowingFiat() {
+        return !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
+    }
+    
+    public CurrencyUnit getCurrencyUnit() {
+        return currencyUnit;
+    }
+
+    public void setCurrencyUnit(CurrencyUnit currencyUnit) {
+        // If this is a new currency, blank the rate.
+        // Thus you should set the currency unit first.
+        if (this.currencyUnit != null && !this.currencyUnit.equals(currencyUnit)) {
+            rate = null;
+        }
+        this.currencyUnit = currencyUnit;
+    }
+
+    public BigDecimal getRate() {
+        return rate;
+    }
+
+    public void setRate(BigDecimal rate) {
+        boolean fireFoundInsteadOfUpdated = (rate== null);
+        this.rate = rate;
+        
+        if (fireFoundInsteadOfUpdated) {
+            notifyFoundExchangeRate();
+        } else {
+            notifyUpdatedExchangeRate();
+        }
     }
     
     public void addCurrencyConverterListener(CurrencyConverterListener listener) {
@@ -370,5 +401,24 @@ public enum CurrencyConverter {
 
     public Map<String, CurrencyInfo> getCurrencyCodeToInfoMap() {
         return currencyCodeToInfoMap;
+    }
+    
+    private void setNotification(final String notification) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                if (notificationLabel != null) {
+                    notificationLabel.setText(notification);
+                }
+            }
+        });
+    }
+
+    public JLabel getNotificationLabel() {
+        return notificationLabel;
+    }
+
+    public void setNotificationLabel(JLabel notificationLabel) {
+        this.notificationLabel = notificationLabel;
     }
 }

@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
@@ -267,6 +268,20 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(amountPanel, constraints);
 
+        JLabel notificationLabel = new MultiBitLabel("");
+        notificationLabel.setForeground(Color.RED);
+        //notificationLabel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 6;
+        constraints.gridwidth = 8;
+        constraints.gridheight = 3;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
+        formPanel.add(notificationLabel, constraints);
+        CurrencyConverter.INSTANCE.setNotificationLabel(notificationLabel);
+        
         Action helpAction;
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
             helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,

@@ -42,14 +42,14 @@ public class CurrencyConverterTest extends TestCase {
         assertNotNull(converter);
 
         // Initialise - will pick up currency of interest.
-        converter.initialise(controller);
+        converter.initialise(controller, null);
         
         // Default currency should be USD
         assertEquals("Wrong default currency.1", CurrencyUnit.of("USD"), converter.getCurrencyUnit());
         
         // Initialise to CAD.
         controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, "CAD");
-        converter.initialise(controller);
+        converter.initialise(controller, null);
         // Default currency should be CAD
         assertEquals("Wrong default currency.2", CurrencyUnit.of("CAD"), converter.getCurrencyUnit());
         
@@ -69,11 +69,11 @@ public class CurrencyConverterTest extends TestCase {
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
         // Initialise - will pick up currency of interest.
-        converter.initialise(controller);
+        converter.initialise(controller, null);
         converter.setCurrencyUnit(CurrencyUnit.of("USD"));
         converter.setRate(BigDecimal.valueOf(5.0));
 
-        Money converted = converter.convertToFiat(CurrencyConverter.NUMBER_OF_SATOSHI_IN_ONE_BITCOIN);   // 1 bitcoin
+        Money converted = converter.convertFromBTCToFiat(CurrencyConverter.NUMBER_OF_SATOSHI_IN_ONE_BITCOIN);   // 1 bitcoin
         
         assertNotNull(converted);
         assertEquals("Wrong currency", "USD", converted.getCurrencyUnit().getCurrencyCode());
@@ -91,12 +91,12 @@ public class CurrencyConverterTest extends TestCase {
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
-        converter.initialise(controller, "GBP");
+        converter.initialise(controller, "GBP", null);
 
         String result = converter.getFiatAsLocalisedString(Money.parse("GBP 1.23"));
-        assertEquals("Wrong GBP formatting", "£1.23", result);
+        assertEquals("Wrong GBP formatting", "\u00A31.23", result);
 
-        converter.initialise(controller, "EUR");
+        converter.initialise(controller, "EUR", null);
 
         result = converter.getFiatAsLocalisedString(Money.parse("EUR 1.23"));
         assertEquals("Wrong EURO formatting", "\u20AC1.23", result);
@@ -114,7 +114,7 @@ public class CurrencyConverterTest extends TestCase {
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
-        converter.initialise(controller, "GBP");
+        converter.initialise(controller, "GBP", null);
 
         BigDecimal testBTCAmount = BigDecimal.valueOf(123456789L);
         String result = converter.getBTCAsLocalisedString(Money.of(CurrencyConverter.BITCOIN_CURRENCY_UNIT, testBTCAmount));
@@ -143,7 +143,7 @@ public class CurrencyConverterTest extends TestCase {
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
-        converter.initialise(controller, "EUR");
+        converter.initialise(controller, "EUR", null);
 
         
         BigDecimal testBTCAmount = BigDecimal.valueOf(123456789L);
@@ -174,7 +174,7 @@ public class CurrencyConverterTest extends TestCase {
         
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
 
-        converter.initialise(controller, "EUR");
+        converter.initialise(controller, "EUR", null);
 
         BigDecimal testBTCAmount = BigDecimal.valueOf(123456789L);
         String result = converter.getBTCAsLocalisedString(Money.of(CurrencyConverter.BITCOIN_CURRENCY_UNIT, testBTCAmount));

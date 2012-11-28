@@ -155,7 +155,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
         if (dataProvider != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
             String sendAmountFiat = dataProvider.getAmountFiat();
             if (sendAmountFiat != null && !"".equals(sendAmountFiat)) {
-                Money sendAmountFiatAsMoney = CurrencyConverter.INSTANCE.convertToMoney(sendAmountFiat);
+                Money sendAmountFiatAsMoney = CurrencyConverter.INSTANCE.parseToFiat(sendAmountFiat);
                 sendAmountLocalised = sendAmountLocalised + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(sendAmountFiatAsMoney, true, true);
             }
         }
@@ -174,7 +174,7 @@ public class SendBitcoinConfirmPanel extends JPanel {
         }
         // Work out what the fee is in fiat.
         if (CurrencyConverter.INSTANCE.isShowingFiat()) {
-            Money feeAsFiatAsMoney = CurrencyConverter.INSTANCE.convertToFiat(Utils.toNanoCoins(fee));
+            Money feeAsFiatAsMoney = CurrencyConverter.INSTANCE.convertFromBTCToFiat(Utils.toNanoCoins(fee));
             if (feeAsFiatAsMoney != null) {
                 sendFeeLocalised = sendFeeLocalised + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(feeAsFiatAsMoney, true, true);
             }

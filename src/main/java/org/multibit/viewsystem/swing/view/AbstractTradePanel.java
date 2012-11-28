@@ -35,14 +35,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.text.Collator;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,8 +66,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import javax.swing.text.InternationalFormatter;
-import javax.swing.text.NumberFormatter;
 
 import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
@@ -110,7 +104,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.WalletMajorVersion;
 import com.google.bitcoin.uri.BitcoinURI;
 
@@ -442,7 +435,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         JPanel forcer1 = new JPanel();
         forcer1.setOpaque(false);
-        // forcer1.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+        //forcer1.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 
         forcer1.setMaximumSize(new Dimension(QRCODE_WIDTH, 1));
         forcer1.setPreferredSize(new Dimension(QRCODE_WIDTH, 1));
@@ -463,7 +456,8 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         forcer2.setMaximumSize(new Dimension((int) (QRCODE_WIDTH * 1.2), 1));
         forcer2.setPreferredSize(new Dimension(QRCODE_WIDTH, 1));
         forcer2.setMinimumSize(new Dimension((int) (QRCODE_WIDTH * 1.0), 1));
-       
+        //forcer2.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+        
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = QR_CODE_LEFT_COLUMN;
         constraints.gridy = 7;
@@ -1474,20 +1468,24 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
             try {
                 if (parsedAmountBTC != null) {
-                    parsedAmountFiat = CurrencyConverter.INSTANCE.convertToFiat(parsedAmountBTC.getAmount().toBigInteger());
+                    parsedAmountFiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(parsedAmountBTC.getAmount().toBigInteger());
                     String fiatText = CurrencyConverter.INSTANCE.getFiatAsLocalisedString(parsedAmountFiat, false, false);
                     if (amountFiatFormattedTextField != null) {
                         amountFiatFormattedTextField.setText(fiatText);
                     }
+                } else {
+                    if (amountFiatFormattedTextField != null) {
+                        amountFiatFormattedTextField.setText("");
+                    }                    
                 }
             } catch (NumberFormatException nfe) {
-                log.debug(nfe.getClass().getName() + " " + nfe.getMessage());
+                log.debug("updateFieldAmount: " + nfe.getClass().getName() + " " + nfe.getMessage());
             }
         }
     }
 
     protected String updateBTCAmount(String amountFiat) {
-        parsedAmountBTC = CurrencyConverter.INSTANCE.convertToBTC(amountFiat);
+        parsedAmountBTC = CurrencyConverter.INSTANCE.convertFromFiatToBTC(amountFiat);
         if (parsedAmountBTC != null) {
             String amountBTCAsString = controller.getLocaliser().bitcoinValueToStringNotLocalised(parsedAmountBTC.getAmount().toBigInteger(), false,
                     false);

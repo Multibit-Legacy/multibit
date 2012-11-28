@@ -27,8 +27,6 @@ public class ImageLoader {
     public static final String ACCEPT_ICON_FILE = "/images/accept.png";
     public static final String ADD_ICON_FILE = "/images/add.png";
     public static final String ADD_PASSWORD_ICON_FILE = "/images/lockAdd.png";
-    public static final String ARROW_LEFT_ICON_FILE = "/images/arrowLeft.png";
-    public static final String ARROW_RIGHT_ICON_FILE = "/images/arrowRight.png";   
     public static final String CANCEL_ICON_FILE = "/images/cancel.png";
     public static final String CHANGE_PASSWORD_ICON_FILE = "/images/lockChange.png";
     public static final String CHART_LINE_ICON_FILE = "/images/chartLine.png";
@@ -41,7 +39,6 @@ public class ImageLoader {
     public static final String TWISTY_DOWN_ICON_FILE = "/images/twistyDown.png";
     public static final String TWISTY_LEFT_ICON_FILE = "/images/twistyLeft.png";
     public static final String TWISTY_RIGHT_ICON_FILE = "/images/twistyRight.png";
-    public static final String EXCHANGES_ICON_FILE = "/images/exchanges.png";
     public static final String EXCLAMATION_MARK_ICON_FILE = "/images/exclamationMark.png";
     public static final String EXPORT_PRIVATE_KEYS_ICON_FILE = "/images/exportKey.png";
     public static final String HELP_CONTENTS_BIG_ICON_FILE = "/images/helpContentsBig.png";
@@ -59,13 +56,11 @@ public class ImageLoader {
     public static final String OPEN_LOCK_ICON_FILE = "/images/openLock.png";
     public static final String OPEN_WALLET_ICON_FILE = "/images/openWallet.png";
     public static final String PASTE_ICON_FILE = "/images/paste.png";
-    public static final String PICTURE_BLANK_ICON_FILE = "/images/pictureBlank.png";
     public static final String PREFERENCES_ICON_FILE = "/images/preferences.png";
     public static final String QUESTION_MARK_ICON_FILE = "/images/questionMark.png";
     public static final String RECEIVE_BITCOIN_ICON_FILE = "/images/receiveIn.png";
     public static final String REMOVE_PASSWORD_ICON_FILE = "/images/lockRemove.png";
     public static final String RESET_TRANSACTIONS_ICON_FILE = "/images/resetTransactions.png";
-    public static final String RTL_WALLET_ICON_FILE = "/images/rtl_wallet.png";
     public static final String SEND_BITCOIN_ICON_FILE = "/images/sendOut.png";
     public static final String SHAPE_TRIANGLE_ICON_FILE = "/images/shapeTriangle.png";
     public static final String SHAPE_SQUARE_ICON_FILE = "/images/shapeSquare.png";
@@ -79,7 +74,6 @@ public class ImageLoader {
     public static final String TICK_ICON_FILE = "/images/tick.png";
     public static final String TRANSACTIONS_ICON_FILE = "/images/transactions.png";
     public static final String UNDO_ICON_FILE = "/images/undo.png";
-    public static final String WALLET_ICON_FILE = "/images/wallet.png";
     public static final String WELCOME_ICON_FILE = "/images/welcome.png";
     public static final String YOUR_WALLETS_ICON_FILE = "/images/yourWallets.png";
     public static final String ZOOM_ICON_FILE = "/images/zoom.png";
