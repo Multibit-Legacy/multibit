@@ -518,7 +518,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         }
         // No amount? Set it to zero.
         BigInteger numericAmount = null == bitcoinURI.getAmount() ? BigInteger.ZERO : bitcoinURI.getAmount();
-        String amount = getLocaliser().bitcoinValueToString(numericAmount, false, false);
+        String amount = getLocaliser().bitcoinValueToStringNotLocalised(numericAmount, false, false);
 
         if (Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
             // Do not show confirm dialog - go straight to send view.

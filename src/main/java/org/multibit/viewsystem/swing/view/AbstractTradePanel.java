@@ -1449,6 +1449,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                     if (notificationLabel != null) {
                         notificationLabel.setText(converterResult.getBtcMessage());
                     }    
+                    updateFiatAmount();
                     // Invalid amount o blank the QR code to avoid confusion
                     displayQRCode(null, null, null);
                 }
@@ -1917,11 +1918,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                     CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCTextField.getText());
                     if (converterResult.isBtcMoneyValid()) {
                         parsedAmountBTC = converterResult.getBtcMoney();
+                        updateFiatAmount();
                     } else {
-                        parsedAmountBTC = null;
+                        // If the conversion fails this is probably an error in one the amount fields so just leave it.
                     }
                 }
-                updateFiatAmount();
             }});
     }   
 }
