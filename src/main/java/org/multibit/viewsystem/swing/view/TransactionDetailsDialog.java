@@ -39,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
@@ -65,7 +66,7 @@ import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 
 /**
- * The transaction details dialog
+ * The transaction details dialog.
  */
 public class TransactionDetailsDialog extends MultiBitDialog {
 
@@ -129,7 +130,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     }
 
     /**
-     * initialise transaction details dialog
+     * Initialise transaction details dialog.
      */
     public void initUI() {
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -230,7 +231,6 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailPanel.add(amountLabel, constraints);
 
         amountText = new MultiBitLabel("");
-        String btcSuffix = controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel");
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 2;
         constraints.gridy = 2;
@@ -283,17 +283,16 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailPanel.add(totalDebitText, constraints);
 
         BigInteger fee = rowTableData.getTransaction().calculateFee(controller.getModel().getActiveWallet());
-        feeText.setText(Utils.bitcoinValueToPlainString(fee) + " " + btcSuffix);
+        feeText.setText(CurrencyConverter.INSTANCE.prettyPrint(Utils.bitcoinValueToPlainString(fee)));
         if (BigInteger.ZERO.compareTo(value) > 0) {
             // debit
             amountLabel.setText(controller.getLocaliser().getString("transactionDetailsDialog.amountSent"));
             try {
                 BigInteger totalDebit = rowTableData.getTransaction().getValue(controller.getModel().getActiveWallet()).negate();
                 BigInteger amountSent = totalDebit.subtract(fee);
-                totalDebitText.setText(Utils.bitcoinValueToPlainString(totalDebit) + " " + btcSuffix);
-                amountText.setText(Utils.bitcoinValueToPlainString(amountSent) + " " + btcSuffix);
+                totalDebitText.setText(CurrencyConverter.INSTANCE.prettyPrint(Utils.bitcoinValueToPlainString(totalDebit)));
+                amountText.setText(CurrencyConverter.INSTANCE.prettyPrint(Utils.bitcoinValueToPlainString(amountSent)));
             } catch (ScriptException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
@@ -302,13 +301,11 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             feeLabel.setVisible(true);
             feeText.setVisible(true);
         } else {
-            // credit - cannot calculate fee so do not show
+            // Credit - cannot calculate fee so do not show.
             try {
-                amountText.setText(Utils.bitcoinValueToPlainString(rowTableData.getTransaction().getValue(
-                        controller.getModel().getActiveWallet()))
-                        + " " + btcSuffix);
+                amountText.setText(CurrencyConverter.INSTANCE.prettyPrint(Utils.bitcoinValueToPlainString(rowTableData.getTransaction().getValue(
+                        controller.getModel().getActiveWallet()))));
             } catch (ScriptException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             amountLabel.setText(controller.getLocaliser().getString("transactionDetailsDialog.amountReceived"));
@@ -363,7 +360,6 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         MultiBitTextArea transactionDetailText = new MultiBitTextArea("", 5, 40, controller);
         transactionDetailText.setEditable(false);
 
-        // TODO localise
         transactionDetailText.setText(rowTableData.getTransaction().toString());
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
@@ -392,9 +388,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         detailPanel.add(filler2, constraints);
-
-        
-        if (isBrowseSupported()) {
+  
+        if (isBrowserSupported()) {
             JButton openInBlockExplorerButton = new JButton(controller.getLocaliser().getString("transactionDetailsDialog.viewAtBlockExplorer"));
             openInBlockExplorerButton.addActionListener(new ActionListener() {
 
@@ -463,13 +458,12 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         detailPanel.add(okButton, constraints);
     }
 
-    // TODO localise
     private String createStatusText(Transaction transaction) {
         return transaction.getConfidence().toString();
     }
 
     /**
-     * create a description for a transaction
+     * Create a description for a transaction.
      * 
      * @param transactionInputs
      * @param transactionOutputs
@@ -564,8 +558,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         return toReturn;
     }
 
-    private boolean isBrowseSupported() {
-
+    private boolean isBrowserSupported() {
         if (!java.awt.Desktop.isDesktopSupported()) {
             return false;
         }

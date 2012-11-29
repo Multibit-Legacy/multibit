@@ -70,25 +70,8 @@ public class ValidationErrorDialog extends MultiBitDialog {
         // Get the data out of the user preferences.
         String addressValue = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE);
         String amountValue = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_VALUE);
- 
-        CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amountValue);
-        
-        String amountPlusConversionToFiat;
-        if (converterResult.isBtcMoneyValid()) {
-            amountPlusConversionToFiat = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
-        } else {
-            // BTC did not parse - just use the original text
-            amountPlusConversionToFiat = amountValue;
-        }
-        amountPlusConversionToFiat = amountPlusConversionToFiat + " " + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel");
-        if (amountValue != null && !"".equals(amountValue)) {
-            if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
-                if (converterResult.isBtcMoneyValid()) {
-                    Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(converterResult.getBtcMoney().getAmount().toBigInteger());
-                    amountPlusConversionToFiat = amountPlusConversionToFiat + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat, true, true);
-                } 
-            }
-        }
+  
+        String amountPlusConversionToFiat = CurrencyConverter.INSTANCE.prettyPrint(amountValue);
         
         // Invalid address.
         String addressIsInvalid = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID);
@@ -184,24 +167,8 @@ public class ValidationErrorDialog extends MultiBitDialog {
                 fee = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
             }
             
-            converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amountValue);
-            
-            String feePlusConversionToFiat;
-            if (converterResult.isBtcMoneyValid()) {
-                feePlusConversionToFiat = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
-            } else {
-                // BTC did not parse - just use the original text
-                feePlusConversionToFiat = amountValue;
-            }
-            feePlusConversionToFiat = feePlusConversionToFiat + " " + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel");
-            if (fee != null && !"".equals(fee)) {
-                if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
-                    if (converterResult.isBtcMoneyValid()) {
-                        Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(converterResult.getBtcMoney().getAmount().toBigInteger());
-                        feePlusConversionToFiat = feePlusConversionToFiat + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat, true, true);
-                    } 
-                }
-            }
+  
+            String feePlusConversionToFiat = CurrencyConverter.INSTANCE.prettyPrint(fee);
 
             String textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage",
                     new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });

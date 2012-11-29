@@ -346,6 +346,35 @@ public enum CurrencyConverter {
         }
     }
     
+    /**
+     * Convert an unlocalised BTC amount e.g. 0.1234 to a localised BTC value with fiat 
+     * e.g. 0,1234 ($10,23)
+     * @param btcAsString
+     * @return pretty string with format <btc localised> (<fiat localised>)
+     */
+    public String prettyPrint(String btcAsString) {
+        String prettyPrint = "";
+        CurrencyConverterResult converterResult = parseToBTCNotLocalised(btcAsString);
+
+        if (converterResult.isBtcMoneyValid()) {
+            prettyPrint = getBTCAsLocalisedString(converterResult.getBtcMoney());
+        } else {
+            // BTC did not parse - just use the original text
+            prettyPrint = btcAsString;
+        }
+        prettyPrint = prettyPrint + " " + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel");
+        if (btcAsString != null && !"".equals(btcAsString)) {
+            if (getRate() != null && isShowingFiat()) {
+                if (converterResult.isBtcMoneyValid()) {
+                    Money fiat = convertFromBTCToFiat(converterResult.getBtcMoney().getAmount()
+                            .toBigInteger());
+                    prettyPrint = prettyPrint + getFiatAsLocalisedString(fiat, true, true);
+                }
+            }
+        }
+        return prettyPrint;
+    }
+
     public boolean isShowingFiat() {
         return !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT));
     }
