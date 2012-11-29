@@ -86,6 +86,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             String previousSendFee = dataProvider.getPreviousSendFee();
             String newSendFee = dataProvider.getNewSendFee();
             controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_SEND_FEE, previousSendFee);
+            
             // Check fee is set.
             if (newSendFee == null || "".equals(newSendFee)) {
                 // Fee must be set validation error.

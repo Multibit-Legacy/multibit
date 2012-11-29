@@ -31,6 +31,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
+import java.math.BigDecimal;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -49,7 +50,10 @@ import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
+import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
@@ -68,8 +72,10 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 
+import com.google.bitcoin.core.Utils;
+
 /**
- * The show preferences view
+ * The show preferences view.
  */
 public class ShowPreferencesPanel extends JPanel implements View, PreferencesDataProvider {
 
@@ -175,7 +181,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     }
 
     /**
-     * update preferences panel
+     * Update preferences panel.
      */
     public void displayView() {
         originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
@@ -190,7 +196,17 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
             sendFeeString = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
         }
         originalFee = sendFeeString;
-        feeTextField.setText(sendFeeString);
+        
+        String sendFeeStringLocalised;
+        CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendFeeString);
+
+        if (converterResult.isBtcMoneyValid()) {
+            sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
+        } else {
+            // BTC did not parse - just use the original text
+            sendFeeStringLocalised = sendFeeString;
+        }
+        feeTextField.setText(sendFeeStringLocalised);
 
         String showDialogString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG);
         String useUriString = controller.getModel().getUserPreference(MultiBitModel.OPEN_URI_USE_URI);
@@ -220,7 +236,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
             try {
                 fontStyle = Integer.parseInt(fontStyleString);
             } catch (NumberFormatException nfe) {
-                // use default
+                // Use default.
             }
         }
         originalFontStyle = "" + fontStyle;
@@ -231,7 +247,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
             try {
                 fontSize = Integer.parseInt(fontSizeString);
             } catch (NumberFormatException nfe) {
-                // use default
+                // Use default.
             }
         }
         originalFontSize = "" + fontSize;
@@ -552,13 +568,23 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
         }
         originalFee = sendFeeString;
 
+        String sendFeeStringLocalised;
+        CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendFeeString);
+
+        if (converterResult.isBtcMoneyValid()) {
+            sendFeeStringLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
+        } else {
+            // BTC did not parse - just use the original text
+            sendFeeStringLocalised = sendFeeString;
+        }
+        
         feeTextField = new MultiBitTextField("", 10, controller);
         feeTextField.setHorizontalAlignment(JLabel.TRAILING);
         feeTextField.setMinimumSize(new Dimension(FEE_TEXT_FIELD_WIDTH, FEE_TEXT_FIELD_HEIGHT));
         feeTextField.setPreferredSize(new Dimension(FEE_TEXT_FIELD_WIDTH, FEE_TEXT_FIELD_HEIGHT));
         feeTextField.setMaximumSize(new Dimension(FEE_TEXT_FIELD_WIDTH, FEE_TEXT_FIELD_HEIGHT));
 
-        feeTextField.setText(sendFeeString);
+        feeTextField.setText(sendFeeStringLocalised);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 1;
         constraints.gridy = 4;
@@ -1495,7 +1521,13 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
     @Override
     public String getNewSendFee() {
-        return feeTextField.getText();
+        CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(feeTextField.getText());
+        if (converterResult.isBtcMoneyValid()) {
+            return controller.getLocaliser().bitcoinValueToStringNotLocalised(converterResult.getBtcMoney().getAmount().toBigInteger(), false, false);
+        } else {
+            // Return the unparsable fee for the action to deal with it.
+            return feeTextField.getText();
+        }
     }
 
     @Override

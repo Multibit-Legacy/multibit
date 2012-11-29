@@ -156,30 +156,29 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         table.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         table.setRowHeight(Math.max(MINIMUM_ICON_HEIGHT, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));
 
-        // use status icons
+        // Use status icons.
         table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
 
-        // set popup for displaying transaction contents
+        // Set popup for displaying transaction contents.
         table.addMouseListener(new PopClickListener());
 
         table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
 
-        // no row is currently selected
+        // No row is currently selected.
         selectedRow = -1;
 
-        // date right justified
+        // Date right justified.
         table.getColumnModel().getColumn(1).setCellRenderer(new TrailingJustifiedDateRenderer());
 
-        // justify column headers
+        // Justify column headers.
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
         JLabel label = (JLabel) renderer;
         label.setHorizontalAlignment(JLabel.CENTER);
         table.getTableHeader().setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
-        // description leading justified (set explicitly as it does not seem to
-        // work otherwise)
+        // Description leading justified (set explicitly as it does not seem to work otherwise).
         if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
             table.getColumnModel().getColumn(2).setCellRenderer(new LeadingJustifiedRenderer());
         } else {
@@ -194,23 +193,23 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         int statusWidth = fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.statusText"));
         tableColumn.setPreferredWidth(statusWidth);
 
-        tableColumn = table.getColumnModel().getColumn(1); // date
+        tableColumn = table.getColumnModel().getColumn(1); // Date.
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
         int dateWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.debitText")),
                 fontMetrics.stringWidth(dateFormatter.format(new Date(DateUtils.nowUtc().getMillis()))));
         tableColumn.setPreferredWidth(dateWidth);
 
-        tableColumn = table.getColumnModel().getColumn(2); // description
-        tableColumn.setPreferredWidth(300);
+        tableColumn = table.getColumnModel().getColumn(2); // Description.
+        tableColumn.setPreferredWidth(250);
 
-        tableColumn = table.getColumnModel().getColumn(3); // amount (BTC)
+        tableColumn = table.getColumnModel().getColumn(3); // Amount (BTC).
         int amountBTCWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel") + " (BTC)"),
                 fontMetrics.stringWidth("000.00000000"));
         tableColumn.setPreferredWidth(amountBTCWidth);
 
         if (CurrencyConverter.INSTANCE.isShowingFiat()) {
-            tableColumn = table.getColumnModel().getColumn(4); // amount (fiat)
+            tableColumn = table.getColumnModel().getColumn(4); // Amount (fiat).
             int amountFiatWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel") + " (USD)"),
                     fontMetrics.stringWidth("000.00000000"));
             tableColumn.setPreferredWidth(amountFiatWidth);
@@ -218,11 +217,11 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             table.getColumnModel().getColumn(4).setCellRenderer(new TrailingJustifiedRenderer());
         }
 
-        // row sorter
+        // Row sorter.
         rowSorter = new TableRowSorter<TableModel>(table.getModel());
         table.setRowSorter(rowSorter);
 
-        // sort by date descending
+        // Sort by date descending.
         List<TableRowSorter.SortKey> sortKeys = new ArrayList<TableRowSorter.SortKey>();
         sortKeys.add(new TableRowSorter.SortKey(1, SortOrder.DESCENDING));
         rowSorter.setSortKeys(sortKeys);
@@ -231,11 +230,11 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 long n1 = o1.getTime();
                 long n2 = o2.getTime();
                 if (n1 == 0) {
-                    // object 1 has missing date
+                    // Object 1 has missing date.
                     return 1;
                 }
                 if (n2 == 0) {
-                    // object 2 has missing date
+                    // Object 2 has missing date.
                     return -1;
                 }
                 if (n1 < n2) {
