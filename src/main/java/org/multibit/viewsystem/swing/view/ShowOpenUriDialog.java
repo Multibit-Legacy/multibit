@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The show open uri view
+ * The show open uri view.
  */
 public class ShowOpenUriDialog extends MultiBitDialog implements View, ShowUriDialogDataProvider {
 
@@ -51,10 +51,6 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, ShowUriDi
     private MultiBitFrame mainFrame;
 
     private MultiBitController controller;
-
-//    private String sendAddress;
-//    private String sendLabel;
-//    private String sendAmount;
 
     private JButton submitButton;
     private JButton cancelButton;
@@ -304,19 +300,9 @@ public class ShowOpenUriDialog extends MultiBitDialog implements View, ShowUriDi
         return !rememberCheckBox.isSelected();
     }
 
-    public String getPreviousCurrency2() {
-        return null;
-    }
-
-    public String getPreviousExchange2() {
-        return null;
-    }
-
-    public boolean getPreviousShowSecondRow() {
-        return false;
-    }
-
-    public String getPreviousCurrency1() {
+    @Override
+    public String getAmountFiat() {
+        // TODO Auto-generated method stub
         return null;
     }
 }

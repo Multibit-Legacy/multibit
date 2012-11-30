@@ -27,10 +27,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.joda.money.Money;
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
+import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
+import org.multibit.viewsystem.dataproviders.BitcoinFormDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CancelBackToParentAction;
@@ -43,6 +47,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
+import com.google.bitcoin.core.Utils;
 
 /**
  * The send bitcoin confirm dialog
@@ -76,6 +81,8 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
     private SendBitcoinNowAction sendBitcoinNowAction;
 
     private static SendBitcoinConfirmDialog thisDialog = null;
+    
+    private BitcoinFormDataProvider dataProvider;
 
     private static ImageIcon shapeTriangleIcon;
     private static ImageIcon shapeSquareIcon;
@@ -94,10 +101,11 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
     /**
      * Creates a new {@link SendBitcoinConfirmDialog}.
      */
-    public SendBitcoinConfirmDialog(MultiBitController controller, MultiBitFrame mainFrame) {
+    public SendBitcoinConfirmDialog(MultiBitController controller, MultiBitFrame mainFrame, BitcoinFormDataProvider dataProvider) {
         super(mainFrame, controller.getLocaliser().getString("sendBitcoinConfirmView.title"));
         this.controller = controller;
         this.mainFrame = mainFrame;
+        this.dataProvider = dataProvider;
 
         thisDialog = this;
 
@@ -133,16 +141,48 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
 
         mainPanel.setLayout(new GridBagLayout());
 
-        // get the data out of the wallet preferences
+        // Get the data out of the wallet preferences.
         sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
         sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
-        sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " "
-                + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel");
+        String sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
+
+        String sendAmountLocalised = "";
+        if (sendAmount != null && !"".equals(sendAmount)) {
+            CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendAmount);
+            
+            if (converterResult.isBtcMoneyValid()) {
+                sendAmountLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
+            }
+        }
+        if (dataProvider != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
+            String sendAmountFiat = dataProvider.getAmountFiat();
+            if (sendAmountFiat != null && !"".equals(sendAmountFiat)) {
+                CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToFiat(sendAmountFiat);
+                if (converterResult.isFiatMoneyValid()) {
+                sendAmountLocalised = sendAmountLocalised + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(converterResult.getFiatMoney(), true, true);
+                }
+            }
+        }
         String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
         if (fee == null || fee == "") {
             fee = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
         }
-        sendFee = fee + " " + controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel");
+
+        String sendFeeLocalised = "";
+        if (fee != null && !"".equals(fee)) {
+            CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(fee);
+            
+            if (converterResult.isBtcMoneyValid()) {
+                sendFeeLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
+            }
+        }
+        // Work out what the fee is in fiat.
+        if (CurrencyConverter.INSTANCE.isShowingFiat()) {
+            Money feeAsFiatAsMoney = CurrencyConverter.INSTANCE.convertFromBTCToFiat(Utils.toNanoCoins(fee));
+            if (feeAsFiatAsMoney != null) {
+                sendFeeLocalised = sendFeeLocalised + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(feeAsFiatAsMoney, true, true);
+            }
+        }
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -273,7 +313,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         detailPanel.add(sendAmountLabel, constraints2);
 
         sendAmountText = new MultiBitLabel("");
-        sendAmountText.setText(sendAmount);
+        sendAmountText.setText(sendAmountLocalised);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
         constraints2.gridy = 2;
@@ -305,7 +345,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         detailPanel.add(sendFeeLabel, constraints2);
 
         sendFeeText = new MultiBitLabel("");
-        sendFeeText.setText(sendFee);
+        sendFeeText.setText(sendFeeLocalised);
         constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 2;
         constraints2.gridy = 4;

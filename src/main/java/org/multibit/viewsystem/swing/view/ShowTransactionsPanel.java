@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -52,6 +53,9 @@ import javax.swing.table.TableRowSorter;
 
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
+import org.multibit.exchange.CurrencyConverterListener;
+import org.multibit.exchange.ExchangeRate;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletTableData;
 import org.multibit.utils.DateUtils;
@@ -59,16 +63,21 @@ import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.UpdateTransactionsTimerTask;
 import org.multibit.viewsystem.swing.WalletTableModel;
 import org.multibit.viewsystem.swing.action.ShowTransactionDetailsAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 
-public class ShowTransactionsPanel extends JPanel implements View {
+public class ShowTransactionsPanel extends JPanel implements View, CurrencyConverterListener {
     private static final long serialVersionUID = 1235108897887842662L;
+
+    private static final Logger log = LoggerFactory.getLogger(ShowTransactionsPanel.class);
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
@@ -98,18 +107,40 @@ public class ShowTransactionsPanel extends JPanel implements View {
     private static final String TICK_ICON_FILE = "/images/tick.png";
 
     private int selectedRow = -1;
+    
+    public static final int UPDATE_TRANSACTIONS_DELAY_TIME = 333; // milliseconds
 
+    /**
+     * Timer used to condense multiple updates
+     */
+    private static Timer updateTransactionsTimer;
+
+    private static UpdateTransactionsTimerTask updateTransactionsTimerTask;
+    
     public ShowTransactionsPanel(MultiBitFrame mainFrame, MultiBitController controller) {
         this.controller = controller;
         this.mainFrame = mainFrame;
 
+        updateTransactionsTimerTask = new UpdateTransactionsTimerTask(controller, this, mainFrame);
+        updateTransactionsTimer = new Timer();
+        updateTransactionsTimer.scheduleAtFixedRate(updateTransactionsTimerTask, UPDATE_TRANSACTIONS_DELAY_TIME, UPDATE_TRANSACTIONS_DELAY_TIME);
         initUI();
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        
+        CurrencyConverter.INSTANCE.addCurrencyConverterListener(this);
     }
 
     private void initUI() {
         createWalletPanel();
+    }
+    
+    public static void updateTransactions() {
+        if (updateTransactionsTimerTask != null) {
+            synchronized(updateTransactionsTimerTask) {
+                updateTransactionsTimerTask.setUpdateTransactions(true);                
+            }
+        }
     }
 
     private void createWalletPanel() {
@@ -125,70 +156,72 @@ public class ShowTransactionsPanel extends JPanel implements View {
         table.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         table.setRowHeight(Math.max(MINIMUM_ICON_HEIGHT, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));
 
-        // use status icons
+        // Use status icons.
         table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
 
-        // set popup for displaying transaction contents
+        // Set popup for displaying transaction contents.
         table.addMouseListener(new PopClickListener());
 
         table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
 
-        // no row is currently selected
+        // No row is currently selected.
         selectedRow = -1;
 
-        // date right justified
+        // Date right justified.
         table.getColumnModel().getColumn(1).setCellRenderer(new TrailingJustifiedDateRenderer());
 
-        // justify column headers
+        // Justify column headers.
         TableCellRenderer renderer = table.getTableHeader().getDefaultRenderer();
         JLabel label = (JLabel) renderer;
         label.setHorizontalAlignment(JLabel.CENTER);
         table.getTableHeader().setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
 
-        // description leading justified (set explicitly as it does not seem to
-        // work otherwise)
+        // Description leading justified (set explicitly as it does not seem to work otherwise).
         if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
             table.getColumnModel().getColumn(2).setCellRenderer(new LeadingJustifiedRenderer());
         } else {
             table.getColumnModel().getColumn(2).setCellRenderer(new TrailingJustifiedRenderer());
         }
 
-        // credit and debit trailing justified
+        // Amount trailing justified.
         table.getColumnModel().getColumn(3).setCellRenderer(new TrailingJustifiedRenderer());
-        table.getColumnModel().getColumn(4).setCellRenderer(new TrailingJustifiedRenderer());
 
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         TableColumn tableColumn = table.getColumnModel().getColumn(0); // status
         int statusWidth = fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.statusText"));
         tableColumn.setPreferredWidth(statusWidth);
 
-        tableColumn = table.getColumnModel().getColumn(1); // date
+        tableColumn = table.getColumnModel().getColumn(1); // Date.
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
         int dateWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.debitText")),
                 fontMetrics.stringWidth(dateFormatter.format(new Date(DateUtils.nowUtc().getMillis()))));
         tableColumn.setPreferredWidth(dateWidth);
 
-        tableColumn = table.getColumnModel().getColumn(2); // description
-        tableColumn.setPreferredWidth(270);
+        tableColumn = table.getColumnModel().getColumn(2); // Description.
+        tableColumn.setPreferredWidth(250);
 
-        tableColumn = table.getColumnModel().getColumn(3); // debit
-        int debitWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.debitText")),
-                fontMetrics.stringWidth("00.00000000"));
-        tableColumn.setPreferredWidth(debitWidth);
+        tableColumn = table.getColumnModel().getColumn(3); // Amount (BTC).
+        int amountBTCWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel") + " (BTC)"),
+                fontMetrics.stringWidth("000.00000000"));
+        tableColumn.setPreferredWidth(amountBTCWidth);
 
-        tableColumn = table.getColumnModel().getColumn(4); // credit
-        int creditWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.creditText")),
-                fontMetrics.stringWidth("00.00000000"));
-        tableColumn.setPreferredWidth(creditWidth);
+        if (CurrencyConverter.INSTANCE.isShowingFiat()) {
+            tableColumn = table.getColumnModel().getColumn(4); // Amount (fiat).
+            int amountFiatWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel") + " (USD)"),
+                    fontMetrics.stringWidth("000.00000000"));
+            tableColumn.setPreferredWidth(amountFiatWidth);
+           
+            table.getColumnModel().getColumn(4).setCellRenderer(new TrailingJustifiedRenderer());
+        }
 
-        // row sorter
+        // Row sorter.
         rowSorter = new TableRowSorter<TableModel>(table.getModel());
         table.setRowSorter(rowSorter);
 
-        // sort by date descending
+        // Sort by date descending.
         List<TableRowSorter.SortKey> sortKeys = new ArrayList<TableRowSorter.SortKey>();
         sortKeys.add(new TableRowSorter.SortKey(1, SortOrder.DESCENDING));
         rowSorter.setSortKeys(sortKeys);
@@ -197,11 +230,11 @@ public class ShowTransactionsPanel extends JPanel implements View {
                 long n1 = o1.getTime();
                 long n2 = o2.getTime();
                 if (n1 == 0) {
-                    // object 1 has missing date
+                    // Object 1 has missing date.
                     return 1;
                 }
                 if (n2 == 0) {
-                    // object 2 has missing date
+                    // Object 2 has missing date.
                     return -1;
                 }
                 if (n1 < n2) {
@@ -235,8 +268,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
     @Override
     public void displayView() {
-        // log.debug("ShowTransactionsPanel#updateView called on panel " +
-        // System.identityHashCode(this));
+        //log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this));
 
         walletTableModel.recreateWalletData();
 
@@ -247,10 +279,12 @@ public class ShowTransactionsPanel extends JPanel implements View {
         table.invalidate();
         table.validate();
         table.repaint();
-
+        
         invalidate();
         validate();
         repaint();
+        
+        //log.debug("Table has " + table.getRowCount() + " rows");
     }
 
     @Override
@@ -266,11 +300,11 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
         JLabel label = new JLabel();
 
-        ImageIcon tickIcon = ImageLoader.createImageIcon(TICK_ICON_FILE);
         ImageIcon shapeTriangleIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_TRIANGLE_ICON_FILE);
         ImageIcon shapeSquareIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_SQUARE_ICON_FILE);
         ImageIcon shapeHeptagonIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_PENTAGON_ICON_FILE);
         ImageIcon shapeHexagonIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_HEXAGON_ICON_FILE);
+        ImageIcon tickIcon = ImageLoader.createImageIcon(TICK_ICON_FILE);
         ImageIcon progress0Icon = ImageLoader.createImageIcon(PROGRESS_0_ICON_FILE);
         ImageIcon progress1Icon = ImageLoader.createImageIcon(PROGRESS_1_ICON_FILE);
         ImageIcon progress2Icon = ImageLoader.createImageIcon(PROGRESS_2_ICON_FILE);
@@ -301,6 +335,7 @@ public class ShowTransactionsPanel extends JPanel implements View {
             case UNKNOWN: {
                 label.setText("?");
                 label.setIcon(null);
+                // label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.notConfirmed"));
                 break;
             }
             case BUILDING: {
@@ -470,8 +505,6 @@ public class ShowTransactionsPanel extends JPanel implements View {
             return iconToReturn;
         }    
     }
-    
-
 
     class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
@@ -486,15 +519,28 @@ public class ShowTransactionsPanel extends JPanel implements View {
 
             label.setText(value + SPACER);
 
+            if ((value + "").indexOf("-") > -1) {
+                // debit
+                if (isSelected) {
+                    label.setForeground(ColorAndFontConstants.SELECTION_DEBIT_FOREGROUND_COLOR);
+                } else {
+                    label.setForeground(ColorAndFontConstants.DEBIT_FOREGROUND_COLOR);                    
+                }
+            } else {
+                // debit
+                if (isSelected) {
+                    label.setForeground(ColorAndFontConstants.SELECTION_CREDIT_FOREGROUND_COLOR); 
+                } else {
+                    label.setForeground(ColorAndFontConstants.CREDIT_FOREGROUND_COLOR);                     
+                }
+            }
             if (isSelected) {
                 selectedRow = row;
                 label.setBackground(table.getSelectionBackground());
-                label.setForeground(table.getSelectionForeground());
             } else {
                 Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
                         : ColorAndFontConstants.BACKGROUND_COLOR);
                 label.setBackground(backgroundColor);
-                label.setForeground(table.getForeground());
             }
 
             return label;
@@ -635,5 +681,20 @@ public class ShowTransactionsPanel extends JPanel implements View {
     @Override
     public int getViewId() {
         return View.TRANSACTIONS_VIEW;
+    }
+
+    @Override
+    public void lostExchangeRate(ExchangeRate exchangeRate) {
+        // TODO Auto-generated method stub    
+    }
+
+    @Override
+    public void foundExchangeRate(ExchangeRate exchangeRate) {
+        initUI();
+    }
+
+    @Override
+    public void updatedExchangeRate(ExchangeRate exchangeRate) {
+        ShowTransactionsPanel.updateTransactions();
     }
 }

@@ -32,6 +32,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import org.multibit.file.WalletVersionException;
@@ -44,7 +45,6 @@ import org.multibit.platform.GenericApplication;
 import org.multibit.platform.GenericApplicationFactory;
 import org.multibit.platform.GenericApplicationSpecification;
 import org.multibit.platform.listener.GenericOpenURIEvent;
-import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ExitAction;
@@ -157,6 +157,9 @@ public class MultiBit {
             @SuppressWarnings("unused")
             MultiBitModel model = new MultiBitModel(controller, userPreferences);
 
+            // Initialise currency converter.
+            CurrencyConverter.INSTANCE.initialise(finalController);
+            
             log.debug("Setting look and feel");
             try {
                 boolean foundTargetLookAndFeel = false;

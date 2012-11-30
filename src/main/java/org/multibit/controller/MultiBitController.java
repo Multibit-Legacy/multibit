@@ -57,6 +57,7 @@ import com.google.bitcoin.core.Peer;
 import com.google.bitcoin.core.PeerEventListener;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.uri.BitcoinURI;
@@ -276,7 +277,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     public void onPeerConnected(Peer peer, int peerCount) {
-        log.debug("Peer '" + peer +"' connected. There are now " + peerCount + " peer(s).");
+        //log.debug("Peer '" + peer +"' connected. There are now " + peerCount + " peer(s).");
         if (peerCount >= 1) {
             setOnlineStatus(StatusEnum.ONLINE);
         }
@@ -287,7 +288,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     public void onPeerDisconnected(Peer peer, int peerCount) {
-        log.debug("Peer '" + peer +"' disconnected. There are now " + peerCount + " peer(s).");
+        //log.debug("Peer '" + peer +"' disconnected. There are now " + peerCount + " peer(s).");
         if (peerCount == 0) {
            setOnlineStatus(StatusEnum.CONNECTING);
         }
@@ -319,7 +320,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             try {
                 if (loopPerWalletModelData.getWallet().isTransactionRelevant(transaction, true)) {
                     loopPerWalletModelData.setDirty(true);
-                    log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
+                    //log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
                 }
             } catch (ScriptException e) {
                 log.debug(e.getMessage());
@@ -340,8 +341,12 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
-        log.debug("Firing confidence change in onTransactionConfidenceChanged.");
+        //log.debug("Firing confidence change in onTransactionConfidenceChanged.");
         
+        // Set the depth in blocks as this does not seem to get updated anywhere.
+        if (getMultiBitService().getChain() != null && transaction.getConfidence().getConfidenceType() == ConfidenceType.BUILDING) {
+            transaction.getConfidence().setDepthInBlocks(getMultiBitService().getChain().getBestChainHeight() - transaction.getConfidence().getAppearedAtChainHeight() + 1);
+        }
         for (ViewSystem viewSystem : viewSystems) {
             viewSystem.onTransactionConfidenceChanged(wallet, transaction);
         }
@@ -523,7 +528,42 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     }
 
     @Override
-    public void onTransaction(Peer peer, Transaction transaction) {
+    public void onTransaction(Peer peer, Transaction transaction) { 
+        // Loop through all the wallets, seeing if the transaction is relevant
+        // and adding them as pending if so.
+        // (As of 25 Oct 2012, intrawallet zero confirmation tx are not seen if this code is removed)
+        if (transaction != null) {
+            try {
+                java.util.List<PerWalletModelData> perWalletModelDataList = getModel().getPerWalletModelDataList();
+
+                if (perWalletModelDataList != null) {
+                    for (PerWalletModelData perWalletModelData : perWalletModelDataList) {
+                        Wallet loopWallet = perWalletModelData.getWallet();
+                        if (loopWallet != null) {
+                            if (loopWallet.isTransactionRelevant(transaction, true)) {
+                                // The perWalletModelData is marked as dirty.
+                                if (perWalletModelData.getWalletInfo() != null) {
+                                    synchronized(perWalletModelData.getWalletInfo()) {
+                                        perWalletModelData.setDirty(true);
+                                    }
+                                } else {
+                                    perWalletModelData.setDirty(true);
+                                }
+                                if (loopWallet.getTransaction(transaction.getHash()) == null) {
+                                    log.debug("MultiBit adding a new pending transaction for the wallet '"
+                                            + perWalletModelData.getWalletDescription() + "'\n" + transaction.toString());
+                                    loopWallet.receivePending(transaction);
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (ScriptException e) {
+                log.error(e.getMessage(), e);
+            } catch (VerificationException e) {
+                log.error(e.getMessage(), e);
+            }
+        }
     }
 
     @Override

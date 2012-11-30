@@ -24,7 +24,10 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 
+import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
+import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -52,9 +55,6 @@ public class ValidationErrorDialog extends MultiBitDialog {
 
     /**
      * Creates a new {@link ValidationErrorDialog}.
-     * 
-     * @param controller
-     *            The controller
      */
     public ValidationErrorDialog(MultiBitController controller, MultiBitFrame mainFrame) {
         super(mainFrame, controller.getLocaliser().getString("validationErrorView.title"));
@@ -70,7 +70,9 @@ public class ValidationErrorDialog extends MultiBitDialog {
         // Get the data out of the user preferences.
         String addressValue = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE);
         String amountValue = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_VALUE);
-
+  
+        String amountPlusConversionToFiat = CurrencyConverter.INSTANCE.prettyPrint(amountValue);
+        
         // Invalid address.
         String addressIsInvalid = controller.getModel().getActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID);
         boolean addressIsInvalidBoolean = false;
@@ -164,20 +166,33 @@ public class ValidationErrorDialog extends MultiBitDialog {
             if (fee == null || fee.equals("")) {
                 fee = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
             }
+            
+  
+            String feePlusConversionToFiat = CurrencyConverter.INSTANCE.prettyPrint(fee);
+
             String textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage",
-                    new String[] { amountValue, fee });
+                    new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });
             if (controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE).compareTo(controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
                 textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage2",
-                        new String[] { amountValue, fee });
+                        new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });
             }
-            String[] lines = textToAdd.split("\n");
+            // There is an extra "BTC." in the translations - remove and add a return.
+            textToAdd = textToAdd.replaceAll("BTC\\.", "\\.\\\\n");
+             
+            String[] lines = textToAdd.split("\\\\n");
             for (int i = 0; i < lines.length; i++) {
                 if (lines[i] != null && lines[i].length() > longestRow.length()) {
                     longestRow = lines[i];
                 }
+                if (lines[i] != null && lines[i].length() > 0) {
+                    if (i == 0) {
+                        completeMessage = completeMessage + lines[i];
+                    } else {
+                        completeMessage = completeMessage + "\n" + lines[i];
+                    }
+                    rows++;
+                }
             }
-            completeMessage = completeMessage + textToAdd;
-            rows++;
         }
 
         // Spacer row at top and bottom.

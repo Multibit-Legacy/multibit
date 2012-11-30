@@ -50,6 +50,6 @@ public class WhitespaceTrimmer {
     }
 
     public static String trim(String text) {
-        return (rtrim(ltrim(text))).trim();
+        return (rtrim(ltrim(text.trim()))).trim();
     }
 }

@@ -17,6 +17,7 @@ package org.multibit.viewsystem.swing.view.ticker;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.joda.money.BigMoney;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
@@ -182,21 +183,24 @@ public class TickerTableModel extends AbstractTableModel {
             if (exchangeData.getLastPrice(currency) == null) {
                 return " ";
             } else {
-                return String.format("%1$,.5f", exchangeData.getLastPrice(currency).getAmount().floatValue());
+                //return String.format("%1$,.5f", exchangeData.getLastPrice(currency).getAmount().floatValue());
+                return controller.getLocaliser().bigMoneyValueToString(exchangeData.getLastPrice(currency));
             }
         } else if (TICKER_COLUMN_BID.equals(variable)) {
             // bid
             if (exchangeData.getLastBid(currency) == null) {
                 return " ";
             } else {
-                return String.format("%1$,.5f", exchangeData.getLastBid(currency).getAmount().floatValue());
+                //return String.format("%1$,.5f", exchangeData.getLastBid(currency).getAmount().floatValue());
+                return controller.getLocaliser().bigMoneyValueToString(exchangeData.getLastBid(currency));
             }
         } else if (TICKER_COLUMN_ASK.equals(variable)) {
             // ask
             if (exchangeData.getLastAsk(currency) == null) {
                 return " ";
             } else {
-                return String.format("%1$,.5f", exchangeData.getLastAsk(currency).getAmount().floatValue());
+                //return String.format("%1$,.5f", exchangeData.getLastAsk(currency).getAmount().floatValue());
+                return controller.getLocaliser().bigMoneyValueToString(exchangeData.getLastAsk(currency));
             }
         } else if (TICKER_COLUMN_EXCHANGE.equals(variable)) {
             // exchange

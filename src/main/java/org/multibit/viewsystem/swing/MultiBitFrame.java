@@ -16,11 +16,13 @@
 package org.multibit.viewsystem.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -50,8 +52,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
+import org.joda.money.Money;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
+import org.multibit.exchange.CurrencyConverterListener;
+import org.multibit.exchange.ExchangeRate;
 import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
@@ -71,10 +77,12 @@ import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
 import org.multibit.viewsystem.swing.view.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.SendBitcoinConfirmDialog;
+import org.multibit.viewsystem.swing.view.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
+import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTablePanel;
 import org.multibit.viewsystem.swing.view.walletlist.SingleWalletPanel;
@@ -91,7 +99,7 @@ import com.google.bitcoin.core.Wallet;
 /*
  * JFrame displaying Swing version of MultiBit
  */
-public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationListener {
+public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationListener, CurrencyConverterListener {
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitFrame.class);
 
@@ -101,11 +109,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public static final String EXAMPLE_LONG_FIELD_TEXT = "1JiM1UyTGqpLqgayxTPbWbcdVeoepmY6pK++++";
     public static final int WIDTH_OF_LONG_FIELDS = 300;
     public static final int WIDTH_OF_AMOUNT_FIELD = 150;
-    public static final int WALLET_WIDTH_DELTA = 20;
+    public static final int WALLET_WIDTH_DELTA = 30;
 
     public static final int SCROLL_BAR_DELTA = 20;
 
-    public static final int HEIGHT_OF_HEADER = 64;
+    public static final int HEIGHT_OF_HEADER = 70;
+
+    public static final int ON_TRANSACTION_CONFIDENCE_CHANGE_DELAY = 50;
 
     private StatusBar statusBar;
     private StatusEnum online = StatusEnum.CONNECTING;
@@ -127,13 +137,21 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         this.helpContext = helpContext;
     }
 
-    private BlinkLabel estimatedBalanceTextLabel;
+    private MultiBitLabel estimatedBalanceLabelLabel;
+    private BlinkLabel estimatedBalanceBTCLabel;
+    private BlinkLabel estimatedBalanceFiatLabel;
 
-    public BlinkLabel getEstimatedBalanceTextLabel() {
-        return estimatedBalanceTextLabel;
+    public BlinkLabel getEstimatedBalanceBTCLabel() {
+        return estimatedBalanceBTCLabel;
     }
 
-    private HelpButton availableBalanceTextButton;
+    public BlinkLabel getEstimatedBalanceFiatLabel() {
+        return estimatedBalanceFiatLabel;
+    }
+
+    private HelpButton availableBalanceLabelButton;
+    private HelpButton availableBalanceBTCButton;
+    private HelpButton availableBalanceFiatButton;
 
     /**
      * list of wallets shown in left hand column
@@ -225,17 +243,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         tickerTimerTask = new TickerTimerTask(controller, this);
         tickerTimer.schedule(tickerTimerTask, TickerTimerTask.INITIAL_DELAY, TickerTimerTask.DEFAULT_REPEAT_RATE);
 
-        estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString(model.getActiveWalletEstimatedBalance(),
-                true, false));
+        estimatedBalanceLabelLabel.setFocusable(false);
+        estimatedBalanceBTCLabel.setFocusable(false);
+        estimatedBalanceFiatLabel.setFocusable(false);
 
-        availableBalanceTextButton.setText(controller.getLocaliser().getString(
-                "multiBitFrame.availableToSpend",
-                new Object[] { controller.getLocaliser()
-                        .bitcoinValueToString(model.getActiveWalletAvailableBalance(), true, false) }));
-
-        estimatedBalanceTextLabel.setFocusable(false);
-
-        availableBalanceTextButton.setFocusable(false);
+        availableBalanceLabelButton.setFocusable(false);
+        availableBalanceBTCButton.setFocusable(false);
+        availableBalanceFiatButton.setFocusable(false);
+               
+        updateHeader();
 
         calculateDividerPosition();
  
@@ -361,7 +377,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         calculateDividerPosition();
         
         // Cannot get the RTL wallets drawing nicely so switch off adjustment.
-        splitPane.setEnabled(ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        splitPane.setEnabled(ComponentOrientation.LEFT_TO_RIGHT.equals(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())));
 
         statusBar = new StatusBar(controller, this);
         statusBar.updateOnlineStatusText(online);
@@ -378,122 +394,229 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     private JPanel createBalancePanel() {
         JPanel headerPanel = new JPanel();
-        
+
         headerPanel.setMinimumSize(new Dimension(700, HEIGHT_OF_HEADER));
         headerPanel.setPreferredSize(new Dimension(700, HEIGHT_OF_HEADER));
         headerPanel.setOpaque(false);
         headerPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-
         headerPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
-
-        JLabel filler1 = new JLabel();
-        filler1.setMinimumSize(new Dimension(20, 20));
-        filler1.setMaximumSize(new Dimension(20, 20));
-        filler1.setPreferredSize(new Dimension(20, 20));
-        filler1.setOpaque(false);
+        
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 0.01;
+        constraints.weighty = 0.6;
         constraints.gridwidth = 1;
-        constraints.gridheight = 2;
-
+        constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(filler1, constraints);
+        headerPanel.add(MultiBitTitledPanel.createStent(8, 8), constraints);
 
-        JLabel walletIconLabel = new JLabel();
-        if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
-            walletIconLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.WALLET_ICON_FILE));
-        } else {
-            walletIconLabel.setIcon(ImageLoader.createImageIcon(ImageLoader.RTL_WALLET_ICON_FILE));
-        }
-        int walletIconWidth = 60;
-        int walletIconHeight = HEIGHT_OF_HEADER - 10;
-    
-        walletIconLabel.setOpaque(false);
-        walletIconLabel.setMinimumSize(new Dimension(walletIconWidth, walletIconHeight));
-        walletIconLabel.setMaximumSize(new Dimension(walletIconWidth, walletIconHeight));
-        walletIconLabel.setPreferredSize(new Dimension(walletIconWidth, walletIconHeight));
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 1;
-        constraints.gridy = 0;
-        constraints.weightx = 0.01;
-        constraints.anchor = GridBagConstraints.LINE_START;
-
-        headerPanel.add(walletIconLabel, constraints);
-
-        constraints.gridx = 2;
-        constraints.gridy = 0;
-        constraints.weightx = 0.01;
-        constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(MultiBitTitledPanel.createStent(10), constraints);
-
-        estimatedBalanceTextLabel = new BlinkLabel(controller, true);
-        estimatedBalanceTextLabel.setHorizontalAlignment(JTextField.LEFT);
-
-        estimatedBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
-
         constraints.gridx = 3;
         constraints.gridy = 0;
-        constraints.weightx = 0.6;
+        constraints.weightx = 0.01;
+        constraints.weighty = 0.6;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(estimatedBalanceTextLabel, constraints);
 
-        Action availableBalanceHelpAction = new HelpContextAction(controller, null, "multiBitFrame.helpMenuText",
-                "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText", HelpContentsPanel.HELP_AVAILABLE_TO_SPEND_URL);
-        availableBalanceTextButton = new HelpButton(availableBalanceHelpAction, controller);
+        String[] keys = new String[] { "multiBitFrame.balanceLabel", "multiBitFrame.availableToSpend2"};
 
-        String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] {
-                controller.getLocaliser().getString("multiBitFrame.availableToSpend.tooltip"), "\n",
-                controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip") });
-        availableBalanceTextButton.setToolTipText(tooltipText);
+        int stentWidth = MultiBitTitledPanel.calculateStentWidthForKeys(controller.getLocaliser(), keys, headerPanel);
 
-        // initially invisible
-        availableBalanceTextButton.setVisible(false);
-        availableBalanceTextButton.setEnabled(false);
+        headerPanel.add(MultiBitTitledPanel.createStent(stentWidth, 1), constraints);
+
+        FontMetrics fontMetrics = this.getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        int availableToSpendWidth = fontMetrics.stringWidth(controller.getLocaliser().getString("multiBitFrame.availableToSpend2"));
+        int availableToSpendHeight = fontMetrics.getHeight();
+
+        estimatedBalanceLabelLabel = new MultiBitLabel(controller.getLocaliser().getString("multiBitFrame.balanceLabel"), JTextField.RIGHT);
+        estimatedBalanceLabelLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
+        estimatedBalanceLabelLabel.setFont(FontSizer.INSTANCE.getAdjustedDefaultFontWithDelta(3 * ColorAndFontConstants.MULTIBIT_LARGE_FONT_INCREASE));
+
+        constraints.gridx = 3;
+        constraints.gridy = 1;
+        constraints.weightx = 0.6;
+        constraints.weighty = 0.4;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        headerPanel.add(estimatedBalanceLabelLabel, constraints);
+        headerPanel.add(MultiBitTitledPanel.createStent(availableToSpendWidth, availableToSpendHeight), constraints);
 
         constraints.gridx = 4;
         constraints.gridy = 0;
-        constraints.weightx = 3.0;
+        constraints.weightx = 0.01;
+        constraints.weighty = 0.6;
         constraints.anchor = GridBagConstraints.LINE_START;
-        headerPanel.add(availableBalanceTextButton, constraints);
+        headerPanel.add(MultiBitTitledPanel.createStent(12), constraints);
+
+        estimatedBalanceBTCLabel = new BlinkLabel(controller, true);
+        estimatedBalanceBTCLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
+        estimatedBalanceBTCLabel.setBorder(BorderFactory.createEmptyBorder());
+        //estimatedBalanceBTCLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
+
+        constraints.gridx = 5;
+        constraints.gridy = 1;
+        constraints.weightx = 0.6;
+        constraints.weighty = 0.6;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        headerPanel.add(estimatedBalanceBTCLabel, constraints);
+
+        estimatedBalanceFiatLabel = new BlinkLabel(controller, true);
+        estimatedBalanceFiatLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
+        estimatedBalanceFiatLabel.setBorder(BorderFactory.createEmptyBorder());
+        //estimatedBalanceFiatLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
+        
+        constraints.gridx = 6;
+        constraints.gridy = 0;
+        constraints.weightx = 0.01;
+        constraints.weighty = 0.6;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        headerPanel.add(MultiBitTitledPanel.createStent(12), constraints);
+
+        constraints.gridx = 7;
+        constraints.gridy = 1;
+        constraints.weightx = 0.6;
+        constraints.weighty = 0.6;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        headerPanel.add(estimatedBalanceFiatLabel, constraints);
+
+        Action availableBalanceHelpAction = new HelpContextAction(controller, null, "multiBitFrame.availableToSpend2",
+                "multiBitFrame.availableToSpend.tooltip", "multiBitFrame.helpMenuText", HelpContentsPanel.HELP_AVAILABLE_TO_SPEND_URL);
+        availableBalanceLabelButton = new HelpButton(availableBalanceHelpAction, controller);
+        availableBalanceLabelButton.setHorizontalAlignment(JLabel.RIGHT);
+        availableBalanceLabelButton.setBorder(BorderFactory.createEmptyBorder());
+        
+        String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] {
+                controller.getLocaliser().getString("multiBitFrame.availableToSpend.tooltip"), "\n",
+                controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip") });
+        availableBalanceLabelButton.setToolTipText(tooltipText);
+        availableBalanceLabelButton.setBorder(BorderFactory.createEmptyBorder());
+
+        constraints.gridx = 3;
+        constraints.gridy = 2;
+        constraints.weightx = 0.6;
+        constraints.weighty = 0.4;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+
+        constraints.anchor = GridBagConstraints.LINE_END;
+        headerPanel.add(availableBalanceLabelButton, constraints);
+        headerPanel.add(MultiBitTitledPanel.createStent(availableToSpendWidth, availableToSpendHeight), constraints);
+
+        constraints.gridx = 5;
+        constraints.gridy = 2;
+        constraints.weightx = 0.6;
+        constraints.weighty = 0.01;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        availableBalanceBTCButton = new HelpButton(availableBalanceHelpAction, controller);
+        availableBalanceBTCButton.setBorder(BorderFactory.createEmptyBorder());
+        headerPanel.add(availableBalanceBTCButton, constraints);
+
+        constraints.gridx = 7;
+        constraints.gridy = 2;
+        constraints.weightx = 0.6;
+        constraints.weighty = 0.01;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+
+        constraints.anchor = GridBagConstraints.LINE_START;
+        availableBalanceFiatButton = new HelpButton(availableBalanceHelpAction, controller);
+        availableBalanceFiatButton.setBorder(BorderFactory.createEmptyBorder());
+        //availableBalanceFiatButton.setBorder(BorderFactory.createLineBorder(Color.RED));
+
+        headerPanel.add(availableBalanceFiatButton, constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.weightx = 0.01;
+        constraints.weighty = 0.6;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        headerPanel.add(MultiBitTitledPanel.createStent(8, 8), constraints);
+ 
+        JPanel forcer1 = new JPanel();
+        forcer1.setOpaque(false);
+        //forcer1.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 8;
+        constraints.gridy = 2;
+        constraints.weightx = 10000;
+        constraints.weighty = 10000;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        headerPanel.add(forcer1, constraints);
+
+        JPanel forcer2 = new JPanel();
+        forcer2.setOpaque(false);
+        //forcer2.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 8;
+        constraints.gridy = 1;
+        constraints.weightx = 10000;
+        constraints.weighty = 0.01;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        headerPanel.add(forcer2, constraints);
+
+        // Initially invisible.
+        availableBalanceLabelButton.setVisible(false);
+        availableBalanceLabelButton.setEnabled(false);
+        availableBalanceBTCButton.setVisible(false);
+        availableBalanceBTCButton.setEnabled(false);
+        availableBalanceFiatButton.setVisible(false);
+        availableBalanceFiatButton.setEnabled(false);
 
         JPanel filler3 = new JPanel();
         filler3.setOpaque(false);
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 5;
+        constraints.gridx = 8;
         constraints.gridy = 0;
         constraints.weightx = 1000;
+        constraints.weighty = 1.0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 2;
+
         constraints.anchor = GridBagConstraints.LINE_START;
         headerPanel.add(filler3, constraints);
 
-        // add ticker panel
+        // Add ticker panel.
         tickerTablePanel = new TickerTablePanel(this, controller);
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 6;
+        constraints.gridx = 9;
         constraints.gridy = 0;
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.gridwidth = 1;
-        constraints.gridheight = 1;
+        constraints.gridheight = 3;
 
         constraints.anchor = GridBagConstraints.CENTER;
         headerPanel.add(tickerTablePanel, constraints);
 
-        // add a little stent to keep it off the right hand edge
-        int stent = 6; // a reasonable default
+        // Add a little stent to keep it off the right hand edge.
+        int stent = 6; // A reasonable default.
         Insets tabAreaInsets = UIManager.getInsets("TabbedPane.tabAreaInsets");
         if (tabAreaInsets != null) {
             stent = tabAreaInsets.right;
         }
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 7;
+        constraints.gridx = 10;
         constraints.gridy = 0;
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
         headerPanel.add(MultiBitTitledPanel.createStent(stent), constraints);
-        
+
         return headerPanel;
     }
 
@@ -701,12 +824,15 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         tickerTablePanel.setVisible(false);
                         controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, Boolean.FALSE.toString());
                         showTicker.setText(controller.getLocaliser().getString("multiBitFrame.ticker.show.text"));
-                        tickerTimer.cancel();
                     } else {
                         tickerTablePanel.setVisible(true);
                         controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, Boolean.TRUE.toString());
                         showTicker.setText(controller.getLocaliser().getString("multiBitFrame.ticker.hide.text"));
-                        // start ticker timer
+                        // Cancel any existing timer.
+                        if (tickerTimer != null) {
+                            tickerTimer.cancel();
+                        }
+                        // Start ticker timer.
                         tickerTimer = new Timer();
                         tickerTimer.schedule(new TickerTimerTask(controller, thisFrame), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
                     }
@@ -760,16 +886,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             navigateAwayFromView(controller.getCurrentView());
         }
 
-        viewFactory = new ViewFactory(controller, this);
-
         if (initUI) {
             this.localiser = controller.getLocaliser();
             Container contentPane = getContentPane();
             contentPane.removeAll();
+            viewTabbedPane.removeAll();
+            viewFactory.initialise();
             initUI();
             applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         }
-
+        
         statusBar.refreshOnlineStatusText();
   
         updateHeader();
@@ -906,17 +1032,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     /**
      * Update due to a block being downloaded
-     * This typically comes in from a Peer so is 'SwingUtilitied' to get the request on the Swing event thread
      */
     public void blockDownloaded() {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                // update transaction screen in case status bars have changed
-                if (View.TRANSACTIONS_VIEW == controller.getCurrentView()) {
-                    thisFrame.fireDataChanged();
-                }
-            }
-        });
+        // Update transaction screen in case status bars have changed.
+        if (View.TRANSACTIONS_VIEW == controller.getCurrentView()) {
+            ShowTransactionsPanel.updateTransactions();
+        }
     }
 
     @Override
@@ -939,25 +1060,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     public void onTransactionConfidenceChanged(Wallet wallet, final Transaction transaction) {
-         SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                // If viewing transactions, refresh the screen so that transaction confidence icons can update.
-                if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
-                    View currentViewView = viewFactory.getView(controller.getCurrentView());
-                    if (currentViewView != null) {
-                        currentViewView.displayView();
-                        
-                        invalidate();
-                        validate();
-                        repaint();
-                    }
-                }
-                SendBitcoinConfirmDialog.updateDialog(transaction);
-            }
-        });
+        ShowTransactionsPanel.updateTransactions();
+        SendBitcoinConfirmDialog.updateDialog(transaction);
     }
     
-
     @Override
     public void onKeyAdded(ECKey key) {
         log.debug("Key added " + key.toString());
@@ -1014,32 +1120,51 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         });
     }
 
-    private void updateHeader() {
+    void updateHeader() {
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-            // files have been changed by another process - blank totals
-            // and put 'Updates stopped' message
-            estimatedBalanceTextLabel.setText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.text"));
-            setUpdatesStoppedTooltip(estimatedBalanceTextLabel);
-            availableBalanceTextButton.setText("");
+            // Files have been changed by another process - blank totals
+            // and put 'Updates stopped' message.
+            estimatedBalanceLabelLabel.setText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.text"));
+            estimatedBalanceBTCLabel.setText("");
+            estimatedBalanceFiatLabel.setText("");
+            setUpdatesStoppedTooltip(estimatedBalanceLabelLabel);
+            availableBalanceLabelButton.setText("");
+            availableBalanceBTCButton.setText("");
+            availableBalanceFiatButton.setText("");
         } else {
-            estimatedBalanceTextLabel.setText(controller.getLocaliser().bitcoinValueToString(
-                    controller.getModel().getActiveWalletEstimatedBalance(), true, false));
-            estimatedBalanceTextLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.balanceLabel.tooltip"));
-
+            BigInteger estimatedBalance = controller.getModel().getActiveWalletEstimatedBalance();
+            estimatedBalanceBTCLabel.setText(controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false));
+            if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
+                Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(estimatedBalance);
+                estimatedBalanceFiatLabel.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")");
+            }
+ 
             if (model.getActiveWalletAvailableBalance() != null
                     && model.getActiveWalletAvailableBalance().equals(controller.getModel().getActiveWalletEstimatedBalance())) {
-                availableBalanceTextButton.setText("");
-                availableBalanceTextButton.setEnabled(false);
-                availableBalanceTextButton.setVisible(false);
-
+                availableBalanceBTCButton.setText("");
+                availableBalanceFiatButton.setText("");
+                availableBalanceLabelButton.setEnabled(false);
+                availableBalanceBTCButton.setEnabled(false);
+                availableBalanceFiatButton.setEnabled(false);
+                availableBalanceLabelButton.setVisible(false);
+                availableBalanceBTCButton.setVisible(false);
+                availableBalanceFiatButton.setVisible(false);
             } else {
-                availableBalanceTextButton.setText(controller.getLocaliser().getString(
-                        "multiBitFrame.availableToSpend",
-                        new Object[] { controller.getLocaliser().bitcoinValueToString(model.getActiveWalletAvailableBalance(),
-                                true, false) }));
-                availableBalanceTextButton.setEnabled(true);
-                availableBalanceTextButton.setVisible(true);
+                BigInteger availableToSpend = model.getActiveWalletAvailableBalance();
+                availableBalanceBTCButton.setText( controller.getLocaliser().bitcoinValueToString(availableToSpend, true, false));
+                if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
+                    Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(model.getActiveWalletAvailableBalance());
+                    availableBalanceFiatButton.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")");
+                } else {
+                    availableBalanceFiatButton.setText("");
+                }
+                availableBalanceLabelButton.setEnabled(true);
+                availableBalanceBTCButton.setEnabled(true);
+                availableBalanceFiatButton.setEnabled(true);
+                availableBalanceLabelButton.setVisible(true);
+                availableBalanceBTCButton.setVisible(true);
+                availableBalanceFiatButton.setVisible(true);
             }
 
             String titleText = localiser.getString("multiBitFrame.title");
@@ -1137,7 +1262,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         } 
         splitPane.setEnabled(true);
         splitPane.setDividerLocation(dividerPosition);
-        splitPane.setEnabled(ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        splitPane.setEnabled(ComponentOrientation.LEFT_TO_RIGHT.equals(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())));
     }
 
     public WalletListPanel getWalletsView() {
@@ -1159,6 +1284,29 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         return splitPane;
     }
 
+    @Override
+    public void lostExchangeRate(ExchangeRate exchangeRate) {
+        // TODO Auto-generated method stub    
+    }
+
+    @Override
+    public void foundExchangeRate(ExchangeRate exchangeRate) {
+        updateHeader();
+    }
+
+    @Override
+    public void updatedExchangeRate(ExchangeRate exchangeRate) {
+        updateHeader();
+    }
+
+    public Timer getTickerTimer() {
+        return tickerTimer;
+    }
+
+    public void setTickerTimer(Timer tickerTimer) {
+        this.tickerTimer = tickerTimer;
+    }
+    
     public TickerTimerTask getTickerTimerTask() {
         return tickerTimerTask;
     }

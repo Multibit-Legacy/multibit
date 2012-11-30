@@ -18,7 +18,12 @@ public interface BitcoinFormDataProvider extends DataProvider {
     public String getLabel();
     
     /**
-     * Get the amount
+     * Get the amount (denominated in BTC).
      */
     public String getAmount();
+    
+    /**
+     * Get the amount (denominated in fiat)
+     */
+    public String getAmountFiat();
 }

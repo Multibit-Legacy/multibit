@@ -37,7 +37,11 @@ public class ViewFactory {
     public ViewFactory(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
-        viewMap = new HashMap<Integer, View>();
+        initialise();
+    }
+    
+    public void initialise() {
+        viewMap = new HashMap<Integer, View>();        
     }
 
     public View getView(int viewNumber) {

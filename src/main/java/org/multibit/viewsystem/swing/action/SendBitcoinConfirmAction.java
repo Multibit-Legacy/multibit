@@ -27,7 +27,7 @@ import org.multibit.viewsystem.swing.view.SendBitcoinConfirmDialog;
 import org.multibit.viewsystem.swing.view.ValidationErrorDialog;
 
 /**
- * This {@link Action} shows the send bitcoin confirm dialog or validation dialog on an attempted spend
+ * This {@link Action} shows the send bitcoin confirm dialog or validation dialog on an attempted spend.
  */
 public class SendBitcoinConfirmAction extends MultiBitSubmitAction {
 
@@ -46,13 +46,13 @@ public class SendBitcoinConfirmAction extends MultiBitSubmitAction {
     }
 
     /**
-     * show the send bitcoin confirm dialog
+     * Show the send bitcoin confirm dialog.
      */
     public void actionPerformed(ActionEvent e) {
         if (abort()) {
             return;
         }
-        
+
         SendBitcoinConfirmDialog sendBitcoinConfirmDialog = null;
         ValidationErrorDialog validationErrorDialog = null;
 
@@ -61,7 +61,7 @@ public class SendBitcoinConfirmAction extends MultiBitSubmitAction {
         
         Validator validator = new Validator(controller);
         if (validator.validate(sendAddress, sendAmount)) {
-            sendBitcoinConfirmDialog = new SendBitcoinConfirmDialog(controller, mainFrame);
+            sendBitcoinConfirmDialog = new SendBitcoinConfirmDialog(controller, mainFrame, dataProvider);
             sendBitcoinConfirmDialog.setVisible(true);
         } else {
             validationErrorDialog = new ValidationErrorDialog(controller, mainFrame);

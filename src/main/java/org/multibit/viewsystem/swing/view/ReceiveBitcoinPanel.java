@@ -39,6 +39,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
+import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletInfo;
@@ -235,12 +237,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(labelScrollPane, constraints);
-
-        JPanel amountPanel = new JPanel();
-        amountPanel.setOpaque(false);
-        amountPanel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        amountPanel.setLayout(new BorderLayout());
-        
+       
         MultiBitLabel amountLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel"));
         amountLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel.tooltip"));
         amountLabel.setHorizontalAlignment(JLabel.TRAILING);
@@ -255,60 +252,29 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
         constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(amountLabel, constraints);
 
-        amountTextField = new MultiBitTextField("", 10, controller);
-        amountTextField.setHorizontalAlignment(JTextField.TRAILING);
-        amountTextField.setMinimumSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
-                FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
-                + TEXTFIELD_VERTICAL_DELTA));
-        amountTextField.setPreferredSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
-                FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
-                + TEXTFIELD_VERTICAL_DELTA));
-        amountTextField.setMaximumSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
-                FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
-                + TEXTFIELD_VERTICAL_DELTA));
-        amountTextField.addKeyListener(new QRCodeKeyListener());
-
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        JPanel amountPanel = createAmountPanel();
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 5;
-        constraints.weightx = 1.0;
-        constraints.weighty = 0.3;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.20;
         constraints.anchor = GridBagConstraints.LINE_START;
-        amountPanel.add(amountTextField, BorderLayout.LINE_START);
         formPanel.add(amountPanel, constraints);
 
-        MultiBitLabel amountUnitLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountUnitLabel"));
-        amountUnitLabel.setHorizontalTextPosition(SwingConstants.LEADING);
-        amountUnitLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel.tooltip"));
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.gridx = 3;
-        constraints.gridy = 5;
+        notificationLabel = new MultiBitLabel("");
+        notificationLabel.setForeground(Color.RED);
+        //notificationLabel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 6;
+        constraints.gridwidth = 8;
+        constraints.gridheight = 3;
         constraints.weightx = 0.1;
-        constraints.weighty = 0.3;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-        constraints.anchor = GridBagConstraints.LINE_START;
-
-        JPanel filler2 = new JPanel();
-        filler2.setOpaque(false);
-        
-        JPanel amountUnitLabelPanel = new JPanel();
-        amountUnitLabelPanel.setOpaque(false);
-        amountUnitLabelPanel.setLayout(new BorderLayout());
-        
-        JPanel amountUnitLabelPanel2 = new JPanel();
-        amountUnitLabelPanel2.setOpaque(false);
-        amountUnitLabelPanel2.setLayout(new BorderLayout());
-        
-        amountUnitLabelPanel.add(amountUnitLabel, BorderLayout.LINE_START);
-        amountUnitLabelPanel.add(filler2, BorderLayout.CENTER);
-        amountUnitLabelPanel2.add(MultiBitTitledPanel.createStent(AbstractTradePanel.AMOUNT_BTC_INDENT), BorderLayout.LINE_START);
-
-        amountUnitLabelPanel2.add(amountUnitLabelPanel, BorderLayout.CENTER);
-
-        amountPanel.add(amountUnitLabelPanel2, BorderLayout.CENTER);
+        constraints.weighty = 0.1;
+        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
+        formPanel.add(notificationLabel, constraints);
 
         Action helpAction;
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
@@ -381,16 +347,16 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
 
             labelTextArea.setEditable(false);
             labelTextArea.setEnabled(false);
-            mainFrame.setUpdatesStoppedTooltip(amountTextField);
-            amountTextField.setEditable(false);
-            amountTextField.setEnabled(false);
+            mainFrame.setUpdatesStoppedTooltip(amountBTCTextField);
+            amountBTCTextField.setEditable(false);
+            amountBTCTextField.setEnabled(false);
         } else {
             labelTextArea.setToolTipText(null);
             labelTextArea.setEditable(true);
             labelTextArea.setEnabled(true);
-            amountTextField.setToolTipText(null);
-            amountTextField.setEditable(true);
-            amountTextField.setEnabled(true);
+            amountBTCTextField.setToolTipText(null);
+            amountBTCTextField.setEditable(true);
+            amountBTCTextField.setEnabled(true);
         }
 
         return formPanel;
@@ -408,8 +374,28 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
         // get the current address, label and amount from the model
         String address = controller.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS);
         String label = controller.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_LABEL);
-        String amount = controller.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_AMOUNT);
 
+        String amountNotLocalised = controller.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_AMOUNT);
+
+        if (amountBTCTextField != null) {
+            CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amountNotLocalised);
+            
+            if (converterResult.isBtcMoneyValid()) {
+                parsedAmountBTC = converterResult.getBtcMoney();
+                String amountLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
+                amountBTCTextField.setText(amountLocalised);
+                if (notificationLabel != null) {
+                    notificationLabel.setText("");
+                }
+            } else {
+                parsedAmountBTC = null;
+                amountBTCTextField.setText("");
+                if (notificationLabel != null) {
+                    notificationLabel.setText(converterResult.getBtcMessage());
+                }
+            }
+        }
+        
         // if the currently stored address is missing or is not in this wallet,
         // pick
         // the address book's first receiving address
@@ -448,9 +434,6 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
         }
         if (label != null) {
             labelTextArea.setText(label);
-        }
-        if (amount != null) {
-            amountTextField.setText(amount);
         }
     }
 

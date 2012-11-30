@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.TimerTask;
 
 import org.joda.money.BigMoney;
+import org.joda.money.CurrencyUnit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
@@ -34,11 +35,11 @@ import com.xeiam.xchange.dto.marketdata.Ticker;
 import com.xeiam.xchange.service.marketdata.polling.PollingMarketDataService;
 
 /**
- * TimerTask to poll MtGox for ticker data process.
+ * TimerTask to poll MtGox for ticker data process
  */
 public class TickerTimerTask extends TimerTask {
 
-    public static final int DEFAULT_REPEAT_RATE = 30000; // milliseconds
+    public static final int DEFAULT_REPEAT_RATE = 60000; // milliseconds
 
     public static final int INITIAL_DELAY = 500; // milliseconds
 
@@ -59,7 +60,7 @@ public class TickerTimerTask extends TimerTask {
         this.controller = controller;
         this.mainFrame = mainFrame;
 
-        // Set the list of currencies we are interested in.
+        // set the list of currencies we are interested in.
         String currency1 = controller.getModel().getUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY);
         if (currency1 == null || "".equals(currency1)) {
             currency1 = TickerTableModel.DEFAULT_CURRENCY;
@@ -72,6 +73,7 @@ public class TickerTimerTask extends TimerTask {
             controller.getModel().getExchangeData().setCurrenciesWeAreInterestedIn(new String[] { currency1 });
         }
     }
+
 
     /**
      * When the timer executes, this code is run.
@@ -94,14 +96,18 @@ public class TickerTimerTask extends TimerTask {
                         for (CurrencyPair loopSymbolPair : exchangeSymbols) {
                             // Get symbol ticker if it is one of the currencies
                             // we are interested in.
-                            // (This is to save hitting the server for ever currency).
+                            // (This is to save hitting the server for every currency).
                             boolean getItFromTheServer = false;
                             String[] currenciesWeAreInterestedIn = controller.getModel().getExchangeData()
                                     .getCurrenciesWeAreInterestedIn();
+                            
+                            String currencyConverterCurrency = currenciesWeAreInterestedIn[0];
+                            
                             if (currenciesWeAreInterestedIn != null) {
                                 for (int i = 0; i < currenciesWeAreInterestedIn.length; i++) {
                                     if (loopSymbolPair.counterCurrency.equals(currenciesWeAreInterestedIn[i])) {
                                         getItFromTheServer = true;
+                                        
                                         break;
                                     }
                                 }
@@ -115,6 +121,12 @@ public class TickerTimerTask extends TimerTask {
                                     controller.getModel().getExchangeData().setLastPrice(loopSymbolPair.counterCurrency, last);
                                     controller.getModel().getExchangeData().setLastBid(loopSymbolPair.counterCurrency, bid);
                                     controller.getModel().getExchangeData().setLastAsk(loopSymbolPair.counterCurrency, ask);
+                                    
+                                    if (currencyConverterCurrency.equals(loopSymbolPair.counterCurrency)) {
+                                        // Put the exchange rate into the currency converter.
+                                        CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(currencyConverterCurrency));
+                                        CurrencyConverter.INSTANCE.setRate(last.getAmount());
+                                    }
                                 }
                             }
                         }

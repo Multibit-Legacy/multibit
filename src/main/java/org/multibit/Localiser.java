@@ -19,14 +19,18 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
+import org.joda.money.BigMoney;
+import org.joda.money.Money;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +70,11 @@ public class Localiser {
     private Locale locale;
 
     private final static String MISSING_RESOURCE_TEXT = "Missing resource : ";
+    
+    private NumberFormat numberFormat;
+    private NumberFormat numberFormatNotLocalised;
+    
+    public static final int NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN = 8;
 
     /**
      * Localiser hardwired to English - mainly for testing
@@ -94,6 +103,11 @@ public class Localiser {
         }
 
         setLocale(locale);
+        
+        numberFormat = NumberFormat.getInstance(locale);
+        numberFormat.setMaximumFractionDigits(NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN);
+        numberFormatNotLocalised = NumberFormat.getInstance(Locale.ENGLISH);
+        numberFormatNotLocalised.setMaximumFractionDigits(NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN);
     }
 
     synchronized public String getString(String key) {
@@ -166,6 +180,9 @@ public class Localiser {
 
         formatter.setLocale(locale);
 
+        numberFormat = NumberFormat.getInstance(locale);
+        numberFormat.setMaximumFractionDigits(NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN);
+
         boolean foundIt = false;
         try {
             InputStream inputStream = Localiser.class.getResourceAsStream(propertyFilename);
@@ -224,36 +241,10 @@ public class Localiser {
         return version;
     }
 
-    /**
-     * @param value
-     *            The value
-     * @param addUnit
-     *            True if a unit should be appended
-     * @param blankZero
-     *            True if a zero value should be returned as blank
-     * @return the given value in nanocoins as a 0.12 type string - 2 sig figs
-     */
-    public String bitcoinValueToFriendlyString(BigInteger value, boolean addUnit, boolean blankZero) {
-        if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
-            return "";
-        }
-
-        boolean negative = value.compareTo(BigInteger.ZERO) < 0;
-        if (negative) {
-            value = value.negate();
-        }
-        BigInteger coins = value.divide(Utils.COIN);
-        BigInteger cents = value.remainder(Utils.COIN);
-        String toReturn = String.format("%s%d.%02d", negative ? "-" : "", coins.intValue(), cents.intValue() / 1000000);
-        if (addUnit) {
-            toReturn = toReturn + " " + getString("sendBitcoinPanel.amountUnitLabel");
-        }
-        return toReturn;
-    }
 
     /**
-     * Returns the given value in nanocoins as a 0.1234 type string down to 100
-     * mikes
+     * Returns the given value in nanocoins as a 0.12345678 type string.
+     * This function is localised. 
      **/
     public String bitcoinValueToString(BigInteger value, boolean addUnit, boolean blankZero) {
         if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
@@ -269,10 +260,62 @@ public class Localiser {
         if (negative) {
             toReturn = "-";
         }
-        toReturn = toReturn + Utils.bitcoinValueToPlainString(value);
+        
+        if (value == null) {
+            throw new IllegalArgumentException("Value cannot be null");
+        }
+                
+        BigDecimal valueInBTC = new BigDecimal(value).divide(new BigDecimal(Utils.COIN));
+        toReturn = toReturn + numberFormat.format(valueInBTC.doubleValue());
+
         if (addUnit) {
             toReturn = toReturn + " " + getString("sendBitcoinPanel.amountUnitLabel");
         }
+        return toReturn;     
+    }
+    /**
+     * Returns the given value in nanocoins as a 0.12345678 type string.
+     * This function is NOT localised. 
+     **/
+    public String bitcoinValueToStringNotLocalised(BigInteger value, boolean addUnit, boolean blankZero) {
+        if (blankZero && value.compareTo(BigInteger.ZERO) == 0) {
+            return "";
+        }
+
+        boolean negative = value.compareTo(BigInteger.ZERO) < 0;
+        if (negative) {
+            value = value.negate();
+        }
+
+        String toReturn = "";
+        if (negative) {
+            toReturn = "-";
+        }
+        
+        if (value == null) {
+            throw new IllegalArgumentException("Value cannot be null");
+        }
+                
+        BigDecimal valueInBTC = new BigDecimal(value).divide(new BigDecimal(Utils.COIN));
+        toReturn = toReturn + numberFormatNotLocalised.format(valueInBTC.doubleValue());
+
+        if (addUnit) {
+            toReturn = toReturn + " " + getString("sendBitcoinPanel.amountUnitLabel");
+        }
+        return toReturn;     
+    }
+    
+    /**
+     * Returns a formatted money onject
+     **/
+    public String bigMoneyValueToString(BigMoney value) {        
+        if (value == null) {
+            throw new IllegalArgumentException("Value cannot be null");
+        }
+           
+        String toReturn = "";
+        toReturn = numberFormat.format(value.getAmount().doubleValue());
+
         return toReturn;     
     }
 }

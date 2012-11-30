@@ -97,11 +97,7 @@ public class FileChangeTimerTask extends TimerTask {
                 }
             }
         }
-        
-        // refresh the transactions screen
-        if (View.TRANSACTIONS_VIEW == controller.getCurrentView()) {
-            mainFrame.fireDataChanged();
-        }
+
         log.debug("End of FileChangeTimerTask - run");
         
     }
