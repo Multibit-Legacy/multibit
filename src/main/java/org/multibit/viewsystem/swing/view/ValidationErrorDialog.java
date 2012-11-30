@@ -177,7 +177,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
                         new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });
             }
             // There is an extra "BTC." in the translations - remove and add a return.
-            textToAdd = textToAdd.replaceAll("BTC\\.", "\\.\\\\n");
+            textToAdd = textToAdd.replaceAll("BTC\\.", "\\.");
              
             String[] lines = textToAdd.split("\\n");
             for (int i = 0; i < lines.length; i++) {

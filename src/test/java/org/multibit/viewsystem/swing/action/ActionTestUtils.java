@@ -7,6 +7,7 @@ import java.util.Locale;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncrypterDecrypter;
+import org.multibit.exchange.CurrencyConverter;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
@@ -31,6 +32,8 @@ public class ActionTestUtils {
          
          controller.setLocaliser(localiser);
          controller.setModel(model);
+         
+         CurrencyConverter.INSTANCE.initialise(controller);
          
          return controller;
      }

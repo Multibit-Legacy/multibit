@@ -1161,13 +1161,13 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         amountBTCTextField = new MultiBitTextField("", 10, controller);
         amountBTCTextField.setHorizontalAlignment(JTextField.TRAILING);
-        amountBTCTextField.setMinimumSize(new Dimension((int) (longFieldWidth * 0.40), getFontMetrics(
+        amountBTCTextField.setMinimumSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
                 FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
                 + TEXTFIELD_VERTICAL_DELTA));
-        amountBTCTextField.setPreferredSize(new Dimension((int) (longFieldWidth * 0.40), getFontMetrics(
+        amountBTCTextField.setPreferredSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
                 FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
                 + TEXTFIELD_VERTICAL_DELTA));
-        amountBTCTextField.setMaximumSize(new Dimension((int) (longFieldWidth * 0.40), getFontMetrics(
+        amountBTCTextField.setMaximumSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
                 FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
                 + TEXTFIELD_VERTICAL_DELTA));
         amountBTCTextField.addKeyListener(new AmountBTCKeyListener());
@@ -1175,7 +1175,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints2.fill = GridBagConstraints.HORIZONTAL;
         constraints2.gridx = 0;
         constraints2.gridy = 0;
-        constraints2.weightx = 1.0;
+        constraints2.weightx = 2.0;
         constraints2.weighty = 0.3;
         constraints2.gridwidth = 1;
         constraints2.gridheight = 1;
@@ -1209,21 +1209,21 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         amountPanel.add(amountEqualsLabel, constraints2);
         amountPanel.add(MultiBitTitledPanel.createStent(amountEqualsLabel.getPreferredSize().width, amountEqualsLabel.getPreferredSize().height), constraints2);
 
-        amountFiatTextField = new MultiBitTextField("", 10, controller);
+        amountFiatTextField = new MultiBitTextField("", 8, controller);
         amountFiatTextField.setHorizontalAlignment(JTextField.TRAILING);
-        amountFiatTextField.setMinimumSize(new Dimension((int) (longFieldWidth * 0.3), getFontMetrics(
+        amountFiatTextField.setMinimumSize(new Dimension((int) (longFieldWidth * 0.2), getFontMetrics(
                 FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
                 + TEXTFIELD_VERTICAL_DELTA));
-        amountFiatTextField.setPreferredSize(new Dimension((int) (longFieldWidth * 0.3), getFontMetrics(
+        amountFiatTextField.setPreferredSize(new Dimension((int) (longFieldWidth * 0.2), getFontMetrics(
                 FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
                 + TEXTFIELD_VERTICAL_DELTA));
-        amountFiatTextField.setMaximumSize(new Dimension((int) (longFieldWidth * 0.3), getFontMetrics(
+        amountFiatTextField.setMaximumSize(new Dimension((int) (longFieldWidth * 0.2), getFontMetrics(
                 FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
                 + TEXTFIELD_VERTICAL_DELTA));
         //amountFiatTextField.addKeyListener(new QRCodeKeyListener());
         amountFiatTextField.addKeyListener(new AmountFiatKeyListener());
 
-        constraints2.fill = GridBagConstraints.HORIZONTAL;
+        constraints2.fill = GridBagConstraints.NONE;
         constraints2.gridx = 4;
         constraints2.gridy = 0;
         constraints2.weightx = 1.0;

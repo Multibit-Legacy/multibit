@@ -18,6 +18,8 @@ package org.multibit.viewsystem.swing.action;
 import java.math.BigInteger;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
+import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.MultiBitModel;
 
 import com.google.bitcoin.core.Address;
@@ -85,9 +87,12 @@ public class Validator {
             // see if the amount is a number
             BigInteger amountBigInteger = null;
             try {
-                amountBigInteger = Utils.toNanoCoins(amount);
-                if (amountBigInteger == null) {
-                    amountIsMissing = Boolean.TRUE;
+                CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amount);
+                if (converterResult.isBtcMoneyValid()) {
+                    // parses ok
+                    amountBigInteger = converterResult.getBtcMoney().getAmount().toBigInteger();
+                } else {
+                    amountIsInvalid = Boolean.TRUE;
                     amountValidatesOk = Boolean.FALSE;
                 }
             } catch (NumberFormatException nfe) {
