@@ -179,7 +179,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
             // There is an extra "BTC." in the translations - remove and add a return.
             textToAdd = textToAdd.replaceAll("BTC\\.", "\\.\\\\n");
              
-            String[] lines = textToAdd.split("\\\\n");
+            String[] lines = textToAdd.split("\\n");
             for (int i = 0; i < lines.length; i++) {
                 if (lines[i] != null && lines[i].length() > longestRow.length()) {
                     longestRow = lines[i];
