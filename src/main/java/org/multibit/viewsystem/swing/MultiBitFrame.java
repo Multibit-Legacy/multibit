@@ -1050,12 +1050,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     /**
-     * one of the wallets has been reorganised due to a block chain reorganise
+     * One of the wallets has been reorganised due to a block chain reorganise
      */
     @Override
     public void onReorganize(Wallet wallet) {
         log.info("Wallet has been reorganised.");
-        recreateAllViews(false);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                recreateAllViews(false);
+            }
+        });
     }
 
     public void onTransactionConfidenceChanged(Wallet wallet, final Transaction transaction) {
