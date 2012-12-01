@@ -200,9 +200,9 @@ public class WalletListPanel extends JPanel implements View, ComponentListener, 
     private JPanel createWalletListPanel() {
         walletListPanel = new JPanel();
         walletListPanel.setLayout(new GridBagLayout());
-        walletListPanel.setOpaque(false);
+        walletListPanel.setOpaque(true);
         walletListPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-
+        
         // get the wallets from the model
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 

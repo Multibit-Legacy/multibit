@@ -521,9 +521,17 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
                             Transaction sentTransaction = thisDialog.getSendBitcoinNowAction().getTransaction();
                             if (sentTransaction != null
                                     && sentTransaction.getHash().equals(transactionWithChangedConfidence.getHash())) {
-                                confirmText2.setText(thisDialog.getConfidenceToolTip(transactionWithChangedConfidence
-                                        .getConfidence()));
-                                confirmText2.setIcon(thisDialog.getConfidenceIcon(transactionWithChangedConfidence.getConfidence()));
+//                                int peers = 0;
+//                                if (sentTransaction.getConfidence() != null && sentTransaction.getConfidence().getBroadcastBy() != null) {
+//                                    peers = sentTransaction.getConfidence().getBroadcastBy().size();
+//                                }
+                                
+                                // Do not show the initial - 'not seen by anything' message - confusing to users
+                                //if (peers > 0) {
+                                   confirmText2.setText(thisDialog.getConfidenceToolTip(sentTransaction
+                                            .getConfidence()));
+                                   confirmText2.setIcon(thisDialog.getConfidenceIcon(sentTransaction.getConfidence()));
+                                //}
                             }
                         }
                     }

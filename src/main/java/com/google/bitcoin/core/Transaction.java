@@ -928,21 +928,6 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         }
         return false;
     }
-
-    /**
-     * make the TransactionOutputs spendable This is used in an intrawallet
-     * transfer as what is spent from the senders's perspetive is avaiable to
-     * spend from the recipients
-     */
-    public void markOutputsAsSpendable() {
-        if (outputs != null) {
-            for (TransactionOutput output : outputs) {
-                if (output != null) {
-                    output.markAsUnspent();
-                }
-            }
-        }
-    }
     
     /**
      * Calculate the fee for a spend

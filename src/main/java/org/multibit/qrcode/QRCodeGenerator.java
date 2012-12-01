@@ -34,6 +34,8 @@ package org.multibit.qrcode;
 import java.awt.image.BufferedImage;
 
 import org.multibit.controller.MultiBitController;
+import org.multibit.exchange.CurrencyConverter;
+import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.MultiBitModel;
 
 import com.google.bitcoin.core.Address;
@@ -91,7 +93,12 @@ public class QRCodeGenerator {
             }
             if (decodeAddress != null && !"".equals(decodeAddress)) {
                 if (amount != null && !"".equals(amount)) {
-                    bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amount), label, null);
+                    CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amount);
+                    if (converterResult.isBtcMoneyValid()) {
+                        bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, converterResult.getBtcMoney().getAmount().toBigInteger(), label, null);
+                    } else {
+                       // No parsable amount - show nothing.  
+                    }
                 } else {
                     bitcoinURI = BitcoinURI.convertToBitcoinURI(decodeAddress, null, label, null);
                 }
