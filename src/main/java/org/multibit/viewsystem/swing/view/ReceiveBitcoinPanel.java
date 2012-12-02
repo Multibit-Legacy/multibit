@@ -15,7 +15,6 @@
  */
 package org.multibit.viewsystem.swing.view;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
@@ -149,9 +148,9 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
         int longFieldWidth = fontMetric.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT);
         addressTextField = new MultiBitTextField("", 24, controller);
 
-        //addressTextField = new MultiBitTextArea("", 24, 1, controller);
         addressTextField.setEditable(false);
-        addressTextField.setOpaque(false);
+        addressTextField.setOpaque(true);
+        addressTextField.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
         Insets insets = addressTextField.getBorder().getBorderInsets(addressTextField);
         addressTextField.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.right));
         addressTextField.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));

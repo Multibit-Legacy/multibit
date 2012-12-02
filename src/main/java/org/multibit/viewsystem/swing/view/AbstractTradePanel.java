@@ -1182,11 +1182,21 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints2.anchor = GridBagConstraints.LINE_START;
         amountPanel.add(amountBTCTextField, constraints2);
 
+        constraints2.fill = GridBagConstraints.NONE;
+        constraints2.gridx = 1;
+        constraints2.gridy = 0;
+        constraints2.weightx = 0.1;
+        constraints2.weighty = 0.1;
+        constraints2.gridwidth = 1;
+        constraints2.gridheight = 1;
+        constraints2.anchor = GridBagConstraints.CENTER;
+        amountPanel.add(MultiBitTitledPanel.createStent(3), constraints2);
+
         MultiBitLabel amountUnitBTCLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel"));
         amountUnitBTCLabel.setHorizontalTextPosition(SwingConstants.LEADING);
         amountUnitBTCLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel.tooltip"));
         constraints2.fill = GridBagConstraints.NONE;
-        constraints2.gridx = 1;
+        constraints2.gridx = 2;
         constraints2.gridy = 0;
         constraints2.weightx = 0.1;
         constraints2.weighty = 0.3;
@@ -1199,7 +1209,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         amountEqualsLabel.setHorizontalTextPosition(SwingConstants.CENTER);
         amountEqualsLabel.setFocusable(false);
         constraints2.fill = GridBagConstraints.NONE;
-        constraints2.gridx = 2;
+        constraints2.gridx = 3;
         constraints2.gridy = 0;
         constraints2.weightx = 0.03;
         constraints2.weighty = 0.3;
@@ -1224,7 +1234,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         amountFiatTextField.addKeyListener(new AmountFiatKeyListener());
 
         constraints2.fill = GridBagConstraints.NONE;
-        constraints2.gridx = 4;
+        constraints2.gridx = 6;
         constraints2.gridy = 0;
         constraints2.weightx = 1.0;
         constraints2.weighty = 0.3;
@@ -1236,13 +1246,26 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         CurrencyInfo currencyInfo = CurrencyConverter.INSTANCE.getCurrencyCodeToInfoMap().get(CurrencyConverter.INSTANCE.getCurrencyUnit().getCurrencyCode());
         amountUnitFiatLabel = new MultiBitLabel("");
-        int fiatCurrencySymbolPosition = 3;   // Prefix is default.
+        int fiatCurrencySymbolPosition = 4;   // Prefix is default.
+        int stentPosition = 5;
         if (currencyInfo != null) {
             amountUnitFiatLabel.setText(currencyInfo.getCurrencySymbol());
             if (!currencyInfo.isPrefix()) {
-                fiatCurrencySymbolPosition = 5;
+                stentPosition = 7;
+                fiatCurrencySymbolPosition = 8;
             }
         }
+        
+        constraints2.fill = GridBagConstraints.NONE;
+        constraints2.gridx = stentPosition;
+        constraints2.gridy = 0;
+        constraints2.weightx = 0.1;
+        constraints2.weighty = 0.1;
+        constraints2.gridwidth = 1;
+        constraints2.gridheight = 1;
+        constraints2.anchor = GridBagConstraints.CENTER;
+        amountPanel.add(MultiBitTitledPanel.createStent(3), constraints2);
+
         amountUnitFiatLabel.setHorizontalTextPosition(SwingConstants.LEADING);
         amountUnitFiatLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountUnitLabel.tooltip"));
         constraints2.fill = GridBagConstraints.NONE;
