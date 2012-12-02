@@ -81,7 +81,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
     private SendBitcoinNowAction sendBitcoinNowAction;
 
     private static SendBitcoinConfirmDialog thisDialog = null;
-    
+
     private BitcoinFormDataProvider dataProvider;
 
     private static ImageIcon shapeTriangleIcon;
@@ -144,45 +144,16 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         // Get the data out of the wallet preferences.
         sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
         sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
-        String sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
+        String sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
 
-        String sendAmountLocalised = "";
-        if (sendAmount != null && !"".equals(sendAmount)) {
-            CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendAmount);
-            
-            if (converterResult.isBtcMoneyValid()) {
-                sendAmountLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
-            }
-        }
-        if (dataProvider != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
-            String sendAmountFiat = dataProvider.getAmountFiat();
-            if (sendAmountFiat != null && !"".equals(sendAmountFiat)) {
-                CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToFiat(sendAmountFiat);
-                if (converterResult.isFiatMoneyValid()) {
-                sendAmountLocalised = sendAmountLocalised + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(converterResult.getFiatMoney(), true, true);
-                }
-            }
-        }
+        String sendAmountLocalised = CurrencyConverter.INSTANCE.prettyPrint(sendAmount);
+
         String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
         if (fee == null || fee == "") {
             fee = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
         }
 
-        String sendFeeLocalised = "";
-        if (fee != null && !"".equals(fee)) {
-            CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(fee);
-            
-            if (converterResult.isBtcMoneyValid()) {
-                sendFeeLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
-            }
-        }
-        // Work out what the fee is in fiat.
-        if (CurrencyConverter.INSTANCE.isShowingFiat()) {
-            Money feeAsFiatAsMoney = CurrencyConverter.INSTANCE.convertFromBTCToFiat(Utils.toNanoCoins(fee));
-            if (feeAsFiatAsMoney != null) {
-                sendFeeLocalised = sendFeeLocalised + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(feeAsFiatAsMoney, true, true);
-            }
-        }
+        String sendFeeLocalised = CurrencyConverter.INSTANCE.prettyPrint(fee);
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -448,12 +419,12 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
                 thisDialog.sendBitcoinNowAction.setEnabled(enableSend);
             }
         }
-        
+
         if (sendBitcoinNowAction != null) {
             sendBitcoinNowAction.setEnabled(enableSend);
             if (enableSend) {
                 if (confirmText1 != null) {
-                    if (controller.getLocaliser().getString("sendBitcoinConfirmView.multibitMustBeOnline").equals(confirmText1)){
+                    if (controller.getLocaliser().getString("sendBitcoinConfirmView.multibitMustBeOnline").equals(confirmText1)) {
                         confirmText1.setText(" ");
                     }
                 }
@@ -521,17 +492,8 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
                             Transaction sentTransaction = thisDialog.getSendBitcoinNowAction().getTransaction();
                             if (sentTransaction != null
                                     && sentTransaction.getHash().equals(transactionWithChangedConfidence.getHash())) {
-//                                int peers = 0;
-//                                if (sentTransaction.getConfidence() != null && sentTransaction.getConfidence().getBroadcastBy() != null) {
-//                                    peers = sentTransaction.getConfidence().getBroadcastBy().size();
-//                                }
-                                
-                                // Do not show the initial - 'not seen by anything' message - confusing to users
-                                //if (peers > 0) {
-                                   confirmText2.setText(thisDialog.getConfidenceToolTip(sentTransaction
-                                            .getConfidence()));
-                                   confirmText2.setIcon(thisDialog.getConfidenceIcon(sentTransaction.getConfidence()));
-                                //}
+                                confirmText2.setText(thisDialog.getConfidenceToolTip(sentTransaction.getConfidence()));
+                                confirmText2.setIcon(thisDialog.getConfidenceIcon(sentTransaction.getConfidence()));
                             }
                         }
                     }

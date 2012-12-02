@@ -517,6 +517,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.anchor = GridBagConstraints.LINE_START;
         availableBalanceBTCButton = new HelpButton(availableBalanceHelpAction, controller);
         availableBalanceBTCButton.setBorder(BorderFactory.createEmptyBorder());
+        availableBalanceBTCButton.setToolTipText(tooltipText);
+
         headerPanel.add(availableBalanceBTCButton, constraints);
 
         constraints.gridx = 7;
@@ -529,6 +531,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.anchor = GridBagConstraints.LINE_START;
         availableBalanceFiatButton = new HelpButton(availableBalanceHelpAction, controller);
         availableBalanceFiatButton.setBorder(BorderFactory.createEmptyBorder());
+        availableBalanceFiatButton.setToolTipText(tooltipText);
+
         //availableBalanceFiatButton.setBorder(BorderFactory.createLineBorder(Color.RED));
 
         headerPanel.add(availableBalanceFiatButton, constraints);
