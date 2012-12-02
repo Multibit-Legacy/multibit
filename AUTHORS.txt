@@ -18,7 +18,9 @@ Baltar              - Polish
 Beetle              - Russian
 bitcoin.hu          - Hungarian
 bitcoinspot         - Dutch
+btctalk             - Persian
 corn3               - Portuguese
+CD1                 - Dutch
 D4CH                - Danish
 damnek              - Dutch
 druhy               - Slovak, French, German
@@ -29,6 +31,7 @@ Ermo                - Italian
 ffe                 - Arabic
 finway              - Simplified Chinese
 freemoney           - Spanish, German
+gaasje              - Dutch
 gilgilgil           - Hebrew
 grouver             - Dutch
 GSBank              - French

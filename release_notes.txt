@@ -1,5 +1,10 @@
 MultiBit release notes.
 
+03 Dec 2012 Version 0.4.15
++ Fiat currency support
++ I18n refresh
++ Mac now uses command-c and v for cut and paste
+
 29 Oct 2012 Version 0.4.14
 + Arabic 100%
 + Fix for chart balance not matching wallet balance

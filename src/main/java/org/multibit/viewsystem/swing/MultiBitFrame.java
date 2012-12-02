@@ -29,6 +29,7 @@ import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigInteger;
@@ -37,6 +38,7 @@ import java.util.Timer;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -47,9 +49,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
+import javax.swing.text.DefaultEditorKit;
 
 import org.joda.money.Money;
 import org.multibit.Localiser;
@@ -103,7 +107,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static final Logger log = LoggerFactory.getLogger(MultiBitFrame.class);
 
     private static final double PROPORTION_OF_VERTICAL_SCREEN_TO_FILL = 0.75D;
-    private static final double PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL = 0.80D;
+    private static final double PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL = 0.82D;
 
     public static final String EXAMPLE_LONG_FIELD_TEXT = "1JiM1UyTGqpLqgayxTPbWbcdVeoepmY6pK++++";
     public static final int WIDTH_OF_LONG_FIELDS = 300;
@@ -194,6 +198,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         this.localiser = controller.getLocaliser();
         this.thisFrame = this;
         this.application = application;
+        
+        // Remap to command v and C on a Mac
+        if (application != null && application.isMac()) {
+            InputMap im = (InputMap) UIManager.get("TextField.focusInputMap");
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.META_DOWN_MASK), DefaultEditorKit.copyAction);
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.META_DOWN_MASK), DefaultEditorKit.pasteAction);
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.META_DOWN_MASK), DefaultEditorKit.cutAction);
+        }
 
         FontSizer.INSTANCE.initialise(controller);
         UIManager.put("ToolTip.font", FontSizer.INSTANCE.getAdjustedDefaultFont());
