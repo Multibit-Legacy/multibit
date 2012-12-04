@@ -28,6 +28,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -55,10 +56,12 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.TabSet;
 import javax.swing.text.TabStop;
@@ -67,6 +70,7 @@ import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
+import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.exchange.ExchangeRate;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletTableData;
@@ -330,6 +334,9 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             table.setRowSelectionInterval(selectedRow, selectedRow);
         }
 
+        // This call is to refresh the first row - which for some unknown reason lags.
+        ShowTransactionsPanel.updateTransactions();
+
         table.invalidate();
         table.validate();
         table.repaint();
@@ -337,7 +344,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         invalidate();
         validate();
         repaint();
-
+         
         //log.debug("Table has " + table.getRowCount() + " rows");
     }
 
@@ -674,32 +681,29 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     }
     
     class DecimalAlignRenderer implements TableCellRenderer {
-        private final float POS = 40f;
-        private final int ALIGN = TabStop.ALIGN_DECIMAL;
-        private final int LEADER = TabStop.LEAD_NONE;
-        private final SimpleAttributeSet ATTRIBS = new SimpleAttributeSet();
-        private final TabStop TAB_STOP = new TabStop(POS, ALIGN, LEADER);
-        private final TabSet TAB_SET = new TabSet(new TabStop[] { TAB_STOP });
+        private final TabStop tabStopRight = new TabStop(40, TabStop.ALIGN_RIGHT, TabStop.LEAD_NONE);        
+        private final TabStop tabStopLeft = new TabStop(41, TabStop.ALIGN_LEFT, TabStop.LEAD_NONE);        
 
-        private StyledDocument document;
+        private final TabSet tabSet = new TabSet(new TabStop[] { tabStopRight, tabStopLeft});
+
+        private AttributeSet attributeSet;
         private JTextPane pane;
         private Style style;
             
         public DecimalAlignRenderer() {
-            document  = new DefaultStyledDocument();
-            pane = new JTextPane(document);
+            pane = new JTextPane();
 
+            StyleContext styleContext = StyleContext.getDefaultStyleContext();
+            attributeSet = styleContext.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.TabSet, tabSet);
+            pane.setParagraphAttributes(attributeSet, true);
             style = pane.addStyle("number", null);
-        
-            StyleConstants.setTabSet(ATTRIBS, TAB_SET);
-            
-            pane.setParagraphAttributes(ATTRIBS, false);
+
             pane.setOpaque(true);
             pane.setBorder(BorderFactory.createEmptyBorder());
          }
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                    boolean hasFocus, int row, int column) {
+                    boolean hasFocus, int row, int column) {  
             JPanel outerPanel = new JPanel(new BorderLayout());
             outerPanel.setOpaque(true);
             outerPanel.setBorder(BorderFactory.createEmptyBorder());
@@ -709,9 +713,28 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             //filler.setBorder(BorderFactory.createLineBorder(Color.RED));
             
             if (value == null) {
-                pane.setText("\t0.0");
+                pane.setText("\t" + controller.getLocaliser().bitcoinValueToString(BigInteger.ZERO, false, false));
             } else {
-                pane.setText("\t" + value.toString());
+                String contents = value.toString();
+                String splitChar;
+                String[] split;
+                if (controller.getLocaliser().bitcoinValueToString(BigInteger.ONE, false, false).indexOf(",") > -1) {
+                    // , as decimal point
+                    splitChar = ",";
+                    split = contents.split(",");
+                } else {
+                    // . as decimal point
+                    splitChar = ".";
+                    split = contents.split("\\.");
+                }
+                if (split == null) {
+                    pane.setText("");
+                } else if (split.length == 1) {
+                    pane.setText("\t" + split[0]);   
+                } else {
+                    pane.setText("\t" + split[0] + splitChar + "\t" + split[1]);
+                }
+                //log.debug("pane.getText = " + pane.getText());
             }            
  
              if ((value.toString()).indexOf("-") > -1) {
