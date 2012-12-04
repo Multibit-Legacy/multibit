@@ -15,9 +15,12 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -34,6 +37,7 @@ import java.util.Timer;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -42,6 +46,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextPane;
 import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -50,6 +55,13 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.TabSet;
+import javax.swing.text.TabStop;
 
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
@@ -129,6 +141,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         
         CurrencyConverter.INSTANCE.addCurrencyConverterListener(this);
+
     }
 
     private void initUI() {
@@ -185,8 +198,10 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             table.getColumnModel().getColumn(2).setCellRenderer(new TrailingJustifiedRenderer());
         }
 
-        // Amount trailing justified.
-        table.getColumnModel().getColumn(3).setCellRenderer(new TrailingJustifiedRenderer());
+        // Amount decimal aligned
+        DecimalAlignRenderer decimalAlignRenderer = new DecimalAlignRenderer();
+        table.getColumnModel().getColumn(3).setCellRenderer(decimalAlignRenderer);
+ 
 
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         TableColumn tableColumn = table.getColumnModel().getColumn(0); // status
@@ -205,13 +220,14 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
         tableColumn = table.getColumnModel().getColumn(3); // Amount (BTC).
         int amountBTCWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel") + " (BTC)"),
-                fontMetrics.stringWidth("000.00000000"));
+                fontMetrics.stringWidth("00000.000000000"));
         tableColumn.setPreferredWidth(amountBTCWidth);
+        tableColumn.setMinWidth(amountBTCWidth);
 
         if (CurrencyConverter.INSTANCE.isShowingFiat()) {
             tableColumn = table.getColumnModel().getColumn(4); // Amount (fiat).
             int amountFiatWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel") + " (USD)"),
-                    fontMetrics.stringWidth("000.00000000"));
+                    fontMetrics.stringWidth("000.0000"));
             tableColumn.setPreferredWidth(amountFiatWidth);
            
             table.getColumnModel().getColumn(4).setCellRenderer(new TrailingJustifiedRenderer());
@@ -227,6 +243,17 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         rowSorter.setSortKeys(sortKeys);
         Comparator<Date> comparator = new Comparator<Date>() {
             public int compare(Date o1, Date o2) {
+                if (o1 == null) {
+                    if (o2 == null) {
+                        return 0;
+                    } else {
+                        return 1;
+                    }
+                } else {
+                    if (o2 == null) {
+                        return -1;
+                    }
+                }
                 long n1 = o1.getTime();
                 long n2 = o2.getTime();
                 if (n1 == 0) {
@@ -248,6 +275,33 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         };
         rowSorter.setComparator(1, comparator);
 
+        Comparator<String> comparatorNumber = new Comparator<String>() {
+            public int compare(String o1, String o2) {
+                try {
+                    if (o1 == null) {
+                        if (o2 == null) {
+                            return 0;
+                        } else {
+                            return 1;
+                        }
+                    } else {
+                        if (o2 == null) {
+                            return -1;
+                        }
+                    }
+                    Double d1 = Double.parseDouble(o1);
+                    Double d2 = Double.parseDouble(o2);
+                    return Double.compare(d1, d2);
+                } catch (NumberFormatException nfe) {
+                    return o1.compareTo(o2);
+                }
+            }
+        };
+        rowSorter.setComparator(3, comparatorNumber);
+        if (CurrencyConverter.INSTANCE.isShowingFiat()) {
+            rowSorter.setComparator(4, comparatorNumber);
+        }
+        
         JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -283,7 +337,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         invalidate();
         validate();
         repaint();
-        
+
         //log.debug("Table has " + table.getRowCount() + " rows");
     }
 
@@ -616,6 +670,109 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             }
 
             return label;
+        }
+    }
+    
+    class DecimalAlignRenderer implements TableCellRenderer {
+        private final float POS = 40f;
+        private final int ALIGN = TabStop.ALIGN_DECIMAL;
+        private final int LEADER = TabStop.LEAD_NONE;
+        private final SimpleAttributeSet ATTRIBS = new SimpleAttributeSet();
+        private final TabStop TAB_STOP = new TabStop(POS, ALIGN, LEADER);
+        private final TabSet TAB_SET = new TabSet(new TabStop[] { TAB_STOP });
+
+        private StyledDocument document;
+        private JTextPane pane;
+        private Style style;
+            
+        public DecimalAlignRenderer() {
+            document  = new DefaultStyledDocument();
+            pane = new JTextPane(document);
+
+            style = pane.addStyle("number", null);
+        
+            StyleConstants.setTabSet(ATTRIBS, TAB_SET);
+            
+            pane.setParagraphAttributes(ATTRIBS, false);
+            pane.setOpaque(true);
+            pane.setBorder(BorderFactory.createEmptyBorder());
+         }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                    boolean hasFocus, int row, int column) {
+            JPanel outerPanel = new JPanel(new BorderLayout());
+            outerPanel.setOpaque(true);
+            outerPanel.setBorder(BorderFactory.createEmptyBorder());
+
+            JLabel filler = new JLabel();
+            filler.setOpaque(true);
+            //filler.setBorder(BorderFactory.createLineBorder(Color.RED));
+            
+            if (value == null) {
+                pane.setText("\t0.0");
+            } else {
+                pane.setText("\t" + value.toString());
+            }            
+ 
+             if ((value.toString()).indexOf("-") > -1) {
+                // debit
+                if (isSelected) {
+                    pane.setForeground(ColorAndFontConstants.SELECTION_DEBIT_FOREGROUND_COLOR);
+                } else {
+                    pane.setForeground(ColorAndFontConstants.DEBIT_FOREGROUND_COLOR);                    
+                }
+            } else {
+                // credit
+                if (isSelected) {
+                    pane.setForeground(ColorAndFontConstants.SELECTION_CREDIT_FOREGROUND_COLOR); 
+                } else {
+                    pane.setForeground(ColorAndFontConstants.CREDIT_FOREGROUND_COLOR);                     
+                }
+            }
+            
+            if (isSelected) {
+                selectedRow = row;
+                pane.setBackground(table.getSelectionBackground());
+                outerPanel.setBackground(table.getSelectionBackground());
+                filler.setBackground(table.getSelectionBackground());
+            } else {
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                        : ColorAndFontConstants.BACKGROUND_COLOR);
+                pane.setBackground(backgroundColor);
+                outerPanel.setBackground(backgroundColor);
+                filler.setBackground(backgroundColor);
+            }
+            
+            StyleConstants.setForeground(style, pane.getForeground());
+            StyleConstants.setBackground(style, pane.getBackground());
+            StyleConstants.setBold(style, false); 
+            StyleConstants.setFontSize(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getSize());
+            StyleConstants.setFontFamily(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getFontName());
+                       
+            pane.getStyledDocument().setCharacterAttributes(0, pane.getText().length(), pane.getStyle("number"), true);
+            
+            GridBagConstraints constraints = new GridBagConstraints();
+            constraints.fill = GridBagConstraints.HORIZONTAL;
+            constraints.gridx = 0;
+            constraints.gridy = 0;
+            constraints.weightx = 1;
+            constraints.weighty = 1;
+            constraints.gridwidth = 1;
+            constraints.gridheight = 1;
+            constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
+            outerPanel.add(pane, BorderLayout.LINE_START);
+                                  
+            constraints.fill = GridBagConstraints.BOTH;
+            constraints.gridx = 0;
+            constraints.gridy = 0;
+            constraints.weightx = 1;
+            constraints.weighty = 1;
+            constraints.gridwidth = 1;
+            constraints.gridheight = 1;
+            constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
+            outerPanel.add(filler, BorderLayout.CENTER);
+   
+            return outerPanel;
         }
     }
 
