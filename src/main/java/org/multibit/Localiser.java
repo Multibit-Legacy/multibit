@@ -30,7 +30,6 @@ import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 import org.joda.money.BigMoney;
-import org.joda.money.Money;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +74,8 @@ public class Localiser {
     private NumberFormat numberFormatNotLocalised;
     
     public static final int NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN = 8;
+    
+    private java.text.DecimalFormatSymbols decimalFormatSymbols;
 
     /**
      * Localiser hardwired to English - mainly for testing
@@ -108,6 +109,8 @@ public class Localiser {
         numberFormat.setMaximumFractionDigits(NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN);
         numberFormatNotLocalised = NumberFormat.getInstance(Locale.ENGLISH);
         numberFormatNotLocalised.setMaximumFractionDigits(NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN);
+        
+        decimalFormatSymbols = new java.text.DecimalFormatSymbols(locale);
     }
 
     synchronized public String getString(String key) {
@@ -182,6 +185,8 @@ public class Localiser {
 
         numberFormat = NumberFormat.getInstance(locale);
         numberFormat.setMaximumFractionDigits(NUMBER_OF_FRACTION_DIGITS_FOR_BITCOIN);
+        
+        decimalFormatSymbols = new java.text.DecimalFormatSymbols(locale);
 
         boolean foundIt = false;
         try {
@@ -317,5 +322,9 @@ public class Localiser {
         toReturn = numberFormat.format(value.getAmount().doubleValue());
 
         return toReturn;     
+    }
+
+    public java.text.DecimalFormatSymbols getDecimalFormatSymbols() {
+        return decimalFormatSymbols;
     }
 }

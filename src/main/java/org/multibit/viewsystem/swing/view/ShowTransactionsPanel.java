@@ -718,7 +718,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 String contents = value.toString();
                 String splitChar;
                 String[] split;
-                if (controller.getLocaliser().bitcoinValueToString(BigInteger.ONE, false, false).indexOf(",") > -1) {
+                if (controller.getLocaliser().getDecimalFormatSymbols().getDecimalSeparator() == ',') {
                     // , as decimal point
                     splitChar = ",";
                     split = contents.split(",");
