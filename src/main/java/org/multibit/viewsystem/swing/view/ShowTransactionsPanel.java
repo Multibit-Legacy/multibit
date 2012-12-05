@@ -28,7 +28,10 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -293,10 +296,19 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                             return -1;
                         }
                     }
-                    Double d1 = Double.parseDouble(o1);
-                    Double d2 = Double.parseDouble(o2);
-                    return Double.compare(d1, d2);
+                    DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
+                    formatter.setParseBigDecimal(true);
+
+                    // Convert spaces to non breakable space.
+                    o1 = o1.replaceAll(" ", "\u00A0");
+                    o2 = o2.replaceAll(" ", "\u00A0");
+
+                    BigDecimal parsedO1 = (BigDecimal) formatter.parse(o1);
+                    BigDecimal parsedO2 = (BigDecimal) formatter.parse(o2);
+                    return parsedO1.compareTo(parsedO2);
                 } catch (NumberFormatException nfe) {
+                    return o1.compareTo(o2);
+                } catch (ParseException e) {
                     return o1.compareTo(o2);
                 }
             }

@@ -242,8 +242,7 @@ public class WalletListPanel extends JPanel implements View, ComponentListener, 
                         int buttonPanelPreferredWidth = buttonPanel.getPreferredSize().width;
                         int loopPanelPreferredWidth = loopPanel.getPreferredSize().width;
                         if (buttonPanelPreferredWidth > loopPanelPreferredWidth) {
-                            loopPanel
-                                    .setPreferredSize(new Dimension(buttonPanelPreferredWidth, loopPanel.getPreferredSize().height));
+                            loopPanel.setPreferredSize(new Dimension(buttonPanelPreferredWidth, loopPanel.getPreferredSize().height));
                         }
 
                         outerPanel.add(loopPanel, constraints2);
