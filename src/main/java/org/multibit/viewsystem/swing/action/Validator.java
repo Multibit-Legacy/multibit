@@ -17,7 +17,6 @@ package org.multibit.viewsystem.swing.action;
 
 import java.math.BigInteger;
 
-import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
@@ -29,8 +28,8 @@ import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet.BalanceType;
 
 /**
- * A class to validate String addresses and amounts TODO - this should create a
- * validation state object and have a getter
+ * a class to validate String addresses and amounts
+ * TODO - this should create a validation state object and have a getter
  * 
  * @author jim
  * 
@@ -44,7 +43,7 @@ public class Validator {
     }
 
     /**
-     * Validate a String address and amount.
+     * Validate a String address and amount
      * 
      * @param address
      * @param amount
@@ -59,7 +58,7 @@ public class Validator {
     }
 
     /**
-     * Validate a String address.
+     * Validate a String address
      * 
      * @param address
      * @return
@@ -70,7 +69,7 @@ public class Validator {
     }
 
     private boolean validateAmount(String amount) {
-        // Copy amount to wallet preferences.
+        // copy amount to wallet preferences
         controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_VALUE, amount);
 
         Boolean amountValidatesOk = Boolean.TRUE;
@@ -80,26 +79,33 @@ public class Validator {
         Boolean amountIsMissing = Boolean.FALSE;
         Boolean amountIsNegativeOrZero = Boolean.FALSE;
 
-        CurrencyConverterResult converterResult = null;
-
-        // See if the amount is missing.
+        // see if the amount is missing
         if (amount == null || "".equals(amount)) {
             amountIsMissing = Boolean.TRUE;
             amountValidatesOk = Boolean.FALSE;
         } else {
-            // See if the amount is a parsable BTC amount.
-            Money parsedAmountBTC = null;
-
-            converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amount);
-            if (converterResult.isBtcMoneyValid()) {
-                parsedAmountBTC = converterResult.getBtcMoney();
-            } else {
+            // see if the amount is a number
+            BigInteger amountBigInteger = null;
+            try {
+                CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amount);
+                if (converterResult.isBtcMoneyValid()) {
+                    // parses ok
+                    amountBigInteger = converterResult.getBtcMoney().getAmount().toBigInteger();
+                } else {
+                    amountIsInvalid = Boolean.TRUE;
+                    amountValidatesOk = Boolean.FALSE;
+                }
+            } catch (NumberFormatException nfe) {
+                amountValidatesOk = Boolean.FALSE;
+                amountIsInvalid = Boolean.TRUE;
+            } catch (ArithmeticException ae) {
+                amountValidatesOk = Boolean.FALSE;
                 amountIsInvalid = Boolean.TRUE;
             }
 
-            // See if the amount is negative or zero.
+            // see if the amount is negative or zero
             if (amountValidatesOk.booleanValue()) {
-                if (parsedAmountBTC.isNegativeOrZero()) {
+                if (amountBigInteger.compareTo(BigInteger.ZERO) <= 0) {
                     amountValidatesOk = Boolean.FALSE;
                     amountIsNegativeOrZero = Boolean.TRUE;
                 } else {
@@ -110,10 +116,10 @@ public class Validator {
                     } else {
                         feeBigInteger = Utils.toNanoCoins(fee);
                     }
-                    BigInteger totalSpend = parsedAmountBTC.getAmount().toBigInteger().add(feeBigInteger);
+                    BigInteger totalSpend = amountBigInteger.add(feeBigInteger);
                     BigInteger availableBalance = controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE);
                     if (totalSpend.compareTo(availableBalance) > 0) {
-                        // Not enough funds.
+                        // not enough funds
                         amountValidatesOk = Boolean.FALSE;
                         notEnoughFunds = Boolean.TRUE;
                     }
@@ -133,16 +139,16 @@ public class Validator {
         Boolean addressIsInvalid = Boolean.TRUE;
 
         if (address != null && !address.isEmpty()) {
-            // Copy address to wallet preferences.
+            // copy address to wallet preferences
             controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE, address);
 
             try {
                 new Address(controller.getModel().getNetworkParameters(), address);
                 addressIsInvalid = Boolean.FALSE;
             } catch (AddressFormatException afe) {
-                // Carry on.
+                // carry on
             } catch (java.lang.StringIndexOutOfBoundsException e) {
-                // Carry on.
+                // carry on
             }
         } else {
             controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_VALUE, "");
@@ -154,8 +160,7 @@ public class Validator {
 
     public void clearValidationState() {
         controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_MISSING, Boolean.FALSE.toString());
-        controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO,
-                Boolean.FALSE.toString());
+        controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_NEGATIVE_OR_ZERO, Boolean.FALSE.toString());
         controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_AMOUNT_IS_INVALID, Boolean.FALSE.toString());
         controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_NOT_ENOUGH_FUNDS, Boolean.FALSE.toString());
         controller.getModel().setActiveWalletPreference(MultiBitModel.VALIDATION_ADDRESS_IS_INVALID, Boolean.FALSE.toString());

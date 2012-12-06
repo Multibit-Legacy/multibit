@@ -34,7 +34,7 @@ public class ColorAndFontConstants {
 
     public static Color BACKGROUND_COLOR;
     public static Color DARK_BACKGROUND_COLOR;
-    public static Color VERY_LIGHT_BACKGROUND_COLOR = new Color(251, 251, 254);
+    public static Color VERY_LIGHT_BACKGROUND_COLOR = new Color(250, 250, 253);
 
     public static Color SELECTION_FOREGROUND_COLOR = SystemColor.textHighlightText;
     public static Color SELECTION_BACKGROUND_COLOR = SystemColor.textHighlight;

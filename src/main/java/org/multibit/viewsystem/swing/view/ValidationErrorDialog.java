@@ -24,10 +24,8 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 
-import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
-import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -177,9 +175,9 @@ public class ValidationErrorDialog extends MultiBitDialog {
                         new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });
             }
             // There is an extra "BTC." in the translations - remove and add a return.
-            textToAdd = textToAdd.replaceAll("BTC\\.", "\\.\\\\n");
+            textToAdd = textToAdd.replaceAll("BTC\\.", "\\.");
              
-            String[] lines = textToAdd.split("\\\\n");
+            String[] lines = textToAdd.split("\\n");
             for (int i = 0; i < lines.length; i++) {
                 if (lines[i] != null && lines[i].length() > longestRow.length()) {
                     longestRow = lines[i];

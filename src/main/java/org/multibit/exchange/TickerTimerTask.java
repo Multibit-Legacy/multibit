@@ -39,7 +39,7 @@ import com.xeiam.xchange.service.marketdata.polling.PollingMarketDataService;
  */
 public class TickerTimerTask extends TimerTask {
 
-    public static final int DEFAULT_REPEAT_RATE = 60000; // milliseconds
+    public static final int DEFAULT_REPEAT_RATE = 600000; // milliseconds
 
     public static final int INITIAL_DELAY = 500; // milliseconds
 

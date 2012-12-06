@@ -41,7 +41,6 @@ import org.multibit.exchange.CurrencyConverterListener;
 import org.multibit.exchange.ExchangeRate;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
-import org.multibit.network.MultiBitDnsDiscovery;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -146,8 +145,6 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
             selectWalletPanelByFilename(activePerModelData.getWalletFilename());
         }
 
-        setPreferredSizes();
-        
         invalidate();
         revalidate();
         repaint();
@@ -202,29 +199,7 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
                 tabPanel);
  
         add(tabbedPane, BorderLayout.CENTER);
-        
-        setPreferredSizes();
     }
-
-    private void setPreferredSizes() {
-//      // Try to fix scroll bar for RTL.
-//      if (ComponentOrientation.RIGHT_TO_LEFT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
-//          int preferredWidth = Math.max(SingleWalletPanel.calculateNormalWidth(this) + LEFT_BORDER + RIGHT_BORDER,
-//                  buttonPanel.getPreferredSize().width);
-//          if (scrollPane.getVerticalScrollBar().isVisible()) {
-//              preferredWidth -= MultiBitFrame.SCROLL_BAR_DELTA;
-//          }
-//          int totalHeight = 0;
-//          for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
-//              if (buttonPanel != null) {
-//                      loopSingleWalletPanel.setPreferredSize(new Dimension(preferredWidth, loopSingleWalletPanel
-//                              .getPreferredSize().height));
-//              }
-//              totalHeight += loopSingleWalletPanel.getPreferredSize().height;
-//          }
-//          walletListPanel.setPreferredSize(new Dimension(preferredWidth, totalHeight));
-//      }        
-  }
 
     private JPanel createWalletListPanel() {
         walletListPanel = new JPanel();
@@ -444,8 +419,6 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
 
         walletListPanel.setPreferredSize(new Dimension(preferredWalletWidth, walletListPanel.getPreferredSize().height));
         mainFrame.calculateDividerPosition();
-        
-        setPreferredSizes();
     }
 
     @Override

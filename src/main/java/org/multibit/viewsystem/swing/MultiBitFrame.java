@@ -30,6 +30,7 @@ import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigInteger;
@@ -38,6 +39,7 @@ import java.util.Timer;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -48,9 +50,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
+import javax.swing.text.DefaultEditorKit;
 
 import org.joda.money.Money;
 import org.multibit.Localiser;
@@ -109,9 +113,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     private static final Logger log = LoggerFactory.getLogger(MultiBitFrame.class);
 
     private static final double PROPORTION_OF_VERTICAL_SCREEN_TO_FILL = 0.75D;
-    private static final double PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL = 0.80D;
+    private static final double PROPORTION_OF_HORIZONTAL_SCREEN_TO_FILL = 0.82D;
 
     public static final String EXAMPLE_LONG_FIELD_TEXT = "1JiM1UyTGqpLqgayxTPbWbcdVeoepmY6pK++++";
+    public static final String EXAMPLE_MEDIUM_FIELD_TEXT = "Typical phrase 0.12345678 BTC ($0.01)";
+
     public static final int WIDTH_OF_LONG_FIELDS = 300;
     public static final int WIDTH_OF_AMOUNT_FIELD = 150;
     public static final int WALLET_WIDTH_DELTA = 30;
@@ -207,6 +213,14 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         this.localiser = controller.getLocaliser();
         this.thisFrame = this;
         this.application = application;
+        
+        // Remap to command v and C on a Mac
+        if (application != null && application.isMac()) {
+            InputMap im = (InputMap) UIManager.get("TextField.focusInputMap");
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.META_DOWN_MASK), DefaultEditorKit.copyAction);
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.META_DOWN_MASK), DefaultEditorKit.pasteAction);
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.META_DOWN_MASK), DefaultEditorKit.cutAction);
+        }
 
         FontSizer.INSTANCE.initialise(controller);
         UIManager.put("ToolTip.font", FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -512,7 +526,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 controller.getLocaliser().getString("multiBitFrame.availableToSpend.tooltip"), "\n",
                 controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip") });
         availableBalanceLabelButton.setToolTipText(tooltipText);
-        //availableBalanceLabelButton.setBorder(BorderFactory.createLineBorder(Color.RED));
+        availableBalanceLabelButton.setBorder(BorderFactory.createEmptyBorder());
 
         constraints.gridx = 3;
         constraints.gridy = 2;
@@ -533,7 +547,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         availableBalanceBTCButton = new HelpButton(availableBalanceHelpAction, controller);
-        availableBalanceBTCButton.setBorder(BorderFactory.createLineBorder(Color.RED));
+        availableBalanceBTCButton.setBorder(BorderFactory.createEmptyBorder());
+        availableBalanceBTCButton.setToolTipText(tooltipText);
+
         headerPanel.add(availableBalanceBTCButton, constraints);
 
         constraints.gridx = 7;
@@ -546,7 +562,9 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         constraints.anchor = GridBagConstraints.LINE_START;
         availableBalanceFiatButton = new HelpButton(availableBalanceHelpAction, controller);
         availableBalanceFiatButton.setBorder(BorderFactory.createEmptyBorder());
-        availableBalanceFiatButton.setBorder(BorderFactory.createLineBorder(Color.RED));
+        availableBalanceFiatButton.setToolTipText(tooltipText);
+
+        //availableBalanceFiatButton.setBorder(BorderFactory.createLineBorder(Color.RED));
 
         headerPanel.add(availableBalanceFiatButton, constraints);
 
@@ -1131,12 +1149,16 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     /**
-     * One of the wallets has been reorganised due to a block chain reorganise.
+     * One of the wallets has been reorganised due to a block chain reorganise
      */
     @Override
     public void onReorganize(Wallet wallet) {
         log.info("Wallet has been reorganised.");
-        recreateAllViews(false);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                recreateAllViews(false);
+            }
+        });
     }
 
     public void onTransactionConfidenceChanged(Wallet wallet, final Transaction transaction) {

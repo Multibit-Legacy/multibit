@@ -62,6 +62,7 @@ import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.PeerGroup;
 import com.google.bitcoin.core.ProtocolException;
+import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
@@ -652,25 +653,35 @@ public class MultiBitService {
                 MessageManager.INSTANCE.addMessage(new Message(wse.getClass().getCanonicalName() + " " + wse.getMessage()));
             }
             
-            // Clone the sent transaction.
             try {
-                Transaction clonedSentTransaction = new Transaction(networkParameters, sendTransaction.bitcoinSerialize());
-                // Modify the transaction so that its TransactionOutputs are
-                // unspent what is spent from the perspective of the sender is available
-                // to the recipient.
-                clonedSentTransaction.markOutputsAsSpendable();
-
-                // Notify other wallets of the send (it might be a send to them).
+                // Notify other wallets of the send (it might be a send to or from them).
                 List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();
 
                 if (perWalletModelDataList != null) {
                     for (PerWalletModelData loopPerWalletModelData : perWalletModelDataList) {
                         if (!perWalletModelData.getWalletFilename().equals(loopPerWalletModelData.getWalletFilename())) {
-                            controller.onCoinsReceived(loopPerWalletModelData.getWallet(), clonedSentTransaction, null, null);
+                            Wallet loopWallet = loopPerWalletModelData.getWallet();
+                            if (loopWallet.isTransactionRelevant(sendTransaction, true)) {
+                                // The perWalletModelData is marked as dirty.
+                                if (perWalletModelData.getWalletInfo() != null) {
+                                    synchronized(perWalletModelData.getWalletInfo()) {
+                                        perWalletModelData.setDirty(true);
+                                    }
+                                } else {
+                                    perWalletModelData.setDirty(true);
+                                }
+                                if (loopWallet.getTransaction(sendTransaction.getHash()) == null) {
+                                    log.debug("MultiBit adding a new pending transaction for the wallet '"
+                                            + perWalletModelData.getWalletDescription() + "'\n" + sendTransaction.toString());
+                                    loopWallet.receivePending(sendTransaction);
+                                }
+                            }  
                         }
                     }
                 }
-            } catch (ProtocolException e) {
+            } catch (ScriptException e) {
+                e.printStackTrace();
+            } catch (VerificationException e) {
                 e.printStackTrace();
             }
         } 

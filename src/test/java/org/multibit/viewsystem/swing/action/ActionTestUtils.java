@@ -9,6 +9,8 @@ import org.multibit.controller.MultiBitController;
 import com.google.bitcoin.crypto.EncrypterDecrypter;
 import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
 import com.google.bitcoin.crypto.ScryptParameters;
+
+import org.multibit.exchange.CurrencyConverter;
 import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
@@ -36,6 +38,8 @@ public class ActionTestUtils {
          
          controller.setLocaliser(localiser);
          controller.setModel(model);
+         
+         CurrencyConverter.INSTANCE.initialise(controller);
          
          return controller;
      }

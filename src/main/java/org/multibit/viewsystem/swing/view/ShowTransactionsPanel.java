@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
@@ -25,6 +26,10 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -42,6 +47,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextPane;
 import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -50,6 +56,13 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.TabSet;
+import javax.swing.text.TabStop;
 
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
@@ -109,6 +122,9 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     private int selectedRow = -1;
     
     public static final int UPDATE_TRANSACTIONS_DELAY_TIME = 333; // milliseconds
+    
+    public static final int DISPLAY_COUNT_LIMIT = 6;
+    private int displayCount;
 
     /**
      * Timer used to condense multiple updates
@@ -129,6 +145,8 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         
         CurrencyConverter.INSTANCE.addCurrencyConverterListener(this);
+        
+        displayCount = 0;;
     }
 
     private void initUI() {
@@ -185,8 +203,10 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             table.getColumnModel().getColumn(2).setCellRenderer(new TrailingJustifiedRenderer());
         }
 
-        // Amount trailing justified.
-        table.getColumnModel().getColumn(3).setCellRenderer(new TrailingJustifiedRenderer());
+        // Amount decimal aligned
+        DecimalAlignRenderer decimalAlignRenderer = new DecimalAlignRenderer();
+        table.getColumnModel().getColumn(3).setCellRenderer(decimalAlignRenderer);
+ 
 
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         TableColumn tableColumn = table.getColumnModel().getColumn(0); // status
@@ -205,13 +225,14 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
         tableColumn = table.getColumnModel().getColumn(3); // Amount (BTC).
         int amountBTCWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel") + " (BTC)"),
-                fontMetrics.stringWidth("000.00000000"));
+                fontMetrics.stringWidth("00000.000000000"));
         tableColumn.setPreferredWidth(amountBTCWidth);
+        tableColumn.setMinWidth(amountBTCWidth);
 
         if (CurrencyConverter.INSTANCE.isShowingFiat()) {
             tableColumn = table.getColumnModel().getColumn(4); // Amount (fiat).
             int amountFiatWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel") + " (USD)"),
-                    fontMetrics.stringWidth("000.00000000"));
+                    fontMetrics.stringWidth("000.0000"));
             tableColumn.setPreferredWidth(amountFiatWidth);
            
             table.getColumnModel().getColumn(4).setCellRenderer(new TrailingJustifiedRenderer());
@@ -227,6 +248,17 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         rowSorter.setSortKeys(sortKeys);
         Comparator<Date> comparator = new Comparator<Date>() {
             public int compare(Date o1, Date o2) {
+                if (o1 == null) {
+                    if (o2 == null) {
+                        return 0;
+                    } else {
+                        return 1;
+                    }
+                } else {
+                    if (o2 == null) {
+                        return -1;
+                    }
+                }
                 long n1 = o1.getTime();
                 long n2 = o2.getTime();
                 if (n1 == 0) {
@@ -248,6 +280,42 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         };
         rowSorter.setComparator(1, comparator);
 
+        Comparator<String> comparatorNumber = new Comparator<String>() {
+            public int compare(String o1, String o2) {
+                try {
+                    if (o1 == null) {
+                        if (o2 == null) {
+                            return 0;
+                        } else {
+                            return 1;
+                        }
+                    } else {
+                        if (o2 == null) {
+                            return -1;
+                        }
+                    }
+                    DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
+                    formatter.setParseBigDecimal(true);
+
+                    // Convert spaces to non breakable space.
+                    o1 = o1.replaceAll(" ", "\u00A0");
+                    o2 = o2.replaceAll(" ", "\u00A0");
+
+                    BigDecimal parsedO1 = (BigDecimal) formatter.parse(o1);
+                    BigDecimal parsedO2 = (BigDecimal) formatter.parse(o2);
+                    return parsedO1.compareTo(parsedO2);
+                } catch (NumberFormatException nfe) {
+                    return o1.compareTo(o2);
+                } catch (ParseException e) {
+                    return o1.compareTo(o2);
+                }
+            }
+        };
+        rowSorter.setComparator(3, comparatorNumber);
+        if (CurrencyConverter.INSTANCE.isShowingFiat()) {
+            rowSorter.setComparator(4, comparatorNumber);
+        }
+        
         JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -268,14 +336,17 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
     @Override
     public void displayView() {
-        //log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this));
-
+        //log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this) + " for wallet " + controller.getModel().getActiveWalletFilename());
+        
+        if (controller.getModel().getActiveWallet() == null) {
+            return;
+        }
         walletTableModel.recreateWalletData();
 
         if (selectedRow > -1 && selectedRow < table.getRowCount()) {
             table.setRowSelectionInterval(selectedRow, selectedRow);
         }
-
+        
         table.invalidate();
         table.validate();
         table.repaint();
@@ -283,7 +354,13 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         invalidate();
         validate();
         repaint();
-        
+
+        // If it is the first showing - schedule to redisplay.
+        // This is to get rid of the bug on the first row amount (BTC) display.
+        if (displayCount < DISPLAY_COUNT_LIMIT) {
+            displayCount++;
+            ShowTransactionsPanel.updateTransactions();
+        }
         //log.debug("Table has " + table.getRowCount() + " rows");
     }
 
@@ -616,6 +693,125 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             }
 
             return label;
+        }
+    }
+    
+    class DecimalAlignRenderer implements TableCellRenderer {
+        private final TabStop tabStopRight = new TabStop(40, TabStop.ALIGN_RIGHT, TabStop.LEAD_NONE);        
+        private final TabStop tabStopLeft = new TabStop(41, TabStop.ALIGN_LEFT, TabStop.LEAD_NONE);        
+
+        private final TabSet tabSet = new TabSet(new TabStop[] { tabStopRight, tabStopLeft});
+
+        private AttributeSet attributeSet;
+        private JTextPane pane;
+        private Style style;
+            
+        public DecimalAlignRenderer() {
+            pane = new JTextPane();
+
+            StyleContext styleContext = StyleContext.getDefaultStyleContext();
+            attributeSet = styleContext.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.TabSet, tabSet);
+            pane.setParagraphAttributes(attributeSet, true);
+            style = pane.addStyle("number", null);
+
+            pane.setOpaque(true);
+            pane.setBorder(BorderFactory.createEmptyBorder());
+         }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                    boolean hasFocus, int row, int column) {  
+            JPanel outerPanel = new JPanel(new BorderLayout());
+            outerPanel.setOpaque(true);
+            outerPanel.setBorder(BorderFactory.createEmptyBorder());
+
+            JLabel filler = new JLabel();
+            filler.setOpaque(true);
+            //filler.setBorder(BorderFactory.createLineBorder(Color.RED));
+            
+            if (value == null) {
+                pane.setText("\t" + controller.getLocaliser().bitcoinValueToString(BigInteger.ZERO, false, false));
+            } else {
+                String contents = value.toString();
+                String splitChar;
+                String[] split;
+                if (controller.getLocaliser().getDecimalFormatSymbols().getDecimalSeparator() == ',') {
+                    // , as decimal point
+                    splitChar = ",";
+                    split = contents.split(",");
+                } else {
+                    // . as decimal point
+                    splitChar = ".";
+                    split = contents.split("\\.");
+                }
+                if (split == null) {
+                    pane.setText("");
+                } else if (split.length == 1) {
+                    pane.setText("\t" + split[0]);   
+                } else {
+                    pane.setText("\t" + split[0] + splitChar + "\t" + split[1]);
+                }
+                //log.debug("pane.getText = " + pane.getText());
+            }            
+ 
+             if ((value.toString()).indexOf("-") > -1) {
+                // debit
+                if (isSelected) {
+                    pane.setForeground(ColorAndFontConstants.SELECTION_DEBIT_FOREGROUND_COLOR);
+                } else {
+                    pane.setForeground(ColorAndFontConstants.DEBIT_FOREGROUND_COLOR);                    
+                }
+            } else {
+                // credit
+                if (isSelected) {
+                    pane.setForeground(ColorAndFontConstants.SELECTION_CREDIT_FOREGROUND_COLOR); 
+                } else {
+                    pane.setForeground(ColorAndFontConstants.CREDIT_FOREGROUND_COLOR);                     
+                }
+            }
+            
+            if (isSelected) {
+                selectedRow = row;
+                pane.setBackground(table.getSelectionBackground());
+                outerPanel.setBackground(table.getSelectionBackground());
+                filler.setBackground(table.getSelectionBackground());
+            } else {
+                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                        : ColorAndFontConstants.BACKGROUND_COLOR);
+                pane.setBackground(backgroundColor);
+                outerPanel.setBackground(backgroundColor);
+                filler.setBackground(backgroundColor);
+            }
+            
+            StyleConstants.setForeground(style, pane.getForeground());
+            StyleConstants.setBackground(style, pane.getBackground());
+            StyleConstants.setBold(style, false); 
+            StyleConstants.setFontSize(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getSize());
+            StyleConstants.setFontFamily(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getFontName());
+                       
+            pane.getStyledDocument().setCharacterAttributes(0, pane.getText().length(), pane.getStyle("number"), true);
+            
+            GridBagConstraints constraints = new GridBagConstraints();
+            constraints.fill = GridBagConstraints.HORIZONTAL;
+            constraints.gridx = 0;
+            constraints.gridy = 0;
+            constraints.weightx = 1;
+            constraints.weighty = 1;
+            constraints.gridwidth = 1;
+            constraints.gridheight = 1;
+            constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
+            outerPanel.add(pane, BorderLayout.LINE_START);
+                                  
+            constraints.fill = GridBagConstraints.BOTH;
+            constraints.gridx = 0;
+            constraints.gridy = 0;
+            constraints.weightx = 1;
+            constraints.weighty = 1;
+            constraints.gridwidth = 1;
+            constraints.gridheight = 1;
+            constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
+            outerPanel.add(filler, BorderLayout.CENTER);
+   
+            return outerPanel;
         }
     }
 

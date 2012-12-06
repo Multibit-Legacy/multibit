@@ -441,7 +441,9 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     public static int calculateNormalWidth(JComponent component) {
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
         FontMetrics fontMetrics = component.getFontMetrics(font);
-        return (int) (fontMetrics.getMaxAdvance() * WIDTH_OF_TEXT_FIELD * 0.95 + WIDTH_DELTA);
+        //return (int) (fontMetrics.getMaxAdvance() * WIDTH_OF_TEXT_FIELD * 0.85 + WIDTH_DELTA);
+        return (int) (fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_MEDIUM_FIELD_TEXT) + WIDTH_DELTA) ;
+        
     }
     
     private int calculateMinimumWidth(int normalWidth) {
@@ -731,7 +733,8 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
                 walletVersion.getLocalisationKey(), walletVersion.getLocalisationKey(), HelpContentsPanel.HELP_WALLET_FORMATS_URL);
 
         MultiBitButton walletFormatLabel = new HelpButton(walletFormatHelpAction, controller);
-        walletFormatLabel.setText(controller.getLocaliser().getString("singleWalletPanel.walletFormat.text"));
+        String walletFormatString = WhitespaceTrimmer.trim(controller.getLocaliser().getString("singleWalletPanel.walletFormat.text").replaceAll(":", "")) + " : ";
+        walletFormatLabel.setText(walletFormatString);
         walletFormatLabel.setBorder(BorderFactory.createEmptyBorder());
         walletFormatLabel.setContentAreaFilled(false);
         walletFormatLabel.setHorizontalAlignment(SwingConstants.LEADING);
