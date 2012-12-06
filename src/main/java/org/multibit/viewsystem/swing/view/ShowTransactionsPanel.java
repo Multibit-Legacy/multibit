@@ -128,6 +128,9 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     private int selectedRow = -1;
     
     public static final int UPDATE_TRANSACTIONS_DELAY_TIME = 333; // milliseconds
+    
+    public static final int DISPLAY_COUNT_LIMIT = 6;
+    private int displayCount;
 
     /**
      * Timer used to condense multiple updates
@@ -148,7 +151,8 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         
         CurrencyConverter.INSTANCE.addCurrencyConverterListener(this);
-
+        
+        displayCount = 0;;
     }
 
     private void initUI() {
@@ -338,17 +342,14 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
     @Override
     public void displayView() {
-        //log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this));
-
+        log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this));
+        
         walletTableModel.recreateWalletData();
 
         if (selectedRow > -1 && selectedRow < table.getRowCount()) {
             table.setRowSelectionInterval(selectedRow, selectedRow);
         }
-
-        // This call is to refresh the first row - which for some unknown reason lags.
-        ShowTransactionsPanel.updateTransactions();
-
+        
         table.invalidate();
         table.validate();
         table.repaint();
@@ -356,7 +357,13 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         invalidate();
         validate();
         repaint();
-         
+
+        // If it is the first showing - schedule to redisplay.
+        // This is to get rid of the bug on the first row amount (BTC) display.
+        if (displayCount < DISPLAY_COUNT_LIMIT) {
+            displayCount++;
+            ShowTransactionsPanel.updateTransactions();
+        }
         //log.debug("Table has " + table.getRowCount() + " rows");
     }
 

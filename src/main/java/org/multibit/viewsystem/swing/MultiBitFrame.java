@@ -970,7 +970,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             return;
         }
         final MultiBitFrame thisFrame = this;
-
+        final int finalViewToDisplay = viewToDisplay;
+        
         SwingUtilities.invokeLater(new Runnable() {
             @SuppressWarnings("deprecation")
             public void run() {

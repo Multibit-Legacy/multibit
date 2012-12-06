@@ -65,7 +65,7 @@ public class TickerTablePanel extends JPanel {
     private static final int HORIZONTAL_DELTA = 30;
     private static final int SCROLLBAR_WIDTH = 20;
     private static final int PER_COLUMN_DELTA = 2;
-
+    
     FontMetrics fontMetrics;
     Font font;
 
