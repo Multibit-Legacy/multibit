@@ -342,8 +342,11 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
     @Override
     public void displayView() {
-        log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this));
+        //log.debug("ShowTransactionsPanel#displayView called on panel " + System.identityHashCode(this) + " for wallet " + controller.getModel().getActiveWalletFilename());
         
+        if (controller.getModel().getActiveWallet() == null) {
+            return;
+        }
         walletTableModel.recreateWalletData();
 
         if (selectedRow > -1 && selectedRow < table.getRowCount()) {
