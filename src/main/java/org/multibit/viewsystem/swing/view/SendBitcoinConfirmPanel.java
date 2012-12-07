@@ -145,43 +145,14 @@ public class SendBitcoinConfirmPanel extends JPanel {
         sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
         String sendAmount = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT) + " " + controller.getLocaliser(). getString("sendBitcoinPanel.amountUnitLabel");
 
-        String sendAmountLocalised = "";
-        if (sendAmount != null && !"".equals(sendAmount)) {
-            CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(sendAmount);
-            
-            if (converterResult.isBtcMoneyValid()) {
-                sendAmountLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
-            }
-        }
-        if (dataProvider != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
-            String sendAmountFiat = dataProvider.getAmountFiat();
-            if (sendAmountFiat != null && !"".equals(sendAmountFiat)) {
-                CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToFiat(sendAmountFiat);
-                if (converterResult.isFiatMoneyValid()) {
-                sendAmountLocalised = sendAmountLocalised + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(converterResult.getFiatMoney(), true, true);
-                }
-            }
-        }
+        String sendAmountLocalised = CurrencyConverter.INSTANCE.prettyPrint(sendAmount);
+
         String fee = controller.getModel().getUserPreference(MultiBitModel.SEND_FEE);
         if (fee == null || fee == "") {
             fee = controller.getLocaliser().bitcoinValueToString(MultiBitModel.SEND_FEE_DEFAULT, false, false);
         }
 
-        String sendFeeLocalised = "";
-        if (fee != null && !"".equals(fee)) {
-            CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(fee);
-            
-            if (converterResult.isBtcMoneyValid()) {
-                sendFeeLocalised = CurrencyConverter.INSTANCE.getBTCAsLocalisedString(converterResult.getBtcMoney());
-            }
-        }
-        // Work out what the fee is in fiat.
-        if (CurrencyConverter.INSTANCE.isShowingFiat()) {
-            Money feeAsFiatAsMoney = CurrencyConverter.INSTANCE.convertFromBTCToFiat(Utils.toNanoCoins(fee));
-            if (feeAsFiatAsMoney != null) {
-                sendFeeLocalised = sendFeeLocalised + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(feeAsFiatAsMoney, true, true);
-            }
-        }
+        String sendFeeLocalised = CurrencyConverter.INSTANCE.prettyPrint(fee);
     
         GridBagConstraints constraints = new GridBagConstraints();
 
