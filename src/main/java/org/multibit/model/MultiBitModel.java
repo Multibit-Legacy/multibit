@@ -62,6 +62,7 @@ public class MultiBitModel {
     // MultiBit start up.
     public static final String TEST_OR_PRODUCTION_NETWORK = "testOrProductionNetwork";
     public static final String TEST_NETWORK_VALUE = "test";
+    public static final String TESTNET3_VALUE = "testnet3";
     public static final String PRODUCTION_NETWORK_VALUE = "production";
     public static final String WALLET_FILENAME = "walletFilename";
 
@@ -837,9 +838,13 @@ public class MultiBitModel {
             testOrProduction = MultiBitModel.PRODUCTION_NETWORK_VALUE;
             userPreferences.put(MultiBitModel.TEST_OR_PRODUCTION_NETWORK, testOrProduction);
         }
-        boolean useTestNet = MultiBitModel.TEST_NETWORK_VALUE.equals(testOrProduction);
-
-	    return useTestNet ? NetworkParameters.testNet() : NetworkParameters.prodNet();
+        if (MultiBitModel.TEST_NETWORK_VALUE.equalsIgnoreCase(testOrProduction)) {
+            return NetworkParameters.testNet();
+        } else if (MultiBitModel.TESTNET3_VALUE.equalsIgnoreCase(testOrProduction)) {
+            return NetworkParameters.testNet3();
+        } else {
+            return NetworkParameters.prodNet();
+        }
 	}
 	   
     public boolean thereIsNoActiveWallet() {

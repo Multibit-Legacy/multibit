@@ -89,13 +89,15 @@ public class MultiBitService {
     public static final int MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN = 6;
 
     public static final String MULTIBIT_PREFIX = "multibit";
-    public static final String TEST_NET_PREFIX = "testnet";
+    public static final String TESTNET_PREFIX = "testnet";
+    public static final String TESTNET3_PREFIX = "testnet3";
     public static final String SEPARATOR = "-";
 
     public static final String BLOCKCHAIN_SUFFIX = ".blockchain";
     public static final String WALLET_SUFFIX = ".wallet";
 
-    public static final String IRC_CHANNEL_TEST = "#bitcoinTEST";;
+    public static final String IRC_CHANNEL_TEST = "#bitcoinTEST";
+    public static final String IRC_CHANNEL_TESTNET3 = "#bitcoinTEST3";
 
     static boolean restartListenerHasBeenAddedToPeerGroup = false;
 
@@ -230,7 +232,9 @@ public class MultiBitService {
             }
         } else {
             // Use DNS for production, IRC for test.
-            if (NetworkParameters.testNet().equals(controller.getModel().getNetworkParameters())){
+            if ("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943".equals(controller.getModel().getNetworkParameters().genesisBlock.getHashAsString())){
+                peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TESTNET3));
+            } else if (NetworkParameters.testNet().equals(controller.getModel().getNetworkParameters())){
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
             } else {
                 peerGroup.addPeerDiscovery(new MultiBitDnsDiscovery(networkParameters));
@@ -244,7 +248,14 @@ public class MultiBitService {
     public static String getFilePrefix() {
         MultiBitController controller = MultiBit.getController();
         MultiBitModel model = controller.getModel();
-        return NetworkParameters.testNet().equals(model.getNetworkParameters()) ? MULTIBIT_PREFIX + SEPARATOR + TEST_NET_PREFIX : MULTIBIT_PREFIX;
+        // testnet3
+        if ("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943".equals(model.getNetworkParameters().genesisBlock.getHashAsString())) {
+            return MULTIBIT_PREFIX + SEPARATOR + TESTNET3_PREFIX;
+        } else if (NetworkParameters.testNet().equals(model.getNetworkParameters())) {
+            return MULTIBIT_PREFIX + SEPARATOR + TESTNET_PREFIX;
+        } else {
+            return MULTIBIT_PREFIX;
+        }
     }
 
     /**
