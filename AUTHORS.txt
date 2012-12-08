@@ -18,16 +18,20 @@ Baltar              - Polish
 Beetle              - Russian
 bitcoin.hu          - Hungarian
 bitcoinspot         - Dutch
+btctalk             - Persian
 corn3               - Portuguese
+CD1                 - Dutch
 D4CH                - Danish
 damnek              - Dutch
 druhy               - Slovak, French, German
 DutchBrat           - Dutch
 Emin Gun Sirer      - Turkish
+eqawasmi            - Arabic
 Ermo                - Italian
 ffe                 - Arabic
 finway              - Simplified Chinese
 freemoney           - Spanish, German
+gaasje              - Dutch
 gilgilgil           - Hebrew
 grouver             - Dutch
 GSBank              - French
@@ -46,6 +50,7 @@ JeromeS             - Arabic
 jesusangel          - Spanish
 Jonny Heggheim      - Norwegian
 Katya Rowe          - Russian
+Kayleigh            - Portuguese
 Kishor Kumar        - Hindi
 knight22            - French
 Kupsi               - Norwegian
@@ -55,6 +60,7 @@ majdom              - Polish
 mazi                - Slovenian
 Marx1996xvx         - Polish
 Mats Henricson      - Swedish
+MBH                 - Arabic
 Memory Dealers      - Japanese
 mohammad_rafigh     - Persian
 moole               - Czech
@@ -70,6 +76,7 @@ raymccarthy         - Swedish
 rbreban             - Spanish
 robsned             - Hindi
 ronimo              - French
+samer               - Arabic
 sasha               - Russian
 spiccioli           - Italian
 stlucifer           - Hindi
