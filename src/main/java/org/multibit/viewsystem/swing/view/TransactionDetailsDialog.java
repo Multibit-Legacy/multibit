@@ -107,6 +107,8 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     private JScrollPane detailScrollPane;
 
     private SimpleDateFormat dateFormatter;
+    
+    private boolean initialisedOk = false;
 
     /**
      * Creates a new {@link TransactionDetailsDialog}.
@@ -116,17 +118,25 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         this.controller = controller;
         this.rowTableData = rowTableData;
 
-        dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
+        try {
+            dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
-        ImageIcon imageIcon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_ICON_FILE);
-        if (imageIcon != null) {
-            setIconImage(imageIcon.getImage());
+            ImageIcon imageIcon = ImageLoader.createImageIcon(ImageLoader.MULTIBIT_ICON_FILE);
+            if (imageIcon != null) {
+                setIconImage(imageIcon.getImage());
+            }
+
+            initUI();
+
+            applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+            okButton.requestFocusInWindow();
+            initialisedOk = true;
+        } catch (Exception e) {
+            String errorMessage = e.getClass().getName() + " " + e.getMessage();
+            log.error(errorMessage);
+            MessageManager.INSTANCE.addMessage(new Message(controller.getLocaliser().getString(
+                    "privateKeysHandler.thereWasAnException", new String[] { errorMessage })));
         }
-
-        initUI();
-
-        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        okButton.requestFocusInWindow();
     }
 
     /**
@@ -582,5 +592,9 @@ public class TransactionDetailsDialog extends MultiBitDialog {
             Message message = new Message("Cannot display URL '" + uri.toString() + "'. Error was '" + ioe.getMessage() + "'");
             MessageManager.INSTANCE.addMessage(message);
         }
+    }
+
+    public boolean isInitialisedOk() {
+        return initialisedOk;
     }
 }

@@ -63,6 +63,7 @@ public class MultiBitModel {
     // MultiBit start up.
     public static final String TEST_OR_PRODUCTION_NETWORK = "testOrProductionNetwork";
     public static final String TEST_NETWORK_VALUE = "test";
+    public static final String TESTNET3_VALUE = "testnet3";
     public static final String PRODUCTION_NETWORK_VALUE = "production";
     public static final String WALLET_FILENAME = "walletFilename";
 

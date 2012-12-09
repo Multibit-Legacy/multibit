@@ -23,6 +23,7 @@ multibit.properties. Multibit looks in a few places for this file:
 
 Wherever this file is found, that directory is used as the application data directory for Multibit.
 
+
 Connect to single node
 ----------------------
 
@@ -40,12 +41,11 @@ or an IP address. E.g, if your node is `12.34.56.78` you would put:
 singleNodeConnection=12.34.56.78
 ```
 
-Using Testnet
--------------
 
-To use the testnet, set the property "testOrProductionNetwork" 
+Testnet / testnet3
+-------------------
+To use the testnet set the property "testOrProductionNetwork" 
 to be "test".
 
-```
-testOrProductionNetwork=test
-```
+To use the testnet3 set the property "testOrProductionNetwork" 
+to be "testnet3".

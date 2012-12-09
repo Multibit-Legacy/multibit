@@ -55,6 +55,8 @@ public class ShowTransactionDetailsAction extends AbstractAction {
      */
     public void actionPerformed(ActionEvent e) {
         final TransactionDetailsDialog transactionDetailsDialog = new TransactionDetailsDialog(controller, mainFrame, rowTableData);
-        transactionDetailsDialog.setVisible(true);
+        if (transactionDetailsDialog != null && transactionDetailsDialog.isInitialisedOk() ) {
+            transactionDetailsDialog.setVisible(true);
+        }
     }
 }

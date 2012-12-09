@@ -752,7 +752,8 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 if (split == null) {
                     pane.setText("");
                 } else if (split.length == 1) {
-                    pane.setText("\t" + split[0]);   
+                    // Integer amount - no decimal point. Add a space to pad it left.
+                    pane.setText("\t" + split[0] + " ");   
                 } else {
                     pane.setText("\t" + split[0] + splitChar + "\t" + split[1]);
                 }
