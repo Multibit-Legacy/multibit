@@ -19,10 +19,12 @@ Beetle              - Russian
 bitcoin.hu          - Hungarian
 bitcoinspot         - Dutch
 btctalk             - Persian
+corentingc          - French
 corn3               - Portuguese
 CD1                 - Dutch
 D4CH                - Danish
 damnek              - Dutch
+dr-nix              - Dutch
 druhy               - Slovak, French, German
 DutchBrat           - Dutch
 Emin Gun Sirer      - Turkish

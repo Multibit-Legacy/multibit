@@ -41,8 +41,8 @@ public class ColorAndFontConstants {
     
     public static Color CREDIT_FOREGROUND_COLOR = Color.GREEN.darker().darker();
     public static Color DEBIT_FOREGROUND_COLOR = Color.RED.darker();
-    public static Color SELECTION_CREDIT_FOREGROUND_COLOR = new Color(100, 255, 100);
-    public static Color SELECTION_DEBIT_FOREGROUND_COLOR = new Color(255, 170, 170);
+    public static Color SELECTION_CREDIT_FOREGROUND_COLOR = SystemColor.textHighlightText; // new Color(100, 255, 100);
+    public static Color SELECTION_DEBIT_FOREGROUND_COLOR = SystemColor.textHighlightText; //new Color(255, 170, 170);
     
     static {
         init();

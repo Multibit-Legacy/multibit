@@ -1,4 +1,12 @@
 MultiBit release notes.
+10 Dec 2012 Version 0.4.16
++ Everything from v 0.5.6beta
++ More error handling on show transaction details dialog.
+
+08 Dec 2012 Version 0.5.6beta
++ Everything from 0.4.15
++ Amount in BTC decimal aligned
++ testnet3 support
 
 03 Dec 2012 Version 0.4.15
 + Fiat currency support

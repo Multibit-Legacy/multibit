@@ -605,14 +605,14 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             if ((value + "").indexOf("-") > -1) {
                 // debit
                 if (isSelected) {
-                    label.setForeground(ColorAndFontConstants.SELECTION_DEBIT_FOREGROUND_COLOR);
+                    label.setForeground(table.getSelectionForeground());
                 } else {
                     label.setForeground(ColorAndFontConstants.DEBIT_FOREGROUND_COLOR);                    
                 }
             } else {
                 // debit
                 if (isSelected) {
-                    label.setForeground(ColorAndFontConstants.SELECTION_CREDIT_FOREGROUND_COLOR); 
+                    label.setForeground(table.getSelectionForeground()); 
                 } else {
                     label.setForeground(ColorAndFontConstants.CREDIT_FOREGROUND_COLOR);                     
                 }
@@ -763,14 +763,14 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
              if ((value.toString()).indexOf("-") > -1) {
                 // debit
                 if (isSelected) {
-                    pane.setForeground(ColorAndFontConstants.SELECTION_DEBIT_FOREGROUND_COLOR);
+                    pane.setForeground(table.getSelectionForeground());
                 } else {
                     pane.setForeground(ColorAndFontConstants.DEBIT_FOREGROUND_COLOR);                    
                 }
             } else {
                 // credit
                 if (isSelected) {
-                    pane.setForeground(ColorAndFontConstants.SELECTION_CREDIT_FOREGROUND_COLOR); 
+                    pane.setForeground(table.getSelectionForeground()); 
                 } else {
                     pane.setForeground(ColorAndFontConstants.CREDIT_FOREGROUND_COLOR);                     
                 }
