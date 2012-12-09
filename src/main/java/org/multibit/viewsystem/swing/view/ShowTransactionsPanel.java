@@ -19,8 +19,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -41,7 +39,6 @@ import java.util.Timer;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -60,12 +57,10 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.text.AttributeSet;
-import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
-import javax.swing.text.StyledDocument;
 import javax.swing.text.TabSet;
 import javax.swing.text.TabStop;
 
@@ -73,7 +68,6 @@ import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterListener;
-import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.exchange.ExchangeRate;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletTableData;
@@ -131,6 +125,8 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     
     public static final int DISPLAY_COUNT_LIMIT = 6;
     private int displayCount;
+    
+    private JScrollPane scrollPane;
 
     /**
      * Timer used to condense multiple updates
@@ -146,6 +142,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         updateTransactionsTimerTask = new UpdateTransactionsTimerTask(controller, this, mainFrame);
         updateTransactionsTimer = new Timer();
         updateTransactionsTimer.scheduleAtFixedRate(updateTransactionsTimerTask, UPDATE_TRANSACTIONS_DELAY_TIME, UPDATE_TRANSACTIONS_DELAY_TIME);
+               
         initUI();
 
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
@@ -168,14 +165,14 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     }
 
     private void createWalletPanel() {
-        setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+        setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         setLayout(new GridBagLayout());
         setOpaque(true);
         GridBagConstraints constraints = new GridBagConstraints();
 
         walletTableModel = new WalletTableModel(controller);
         table = new JTable(walletTableModel);
-        table.setOpaque(true);
+        table.setOpaque(false);
         table.setBorder(BorderFactory.createEmptyBorder());
         table.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         table.setRowHeight(Math.max(MINIMUM_ICON_HEIGHT, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));
@@ -189,6 +186,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
+        table.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
         // No row is currently selected.
         selectedRow = -1;
@@ -322,13 +320,16 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             rowSorter.setComparator(4, comparatorNumber);
         }
         
-        JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+        scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
+        scrollPane.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.getViewport().setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         scrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
         scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        scrollPane.setOpaque(true);
+        
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
@@ -471,10 +472,11 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
-                        : ColorAndFontConstants.BACKGROUND_COLOR);
-                label.setBackground(backgroundColor);
+                label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                 label.setForeground(table.getForeground());
+                if (row % 2 != 0) {
+                    label.setOpaque(false);
+                }
             }
 
             return label;
@@ -592,8 +594,12 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
-        MultiBitLabel label = new MultiBitLabel("");
+        MultiBitLabel label;
 
+        public TrailingJustifiedRenderer() {
+            label = new MultiBitLabel("");
+        }
+        
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -621,9 +627,10 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 selectedRow = row;
                 label.setBackground(table.getSelectionBackground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
-                        : ColorAndFontConstants.BACKGROUND_COLOR);
-                label.setBackground(backgroundColor);
+                label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                if (row % 2 != 0) {
+                    label.setOpaque(false);
+                }
             }
 
             return label;
@@ -633,9 +640,15 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
-        MultiBitLabel label = new MultiBitLabel("");
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
+        SimpleDateFormat dateFormatter;
 
+        MultiBitLabel label;
+
+        public TrailingJustifiedDateRenderer() {
+            label = new MultiBitLabel("");
+            dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
+        }
+        
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -664,10 +677,11 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
-                        : ColorAndFontConstants.BACKGROUND_COLOR);
-                label.setBackground(backgroundColor);
+                label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                 label.setForeground(table.getForeground());
+                if (row % 2 != 0) {
+                    label.setOpaque(false);
+                }
             }
 
             return label;
@@ -677,12 +691,15 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     class LeadingJustifiedRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
-        MultiBitLabel label = new MultiBitLabel("");
+        MultiBitLabel label;
 
+        public LeadingJustifiedRenderer() {
+            label = new MultiBitLabel("");
+        }
+        
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             label.setHorizontalAlignment(SwingConstants.LEADING);
-            label.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
             label.setOpaque(true);
             label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
             label.setText((String) value);
@@ -692,10 +709,11 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
-                        : ColorAndFontConstants.BACKGROUND_COLOR);
-                label.setBackground(backgroundColor);
+                label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                 label.setForeground(table.getForeground());
+                if (row % 2 != 0) {
+                    label.setOpaque(false);
+                }
             }
 
             return label;
@@ -782,15 +800,22 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 outerPanel.setBackground(table.getSelectionBackground());
                 filler.setBackground(table.getSelectionBackground());
             } else {
-                Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
-                        : ColorAndFontConstants.BACKGROUND_COLOR);
-                pane.setBackground(backgroundColor);
-                outerPanel.setBackground(backgroundColor);
-                filler.setBackground(backgroundColor);
+                pane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                outerPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                filler.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                if (row % 2 != 0) {
+                    pane.setOpaque(false);
+                    outerPanel.setOpaque(false);
+                    filler.setOpaque(false);
+                }
             }
             
             StyleConstants.setForeground(style, pane.getForeground());
-            StyleConstants.setBackground(style, pane.getBackground());
+            if (row % 2 == 0 || isSelected) {
+                StyleConstants.setBackground(style, pane.getBackground());
+            } else {
+                StyleConstants.setBackground(style, scrollPane.getBackground());
+            }
             StyleConstants.setBold(style, false); 
             StyleConstants.setFontSize(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getSize());
             StyleConstants.setFontFamily(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getFontName());

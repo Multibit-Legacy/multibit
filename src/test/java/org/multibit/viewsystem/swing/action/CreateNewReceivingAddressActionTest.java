@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
@@ -34,6 +35,7 @@ public class CreateNewReceivingAddressActionTest extends TestCase {
         assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());
 
         // Create a new CreateNewReceivingAddressAction to test.
+        ColorAndFontConstants.init();
         FontSizer.INSTANCE.initialise(controller);
         ReceiveBitcoinPanel receiveBitcoinPanel = new ReceiveBitcoinPanel(null, controller);
         CreateNewReceivingAddressAction createNewReceivingAddressAction = receiveBitcoinPanel.getCreateNewReceivingAddressAction();

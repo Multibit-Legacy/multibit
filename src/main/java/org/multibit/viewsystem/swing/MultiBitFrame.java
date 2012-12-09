@@ -208,9 +208,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             im.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.META_DOWN_MASK), DefaultEditorKit.cutAction);
         }
 
+        ColorAndFontConstants.init();
+
         FontSizer.INSTANCE.initialise(controller);
         UIManager.put("ToolTip.font", FontSizer.INSTANCE.getAdjustedDefaultFont());
-
+        
         setCursor(Cursor.WAIT_CURSOR);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
