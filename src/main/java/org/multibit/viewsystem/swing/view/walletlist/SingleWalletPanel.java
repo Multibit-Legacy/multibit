@@ -247,6 +247,22 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.LINE_START;
         myRoundedPanel.add(walletDescriptionTextField, constraints);
 
+        JLabel filler2 = new JLabel();
+        filler2.setMinimumSize(ABOVE_BASELINE_LEADING_CORNER_PADDING);
+        filler2.setPreferredSize(ABOVE_BASELINE_LEADING_CORNER_PADDING);
+        filler2.setMaximumSize(ABOVE_BASELINE_LEADING_CORNER_PADDING);
+        //filler2.setBorder(BorderFactory.createLineBorder(Color.RED));
+        filler2.setOpaque(false);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 7;
+        constraints.gridy = 0;
+        constraints.weightx = 0.04;
+        constraints.weighty = 0.04;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.ABOVE_BASELINE_TRAILING;
+        myRoundedPanel.add(filler2, constraints);
+
         // Wallet type icon.
         walletTypeButton = new JButton();
         walletTypeButton.setOpaque(false);
