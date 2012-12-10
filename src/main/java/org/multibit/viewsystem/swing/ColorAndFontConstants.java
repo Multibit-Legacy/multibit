@@ -44,6 +44,8 @@ public class ColorAndFontConstants {
     public static Color SELECTION_CREDIT_FOREGROUND_COLOR = SystemColor.textHighlightText;
     public static Color SELECTION_DEBIT_FOREGROUND_COLOR = SystemColor.textHighlightText;
     
+    public static Color ALTERNATE_TABLE_COLOR = new Color(230, 230, 233);
+    
     public static void init() {
         MULTIBIT_DEFAULT_FONT_NAME =   UIManager.get("Label.font") == null ? Font.DIALOG : ((Font)UIManager.get("Label.font")).getFontName();
         MULTIBIT_DEFAULT_FONT_STYLE =  UIManager.get("Label.font") == null ? 0 : ((Font)UIManager.get("Label.font")).getStyle();

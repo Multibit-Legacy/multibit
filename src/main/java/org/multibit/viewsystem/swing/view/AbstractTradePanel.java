@@ -830,7 +830,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                 label.setForeground(table.getSelectionForeground());
             } else {
                 Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
-                        : ColorAndFontConstants.BACKGROUND_COLOR);
+                        : ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -856,7 +856,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                 label.setForeground(table.getSelectionForeground());
             } else {
                 Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
-                        : ColorAndFontConstants.BACKGROUND_COLOR);
+                        : ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -882,7 +882,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                 label.setForeground(table.getSelectionForeground());
             } else {
                 Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
-                        : ColorAndFontConstants.BACKGROUND_COLOR);
+                        : ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }
@@ -908,7 +908,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                 label.setForeground(table.getSelectionForeground());
             } else {
                 Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
-                        : ColorAndFontConstants.BACKGROUND_COLOR);
+                        : ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
                 label.setBackground(backgroundColor);
                 label.setForeground(table.getForeground());
             }

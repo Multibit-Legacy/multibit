@@ -179,7 +179,7 @@ public class WalletListPanel extends JPanel implements View, ComponentListener, 
 
         createWalletListPanel();
                 
-        scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         scrollPane.setViewportView(walletListPanel);
         scrollPane.setAlignmentX(JScrollPane.LEFT_ALIGNMENT);

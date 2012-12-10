@@ -329,6 +329,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         scrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
         scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
         scrollPane.setOpaque(true);
+        scrollPane.getViewport().setOpaque(true);
         
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -357,6 +358,10 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         table.invalidate();
         table.validate();
         table.repaint();
+        
+        scrollPane.invalidate();
+        scrollPane.validate();
+        scrollPane.repaint();
         
         invalidate();
         validate();
@@ -472,10 +477,12 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                 label.setForeground(table.getForeground());
-                if (row % 2 != 0) {
-                    label.setOpaque(false);
+                if (row % 2 == 0) {
+                    label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                } else {
+                    label.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
+                    label.setOpaque(true);
                 }
             }
 
@@ -627,9 +634,11 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 selectedRow = row;
                 label.setBackground(table.getSelectionBackground());
             } else {
-                label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-                if (row % 2 != 0) {
-                    label.setOpaque(false);
+                if (row % 2 == 0) {
+                    label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                } else {
+                    label.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
+                    label.setOpaque(true);
                 }
             }
 
@@ -677,10 +686,12 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                 label.setForeground(table.getForeground());
-                if (row % 2 != 0) {
-                    label.setOpaque(false);
+                if (row % 2 == 0) {
+                    label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                } else {
+                    label.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
+                    label.setOpaque(true);
                 }
             }
 
@@ -709,10 +720,12 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 label.setBackground(table.getSelectionBackground());
                 label.setForeground(table.getSelectionForeground());
             } else {
-                label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                 label.setForeground(table.getForeground());
-                if (row % 2 != 0) {
-                    label.setOpaque(false);
+                if (row % 2 == 0) {
+                    label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                } else {
+                    label.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
+                    label.setOpaque(true);
                 }
             }
 
@@ -797,16 +810,21 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             if (isSelected) {
                 selectedRow = row;
                 pane.setBackground(table.getSelectionBackground());
-                outerPanel.setBackground(table.getSelectionBackground());
+                //outerPanel.setBackground(table.getSelectionBackground());
                 filler.setBackground(table.getSelectionBackground());
             } else {
-                pane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-                outerPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-                filler.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-                if (row % 2 != 0) {
-                    pane.setOpaque(false);
-                    outerPanel.setOpaque(false);
-                    filler.setOpaque(false);
+                if (row % 2 == 0) {
+                    pane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                    outerPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                    filler.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                    outerPanel.setOpaque(true);
+                } else {
+                    pane.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
+                    outerPanel.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
+                    filler.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
+                    pane.setOpaque(true);
+                    outerPanel.setOpaque(true);
+                    filler.setOpaque(true);
                 }
             }
             
@@ -814,7 +832,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             if (row % 2 == 0 || isSelected) {
                 StyleConstants.setBackground(style, pane.getBackground());
             } else {
-                StyleConstants.setBackground(style, scrollPane.getBackground());
+                StyleConstants.setBackground(style, ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
             }
             StyleConstants.setBold(style, false); 
             StyleConstants.setFontSize(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getSize());
