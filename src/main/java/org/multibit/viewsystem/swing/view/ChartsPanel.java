@@ -50,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Transaction;
+import com.google.bitcoin.core.Wallet.BalanceType;
 import com.xeiam.xchart.Chart;
 import com.xeiam.xchart.SeriesColor;
 import com.xeiam.xchart.SeriesLineStyle;
@@ -354,7 +355,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
 
             // Add in the balance at the end of the time window.
             chartData.add(new ChartData(new Date(DateUtils.nowUtc().getMillis()), balance));
-            log.debug("Last transaction date = " + previousDate + ", chart balance = " + balance + ", wallet balance = " + controller.getModel().getActiveWallet().getBalance());
+            log.debug("Last transaction date = " + previousDate + ", chart balance = " + balance + ", wallet balance = " + controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED));
         } catch (com.google.bitcoin.core.ScriptException e1) {
             e1.printStackTrace();
         }

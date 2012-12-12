@@ -324,7 +324,7 @@ public enum CurrencyConverter {
         formatter.setParseBigDecimal(true);
         try {
             BigDecimal parsedBTC = ((BigDecimal)formatter.parse(btcString)).movePointRight(NUMBER_OF_DECIMAL_POINTS_IN_A_BITCOIN);
-            log.debug("For locale " + controller.getLocaliser().getLocale().toString() +  ", '" + btcString + "' parses to " + parsedBTC.toPlainString());
+            //log.debug("For locale " + controller.getLocaliser().getLocale().toString() +  ", '" + btcString + "' parses to " + parsedBTC.toPlainString());
             btcAmount = Money.of(BITCOIN_CURRENCY_UNIT, parsedBTC);
             CurrencyConverterResult result = new CurrencyConverterResult();
             result.setBtcMoneyValid(true);
