@@ -515,11 +515,14 @@ public class SendBitcoinConfirmPanel extends JPanel {
 
         MultiBitModel model = controller.getModel();
         if (model != null) {
+            String singleNodeConnection = model.getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
+            boolean singleNodeConnectionOverride = singleNodeConnection != null && singleNodeConnection.trim().length() > 0;
+            
             if (thisPanel.sendBitcoinNowAction != null) {
-                if (model.getNumberOfConnectedPeers() < MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
+                if (!singleNodeConnectionOverride && model.getNumberOfConnectedPeers() < MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
                     // Disable send button
                     enableSend = false;
-                } else if (model.getNumberOfConnectedPeers() >= MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
+                } else {
                     // Enable send button
                     enableSend = true;
                 }
@@ -589,12 +592,15 @@ public class SendBitcoinConfirmPanel extends JPanel {
                 if (thisPanel != null && thisPanel.isVisible()) {
                     MultiBitModel model = MultiBit.getController().getModel();
                     if (model != null) {
+                        String singleNodeConnection = model.getUserPreference(MultiBitModel.SINGLE_NODE_CONNECTION);
+                        boolean singleNodeConnectionOverride = singleNodeConnection != null && singleNodeConnection.trim().length() > 0;
+                        
                         boolean enableSend = false;
                         if (thisPanel.sendBitcoinNowAction != null) {
-                            if (model.getNumberOfConnectedPeers() < MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
+                            if (!singleNodeConnectionOverride && model.getNumberOfConnectedPeers() < MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
                                 // Disable send button
                                 enableSend = false;
-                            } else if (model.getNumberOfConnectedPeers() >= MultiBitModel.MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED) {
+                            } else {
                                 // Enable send button
                                 enableSend = true;
                             }

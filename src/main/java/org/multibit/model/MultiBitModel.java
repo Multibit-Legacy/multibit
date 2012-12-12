@@ -112,7 +112,7 @@ public class MultiBitModel {
     public static final String DISPLAY_AS_SWATCH = "displayAsSwatch";
     public static final String DISPLAY_AS_QR_CODE = "displayAsQRcode";
     
-    public static final int MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED = 1;
+    public static final int MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED = 2;
 
     // Open bitcoin URI.
     public static final String OPEN_URI_SHOW_DIALOG = "openUriShowDialog";

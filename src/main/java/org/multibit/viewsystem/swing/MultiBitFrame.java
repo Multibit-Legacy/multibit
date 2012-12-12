@@ -221,6 +221,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             im.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.META_DOWN_MASK), DefaultEditorKit.pasteAction);
             im.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.META_DOWN_MASK), DefaultEditorKit.cutAction);
         }
+        
+        ColorAndFontConstants.init();
 
         FontSizer.INSTANCE.initialise(controller);
         UIManager.put("ToolTip.font", FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -938,6 +940,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * Recreate all views.
      */
     public void recreateAllViews(boolean initUI) {
+        ColorAndFontConstants.init();
+
         // Close down current view.
         if (controller.getCurrentView() != 0) {
             navigateAwayFromView(controller.getCurrentView());
