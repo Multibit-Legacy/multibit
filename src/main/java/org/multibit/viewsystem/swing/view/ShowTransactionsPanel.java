@@ -129,6 +129,8 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     private int displayCount;
     
     private JScrollPane scrollPane;
+    
+    private JTextPane firstTextPaneInTable;
 
     /**
      * Timer used to condense multiple updates
@@ -355,6 +357,12 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
         if (selectedRow > -1 && selectedRow < table.getRowCount()) {
             table.setRowSelectionInterval(selectedRow, selectedRow);
+        }
+        
+        if (firstTextPaneInTable != null) {
+            firstTextPaneInTable.invalidate();
+            firstTextPaneInTable.validate();
+            firstTextPaneInTable.repaint();
         }
         
         table.invalidate();
@@ -841,6 +849,11 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             StyleConstants.setFontFamily(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getFontName());
                        
             pane.getStyledDocument().setCharacterAttributes(0, pane.getText().length(), pane.getStyle("number"), true);
+            
+            if (row == 0) {
+                // Remember the first text pane
+                firstTextPaneInTable = pane;
+            }
             
             GridBagConstraints constraints = new GridBagConstraints();
             constraints.fill = GridBagConstraints.HORIZONTAL;

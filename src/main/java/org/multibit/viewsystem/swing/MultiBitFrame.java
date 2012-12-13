@@ -943,52 +943,54 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                ColorAndFontConstants.init();
+                synchronized (thisFrame) {
+                    ColorAndFontConstants.init();
 
-                // Close down current view.
-                if (controller.getCurrentView() != 0) {
-                    navigateAwayFromView(controller.getCurrentView());
-                }
+                    // Close down current view.
+                    if (controller.getCurrentView() != 0) {
+                        navigateAwayFromView(controller.getCurrentView());
+                    }
 
-                if (initUI) {
-                    thisFrame.localiser = controller.getLocaliser();
-                    Container contentPane = getContentPane();
-                    contentPane.removeAll();
-                    viewTabbedPane.removeAll();
-                    viewFactory.initialise();
-                    initUI();
-                    applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-                }
+                    if (initUI) {
+                        thisFrame.localiser = controller.getLocaliser();
+                        Container contentPane = getContentPane();
+                        contentPane.removeAll();
+                        viewTabbedPane.removeAll();
+                        viewFactory.initialise();
+                        initUI();
+                        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+                    }
 
-                statusBar.refreshOnlineStatusText();
+                    statusBar.refreshOnlineStatusText();
 
-                updateHeader();
-                
-                // Tell the wallets list to display.
-                if (walletsView != null) {
-                    walletsView.initUI();
-                    walletsView.displayView();
-                }
+                    updateHeader();
 
-                // Tell all the tabs in the tabbedPane to update.
-                if (viewTabbedPane != null) {
-                    for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
-                        JPanel tabComponent = (JPanel) viewTabbedPane.getComponentAt(i);
-                        Component[] components = tabComponent.getComponents();
-                        if (components != null && components.length > 0 && components[0] instanceof View) {
-                            View loopView = ((View) components[0]);
-                            loopView.displayView();
-                            if (loopView.getViewId() == controller.getCurrentView()) {
-                                viewTabbedPane.setSelectedIndex(i);
+                    // Tell the wallets list to display.
+                    if (walletsView != null) {
+                        walletsView.initUI();
+                        walletsView.displayView();
+                    }
+
+                    // Tell all the tabs in the tabbedPane to update.
+                    if (viewTabbedPane != null) {
+                        for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
+                            JPanel tabComponent = (JPanel) viewTabbedPane.getComponentAt(i);
+                            Component[] components = tabComponent.getComponents();
+                            if (components != null && components.length > 0 && components[0] instanceof View) {
+                                View loopView = ((View) components[0]);
+                                loopView.displayView();
+                                if (loopView.getViewId() == controller.getCurrentView()) {
+                                    viewTabbedPane.setSelectedIndex(i);
+                                }
                             }
                         }
                     }
-                }
 
-                invalidate();
-                validate();
-                repaint();            
-           }
+                    invalidate();
+                    validate();
+                    repaint();
+                }
+            }
         });
     }
 
