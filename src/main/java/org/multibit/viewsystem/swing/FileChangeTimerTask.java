@@ -73,6 +73,7 @@ public class FileChangeTimerTask extends TimerTask {
                         if (!previousFilesHaveBeenChanged) {
                             // only fire once, when change happens
                             controller.fireFilesHaveBeenChangedByAnotherProcess(loopModelData);
+                            log.debug("Marking wallet " + loopModelData.getWalletFilename() + " as having been changed by another process.");
                         }
                     }
 

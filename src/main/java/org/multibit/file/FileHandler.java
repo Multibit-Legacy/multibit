@@ -404,6 +404,7 @@ public class FileHandler {
         } finally {
             if (fileOutputStream != null) {
                 try {
+                    fileOutputStream.flush();
                     fileOutputStream.close();
                 } catch (IOException e) {
                     throw new WalletSaveException("Cannot save wallet '" + perWalletModelData.getWalletFilename(), e);
@@ -527,23 +528,33 @@ public class FileHandler {
                 String walletFileLastModified = "" + walletFile.lastModified();
                 String walletInfoFileSize = "" + walletInfoFile.length();
                 String walletInfoFileLastModified = "" + walletInfoFile.lastModified();
-                if (walletInfo != null) {
-                    if (!walletFileSize.equals(walletInfo.getProperty(MultiBitModel.WALLET_FILE_SIZE))) {
-                        haveFilesChanged = true;
-                    }
 
-                    if (!walletFileLastModified.equals(walletInfo.getProperty(MultiBitModel.WALLET_FILE_LAST_MODIFIED))) {
-                        haveFilesChanged = true;
-                    }
-
-                    if (!walletInfoFileSize.equals(walletInfo.getProperty(MultiBitModel.WALLET_INFO_FILE_SIZE))) {
-                        haveFilesChanged = true;
-                    }
-
-                    if (!walletInfoFileLastModified.equals(walletInfo.getProperty(MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED))) {
-                        haveFilesChanged = true;
-                    }
+                if (!walletFileSize.equals(walletInfo.getProperty(MultiBitModel.WALLET_FILE_SIZE))) {
+                    haveFilesChanged = true;
+                    log.debug("Previous wallet file size was '" + walletInfo.getProperty(MultiBitModel.WALLET_FILE_SIZE)
+                            + "'. It is now '" + walletFileSize + "'");
                 }
+
+                if (!walletFileLastModified.equals(walletInfo.getProperty(MultiBitModel.WALLET_FILE_LAST_MODIFIED))) {
+                    haveFilesChanged = true;
+                    log.debug("Previous wallet file modification date was '"
+                            + walletInfo.getProperty(MultiBitModel.WALLET_FILE_LAST_MODIFIED) + "'. It is now '"
+                            + walletFileLastModified + "'");
+                }
+
+                if (!walletInfoFileSize.equals(walletInfo.getProperty(MultiBitModel.WALLET_INFO_FILE_SIZE))) {
+                    haveFilesChanged = true;
+                    log.debug("Previous wallet info file size was '" + walletInfo.getProperty(MultiBitModel.WALLET_INFO_FILE_SIZE)
+                            + "'. It is now '" + walletInfoFileSize + "'");
+                }
+
+                if (!walletInfoFileLastModified.equals(walletInfo.getProperty(MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED))) {
+                    haveFilesChanged = true;
+                    log.debug("Previous wallet info file modification date was '"
+                            + walletInfo.getProperty(MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED) + "'. It is now '"
+                            + walletInfoFileLastModified + "'");
+                }
+
                 if (haveFilesChanged) {
                     log.debug("Result of check of whether files have changed for wallet filename "
                             + perWalletModelData.getWalletFilename() + " was " + haveFilesChanged + ".");
@@ -560,7 +571,8 @@ public class FileHandler {
                         perWalletModelData.setWalletBackupFilename(createBackupFilename(walletFile, true, false, null));
 
                         perWalletModelData.setWalletInfoBackupFilename(createBackupFilename(
-                                new File(WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename())), false, true, null));
+                                new File(WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename())), false, true,
+                                null));
                     } catch (IOException e) {
                         log.error(e.getMessage(), e);
                     }
@@ -691,6 +703,7 @@ public class FileHandler {
         } finally {
             if (outputStream != null) {
                 try {
+                    outputStream.flush();
                     outputStream.close();
                 } catch (IOException e) {
                     log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
@@ -746,6 +759,7 @@ public class FileHandler {
     private synchronized void saveToFileStreamAsSerialised(Wallet wallet, OutputStream f) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(f);
         oos.writeObject(wallet);
+        oos.flush();
         oos.close();
     }
 
@@ -880,6 +894,7 @@ public class FileHandler {
                 destination.close();
                 destination = null;
             } else if (fileOutputStream != null) {
+                fileOutputStream.flush();
                 fileOutputStream.close();
             }
         }

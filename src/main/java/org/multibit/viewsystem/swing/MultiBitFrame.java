@@ -1249,6 +1249,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     availableBalanceBTCButton.setText("");
                     availableBalanceFiatButton.setText("");
                 } else {
+                    estimatedBalanceLabelLabel
+                    .setText(controller.getLocaliser().getString("multiBitFrame.balanceLabel"));
                     BigInteger estimatedBalance = controller.getModel().getActiveWalletEstimatedBalance();
                     estimatedBalanceBTCLabel.setText(controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false));
                     if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
