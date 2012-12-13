@@ -101,6 +101,8 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     private TableRowSorter<TableModel> rowSorter;
 
     private static final String SPACER = "   "; // 3 spaces
+    
+    private static final int STATUS_WIDTH_DELTA = 4;
 
     private static final int TABLE_BORDER = 3;
 
@@ -215,12 +217,12 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         TableColumn tableColumn = table.getColumnModel().getColumn(0); // status
         int statusWidth = fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.statusText"));
-        tableColumn.setPreferredWidth(statusWidth);
+        tableColumn.setPreferredWidth(statusWidth + STATUS_WIDTH_DELTA);
 
         tableColumn = table.getColumnModel().getColumn(1); // Date.
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
-        int dateWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.debitText")),
+        int dateWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.dateText")),
                 fontMetrics.stringWidth(dateFormatter.format(new Date(DateUtils.nowUtc().getMillis()))));
         tableColumn.setPreferredWidth(dateWidth);
 

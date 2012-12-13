@@ -939,52 +939,57 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     /**
      * Recreate all views.
      */
-    public void recreateAllViews(boolean initUI) {
-        ColorAndFontConstants.init();
+    public void recreateAllViews(final boolean initUI) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                ColorAndFontConstants.init();
 
-        // Close down current view.
-        if (controller.getCurrentView() != 0) {
-            navigateAwayFromView(controller.getCurrentView());
-        }
+                // Close down current view.
+                if (controller.getCurrentView() != 0) {
+                    navigateAwayFromView(controller.getCurrentView());
+                }
 
-        if (initUI) {
-            this.localiser = controller.getLocaliser();
-            Container contentPane = getContentPane();
-            contentPane.removeAll();
-            viewTabbedPane.removeAll();
-            viewFactory.initialise();
-            initUI();
-            applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        }
+                if (initUI) {
+                    thisFrame.localiser = controller.getLocaliser();
+                    Container contentPane = getContentPane();
+                    contentPane.removeAll();
+                    viewTabbedPane.removeAll();
+                    viewFactory.initialise();
+                    initUI();
+                    applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+                }
 
-        statusBar.refreshOnlineStatusText();
+                statusBar.refreshOnlineStatusText();
 
-        updateHeader();
-        
-        // Tell the wallets list to display.
-        if (walletsView != null) {
-            walletsView.initUI();
-            walletsView.displayView();
-        }
+                updateHeader();
+                
+                // Tell the wallets list to display.
+                if (walletsView != null) {
+                    walletsView.initUI();
+                    walletsView.displayView();
+                }
 
-        // Tell all the tabs in the tabbedPane to update.
-        if (viewTabbedPane != null) {
-            for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
-                JPanel tabComponent = (JPanel) viewTabbedPane.getComponentAt(i);
-                Component[] components = tabComponent.getComponents();
-                if (components != null && components.length > 0 && components[0] instanceof View) {
-                    View loopView = ((View) components[0]);
-                    loopView.displayView();
-                    if (loopView.getViewId() == controller.getCurrentView()) {
-                        viewTabbedPane.setSelectedIndex(i);
+                // Tell all the tabs in the tabbedPane to update.
+                if (viewTabbedPane != null) {
+                    for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
+                        JPanel tabComponent = (JPanel) viewTabbedPane.getComponentAt(i);
+                        Component[] components = tabComponent.getComponents();
+                        if (components != null && components.length > 0 && components[0] instanceof View) {
+                            View loopView = ((View) components[0]);
+                            loopView.displayView();
+                            if (loopView.getViewId() == controller.getCurrentView()) {
+                                viewTabbedPane.setSelectedIndex(i);
+                            }
+                        }
                     }
                 }
-            }
-        }
 
-        invalidate();
-        validate();
-        repaint();
+                invalidate();
+                validate();
+                repaint();            
+           }
+        });
     }
 
     /**
@@ -1158,16 +1163,17 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     public void onReorganize(Wallet wallet) {
         log.info("Wallet has been reorganised.");
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                recreateAllViews(false);
-            }
-        });
+        recreateAllViews(false);
     }
 
     public void onTransactionConfidenceChanged(Wallet wallet, final Transaction transaction) {
-        ShowTransactionsPanel.updateTransactions();
-        SendBitcoinConfirmPanel.updatePanel(transaction);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                ShowTransactionsPanel.updateTransactions();
+                SendBitcoinConfirmPanel.updatePanel(transaction);
+            }
+        });
     }
 
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
@@ -1226,59 +1232,69 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     }
 
     void updateHeader() {
-        if (controller.getModel().getActivePerWalletModelData() != null
-                && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-            // Files have been changed by another process - blank totals
-            // and put 'Updates stopped' message.
-            estimatedBalanceLabelLabel.setText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.text"));
-            estimatedBalanceBTCLabel.setText("");
-            estimatedBalanceFiatLabel.setText("");
-            setUpdatesStoppedTooltip(estimatedBalanceLabelLabel);
-            availableBalanceLabelButton.setText("");
-            availableBalanceBTCButton.setText("");
-            availableBalanceFiatButton.setText("");
-        } else {
-            BigInteger estimatedBalance = controller.getModel().getActiveWalletEstimatedBalance();
-            estimatedBalanceBTCLabel.setText(controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false));
-            if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
-                Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(estimatedBalance);
-                estimatedBalanceFiatLabel.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")");
-            }
- 
-            if (model.getActiveWalletAvailableBalanceWithBoomerangChange() != null
-                    && model.getActiveWalletAvailableBalanceWithBoomerangChange().equals(controller.getModel().getActiveWalletEstimatedBalance())) {
-                availableBalanceBTCButton.setText("");
-                availableBalanceFiatButton.setText("");
-                availableBalanceLabelButton.setEnabled(false);
-                availableBalanceBTCButton.setEnabled(false);
-                availableBalanceFiatButton.setEnabled(false);
-                availableBalanceLabelButton.setVisible(false);
-                availableBalanceBTCButton.setVisible(false);
-                availableBalanceFiatButton.setVisible(false);
-            } else {
-                BigInteger availableToSpend = model.getActiveWalletAvailableBalanceWithBoomerangChange();
-                availableBalanceBTCButton.setText( controller.getLocaliser().bitcoinValueToString(availableToSpend, true, false));
-                if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
-                    Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(model.getActiveWalletAvailableBalanceWithBoomerangChange());
-                    availableBalanceFiatButton.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")");
-                } else {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                if (controller.getModel().getActivePerWalletModelData() != null
+                        && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+                    // Files have been changed by another process - blank totals
+                    // and put 'Updates stopped' message.
+                    estimatedBalanceLabelLabel
+                            .setText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.text"));
+                    estimatedBalanceBTCLabel.setText("");
+                    estimatedBalanceFiatLabel.setText("");
+                    setUpdatesStoppedTooltip(estimatedBalanceLabelLabel);
+                    availableBalanceLabelButton.setText("");
+                    availableBalanceBTCButton.setText("");
                     availableBalanceFiatButton.setText("");
-                }
-                availableBalanceLabelButton.setEnabled(true);
-                availableBalanceBTCButton.setEnabled(true);
-                availableBalanceFiatButton.setEnabled(true);
-                availableBalanceLabelButton.setVisible(true);
-                availableBalanceBTCButton.setVisible(true);
-                availableBalanceFiatButton.setVisible(true);
-            }
+                } else {
+                    BigInteger estimatedBalance = controller.getModel().getActiveWalletEstimatedBalance();
+                    estimatedBalanceBTCLabel.setText(controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false));
+                    if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
+                        Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(estimatedBalance);
+                        estimatedBalanceFiatLabel.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat) + ")");
+                    }
 
-            String titleText = localiser.getString("multiBitFrame.title");
-            if (controller.getModel().getActiveWallet() != null) {
-                titleText = titleText + SEPARATOR + controller.getModel().getActivePerWalletModelData().getWalletDescription()
-                        + SEPARATOR + controller.getModel().getActivePerWalletModelData().getWalletFilename();
+                    if (model.getActiveWalletAvailableBalanceWithBoomerangChange() != null
+                            && model.getActiveWalletAvailableBalanceWithBoomerangChange().equals(
+                                    controller.getModel().getActiveWalletEstimatedBalance())) {
+                        availableBalanceBTCButton.setText("");
+                        availableBalanceFiatButton.setText("");
+                        availableBalanceLabelButton.setEnabled(false);
+                        availableBalanceBTCButton.setEnabled(false);
+                        availableBalanceFiatButton.setEnabled(false);
+                        availableBalanceLabelButton.setVisible(false);
+                        availableBalanceBTCButton.setVisible(false);
+                        availableBalanceFiatButton.setVisible(false);
+                    } else {
+                        BigInteger availableToSpend = model.getActiveWalletAvailableBalanceWithBoomerangChange();
+                        availableBalanceBTCButton.setText(controller.getLocaliser().bitcoinValueToString(availableToSpend, true,
+                                false));
+                        if (CurrencyConverter.INSTANCE.getRate() != null && CurrencyConverter.INSTANCE.isShowingFiat()) {
+                            Money fiat = CurrencyConverter.INSTANCE.convertFromBTCToFiat(model
+                                    .getActiveWalletAvailableBalanceWithBoomerangChange());
+                            availableBalanceFiatButton.setText("(" + CurrencyConverter.INSTANCE.getFiatAsLocalisedString(fiat)
+                                    + ")");
+                        } else {
+                            availableBalanceFiatButton.setText("");
+                        }
+                        availableBalanceLabelButton.setEnabled(true);
+                        availableBalanceBTCButton.setEnabled(true);
+                        availableBalanceFiatButton.setEnabled(true);
+                        availableBalanceLabelButton.setVisible(true);
+                        availableBalanceBTCButton.setVisible(true);
+                        availableBalanceFiatButton.setVisible(true);
+                    }
+
+                    String titleText = localiser.getString("multiBitFrame.title");
+                    if (controller.getModel().getActiveWallet() != null) {
+                        titleText = titleText + SEPARATOR
+                                + controller.getModel().getActivePerWalletModelData().getWalletDescription() + SEPARATOR
+                                + controller.getModel().getActivePerWalletModelData().getWalletFilename();
+                    }
+                    setTitle(titleText);
+                }
             }
-            setTitle(titleText);
-        }
+        });
     }
 
     // Macify application methods.

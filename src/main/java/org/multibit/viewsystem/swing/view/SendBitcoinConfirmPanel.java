@@ -586,7 +586,6 @@ public class SendBitcoinConfirmPanel extends JPanel {
     
     public static void updatePanel(final Transaction transactionWithChangedConfidence) {
         SwingUtilities.invokeLater(new Runnable() {
-
             @Override
             public void run() {
                 if (thisPanel != null && thisPanel.isVisible()) {
