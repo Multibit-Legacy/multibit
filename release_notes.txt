@@ -2,6 +2,7 @@ MultiBit release notes.
 
 14 Dec 2012 Version 0.5.7beta
 + Change is now spendable as soon as transaction traverse the network.
++ Fix for "Could not generate key from password and salt" bug on send from unencrypted wallets.
 
 
 08 Dec 2012 Version 0.5.6beta

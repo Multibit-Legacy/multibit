@@ -640,7 +640,7 @@ public class MultiBitService {
 
         log.debug("MultiBitService#sendCoins - Just about to send coins");
         KeyParameter aesKey = null;
-        if (perWalletModelData.getWallet().getEncrypterDecrypter() != null) {
+        if (decryptBeforeSigning && perWalletModelData.getWallet().getEncrypterDecrypter() != null) {
             aesKey = perWalletModelData.getWallet().getEncrypterDecrypter().deriveKey(password);
         }
         Transaction sendTransaction = perWalletModelData.getWallet().sendCoinsAsync(peerGroup, sendAddress,
