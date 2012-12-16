@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2012 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import org.joda.money.Money;
-import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.model.PerWalletModelData;
@@ -239,9 +238,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             public void mouseClicked(MouseEvent evt) {
                 expanded = !expanded;
                 setSelected(selected);
-                thisPanel.invalidate();
-                thisPanel.validate();
-                thisPanel.repaint();
             }
         });
         constraints.fill = GridBagConstraints.NONE;
@@ -363,7 +359,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     public static int calculateNormalWidth(JComponent component) {
         Font font = FontSizer.INSTANCE.getAdjustedDefaultFont();
         FontMetrics fontMetrics = component.getFontMetrics(font);
-        //return (int) (fontMetrics.getMaxAdvance() * WIDTH_OF_TEXT_FIELD * 0.85 + WIDTH_DELTA);
         return (int) (fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_MEDIUM_FIELD_TEXT) + WIDTH_DELTA) ;
         
     }
@@ -519,14 +514,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         } else {
             amountLabelBTC.setText(balanceTextToShowBTC);
             amountLabelFiat.setText(balanceTextToShowFiat);
-        }
-        
-        amountLabelFiat.invalidate();
-        amountLabelFiat.validate();
-        amountLabelFiat.repaint();
-        invalidate();
-        validate();
-        repaint();  
+        }  
         
         if (perWalletModelData.isFilesHaveBeenChangedByAnotherProcess()) {
             myRoundedPanel.setOpaque(true);
@@ -847,11 +835,5 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         amountLabelFiat.setMinimumSize(new Dimension(fiatLabelMinimumWidth, amountLabelFiat.getMinimumSize().height));
         amountLabelFiat.setPreferredSize(new Dimension(fiatLabelMinimumWidth, amountLabelFiat.getPreferredSize().height));
         amountLabelFiat.setMaximumSize(new Dimension(fiatLabelMinimumWidth, amountLabelFiat.getMaximumSize().height));
-        amountLabelFiat.invalidate();
-        amountLabelFiat.validate();
-        amountLabelFiat.repaint();
-        invalidate();
-        validate();
-        repaint();
     }
 }

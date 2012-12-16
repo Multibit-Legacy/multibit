@@ -35,6 +35,7 @@ import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
+import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -365,6 +366,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
         // Return to the same view.
         controller.displayView(controller.getCurrentView());
+
         if (feeValidationError) {
             MessageManager.INSTANCE.addMessage(new Message(updateStatusText));
         } else {

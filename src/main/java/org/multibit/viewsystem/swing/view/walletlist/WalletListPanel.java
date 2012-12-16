@@ -60,8 +60,6 @@ public class WalletListPanel extends JPanel implements View, ComponentListener, 
 
     private static final long serialVersionUID = 191352298245057705L;
 
-    private static final Logger log = LoggerFactory.getLogger(WalletListPanel.class);
-
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
 
@@ -126,9 +124,6 @@ public class WalletListPanel extends JPanel implements View, ComponentListener, 
                 for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
                     loopSingleWalletPanel.setFiatLabelWidth(amountFiatLabelSize + 10);
                 }
-                invalidate();
-                revalidate();
-                repaint();
             }
         }
         
@@ -139,10 +134,6 @@ public class WalletListPanel extends JPanel implements View, ComponentListener, 
         if (activePerModelData != null) {
             selectWalletPanelByFilename(activePerModelData.getWalletFilename());
         }
-        
-        invalidate();
-        revalidate();
-        repaint();
     }
 
     private void selectWalletPanelByFilename(String filename) {
@@ -421,8 +412,7 @@ public class WalletListPanel extends JPanel implements View, ComponentListener, 
     
     @Override
     public void lostExchangeRate(ExchangeRate exchangeRate) {
-        // TODO Auto-generated method stub
-        
+        // TODO Auto-generated method stub   
     }
 
     @Override

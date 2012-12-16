@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2012 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -129,8 +129,6 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     
     private JScrollPane scrollPane;
     
-    private JTextPane firstTextPaneInTable;
-
     /**
      * Timer used to condense multiple updates
      */
@@ -161,9 +159,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     
     public static void updateTransactions() {
         if (updateTransactionsTimerTask != null) {
-            synchronized(updateTransactionsTimerTask) {
                 updateTransactionsTimerTask.setUpdateTransactions(true);                
-            }
         }
     }
 
@@ -357,24 +353,6 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         if (selectedRow > -1 && selectedRow < table.getRowCount()) {
             table.setRowSelectionInterval(selectedRow, selectedRow);
         }
-        
-        if (firstTextPaneInTable != null) {
-            firstTextPaneInTable.invalidate();
-            firstTextPaneInTable.validate();
-            firstTextPaneInTable.repaint();
-        }
-        
-        table.invalidate();
-        table.validate();
-        table.repaint();
-        
-        scrollPane.invalidate();
-        scrollPane.validate();
-        scrollPane.repaint();
-        
-        invalidate();
-        validate();
-        repaint();
 
         // If it is the first showing - schedule to redisplay.
         // This is to get rid of the bug on the first row amount (BTC) display.
@@ -849,11 +827,6 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                        
             pane.getStyledDocument().setCharacterAttributes(0, pane.getText().length(), pane.getStyle("number"), true);
             
-            if (row == 0) {
-                // Remember the first text pane
-                firstTextPaneInTable = pane;
-            }
-            
             GridBagConstraints constraints = new GridBagConstraints();
             constraints.fill = GridBagConstraints.HORIZONTAL;
             constraints.gridx = 0;
@@ -875,6 +848,9 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
             outerPanel.add(filler, BorderLayout.CENTER);
    
+            outerPanel.invalidate();
+            outerPanel.validate();
+            outerPanel.repaint();
             return outerPanel;
         }
     }
