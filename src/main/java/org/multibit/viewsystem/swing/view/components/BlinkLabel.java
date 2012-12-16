@@ -85,6 +85,10 @@ public class BlinkLabel extends MultiBitLabel {
             blinkLabel.setForeground(ORIGINAL_FOREGROUND_COLOR);
             blinkLabel.setBackground(originalBackgroundColor);
             blinkLabel.setOpaque(false);
+            
+            blinkLabel.invalidate();
+            blinkLabel.validate();
+            blinkLabel.repaint();
         }
     }
 

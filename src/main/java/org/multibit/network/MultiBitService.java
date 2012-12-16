@@ -554,17 +554,17 @@ public class MultiBitService {
                         if (!perWalletModelData.getWalletFilename().equals(loopPerWalletModelData.getWalletFilename())) {
                             Wallet loopWallet = loopPerWalletModelData.getWallet();
                             if (loopWallet.isTransactionRelevant(sendTransaction, true)) {
-                                // The perWalletModelData is marked as dirty.
-                                if (perWalletModelData.getWalletInfo() != null) {
-                                    synchronized(perWalletModelData.getWalletInfo()) {
-                                        perWalletModelData.setDirty(true);
+                                // The loopPerWalletModelData is marked as dirty.
+                                if (loopPerWalletModelData.getWalletInfo() != null) {
+                                    synchronized(loopPerWalletModelData.getWalletInfo()) {
+                                        loopPerWalletModelData.setDirty(true);
                                     }
                                 } else {
-                                    perWalletModelData.setDirty(true);
+                                    loopPerWalletModelData.setDirty(true);
                                 }
                                 if (loopWallet.getTransaction(sendTransaction.getHash()) == null) {
                                     log.debug("MultiBit adding a new pending transaction for the wallet '"
-                                            + perWalletModelData.getWalletDescription() + "'\n" + sendTransaction.toString());
+                                            + loopPerWalletModelData.getWalletDescription() + "'\n" + sendTransaction.toString());
                                     loopWallet.receivePending(sendTransaction);
                                 }
                             }  

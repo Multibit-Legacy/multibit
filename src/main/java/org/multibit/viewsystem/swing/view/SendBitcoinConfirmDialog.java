@@ -458,10 +458,13 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
         confirmText1.setText(confirm1);
         confirmText2.setText(" " + confirm2);
 
-        OkBackToParentAction okAction = new OkBackToParentAction(controller, this);
-        sendButton.setAction(okAction);
+        // REmove the Send button and replace it with an ok button.
+        if (sendButton.getAction() instanceof SendBitcoinNowAction) {
+            OkBackToParentAction okAction = new OkBackToParentAction(controller, this);
+            sendButton.setAction(okAction);
 
-        cancelButton.setVisible(false);
+            cancelButton.setVisible(false);
+        }
     }
 
     public static void updateDialog(final Transaction transactionWithChangedConfidence) {

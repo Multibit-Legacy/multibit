@@ -76,6 +76,9 @@ public class SendBitcoinNowAction extends AbstractAction {
      * actually send the bitcoin
      */
     public void actionPerformed(ActionEvent event) {
+        // Blank  message and remove the send button.
+        sendBitcoinConfirmView.setSendConfirmText(" ", " ");
+
         // check to see if the wallet files have changed
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();
         boolean haveFilesChanged = controller.getFileHandler().haveFilesChanged(perWalletModelData);
@@ -86,6 +89,9 @@ public class SendBitcoinNowAction extends AbstractAction {
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
             controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
+            // Put sending message and remove the send button.
+            sendBitcoinConfirmView.setSendConfirmText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
+
             // get the data out of the wallet preferences
             String sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
             String sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
@@ -102,8 +108,6 @@ public class SendBitcoinNowAction extends AbstractAction {
                 WalletInfo addressBook = perWalletModelData.getWalletInfo();
                 addressBook.addSendingAddress(new AddressBookData(sendLabel, sendAddress));
             }
-
-            sendBitcoinConfirmView.setSendConfirmText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
 
             performSend(perWalletModelData, sendAddress, sendAmount, fee);
         }
