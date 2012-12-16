@@ -24,10 +24,8 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 
-import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
-import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -172,7 +170,7 @@ public class ValidationErrorDialog extends MultiBitDialog {
 
             String textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage",
                     new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });
-            if (controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE).compareTo(controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
+            if (controller.getModel().getActiveWallet().getBalance(BalanceType.AVAILABLE_WITH_BOOMERANG_CHANGE).compareTo(controller.getModel().getActiveWallet().getBalance(BalanceType.ESTIMATED)) != 0) {
                 textToAdd = controller.getLocaliser().getString("validationErrorView.notEnoughFundsMessage2",
                         new String[] { amountPlusConversionToFiat, feePlusConversionToFiat });
             }

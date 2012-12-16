@@ -104,7 +104,7 @@ public class MultiBitModel {
     public static final String DISPLAY_AS_SWATCH = "displayAsSwatch";
     public static final String DISPLAY_AS_QR_CODE = "displayAsQRcode";
     
-    public static final int MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED = 1;
+    public static final int MINIMUM_NUMBER_OF_CONNECTED_PEERS_BEFORE_SEND_IS_ENABLED = 2;
 
     // Open bitcoin URI.
     public static final String OPEN_URI_SHOW_DIALOG = "openUriShowDialog";
@@ -345,15 +345,15 @@ public class MultiBitModel {
     }
 
     /**
-     * get the available balance of the active wallet
+     * Get the available balance (plus boomeranged change) of the active wallet.
      * 
      * @return
      */
-    public BigInteger getActiveWalletAvailableBalance() {
+    public BigInteger getActiveWalletAvailableBalanceWithBoomerangChange() {
         if (activeWalletModelData.getWallet() == null) {
             return BigInteger.ZERO;
         } else {
-            return activeWalletModelData.getWallet().getBalance(BalanceType.AVAILABLE);
+            return activeWalletModelData.getWallet().getBalance(BalanceType.AVAILABLE_WITH_BOOMERANG_CHANGE);
         }
     }
 

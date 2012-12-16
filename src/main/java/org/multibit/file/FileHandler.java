@@ -59,7 +59,6 @@ import com.google.bitcoin.store.WalletProtobufSerializer;
  * 
  */
 public class FileHandler {
-
     private static Logger log = LoggerFactory.getLogger(FileHandler.class);
 
     public static final String USER_PROPERTIES_FILE_NAME = "multibit.properties";
@@ -71,7 +70,7 @@ public class FileHandler {
     private MultiBitController controller;
 
     private Date dateForBackupName = null;
-       
+    
     private DateFormat dateFormat;
     private WalletProtobufSerializer walletProtobufSerializer;
     
@@ -185,7 +184,8 @@ public class FileHandler {
         boolean isWalletSerialised = false;
         InputStream stream = null;
         try {
-            // Determine what kind of wallet stream this is: Java Serialization or protobuf format.
+            // Determine what kind of wallet stream this is: Java Serialization
+            // or protobuf format.
             stream = new BufferedInputStream(new FileInputStream(walletFile));
             isWalletSerialised = stream.read() == 0xac && stream.read() == 0xed;
         } catch (FileNotFoundException e) {
@@ -198,7 +198,7 @@ public class FileHandler {
                     stream.close();
                 } catch (IOException e) {
                     log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
-                } 
+                }
             }
         }
         return isWalletSerialised;
@@ -208,16 +208,10 @@ public class FileHandler {
      * Save the perWalletModelData to file.
      * 
      * @param perWalletModelData
-     *            TODO give notification of whether data was written to a backup
-     *            file
      * @param forceWrite
-     *            force the write of the perWalletModelData
+     *            force the write of the perWalletModelData     
      */
     public void savePerWalletModelData(PerWalletModelData perWalletModelData, boolean forceWrite) {
-        // log.info("Wallet details for wallet file = " +
-        // perWalletModelData.getWalletFilename() + "\n"
-        // + perWalletModelData.getWallet().toString());
- 
         if (perWalletModelData == null || perWalletModelData.getWalletFilename() == null) {
             return;
         }
@@ -251,9 +245,10 @@ public class FileHandler {
     }
 
     /**
-     * Backup the perWalletModelData.
-     * The lastFailedMigrateVersion parameter can be used so that wallet migration is delayed for the backup
-     * should it ever need to be opened in MultiBit (to stop the wallet migrate trying to re-migrate it).
+     * Backup the perWalletModelData. The lastFailedMigrateVersion parameter can
+     * be used so that wallet migration is delayed for the backup should it ever
+     * need to be opened in MultiBit (to stop the wallet migrate trying to
+     * re-migrate it).
      * 
      * @param perWalletModelData
      * @param lastFailedMigrateVersion
@@ -462,23 +457,37 @@ public class FileHandler {
                 if (walletInfo != null) {
                     if (!walletFileSize.equals(walletInfo.getProperty(MultiBitModel.WALLET_FILE_SIZE))) {
                         haveFilesChanged = true;
+                        log.debug("Previous wallet file size was '" + walletInfo.getProperty(MultiBitModel.WALLET_FILE_SIZE)
+                                + "'. It is now '" + walletFileSize + "'");
                     }
 
                     if (!walletFileLastModified.equals(walletInfo.getProperty(MultiBitModel.WALLET_FILE_LAST_MODIFIED))) {
                         haveFilesChanged = true;
+                        log.debug("Previous wallet file modification date was '"
+                                + walletInfo.getProperty(MultiBitModel.WALLET_FILE_LAST_MODIFIED) + "'. It is now '"
+                                + walletFileLastModified + "'");
                     }
 
                     if (!walletInfoFileSize.equals(walletInfo.getProperty(MultiBitModel.WALLET_INFO_FILE_SIZE))) {
                         haveFilesChanged = true;
+                        log.debug("Previous wallet info file size was '" + walletInfo.getProperty(MultiBitModel.WALLET_INFO_FILE_SIZE)
+                                + "'. It is now '" + walletInfoFileSize + "'");
                     }
 
                     if (!walletInfoFileLastModified.equals(walletInfo.getProperty(MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED))) {
                         haveFilesChanged = true;
+                        log.debug("Previous wallet info file modification date was '"
+                                + walletInfo.getProperty(MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED) + "'. It is now '"
+                                + walletInfoFileLastModified + "'");
                     }
                 }
                 if (haveFilesChanged) {
                     log.debug("Result of check of whether files have changed for wallet filename "
                             + perWalletModelData.getWalletFilename() + " was " + haveFilesChanged + ".");
+                    log.debug(MultiBitModel.WALLET_FILE_SIZE + " " + walletFileSize + " ,"
+                            + MultiBitModel.WALLET_FILE_LAST_MODIFIED + " " + walletFileLastModified + " ,"
+                            + MultiBitModel.WALLET_INFO_FILE_SIZE + " " + walletInfoFileSize + " ,"
+                            + MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED + " " + walletInfoFileLastModified);
                 }
 
                 // Create backup filenames early if the files have changed.
@@ -529,7 +538,6 @@ public class FileHandler {
         walletInfo.put(MultiBitModel.WALLET_INFO_FILE_SIZE, "" + walletInfoFileSize);
         walletInfo.put(MultiBitModel.WALLET_INFO_FILE_LAST_MODIFIED, "" + walletInfoFileLastModified);
 
-        // TODO Fix this - create a toString()
         log.debug("rememberFileSizesAndLastModified: Wallet filename " + walletFilename + " , " + MultiBitModel.WALLET_FILE_SIZE + " " + walletFileSize + " ,"
                 + MultiBitModel.WALLET_FILE_LAST_MODIFIED + " " + walletFileLastModified + " ,"
                 + MultiBitModel.WALLET_INFO_FILE_SIZE + " " + walletInfoFileSize + " ,"
@@ -566,7 +574,7 @@ public class FileHandler {
 
         // Write the user preference properties.
         Properties userPreferences = controller.getModel().getAllUserPreferences();
-        OutputStream outputStream;
+        OutputStream outputStream = null;
         try {
             String userPropertiesFilename;
             if ("".equals(controller.getApplicationDataDirectoryLocator().getApplicationDataDirectory())) {
@@ -584,6 +592,17 @@ public class FileHandler {
             log.error(e.getMessage(), e);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
+        } finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.flush();
+                    outputStream.close();
+                } catch (IOException e) {
+                    log.error(e.getClass().getCanonicalName() + " " + e.getMessage());
+                } finally {
+                    outputStream = null;
+                }
+            }
         }
     }
 
@@ -608,7 +627,6 @@ public class FileHandler {
 
         return userPreferences;
     }
-
     
     /**
      * Uses Java serialization to save the wallet to the given file.
@@ -633,6 +651,7 @@ public class FileHandler {
     private synchronized void saveToFileStreamAsSerialised(Wallet wallet, OutputStream f) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(f);
         oos.writeObject(wallet);
+        oos.flush();
         oos.close();
     }
     
@@ -761,6 +780,7 @@ public class FileHandler {
                 destination.close();
                 destination = null;
             } else if (fileOutputStream != null) {
+                fileOutputStream.flush();
                 fileOutputStream.close();
             }
         }

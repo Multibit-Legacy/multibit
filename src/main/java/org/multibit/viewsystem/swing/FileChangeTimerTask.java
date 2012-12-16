@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2012 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,9 @@ import java.util.TimerTask;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.WalletSaveException;
-import org.multibit.file.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,16 +41,12 @@ public class FileChangeTimerTask extends TimerTask {
     private static Logger log = LoggerFactory.getLogger(FileChangeTimerTask.class);
 
     private final MultiBitController controller;
-    private final MultiBitFrame mainFrame;
 
     /**
-     * Constructs the object, sets the string to be output in function run()
-     * 
-     * @param str
+     * Constructs the object, sets the string to be output in function run().
      */
-    public FileChangeTimerTask(MultiBitController controller, MultiBitFrame mainFrame) {
+    public FileChangeTimerTask(MultiBitController controller) {
         this.controller = controller;
-        this.mainFrame = mainFrame;
     }
 
     /**
@@ -71,8 +65,9 @@ public class FileChangeTimerTask extends TimerTask {
                         boolean previousFilesHaveBeenChanged = loopModelData.isFilesHaveBeenChangedByAnotherProcess();
                         loopModelData.setFilesHaveBeenChangedByAnotherProcess(true);
                         if (!previousFilesHaveBeenChanged) {
-                            // only fire once, when change happens
+                            // Only fire once, when change happens.
                             controller.fireFilesHaveBeenChangedByAnotherProcess(loopModelData);
+                            log.debug("Marking wallet " + loopModelData.getWalletFilename() + " as having been changed by another process.");
                         }
                     }
 
@@ -87,18 +82,12 @@ public class FileChangeTimerTask extends TimerTask {
                                     new Object[] { loopModelData.getWalletFilename(), e.getMessage() });
                             log.error(message);
                             MessageManager.INSTANCE.addMessage(new Message(message));
-                        } catch (WalletVersionException e) {
-                            String message = controller.getLocaliser().getString("createNewWalletAction.walletCouldNotBeCreated",
-                                    new Object[] { loopModelData.getWalletFilename(), e.getMessage() });
-                            log.error(message);
-                            MessageManager.INSTANCE.addMessage(new Message(message));
-                        } 
+                        }
                     }
                 }
             }
         }
-
-        log.debug("End of FileChangeTimerTask - run");
         
+        log.debug("End of FileChangeTimerTask - run");
     }
 }

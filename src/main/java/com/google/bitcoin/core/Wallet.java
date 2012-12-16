@@ -56,6 +56,8 @@ import static com.google.common.base.Preconditions.*;
 public class Wallet implements Serializable, IsMultiBitClass {
     private static final Logger log = LoggerFactory.getLogger(Wallet.class);
     private static final long serialVersionUID = 2L;
+    
+    public static final int MINIMUM_NUMBER_OF_PEERS_A_TRANSACTION_IS_SEEN_BY_FOR_SPEND = 2;
 
     // Algorithm for movement of transactions between pools. Outbound tx = us spending coins. Inbound tx = us
     // receiving coins. If a tx is both inbound and outbound (spend with change) it is considered outbound for the
@@ -1176,10 +1178,36 @@ public class Wallet implements Serializable, IsMultiBitClass {
         }
         // Can we afford this?
         if (valueGathered.compareTo(total) < 0) {
-            log.info("Insufficient value in wallet for send, missing "
-                    + bitcoinValueToFriendlyString(nanocoins.subtract(valueGathered)));
-            // TODO: Should throw an exception here.
-            return false;
+            // If there are insufficient unspent coins, see if there are any pending coins that have change-back-to-self 
+            // and that have been seen by two or more peers. These are eligible for spending ("The Boomerang Rule")
+            for (Transaction tx : pending.values()) {
+                // Do not try and spend coinbases that were mined too recently, the protocol forbids it.
+                if (!tx.isMature()) {
+                    continue;
+                }
+                
+                if (transactionSpendsFromThisWalletAndHasBoomerangedBack(tx)) {
+                    for (TransactionOutput output : tx.getOutputs()) {
+                        if (!output.isAvailableForSpending())
+                            continue;
+                        if (!output.isMine(this))
+                            continue;
+
+                        gathered.add(output);
+                        valueGathered = valueGathered.add(output.getValue());
+                    }
+                    if (valueGathered.compareTo(total) >= 0)
+                        break;
+                }
+            }   
+            
+            if (valueGathered.compareTo(total) < 0) {
+                // Still not enough funds.
+                log.info("Insufficient value in wallet for send, missing "
+                        + bitcoinValueToFriendlyString(nanocoins.subtract(valueGathered)));
+                // TODO: Should throw an exception here.
+                return false;
+            }
         }
         checkState(gathered.size() > 0);
         sendTx.getConfidence().setConfidenceType(TransactionConfidence.ConfidenceType.NOT_SEEN_IN_CHAIN);
@@ -1209,6 +1237,44 @@ public class Wallet implements Serializable, IsMultiBitClass {
         sendTx.setUpdateTime(new Date());
 
         log.info("  completed {}", sendTx.getHashAsString());
+        return true;
+    }
+    
+    private boolean transactionSpendsFromThisWalletAndHasBoomerangedBack(Transaction tx) {
+        boolean seenByEnoughPeers = false;
+        TransactionConfidence confidence = tx.getConfidence();
+        if (confidence != null && confidence.getBroadcastBy() != null 
+                && confidence.getBroadcastBy().size() >= MINIMUM_NUMBER_OF_PEERS_A_TRANSACTION_IS_SEEN_BY_FOR_SPEND) {
+            seenByEnoughPeers = true;
+        }
+        
+        if (!seenByEnoughPeers) return false;
+        
+        boolean wasSentFromMyWallet = true;
+        // Check all transaction inputs are from your own wallet
+        for (TransactionInput input : tx.getInputs()) {
+            TransactionOutPoint outPoint = input.getOutpoint();
+            try {
+                TransactionOutput transactionOutput = outPoint.getConnectedOutput();
+                if (transactionOutput == null) {
+                    wasSentFromMyWallet = false;
+                    break;
+                }
+                ECKey ecKey = outPoint.getConnectedKey(this);
+                // if no ecKey was found then the transaction uses a transaction output from somewhere else
+                if (ecKey == null) {
+                    wasSentFromMyWallet = false;
+                    break;
+                }
+            } catch (ScriptException e) {
+                wasSentFromMyWallet = false;
+                break;
+            }
+        }
+        
+        if (!wasSentFromMyWallet) return false;
+        
+        // Transaction is both from out wallet and has boomeranged back.
         return true;
     }
 
@@ -1304,7 +1370,13 @@ public class Wallet implements Serializable, IsMultiBitClass {
          * Balance that can be safely used to create new spends. This is all confirmed unspent outputs minus the ones
          * spent by pending transactions, but not including the outputs of those pending transactions.
          */
-        AVAILABLE
+        AVAILABLE,
+        
+        /**
+         * Balance that can be safely used to create new spends. This includes all available and any change that
+         * has been been by MINIMUM_NUMBER_OF_PEERS_A_TRANSACTION_IS_SEEN_BY_FOR_SPEND or more peers.
+         */
+        AVAILABLE_WITH_BOOMERANG_CHANGE
     }
 
     /**
@@ -1326,7 +1398,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         BigInteger available = BigInteger.ZERO;
         for (Transaction tx : unspent.values()) {
             // For an 'available to spend' balance exclude coinbase transactions that have not yet matured.
-            if (balanceType == BalanceType.AVAILABLE && !tx.isMature()) {
+            if ((balanceType == BalanceType.AVAILABLE || balanceType == BalanceType.AVAILABLE_WITH_BOOMERANG_CHANGE) && !tx.isMature()) {
                 continue;
             }
 
@@ -1338,16 +1410,39 @@ public class Wallet implements Serializable, IsMultiBitClass {
         }
         if (balanceType == BalanceType.AVAILABLE)
             return available;
-        checkState(balanceType == BalanceType.ESTIMATED);
-        // Now add back all the pending outputs to assume the transaction goes through.
-        BigInteger estimated = available;
-        for (Transaction tx : pending.values()) {
-            for (TransactionOutput output : tx.getOutputs()) {
-                if (!output.isMine(this)) continue;
-                estimated = estimated.add(output.getValue());
+        checkState(balanceType == BalanceType.ESTIMATED || balanceType == BalanceType.AVAILABLE_WITH_BOOMERANG_CHANGE);        
+        if (balanceType == BalanceType.ESTIMATED) {
+            // Now add back all the pending outputs to assume the transaction goes through.
+            BigInteger estimated = available;
+
+            for (Transaction tx : pending.values()) {
+                for (TransactionOutput output : tx.getOutputs()) {
+                    if (!output.isMine(this)) continue;
+                    if (!output.isAvailableForSpending()) continue;
+                    estimated = estimated.add(output.getValue());
+                }
             }
+
+            return estimated;
+        } else {
+            BigInteger availableWithBoomerang = available;
+
+            // If transactions send from your own wallet then change is spendable after the transaction has been seen by
+            // MINIMUM_NUMBER_OF_PEERS_A_TRANSACTION_IS_SEEN_BY_FOR_SPEND
+            for (Transaction tx : pending.values()) {
+                if (transactionSpendsFromThisWalletAndHasBoomerangedBack(tx)) {
+                    // Transaction is both from out wallet and has boomeranged back.
+                    for (TransactionOutput output : tx.getOutputs()) {
+                        if (!output.isMine(this))
+                            continue;
+                        if (!output.isAvailableForSpending())
+                            continue;
+                        availableWithBoomerang = availableWithBoomerang.add(output.getValue());
+                    }
+                }
+            }
+            return availableWithBoomerang;
         }
-        return estimated;
     }
 
     @Override

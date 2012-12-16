@@ -16,7 +16,6 @@
 package org.multibit.viewsystem.swing.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.FontMetrics;
@@ -101,6 +100,8 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     private TableRowSorter<TableModel> rowSorter;
 
     private static final String SPACER = "   "; // 3 spaces
+    
+    private static final int STATUS_WIDTH_DELTA = 4;
 
     private static final int TABLE_BORDER = 3;
 
@@ -127,6 +128,8 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     private int displayCount;
     
     private JScrollPane scrollPane;
+    
+    private JTextPane firstTextPaneInTable;
 
     /**
      * Timer used to condense multiple updates
@@ -215,12 +218,12 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         FontMetrics fontMetrics = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         TableColumn tableColumn = table.getColumnModel().getColumn(0); // status
         int statusWidth = fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.statusText"));
-        tableColumn.setPreferredWidth(statusWidth);
+        tableColumn.setPreferredWidth(statusWidth + STATUS_WIDTH_DELTA);
 
         tableColumn = table.getColumnModel().getColumn(1); // Date.
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
 
-        int dateWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.debitText")),
+        int dateWidth = Math.max(fontMetrics.stringWidth(controller.getLocaliser().getString("walletData.dateText")),
                 fontMetrics.stringWidth(dateFormatter.format(new Date(DateUtils.nowUtc().getMillis()))));
         tableColumn.setPreferredWidth(dateWidth);
 
@@ -353,6 +356,12 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
         if (selectedRow > -1 && selectedRow < table.getRowCount()) {
             table.setRowSelectionInterval(selectedRow, selectedRow);
+        }
+        
+        if (firstTextPaneInTable != null) {
+            firstTextPaneInTable.invalidate();
+            firstTextPaneInTable.validate();
+            firstTextPaneInTable.repaint();
         }
         
         table.invalidate();
@@ -839,6 +848,11 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             StyleConstants.setFontFamily(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getFontName());
                        
             pane.getStyledDocument().setCharacterAttributes(0, pane.getText().length(), pane.getStyle("number"), true);
+            
+            if (row == 0) {
+                // Remember the first text pane
+                firstTextPaneInTable = pane;
+            }
             
             GridBagConstraints constraints = new GridBagConstraints();
             constraints.fill = GridBagConstraints.HORIZONTAL;
