@@ -335,7 +335,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         // between pools.
         EnumSet<Pool> containingPools = getContainingPools(tx);
         if (!containingPools.equals(EnumSet.noneOf(Pool.class))) {
-            log.info("Received tx we already saw in a block or created ourselves: " + tx.getHashAsString());
+            //log.info("Received tx we already saw in a block or created ourselves: " + tx.getHashAsString());
             return;
         }
 
@@ -1009,6 +1009,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * coins as spent until commitTx is called on the result.
      */
     public synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee) {
+        log.info("Just about to create send (createSend)");
         return createSend(address, nanocoins, fee, getChangeAddress());
     }
 
@@ -1022,6 +1023,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @return the Transaction that was created, or null if there are insufficient coins in thew allet.
      */
     public synchronized Transaction sendCoinsOffline(Address to, BigInteger nanocoins, BigInteger fee) {
+        log.info("Just about to create send (sendCoinsOffline)");
+
         Transaction tx = createSend(to, nanocoins, fee);
         if (tx == null)   // Not enough money! :-(
             return null;
@@ -1049,6 +1052,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      */
     public synchronized Transaction sendCoinsAsync(PeerGroup peerGroup, Address to, BigInteger nanocoins, BigInteger fee)
             throws IOException {
+        log.info("Just about to send coins (sendCoinsAsync)");
         Transaction tx = sendCoinsOffline(to, nanocoins, fee);
         if (tx == null)
             return null;  // Not enough money.
@@ -1070,6 +1074,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      */
     public synchronized Transaction sendCoins(PeerGroup peerGroup, Address to, BigInteger nanocoins, final BigInteger fee)
             throws IOException {
+        log.info("Just about to send coins");
         Transaction tx = sendCoinsOffline(to, nanocoins, fee);
         if (tx == null)
             return null;  // Not enough money.

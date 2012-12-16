@@ -42,10 +42,7 @@ singleNodeConnection=12.34.56.78
 ```
 
 
-Testnet / testnet3
+Testnet
 -------------------
 To use the testnet set the property "testOrProductionNetwork" 
 to be "test".
-
-To use the testnet3 set the property "testOrProductionNetwork" 
-to be "testnet3".

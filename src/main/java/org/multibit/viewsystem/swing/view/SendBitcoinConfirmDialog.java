@@ -54,7 +54,7 @@ public class SendBitcoinConfirmDialog extends MultiBitDialog {
     private static final long serialVersionUID = 191435612345057705L;
 
     private static final int HEIGHT_DELTA = 150;
-    private static final int WIDTH_DELTA = 250;
+    private static final int WIDTH_DELTA = 150;
 
     private MultiBitFrame mainFrame;
 
