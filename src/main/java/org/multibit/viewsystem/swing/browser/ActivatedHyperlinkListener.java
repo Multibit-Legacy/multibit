@@ -30,8 +30,10 @@ import org.multibit.viewsystem.swing.MultiBitFrame;
 public class ActivatedHyperlinkListener implements HyperlinkListener {
 
     private static final String MULTIBIT_HOST_NAME = "www.multibit.org";
-
+    private static final String MULTIBIT_HOST_NAME2 = "188.138.113.201";
+    
     private static final String HTTP_PROTOCOL = "http";
+    private static final String HTTPS_PROTOCOL = "https";
 
     private static final String SPACER = " "; // 3 spaces
 
@@ -86,11 +88,11 @@ public class ActivatedHyperlinkListener implements HyperlinkListener {
         } else if (type == HyperlinkEvent.EventType.ACTIVATED) {
             Runnable runner = new Runnable() {
                 public void run() {
-                    if (HTTP_PROTOCOL.equals(url.getProtocol()) && MULTIBIT_HOST_NAME.equals(url.getHost())) {
+                    if ((HTTP_PROTOCOL.equals(url.getProtocol()) || HTTPS_PROTOCOL.equals(url.getProtocol())) && (MULTIBIT_HOST_NAME.equals(url.getHost()) || MULTIBIT_HOST_NAME2.equals(url.getHost()))) {
                         browser.visit(url.toString());
                     } else {
                         JOptionPane.showMessageDialog(mainFrame, "The help contents can only show HTTP content from "
-                                + MULTIBIT_HOST_NAME + "\nPlease use your main browser to view the URL:\n" + url.toString(),
+                                + MULTIBIT_HOST_NAME + " and " + MULTIBIT_HOST_NAME + "\nPlease use your main browser to view the URL:\n" + url.toString(),
                                 "Cannot follow link", JOptionPane.INFORMATION_MESSAGE);
 
                     }
