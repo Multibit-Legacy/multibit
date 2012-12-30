@@ -1,5 +1,12 @@
 MultiBit release notes.
 
+
+Version 0.4.18
+
+Bug fixes
++ Issue 63 fixed (default fee of 1 BTC for comm decimal separator languages).
+
+
 17 Dec 2012 Version 0.4.17
 + Change is now spendable as soon as transaction traverse the network.
 
