@@ -50,7 +50,7 @@ import org.multibit.utils.ImageLoader;
 import org.multibit.utils.VersionComparator;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.slf4j.Logger;
@@ -91,6 +91,7 @@ public class MigrateWalletsAction extends AbstractAction {
     /**
      * Ask the user if they want to migrate wallets now, then perform migration in background thread.
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         setEnabled(false);
@@ -464,6 +465,7 @@ public class MigrateWalletsAction extends AbstractAction {
         //Handle window closing correctly.
         dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         dialog.addWindowListener(new WindowAdapter() {
+            @Override
                 public void windowClosing(WindowEvent we) {
                 /*
                  * Instead of directly closing the window,

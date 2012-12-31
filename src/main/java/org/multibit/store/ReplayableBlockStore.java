@@ -303,6 +303,7 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
         }
     }
 
+    @Override
     public synchronized void put(StoredBlock block) throws BlockStoreException {
         ensureOpen();
         try {
@@ -315,6 +316,7 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
         }
     }
 
+    @Override
     public synchronized StoredBlock get(Sha256Hash hash) throws BlockStoreException {
         ensureOpen();
         // Check the memory cache first.
@@ -384,6 +386,7 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
         return null;
     }
 
+    @Override
     public synchronized StoredBlock getChainHead() throws BlockStoreException {
         ensureOpen();
         // This will hit the cache
@@ -393,6 +396,7 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
         return head;
     }
 
+    @Override
     public synchronized void setChainHead(StoredBlock chainHead) throws BlockStoreException {
         ensureOpen();
         try {
@@ -449,6 +453,7 @@ public class ReplayableBlockStore implements BlockStore, IsMultiBitClass {
         notFoundCache.clear();
     }
     
+    @Override
     public void close() throws BlockStoreException {
         ensureOpen();
         try {

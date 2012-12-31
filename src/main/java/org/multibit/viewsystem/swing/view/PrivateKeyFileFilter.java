@@ -29,10 +29,12 @@ public class PrivateKeyFileFilter extends javax.swing.filechooser.FileFilter {
         this.controller = controller;
     }
     
+    @Override
     public boolean accept(File file) {
         return (file.isDirectory() && !(file.getName().toLowerCase().endsWith(MAC_APPLICATION_SUFFIX))) || (file.getName().toLowerCase().endsWith(MultiBitModel.PRIVATE_KEY_FILE_EXTENSION));
     }
 
+    @Override
     public String getDescription() {
         String multiBitText = controller.getLocaliser().getString("multiBitFrame.title");
         return multiBitText + " (*." + MultiBitModel.PRIVATE_KEY_FILE_EXTENSION + ")";

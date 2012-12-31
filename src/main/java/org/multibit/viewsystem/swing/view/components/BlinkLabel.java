@@ -81,6 +81,7 @@ public class BlinkLabel extends MultiBitLabel {
             this.blinkLabel = blinkLabel;
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             blinkLabel.setForeground(ORIGINAL_FOREGROUND_COLOR);
             blinkLabel.setBackground(originalBackgroundColor);

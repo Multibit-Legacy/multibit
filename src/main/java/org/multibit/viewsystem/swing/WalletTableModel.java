@@ -67,10 +67,12 @@ public class WalletTableModel extends AbstractTableModel {
         }
     }
 
+    @Override
     public int getColumnCount() {
         return headers.size();
     }
 
+    @Override
     public int getRowCount() {
         return walletData.size();
     }
@@ -79,10 +81,12 @@ public class WalletTableModel extends AbstractTableModel {
         return walletData.get(row);
     }
 
+    @Override
     public String getColumnName(int column) {
         return headers.get(column);
     }
 
+    @Override
     public Object getValueAt(int row, int column) {
         WalletTableData walletDataRow = null;
         if (row >= 0 && row < walletData.size()) {
@@ -145,6 +149,7 @@ public class WalletTableModel extends AbstractTableModel {
     /**
      * Table model is read only.
      */
+    @Override
     public void setValueAt(Object value, int row, int column) {
         throw new UnsupportedOperationException();
     }

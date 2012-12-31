@@ -15,6 +15,22 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
+import org.multibit.viewsystem.swing.view.panels.RemovePasswordPanel;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.panels.MessagesPanel;
+import org.multibit.viewsystem.swing.view.panels.ResetTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.WelcomePanel;
+import org.multibit.viewsystem.swing.view.panels.HelpAboutPanel;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.ExportPrivateKeysPanel;
+import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
+import org.multibit.viewsystem.swing.view.panels.AddPasswordPanel;
+import org.multibit.viewsystem.swing.view.panels.ChangePasswordPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
+import org.multibit.viewsystem.swing.view.panels.ChartsPanel;
+import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,7 +90,7 @@ public class ViewFactory {
         }
 
         case View.TRANSACTIONS_VIEW: {
-            viewToReturn = new ShowTransactionsPanel(mainFrame, controller);
+            viewToReturn = new ShowTransactionsPanel(controller, mainFrame);
             break;
         }
 
@@ -89,12 +105,12 @@ public class ViewFactory {
         }
                
         case View.RECEIVE_BITCOIN_VIEW: {
-            viewToReturn = new ReceiveBitcoinPanel(mainFrame, controller);
+            viewToReturn = new ReceiveBitcoinPanel(controller, mainFrame);
             break;
         }
         
         case View.SEND_BITCOIN_VIEW: {
-            viewToReturn = new SendBitcoinPanel(mainFrame, controller);
+            viewToReturn = new SendBitcoinPanel(controller, mainFrame);
             break;
         }
         

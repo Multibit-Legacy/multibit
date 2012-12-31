@@ -73,6 +73,7 @@ public class CreateWalletSubmitAction extends AbstractAction {
     /**
      * Create new wallet.
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         if (mainFrame != null) {
             mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));

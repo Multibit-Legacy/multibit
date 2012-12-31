@@ -86,7 +86,9 @@ public class Sha256Hash implements Serializable, IsMultiBitClass {
      */
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof Sha256Hash)) return false;
+        if (!(other instanceof Sha256Hash)) {
+            return false;
+        }
         return Arrays.equals(bytes, ((Sha256Hash) other).bytes);
     }
 

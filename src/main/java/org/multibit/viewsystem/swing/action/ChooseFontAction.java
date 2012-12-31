@@ -23,7 +23,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.viewsystem.swing.view.ShowPreferencesPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.components.JFontChooser;
 
 /**
@@ -52,6 +52,7 @@ public class ChooseFontAction extends AbstractAction {
     /**
      * Show font chooser dialog.
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         JFontChooser fontChooser = new JFontChooser(controller);
         fontChooser.setSelectedFont(showPreferencesPanel.getSelectedFont());

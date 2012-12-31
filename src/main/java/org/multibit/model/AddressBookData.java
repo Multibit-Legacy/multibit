@@ -71,6 +71,7 @@ public class AddressBookData implements Comparable {
         return "AddressBookData [label=" + label + ", address=" + address + "]";
     }
 
+    @Override
     public int compareTo(Object other) {
         if (other instanceof AddressBookData) {
             return (label + "").compareTo(((AddressBookData)other).label);

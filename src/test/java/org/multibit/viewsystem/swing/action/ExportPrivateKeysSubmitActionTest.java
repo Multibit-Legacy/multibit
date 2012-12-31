@@ -32,7 +32,7 @@ import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.viewsystem.swing.view.ExportPrivateKeysPanel;
+import org.multibit.viewsystem.swing.view.panels.ExportPrivateKeysPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 import com.google.bitcoin.core.Utils;

@@ -427,6 +427,7 @@ public class WalletTest {
         // Make a fresh copy of the tx to ensure we're testing realistically.
         flags[0] = flags[1] = false;
         notifiedTx[0].getConfidence().addEventListener(new TransactionConfidence.Listener() {
+            @Override
             public void onConfidenceChanged(Transaction tx) {
                 flags[1] = true;
             }

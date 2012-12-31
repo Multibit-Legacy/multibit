@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.panels;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -107,6 +107,8 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.WalletMajorVersion;
 import com.google.bitcoin.uri.BitcoinURI;
+import org.multibit.viewsystem.swing.view.models.AddressBookTableModel;
+import org.multibit.viewsystem.swing.view.ImageSelection;
 
 /**
  * Abstract parent class for SendBitcoinPanel and ReceiveBitcoinPanel
@@ -641,6 +643,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             
             Collator collator;
             
+            @Override
             public int compare(String o1, String o2) {
                 if (collator == null) {
                     collator = Collator.getInstance(controller.getLocaliser().getLocale());
@@ -784,6 +787,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             enabled = true;
         }
 
+        @Override
         public void valueChanged(ListSelectionEvent event) {
             if (enabled) {
                 int viewRow = addressesTable.getSelectedRow();
@@ -817,6 +821,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         MultiBitLabel label = new MultiBitLabel("");
 
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             label.setHorizontalAlignment(SwingConstants.LEADING);
@@ -843,6 +848,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         MultiBitLabel label = new MultiBitLabel("");
 
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             label.setHorizontalAlignment(SwingConstants.LEFT);
@@ -869,6 +875,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         MultiBitLabel label = new MultiBitLabel("");
 
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -895,6 +902,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         MultiBitLabel label = new MultiBitLabel("");
 
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             label.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -935,6 +943,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
         // drag support
         MouseListener listener = new MouseAdapter() {
+            @Override
             public void mousePressed(MouseEvent me) {
                 JComponent comp = (JComponent) me.getSource();
                 TransferHandler handler = comp.getTransferHandler();
@@ -1378,15 +1387,18 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     protected class QRCodeKeyListener implements KeyListener {
         /** Handle the key typed event from the text field. */
+        @Override
         public void keyTyped(KeyEvent e) {
         }
 
         /** Handle the key-pressed event from the text field. */
+        @Override
         public void keyPressed(KeyEvent e) {
             // do nothing
         }
 
         /** Handle the key-released event from the text field. */
+        @Override
         public void keyReleased(KeyEvent e) {
             String address = null;
             if (addressTextField != null) {
@@ -1434,15 +1446,18 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     protected class AmountBTCKeyListener implements KeyListener {
         /** Handle the key typed event in the amount BTC field */
+        @Override
         public void keyTyped(KeyEvent e) {
         }
 
         /** Handle the key-pressed event in the amount BTC field */
+        @Override
         public void keyPressed(KeyEvent e) {
             // do nothing
         }
 
         /** Handle the key-released event in the amount BTC field */
+        @Override
         public void keyReleased(KeyEvent e) {
             String address = null;
             if (addressTextField != null) {
@@ -1483,15 +1498,18 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
     protected class AmountFiatKeyListener implements KeyListener {
         /** Handle the key typed event in the amount Fiat field */
+        @Override
         public void keyTyped(KeyEvent e) {
         }
 
         /** Handle the key-pressed event in the amount Fiat field */
+        @Override
         public void keyPressed(KeyEvent e) {
             // do nothing
         }
 
         /** Handle the key-released event in the amount Fiat field */
+        @Override
         public void keyReleased(KeyEvent e) {
             String address = null;
             if (addressTextField != null) {

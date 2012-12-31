@@ -15,6 +15,7 @@
  */
 package org.multibit.viewsystem.swing.view;
 
+import org.multibit.viewsystem.swing.view.panels.AbstractTradePanel;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
@@ -69,10 +70,12 @@ public class ImageSelection extends TransferHandler implements Transferable {
         }
     }
 
+    @Override
     public int getSourceActions(JComponent c) {
         return TransferHandler.COPY;
     }
 
+    @Override
     public boolean canImport(JComponent comp, DataFlavor flavor[]) {
         if (!canImport) {
             return false;
@@ -108,6 +111,7 @@ public class ImageSelection extends TransferHandler implements Transferable {
         return null;
     }
 
+    @Override
     public boolean importData(JComponent comp, Transferable transferable) {
         if (comp instanceof JLabel) {
             log.debug("importData - 1");
@@ -123,6 +127,7 @@ public class ImageSelection extends TransferHandler implements Transferable {
     }
 
     // Transferable.
+    @Override
     public Object getTransferData(DataFlavor flavor) {
         if (isDataFlavorSupported(flavor)) {
             if (DataFlavor.imageFlavor.equals(flavor) && image != null && image.getHeight(null) > 0) {
@@ -199,10 +204,12 @@ public class ImageSelection extends TransferHandler implements Transferable {
         return qrCodeFile;
     }
 
+    @Override
     public DataFlavor[] getTransferDataFlavors() {
         return flavors;
     }
 
+    @Override
     public boolean isDataFlavorSupported(DataFlavor flavor) {
         for (int j = 0, m = flavors.length; j < m; j++) {
             if (flavor.equals(flavors[j])) {

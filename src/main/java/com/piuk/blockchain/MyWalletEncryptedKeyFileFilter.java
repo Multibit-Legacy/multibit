@@ -23,10 +23,12 @@ public class MyWalletEncryptedKeyFileFilter extends javax.swing.filechooser.File
 
     public MyWalletEncryptedKeyFileFilter() {    }
     
+    @Override
     public boolean accept(File file) {
         return (file.getName().toLowerCase().endsWith(MultiBitModel.BLOCKCHAIN_WALLET_ENCRYPTED_SUFFIX));
     }
 
+    @Override
     public String getDescription() {
         String multiBitText = "";
         

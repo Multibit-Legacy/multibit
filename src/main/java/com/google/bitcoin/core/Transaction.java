@@ -145,6 +145,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     /**
      * Returns the transaction hash as you see them in the block explorer.
      */
+    @Override
     public Sha256Hash getHash() {
         if (hash == null) {
             byte[] bits = bitcoinSerialize();
@@ -409,11 +410,13 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         SINGLE,      // 3
     }
 
+    @Override
     protected void unCache() {
         super.unCache();
         hash = null;
     }
 
+    @Override
     protected void parseLite() throws ProtocolException {
 
         //skip this if the length has been provided i.e. the tx is not part of a block
@@ -472,6 +475,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         return cursor - offset + 4;
     }
 
+    @Override
     void parse() throws ProtocolException {
 
         if (parsed)
@@ -528,6 +532,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
     /**
      * A human readable version of the transaction useful for debugging. The format is not guaranteed to be stable.
      */
+    @Override
     public String toString() {
         // Basic info about the tx.
         StringBuffer s = new StringBuffer();

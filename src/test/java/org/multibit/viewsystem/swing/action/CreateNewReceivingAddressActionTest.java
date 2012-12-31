@@ -22,7 +22,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
-import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
+import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 public class CreateNewReceivingAddressActionTest extends TestCase {
@@ -37,7 +37,7 @@ public class CreateNewReceivingAddressActionTest extends TestCase {
         // Create a new CreateNewReceivingAddressAction to test.
         ColorAndFontConstants.init();
         FontSizer.INSTANCE.initialise(controller);
-        ReceiveBitcoinPanel receiveBitcoinPanel = new ReceiveBitcoinPanel(null, controller);
+        ReceiveBitcoinPanel receiveBitcoinPanel = new ReceiveBitcoinPanel(controller, null);
         CreateNewReceivingAddressAction createNewReceivingAddressAction = receiveBitcoinPanel.getCreateNewReceivingAddressAction();
 
         assertNotNull("createNewReceivingAddressAction was not created successfully", createNewReceivingAddressAction);

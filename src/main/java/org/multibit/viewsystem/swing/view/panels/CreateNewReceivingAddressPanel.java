@@ -1,4 +1,4 @@
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -25,6 +25,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 
 import com.google.bitcoin.core.EncryptionType;
+import org.multibit.viewsystem.swing.view.dialogs.CreateNewReceivingAddressDialog;
 
 /**
  * JPanel for creating new receiving addresses.

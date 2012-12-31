@@ -130,6 +130,7 @@ public class TransactionOutput extends ChildMessage implements Serializable, IsM
         return scriptPubKey;
     }
 
+    @Override
     protected void parseLite() {
         // TODO: There is no reason to use BigInteger for values, they are always smaller than 21 million * COIN
         // The only reason to use BigInteger would be to properly read values from the reference implementation, however
@@ -140,6 +141,7 @@ public class TransactionOutput extends ChildMessage implements Serializable, IsM
         length = cursor - offset + scriptLen;
     }
 
+    @Override
     void parse() throws ProtocolException {
         scriptBytes = readBytes(scriptLen);
     }
@@ -232,6 +234,7 @@ public class TransactionOutput extends ChildMessage implements Serializable, IsM
     /**
      * Returns a human readable debug string.
      */
+    @Override
     public String toString() {
         try {
             return "TxOut of " + Utils.bitcoinValueToFriendlyString(value) + " to " + getScriptPubKey().getToAddress()

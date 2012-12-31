@@ -6,7 +6,7 @@ import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
-import org.multibit.viewsystem.swing.view.ShowTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 
 public class UpdateTransactionsTimerTask extends TimerTask {
 
@@ -32,6 +32,7 @@ public class UpdateTransactionsTimerTask extends TimerTask {
         // If viewing transactions, refresh the screen so that transaction
         // confidence icons can update.
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 boolean updateThisTime = false;
                 synchronized (thisTimerTask) {
