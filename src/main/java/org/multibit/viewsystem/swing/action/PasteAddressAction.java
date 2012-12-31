@@ -26,7 +26,7 @@ import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.utils.WhitespaceTrimmer;
-import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 
 /**
  * This {@link Action} represents the swing paste address action
@@ -55,6 +55,7 @@ public class PasteAddressAction extends AbstractAction {
     /**
      * delegate to generic paste address action
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         // check to see if the wallet files have changed
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();

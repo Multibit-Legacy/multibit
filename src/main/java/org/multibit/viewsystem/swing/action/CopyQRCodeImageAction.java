@@ -51,6 +51,7 @@ public class CopyQRCodeImageAction extends AbstractAction {
     /**
      * delegate to generic copy QRCode image action
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         if (dataProvider != null) {
             JLabel qrCodeLabel = dataProvider.getURIImage();

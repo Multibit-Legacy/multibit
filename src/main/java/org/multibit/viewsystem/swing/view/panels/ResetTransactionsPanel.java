@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.panels;
 
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
@@ -545,6 +545,7 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
 
         }
 
+        @Override
         public void itemStateChanged(ItemEvent e) {
             if (e.getSource().equals(resetFromFirstTransactionRadioButton)) {
                 calendarChooser.setEnabled(false);
@@ -559,10 +560,12 @@ public class ResetTransactionsPanel extends JPanel implements View, ResetTransac
     }
     
     // ResetTransactionDataProvider methods
+    @Override
     public Date getResetDate() {
         return resetDate;
     }
 
+    @Override
     public boolean isResetFromFirstTransaction() {
         if (resetFromFirstTransactionRadioButton != null) {
             return resetFromFirstTransactionRadioButton.isSelected();

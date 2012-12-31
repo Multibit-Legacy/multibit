@@ -41,6 +41,7 @@ public class SimpleViewSystem implements ViewSystem {
         System.out.println("SIMPLE. Wallet " + wallet.hashCode() + " was reorganised");
     }
 
+    @Override
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction transaction) {
         System.out.println("SIMPLE. Confidence changed for wallet: " + wallet.hashCode() + ", transaction:\n" + transaction.toString());
     }

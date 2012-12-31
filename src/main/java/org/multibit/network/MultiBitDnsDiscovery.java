@@ -82,6 +82,7 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
         random = new Random();
     }
 
+    @Override
     public InetSocketAddress[] getPeers() throws PeerDiscoveryException {
         if (canReturnCache && !haveReturnedCurrentCache) {
             InetSocketAddress[] addressesToReturn;
@@ -166,6 +167,7 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
     }
 
     /** We don't have a way to abort a DNS lookup, so this does nothing */
+    @Override
     public void shutdown() {
     }
 
@@ -206,6 +208,7 @@ public class MultiBitDnsDiscovery implements PeerDiscovery {
                 return successMeasure;
             }
 
+            @Override
             protected void done() {
                 try {
                     // Add addresses for this host onto the allhosts - set.

@@ -30,7 +30,7 @@ import javax.swing.Icon;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.utils.WhitespaceTrimmer;
-import org.multibit.viewsystem.swing.view.AbstractTradePanel;
+import org.multibit.viewsystem.swing.view.panels.AbstractTradePanel;
 
 /**
  * This {@link Action} enables you to paste a swatch into the Send Bitcoin Panel
@@ -58,6 +58,7 @@ public class PasteSwatchAction extends AbstractAction {
     /**
      * paste the swatch data
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         // check to see if the wallet files have changed
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();

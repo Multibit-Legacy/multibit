@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.dialogs;
+
+
 
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -23,6 +25,8 @@ import java.awt.event.ActionListener;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
+
+import com.google.bitcoin.core.Wallet.BalanceType;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
@@ -37,8 +41,7 @@ import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
-
-import com.google.bitcoin.core.Wallet.BalanceType;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 /**
  * The validation error dialog - used to tell the user their input is invalid.

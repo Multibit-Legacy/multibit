@@ -55,6 +55,7 @@ public class HelpContextAction extends AbstractAction {
     /**
      * display the view specified
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         controller.displayHelpContext(helpContextToDisplay);
     }

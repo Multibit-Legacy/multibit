@@ -81,10 +81,10 @@ import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.action.MultiBitWalletBusyAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
-import org.multibit.viewsystem.swing.view.HelpContentsPanel;
-import org.multibit.viewsystem.swing.view.SendBitcoinConfirmDialog;
-import org.multibit.viewsystem.swing.view.SendBitcoinConfirmPanel;
-import org.multibit.viewsystem.swing.view.ShowTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.dialogs.SendBitcoinConfirmDialog;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -144,6 +144,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         return helpContext;
     }
 
+    @Override
     public void setHelpContext(String helpContext) {
         this.helpContext = helpContext;
     }
@@ -243,6 +244,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // TODO Examine how this fits in with the controller onQuit() event
         addWindowListener(new WindowAdapter() {
+            @Override
             public void windowClosing(WindowEvent arg0) {
                 org.multibit.viewsystem.swing.action.ExitAction exitAction = new org.multibit.viewsystem.swing.action.ExitAction(
                         finalController, thisFrame);
@@ -879,6 +881,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         }
 
         showTicker.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent event) {
                 if (tickerTablePanel != null) {
                     if (tickerTablePanel.isVisible()) {
@@ -939,6 +942,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     /**
      * Recreate all views.
      */
+    @Override
     public void recreateAllViews(final boolean initUI) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -997,6 +1001,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     /**
      * Display next view on Swing event dispatch thread.
      */
+    @Override
     public void displayView(int viewToDisplay) {
         //log.debug("Displaying view '" + viewToDisplay + "'");
         // Open wallet view obselete - show transactions
@@ -1026,6 +1031,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         SwingUtilities.invokeLater(new Runnable() {
             @SuppressWarnings("deprecation")
+            @Override
             public void run() {
                 String viewTitle = nextViewFinal.getViewTitle();
                 boolean foundTab = false;
@@ -1073,6 +1079,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * Navigate away from view - this may be on another thread hence the
      * SwingUtilities.invokeLater.
      */
+    @Override
     public void navigateAwayFromView(int viewToNavigateAwayFrom) {
         if (View.YOUR_WALLETS_VIEW == viewToNavigateAwayFrom) {
             // Do nothing
@@ -1083,6 +1090,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         if (viewToNavigateAwayFromFinal != null) {
             SwingUtilities.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     viewToNavigateAwayFromFinal.navigateAwayFromView();
                 }
@@ -1168,6 +1176,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         recreateAllViews(false);
     }
 
+    @Override
     public void onTransactionConfidenceChanged(Wallet wallet, final Transaction transaction) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -1178,6 +1187,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         });
     }
 
+    @Override
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
         if (controller.getModel().getActiveWalletFilename() != null
                 && controller.getModel().getActiveWalletFilename().equals(perWalletModelData.getWalletFilename())) {
@@ -1191,8 +1201,10 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     /**
      * Update the UI after the model data has changed.
      */
+    @Override
     public void fireDataChanged() {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 // Update the password related menu items.
                 updateMenuItemsOnWalletChange();
@@ -1226,6 +1238,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      */
     public void fireExchangeDataChanged() {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 tickerTablePanel.update();
                 updateHeader();
@@ -1235,6 +1248,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     void updateHeader() {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 if (controller.getModel().getActivePerWalletModelData() != null
                         && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {

@@ -28,7 +28,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.file.FileHandler;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
-import org.multibit.viewsystem.swing.view.ChangePasswordPanel;
+import org.multibit.viewsystem.swing.view.panels.ChangePasswordPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
@@ -73,6 +73,7 @@ public class ChangePasswordSubmitAction extends MultiBitSubmitAction implements 
     /**
      * Change the wallet password.
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         changePasswordPanel.clearMessages();
         privateKeysBackupFile = null;

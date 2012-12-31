@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.dialogs;
 
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
@@ -441,6 +441,7 @@ public class TransactionDetailsDialog extends MultiBitDialog {
         OkBackToParentAction okAction = new OkBackToParentAction(controller, this);
         okButton = new MultiBitButton(okAction, controller);
         okButton.addKeyListener(new KeyAdapter() {
+            @Override
             public void keyPressed(KeyEvent key) {
                 if (key.getKeyChar() == KeyEvent.VK_ENTER)
                     okButton.doClick();
