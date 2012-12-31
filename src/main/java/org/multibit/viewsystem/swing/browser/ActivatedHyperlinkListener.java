@@ -46,6 +46,7 @@ public class ActivatedHyperlinkListener implements HyperlinkListener {
         this.browser = browser;
     }
 
+    @Override
     public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
         HyperlinkEvent.EventType type = hyperlinkEvent.getEventType();
         final URL url = hyperlinkEvent.getURL();
@@ -85,6 +86,7 @@ public class ActivatedHyperlinkListener implements HyperlinkListener {
             }
         } else if (type == HyperlinkEvent.EventType.ACTIVATED) {
             Runnable runner = new Runnable() {
+                @Override
                 public void run() {
                     if (HTTP_PROTOCOL.equals(url.getProtocol()) && MULTIBIT_HOST_NAME.equals(url.getHost())) {
                         browser.visit(url.toString());

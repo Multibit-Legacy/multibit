@@ -25,7 +25,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import com.google.bitcoin.core.WalletMajorVersion;
-import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 
 /**
  * This {@link Action} represents an action to create a sending address.
@@ -48,6 +48,7 @@ public class CreateNewSendingAddressAction extends MultiBitSubmitAction {
     /**
      * Create new send address.
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         if (abort()) {
             return;
@@ -62,7 +63,7 @@ public class CreateNewSendingAddressAction extends MultiBitSubmitAction {
             perWalletModelData.setWalletInfo(walletInfo);
         }
 
-        if (walletInfo.getSendingAddresses().size() == 0) {
+        if (walletInfo.getSendingAddresses().isEmpty()) {
             String address = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
             String label = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
 

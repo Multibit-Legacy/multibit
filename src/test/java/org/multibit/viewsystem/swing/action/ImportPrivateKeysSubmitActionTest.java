@@ -25,7 +25,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.file.PrivateKeysHandlerTest;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.viewsystem.swing.view.ImportPrivateKeysPanel;
+import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 import com.google.bitcoin.core.ECKey;

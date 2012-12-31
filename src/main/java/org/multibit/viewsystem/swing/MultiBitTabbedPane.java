@@ -59,6 +59,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
         ToolTipManager.sharedInstance().registerComponent(this);
     }
     
+    @Override
     public void setSelectedIndex(int index) {
         super.setSelectedIndex(index);
 
@@ -166,6 +167,7 @@ public class MultiBitTabbedPane extends JTabbedPane {
             JButton tabCloseButton = new JButton(closeTabIcon);
             tabCloseButton.setPreferredSize(closeButtonSize);
             tabCloseButton.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     int closeTabNumber = thisTabbedPane.indexOfComponent(finalComponent);
 

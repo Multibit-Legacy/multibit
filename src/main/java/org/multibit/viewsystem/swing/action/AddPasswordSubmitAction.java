@@ -33,7 +33,7 @@ import org.multibit.file.FileHandler;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
 import com.google.bitcoin.core.WalletMajorVersion;
-import org.multibit.viewsystem.swing.view.AddPasswordPanel;
+import org.multibit.viewsystem.swing.view.panels.AddPasswordPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
@@ -74,6 +74,7 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
     /**
      * Add a password to a wallet.
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         addPasswordPanel.clearMessages();
         privateKeysBackupFile = null;

@@ -101,6 +101,7 @@ public abstract class BaseMacInvocationHandler<H extends GenericHandler, E exten
         // The invocation handler manages all method calls against the proxy
         // Relies on the proxy having the same method signatures
         InvocationHandler invocationHandler = new InvocationHandler() {
+            @Override
             public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
                 Method nativeMethod = nativeEvent.getClass().getMethod(method.getName(), method.getParameterTypes());
                 log.debug("Invoking method {}.{}", nativeEvent.getClass().getSimpleName(), method.getName());

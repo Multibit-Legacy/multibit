@@ -1,5 +1,5 @@
-<project xmlns="http:/f/maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http:/f/maven.apache.org/POM/4.0.0">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.multibit</groupId>
 	<artifactId>multibit</artifactId>
@@ -577,12 +577,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.google</groupId>
-			<artifactId>bitcoinj</artifactId>
-			<version>${bitcoinj.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.xeiam.xchange</groupId>
 			<artifactId>xchange</artifactId>
 			<version>1.1.0</version>
@@ -638,6 +632,11 @@
 		</dependency>
 		<!-- <dependency> <groupId>com.seaglasslookandfeel</groupId> <artifactId>seaglasslookandfeel</artifactId> 
 			<version>0.2</version> </dependency> -->
+	 <dependency>
+	  <groupId>com.google</groupId>
+	  <artifactId>bitcoinj</artifactId>
+	  <version>0.7.jim-SNAPSHOT</version>
+	 </dependency>
 	</dependencies>
 
 	<reporting>
@@ -678,7 +677,7 @@
 		</staging.linux.dir>
 
 		<!-- Version of BitCoinJ to use (multiple uses) -->
-		<bitcoinj.version>0.7-SNAPSHOT</bitcoinj.version>
+		<bitcoinj.version>0.7.jim-SNAPSHOT</bitcoinj.version>
 
 		<!-- Version of spongycastle to use -->
 		<sc-light-jdk15on.version>1.47.0.2</sc-light-jdk15on.version>

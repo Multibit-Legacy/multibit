@@ -35,7 +35,7 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.model.WalletInfo;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.SendBitcoinConfirmPanel;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,6 +96,7 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
     /**
      * Actually send the bitcoin.
      */
+    @Override
     public void actionPerformed(ActionEvent event) {
         sendBitcoinConfirmPanel.setMessageText(" ", " ");
 

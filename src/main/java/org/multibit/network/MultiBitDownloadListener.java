@@ -65,6 +65,7 @@ public class MultiBitDownloadListener extends DownloadListener {
      * @param date
      *            the date of the last block downloaded
      */
+    @Override
     protected void progress(double pct, int blocksSoFar, Date date) {
         if (pct > DONE_FOR_DOUBLES) {
             // we are done downloading
@@ -96,6 +97,7 @@ public class MultiBitDownloadListener extends DownloadListener {
      * @param blocks
      *            the number of blocks to download, estimated
      */
+    @Override
     protected void startDownload(int blocks) {
         if (blocks == 0) {
             doneDownload();
@@ -127,6 +129,7 @@ public class MultiBitDownloadListener extends DownloadListener {
     /**
      * Called when we are done downloading the block chain.
      */
+    @Override
     protected void doneDownload() {
         String downloadStatusText = controller.getLocaliser().getString("multiBitDownloadListener.doneDownloadText");
      

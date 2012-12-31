@@ -71,6 +71,7 @@ public class ApplicationInstanceManager {
                     0, 1 }));
             log.debug("Listening for application instances on socket " + MULTIBIT_NETWORK_SOCKET);
             instanceListenerThread = new Thread(new Runnable() {
+                @Override
                 public void run() {
                     boolean socketClosed = false;
                     Socket client = null;

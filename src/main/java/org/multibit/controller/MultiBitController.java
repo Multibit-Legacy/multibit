@@ -47,7 +47,7 @@ import org.multibit.platform.listener.GenericQuitResponse;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
-import org.multibit.viewsystem.swing.view.SendBitcoinConfirmPanel;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -296,6 +296,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
      * The controller listens for PeerGroup events and notifies interested
      * parties
      */
+    @Override
     public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {   
         onBlocksDownloaded(peer, block, blocksLeft, true);
     }
@@ -319,11 +320,13 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         fireBlockDownloaded();
     }
 
+    @Override
     public void onChainDownloadStarted(Peer peer, int blocksLeft) {
         // log.debug("onChainDownloadStarted called");
         fireBlockDownloaded();
     }
 
+    @Override
     public void onPeerConnected(Peer peer, int peerCount) {
         //log.debug("Peer '" + peer.toString() + "' connected . PeerCount = " + peerCount);
         if (peerCount >= 1) {
@@ -334,6 +337,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         }   
         SendBitcoinConfirmPanel.updatePanel(null);    }
 
+    @Override
     public void onPeerDisconnected(Peer peer, int peerCount) {
         //log.debug("Peer '" + peer.toString() + "' disconnected . PeerCount = " + peerCount);
         if (peerCount == 0) {
@@ -485,7 +489,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
             
             return;
         }
-        if (rawBitcoinURI == null || "".equals(rawBitcoinURI)) {
+        if (rawBitcoinURI == null || rawBitcoinURI.equals("")) {
             log.debug("No Bitcoin URI found to handle");
             // displayView(getCurrentView());
             return;

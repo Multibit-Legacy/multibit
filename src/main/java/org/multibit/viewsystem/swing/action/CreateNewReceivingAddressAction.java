@@ -23,8 +23,8 @@ import javax.swing.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressDialog;
-import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
+import org.multibit.viewsystem.swing.view.dialogs.CreateNewReceivingAddressDialog;
+import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +54,7 @@ public class CreateNewReceivingAddressAction extends MultiBitSubmitAction {
     /**
      * Create new receiving address dialog.
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         if (abort()) {
             return;
