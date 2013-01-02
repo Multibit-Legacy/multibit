@@ -37,9 +37,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 public class HelpAboutPanel extends JPanel implements View {
     private static final long serialVersionUID = 191352212345057705L;
 
-    private static final String SPLASH_ICON_FILE = "/images/splash.jpg";
-
-    private static final String MULTIBIT_URL = "http://multibit.org";
+    private static final String MULTIBIT_URL = "https://multibit.org";
     
     private MultiBitController controller;
 
@@ -69,25 +67,13 @@ public class HelpAboutPanel extends JPanel implements View {
         fillerPanel1.setOpaque(false);
         add(fillerPanel1, constraints);
 
-        ImageIcon imageIcon = ImageLoader.createImageIcon(SPLASH_ICON_FILE);
-        JLabel splashLabel = new JLabel();
-        splashLabel.setIcon(imageIcon);
-        constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1;
-        constraints.weighty = 0.4;
-        constraints.anchor = GridBagConstraints.CENTER;
-        add(splashLabel, constraints);
-
         MultiBitLabel titleLabel = new MultiBitLabel("");
         titleLabel.setHorizontalTextPosition(JLabel.CENTER);
         titleLabel.setText(controller.getLocaliser().getString("helpAboutAction.messageBoxTitle"));
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 2;
+        constraints.gridy = 1;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 0.1;
@@ -96,7 +82,7 @@ public class HelpAboutPanel extends JPanel implements View {
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 2;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 0.1;
@@ -106,7 +92,7 @@ public class HelpAboutPanel extends JPanel implements View {
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 3;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 0.1;
@@ -116,7 +102,7 @@ public class HelpAboutPanel extends JPanel implements View {
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 4;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 0.2;

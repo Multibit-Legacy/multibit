@@ -140,6 +140,10 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
         if (activePerModelData != null) {
             selectWalletPanelByFilename(activePerModelData.getWalletFilename());
         }
+        
+        invalidate();
+        revalidate();
+        repaint();
     }
 
     private void selectWalletPanelByFilename(String filename) {
