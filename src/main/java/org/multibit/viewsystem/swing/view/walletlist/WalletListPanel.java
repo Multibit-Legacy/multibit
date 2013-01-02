@@ -71,7 +71,6 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
     private ArrayList<SingleWalletPanel> walletPanels;
     private JPanel buttonPanel;
 
-
     private JScrollPane scrollPane;
     
     private static final int TOP_BORDER = 4;
@@ -131,9 +130,6 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
                 for (SingleWalletPanel loopSingleWalletPanel : walletPanels) {
                     loopSingleWalletPanel.setFiatLabelWidth(amountFiatLabelSize + 10);
                 }
-                invalidate();
-                revalidate();
-                repaint();
             }
         }
         
@@ -144,10 +140,6 @@ public class WalletListPanel extends JPanel implements View, WalletBusyListener,
         if (activePerModelData != null) {
             selectWalletPanelByFilename(activePerModelData.getWalletFilename());
         }
-
-        invalidate();
-        revalidate();
-        repaint();
     }
 
     private void selectWalletPanelByFilename(String filename) {

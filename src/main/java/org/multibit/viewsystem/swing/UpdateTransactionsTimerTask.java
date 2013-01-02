@@ -9,12 +9,9 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.view.ShowTransactionsPanel;
 
 public class UpdateTransactionsTimerTask extends TimerTask {
-
     private MultiBitController controller;
     private ShowTransactionsPanel transactionsPanel;
     private MultiBitFrame mainFrame;
-
-    private final TimerTask thisTimerTask;
 
     private Boolean updateTransactions = Boolean.FALSE;
 
@@ -23,8 +20,6 @@ public class UpdateTransactionsTimerTask extends TimerTask {
         this.controller = controller;
         this.transactionsPanel = transactionsPanel;
         this.mainFrame = mainFrame;
-        thisTimerTask = this;
-
     }
 
     @Override
@@ -34,20 +29,17 @@ public class UpdateTransactionsTimerTask extends TimerTask {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 boolean updateThisTime = false;
-                synchronized (thisTimerTask) {
-                    if (updateTransactions) {
-                        updateTransactions = false;
-                        updateThisTime = true;
-                    }
+                if (updateTransactions) {
+                    updateTransactions = false;
+                    updateThisTime = true;
                 }
 
                 if (updateThisTime) {
                     mainFrame.updateHeader();
                     if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
+                        // log.debug("Updating transaction view");
                         transactionsPanel.displayView();
                     }
-                    mainFrame.invalidate();
-                    mainFrame.validate();
                 }
             }
         });

@@ -86,8 +86,6 @@ public class SendBitcoinConfirmPanel extends JPanel {
     
     private static SendBitcoinConfirmPanel thisPanel = null;
     
-    private BitcoinFormDataProvider dataProvider;
-
     private static ImageIcon shapeTriangleIcon;
     private static ImageIcon shapeSquareIcon;
     private static ImageIcon shapeHeptagonIcon;
@@ -105,12 +103,11 @@ public class SendBitcoinConfirmPanel extends JPanel {
     /**
      * Creates a new {@link SendBitcoinConfirmPanel}.
      */
-    public SendBitcoinConfirmPanel(MultiBitController controller, MultiBitFrame mainFrame, MultiBitDialog sendBitcoinConfirmDialog, BitcoinFormDataProvider dataProvider) {
+    public SendBitcoinConfirmPanel(MultiBitController controller, MultiBitFrame mainFrame, MultiBitDialog sendBitcoinConfirmDialog) {
         super();
         this.controller = controller;
         this.mainFrame = mainFrame;
         this.sendBitcoinConfirmDialog = sendBitcoinConfirmDialog;
-        this.dataProvider = dataProvider;
         
         thisPanel = this;
 

@@ -20,13 +20,13 @@ import java.util.TimerTask;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.file.WalletSaveException;
-import com.google.bitcoin.core.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
-import org.multibit.viewsystem.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.bitcoin.core.WalletVersionException;
 
 /**
  * TimerTask to detect whether wallet files have been changed by some external
@@ -43,16 +43,13 @@ public class FileChangeTimerTask extends TimerTask {
     private static Logger log = LoggerFactory.getLogger(FileChangeTimerTask.class);
 
     private final MultiBitController controller;
-    private final MultiBitFrame mainFrame;
 
     /**
      * Constructs the object, sets the string to be output in function run()
-     * 
      * @param str
      */
-    public FileChangeTimerTask(MultiBitController controller, MultiBitFrame mainFrame) {
+    public FileChangeTimerTask(MultiBitController controller) {
         this.controller = controller;
-        this.mainFrame = mainFrame;
     }
 
     /**
@@ -99,7 +96,6 @@ public class FileChangeTimerTask extends TimerTask {
             }
         }
         
-        log.debug("End of FileChangeTimerTask - run");
-        
+        log.debug("End of FileChangeTimerTask - run");    
     }
 }

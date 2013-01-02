@@ -83,6 +83,8 @@ import com.google.bitcoin.store.BlockStoreException;
  * </p>
  */
 public class MultiBitService {
+    private static final String TESTNET3_GENESIS_HASH = "000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943";
+
     private static final Logger log = LoggerFactory.getLogger(MultiBitService.class);
 
     private static final int NUMBER_OF_MILLISECOND_IN_A_SECOND = 1000;
@@ -232,7 +234,7 @@ public class MultiBitService {
             }
         } else {
             // Use DNS for production, IRC for test.
-            if ("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943".equals(controller.getModel().getNetworkParameters().genesisBlock.getHashAsString())){
+            if (TESTNET3_GENESIS_HASH.equals(controller.getModel().getNetworkParameters().genesisBlock.getHashAsString())){
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TESTNET3));
             } else if (NetworkParameters.testNet().equals(controller.getModel().getNetworkParameters())){
                 peerGroup.addPeerDiscovery(new IrcDiscovery(IRC_CHANNEL_TEST));
@@ -249,7 +251,7 @@ public class MultiBitService {
         MultiBitController controller = MultiBit.getController();
         MultiBitModel model = controller.getModel();
         // testnet3
-        if ("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943".equals(model.getNetworkParameters().genesisBlock.getHashAsString())) {
+        if (TESTNET3_GENESIS_HASH.equals(model.getNetworkParameters().genesisBlock.getHashAsString())) {
             return MULTIBIT_PREFIX + SEPARATOR + TESTNET3_PREFIX;
         } else if (NetworkParameters.testNet().equals(model.getNetworkParameters())) {
             return MULTIBIT_PREFIX + SEPARATOR + TESTNET_PREFIX;
@@ -673,17 +675,17 @@ public class MultiBitService {
                         if (!perWalletModelData.getWalletFilename().equals(loopPerWalletModelData.getWalletFilename())) {
                             Wallet loopWallet = loopPerWalletModelData.getWallet();
                             if (loopWallet.isTransactionRelevant(sendTransaction, true)) {
-                                // The perWalletModelData is marked as dirty.
-                                if (perWalletModelData.getWalletInfo() != null) {
-                                    synchronized(perWalletModelData.getWalletInfo()) {
-                                        perWalletModelData.setDirty(true);
+                                // The loopPerWalletModelData is marked as dirty.
+                                if (loopPerWalletModelData.getWalletInfo() != null) {
+                                    synchronized(loopPerWalletModelData.getWalletInfo()) {
+                                        loopPerWalletModelData.setDirty(true);
                                     }
                                 } else {
-                                    perWalletModelData.setDirty(true);
+                                    loopPerWalletModelData.setDirty(true);
                                 }
                                 if (loopWallet.getTransaction(sendTransaction.getHash()) == null) {
                                     log.debug("MultiBit adding a new pending transaction for the wallet '"
-                                            + perWalletModelData.getWalletDescription() + "'\n" + sendTransaction.toString());
+                                            + loopPerWalletModelData.getWalletDescription() + "'\n" + sendTransaction.toString());
                                     loopWallet.receivePending(sendTransaction);
                                 }
                             }  

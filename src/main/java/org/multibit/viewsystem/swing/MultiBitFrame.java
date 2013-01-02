@@ -266,7 +266,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Initialise the file change timer.
         fileChangeTimer = new Timer();
-        fileChangeTimer.schedule(new FileChangeTimerTask(controller, this), FileChangeTimerTask.INITIAL_DELAY, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
+        fileChangeTimer.schedule(new FileChangeTimerTask(controller), FileChangeTimerTask.INITIAL_DELAY, FileChangeTimerTask.DEFAULT_REPEAT_RATE);
 
          // Initialise the ticker.
         tickerTimer = new Timer();
@@ -940,58 +940,47 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * Recreate all views.
      */
     public void recreateAllViews(final boolean initUI) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (thisFrame) {
-                    ColorAndFontConstants.init();
+        ColorAndFontConstants.init();
 
-                    // Close down current view.
-                    if (controller.getCurrentView() != 0) {
-                        navigateAwayFromView(controller.getCurrentView());
+        // Close down current view.
+        if (controller.getCurrentView() != 0) {
+            navigateAwayFromView(controller.getCurrentView());
+        }
+
+        if (initUI) {
+            thisFrame.localiser = controller.getLocaliser();
+            Container contentPane = getContentPane();
+            contentPane.removeAll();
+            viewTabbedPane.removeAll();
+            viewFactory.initialise();
+            initUI();
+            applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        }
+
+        statusBar.refreshOnlineStatusText();
+
+        updateHeader();
+
+        // Tell the wallets list to display.
+        if (walletsView != null) {
+            walletsView.initUI();
+            walletsView.displayView();
+        }
+
+        // Tell all the tabs in the tabbedPane to update.
+        if (viewTabbedPane != null) {
+            for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
+                JPanel tabComponent = (JPanel) viewTabbedPane.getComponentAt(i);
+                Component[] components = tabComponent.getComponents();
+                if (components != null && components.length > 0 && components[0] instanceof View) {
+                    View loopView = ((View) components[0]);
+                    loopView.displayView();
+                    if (loopView.getViewId() == controller.getCurrentView()) {
+                        viewTabbedPane.setSelectedIndex(i);
                     }
-
-                    if (initUI) {
-                        thisFrame.localiser = controller.getLocaliser();
-                        Container contentPane = getContentPane();
-                        contentPane.removeAll();
-                        viewTabbedPane.removeAll();
-                        viewFactory.initialise();
-                        initUI();
-                        applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-                    }
-
-                    statusBar.refreshOnlineStatusText();
-
-                    updateHeader();
-
-                    // Tell the wallets list to display.
-                    if (walletsView != null) {
-                        walletsView.initUI();
-                        walletsView.displayView();
-                    }
-
-                    // Tell all the tabs in the tabbedPane to update.
-                    if (viewTabbedPane != null) {
-                        for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
-                            JPanel tabComponent = (JPanel) viewTabbedPane.getComponentAt(i);
-                            Component[] components = tabComponent.getComponents();
-                            if (components != null && components.length > 0 && components[0] instanceof View) {
-                                View loopView = ((View) components[0]);
-                                loopView.displayView();
-                                if (loopView.getViewId() == controller.getCurrentView()) {
-                                    viewTabbedPane.setSelectedIndex(i);
-                                }
-                            }
-                        }
-                    }
-
-                    invalidate();
-                    validate();
-                    repaint();
                 }
             }
-        });
+        }
     }
 
     /**
@@ -1057,12 +1046,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 }
 
                 nextViewFinal.displayView();
-
-                if (nextViewFinal instanceof JPanel) {
-                    ((JPanel) nextViewFinal).invalidate();
-                    ((JPanel) nextViewFinal).validate();
-                    ((JPanel) nextViewFinal).repaint();
-                }
 
                 thisFrame.setCursor(Cursor.DEFAULT_CURSOR);
             }

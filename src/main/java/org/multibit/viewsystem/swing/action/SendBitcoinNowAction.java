@@ -108,6 +108,9 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
             perWalletModelData.setFilesHaveBeenChangedByAnotherProcess(true);
             controller.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         } else {
+            // Put sending message and remove the send button.
+            sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("sendBitcoinNowAction.sendingBitcoin"), " ");
+
             // Get the data out of the wallet preferences.
             String sendAddress = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
             String sendLabel = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);

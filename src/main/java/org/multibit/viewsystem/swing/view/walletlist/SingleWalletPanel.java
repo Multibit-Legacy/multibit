@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 multibit.org
+ * Copyright 2013 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -628,12 +628,12 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             amountLabelFiat.setText(balanceTextToShowFiat);
         }
         
-        amountLabelFiat.invalidate();
-        amountLabelFiat.validate();
-        amountLabelFiat.repaint();
-        invalidate();
-        validate();
-        repaint();
+//        amountLabelFiat.invalidate();
+//        amountLabelFiat.validate();
+//        amountLabelFiat.repaint();
+//        invalidate();
+//        validate();
+//        repaint();
               
         String encryptionText = "";
         if (perWalletModelData.getWallet() != null) {
@@ -928,11 +928,11 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         amountLabelFiat.setMinimumSize(new Dimension(fiatLabelMinimumWidth, amountLabelFiat.getMinimumSize().height));
         amountLabelFiat.setPreferredSize(new Dimension(fiatLabelMinimumWidth, amountLabelFiat.getPreferredSize().height));
         amountLabelFiat.setMaximumSize(new Dimension(fiatLabelMinimumWidth, amountLabelFiat.getMaximumSize().height));
-        amountLabelFiat.invalidate();
-        amountLabelFiat.validate();
-        amountLabelFiat.repaint();
-        invalidate();
-        validate();
-        repaint();
+//        amountLabelFiat.invalidate();
+//        amountLabelFiat.validate();
+//        amountLabelFiat.repaint();
+//        invalidate();
+//        validate();
+//        repaint();
     }
 }

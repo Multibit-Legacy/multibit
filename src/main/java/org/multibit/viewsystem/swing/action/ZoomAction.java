@@ -114,8 +114,15 @@ public class ZoomAction extends AbstractAction {
             optionPane.addPropertyChangeListener(new PropertyChangeListener() {
                 public void propertyChange(PropertyChangeEvent e) {
                     String prop = e.getPropertyName();
+                    Object newValue = e.getNewValue();
+                    
+                    String newValueString = "";
+                    if (newValue != null) {
+                        newValueString = newValue.toString();
+                    }
 
-                    if (dialog.isVisible() && (e.getSource() == optionPane) && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
+                    //System.out.println("property changed = " + prop + ", new value = " + newValue);
+                    if (dialog.isVisible() && (e.getSource() == optionPane) && (prop.equals(JOptionPane.VALUE_PROPERTY)) && newValueString.equals("0")) {
                         dialog.setVisible(false);
                     }
                 }
@@ -123,9 +130,10 @@ public class ZoomAction extends AbstractAction {
             optionPane.setOpaque(false);
 
             dialog.setContentPane(optionPane);
-            dialog.pack();
             dialog.setSize(mainFrameSize);
             dialog.setLocation(mainFrame.getLocationOnScreen());
+            // Reduces flickiness.
+            dialog.repaint();
             dialog.setVisible(true);
         } finally {
             setEnabled(true);
