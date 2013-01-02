@@ -41,7 +41,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 
@@ -227,6 +227,7 @@ public class TickerTablePanel extends JPanel {
 
         MultiBitLabel label = new MultiBitLabel("");
 
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -262,6 +263,7 @@ public class TickerTablePanel extends JPanel {
 
         MultiBitLabel label = new MultiBitLabel("");
 
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             label.setHorizontalAlignment(SwingConstants.LEADING);
@@ -297,6 +299,7 @@ public class TickerTablePanel extends JPanel {
 
         MultiBitLabel label = new MultiBitLabel("");
 
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             label.setHorizontalAlignment(SwingConstants.CENTER);

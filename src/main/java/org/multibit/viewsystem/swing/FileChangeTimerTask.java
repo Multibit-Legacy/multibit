@@ -55,6 +55,7 @@ public class FileChangeTimerTask extends TimerTask {
     /**
      * When the timer executes, this code is run.
      */
+    @Override
     public void run() {
         log.debug("Start of FileChangeTimerTask - run");
         List<PerWalletModelData> perWalletModelDataList = controller.getModel().getPerWalletModelDataList();

@@ -67,6 +67,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
     /**
      * Reset the transactions and replay the blockchain.
      */
+    @Override
     public void actionPerformed(ActionEvent event) {
         log.debug("RT Ping 1");
         if (abort()) {
@@ -176,6 +177,7 @@ public class ResetTransactionsSubmitAction extends MultiBitSubmitAction {
                 return successMeasure;
             }
 
+            @Override
             protected void done() {
                 try {
                     Boolean wasSuccessful = get();

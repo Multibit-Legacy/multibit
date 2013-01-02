@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.panels;
 
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.util.ArrayList;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -39,16 +42,16 @@ import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
+import org.multibit.model.WalletInfo;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.action.CopySendAddressAction;
-import org.multibit.viewsystem.swing.action.CreateNewSendingAddressAction;
+import org.multibit.viewsystem.swing.action.CopyReceiveAddressAction;
+import org.multibit.viewsystem.swing.action.CreateNewReceivingAddressAction;
 import org.multibit.viewsystem.swing.action.DeleteSendingAddressAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.MoreOrLessAction;
-import org.multibit.viewsystem.swing.action.PasteAddressAction;
 import org.multibit.viewsystem.swing.action.SendBitcoinConfirmAction;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
@@ -57,71 +60,62 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.Utils;
+public class ReceiveBitcoinPanel extends AbstractTradePanel implements View {
 
-public class SendBitcoinPanel extends AbstractTradePanel implements View {
+    static final Logger log = LoggerFactory.getLogger(ReceiveBitcoinPanel.class);
 
-    private static final long serialVersionUID = -2065108865497111662L;
+    private static final long serialVersionUID = -2065108865497842662L;
 
-    private MultiBitButton pasteAddressButton;
-    private MultiBitButton sendButton;
-    private SendBitcoinConfirmAction sendBitcoinConfirmAction;
+    private CreateNewReceivingAddressAction createNewReceivingAddressAction;
 
-    public SendBitcoinPanel(MultiBitFrame mainFrame, MultiBitController controller) {
+    public ReceiveBitcoinPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         super(mainFrame, controller);
-        checkDeleteSendingEnabled();
-    }
-
-    @Override
-    protected boolean isReceiveBitcoin() {
-        return false;
-    }
-
-    @Override
-    public Action getCreateNewAddressAction() {
-        return new CreateNewSendingAddressAction(controller, this);
-    }
-
-    @Override
-    protected Action getDeleteAddressAction() {
-        return new DeleteSendingAddressAction(controller, mainFrame, this);
     }
     
-    public void checkDeleteSendingEnabled() {
-        AddressBookTableModel addressesTableModel = getAddressesTableModel();
-        if (deleteAddressAction != null) {
-            deleteAddressAction.setEnabled(addressesTableModel != null && addressesTableModel.getRowCount() > 0);
-        }
+    @Override
+    protected boolean isReceiveBitcoin() {
+        return true;
     }
-
+    
+    @Override
+    protected Action getCreateNewAddressAction() {
+        createNewReceivingAddressAction = new CreateNewReceivingAddressAction(controller, mainFrame, this);
+        return createNewReceivingAddressAction;
+    }
+    
+    @Override
+    protected Action getDeleteAddressAction() {
+        // Return a delete sending address action - it gets turned into a stent
+        return new DeleteSendingAddressAction(controller, mainFrame, null);
+    }
+ 
     @Override
     public String getAddressConstant() {
-        return MultiBitModel.SEND_ADDRESS;
+        return MultiBitModel.RECEIVE_ADDRESS;
     }
-
+    
     @Override
     public String getLabelConstant() {
-        return MultiBitModel.SEND_LABEL;
+        return MultiBitModel.RECEIVE_LABEL;
     }
-
     @Override
     public String getAmountConstant() {
-        return MultiBitModel.SEND_AMOUNT;
+        return MultiBitModel.RECEIVE_AMOUNT;
     }
-
+    
     /**
      * method for concrete impls to populate the localisation map
      */
     @Override
     protected void populateLocalisationMap() {
-        localisationKeyConstantToKeyMap.put(ADDRESSES_TITLE, "sendBitcoinPanel.sendingAddressesTitle");
-        localisationKeyConstantToKeyMap.put(CREATE_NEW_TOOLTIP, "createOrEditAddressAction.createSending.tooltip");
-        localisationKeyConstantToKeyMap.put(DELETE_TOOLTIP, "deleteSendingAddressSubmitAction.tooltip");
+        localisationKeyConstantToKeyMap.put(ADDRESSES_TITLE, "receiveBitcoinPanel.receivingAddressesTitle");      
+        localisationKeyConstantToKeyMap.put(CREATE_NEW_TOOLTIP, "createOrEditAddressAction.createReceiving.tooltip");       
     }
 
+    @Override
     protected JPanel createFormPanel(JPanel formPanel, GridBagConstraints constraints) {
         formPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
@@ -131,48 +125,49 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         buttonPanel.setLayout(flowLayout);
 
         formPanel.setLayout(new GridBagLayout());
+        JPanel filler1 = new JPanel();
+        filler1.setOpaque(false);
 
         // create stents and forcers
-        createFormPanelStentsAndForcers(formPanel, constraints);
+        createFormPanelStentsAndForcers(formPanel,constraints);
 
-        MultiBitLabel addressLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel"));
-        addressLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.addressLabel.tooltip"));
+        MultiBitLabel addressLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel"));
+        addressLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel.tooltip"));
+        addressLabel.setBorder(BorderFactory.createMatteBorder((int)(TEXTFIELD_VERTICAL_DELTA * 0.5), 0, (int)(TEXTFIELD_VERTICAL_DELTA * 0.5), 0, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
         addressLabel.setHorizontalAlignment(JLabel.TRAILING);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
         constraints.gridy = 1;
-        constraints.weightx = 4.0;
+        constraints.weightx = 1;
         constraints.weighty = 0.2;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(addressLabel, constraints);
-        String receiveAddressText = controller.getLocaliser().getString("receiveBitcoinPanel.addressLabel");
-        MultiBitLabel notUsedReceiveAddressLabel = new MultiBitLabel(receiveAddressText);
-        formPanel.add(MultiBitTitledPanel.createStent((int)notUsedReceiveAddressLabel.getPreferredSize().getWidth()), constraints);
-        
-        int longFieldWidth = fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT);
-        addressTextField = new MultiBitTextField("", 24, controller);
-        addressTextField.setHorizontalAlignment(JTextField.LEADING);
-        addressTextField.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
-                .getHeight() + TEXTFIELD_VERTICAL_DELTA));
-        addressTextField.setPreferredSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
-                .getHeight() + TEXTFIELD_VERTICAL_DELTA));
-        addressTextField.setMaximumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
-                .getHeight() + TEXTFIELD_VERTICAL_DELTA));
 
-        addressTextField.addKeyListener(new QRCodeKeyListener());
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        FontMetrics fontMetric = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
+        int longFieldWidth = fontMetric.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT);
+        addressTextField = new MultiBitTextField("", 24, controller);
+
+        //addressTextField = new MultiBitTextArea("", 24, 1, controller);
+        addressTextField.setEditable(false);
+        addressTextField.setOpaque(false);
+        Insets insets = addressTextField.getBorder().getBorderInsets(addressTextField);
+        addressTextField.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.right));
+        addressTextField.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));
+        
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 2;
         constraints.gridy = 1;
-        constraints.weightx = 1.0;
-        constraints.weighty = 0.2;
+        constraints.weightx = 0.1;
+        constraints.weightx = 0.2;
         constraints.gridwidth = 3;
+        constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(addressTextField, constraints);
 
         ImageIcon copyIcon = ImageLoader.createImageIcon(ImageLoader.COPY_ICON_FILE);
-        CopySendAddressAction copyAddressAction = new CopySendAddressAction(controller, this, copyIcon);
+        CopyReceiveAddressAction copyAddressAction = new CopyReceiveAddressAction(controller, this, copyIcon);
         MultiBitButton copyAddressButton = new MultiBitButton(copyAddressAction, controller);
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 6;
@@ -181,23 +176,22 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(copyAddressButton, constraints);
-
-        ImageIcon pasteIcon = ImageLoader.createImageIcon(ImageLoader.PASTE_ICON_FILE);
-        PasteAddressAction pasteAddressAction = new PasteAddressAction(controller, this, pasteIcon);
-        pasteAddressButton = new MultiBitButton(pasteAddressAction, controller);
-        constraints.fill = GridBagConstraints.NONE;
+        
+        JPanel pasteButtonStent = MultiBitTitledPanel.createStent((int)copyAddressButton.getPreferredSize().getWidth(), (int)copyAddressButton.getPreferredSize().getHeight());
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 8;
         constraints.gridy = 1;
         constraints.weightx = 10.0;
         constraints.weighty = 0.2;
         constraints.gridwidth = 1;
+        constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        formPanel.add(pasteAddressButton, constraints);
+        formPanel.add(pasteButtonStent, constraints);
 
-        MultiBitLabel labelLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel"));
-        labelLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.labelLabel.tooltip"));
+        MultiBitLabel labelLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel"));
+        labelLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.labelLabel.tooltip"));
         labelLabel.setHorizontalAlignment(JLabel.TRAILING);
-        constraints.fill = GridBagConstraints.NONE;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 3;
         constraints.weightx = 0.1;
@@ -208,10 +202,10 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         formPanel.add(labelLabel, constraints);
 
         JTextField aTextField = new JTextField();
-        labelTextArea = new MultiBitTextArea("", AbstractTradePanel.PREFERRED_NUMBER_OF_LABEL_ROWS, 20, controller);
+        labelTextArea = new MultiBitTextArea("", AbstractTradePanel.PREFERRED_NUMBER_OF_LABEL_ROWS , 20, controller);
         labelTextArea.setBorder(aTextField.getBorder());
         labelTextArea.addKeyListener(new QRCodeKeyListener());
-
+ 
         final JScrollPane labelScrollPane = new JScrollPane(labelTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         labelScrollPane.setOpaque(true);
@@ -228,6 +222,9 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
             }
         });
         labelScrollPane.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
+                .getHeight() * AbstractTradePanel.PREFERRED_NUMBER_OF_LABEL_ROWS + TEXTFIELD_VERTICAL_DELTA));
+
+        labelScrollPane.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
                 .getHeight() * AbstractTradePanel.PREFERRED_NUMBER_OF_LABEL_ROWS + TEXTFIELD_VERTICAL_DELTA + 6));
         labelScrollPane.setPreferredSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
                 .getHeight() * AbstractTradePanel.PREFERRED_NUMBER_OF_LABEL_ROWS + TEXTFIELD_VERTICAL_DELTA + 6));
@@ -239,21 +236,22 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         constraints.gridy = 3;
         constraints.weightx = 0.6;
         constraints.weighty = 1.0;
-        constraints.gridwidth = 3;
-        constraints.gridheight = 1;
+        constraints.gridwidth = 4;
+        constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
         formPanel.add(labelScrollPane, constraints);
 
-        MultiBitLabel amountLabel = new MultiBitLabel(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel"));
-        amountLabel.setToolTipText(controller.getLocaliser().getString("sendBitcoinPanel.amountLabel.tooltip"));
+        MultiBitLabel amountLabel = new MultiBitLabel(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel"));
+        amountLabel.setToolTipText(controller.getLocaliser().getString("receiveBitcoinPanel.amountLabel.tooltip"));
         amountLabel.setHorizontalAlignment(JLabel.TRAILING);
-        constraints.fill = GridBagConstraints.NONE;
+
+        constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridx = 0;
         constraints.gridy = 5;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.2;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
-        constraints.weightx = 0.1;
-        constraints.weighty = 0.20;
         constraints.anchor = GridBagConstraints.LINE_END;
         formPanel.add(amountLabel, constraints);
 
@@ -285,20 +283,18 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
             helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_ICON_FILE,
                     "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
-                    HelpContentsPanel.HELP_SENDING_URL);
+                    HelpContentsPanel.HELP_RECEIVING_URL);
         } else {
             helpAction = new HelpContextAction(controller, ImageLoader.HELP_CONTENTS_BIG_RTL_ICON_FILE,
                     "multiBitFrame.helpMenuText", "multiBitFrame.helpMenuTooltip", "multiBitFrame.helpMenuText",
-                    HelpContentsPanel.HELP_SENDING_URL);
+                    HelpContentsPanel.HELP_RECEIVING_URL);
         }
         HelpButton helpButton = new HelpButton(helpAction, controller);
         helpButton.setText("");
-
-        String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] {
-                controller.getLocaliser().getString("sendBitcoinPanel.helpLabel1.message"),
-                controller.getLocaliser().getString("sendBitcoinPanel.helpLabel2.message"),
-                controller.getLocaliser().getString("sendBitcoinPanel.helpLabel3.message"), "\n",
-                controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip") });
+ 
+        String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[]{controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel1.message"),
+                controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel2.message"), controller.getLocaliser().getString("receiveBitcoinPanel.helpLabel3.message"),
+                "\n", controller.getLocaliser().getString("multiBitFrame.helpMenuTooltip") });
         helpButton.setToolTipText(tooltipText);
         helpButton.setHorizontalAlignment(SwingConstants.LEADING);
         helpButton.setBorder(BorderFactory.createEmptyBorder(0, HELP_BUTTON_INDENT, HELP_BUTTON_INDENT, HELP_BUTTON_INDENT));
@@ -311,10 +307,11 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.BELOW_BASELINE_LEADING;
         formPanel.add(helpButton, constraints);
-
-        sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, mainFrame, this);
-        sendButton = new MultiBitButton(sendBitcoinConfirmAction, controller);
-        constraints.fill = GridBagConstraints.HORIZONTAL;
+        
+        SendBitcoinConfirmAction sendBitcoinConfirmAction = new SendBitcoinConfirmAction(controller, mainFrame, this);
+        MultiBitButton notUsedSendButton = new MultiBitButton(sendBitcoinConfirmAction, controller);
+        JPanel sendButtonStent = MultiBitTitledPanel.createStent((int)notUsedSendButton.getPreferredSize().getWidth(), (int)notUsedSendButton.getPreferredSize().getHeight());
+        constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 6;
         constraints.gridy = 5;
         constraints.weightx = 0.1;
@@ -322,7 +319,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         constraints.gridwidth = 3;
         constraints.gridheight = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        formPanel.add(sendButton, constraints);
+        formPanel.add(sendButtonStent, constraints);
 
         Action sidePanelAction = new MoreOrLessAction(controller, this);
         sidePanelButton = new MultiBitButton(sidePanelAction, controller);
@@ -334,31 +331,54 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
         displaySidePanel();
 
         constraints.fill = GridBagConstraints.NONE;
-        constraints.gridx = 4;
+        constraints.gridx = 3;
         constraints.gridy = 3;
         constraints.weightx = 0.1;
         constraints.weighty = 0.3;
-        constraints.gridwidth = 7;
+        constraints.gridwidth = 8;
         constraints.gridheight = 3;
         constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
         formPanel.add(sidePanelButton, constraints);
 
+        // disable any new changes if another process has changed the wallet
+        if (controller.getModel().getActivePerWalletModelData() != null
+                && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
+            // files have been changed by another process - disallow edits
+            labelTextArea.setToolTipText(controller.getLocaliser().getString("singleWalletPanel.dataHasChanged.tooltip"));
+            mainFrame.setUpdatesStoppedTooltip(labelTextArea);
+
+            labelTextArea.setEditable(false);
+            labelTextArea.setEnabled(false);
+            mainFrame.setUpdatesStoppedTooltip(amountBTCTextField);
+            amountBTCTextField.setEditable(false);
+            amountBTCTextField.setEnabled(false);
+        } else {
+            labelTextArea.setToolTipText(null);
+            labelTextArea.setEditable(true);
+            labelTextArea.setEnabled(true);
+            amountBTCTextField.setToolTipText(null);
+            amountBTCTextField.setEditable(true);
+            amountBTCTextField.setEnabled(true);
+        }
+
         return formPanel;
     }
 
-    public String getAddress() {
+    public String getReceiveAddress() {
         if (addressTextField != null) {
             return addressTextField.getText();
         } else {
             return "";
         }
     }
-
+    
+    @Override
     public void loadForm() {
         // get the current address, label and amount from the model
-        String address = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_ADDRESS);
-        String label = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_LABEL);
-        String amountNotLocalised = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_AMOUNT);
+        String address = controller.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS);
+        String label = controller.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_LABEL);
+
+        String amountNotLocalised = controller.getModel().getActiveWalletPreference(MultiBitModel.RECEIVE_AMOUNT);
 
         if (amountBTCTextField != null) {
             CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTCNotLocalised(amountNotLocalised);
@@ -378,112 +398,94 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
                 }
             }
         }
+        
+        // if the currently stored address is missing or is not in this wallet,
+        // pick
+        // the address book's first receiving address
+        boolean pickFirstReceivingAddress = false;
+        if (address == null || address == "") {
+            pickFirstReceivingAddress = true;
+        } else {
+            WalletInfo addressBook = controller.getModel().getActiveWalletWalletInfo();
+            if (addressBook != null) {
+                if (!addressBook.containsReceivingAddress(address)) {
+                    pickFirstReceivingAddress = true;
+                }
+            }
+        }
+
+        if (pickFirstReceivingAddress) {
+            WalletInfo addressBook = controller.getModel().getActiveWalletWalletInfo();
+            if (addressBook != null) {
+                ArrayList<AddressBookData> receivingAddresses = addressBook.getReceivingAddresses();
+                if (receivingAddresses != null) {
+                    if (receivingAddresses.iterator().hasNext()) {
+                        AddressBookData addressBookData = receivingAddresses.iterator().next();
+                        if (addressBookData != null) {
+                            address = addressBookData.getAddress();
+                            label = addressBookData.getLabel();
+                            controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_ADDRESS, address);
+                            controller.getModel().setActiveWalletPreference(MultiBitModel.RECEIVE_LABEL, label);
+                        }
+                    }
+                }
+            }
+        }
 
         if (address != null) {
             addressTextField.setText(address);
-        } else {
-            addressTextField.setText("");
         }
         if (label != null) {
             labelTextArea.setText(label);
-        } else {
-            labelTextArea.setText("");
         }
-
-        // if there is a pending 'handleopenURI' that needs pasting into the
-        // send form, do it
-        String performPasteNow = controller.getModel().getActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW);
-        if (Boolean.TRUE.toString().equalsIgnoreCase(performPasteNow)) {
-            try {
-                Address decodeAddress = new Address(controller.getModel().getNetworkParameters(), address);
-                processDecodedString(com.google.bitcoin.uri.BitcoinURI.convertToBitcoinURI(decodeAddress, Utils.toNanoCoins(amountNotLocalised), label, null), null);
-                controller.getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "false");
-                sendButton.requestFocusInWindow();
-
-                mainFrame.bringToFront();
-            } catch (AddressFormatException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public void setAddressBookDataByRow(AddressBookData addressBookData) {
-        addressTextField.setText(addressBookData.getAddress());
-        addressesTableModel.setAddressBookDataByRow(addressBookData, selectedAddressRowModel, false);
     }
 
     @Override
     public void displayView() {
         super.displayView();
-
+        
         JTextField aTextField = new JTextField();
-
         labelTextArea.setBorder(aTextField.getBorder());
-
-        String bringToFront = controller.getModel().getUserPreference(MultiBitModel.BRING_TO_FRONT);
-        if (Boolean.TRUE.toString().equals(bringToFront)) {
-            controller.getModel().setUserPreference(MultiBitModel.BRING_TO_FRONT, "false");
-            mainFrame.bringToFront();
-        }
 
         // disable any new changes if another process has changed the wallet
         if (controller.getModel().getActivePerWalletModelData() != null
                 && controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
             // files have been changed by another process - disallow edits
-            mainFrame.setUpdatesStoppedTooltip(addressTextField);
-            addressTextField.setEditable(false);
-            addressTextField.setEnabled(false);
-
-            if (sendButton != null) {
-                sendButton.setEnabled(false);
-                mainFrame.setUpdatesStoppedTooltip(sendButton);
-            }
-            if (pasteAddressButton != null) {
-                pasteAddressButton.setEnabled(false);
-                mainFrame.setUpdatesStoppedTooltip(pasteAddressButton);
-            }
-            titleLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.sendingAddressesTitle.mayBeOutOfDate"));
+            titleLabel.setText(controller.getLocaliser()
+                    .getString("receiveBitcoinPanel.receivingAddressesTitle.mayBeOutOfDate"));
             mainFrame.setUpdatesStoppedTooltip(titleLabel);
         } else {
-            addressTextField.setToolTipText(null);
-            addressTextField.setEditable(true);
-            addressTextField.setEnabled(true);
-
-            if (sendButton != null) {
-                sendButton.setEnabled(true);
-                sendButton.setToolTipText(controller.getLocaliser().getString("sendBitcoinAction.tooltip"));
-            }
-            if (pasteAddressButton != null) {
-                pasteAddressButton.setEnabled(true);
-                pasteAddressButton.setToolTipText(controller.getLocaliser().getString("pasteAddressAction.tooltip"));
-            }
-            titleLabel.setText(controller.getLocaliser().getString("sendBitcoinPanel.sendingAddressesTitle"));
+            titleLabel.setText(controller.getLocaliser().getString("receiveBitcoinPanel.receivingAddressesTitle"));
             titleLabel.setToolTipText(null);
         }
-        checkDeleteSendingEnabled();
     }
-
+    
     @Override
     public Icon getViewIcon() {
-        return ImageLoader.createImageIcon(ImageLoader.SEND_BITCOIN_ICON_FILE);
+        return ImageLoader.createImageIcon(ImageLoader.RECEIVE_BITCOIN_ICON_FILE);
     }
 
     @Override
     public String getViewTitle() {
-        return controller.getLocaliser().getString("sendBitcoinConfirmAction.text");
+        return controller.getLocaliser().getString("receiveBitcoinAction.textShort");
     }
-
+  
     @Override
     public String getViewTooltip() {
-        return controller.getLocaliser().getString("sendBitcoinConfirmAction.tooltip");
+        return controller.getLocaliser().getString("receiveBitcoinAction.tooltip");
     }
 
     @Override
     public int getViewId() {
-        return View.SEND_BITCOIN_VIEW;
+        return View.RECEIVE_BITCOIN_VIEW;
     }
     
-    public SendBitcoinConfirmAction getSendBitcoinConfirmAction() {
-        return sendBitcoinConfirmAction;
+    public CreateNewReceivingAddressAction getCreateNewReceivingAddressAction() {
+        return createNewReceivingAddressAction;
+    }
+
+    @Override
+    public void checkDeleteSendingEnabled() {
+        // Not used on receive bitcoin panel.
     }
 }

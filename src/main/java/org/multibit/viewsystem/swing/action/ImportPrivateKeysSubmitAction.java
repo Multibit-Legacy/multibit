@@ -41,7 +41,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.DateUtils;
-import org.multibit.viewsystem.swing.view.ImportPrivateKeysPanel;
+import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -93,6 +93,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
     /**
      * Import the private keys and replay the blockchain.
      */
+    @Override
     public void actionPerformed(ActionEvent event) {
         privateKeysBackupFile = null;
 
@@ -371,6 +372,7 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
             }
 
+            @Override
             protected void done() {
                 try {
                     Boolean wasSuccessful = get();

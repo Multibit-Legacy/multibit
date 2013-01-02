@@ -142,10 +142,12 @@ public class TickerTableModel extends AbstractTableModel {
         exchangeData = multiBitModel.getExchangeData();
     }
 
+    @Override
     public int getColumnCount() {
         return numberOfColumns;
     }
 
+    @Override
     public int getRowCount() {
         if (showSecondRow) {
             return 2;
@@ -154,10 +156,12 @@ public class TickerTableModel extends AbstractTableModel {
         }
     }
 
+    @Override
     public String getColumnName(int column) {
         return controller.getLocaliser().getString("tickerTableModel." + columnVariables[column]);
     }
 
+    @Override
     public Object getValueAt(int row, int column) {
         if (row < 0 && row >= getRowCount()) {
             return null;
@@ -214,6 +218,7 @@ public class TickerTableModel extends AbstractTableModel {
     /**
      * table model is read only
      */
+    @Override
     public void setValueAt(Object value, int row, int column) {
         throw new UnsupportedOperationException();
     }

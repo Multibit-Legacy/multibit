@@ -22,7 +22,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
-import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 public class DeleteSendingAddressActionTest extends TestCase {
@@ -42,7 +42,7 @@ public class DeleteSendingAddressActionTest extends TestCase {
 
         ColorAndFontConstants.init();
         FontSizer.INSTANCE.initialise(controller);
-        SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(null, controller);
+        SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(controller, null);
         DeleteSendingAddressSubmitAction deleteSubmitAction = new DeleteSendingAddressSubmitAction(controller, sendBitcoinPanel, null);
 
         assertNotNull("deleteSubmitAction was not created successfully", deleteSubmitAction);

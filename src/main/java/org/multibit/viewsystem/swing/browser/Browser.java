@@ -32,7 +32,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 public class Browser extends javax.swing.JEditorPane {
     private static final long serialVersionUID = 1L;
@@ -176,6 +176,7 @@ public class Browser extends javax.swing.JEditorPane {
                 }
             }
             
+            @Override
             protected void done() {
                 Boolean wasSuccessful = false;
                 try {

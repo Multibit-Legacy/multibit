@@ -55,7 +55,7 @@ import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
-import org.multibit.viewsystem.swing.view.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
@@ -306,6 +306,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         twistyLabel.setBorder(BorderFactory.createEmptyBorder(TWISTY_TOP_BORDER, TWISTY_LEFT_OR_RIGHT_BORDER, 0, TWISTY_LEFT_OR_RIGHT_BORDER));
         twistyLabel.setVisible(false);
         twistyLabel.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent evt) {
                 expanded = !expanded;
                 setSelected(selected);
@@ -559,6 +560,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         }
     }
 
+    @Override
     public void actionPerformed(ActionEvent evt) {
         saveChanges();
         requestFocusInWindow();

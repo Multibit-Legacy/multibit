@@ -32,7 +32,7 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.ExportPrivateKeysPanel;
+import org.multibit.viewsystem.swing.view.panels.ExportPrivateKeysPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
@@ -79,6 +79,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
     /**
      * Export the private keys to a file.
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         if (abort()) {
             return;
@@ -230,6 +231,7 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
             }
 
+            @Override
             protected void done() {
                 try {
                     Boolean wasSuccessful = get();

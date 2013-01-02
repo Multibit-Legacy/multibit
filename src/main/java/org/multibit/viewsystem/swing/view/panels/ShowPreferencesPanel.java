@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -183,6 +183,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     /**
      * Update preferences panel.
      */
+    @Override
     public void displayView() {
         originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
         showTicker.setSelected(originalShowTicker);
@@ -845,6 +846,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         showBitcoinConvertedToFiat.addItemListener(
                 new ItemListener() {
+            @Override
                     public void itemStateChanged(ItemEvent e) {
                         boolean selectedChange = (e.getStateChange() == ItemEvent.SELECTED);
                         boolean unSelectedChange = (e.getStateChange() == ItemEvent.DESELECTED);
@@ -1348,6 +1350,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         }
 
+        @Override
         public void itemStateChanged(ItemEvent e) {
             if (e.getSource().equals(useDefaultLocale)) {
                 languageComboBox.setEnabled(false);
@@ -1362,6 +1365,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         }
 
+        @Override
         public void itemStateChanged(ItemEvent e) {
             enableTickerSecondRow(showSecondRowCheckBox.isSelected());
         }
@@ -1410,6 +1414,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
          * This method finds the image and text corresponding to the selected
          * value and returns the label, set up to display the text and image.
          */
+        @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             // Get the selected index. (The index param isn't
             // always valid, so just use the value.)

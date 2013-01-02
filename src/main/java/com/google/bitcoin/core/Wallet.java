@@ -266,6 +266,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         eventListeners = new ArrayList<WalletEventListener>();
         ignoreNextNewBlock = new HashSet<Sha256Hash>();
         txConfidenceListener = new TransactionConfidence.Listener() {
+            @Override
             public void onConfidenceChanged(Transaction tx) {
                 invokeOnTransactionConfidenceChanged(tx);
                 // Many onWalletChanged events will not occur because they are suppressed, eg, because:
@@ -1035,6 +1036,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         ArrayList<Transaction> all = new ArrayList<Transaction>(getTransactions(includeDead, false));
         // Order by date.
         Collections.sort(all, Collections.reverseOrder(new Comparator<Transaction>() {
+            @Override
             public int compare(Transaction t1, Transaction t2) {
                 return t1.getUpdateTime().compareTo(t2.getUpdateTime());
             }

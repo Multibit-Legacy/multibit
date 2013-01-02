@@ -26,7 +26,7 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.ShowOpenUriDialog;
+import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
 
 /**
  * This {@link Action} processes the open uri command
@@ -58,6 +58,7 @@ public class ShowOpenUriSubmitAction extends AbstractAction {
     /**
      * show the showOpenUriDialog
      */
+    @Override
     public void actionPerformed(ActionEvent event) {
         // check to see if the wallet files have changed
         PerWalletModelData perWalletModelData = controller.getModel().getActivePerWalletModelData();

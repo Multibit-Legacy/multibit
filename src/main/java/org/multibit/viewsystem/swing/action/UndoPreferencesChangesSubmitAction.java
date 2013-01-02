@@ -54,6 +54,7 @@ public class UndoPreferencesChangesSubmitAction extends AbstractAction {
     /**
      * Get the previous language and font changes and undo them
      */
+    @Override
     public void actionPerformed(ActionEvent event) {
         String previousFontName = (String) controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_FONT_NAME);
         String previousFontStyle = (String) controller.getModel().getUserPreference(MultiBitModel.PREVIOUS_FONT_STYLE);

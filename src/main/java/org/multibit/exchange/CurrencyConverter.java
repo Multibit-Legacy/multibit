@@ -423,6 +423,7 @@ public enum CurrencyConverter {
     
     private void notifyFoundExchangeRate() {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 if (listeners != null) {
                     for (CurrencyConverterListener listener : listeners) {
@@ -435,6 +436,7 @@ public enum CurrencyConverter {
     
     private void notifyUpdatedExchangeRate() {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 if (listeners != null) {
                     for (CurrencyConverterListener listener : listeners) {

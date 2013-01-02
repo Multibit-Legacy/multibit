@@ -48,6 +48,7 @@ public class OkBackToParentAction extends AbstractAction {
     /**
      * close the root dialog
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         if (dialog != null) {
             dialog.setVisible(false);

@@ -81,6 +81,7 @@ public class FileHandlerTest extends TestCase {
     private EncrypterDecrypter encrypterDecrypter;
 
     @Before
+    @Override
     public void setUp() throws Exception {
         secureRandom = new SecureRandom();
         

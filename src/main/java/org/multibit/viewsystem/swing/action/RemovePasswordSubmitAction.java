@@ -29,7 +29,7 @@ import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
 import com.google.bitcoin.core.WalletMajorVersion;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.RemovePasswordPanel;
+import org.multibit.viewsystem.swing.view.panels.RemovePasswordPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +63,7 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
     /**
      * Remove the password protection on a wallet.
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         removePasswordPanel.clearMessages();
 
