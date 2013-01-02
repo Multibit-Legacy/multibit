@@ -38,7 +38,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.ShowPreferencesPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 
@@ -72,6 +72,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
     /**
      * Change preferences.
      */
+    @Override
     public void actionPerformed(ActionEvent event) {
         boolean feeValidationError = false;
 

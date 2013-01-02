@@ -52,6 +52,7 @@ public class CreateAndDeleteWalletsTest extends TestCase {
     private static SimpleViewSystem simpleViewSystem ;
     
     @Before
+    @Override
     public void setUp() throws IOException {  
         multiBitDirectory = createMultiBitRuntime();
 

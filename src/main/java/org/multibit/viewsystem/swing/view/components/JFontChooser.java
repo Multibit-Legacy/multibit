@@ -403,6 +403,7 @@ public class JFontChooser extends JComponent {
         dialogResultValue = ERROR_OPTION;
         JDialog dialog = createDialog(parent);
         dialog.addWindowListener(new WindowAdapter() {
+            @Override
             public void windowClosing(WindowEvent e) {
                 dialogResultValue = CANCEL_OPTION;
             }
@@ -422,6 +423,7 @@ public class JFontChooser extends JComponent {
             this.textComponent = textComponent;
         }
 
+        @Override
         public void valueChanged(ListSelectionEvent e) {
             if (e.getValueIsAdjusting() == false) {
                 JList list = (JList) e.getSource();
@@ -446,10 +448,12 @@ public class JFontChooser extends JComponent {
             this.textComponent = textComponent;
         }
 
+        @Override
         public void focusGained(FocusEvent e) {
             textComponent.selectAll();
         }
 
+        @Override
         public void focusLost(FocusEvent e) {
             textComponent.select(0, 0);
             updateSampleFont();
@@ -463,6 +467,7 @@ public class JFontChooser extends JComponent {
             this.targetList = list;
         }
 
+        @Override
         public void keyPressed(KeyEvent e) {
             int i = targetList.getSelectedIndex();
             switch (e.getKeyCode()) {
@@ -494,14 +499,17 @@ public class JFontChooser extends JComponent {
             this.targetList = targetList;
         }
 
+        @Override
         public void insertUpdate(DocumentEvent e) {
             update(e);
         }
 
+        @Override
         public void removeUpdate(DocumentEvent e) {
             update(e);
         }
 
+        @Override
         public void changedUpdate(DocumentEvent e) {
             update(e);
         }
@@ -538,6 +546,7 @@ public class JFontChooser extends JComponent {
                 this.index = index;
             }
 
+            @Override
             public void run() {
                 targetList.setSelectedIndex(this.index);
             }
@@ -559,6 +568,7 @@ public class JFontChooser extends JComponent {
             putValue(Action.NAME, controller.getLocaliser().getString("fontChooser.ok"));
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             dialogResultValue = OK_OPTION;
             dialog.setVisible(false);
@@ -577,6 +587,7 @@ public class JFontChooser extends JComponent {
             putValue(Action.NAME, controller.getLocaliser().getString("fontChooser.cancel"));
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             dialogResultValue = CANCEL_OPTION;
             dialog.setVisible(false);

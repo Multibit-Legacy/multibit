@@ -234,8 +234,8 @@ public class MultiBitModel {
      */
     private int numberOfConnectedPeers = UNKNOWN_NUMBER_OF_CONNECTD_PEERS;
     
-  
-    public MultiBitModel(MultiBitController controller) {
+    
+     public MultiBitModel(MultiBitController controller) {
         this(controller, new Properties());
     }
 
@@ -247,7 +247,7 @@ public class MultiBitModel {
 
         activeWalletModelData = new PerWalletModelData();
         perWalletModelDataList.add(activeWalletModelData);
-        
+
 
         // Initialize everything to look at the stored opened view.
         // If no properties passed in just initialize to the default view.
@@ -271,15 +271,14 @@ public class MultiBitModel {
 
         setCurrentView(initialView);
         log.debug("Initial view from properties file is '" + getCurrentView() + "'");
-        
+
         controller.setModel(this);
     }
 
     /**
      * Get a user preference.
-     * 
-     * @param key
-     *            String key of property
+     *
+     * @param key String key of property
      * @return String property value
      */
     public String getUserPreference(String key) {
@@ -288,7 +287,7 @@ public class MultiBitModel {
 
     /**
      * Set a user preference.
-     * 
+     *
      * @return
      */
     public void setUserPreference(String key, String value) {
@@ -299,7 +298,7 @@ public class MultiBitModel {
 
     /**
      * Get all user preference.
-     * 
+     *
      * @return
      */
     public Properties getAllUserPreferences() {
@@ -319,9 +318,8 @@ public class MultiBitModel {
 
     /**
      * Get a wallet preference from the active wallet.
-     * 
-     * @param key
-     *            String key of property
+     *
+     * @param key String key of property
      * @return String property value
      */
     public String getActiveWalletPreference(String key) {
@@ -334,7 +332,7 @@ public class MultiBitModel {
 
     /**
      * Set a wallet preference from the active wallet.
-     * 
+     *
      * @return
      */
     public void setActiveWalletPreference(String key, String value) {
@@ -352,7 +350,7 @@ public class MultiBitModel {
 
     /**
      * Get the estimated balance of the active wallet.
-     * 
+     *
      * @return
      */
     public BigInteger getActiveWalletEstimatedBalance() {
@@ -365,7 +363,7 @@ public class MultiBitModel {
 
     /**
      * Get the available balance (plus boomeranged change) of the active wallet.
-     * 
+     *
      * @return
      */
     public BigInteger getActiveWalletAvailableBalanceWithBoomerangChange() {
@@ -378,7 +376,7 @@ public class MultiBitModel {
 
     /**
      * Get the wallet data for the active wallet.
-     * 
+     *
      * @return
      */
     public List<WalletTableData> getActiveWalletWalletData() {
@@ -387,7 +385,7 @@ public class MultiBitModel {
 
     /**
      * Get the wallet info for the active wallet.
-     * 
+     *
      * @return
      */
     public WalletInfo getActiveWalletWalletInfo() {
@@ -396,7 +394,7 @@ public class MultiBitModel {
 
     /**
      * Get the active wallet.
-     * 
+     *
      * @return
      */
     public Wallet getActiveWallet() {
@@ -405,7 +403,7 @@ public class MultiBitModel {
 
     /**
      * Set the active wallet, given a wallet filename.
-     * 
+     *
      * @param wallet
      */
     public void setActiveWalletByFilename(String walletFilename) {
@@ -423,12 +421,12 @@ public class MultiBitModel {
     }
 
     /**
-     * Remove the specified perWalletModelData.
-     * Note that this does not remove any backing wallet or wallet info files.
-     * 
-     * Removal is determined by matching the wallet filename.
-     * Use FileHandler to do that.
-     * 
+     * Remove the specified perWalletModelData. Note that this does not remove
+     * any backing wallet or wallet info files.
+     *
+     * Removal is determined by matching the wallet filename. Use FileHandler to
+     * do that.
+     *
      * @param perWalletModeData
      */
     public void remove(PerWalletModelData perWalletModelDataToRemove) {
@@ -447,7 +445,7 @@ public class MultiBitModel {
 
     /**
      * Set a wallet description, given a wallet filename.
-     * 
+     *
      * @param wallet
      */
     public void setWalletDescriptionByFilename(String walletFilename, String walletDescription) {
@@ -499,6 +497,7 @@ public class MultiBitModel {
         // Wire up the controller as a wallet event listener.
         if (wallet != null) {
             wallet.addEventListener(new WalletEventListener() {
+                @Override
                 public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
                     controller.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
                 }
@@ -513,12 +512,13 @@ public class MultiBitModel {
                     controller.onReorganise(wallet);
                 }
 
-                public void onTransactionConfidenceChanged(Wallet wallet, Transaction tx) {
-                   controller.onTransactionConfidenceChanged(wallet, tx); 
-                }
-                
                 @Override
-                public void onKeyAdded(ECKey key) {        
+                public void onTransactionConfidenceChanged(Wallet wallet, Transaction tx) {
+                    controller.onTransactionConfidenceChanged(wallet, tx);
+                }
+
+                @Override
+                public void onKeyAdded(ECKey key) {
                     controller.onKeyAdded(key);
                 }
 
@@ -534,11 +534,11 @@ public class MultiBitModel {
 
         return newPerWalletModelData;
     }
-    
+
     /**
      * Get the active wallet filename.
-     * 
-     * 
+     *
+     *
      * @return
      */
     public String getActiveWalletFilename() {
@@ -638,7 +638,7 @@ public class MultiBitModel {
                 NetworkParameters networkParameters = getNetworkParameters();
                 if (networkParameters != null) {
                     if (perWalletModelData.getWalletInfo() != null) {
-                       // clear the existing receiving addresses
+                        // clear the existing receiving addresses
                         perWalletModelData.getWalletInfo().getReceivingAddresses().clear();
                         for (ECKey key : keyChain) {
                             Address address = key.toAddress(getNetworkParameters());
@@ -652,7 +652,7 @@ public class MultiBitModel {
 
     /**
      * Create a description for a transaction.
-     * 
+     *
      * @param transactionInputs
      * @param transactionOutputs
      * @param credit
@@ -706,10 +706,10 @@ public class MultiBitModel {
                 }
                 if (label != null && label != "") {
                     toReturn = controller.getLocaliser().getString("multiBitModel.creditDescriptionWithLabel",
-                            new Object[] { addressString, label });
+                            new Object[]{addressString, label});
                 } else {
                     toReturn = controller.getLocaliser().getString("multiBitModel.creditDescription",
-                            new Object[] { addressString });
+                            new Object[]{addressString});
                 }
             } catch (ScriptException e) {
                 log.error(e.getMessage(), e);
@@ -729,10 +729,10 @@ public class MultiBitModel {
                     }
                     if (label != null && label != "") {
                         toReturn = controller.getLocaliser().getString("multiBitModel.debitDescriptionWithLabel",
-                                new Object[] { addressString, label });
+                                new Object[]{addressString, label});
                     } else {
                         toReturn = controller.getLocaliser().getString("multiBitModel.debitDescription",
-                                new Object[] { addressString });
+                                new Object[]{addressString});
                     }
                 }
             } catch (ScriptException e) {
@@ -744,7 +744,7 @@ public class MultiBitModel {
 
     /**
      * Work out the transaction date.
-     * 
+     *
      * @param transaction
      * @return Date date of transaction
      */
@@ -783,7 +783,7 @@ public class MultiBitModel {
 
     /**
      * Work out the height of the block chain in which the transaction appears.
-     * 
+     *
      * @param transaction
      * @return
      */
@@ -823,15 +823,15 @@ public class MultiBitModel {
         setUserPreference(MultiBitModel.SELECTED_VIEW, "" + view);
     }
 
-	public ExchangeData getExchangeData() {
-		return exchangeData;
-	}
+    public ExchangeData getExchangeData() {
+        return exchangeData;
+    }
 
-	public void setExchangeData(ExchangeData exchangeData) {
-		this.exchangeData = exchangeData;
-	}
-	
-	public NetworkParameters getNetworkParameters() {
+    public void setExchangeData(ExchangeData exchangeData) {
+        this.exchangeData = exchangeData;
+    }
+
+    public NetworkParameters getNetworkParameters() {
         // If test or production is not specified, default to production.
         String testOrProduction = userPreferences.getProperty(MultiBitModel.TEST_OR_PRODUCTION_NETWORK);
         if (testOrProduction == null) {
@@ -845,8 +845,8 @@ public class MultiBitModel {
         } else {
             return NetworkParameters.prodNet();
         }
-	}
-	   
+    }
+
     public boolean thereIsNoActiveWallet() {
         return activeWalletModelData == null
                 || "".equals(activeWalletModelData.getWalletFilename()) || activeWalletModelData.getWalletFilename() == null;
@@ -858,5 +858,5 @@ public class MultiBitModel {
 
     public void setNumberOfConnectedPeers(int numberOfConnectedPeers) {
         this.numberOfConnectedPeers = numberOfConnectedPeers;
-    }    
+    }
 }

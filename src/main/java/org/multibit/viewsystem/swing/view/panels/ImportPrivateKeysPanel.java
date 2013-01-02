@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -67,6 +67,8 @@ import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
 import com.piuk.blockchain.MyWallet;
 import com.piuk.blockchain.MyWalletEncryptedKeyFileFilter;
 import com.piuk.blockchain.MyWalletPlainKeyFileFilter;
+import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
+import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
 
 /**
  * The import private keys view.

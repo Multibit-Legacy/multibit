@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.models;
 
 import java.util.ArrayList;
 
@@ -45,10 +45,12 @@ public class AddressBookTableModel extends DefaultTableModel {
         this.isReceiving = isReceiving;
     }
 
+    @Override
     public int getColumnCount() {
         return tableHeaderKeys.length;
     }
 
+    @Override
     public int getRowCount() {
         if (controller == null) {
             return 0;
@@ -69,10 +71,12 @@ public class AddressBookTableModel extends DefaultTableModel {
         }
     }
 
+    @Override
     public String getColumnName(int column) {
         return headers.get(column);
     }
 
+    @Override
     public Object getValueAt(int row, int column) {
         WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
 
@@ -110,6 +114,7 @@ public class AddressBookTableModel extends DefaultTableModel {
     /**
      * table model is read only
      */
+    @Override
     public void setValueAt(Object value, int row, int column) {
         throw new UnsupportedOperationException();
     }

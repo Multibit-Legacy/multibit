@@ -39,8 +39,8 @@ import org.multibit.model.WalletBusyListener;
 import org.multibit.model.WalletInfo;
 import com.google.bitcoin.core.WalletMajorVersion;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressDialog;
-import org.multibit.viewsystem.swing.view.CreateNewReceivingAddressPanel;
+import org.multibit.viewsystem.swing.view.dialogs.CreateNewReceivingAddressDialog;
+import org.multibit.viewsystem.swing.view.panels.CreateNewReceivingAddressPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -88,6 +88,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
     /**
      * Create new receiving addresses.
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         if (abort()) {
             return;
@@ -220,6 +221,7 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                 longMessage = shortMessage;
             }
 
+            @Override
             protected void done() {
                 try {
                     Boolean wasSuccessful = get();

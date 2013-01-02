@@ -74,6 +74,7 @@ public class OpenWalletAction extends AbstractAction {
     /**
      * show open file chooser and load wallet
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         setEnabled(false);
@@ -159,6 +160,7 @@ public class OpenWalletAction extends AbstractAction {
                 }
             }
             
+            @Override
             protected void done() {
                 try {
                     Boolean wasSuccessful = get();

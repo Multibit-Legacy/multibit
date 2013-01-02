@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -139,7 +139,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
     private static UpdateTransactionsTimerTask updateTransactionsTimerTask;
     
-    public ShowTransactionsPanel(MultiBitFrame mainFrame, MultiBitController controller) {
+    public ShowTransactionsPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
 
@@ -255,6 +255,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         sortKeys.add(new TableRowSorter.SortKey(1, SortOrder.DESCENDING));
         rowSorter.setSortKeys(sortKeys);
         Comparator<Date> comparator = new Comparator<Date>() {
+            @Override
             public int compare(Date o1, Date o2) {
                 if (o1 == null) {
                     if (o2 == null) {
@@ -289,6 +290,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         rowSorter.setComparator(1, comparator);
 
         Comparator<String> comparatorNumber = new Comparator<String>() {
+            @Override
             public int compare(String o1, String o2) {
                 try {
                     if (o1 == null) {
@@ -416,6 +418,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         ImageIcon rtlProgress4Icon = ImageLoader.createImageIcon(RTL_PROGRESS_4_ICON_FILE);
         ImageIcon rtlProgress5Icon = ImageLoader.createImageIcon(RTL_PROGRESS_5_ICON_FILE);
 
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             label.setHorizontalAlignment(SwingConstants.CENTER);
@@ -617,6 +620,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             label = new MultiBitLabel("");
         }
         
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -668,6 +672,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", controller.getLocaliser().getLocale());
         }
         
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -718,6 +723,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             label = new MultiBitLabel("");
         }
         
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             label.setHorizontalAlignment(SwingConstants.LEADING);
@@ -765,6 +771,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             pane.setBorder(BorderFactory.createEmptyBorder());
          }
 
+        @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                     boolean hasFocus, int row, int column) {  
             JPanel outerPanel = new JPanel(new BorderLayout());
@@ -894,11 +901,13 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     }
 
     class PopClickListener extends MouseAdapter {
+        @Override
         public void mousePressed(MouseEvent e) {
             if (e.isPopupTrigger())
                 doPop(e);
         }
 
+        @Override
         public void mouseReleased(MouseEvent e) {
             if (e.isPopupTrigger())
                 doPop(e);

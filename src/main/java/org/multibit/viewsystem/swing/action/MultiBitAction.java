@@ -55,6 +55,7 @@ public class MultiBitAction extends AbstractAction {
     /**
      * display the view specified
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         controller.displayView(viewToDisplay);
     }

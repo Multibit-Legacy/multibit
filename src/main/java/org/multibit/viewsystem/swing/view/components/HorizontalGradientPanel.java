@@ -37,6 +37,7 @@ public class HorizontalGradientPanel extends JPanel {
         setOpaque(false);
     }
     
+    @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2d = (Graphics2D)g;
         Dimension d = this.getSize();

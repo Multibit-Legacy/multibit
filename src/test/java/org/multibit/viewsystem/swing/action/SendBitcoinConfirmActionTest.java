@@ -22,7 +22,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
-import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 public class SendBitcoinConfirmActionTest extends TestCase {
@@ -37,7 +37,7 @@ public class SendBitcoinConfirmActionTest extends TestCase {
         // Create a new SendBitcoinConfirmAction to test.
         ColorAndFontConstants.init();
         FontSizer.INSTANCE.initialise(controller);
-        SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(null, controller);
+        SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(controller, null);
         SendBitcoinConfirmAction sendBitcoinConfirmAction = sendBitcoinPanel.getSendBitcoinConfirmAction();
 
         assertNotNull("sendBitcoinConfirmAction was not created successfully", sendBitcoinConfirmAction);

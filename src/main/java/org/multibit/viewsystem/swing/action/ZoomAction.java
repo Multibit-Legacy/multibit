@@ -38,7 +38,7 @@ import javax.swing.SwingConstants;
 import org.multibit.controller.MultiBitController;
 import org.multibit.qrcode.QRCodeGenerator;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.AbstractTradePanel;
+import org.multibit.viewsystem.swing.view.panels.AbstractTradePanel;
 
 /**
  * This {@link Action} displays a QR code zoomed to the whole display.
@@ -73,6 +73,7 @@ public class ZoomAction extends AbstractAction {
     /**
      * Zoom the QR code.
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         setEnabled(false);
@@ -112,6 +113,7 @@ public class ZoomAction extends AbstractAction {
 
             final JOptionPane optionPane = new JOptionPane(iconPanel, JOptionPane.PLAIN_MESSAGE);
             optionPane.addPropertyChangeListener(new PropertyChangeListener() {
+                @Override
                 public void propertyChange(PropertyChangeEvent e) {
                     String prop = e.getPropertyName();
 

@@ -49,6 +49,7 @@ public class DashedBorder implements Border {
         dashHeight = height;
     }
 
+    @Override
     public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
         Insets insets = getBorderInsets(c);
         g.setColor(color);
@@ -66,10 +67,12 @@ public class DashedBorder implements Border {
         }
     }
 
+    @Override
     public Insets getBorderInsets(Component c) {
         return new Insets(THICKNESS, THICKNESS, THICKNESS, THICKNESS);
     }
 
+    @Override
     public boolean isBorderOpaque() {
         return false;
     }

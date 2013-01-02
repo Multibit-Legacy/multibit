@@ -116,10 +116,12 @@ public class MultiBit {
 
             final MultiBitController finalController = controller;
             ApplicationInstanceManager.setApplicationInstanceListener(new ApplicationInstanceListener() {
+                @Override
                 public void newInstanceCreated(String rawURI) {
                     final String finalRawUri = rawURI;
                     log.debug("New instance of MultiBit detected...");
                     Runnable doProcessCommandLine = new Runnable() {
+                        @Override
                         public void run() {
                             processCommandLineURI(finalController, finalRawUri);
                         }
@@ -151,8 +153,13 @@ public class MultiBit {
             log.debug("Creating model");
 
             // Create the model.
-            @SuppressWarnings("unused")
+            // The model is set to the controller.
+            // The model constructor calls 'setModel(this) on the controller.
+
             MultiBitModel model = new MultiBitModel(controller, userPreferences);
+            if (null == model) {
+                throw new NullPointerException("Unable to make MultBit model!");
+            }
 
             // Initialise currency converter.
             CurrencyConverter.INSTANCE.initialise(finalController);
@@ -188,7 +195,8 @@ public class MultiBit {
             } catch (IllegalAccessException e) {
                 // carry on
             }
-
+            
+            // This is when the GUI is first displayed to the user.
             log.debug("Creating user interface");
             swingViewSystem = new MultiBitFrame(controller, genericApplication, controller.getCurrentView());
 

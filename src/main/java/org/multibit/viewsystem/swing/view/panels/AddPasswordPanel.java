@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.panels;
 
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
@@ -600,15 +600,18 @@ public class AddPasswordPanel extends JPanel implements View, WalletBusyListener
 
     class PasswordListener implements KeyListener {
         /** Handle the key typed event from the text field. */
+        @Override
         public void keyTyped(KeyEvent e) {
         }
 
         /** Handle the key-pressed event from the text field. */
+        @Override
         public void keyPressed(KeyEvent e) {
             // do nothing
         }
 
         /** Handle the key-released event from the text field. */
+        @Override
         public void keyReleased(KeyEvent e) {
             char[] password1 = null;
             char[] password2 = null;

@@ -22,7 +22,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
+import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
 
 /**
  * This {@link Action} represents the swing copy receive address action
@@ -50,6 +50,7 @@ public class CopyReceiveAddressAction extends AbstractAction {
     /**
      * Copy receive address to clipboard
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         // copy receive address to clipboard
         TextTransfer textTransfer = new TextTransfer();

@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.panels;
 
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Arrays;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -39,8 +42,8 @@ import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.action.ChangePasswordSubmitAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
-import org.multibit.viewsystem.swing.action.RemovePasswordSubmitAction;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
@@ -49,9 +52,9 @@ import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import com.google.bitcoin.core.EncryptionType;
 
 /**
- * The remove password view.
+ * The change password view.
  */
-public class RemovePasswordPanel extends JPanel implements View, WalletBusyListener {
+public class ChangePasswordPanel extends JPanel implements View, WalletBusyListener {
 
     private static final long serialVersionUID = 444992298432957705L;
 
@@ -66,17 +69,26 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
     private MultiBitLabel messageLabel1;
     private MultiBitLabel messageLabel2;
 
-    private JPasswordField passwordField;
+    private MultiBitLabel reminderLabel1;
+    private MultiBitLabel reminderLabel2;
+    private MultiBitLabel reminderLabel3;
+
+    private JPasswordField currentPasswordField;
+
+    private JPasswordField newPasswordField;
+    private JPasswordField repeatNewPasswordField;
     
-    private RemovePasswordSubmitAction removePasswordSubmitAction;
+    private ChangePasswordSubmitAction changePasswordSubmitAction ;
+
+    private JLabel tickLabel;
 
     public static final int STENT_HEIGHT = 12;
     public static final int STENT_DELTA = 20;
 
     /**
-     * Creates a new {@link RemovePasswordPanel}.
+     * Creates a new {@link ChangePasswordPanel}.
      */
-    public RemovePasswordPanel(MultiBitController controller, MultiBitFrame mainFrame) {
+    public ChangePasswordPanel(MultiBitController controller, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.mainFrame = mainFrame;
 
@@ -131,11 +143,20 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
         constraints.anchor = GridBagConstraints.LINE_START;
         mainPanel.add(createCurrentPasswordPanel(stentWidth), constraints);
 
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.gridwidth = 2;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        mainPanel.add(createNewPasswordPanel(stentWidth), constraints);
+
         JLabel filler1 = new JLabel();
         filler1.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 2;
+        constraints.gridy = 3;
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
         constraints.weightx = 1;
@@ -145,7 +166,7 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
 
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 4;
         constraints.gridwidth = 1;
         constraints.weightx = 0.4;
         constraints.weighty = 0.06;
@@ -158,7 +179,7 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
         messageLabel1.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 5;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 0.06;
@@ -171,7 +192,7 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
         messageLabel2.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 6;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 0.06;
@@ -192,7 +213,7 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
         helpButton.setBorder(BorderFactory.createEmptyBorder(0, AbstractTradePanel.HELP_BUTTON_INDENT, AbstractTradePanel.HELP_BUTTON_INDENT, AbstractTradePanel.HELP_BUTTON_INDENT));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 0;
-        constraints.gridy = 6;
+        constraints.gridy = 7;
         constraints.weightx = 1;
         constraints.weighty = 0.1;
         constraints.gridwidth = 1;
@@ -204,7 +225,7 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
         filler2.setOpaque(false);
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 0;
-        constraints.gridy = 7;
+        constraints.gridy = 8;
         constraints.gridwidth = 1;
         constraints.weightx = 1;
         constraints.weighty = 100;
@@ -228,7 +249,7 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
         GridBagConstraints constraints = new GridBagConstraints();
 
         MultiBitTitledPanel.addLeftJustifiedTextAtIndent(
-                controller.getLocaliser().getString("removePasswordPanel.text"), 3, inputWalletPanel);
+                controller.getLocaliser().getString("changePasswordPanel.text"), 3, inputWalletPanel);
 
         constraints.fill = GridBagConstraints.BOTH;
         constraints.gridx = 1;
@@ -333,7 +354,7 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
 
     private JPanel createCurrentPasswordPanel(int stentWidth) {
         MultiBitTitledPanel currentPasswordPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
-                "addPasswordPanel.password.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+                "changePasswordPanel.currentPassword.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
 
         GridBagConstraints constraints = new GridBagConstraints();
 
@@ -393,10 +414,9 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
         constraints.anchor = GridBagConstraints.LINE_END;
         currentPasswordPanel.add(passwordPromptLabel, constraints);
 
-        passwordField = new JPasswordField(24);
-        passwordField.setMinimumSize(new Dimension(200, 20));
-        passwordField.addKeyListener(new PasswordListener());
-        passwordField.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        currentPasswordField = new JPasswordField(24);
+        currentPasswordField.setMinimumSize(new Dimension(200, 20));
+        currentPasswordField.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         constraints.fill = GridBagConstraints.NONE;
         constraints.gridx = 3;
         constraints.gridy = 4;
@@ -404,7 +424,7 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
         constraints.weighty = 0.25;
         constraints.gridwidth = 1;
         constraints.anchor = GridBagConstraints.LINE_START;
-        currentPasswordPanel.add(passwordField, constraints);
+        currentPasswordPanel.add(currentPasswordField, constraints);
 
         JLabel filler3 = new JLabel();
         filler3.setMinimumSize(new Dimension(3, 3));
@@ -456,6 +476,206 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
 
         return currentPasswordPanel;
     }
+    private JPanel createNewPasswordPanel(int stentWidth) {
+        MultiBitTitledPanel passwordProtectPanel = new MultiBitTitledPanel(controller.getLocaliser().getString(
+                "changePasswordPanel.newPassword.title"), ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
+        GridBagConstraints constraints = new GridBagConstraints();
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.05;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        JPanel indent = MultiBitTitledPanel.getIndentPanel(1);
+        passwordProtectPanel.add(indent, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 3;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        JPanel stent = MultiBitTitledPanel.createStent(stentWidth, STENT_HEIGHT);
+        passwordProtectPanel.add(stent, constraints);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 2;
+        constraints.gridy = 3;
+        constraints.weightx = 0.05;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        passwordProtectPanel.add(MultiBitTitledPanel.createStent(MultiBitTitledPanel.SEPARATION_BETWEEN_NAME_VALUE_PAIRS), constraints);
+
+        JPanel filler0 = new JPanel();
+        filler0.setOpaque(false);
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 4;
+        constraints.gridy = 3;
+        constraints.weightx = 100;
+        constraints.weighty = 1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        passwordProtectPanel.add(filler0, constraints);
+
+        MultiBitLabel passwordPromptLabel = new MultiBitLabel("");
+        passwordPromptLabel.setText(controller.getLocaliser().getString("changePasswordPanel.newPasswordPrompt"));
+        passwordPromptLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 4;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        passwordProtectPanel.add(passwordPromptLabel, constraints);
+
+        newPasswordField = new JPasswordField(24);
+        newPasswordField.setMinimumSize(new Dimension(200, 20));
+        newPasswordField.addKeyListener(new PasswordListener());
+        newPasswordField.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 4;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.25;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        passwordProtectPanel.add(newPasswordField, constraints);
+
+        JLabel filler3 = new JLabel();
+        filler3.setMinimumSize(new Dimension(3, 3));
+        filler3.setMaximumSize(new Dimension(3, 3));
+        filler3.setPreferredSize(new Dimension(3, 3));
+        filler3.setOpaque(false);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 5;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        passwordProtectPanel.add(filler3, constraints);
+
+        MultiBitLabel repeatPasswordPromptLabel = new MultiBitLabel("");
+        repeatPasswordPromptLabel.setText(controller.getLocaliser().getString("changePasswordPanel.repeatNewPasswordPrompt"));
+        repeatPasswordPromptLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 1;
+        constraints.gridy = 6;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_END;
+        passwordProtectPanel.add(repeatPasswordPromptLabel, constraints);
+
+        repeatNewPasswordField = new JPasswordField(24);
+        repeatNewPasswordField.setMinimumSize(new Dimension(200, 20));
+        repeatNewPasswordField.addKeyListener(new PasswordListener());
+        repeatNewPasswordField.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 6;
+        constraints.weightx = 0.3;
+        constraints.weighty = 0.25;
+        constraints.gridwidth = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        passwordProtectPanel.add(repeatNewPasswordField, constraints);
+
+        ImageIcon tickIcon = ImageLoader.createImageIcon(ImageLoader.TICK_ICON_FILE);
+        tickLabel = new JLabel(tickIcon);
+        tickLabel.setToolTipText(controller.getLocaliser().getString("showExportPrivateKeysPanel.theTwoPasswordsMatch"));
+        tickLabel.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+
+        tickLabel.setVisible(false);
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 4;
+        constraints.gridy = 4;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 3;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        passwordProtectPanel.add(tickLabel, constraints);
+
+        JLabel filler4 = new JLabel();
+        filler4.setMinimumSize(new Dimension(3, 12));
+        filler4.setMaximumSize(new Dimension(3, 12));
+        filler4.setPreferredSize(new Dimension(3, 12));
+        filler4.setOpaque(false);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 7;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        passwordProtectPanel.add(filler4, constraints);
+
+        reminderLabel1 = new MultiBitLabel(controller.getLocaliser().getString("changePasswordPanel.reminder1"));
+        reminderLabel1.setFont(reminderLabel1.getFont().deriveFont(Font.BOLD));
+        reminderLabel1.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 8;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 3;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        passwordProtectPanel.add(reminderLabel1, constraints);
+
+        reminderLabel2 = new MultiBitLabel(controller.getLocaliser().getString("changePasswordPanel.reminder2"));
+        reminderLabel2.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 9;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 3;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        passwordProtectPanel.add(reminderLabel2, constraints);
+
+        reminderLabel3 = new MultiBitLabel(controller.getLocaliser().getString("changePasswordPanel.reminder3"));
+        reminderLabel3.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.gridx = 3;
+        constraints.gridy = 10;
+        constraints.weightx = 0.2;
+        constraints.weighty = 0.3;
+        constraints.gridwidth = 3;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.LINE_START;
+        passwordProtectPanel.add(reminderLabel3, constraints);
+
+        JLabel filler5 = new JLabel();
+        filler5.setMinimumSize(new Dimension(3, 8));
+        filler5.setMaximumSize(new Dimension(3, 8));
+        filler5.setPreferredSize(new Dimension(3, 8));
+        filler5.setOpaque(false);
+
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 1;
+        constraints.gridy = 11;
+        constraints.weightx = 0.1;
+        constraints.weighty = 0.1;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        constraints.anchor = GridBagConstraints.CENTER;
+        passwordProtectPanel.add(filler5, constraints);
+
+        return passwordProtectPanel;
+    }
 
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel();
@@ -469,9 +689,9 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
          * Create submit action with references to the password fields - this
          * avoids having any public accessors on the panel
          */
-        removePasswordSubmitAction = new RemovePasswordSubmitAction(controller, this,
-                ImageLoader.createImageIcon(ImageLoader.REMOVE_PASSWORD_ICON_FILE), passwordField, mainFrame);
-        MultiBitButton submitButton = new MultiBitButton(removePasswordSubmitAction, controller);
+        changePasswordSubmitAction = new ChangePasswordSubmitAction(controller, this,
+                ImageLoader.createImageIcon(ImageLoader.CHANGE_PASSWORD_ICON_FILE), currentPasswordField, newPasswordField, repeatNewPasswordField);
+        MultiBitButton submitButton = new MultiBitButton(changePasswordSubmitAction, controller);
         submitButton.applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         buttonPanel.add(submitButton);
 
@@ -494,9 +714,11 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
     }
     
     public void clearPasswords() {
-        passwordField.setText("");
+        currentPasswordField.setText("");
+        newPasswordField.setText("");
+        repeatNewPasswordField.setText("");
+        tickLabel.setVisible(false);
     }
-
 
     public void setMessage1(String message1) {
         if (messageLabel1 != null) {
@@ -512,38 +734,68 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
 
     class PasswordListener implements KeyListener {
         /** Handle the key typed event from the text field. */
+        @Override
         public void keyTyped(KeyEvent e) {
         }
 
         /** Handle the key-pressed event from the text field. */
+        @Override
         public void keyPressed(KeyEvent e) {
             // do nothing
         }
 
         /** Handle the key-released event from the text field. */
+        @Override
         public void keyReleased(KeyEvent e) {
+            char[] password1 = null;
+            char[] password2 = null;
+
+            if (newPasswordField != null) {
+                password1 = newPasswordField.getPassword();
+            }
+            if (repeatNewPasswordField != null) {
+                password2 = repeatNewPasswordField.getPassword();
+            }
+
+            boolean tickLabelVisible = false;
+            if (password1 != null && password2 != null) {
+                if (Arrays.equals(password1, password2)) {
+                    tickLabelVisible = true;
+                }
+            }
+            tickLabel.setVisible(tickLabelVisible);
+
             clearMessages();
+
+            // clear the password arrays
+            for (int i = 0; i < password1.length; i++) {
+                password1[i] = 0;
+            }
+
+            for (int i = 0; i < password2.length; i++) {
+                password2[i] = 0;
+            }
         }
     }
 
     @Override
     public Icon getViewIcon() {
-        return ImageLoader.createImageIcon(ImageLoader.REMOVE_PASSWORD_ICON_FILE);
+        return ImageLoader.createImageIcon(ImageLoader.CHANGE_PASSWORD_ICON_FILE);
     }
 
     @Override
     public String getViewTitle() {
-        return controller.getLocaliser().getString("removePasswordAction.text");
+        return controller.getLocaliser().getString("changePasswordAction.text");
     }
 
     @Override
     public String getViewTooltip() {
-        return controller.getLocaliser().getString("removePasswordAction.tooltip");
+        return controller.getLocaliser().getString("changePasswordAction.tooltip");
     }
 
     @Override
     public int getViewId() {
-        return View.REMOVE_PASSWORD_VIEW;
+        return View.CHANGE_PASSWORD_VIEW;
     }
 
     @Override
@@ -551,28 +803,28 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
         boolean unencryptedWalletType = controller.getModel().getActiveWallet() == null ? false : controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.UNENCRYPTED;
 
         if (unencryptedWalletType) {
-            // Is not an encrypted wallet so cannot remove a password regardless.
-            removePasswordSubmitAction.putValue(Action.SHORT_DESCRIPTION,
-                    controller.getLocaliser().getString("removePasswordSubmitAction.text"));
-            removePasswordSubmitAction.setEnabled(false);
+            // Is an unencrypted wallet so cannot change a password regardless.
+            changePasswordSubmitAction.putValue(Action.SHORT_DESCRIPTION,
+                    controller.getLocaliser().getString("changePasswordSubmitAction.text"));
+            changePasswordSubmitAction.setEnabled(false);
         } else {
             // Update the enable status of the action to match the wallet busy
             // status.
             if (controller.getModel().getActivePerWalletModelData().isBusy()) {
                 // Wallet is busy with another operation that may change the
                 // private keys - Action is disabled.
-                removePasswordSubmitAction.putValue(
+                changePasswordSubmitAction.putValue(
                         Action.SHORT_DESCRIPTION,
                         controller.getLocaliser().getString("multiBitSubmitAction.walletIsBusy",
                                 new Object[] { controller.getModel().getActivePerWalletModelData().getBusyOperation() }));
-                removePasswordSubmitAction.setEnabled(false);
+                changePasswordSubmitAction.setEnabled(false);
             } else {
                 // Enable unless wallet has been modified by another process.
                 if (!controller.getModel().getActivePerWalletModelData().isFilesHaveBeenChangedByAnotherProcess()) {
-                    removePasswordSubmitAction.putValue(Action.SHORT_DESCRIPTION,
-                            controller.getLocaliser().getString("removePasswordSubmitAction.text"));
+                    changePasswordSubmitAction.putValue(Action.SHORT_DESCRIPTION,
+                            controller.getLocaliser().getString("changePasswordSubmitAction.text"));
 
-                    removePasswordSubmitAction.setEnabled(true);
+                    changePasswordSubmitAction.setEnabled(true);
                 }
             }
         }

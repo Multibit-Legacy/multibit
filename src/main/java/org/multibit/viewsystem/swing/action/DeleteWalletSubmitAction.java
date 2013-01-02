@@ -32,7 +32,7 @@ import com.google.bitcoin.core.WalletVersionException;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import com.google.bitcoin.core.WalletMajorVersion;
-import org.multibit.viewsystem.swing.view.DeleteWalletConfirmDialog;
+import org.multibit.viewsystem.swing.view.dialogs.DeleteWalletConfirmDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +64,7 @@ public class DeleteWalletSubmitAction extends AbstractAction {
     /**
      * Delete the wallet and updates the dialog.
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         try {
             String walletDescription = controller.getModel().getActivePerWalletModelData().getWalletDescription();
