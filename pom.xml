@@ -636,6 +636,11 @@
             <artifactId>bitcoinj</artifactId>
             <version>${bitcoinj.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.seaglasslookandfeel</groupId>
+            <artifactId>seaglasslookandfeel</artifactId>
+            <version>0.2</version>
+        </dependency>
     </dependencies>
 
     <reporting>

@@ -765,9 +765,10 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
                 }
             }
         }
-        //lookAndFeelComboBox.addItem(MultiBitModel.SEA_GLASS_LOOK_AND_FEEL);
-        //if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
-        //    lookAndFeelComboBox.setSelectedItem(MultiBitModel.SEA_GLASS_LOOK_AND_FEEL);
+        lookAndFeelComboBox.addItem(MultiBitModel.SEA_GLASS_LOOK_AND_FEEL);
+        if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
+            lookAndFeelComboBox.setSelectedItem(MultiBitModel.SEA_GLASS_LOOK_AND_FEEL);
+        }
         if (originalLookAndFeel == null || originalLookAndFeel.equals("") || SYSTEM_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
             lookAndFeelComboBox.setSelectedItem(localisedSystemLookAndFeelName);
         }

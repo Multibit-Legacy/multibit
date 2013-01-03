@@ -155,11 +155,7 @@ public class MultiBit {
             // Create the model.
             // The model is set to the controller.
             // The model constructor calls 'setModel(this) on the controller.
-
             MultiBitModel model = new MultiBitModel(controller, userPreferences);
-            if (null == model) {
-                throw new NullPointerException("Unable to make MultBit model!");
-            }
 
             // Initialise currency converter.
             CurrencyConverter.INSTANCE.initialise(finalController);
@@ -167,16 +163,26 @@ public class MultiBit {
             log.debug("Setting look and feel");
             try {
                 boolean foundTargetLookAndFeel = false;
-                
+
+   
                 if (!foundTargetLookAndFeel) {
                     String lookAndFeel = userPreferences.getProperty(MultiBitModel.LOOK_AND_FEEL);
 
-                    if (lookAndFeel != null && lookAndFeel != "") {
-                        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                            if (lookAndFeel.equalsIgnoreCase(info.getName())) {
-                                UIManager.setLookAndFeel(info.getClassName());
-                                foundTargetLookAndFeel = true;
-                                break;
+                    if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(lookAndFeel)) {
+                        try {
+                            UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
+                            foundTargetLookAndFeel = true;
+                        } catch (Exception e) {
+                            log.error(e.getClass().getName() + " " + e.getMessage());    
+                        }                     
+                    } else {
+                        if (lookAndFeel != null && lookAndFeel != "") {
+                            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                                if (lookAndFeel.equalsIgnoreCase(info.getName())) {
+                                    UIManager.setLookAndFeel(info.getClassName());
+                                    foundTargetLookAndFeel = true;
+                                    break;
+                                }
                             }
                         }
                     }
