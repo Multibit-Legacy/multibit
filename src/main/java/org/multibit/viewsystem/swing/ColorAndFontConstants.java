@@ -46,12 +46,14 @@ public class ColorAndFontConstants {
     
     public static Color ALTERNATE_TABLE_COLOR = new Color(230, 230, 233);
     
+    public static Color SEAGLASS_BLUE = new Color(237, 246, 252);
+    
     public static void init() {
         MULTIBIT_DEFAULT_FONT_NAME =   UIManager.get("Label.font") == null ? Font.DIALOG : ((Font)UIManager.get("Label.font")).getFontName();
         MULTIBIT_DEFAULT_FONT_STYLE =  UIManager.get("Label.font") == null ? 0 : ((Font)UIManager.get("Label.font")).getStyle();
         MULTIBIT_DEFAULT_FONT_SIZE = UIManager.get("Label.font") == null ? 13 : ((Font)UIManager.get("Label.font")).getSize() + 1;
 
-        BACKGROUND_COLOR =  UIManager.get("Label.font") == null ?  new Color(250, 250, 253) : (Color) UIManager.get("Label.background");
+        BACKGROUND_COLOR =  UIManager.get("Label.background") == null ?  new Color(250, 250, 253) : (Color) UIManager.get("Label.background");
         DARK_BACKGROUND_COLOR = BACKGROUND_COLOR.darker();
     }
 }

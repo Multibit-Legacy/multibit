@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
+import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -47,6 +48,7 @@ import org.multibit.platform.GenericApplicationFactory;
 import org.multibit.platform.GenericApplicationSpecification;
 import org.multibit.platform.listener.GenericOpenURIEvent;
 import org.multibit.viewsystem.ViewSystem;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.action.MigrateWalletsAction;
@@ -171,6 +173,7 @@ public class MultiBit {
                     if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(lookAndFeel)) {
                         try {
                             UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
+                            ColorAndFontConstants.ALTERNATE_TABLE_COLOR = ColorAndFontConstants.SEAGLASS_BLUE;
                             foundTargetLookAndFeel = true;
                         } catch (Exception e) {
                             log.error(e.getClass().getName() + " " + e.getMessage());    
