@@ -149,7 +149,8 @@ public class TickerTablePanel extends JPanel {
             tickerWidth += SCROLLBAR_WIDTH;
         }
         
-        for (int i = 0; i < Math.min(table.getColumnCount(), columnVariables.length); i++) {
+        int numberOfColumns = Math.min(table.getColumnCount(), columnVariables.length);
+        for (int i = 0; i < numberOfColumns; i++) {
             // work out width
             int columnWidth;
 
@@ -166,12 +167,19 @@ public class TickerTablePanel extends JPanel {
             tickerWidth += columnWidth;
             table.getColumnModel().getColumn(i).setPreferredWidth(columnWidth);
 
-            if (TickerTableModel.TICKER_COLUMN_CURRENCY.equals(columnVariables[i])) {
-                table.getColumnModel().getColumn(i).setCellRenderer(new CurrencyCenterJustifiedRenderer());
-            } else if (TickerTableModel.TICKER_COLUMN_EXCHANGE.equals(columnVariables[i])) {
-                table.getColumnModel().getColumn(i).setCellRenderer(new CurrencyCenterJustifiedRenderer());
+            TableCellRenderer columnRenderer;
+            if (i == numberOfColumns - 1) {
+                columnRenderer = new CurrencyCenterJustifiedWithRightBorderRenderer();
+                
             } else {
-                table.getColumnModel().getColumn(i).setCellRenderer(new CurrencyCenterJustifiedRenderer());
+                columnRenderer = new CurrencyCenterJustifiedRenderer();
+            }
+            if (TickerTableModel.TICKER_COLUMN_CURRENCY.equals(columnVariables[i])) {
+                table.getColumnModel().getColumn(i).setCellRenderer(columnRenderer);
+            } else if (TickerTableModel.TICKER_COLUMN_EXCHANGE.equals(columnVariables[i])) {
+                table.getColumnModel().getColumn(i).setCellRenderer(columnRenderer);
+            } else {
+                table.getColumnModel().getColumn(i).setCellRenderer(columnRenderer);
             }
         }
 
@@ -308,6 +316,30 @@ public class TickerTablePanel extends JPanel {
             label.setText((String) value);
             label.setFont(font);
             label.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.LIGHT_GRAY));
+
+            Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
+                    : ColorAndFontConstants.BACKGROUND_COLOR);
+            label.setBackground(backgroundColor);
+            label.setForeground(table.getForeground());
+
+            return label;
+        }
+    }
+    
+    class CurrencyCenterJustifiedWithRightBorderRenderer extends DefaultTableCellRenderer {
+        private static final long serialVersionUID = 1549545L;
+
+        MultiBitLabel label = new MultiBitLabel("");
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+            label.setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
+            label.setOpaque(true);
+            label.setText((String) value);
+            label.setFont(font);
+            label.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, Color.LIGHT_GRAY));
 
             Color backgroundColor = (row % 2 == 0 ? ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR
                     : ColorAndFontConstants.BACKGROUND_COLOR);
