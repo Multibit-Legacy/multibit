@@ -806,14 +806,17 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 pane.setBackground(table.getSelectionBackground());
                 // outerPanel.setBackground(table.getSelectionBackground());
                 filler.setBackground(table.getSelectionBackground());
+                pane.setBorder(BorderFactory.createMatteBorder(1,1,1,1, table.getSelectionBackground()));
             } else {
                 if (row % 2 == 0) {
                     pane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                    pane.setBorder(BorderFactory.createMatteBorder(1,1,1,1, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
                     outerPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                     filler.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                     outerPanel.setOpaque(true);
                 } else {
                     pane.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
+                    pane.setBorder(BorderFactory.createMatteBorder(1,1,1,1, ColorAndFontConstants.ALTERNATE_TABLE_COLOR));
                     outerPanel.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
                     filler.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
                     pane.setOpaque(true);

@@ -2,6 +2,7 @@ MultiBit release notes.
 
 Version 0.5.8beta
 + Removed splash screen (and help about) image as it was causing a Segmentation Fault on openjdk6 when viewed in 256 colors.
++ Fixed flicky first transaction row
 
 Version 0.4.18
 Bug fixes
