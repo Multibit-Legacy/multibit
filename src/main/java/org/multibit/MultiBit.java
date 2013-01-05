@@ -174,6 +174,8 @@ public class MultiBit {
                         try {
                             UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
                             ColorAndFontConstants.ALTERNATE_TABLE_COLOR = ColorAndFontConstants.SEAGLASS_BLUE;
+                            ColorAndFontConstants.BACKGROUND_COLOR = ColorAndFontConstants.SEAGLASS_BACKGROUND;
+                            ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR = ColorAndFontConstants.SEAGLASS_BACKGROUND;
                             foundTargetLookAndFeel = true;
                         } catch (Exception e) {
                             log.error(e.getClass().getName() + " " + e.getMessage());    

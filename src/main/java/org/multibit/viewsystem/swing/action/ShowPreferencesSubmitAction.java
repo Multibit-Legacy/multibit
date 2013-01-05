@@ -343,7 +343,10 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 } else if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equals(newLookAndFeel)) {
                     UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
-                    ColorAndFontConstants.ALTERNATE_TABLE_COLOR = ColorAndFontConstants.SEAGLASS_BLUE;
+                     ColorAndFontConstants.ALTERNATE_TABLE_COLOR = ColorAndFontConstants.SEAGLASS_BLUE;
+                    ColorAndFontConstants.BACKGROUND_COLOR = ColorAndFontConstants.SEAGLASS_BACKGROUND;
+                    ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR = ColorAndFontConstants.SEAGLASS_BACKGROUND;
+
                 } else {
                     for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                         if (newLookAndFeel.equalsIgnoreCase(info.getName())) {

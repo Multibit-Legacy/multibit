@@ -47,6 +47,7 @@ public class ColorAndFontConstants {
     public static Color ALTERNATE_TABLE_COLOR = new Color(230, 230, 233);
     
     public static Color SEAGLASS_BLUE = new Color(237, 246, 252);
+    public static Color SEAGLASS_BACKGROUND = new Color(249, 249, 252);
     
     public static void init() {
         MULTIBIT_DEFAULT_FONT_NAME =   UIManager.get("Label.font") == null ? Font.DIALOG : ((Font)UIManager.get("Label.font")).getFontName();
