@@ -345,10 +345,12 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             try {
                 if (ShowPreferencesPanel.SYSTEM_LOOK_AND_FEEL.equals(newLookAndFeel)) {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                } else if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equals(newLookAndFeel)) {
-                    UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
-                    seaglass = true;
-                } else {
+                }
+//                } else if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equals(newLookAndFeel)) {
+//                    UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
+//                    seaglass = true;
+//                } 
+                else {
                     for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                         if (newLookAndFeel.equalsIgnoreCase(info.getName())) {
                             UIManager.setLookAndFeel(info.getClassName());

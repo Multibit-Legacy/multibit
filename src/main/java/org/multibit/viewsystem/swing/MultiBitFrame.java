@@ -1170,11 +1170,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             availableBalanceBTCButton.setText(" ");
             availableBalanceFiatButton.setText(" ");
 
-            if (headerPanel != null) {
-                headerPanel.invalidate();
-            }
-            validate();
-            repaint();
+//            if (headerPanel != null) {
+//                headerPanel.invalidate();
+//            }
+//            validate();
+//            repaint();
         } else {
             estimatedBalanceLabelLabel.setText(controller.getLocaliser().getString("multiBitFrame.balanceLabel"));
             BigInteger estimatedBalance = controller.getModel().getActiveWalletEstimatedBalance();
@@ -1196,11 +1196,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 availableBalanceBTCButton.setVisible(false);
                 availableBalanceFiatButton.setVisible(false);
 
-                if (headerPanel != null) {
-                    headerPanel.invalidate();
-                }
-                validate();
-                repaint();
+//                if (headerPanel != null) {
+//                    headerPanel.invalidate();
+//                }
+//                validate();
+//                repaint();
             } else {
                 BigInteger availableToSpend = model.getActiveWalletAvailableBalanceWithBoomerangChange();
                 availableBalanceBTCButton.setText(controller.getLocaliser().bitcoinValueToString(availableToSpend, true, false));
@@ -1218,11 +1218,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 availableBalanceBTCButton.setVisible(true);
                 availableBalanceFiatButton.setVisible(true);
 
-                if (headerPanel != null) {
-                    headerPanel.invalidate();
-                }
-                validate();
-                repaint();
+//                if (headerPanel != null) {
+//                    headerPanel.invalidate();
+//                }
+//                validate();
+//                repaint();
             }
 
             String titleText = localiser.getString("multiBitFrame.title");

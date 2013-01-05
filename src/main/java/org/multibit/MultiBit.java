@@ -168,17 +168,17 @@ public class MultiBit {
                 if (!foundTargetLookAndFeel) {
                     String lookAndFeel = userPreferences.getProperty(MultiBitModel.LOOK_AND_FEEL);
 
-                    if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(lookAndFeel)) {
-                        try {
-                            UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
-                            ColorAndFontConstants.ALTERNATE_TABLE_COLOR = ColorAndFontConstants.SEAGLASS_BLUE;
-                            ColorAndFontConstants.BACKGROUND_COLOR = ColorAndFontConstants.SEAGLASS_BACKGROUND;
-                            ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR = ColorAndFontConstants.SEAGLASS_BACKGROUND;
-                            foundTargetLookAndFeel = true;
-                        } catch (Exception e) {
-                            log.error(e.getClass().getName() + " " + e.getMessage());    
-                        }                     
-                    } else {
+//                    if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(lookAndFeel)) {
+//                        try {
+//                            UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
+//                            ColorAndFontConstants.ALTERNATE_TABLE_COLOR = ColorAndFontConstants.SEAGLASS_BLUE;
+//                            ColorAndFontConstants.BACKGROUND_COLOR = ColorAndFontConstants.SEAGLASS_BACKGROUND;
+//                            ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR = ColorAndFontConstants.SEAGLASS_BACKGROUND;
+//                            foundTargetLookAndFeel = true;
+//                        } catch (Exception e) {
+//                            log.error(e.getClass().getName() + " " + e.getMessage());    
+//                        }                     
+//                    } else {
                         if (lookAndFeel != null && lookAndFeel != "") {
                             for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                                 if (lookAndFeel.equalsIgnoreCase(info.getName())) {
@@ -188,7 +188,7 @@ public class MultiBit {
                                 }
                             }
                         }
-                    }
+                    //}
                 }
                 
                 // Set System look and feel if target not found
