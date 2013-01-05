@@ -499,7 +499,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     /**
      * Update any UI elements from the model (hint that data has changed).
      */
-    public void updateFromModel(boolean blinkEnabled) {   
+    public void updateFromModel(boolean blinkEnabled) { 
+        inactiveBackGroundColor = new Color(Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getRed() - COLOR_DELTA), Math.max(0,
+                ColorAndFontConstants.BACKGROUND_COLOR.getBlue() - COLOR_DELTA), Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getGreen() - COLOR_DELTA));
+
         BigInteger estimatedBalance = perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED);
         String balanceTextToShowBTC = controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false);
         String balanceTextToShowFiat = "";

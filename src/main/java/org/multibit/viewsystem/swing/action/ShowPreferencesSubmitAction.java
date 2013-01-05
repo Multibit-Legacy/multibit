@@ -312,6 +312,9 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         controller.getModel().setUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES, "true");
 
         if (restartTickerTimer) {
+            // Reinitialise the currency converter.
+            CurrencyConverter.INSTANCE.initialise(controller);
+            
             // Cancel any existing timer.
             if (mainFrame.getTickerTimer() != null) {
                 mainFrame.getTickerTimer().cancel();
