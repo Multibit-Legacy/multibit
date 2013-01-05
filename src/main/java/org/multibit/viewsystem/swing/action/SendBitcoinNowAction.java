@@ -33,7 +33,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.SendBitcoinConfirmDialog;
+import org.multibit.viewsystem.swing.view.dialogs.SendBitcoinConfirmDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

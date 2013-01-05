@@ -41,7 +41,7 @@ import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.utils.DateUtils;
-import org.multibit.viewsystem.swing.view.ImportPrivateKeysPanel;
+import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -23,7 +23,7 @@ import javax.swing.ImageIcon;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.DeleteWalletConfirmDialog;
+import org.multibit.viewsystem.swing.view.dialogs.DeleteWalletConfirmDialog;
 
 /**
  * This {@link Action} show the delete wallet confirmation dialog.

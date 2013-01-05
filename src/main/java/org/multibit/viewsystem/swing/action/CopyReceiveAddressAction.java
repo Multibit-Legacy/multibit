@@ -22,7 +22,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.viewsystem.swing.view.ReceiveBitcoinPanel;
+import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
 
 /**
  * This {@link Action} represents the swing copy receive address action

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.dialogs;
 
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -37,6 +37,7 @@ import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextArea;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 import com.google.bitcoin.core.Wallet.BalanceType;
 

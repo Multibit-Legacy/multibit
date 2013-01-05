@@ -22,7 +22,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
-import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 public class CreateNewSendingAddressActionTest extends TestCase {
@@ -35,7 +35,7 @@ public class CreateNewSendingAddressActionTest extends TestCase {
         assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());
 
         // Create a new CreateNewSendingAddressAction to test.
-        ColorAndFontConstants.init();
+        ColorAndFontConstants.init(false);
         FontSizer.INSTANCE.initialise(controller);
         SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(null, controller);
         CreateNewSendingAddressAction createNewSendingAddressAction = (CreateNewSendingAddressAction)sendBitcoinPanel.getCreateNewAddressAction();

@@ -6,7 +6,7 @@ import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.View;
-import org.multibit.viewsystem.swing.view.ShowTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 
 public class UpdateTransactionsTimerTask extends TimerTask {
     private MultiBitController controller;

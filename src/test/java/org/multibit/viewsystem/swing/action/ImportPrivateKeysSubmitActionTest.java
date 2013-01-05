@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.multibit.controller.MultiBitController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
-import org.multibit.viewsystem.swing.view.ImportPrivateKeysPanel;
+import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 public class ImportPrivateKeysSubmitActionTest extends TestCase {

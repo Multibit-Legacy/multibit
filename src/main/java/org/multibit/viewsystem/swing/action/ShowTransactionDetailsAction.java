@@ -23,7 +23,7 @@ import javax.swing.Action;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.WalletTableData;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.TransactionDetailsDialog;
+import org.multibit.viewsystem.swing.view.dialogs.TransactionDetailsDialog;
 
 /**
  * This {@link Action} shows the transaction details dialog

@@ -25,7 +25,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletVersion;
-import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 
 /**
  * This {@link Action} represents an action to create a sending address.

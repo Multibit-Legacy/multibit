@@ -78,9 +78,9 @@ import org.multibit.viewsystem.swing.action.HelpContextAction;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.MultiBitAction;
 import org.multibit.viewsystem.swing.action.OpenWalletAction;
-import org.multibit.viewsystem.swing.view.HelpContentsPanel;
-import org.multibit.viewsystem.swing.view.SendBitcoinConfirmDialog;
-import org.multibit.viewsystem.swing.view.ShowTransactionsPanel;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.dialogs.SendBitcoinConfirmDialog;
+import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 import org.multibit.viewsystem.swing.view.ViewFactory;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -209,8 +209,6 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             im.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.META_DOWN_MASK), DefaultEditorKit.cutAction);
         }
 
-        ColorAndFontConstants.init();
-
         FontSizer.INSTANCE.initialise(controller);
         UIManager.put("ToolTip.font", FontSizer.INSTANCE.getAdjustedDefaultFont());
         
@@ -227,6 +225,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         ToolTipManager.sharedInstance().setDismissDelay(TOOLTIP_DISMISSAL_DELAY);
 
         final MultiBitController finalController = controller;
+
+        boolean seaglass = false;
+        if (controller.getModel() != null) {
+            seaglass = MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(controller.getModel().getUserPreference(MultiBitModel.LOOK_AND_FEEL));
+        }
+        ColorAndFontConstants.init(seaglass);
 
         // TODO Examine how this fits in with the controller onQuit() event
         addWindowListener(new WindowAdapter() {
@@ -900,7 +904,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * Recreate all views.
      */
     public void recreateAllViews(final boolean initUI) {
-        ColorAndFontConstants.init();
+        boolean seaglass = false;
+        if (controller.getModel() != null) {
+            seaglass = MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(controller.getModel().getUserPreference(MultiBitModel.LOOK_AND_FEEL));
+        }
+        ColorAndFontConstants.init(seaglass);
 
         // Close down current view.
         if (controller.getCurrentView() != 0) {

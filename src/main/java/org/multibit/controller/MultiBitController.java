@@ -45,7 +45,7 @@ import org.multibit.platform.listener.GenericQuitResponse;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
-import org.multibit.viewsystem.swing.view.SendBitcoinConfirmDialog;
+import org.multibit.viewsystem.swing.view.dialogs.SendBitcoinConfirmDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

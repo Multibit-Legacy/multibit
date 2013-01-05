@@ -4,4 +4,3 @@ Created-By: Apache Maven
 Built-By: jim
 Build-Jdk: 1.6.0_26
 Main-Class: org.multibit.MultiBitInExecutableJar
-SplashScreen-Image: images/splash.jpg

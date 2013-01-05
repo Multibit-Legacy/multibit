@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.dialogs;
 
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
@@ -36,6 +36,7 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 
 /**
  * The delete sending address confirm dialog.

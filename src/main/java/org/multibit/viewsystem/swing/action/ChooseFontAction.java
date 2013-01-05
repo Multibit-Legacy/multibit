@@ -23,7 +23,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.viewsystem.swing.view.ShowPreferencesPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.components.JFontChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

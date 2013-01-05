@@ -46,6 +46,7 @@ import org.multibit.platform.GenericApplicationFactory;
 import org.multibit.platform.GenericApplicationSpecification;
 import org.multibit.platform.listener.GenericOpenURIEvent;
 import org.multibit.viewsystem.ViewSystem;
+import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.action.MigrateWalletsAction;
@@ -164,18 +165,32 @@ public class MultiBit {
             try {
                 boolean foundTargetLookAndFeel = false;
 
-                String lookAndFeel = userPreferences.getProperty(MultiBitModel.LOOK_AND_FEEL);
-                
-                if (lookAndFeel != null && lookAndFeel != "") {
-                    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                        //log.debug("Found look and feel : " + info.getName());
-                        if (lookAndFeel.equalsIgnoreCase(info.getName())) {
-                            UIManager.setLookAndFeel(info.getClassName());
+                if (!foundTargetLookAndFeel) {
+                    String lookAndFeel = userPreferences.getProperty(MultiBitModel.LOOK_AND_FEEL);
+
+                    if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(lookAndFeel)) {
+                        try {
+                            UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
+                            ColorAndFontConstants.ALTERNATE_TABLE_COLOR = ColorAndFontConstants.SEAGLASS_BLUE;
+                            ColorAndFontConstants.BACKGROUND_COLOR = ColorAndFontConstants.SEAGLASS_BACKGROUND;
+                            ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR = ColorAndFontConstants.SEAGLASS_BACKGROUND;
                             foundTargetLookAndFeel = true;
-                            break;
+                        } catch (Exception e) {
+                            log.error(e.getClass().getName() + " " + e.getMessage());    
+                        }                     
+                    } else {
+                        if (lookAndFeel != null && lookAndFeel != "") {
+                            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                                if (lookAndFeel.equalsIgnoreCase(info.getName())) {
+                                    UIManager.setLookAndFeel(info.getClassName());
+                                    foundTargetLookAndFeel = true;
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
+                
                 // Set System look and feel if target not found
                 if (!foundTargetLookAndFeel) {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

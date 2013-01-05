@@ -38,7 +38,7 @@ import javax.swing.SwingConstants;
 import org.multibit.controller.MultiBitController;
 import org.multibit.qrcode.QRCodeGenerator;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.AbstractTradePanel;
+import org.multibit.viewsystem.swing.view.panels.AbstractTradePanel;
 
 /**
  * This {@link Action} displays a QR code zoomed to the whole display

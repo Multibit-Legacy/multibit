@@ -36,6 +36,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.TransferHandler;
 
+import org.multibit.viewsystem.swing.view.panels.AbstractTradePanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

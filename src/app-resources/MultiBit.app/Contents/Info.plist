@@ -7,7 +7,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>org.multibit</string>
 	<key>CFBundleVersion</key>
-	<string>0.3.0-SNAPSHOT</string>
+	<string>0.4.x</string>
 	<key>CFBundleAllowMixedLocalizations</key>
 	<string>true</string>
 	<key>CFBundleExecutable</key>
@@ -23,9 +23,9 @@
 	<key>CFBundleIconFile</key>
 	<string>multibit.icns</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright Multibit developers 2012</string>
+	<string>Copyright Multibit developers 2013</string>
 	<key>CFBundleGetInfoString</key>
-	<string>MultiBit 0.3.0-SNAPSHOT, © 2012 MultiBit developers</string>
+	<string>MultiBit 0.4.x, © 2013 MultiBit developers</string>
 	<key>CFBundleDisplayName</key>
 	<string>MultiBit</string>
 	<key>Java</key>

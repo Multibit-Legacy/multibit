@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -26,12 +26,9 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.SystemColor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
-import java.math.BigDecimal;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -50,7 +47,6 @@ import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
@@ -71,8 +67,6 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
-
-import com.google.bitcoin.core.Utils;
 
 /**
  * The show preferences view.
@@ -183,6 +177,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     /**
      * Update preferences panel.
      */
+    @Override
     public void displayView() {
         originalShowTicker = !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW));
         showTicker.setSelected(originalShowTicker);
@@ -764,9 +759,10 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
                 }
             }
         }
-        //lookAndFeelComboBox.addItem(MultiBitModel.SEA_GLASS_LOOK_AND_FEEL);
-        //if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
-        //    lookAndFeelComboBox.setSelectedItem(MultiBitModel.SEA_GLASS_LOOK_AND_FEEL);
+        lookAndFeelComboBox.addItem(MultiBitModel.SEA_GLASS_LOOK_AND_FEEL);
+        if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
+            lookAndFeelComboBox.setSelectedItem(MultiBitModel.SEA_GLASS_LOOK_AND_FEEL);
+        }
         if (originalLookAndFeel == null || originalLookAndFeel.equals("") || SYSTEM_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
             lookAndFeelComboBox.setSelectedItem(localisedSystemLookAndFeelName);
         }
@@ -845,6 +841,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         showBitcoinConvertedToFiat.addItemListener(
                 new ItemListener() {
+            @Override
                     public void itemStateChanged(ItemEvent e) {
                         boolean selectedChange = (e.getStateChange() == ItemEvent.SELECTED);
                         boolean unSelectedChange = (e.getStateChange() == ItemEvent.DESELECTED);
@@ -1348,6 +1345,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         }
 
+        @Override
         public void itemStateChanged(ItemEvent e) {
             if (e.getSource().equals(useDefaultLocale)) {
                 languageComboBox.setEnabled(false);
@@ -1362,6 +1360,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
         }
 
+        @Override
         public void itemStateChanged(ItemEvent e) {
             enableTickerSecondRow(showSecondRowCheckBox.isSelected());
         }
@@ -1410,6 +1409,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
          * This method finds the image and text corresponding to the selected
          * value and returns the label, set up to display the text and image.
          */
+        @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             // Get the selected index. (The index param isn't
             // always valid, so just use the value.)

@@ -39,7 +39,7 @@ import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.ShowPreferencesPanel;
+import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 
@@ -337,10 +337,14 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             controller.fireDataStructureChanged();
         }
         
+        boolean seaglass = false;
         if (lookAndFeelHasChanged) {
             try {
                 if (ShowPreferencesPanel.SYSTEM_LOOK_AND_FEEL.equals(newLookAndFeel)) {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } else if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equals(newLookAndFeel)) {
+                    UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
+                    seaglass = true;
                 } else {
                     for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                         if (newLookAndFeel.equalsIgnoreCase(info.getName())) {
@@ -359,7 +363,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 e.printStackTrace();
             }
 
-            ColorAndFontConstants.init();
+            ColorAndFontConstants.init(seaglass);
             controller.fireDataStructureChanged();
             SwingUtilities.updateComponentTreeUI(mainFrame);
         }

@@ -27,8 +27,8 @@ import org.multibit.model.WalletInfo;
 import org.multibit.model.WalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.view.AddressBookTableModel;
-import org.multibit.viewsystem.swing.view.DeleteSendingAddressConfirmDialog;
-import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
+import org.multibit.viewsystem.swing.view.dialogs.DeleteSendingAddressConfirmDialog;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

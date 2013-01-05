@@ -50,7 +50,7 @@ import org.multibit.utils.ImageLoader;
 import org.multibit.utils.VersionComparator;
 import org.multibit.viewsystem.View;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.HelpContentsPanel;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitDialog;
 import org.slf4j.Logger;

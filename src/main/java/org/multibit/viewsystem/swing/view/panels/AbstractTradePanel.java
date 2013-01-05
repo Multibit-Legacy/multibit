@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.panels;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -95,6 +95,8 @@ import org.multibit.viewsystem.swing.action.CopyQRCodeImageAction;
 import org.multibit.viewsystem.swing.action.MnemonicUtil;
 import org.multibit.viewsystem.swing.action.PasteSwatchAction;
 import org.multibit.viewsystem.swing.action.ZoomAction;
+import org.multibit.viewsystem.swing.view.AddressBookTableModel;
+import org.multibit.viewsystem.swing.view.ImageSelection;
 import org.multibit.viewsystem.swing.view.components.DashedBorder;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;

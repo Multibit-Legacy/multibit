@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -52,6 +52,7 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ExportPrivateKeysSubmitAction;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
+import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;

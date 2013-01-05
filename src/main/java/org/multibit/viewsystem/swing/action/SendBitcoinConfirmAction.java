@@ -23,8 +23,8 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.dataproviders.BitcoinFormDataProvider;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.SendBitcoinConfirmDialog;
-import org.multibit.viewsystem.swing.view.ValidationErrorDialog;
+import org.multibit.viewsystem.swing.view.dialogs.SendBitcoinConfirmDialog;
+import org.multibit.viewsystem.swing.view.dialogs.ValidationErrorDialog;
 
 /**
  * This {@link Action} shows the send bitcoin confirm dialog or validation dialog on an attempted spend.

@@ -22,8 +22,8 @@ import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.DeleteSendingAddressConfirmDialog;
-import org.multibit.viewsystem.swing.view.SendBitcoinPanel;
+import org.multibit.viewsystem.swing.view.dialogs.DeleteSendingAddressConfirmDialog;
+import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 
 /**
  * This {@link Action} show the delete sending address confirmation dialog.

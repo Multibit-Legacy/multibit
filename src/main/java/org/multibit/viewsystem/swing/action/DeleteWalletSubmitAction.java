@@ -32,7 +32,7 @@ import org.multibit.file.WalletVersionException;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletVersion;
-import org.multibit.viewsystem.swing.view.DeleteWalletConfirmDialog;
+import org.multibit.viewsystem.swing.view.dialogs.DeleteWalletConfirmDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

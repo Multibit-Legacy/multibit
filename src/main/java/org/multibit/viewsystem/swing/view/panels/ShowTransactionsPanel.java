@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem.swing.view;
+package org.multibit.viewsystem.swing.view.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -721,15 +721,15 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     }
     
     class DecimalAlignRenderer implements TableCellRenderer {
-        private final TabStop tabStopRight = new TabStop(40, TabStop.ALIGN_RIGHT, TabStop.LEAD_NONE);        
-        private final TabStop tabStopLeft = new TabStop(41, TabStop.ALIGN_LEFT, TabStop.LEAD_NONE);        
+        private final TabStop tabStopRight = new TabStop(40, TabStop.ALIGN_RIGHT, TabStop.LEAD_NONE);
+        private final TabStop tabStopLeft = new TabStop(41, TabStop.ALIGN_LEFT, TabStop.LEAD_NONE);
 
-        private final TabSet tabSet = new TabSet(new TabStop[] { tabStopRight, tabStopLeft});
+        private final TabSet tabSet = new TabSet(new TabStop[] { tabStopRight, tabStopLeft });
 
         private AttributeSet attributeSet;
         private JTextPane pane;
         private Style style;
-            
+
         public DecimalAlignRenderer() {
             pane = new JTextPane();
 
@@ -740,18 +740,18 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
             pane.setOpaque(true);
             pane.setBorder(BorderFactory.createEmptyBorder());
-         }
+        }
 
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                    boolean hasFocus, int row, int column) {  
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
             JPanel outerPanel = new JPanel(new BorderLayout());
             outerPanel.setOpaque(true);
             outerPanel.setBorder(BorderFactory.createEmptyBorder());
 
             JLabel filler = new JLabel();
             filler.setOpaque(true);
-            //filler.setBorder(BorderFactory.createLineBorder(Color.RED));
-            
+
             if (value == null) {
                 pane.setText("\t" + controller.getLocaliser().bitcoinValueToString(BigInteger.ZERO, false, false));
             } else {
@@ -770,43 +770,47 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 if (split == null) {
                     pane.setText("");
                 } else if (split.length == 1) {
-                    // Integer amount - no decimal point. Add a space to pad it left.
-                    pane.setText("\t" + split[0] + " ");   
+                    // Integer amount - no decimal point. Add a space to pad it
+                    // left.
+                    pane.setText("\t" + split[0] + " ");
                 } else {
-                    pane.setText("\t" + split[0] + splitChar + "\t" + split[1]);
+                    pane.setText("\t" + split[0] + splitChar + "\t" + split[1] + " ");
                 }
-                //log.debug("pane.getText = " + pane.getText());
-            }            
- 
-             if ((value.toString()).indexOf("-") > -1) {
+                // log.debug("pane.getText = " + pane.getText());
+            }
+
+            if ((value.toString()).indexOf("-") > -1) {
                 // debit
                 if (isSelected) {
                     pane.setForeground(table.getSelectionForeground());
                 } else {
-                    pane.setForeground(ColorAndFontConstants.DEBIT_FOREGROUND_COLOR);                    
+                    pane.setForeground(ColorAndFontConstants.DEBIT_FOREGROUND_COLOR);
                 }
             } else {
                 // credit
                 if (isSelected) {
-                    pane.setForeground(table.getSelectionForeground()); 
+                    pane.setForeground(table.getSelectionForeground());
                 } else {
-                    pane.setForeground(ColorAndFontConstants.CREDIT_FOREGROUND_COLOR);                     
+                    pane.setForeground(ColorAndFontConstants.CREDIT_FOREGROUND_COLOR);
                 }
             }
-            
+
             if (isSelected) {
                 selectedRow = row;
                 pane.setBackground(table.getSelectionBackground());
-                //outerPanel.setBackground(table.getSelectionBackground());
+                // outerPanel.setBackground(table.getSelectionBackground());
                 filler.setBackground(table.getSelectionBackground());
+                pane.setBorder(BorderFactory.createMatteBorder(1,1,1,1, table.getSelectionBackground()));
             } else {
                 if (row % 2 == 0) {
                     pane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                    pane.setBorder(BorderFactory.createMatteBorder(1,1,1,1, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
                     outerPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                     filler.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                     outerPanel.setOpaque(true);
                 } else {
                     pane.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
+                    pane.setBorder(BorderFactory.createMatteBorder(1,1,1,1, ColorAndFontConstants.ALTERNATE_TABLE_COLOR));
                     outerPanel.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
                     filler.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
                     pane.setOpaque(true);
@@ -814,43 +818,22 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                     filler.setOpaque(true);
                 }
             }
-            
+
             StyleConstants.setForeground(style, pane.getForeground());
             if (row % 2 == 0 || isSelected) {
                 StyleConstants.setBackground(style, pane.getBackground());
             } else {
                 StyleConstants.setBackground(style, ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
             }
-            StyleConstants.setBold(style, false); 
+            StyleConstants.setBold(style, false);
             StyleConstants.setFontSize(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getSize());
             StyleConstants.setFontFamily(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getFontName());
-                       
+
             pane.getStyledDocument().setCharacterAttributes(0, pane.getText().length(), pane.getStyle("number"), true);
-            
-            GridBagConstraints constraints = new GridBagConstraints();
-            constraints.fill = GridBagConstraints.HORIZONTAL;
-            constraints.gridx = 0;
-            constraints.gridy = 0;
-            constraints.weightx = 1;
-            constraints.weighty = 1;
-            constraints.gridwidth = 1;
-            constraints.gridheight = 1;
-            constraints.anchor = GridBagConstraints.ABOVE_BASELINE_LEADING;
+
             outerPanel.add(pane, BorderLayout.LINE_START);
-                                  
-            constraints.fill = GridBagConstraints.BOTH;
-            constraints.gridx = 0;
-            constraints.gridy = 0;
-            constraints.weightx = 1;
-            constraints.weighty = 1;
-            constraints.gridwidth = 1;
-            constraints.gridheight = 1;
-            constraints.anchor = GridBagConstraints.BASELINE_TRAILING;
             outerPanel.add(filler, BorderLayout.CENTER);
-   
-            outerPanel.invalidate();
-            outerPanel.validate();
-            outerPanel.repaint();
+            outerPanel.doLayout();
             return outerPanel;
         }
     }
