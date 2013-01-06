@@ -833,7 +833,11 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
             outerPanel.add(pane, BorderLayout.LINE_START);
             outerPanel.add(filler, BorderLayout.CENTER);
-            outerPanel.doLayout();
+            
+            // Avoid flicker of first row by doing layout.
+            if (row ==0) {
+                outerPanel.doLayout();
+            }
             return outerPanel;
         }
     }
