@@ -35,7 +35,7 @@ public class CreateNewSendingAddressActionTest extends TestCase {
         assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());
 
         // Create a new CreateNewSendingAddressAction to test.
-        ColorAndFontConstants.init(false);
+        ColorAndFontConstants.init();
         FontSizer.INSTANCE.initialise(controller);
         SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(null, controller);
         CreateNewSendingAddressAction createNewSendingAddressAction = (CreateNewSendingAddressAction)sendBitcoinPanel.getCreateNewAddressAction();

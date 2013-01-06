@@ -225,12 +225,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         ToolTipManager.sharedInstance().setDismissDelay(TOOLTIP_DISMISSAL_DELAY);
 
         final MultiBitController finalController = controller;
-
-        boolean seaglass = false;
-        if (controller.getModel() != null) {
-            seaglass = MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(controller.getModel().getUserPreference(MultiBitModel.LOOK_AND_FEEL));
-        }
-        ColorAndFontConstants.init(seaglass);
+        ColorAndFontConstants.init();
 
         // TODO Examine how this fits in with the controller onQuit() event
         addWindowListener(new WindowAdapter() {
@@ -904,11 +899,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      * Recreate all views.
      */
     public void recreateAllViews(final boolean initUI) {
-        boolean seaglass = false;
-        if (controller.getModel() != null) {
-            seaglass = MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(controller.getModel().getUserPreference(MultiBitModel.LOOK_AND_FEEL));
-        }
-        ColorAndFontConstants.init(seaglass);
+        ColorAndFontConstants.init();
 
         // Close down current view.
         if (controller.getCurrentView() != 0) {

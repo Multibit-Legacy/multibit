@@ -340,16 +340,11 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             controller.fireDataStructureChanged();
         }
         
-        boolean seaglass = false;
         if (lookAndFeelHasChanged) {
             try {
-                if (ShowPreferencesPanel.SYSTEM_LOOK_AND_FEEL.equals(newLookAndFeel)) {
+                if (MultiBitModel.SYSTEM_LOOK_AND_FEEL.equals(newLookAndFeel)) {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 }
-//                } else if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equals(newLookAndFeel)) {
-//                    UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
-//                    seaglass = true;
-//                } 
                 else {
                     for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                         if (newLookAndFeel.equalsIgnoreCase(info.getName())) {
@@ -368,7 +363,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                 e.printStackTrace();
             }
 
-            ColorAndFontConstants.init(seaglass);
+            ColorAndFontConstants.init();
             controller.fireDataStructureChanged();
             SwingUtilities.updateComponentTreeUI(mainFrame);
         }

@@ -154,7 +154,6 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     private String originalLookAndFeel;
     private JComboBox lookAndFeelComboBox;
     private String localisedSystemLookAndFeelName;
-    public static final String SYSTEM_LOOK_AND_FEEL = "system"; // as it appears in multibit.properties
 
     private Font selectedFont;
 
@@ -759,11 +758,8 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
                 }
             }
         }
-//        lookAndFeelComboBox.addItem(MultiBitModel.SEA_GLASS_LOOK_AND_FEEL);
-//        if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
-//            lookAndFeelComboBox.setSelectedItem(MultiBitModel.SEA_GLASS_LOOK_AND_FEEL);
-//        }
-        if (originalLookAndFeel == null || originalLookAndFeel.equals("") || SYSTEM_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
+
+        if (originalLookAndFeel == null || originalLookAndFeel.equals("") || MultiBitModel.SYSTEM_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
             lookAndFeelComboBox.setSelectedItem(localisedSystemLookAndFeelName);
         }
         
@@ -1738,7 +1734,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     public String getNewLookAndFeel() {
         String lookAndFeel = (String)lookAndFeelComboBox.getSelectedItem();
         if (localisedSystemLookAndFeelName.equals(lookAndFeel)) {
-            lookAndFeel = SYSTEM_LOOK_AND_FEEL;
+            lookAndFeel = MultiBitModel.SYSTEM_LOOK_AND_FEEL;
         }
         return lookAndFeel;
     }

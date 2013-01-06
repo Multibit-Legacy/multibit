@@ -40,7 +40,7 @@ public class DeleteSendingAddressActionTest extends TestCase {
         // Create a new wallet and put it in the model as the active wallet.
         ActionTestUtils.createNewActiveWallet(controller, "testDeleteSendingAddress");
 
-        ColorAndFontConstants.init(false);
+        ColorAndFontConstants.init();
         FontSizer.INSTANCE.initialise(controller);
         SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(null, controller);
         DeleteSendingAddressSubmitAction deleteSubmitAction = new DeleteSendingAddressSubmitAction(controller, sendBitcoinPanel, null);

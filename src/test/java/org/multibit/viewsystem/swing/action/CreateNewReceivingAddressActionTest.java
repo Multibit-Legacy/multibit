@@ -35,7 +35,7 @@ public class CreateNewReceivingAddressActionTest extends TestCase {
         assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());
 
         // Create a new CreateNewReceivingAddressAction to test.
-        ColorAndFontConstants.init(false);
+        ColorAndFontConstants.init();
         FontSizer.INSTANCE.initialise(controller);
         ReceiveBitcoinPanel receiveBitcoinPanel = new ReceiveBitcoinPanel(null, controller);
         CreateNewReceivingAddressAction createNewReceivingAddressAction = receiveBitcoinPanel.getCreateNewReceivingAddressAction();

@@ -35,7 +35,7 @@ public class SendBitcoinConfirmActionTest extends TestCase {
         assertTrue("There was an active wallet when there should not be", controller.getModel().thereIsNoActiveWallet());
 
         // Create a new SendBitcoinConfirmAction to test.
-        ColorAndFontConstants.init(false);
+        ColorAndFontConstants.init();
         FontSizer.INSTANCE.initialise(controller);
         SendBitcoinPanel sendBitcoinPanel = new SendBitcoinPanel(null, controller);
         SendBitcoinConfirmAction sendBitcoinConfirmAction = sendBitcoinPanel.getSendBitcoinConfirmAction();

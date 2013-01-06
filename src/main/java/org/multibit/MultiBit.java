@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
+import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -163,37 +164,18 @@ public class MultiBit {
             
             log.debug("Setting look and feel");
             try {
-                boolean foundTargetLookAndFeel = false;
-
-                if (!foundTargetLookAndFeel) {
-                    String lookAndFeel = userPreferences.getProperty(MultiBitModel.LOOK_AND_FEEL);
-
-//                    if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(lookAndFeel)) {
-//                        try {
-//                            UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
-//                            ColorAndFontConstants.ALTERNATE_TABLE_COLOR = ColorAndFontConstants.SEAGLASS_BLUE;
-//                            ColorAndFontConstants.BACKGROUND_COLOR = ColorAndFontConstants.SEAGLASS_BACKGROUND;
-//                            ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR = ColorAndFontConstants.SEAGLASS_BACKGROUND;
-//                            foundTargetLookAndFeel = true;
-//                        } catch (Exception e) {
-//                            log.error(e.getClass().getName() + " " + e.getMessage());    
-//                        }                     
-//                    } else {
-                        if (lookAndFeel != null && lookAndFeel != "") {
-                            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                                if (lookAndFeel.equalsIgnoreCase(info.getName())) {
-                                    UIManager.setLookAndFeel(info.getClassName());
-                                    foundTargetLookAndFeel = true;
-                                    break;
-                                }
+                String lookAndFeel = userPreferences.getProperty(MultiBitModel.LOOK_AND_FEEL);
+ 
+                // No need to load look and feel if system - will be used by default.
+                if (!"system".equalsIgnoreCase(lookAndFeel)) {
+                    if (lookAndFeel != null && lookAndFeel != "") {
+                        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                            if (lookAndFeel.equalsIgnoreCase(info.getName())) {
+                                UIManager.setLookAndFeel(info.getClassName());
+                                break;
                             }
                         }
-                    //}
-                }
-                
-                // Set System look and feel if target not found
-                if (!foundTargetLookAndFeel) {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    }
                 }
             } catch (UnsupportedLookAndFeelException e) {
                 // carry on
