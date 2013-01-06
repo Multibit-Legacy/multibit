@@ -48,10 +48,3 @@ singleConnectionNode=<node to connect to>
 
 The node can be specified as either a domain name (www.myNode.com) or an IP address.
 
-Show Merchant Menu
-==================
-MultiBit works with a sister project called MultiBit Merchant (see https://github.com/gary-rowe/MultiBitMerchant)
-which offers specialised features suitable for merchants. To activate these features within the MultiBit client
-add the following property into multibit.properties:
-
-showMerchantMenu=true

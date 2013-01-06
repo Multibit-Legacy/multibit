@@ -1,10 +1,10 @@
 MultiBit release notes.
 
-Version 0.4.18
+6th Jan 2013 Version 0.4.18
 Bug fixes
 + Issue 63 fixed (default fee of 1 BTC for comma decimal separator languages).
 + Removed splash screen (and help about) image as it was causing a Segmentation Fault on openjdk6 when viewed in 256 colors.
-+ Fixed flicky first transaction row
++ Fixed flickery first transaction row
 
 
 17 Dec 2012 Version 0.4.17

@@ -18,12 +18,14 @@ Baltar              - Polish
 Beetle              - Russian
 bitcoin.hu          - Hungarian
 bitcoinspot         - Dutch
+blackarrow          - Hindi
 btctalk             - Persian
 corentingc          - French
 corn3               - Portuguese
 CD1                 - Dutch
 D4CH                - Danish
 damnek              - Dutch
+darpho              - Spanish
 dr-nix              - Dutch
 druhy               - Slovak, French, German
 DutchBrat           - Dutch
@@ -87,6 +89,7 @@ Technomage          - Finnish
 teknomunk           - Japanese
 tengo               - Russian
 tesla               - Russian
+thaven              - Dutch
 tpantlik            - Czech
 viboracecata        - Chinese Simplified
 welyoe              - Bahasa Indonesia

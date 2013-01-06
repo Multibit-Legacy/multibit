@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.view.panels;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.FontMetrics;
@@ -203,7 +204,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         if (ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()).isLeftToRight()) {
             table.getColumnModel().getColumn(2).setCellRenderer(new LeadingJustifiedRenderer());
         } else {
-            table.getColumnModel().getColumn(2).setCellRenderer(new TrailingJustifiedRenderer());
+            table.getColumnModel().getColumn(2).setCellRenderer(new TrailingJustifiedStringRenderer());
         }
 
         // Amount decimal aligned
@@ -238,7 +239,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                     fontMetrics.stringWidth("000.0000"));
             tableColumn.setPreferredWidth(amountFiatWidth);
            
-            table.getColumnModel().getColumn(4).setCellRenderer(new TrailingJustifiedRenderer());
+            table.getColumnModel().getColumn(4).setCellRenderer(new TrailingJustifiedNumericRenderer());
         }
 
         // Row sorter.
@@ -585,12 +586,12 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         }    
     }
 
-    class TrailingJustifiedRenderer extends DefaultTableCellRenderer {
+    class TrailingJustifiedNumericRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
         MultiBitLabel label;
 
-        public TrailingJustifiedRenderer() {
+        public TrailingJustifiedNumericRenderer() {
             label = new MultiBitLabel("");
         }
         
@@ -633,6 +634,45 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         }
     }
 
+    class TrailingJustifiedStringRenderer extends DefaultTableCellRenderer {
+        private static final long serialVersionUID = 1549545L;
+
+        MultiBitLabel label;
+
+        public TrailingJustifiedStringRenderer() {
+            label = new MultiBitLabel("");
+        }
+        
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
+            label.setHorizontalAlignment(SwingConstants.TRAILING);
+            label.setOpaque(true);
+            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
+
+            label.setText(value + SPACER);
+
+            if (isSelected) {
+                label.setForeground(table.getSelectionForeground());
+            } else {
+                label.setForeground(Color.BLACK);
+            }
+
+            if (isSelected) {
+                selectedRow = row;
+                label.setBackground(table.getSelectionBackground());
+            } else {
+                if (row % 2 == 0) {
+                    label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                } else {
+                    label.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
+                    label.setOpaque(true);
+                }
+            }
+
+            return label;
+        }
+    }
+    
     class TrailingJustifiedDateRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 1549545L;
 
