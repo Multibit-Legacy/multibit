@@ -51,6 +51,7 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.action.MigrateWalletsAction;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -158,9 +159,6 @@ public class MultiBit {
             log.debug("Creating model");
             @SuppressWarnings("unused")
             MultiBitModel model = new MultiBitModel(controller, userPreferences);
-
-            // Initialise currency converter.
-            CurrencyConverter.INSTANCE.initialise(finalController);
             
             log.debug("Setting look and feel");
             try {
@@ -186,6 +184,11 @@ public class MultiBit {
             } catch (IllegalAccessException e) {
                 // carry on
             }
+
+            // Initialise singletons.
+            ColorAndFontConstants.init();
+            FontSizer.INSTANCE.initialise(controller);
+            CurrencyConverter.INSTANCE.initialise(finalController);
 
             log.debug("Creating views");
             swingViewSystem = new MultiBitFrame(controller, genericApplication, controller.getCurrentView());
@@ -363,6 +366,7 @@ public class MultiBit {
             
             log.error("An unexpected error caused MultiBit to quit.");
             log.error("The error was '" + e.getClass().getCanonicalName() + " " + e.getMessage() + "'");
+            e.printStackTrace();
             log.error("Please read http://multibit.org/help_troubleshooting.html for help on troubleshooting.");
             
             // Try saving any dirty wallets.
