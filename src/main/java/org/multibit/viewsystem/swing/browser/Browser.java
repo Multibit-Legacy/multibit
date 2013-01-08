@@ -33,18 +33,20 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Browser extends javax.swing.JEditorPane {
     private static final long serialVersionUID = 1L;
+
+    private Logger log = LoggerFactory.getLogger(Browser.class);
 
     private String loadingMessage;
     
     private String currentHref;
     
     private boolean loading = false;
-    
-    private boolean loadedOkAtConstruction;
-    
+     
     private MultiBitFrame mainFrame;
     
     public Browser(MultiBitController controller, MultiBitFrame mainFrame, String currentHref) {
@@ -52,8 +54,6 @@ public class Browser extends javax.swing.JEditorPane {
         
         this.currentHref = currentHref;
         this.mainFrame = mainFrame;
-
-        loadedOkAtConstruction = false;
 
         try {
             if (mainFrame != null) {
@@ -89,11 +89,12 @@ public class Browser extends javax.swing.JEditorPane {
             Document doc = kit.createDefaultDocument();
             setDocument(doc);
 
-            setPage(new URL(currentHref));
-            loadedOkAtConstruction = true;
+            log.debug("Trying to load '" + currentHref + "'...");
+            Message message = new Message(getLoadingMessage(currentHref, loadingMessage), true);
+            MessageManager.INSTANCE.addMessage(message);
+            //setPage(new URL(currentHref));
+            getUrlContentInBackground(this, new URL(currentHref));
         } catch (MalformedURLException e) {
-            MessageManager.INSTANCE.addMessage(new Message(e.getClass().getCanonicalName() + " " + e.getMessage()));         
-        } catch (IOException e) {
             MessageManager.INSTANCE.addMessage(new Message(e.getClass().getCanonicalName() + " " + e.getMessage()));         
         } catch (Exception ex) { 
             Message message = new Message("Cannot load page: " + currentHref + " " + ex.getMessage(), true);
@@ -211,9 +212,5 @@ public class Browser extends javax.swing.JEditorPane {
 
     public boolean isLoading() {
         return loading;
-    }
-
-    public boolean wasLoadedOkAtConstruction() {
-        return loadedOkAtConstruction;
     }
 }

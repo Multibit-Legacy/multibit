@@ -80,7 +80,6 @@ public class HelpContentsPanel extends JPanel implements View {
         
         mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         SwingUtilities.invokeLater(new Runnable() {
-
             @Override
             public void run() {
                 browser = new Browser(finalController, finalMainFrame, HELP_BASE_URL + helpContext);
@@ -92,14 +91,12 @@ public class HelpContentsPanel extends JPanel implements View {
                 scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
                 add(scrollPane, BorderLayout.CENTER);          
             }
-            
         });
-      
     }
     
 
     public static String createMultilineTooltipText(String[] toolTips) {
-        // multiline tool tip text
+        // Multiline tool tip text.
         String toolTipText = "<html><font face=\"sansserif\">";
 
         if (toolTips != null) {
@@ -127,7 +124,7 @@ public class HelpContentsPanel extends JPanel implements View {
         }
         
         if (browser != null) {
-            if (!firstTimeLoaded || (firstTimeLoaded && !browser.wasLoadedOkAtConstruction())) {
+            if (!firstTimeLoaded || (firstTimeLoaded && !browser.isLoading())) {
                   browser.visit(HELP_BASE_URL + helpContext);
             }
         }
