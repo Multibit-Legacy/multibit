@@ -53,10 +53,9 @@ public class TickerTimerTask extends TimerTask {
     private List<CurrencyPair> exchangeSymbols;
 
     /**
-     * Constructs the object, sets the string to be output in function run().
+     * Constructs the TickerTimerTask and initialises currencies of interest.
      */
     public TickerTimerTask(MultiBitController controller, MultiBitFrame mainFrame) {
-    	
         this.controller = controller;
         this.mainFrame = mainFrame;
 
@@ -76,55 +75,60 @@ public class TickerTimerTask extends TimerTask {
 
 
     /**
-     * When the timer executes, this code is run.
+     * When the timer executes, get the exchange data and pass to the CurrencyConverter, which notifies parties of interest.
      */
     @Override
     public void run() {
         try {
             // Create exchange.
-            synchronized (this) {
+            synchronized(this) {
                 if (mtGox == null) {
                     log.debug("mtGox is null ... creating exchange ...");
                     createExchange();
                     log.debug("... done. mtGox exchange = " + mtGox);
                 }
             }
-
+            
             if (marketDataService != null) {
                 if (exchangeSymbols != null) {
-                    for (CurrencyPair loopSymbolPair : exchangeSymbols) {
-                        // Get symbol ticker if it is one of the currencies we are interested in.
-                        // (This is to save hitting the server for every currency).
-                        boolean getItFromTheServer = false;
-                        String[] currenciesWeAreInterestedIn = controller.getModel().getExchangeData()
-                                .getCurrenciesWeAreInterestedIn();
-
-                        String currencyConverterCurrency = currenciesWeAreInterestedIn[0];
-
-                        if (currenciesWeAreInterestedIn != null) {
-                            for (int i = 0; i < currenciesWeAreInterestedIn.length; i++) {
-                                if (loopSymbolPair.counterCurrency.equals(currenciesWeAreInterestedIn[i])) {
-                                    getItFromTheServer = true;
-
-                                    break;
+                    // Only get data from server if ticker is being shown or if currency conversion is switched on.
+                    // (This is to minimise the load on the remote servers).
+                    if (!Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW)) ||
+                            !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT))) {
+                        for (CurrencyPair loopSymbolPair : exchangeSymbols) {
+                            // Get symbol ticker if it is one of the currencies
+                            // we are interested in.
+                            // (This is to save hitting the server for every currency).
+                            boolean getItFromTheServer = false;
+                            String[] currenciesWeAreInterestedIn = controller.getModel().getExchangeData()
+                                    .getCurrenciesWeAreInterestedIn();
+                            
+                            String currencyConverterCurrency = currenciesWeAreInterestedIn[0];
+                            
+                            if (currenciesWeAreInterestedIn != null) {
+                                for (int i = 0; i < currenciesWeAreInterestedIn.length; i++) {
+                                    if (loopSymbolPair.counterCurrency.equals(currenciesWeAreInterestedIn[i])) {
+                                        getItFromTheServer = true;
+                                        
+                                        break;
+                                    }
                                 }
-                            }
-                            if (getItFromTheServer) {
-                                Ticker loopTicker = marketDataService.getTicker(loopSymbolPair.baseCurrency,
-                                        loopSymbolPair.counterCurrency);
-                                BigMoney last = loopTicker.getLast();
-                                BigMoney bid = loopTicker.getBid();
-                                BigMoney ask = loopTicker.getAsk();
+                                if (getItFromTheServer) {
+                                    Ticker loopTicker = marketDataService.getTicker(loopSymbolPair.baseCurrency,
+                                            loopSymbolPair.counterCurrency);
+                                    BigMoney last = loopTicker.getLast();
+                                    BigMoney bid = loopTicker.getBid();
+                                    BigMoney ask = loopTicker.getAsk();
 
-                                controller.getModel().getExchangeData().setLastPrice(loopSymbolPair.counterCurrency, last);
-                                controller.getModel().getExchangeData().setLastBid(loopSymbolPair.counterCurrency, bid);
-                                controller.getModel().getExchangeData().setLastAsk(loopSymbolPair.counterCurrency, ask);
-
-                                if (currencyConverterCurrency.equals(loopSymbolPair.counterCurrency)) {
-                                    // Put the exchange rate into the currency
-                                    // converter.
-                                    CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(currencyConverterCurrency));
-                                    CurrencyConverter.INSTANCE.setRate(last.getAmount());
+                                    controller.getModel().getExchangeData().setLastPrice(loopSymbolPair.counterCurrency, last);
+                                    controller.getModel().getExchangeData().setLastBid(loopSymbolPair.counterCurrency, bid);
+                                    controller.getModel().getExchangeData().setLastAsk(loopSymbolPair.counterCurrency, ask);
+                                    
+                                    if (currencyConverterCurrency.equals(loopSymbolPair.counterCurrency)) {
+                                        // Put the exchange rate into the currency converter.
+                                        CurrencyConverter.INSTANCE.setCurrencyUnit(CurrencyUnit.of(currencyConverterCurrency));
+                                        CurrencyConverter.INSTANCE.setRate(last.getAmount());
+                                    }
                                 }
                             }
                         }
@@ -136,8 +140,8 @@ public class TickerTimerTask extends TimerTask {
         } catch (Exception e) {
             // Stop any xchange errors percolating out.
             log.error(e.getClass().getName() + " " + e.getMessage());
-            if (e.getCause() != null) {
-                log.error(e.getCause().getClass().getName() + " " + e.getCause().getMessage());
+            if (e.getCause() != null)  {
+                log.error(e.getCause().getClass().getName() + " " + e.getCause().getMessage());                
             }
         }
     }
