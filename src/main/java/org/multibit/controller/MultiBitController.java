@@ -33,7 +33,6 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
 import org.multibit.model.WalletBusyListener;
-import org.multibit.network.CacheManager;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.listener.GenericAboutEvent;
 import org.multibit.platform.listener.GenericAboutEventListener;
@@ -120,9 +119,6 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
     private volatile URI rawBitcoinURI = null;
 
     private volatile boolean applicationStarting = true;
-
-    private boolean useCacheManagerDetermined = false;
-    private boolean useCacheManager = false;
     
     /**
      * Used for testing only.
@@ -301,22 +297,7 @@ public class MultiBitController implements PeerEventListener, GenericOpenURIEven
         onBlocksDownloaded(peer, block, blocksLeft, true);
     }
     
-    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft, boolean checkIfBlockNeedsWriting) {  
-        // Work out whether to use CacheManager.
-        if (!useCacheManagerDetermined) {
-            String useCacheManagerString = getModel().getUserPreference(MultiBitModel.USE_CACHE_MANAGER);
-            useCacheManager = false;
-            if (Boolean.TRUE.toString().equalsIgnoreCase(useCacheManagerString)) {
-                useCacheManager = true;
-            }
-            useCacheManagerDetermined = true;
-            CacheManager.INSTANCE.setController(this);
-        }
-        
-        if (checkIfBlockNeedsWriting && useCacheManager) {
-            CacheManager.INSTANCE.writeFile(block);
-        }
- 
+    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft, boolean checkIfBlockNeedsWriting) {   
         fireBlockDownloaded();
     }
 

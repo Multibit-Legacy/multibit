@@ -187,10 +187,7 @@ public class MultiBitModel {
 
     // Wallet migration.
     public static final String LAST_FAILED_MIGRATE_VERSION = "lastFailedMigrateVersion";
-    
-    // Whether or not to use the cache manager.
-    public static final String USE_CACHE_MANAGER = "useCacheManager";
-    
+       
     // Wallet backup.
     public static final String WALLET_BACKUP_FILE = "walletBackupFile";
        

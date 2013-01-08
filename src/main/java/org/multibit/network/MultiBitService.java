@@ -35,19 +35,14 @@ import javax.swing.SwingWorker;
 
 import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
-import com.google.bitcoin.crypto.EncrypterDecrypter;
-import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
-import com.google.bitcoin.crypto.ScryptParameters;
 import org.multibit.file.FileHandlerException;
 import org.multibit.file.WalletSaveException;
-import com.google.bitcoin.core.WalletVersionException;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
 import org.multibit.model.WalletInfo;
-import com.google.bitcoin.core.WalletMajorVersion;
 import org.multibit.store.ReplayableBlockStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,13 +56,17 @@ import com.google.bitcoin.core.MultiBitBlockChain;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.PeerAddress;
 import com.google.bitcoin.core.PeerGroup;
-import com.google.bitcoin.core.ProtocolException;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.StoredBlock;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.core.WalletMajorVersion;
+import com.google.bitcoin.core.WalletVersionException;
+import com.google.bitcoin.crypto.EncrypterDecrypter;
+import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
+import com.google.bitcoin.crypto.ScryptParameters;
 import com.google.bitcoin.discovery.IrcDiscovery;
 import com.google.bitcoin.store.BlockStoreException;
 
@@ -394,83 +393,20 @@ public class MultiBitService {
         boolean restartPeerGroup = true;
         
         MessageManager.INSTANCE.addMessage(new Message (controller.getLocaliser().getString("resetTransactionsSubmitAction.startReplay")));
-
-        // Work out whether to use CacheManager.
-        String useCacheManagerString = controller.getModel().getUserPreference(MultiBitModel.USE_CACHE_MANAGER);
-        boolean useCacheManager = false;
-        if (Boolean.TRUE.toString().equalsIgnoreCase(useCacheManagerString)) {
-            useCacheManager = true;
-            CacheManager cacheManager = CacheManager.INSTANCE;
-            log.debug("CacheManager = " + cacheManager);
-            cacheManager.setController(controller);
-            cacheManager.initialise();
-        }
         
         // Navigate backwards in the blockchain to work out how far back in time to go.
-        log.debug("Starting replay of blockchain from date = '" + dateToReplayFrom + "', useCacheManager = " + useCacheManager);
+        log.debug("Starting replay of blockchain from date = '" + dateToReplayFrom);
         StoredBlock storedBlock = null;
 
         Stack<StoredBlock> blockStack = new Stack<StoredBlock>();
 
         if (dateToReplayFrom == null || genesisBlockCreationDate.after(dateToReplayFrom)) {
             // Go back to the genesis block.
-            if (!useCacheManager) {
-                try {
-                    blockChain.setChainHeadClearCachesAndTruncateBlockStore(new StoredBlock(networkParameters.genesisBlock,
-                            networkParameters.genesisBlock.getWork(), 0));
-                } catch (VerificationException e) {
-                    throw new BlockStoreException(e);
-                }
-            } else {
-                // Make sure the genesis block is cached - this will be the starting point for the replay from cache.
-                CacheManager.INSTANCE.writeFile(networkParameters.genesisBlock);
-
-                File blockFile = CacheManager.INSTANCE.getBlockCacheFile(networkParameters.genesisBlock);
-
-                log.debug("Actual Satoshi genesis exists = "
-                        + (new File(CacheManager.INSTANCE.getBlockCacheDirectory() + File.separator
-                                + "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f.block")).exists());
-
-                if (blockFile.exists()) {
-                    log.debug("Can replay blocks from the cache from  the genesis block");
-
-                    // Put the whole chain on the stack.
-                    storedBlock = blockStore.getChainHead();
-                    assert storedBlock != null;
-
-                    blockStack.push(storedBlock);
-
-                    while (true) {
-                        if (storedBlock == null) {
-                            // Null result of previous get previous - have
-                            // reached genesis block.
-                            break;
-                        }
-                        Block header = storedBlock.getHeader();
-                        if (header == null) {
-                            log.debug("No header for stored block " + storedBlock.getHeight());
-                            break;
-                        }
-
-                        try {
-                            StoredBlock previousBlock = storedBlock.getPrev(blockStore);
-                            if (previousBlock == null) {
-                                log.debug("Could not navigate backwards form storedBlock " + storedBlock.getHeight());
-                                break;
-                            } else {
-                                storedBlock = previousBlock;
-                                blockStack.push(storedBlock);
-                            }
-                        } catch (BlockStoreException e) {
-                            e.printStackTrace();
-                            // We have to stop navigating backwards.
-                            break;
-                        }
-                    }
-                    restartPeerGroup();
-                    restartPeerGroup = false;
-                    storedBlock = CacheManager.INSTANCE.replayFromBlockCache(blockStack);
-                }
+            try {
+                blockChain.setChainHeadClearCachesAndTruncateBlockStore(new StoredBlock(networkParameters.genesisBlock,
+                        networkParameters.genesisBlock.getWork(), 0));
+            } catch (VerificationException e) {
+                throw new BlockStoreException(e);
             }
         } else {
             // Not a replay from the genesis block.
@@ -532,35 +468,6 @@ public class MultiBitService {
                     e.printStackTrace();
                     // We have to stop - fail.
                     break;
-                }
-            }
-
-            if (useCacheManager) {
-                // Go back some more blocks to ensure there is an overlap of blocks downloaded.
-                for (int i = 0; i < MAXIMUM_EXPECTED_LENGTH_OF_ALTERNATE_CHAIN; i++) {
-                    try {
-                        StoredBlock previousBlock = storedBlock.getPrev(blockStore);
-                        if (previousBlock == null) {
-                            log.debug("Could not navigate backwards form storedBlock.2 " + storedBlock.getHeight());
-                            break;
-                        } else {
-                            storedBlock = previousBlock;
-                        }
-                    } catch (BlockStoreException e) {
-                        e.printStackTrace();
-                        // We have to stop - fail.
-                        break;
-                    }
-                }
-                
-                // See if block is already cached. If it is, replay the cached blocks.
-                File blockFile = CacheManager.INSTANCE.getBlockCacheFile(storedBlock);
-
-                if (blockFile != null && blockFile.exists()) {
-                    restartPeerGroup();
-                    restartPeerGroup = false;
-                    log.debug("Can replay blocks from the cache from storedBlock height = " + storedBlock.getHeight());
-                    storedBlock = CacheManager.INSTANCE.replayFromBlockCache(blockStack);
                 }
             }
 
