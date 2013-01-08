@@ -67,31 +67,26 @@ public class HelpContentsPanel extends JPanel implements View {
         this.mainFrame = mainFrame;
         helpContext = mainFrame.getHelpContext();
         if (helpContext == null || "".equals(helpContext)) {
-            helpContext = "help_contents.html";
+            helpContext = HELP_CONTENTS_URL;
         }
-        
+
         setLayout(new BorderLayout());
         firstTimeLoaded = true;
 
         setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
-        final MultiBitController  finalController = controller;
+        final MultiBitController finalController = controller;
         final MultiBitFrame finalMainFrame = mainFrame;
-        
+
         mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                browser = new Browser(finalController, finalMainFrame, HELP_BASE_URL + helpContext);
-                
-                JScrollPane scrollPane = new JScrollPane(browser);
-                scrollPane.setPreferredSize(new Dimension(800, 400));
-                scrollPane.setBorder(BorderFactory.createEmptyBorder());
-                scrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-                scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-                add(scrollPane, BorderLayout.CENTER);          
-            }
-        });
+        browser = new Browser(finalController, finalMainFrame, HELP_BASE_URL + helpContext);
+
+        JScrollPane scrollPane = new JScrollPane(browser);
+        scrollPane.setPreferredSize(new Dimension(800, 400));
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        add(scrollPane, BorderLayout.CENTER);
     }
     
 
@@ -125,7 +120,7 @@ public class HelpContentsPanel extends JPanel implements View {
         
         if (browser != null) {
             if (!firstTimeLoaded || (firstTimeLoaded && !browser.isLoading())) {
-                  browser.visit(HELP_BASE_URL + helpContext);
+                  browser.visit(HELP_BASE_URL + helpContext, false);
             }
         }
         firstTimeLoaded = false;

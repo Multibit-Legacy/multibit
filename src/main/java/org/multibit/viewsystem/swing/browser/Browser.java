@@ -16,9 +16,9 @@
 package org.multibit.viewsystem.swing.browser;
 
 import java.awt.Cursor;
+import java.awt.Font;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
@@ -32,6 +32,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,10 +49,12 @@ public class Browser extends javax.swing.JEditorPane {
     private boolean loading = false;
      
     private MultiBitFrame mainFrame;
+    private MultiBitController controller;
     
     public Browser(MultiBitController controller, MultiBitFrame mainFrame, String currentHref) {
         super();
         
+        this.controller = controller;
         this.currentHref = currentHref;
         this.mainFrame = mainFrame;
 
@@ -62,6 +65,7 @@ public class Browser extends javax.swing.JEditorPane {
             addHyperlinkListener(new ActivatedHyperlinkListener(mainFrame, this, currentHref));
 
             loadingMessage = controller.getLocaliser().getString("browser.loadingMessage");
+           
             setEditable(false);
             setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
 
@@ -73,13 +77,9 @@ public class Browser extends javax.swing.JEditorPane {
             fontName = fontName + ", san-serif";
 
             int fontSize = ColorAndFontConstants.MULTIBIT_DEFAULT_FONT_SIZE;
-            String fontSizeString = controller.getModel().getUserPreference(MultiBitModel.FONT_SIZE);
-            if (fontSizeString != null && !"".equals(fontSizeString)) {
-                try {
-                    fontSize = Integer.parseInt(fontSizeString);
-                } catch (NumberFormatException nfe) {
-                // Use default.
-                }
+            Font adjustedFont = FontSizer.INSTANCE.getAdjustedDefaultFont();
+            if (adjustedFont != null) {
+                fontSize = adjustedFont.getSize();
             }
         
             HTMLEditorKit kit = new HTMLEditorKit();
@@ -92,18 +92,10 @@ public class Browser extends javax.swing.JEditorPane {
             log.debug("Trying to load '" + currentHref + "'...");
             Message message = new Message(getLoadingMessage(currentHref, loadingMessage), true);
             MessageManager.INSTANCE.addMessage(message);
-            //setPage(new URL(currentHref));
-            getUrlContentInBackground(this, new URL(currentHref));
-        } catch (MalformedURLException e) {
-            MessageManager.INSTANCE.addMessage(new Message(e.getClass().getCanonicalName() + " " + e.getMessage()));         
+            setPage(currentHref);
         } catch (Exception ex) { 
-            Message message = new Message("Cannot load page: " + currentHref + " " + ex.getMessage(), true);
-            MessageManager.INSTANCE.addMessage(message);
-        } finally {
-            if (mainFrame != null) {
-                mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            }
-        }
+            showUnableToLoadMessage(ex.getClass().getCanonicalName() + " " + ex.getMessage());
+        } 
     }
 
     public static String getLoadingMessage(String href, String loadingMessage) {
@@ -113,9 +105,9 @@ public class Browser extends javax.swing.JEditorPane {
     /**
      * This internal method attempts to load and display the specified URL. 
      **/
-    public boolean visit(String newHref) {
+    public boolean visit(String newHref, boolean forceLoad) {
         try {
-            if (!newHref.equals(currentHref)) {
+            if (forceLoad || !newHref.equals(currentHref)) {
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 Message message = new Message(getLoadingMessage(newHref, loadingMessage));
                 message.setShowInMessagesTab(false);
@@ -133,8 +125,7 @@ public class Browser extends javax.swing.JEditorPane {
             }
            return true; // Return success.
         } catch (IOException ex) { 
-            Message message = new Message("Cannot load page: " + ex.getMessage(), true);
-            MessageManager.INSTANCE.addMessage(message);
+            showUnableToLoadMessage(ex.getClass().getCanonicalName() + " " + ex.getMessage());
             return false; // Return failure.
         } finally {
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));            
@@ -149,7 +140,7 @@ public class Browser extends javax.swing.JEditorPane {
             
             private String message = null;
             
-            private StringBuffer sb = new StringBuffer();
+            private StringBuffer stringBuffer = new StringBuffer();
             
             @Override
             protected Boolean doInBackground() throws Exception {
@@ -165,7 +156,7 @@ public class Browser extends javax.swing.JEditorPane {
                         if(byteRead == -1)
                             break;
                         for(int i = 0; i < byteRead; i++){
-                            sb.append((char)buffer[i]);
+                            stringBuffer.append((char)buffer[i]);
                         }
                     }
                     return true;
@@ -184,20 +175,28 @@ public class Browser extends javax.swing.JEditorPane {
                     wasSuccessful = get();
                     
                     if (wasSuccessful) {
-                        browser.setText(sb.toString());
-                        // Scroll to top.
-                        browser.setCaretPosition(0);
-                        MessageManager.INSTANCE.addMessage(new Message(" "));
+                        String result = stringBuffer.toString();
+                        if (result != null && result.length() > 0) {
+                            browser.setText(result);
+                            // Scroll to top.
+                            browser.setCaretPosition(0);
+                            MessageManager.INSTANCE.addMessage(new Message(" "));
+                        } else {
+                            if (message != null) {
+                                showUnableToLoadMessage(message);
+                            }
+                        } 
                     } else {
-                        MessageManager.INSTANCE.addMessage(new Message(message));
-                    } 
-                    
+                        if (message != null) {
+                            showUnableToLoadMessage(message);
+                        }
+                    }       
                 } catch (InterruptedException e) {
-                    message = e.getClass().getCanonicalName() + " " + e.getMessage();
+                    showUnableToLoadMessage(message);
                     e.printStackTrace();
                 } catch (ExecutionException e) {
-                    message = e.getClass().getCanonicalName() + " " + e.getMessage();
-                                               e.printStackTrace();
+                    showUnableToLoadMessage(message);
+                    e.printStackTrace();
                 } finally {
                     setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 }
@@ -212,5 +211,11 @@ public class Browser extends javax.swing.JEditorPane {
 
     public boolean isLoading() {
         return loading;
+    }
+    
+    private void showUnableToLoadMessage(String message) {
+        Message messageToShow = new Message(controller.getLocaliser().getString("browser.unableToLoad", new String[]{currentHref, message}), true);
+        MessageManager.INSTANCE.addMessage(messageToShow);
+        
     }
 }
