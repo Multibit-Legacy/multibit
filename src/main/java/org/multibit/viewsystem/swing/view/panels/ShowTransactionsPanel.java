@@ -125,9 +125,6 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     
     public static final int UPDATE_TRANSACTIONS_DELAY_TIME = 333; // milliseconds
     
-    public static final int DISPLAY_COUNT_LIMIT = 6;
-    private int displayCount;
-    
     private JScrollPane scrollPane;
     
     /**
@@ -150,8 +147,6 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         applyComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
         
         CurrencyConverter.INSTANCE.addCurrencyConverterListener(this);
-        
-        displayCount = 0;;
     }
 
     private void initUI() {
@@ -357,12 +352,6 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             table.setRowSelectionInterval(selectedRow, selectedRow);
         }
 
-        // If it is the first showing - schedule to redisplay.
-        // This is to get rid of the bug on the first row amount (BTC) display.
-        if (displayCount < DISPLAY_COUNT_LIMIT) {
-            displayCount++;
-            ShowTransactionsPanel.updateTransactions();
-        }
         //log.debug("Table has " + table.getRowCount() + " rows");
     }
 

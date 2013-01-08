@@ -78,7 +78,6 @@
             <file src="readme.txt" targetdir="$INSTALL_PATH"/>
             <file src="configuration.txt" targetdir="$INSTALL_PATH"/>
             <file src="multibit48.png" targetdir="$INSTALL_PATH"/>
-            <file src="multibit.properties" targetdir="$INSTALL_PATH"/>
             <file src="multibit.blockchain" targetdir="$INSTALL_PATH"/>
             <file src="release_notes.txt" targetdir="$INSTALL_PATH"/>
             <file src="configuration.txt" targetdir="$INSTALL_PATH"/>
