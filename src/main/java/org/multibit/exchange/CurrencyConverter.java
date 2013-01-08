@@ -49,10 +49,27 @@ public enum CurrencyConverter {
     private CurrencyUnit currencyUnit = CurrencyUnit.of(TickerTableModel.DEFAULT_CURRENCY);
 
     /**
+     * MoneyFormatter without currency code
+     */
+    MoneyFormatter moneyFormatter;
+    
+    /**
+     * MoneyFormatter with currency code
+     */
+    MoneyFormatter moneyFormatterWithCurrencyCode;
+    
+    /**
      * The exchange rate i.e the value of 1 BTC in the currency.
      */
     private BigDecimal rate;
+    
+    /**
+     * THe rate rate in terms of satoshi i.e. value of 1 satoshi in the currency
+     */
+    private BigDecimal rateDividedByNumberOfSatoshiInOneBitcoin;
       
+    private String groupingSeparator;
+    
     /**
      * Map of currency code to currency info.
      */
@@ -72,6 +89,7 @@ public enum CurrencyConverter {
        }         
         // Exchange rate is unknown.
         rate = null;
+        rateDividedByNumberOfSatoshiInOneBitcoin = null;
         
         // Setup listeners
         listeners = new ArrayList<CurrencyConverterListener>();
@@ -95,6 +113,12 @@ public enum CurrencyConverter {
         currencyCodeToInfoMap.put("DKK", new CurrencyInfo("DKK", "\u006B\u0072.", true));
         currencyCodeToInfoMap.put("THB", new CurrencyInfo("THB", "\u0E3F", true));
         currencyCodeToInfoMap.put("PLN", new CurrencyInfo("PLN", "\u007A\u0142", false));
+        
+        moneyFormatter = getMoneyFormatter(false);
+        moneyFormatterWithCurrencyCode = getMoneyFormatter(true);
+        
+        DecimalFormat fiatFormatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
+        groupingSeparator = String.valueOf(fiatFormatter.getDecimalFormatSymbols().getGroupingSeparator());
     }
 
     /**
@@ -108,7 +132,7 @@ public enum CurrencyConverter {
         } else {
             Money bitcoin = Money.of(BITCOIN_CURRENCY_UNIT, new BigDecimal(bitcoinAmountInSatoshi));
             
-            Money fiatAmount = bitcoin.convertedTo(currencyUnit, rate.divide(new BigDecimal(CurrencyConverter.NUMBER_OF_SATOSHI_IN_ONE_BITCOIN)), RoundingMode.HALF_EVEN);
+            Money fiatAmount = bitcoin.convertedTo(currencyUnit, rateDividedByNumberOfSatoshiInOneBitcoin, RoundingMode.HALF_EVEN);
             
             return fiatAmount;
         }
@@ -229,12 +253,27 @@ public enum CurrencyConverter {
         if (money == null) {
             return "";
         }
-        MoneyFormatter moneyFormatter = getMoneyFormatter(addCurrencySymbol);
         
-        DecimalFormat formatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
-        String groupingSeparator = String.valueOf(formatter.getDecimalFormatSymbols().getGroupingSeparator());
+        MoneyFormatter moneyFormatterToUse;
+        if (addCurrencySymbol) {
+            if (moneyFormatterWithCurrencyCode == null) {
+                moneyFormatterWithCurrencyCode = getMoneyFormatter(true);
+            }
+            moneyFormatterToUse = moneyFormatterWithCurrencyCode;
+        } else {
+            if (moneyFormatter == null) {
+                moneyFormatter = getMoneyFormatter(false);
+            }
+            moneyFormatterToUse = moneyFormatter;
+            
+        }
+   
+        if (groupingSeparator == null) {
+            DecimalFormat fiatFormatter = (DecimalFormat) DecimalFormat.getInstance(controller.getLocaliser().getLocale());
+            groupingSeparator = String.valueOf(fiatFormatter.getDecimalFormatSymbols().getGroupingSeparator());
+        }
 
-        String toReturn =  moneyFormatter.print(money);
+        String toReturn =  moneyFormatterToUse.print(money);
         
         // Get rid of negative sign followed by thousand separator
         if (".".equals(groupingSeparator)) {
@@ -288,7 +327,6 @@ public enum CurrencyConverter {
             result.setFiatMessage(controller.getLocaliser().getString("currencyConverter.fiatCanOnlyHaveSetDecimalPlaces",
                     new Object[]{currencyString, currencyUnit.getDecimalPlaces()}));
             return result;    
-
         }
     }
     
@@ -388,6 +426,7 @@ public enum CurrencyConverter {
         // Thus you should set the currency unit first.
         if (this.currencyUnit != null && !this.currencyUnit.equals(currencyUnit)) {
             rate = null;
+            rateDividedByNumberOfSatoshiInOneBitcoin = null;
         }
         this.currencyUnit = currencyUnit;
     }
@@ -399,6 +438,7 @@ public enum CurrencyConverter {
     public void setRate(BigDecimal rate) {
         boolean fireFoundInsteadOfUpdated = (rate== null);
         this.rate = rate;
+        this.rateDividedByNumberOfSatoshiInOneBitcoin = rate.divide(new BigDecimal(CurrencyConverter.NUMBER_OF_SATOSHI_IN_ONE_BITCOIN));
         
         if (fireFoundInsteadOfUpdated) {
             notifyFoundExchangeRate();

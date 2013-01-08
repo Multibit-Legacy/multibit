@@ -38,7 +38,6 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 
@@ -312,6 +311,9 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         controller.getModel().setUserPreference(MultiBitModel.CAN_UNDO_PREFERENCES_CHANGES, "true");
 
         if (restartTickerTimer) {
+            // Reinitialise the currency converter.
+            CurrencyConverter.INSTANCE.initialise(controller);
+
             // Cancel any existing timer.
             if (mainFrame.getTickerTimer() != null) {
                 mainFrame.getTickerTimer().cancel();
@@ -339,15 +341,10 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         
         if (lookAndFeelHasChanged) {
             try {
-                if (ShowPreferencesPanel.SYSTEM_LOOK_AND_FEEL.equals(newLookAndFeel)) {
+                if (MultiBitModel.SYSTEM_LOOK_AND_FEEL.equals(newLookAndFeel)) {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                } else if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equals(newLookAndFeel)) {
-                    UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
-                     ColorAndFontConstants.ALTERNATE_TABLE_COLOR = ColorAndFontConstants.SEAGLASS_BLUE;
-                    ColorAndFontConstants.BACKGROUND_COLOR = ColorAndFontConstants.SEAGLASS_BACKGROUND;
-                    ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR = ColorAndFontConstants.SEAGLASS_BACKGROUND;
-
-                } else {
+                }
+                else {
                     for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                         if (newLookAndFeel.equalsIgnoreCase(info.getName())) {
                             UIManager.setLookAndFeel(info.getClassName());
@@ -372,6 +369,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
         // Return to the same view.
         controller.displayView(controller.getCurrentView());
+        
         if (feeValidationError) {
             MessageManager.INSTANCE.addMessage(new Message(updateStatusText));
         } else {

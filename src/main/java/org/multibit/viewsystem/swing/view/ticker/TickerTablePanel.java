@@ -327,7 +327,7 @@ public class TickerTablePanel extends JPanel {
     }
     
     class CurrencyCenterJustifiedWithRightBorderRenderer extends DefaultTableCellRenderer {
-        private static final long serialVersionUID = 1549545L;
+        private static final long serialVersionUID = 9949545L;
 
         MultiBitLabel label = new MultiBitLabel("");
 

@@ -26,12 +26,9 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.SystemColor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
-import java.math.BigDecimal;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -50,7 +47,6 @@ import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.exchange.CurrencyConverterResult;
@@ -71,8 +67,6 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
 import org.multibit.viewsystem.swing.view.components.MultiBitTitledPanel;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
-
-import com.google.bitcoin.core.Utils;
 
 /**
  * The show preferences view.
@@ -160,8 +154,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     private String originalLookAndFeel;
     private JComboBox lookAndFeelComboBox;
     private String localisedSystemLookAndFeelName;
-    public static final String SYSTEM_LOOK_AND_FEEL = "system"; // as it appears in multibit.properties
-
+ 
     private Font selectedFont;
 
     private static final int STENT_DELTA = 0;
@@ -765,11 +758,8 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
                 }
             }
         }
-        lookAndFeelComboBox.addItem(MultiBitModel.SEA_GLASS_LOOK_AND_FEEL);
-        if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
-            lookAndFeelComboBox.setSelectedItem(MultiBitModel.SEA_GLASS_LOOK_AND_FEEL);
-        }
-        if (originalLookAndFeel == null || originalLookAndFeel.equals("") || SYSTEM_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
+        
+        if (originalLookAndFeel == null || originalLookAndFeel.equals("") || MultiBitModel.SYSTEM_LOOK_AND_FEEL.equalsIgnoreCase(originalLookAndFeel)) {
             lookAndFeelComboBox.setSelectedItem(localisedSystemLookAndFeelName);
         }
         
@@ -1744,7 +1734,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
     public String getNewLookAndFeel() {
         String lookAndFeel = (String)lookAndFeelComboBox.getSelectedItem();
         if (localisedSystemLookAndFeelName.equals(lookAndFeel)) {
-            lookAndFeel = SYSTEM_LOOK_AND_FEEL;
+            lookAndFeel = MultiBitModel.SYSTEM_LOOK_AND_FEEL;
         }
         return lookAndFeel;
     }

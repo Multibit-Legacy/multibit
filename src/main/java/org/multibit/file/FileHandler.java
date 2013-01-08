@@ -223,24 +223,27 @@ public class FileHandler {
 
         WalletInfo walletInfo = perWalletModelData.getWalletInfo();
 
-        synchronized (walletInfo) {
-            // Save the perWalletModelData if it is dirty or if forceWrite is true.
-            if (perWalletModelData.isDirty() || forceWrite) {
-                // Check dates and sizes of files.
-                boolean filesHaveChanged = haveFilesChanged(perWalletModelData);
+        if (walletInfo != null) {
+            synchronized (walletInfo) {
+                // Save the perWalletModelData if it is dirty or if forceWrite
+                // is true.
+                if (perWalletModelData.isDirty() || forceWrite) {
+                    // Check dates and sizes of files.
+                    boolean filesHaveChanged = haveFilesChanged(perWalletModelData);
 
-                if (!filesHaveChanged || forceWrite) {
-                    // Normal write of data.
-                    String walletInfoFilename = WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename());
-                    saveWalletAndWalletInfo(perWalletModelData, perWalletModelData.getWalletFilename(), walletInfoFilename);
+                    if (!filesHaveChanged || forceWrite) {
+                        // Normal write of data.
+                        String walletInfoFilename = WalletInfo.createWalletInfoFilename(perWalletModelData.getWalletFilename());
+                        saveWalletAndWalletInfo(perWalletModelData, perWalletModelData.getWalletFilename(), walletInfoFilename);
 
-                    rememberFileSizesAndLastModified(walletFile, walletInfo);
+                        rememberFileSizesAndLastModified(walletFile, walletInfo);
 
-                    // The perWalletModelData is no longer dirty.
-                    perWalletModelData.setDirty(false);
-                } else {
-                    // Write to backup files.
-                    backupPerWalletModelData(perWalletModelData, null);
+                        // The perWalletModelData is no longer dirty.
+                        perWalletModelData.setDirty(false);
+                    } else {
+                        // Write to backup files.
+                        backupPerWalletModelData(perWalletModelData, null);
+                    }
                 }
             }
         }

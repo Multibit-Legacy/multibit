@@ -52,6 +52,7 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.action.MigrateWalletsAction;
+import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,6 +88,14 @@ public class MultiBit {
 
         // Enclosing try to enable graceful closure for unexpected errors.
         try {
+            // Set any bespoke system properties
+            try {
+                // Fix for Windows / Java 7 / VPN bug.
+                System.setProperty("java.net.preferIPv4Stack", "true");
+            } catch (SecurityException se) {
+                log.error(se.getClass().getName() + " " + se.getMessage());
+            }
+            
             ViewSystem swingViewSystem = null;
 
             ApplicationDataDirectoryLocator applicationDataDirectoryLocator = new ApplicationDataDirectoryLocator();
@@ -164,38 +173,18 @@ public class MultiBit {
             
             log.debug("Setting look and feel");
             try {
-                boolean foundTargetLookAndFeel = false;
-
-   
-                if (!foundTargetLookAndFeel) {
-                    String lookAndFeel = userPreferences.getProperty(MultiBitModel.LOOK_AND_FEEL);
-
-                    if (MultiBitModel.SEA_GLASS_LOOK_AND_FEEL.equalsIgnoreCase(lookAndFeel)) {
-                        try {
-                            UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
-                            ColorAndFontConstants.ALTERNATE_TABLE_COLOR = ColorAndFontConstants.SEAGLASS_BLUE;
-                            ColorAndFontConstants.BACKGROUND_COLOR = ColorAndFontConstants.SEAGLASS_BACKGROUND;
-                            ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR = ColorAndFontConstants.SEAGLASS_BACKGROUND;
-                            foundTargetLookAndFeel = true;
-                        } catch (Exception e) {
-                            log.error(e.getClass().getName() + " " + e.getMessage());    
-                        }                     
-                    } else {
-                        if (lookAndFeel != null && lookAndFeel != "") {
-                            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                                if (lookAndFeel.equalsIgnoreCase(info.getName())) {
-                                    UIManager.setLookAndFeel(info.getClassName());
-                                    foundTargetLookAndFeel = true;
-                                    break;
-                                }
+                String lookAndFeel = userPreferences.getProperty(MultiBitModel.LOOK_AND_FEEL);
+ 
+                // No need to load look and feel if system - will be used by default.
+                if (!"system".equalsIgnoreCase(lookAndFeel)) {
+                    if (lookAndFeel != null && lookAndFeel != "") {
+                        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                            if (lookAndFeel.equalsIgnoreCase(info.getName())) {
+                                UIManager.setLookAndFeel(info.getClassName());
+                                break;
                             }
                         }
                     }
-                }
-                
-                // Set System look and feel if target not found
-                if (!foundTargetLookAndFeel) {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 }
             } catch (UnsupportedLookAndFeelException e) {
                 // carry on
@@ -206,6 +195,11 @@ public class MultiBit {
             } catch (IllegalAccessException e) {
                 // carry on
             }
+
+            // Initialise singletons.
+            ColorAndFontConstants.init();
+            FontSizer.INSTANCE.initialise(controller);
+            CurrencyConverter.INSTANCE.initialise(finalController);
             
             // This is when the GUI is first displayed to the user.
             log.debug("Creating user interface");
@@ -420,6 +414,7 @@ public class MultiBit {
                 } finally {
                     if (swingViewSystem instanceof MultiBitFrame) {
                         ((MultiBitFrame) swingViewSystem).getWalletsView().initUI();
+                        ((MultiBitFrame) swingViewSystem).getWalletsView().displayView();
                     }
                     controller.fireDataChanged();
 
@@ -461,6 +456,7 @@ public class MultiBit {
 
             log.error("An unexpected error caused MultiBit to quit.");
             log.error("The error was '" + e.getClass().getCanonicalName() + " " + e.getMessage() + "'");
+            e.printStackTrace();
             log.error("Please read http://multibit.org/help_troubleshooting.html for help on troubleshooting.");
 
             // Try saving any dirty wallets.

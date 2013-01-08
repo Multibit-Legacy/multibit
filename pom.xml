@@ -241,7 +241,6 @@
                                 <resource>
                                     <directory>src/main/resources</directory>
                                     <includes>
-                                        <include>multibit.properties</include>
                                         <include>multibit.blockchain</include>
                                     </includes>
                                 </resource>
@@ -295,7 +294,6 @@
                                 <resource>
                                     <directory>src/main/resources</directory>
                                     <includes>
-                                        <include>multibit.properties</include>
                                         <include>multibit.blockchain</include>
                                     </includes>
                                 </resource>
@@ -354,7 +352,6 @@
                                     <directory>${basedir}/target/staging.linux</directory>
                                     <includes>
                                         <include>multibit-exe.jar</include>
-                                        <include>multibit.properties</include>
                                         <include>multibit.blockchain</include>
                                         <include>release_notes.txt</include>
                                         <include>configuration.txt</include>

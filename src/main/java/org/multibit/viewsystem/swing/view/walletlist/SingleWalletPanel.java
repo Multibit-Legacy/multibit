@@ -46,22 +46,19 @@ import javax.swing.border.Border;
 import org.joda.money.Money;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
-import org.multibit.exchange.CurrencyConverterListener;
-import org.multibit.exchange.ExchangeRate;
-import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
-import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitButton;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.multibit.viewsystem.swing.view.components.MultiBitTextField;
+import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.Wallet.BalanceType;
@@ -613,7 +610,10 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
     /**
      * Update any UI elements from the model (hint that data has changed).
      */
-    public void updateFromModel(boolean blinkEnabled) {   
+    public void updateFromModel(boolean blinkEnabled) { 
+        inactiveBackGroundColor = new Color(Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getRed() - COLOR_DELTA), Math.max(0,
+                ColorAndFontConstants.BACKGROUND_COLOR.getBlue() - COLOR_DELTA), Math.max(0, ColorAndFontConstants.BACKGROUND_COLOR.getGreen() - COLOR_DELTA));
+
         BigInteger estimatedBalance = perWalletModelData.getWallet().getBalance(BalanceType.ESTIMATED);
         String balanceTextToShowBTC = controller.getLocaliser().bitcoinValueToString(estimatedBalance, true, false);
         String balanceTextToShowFiat = "";
@@ -629,13 +629,6 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             amountLabelBTC.setText(balanceTextToShowBTC);
             amountLabelFiat.setText(balanceTextToShowFiat);
         }
-        
-//        amountLabelFiat.invalidate();
-//        amountLabelFiat.validate();
-//        amountLabelFiat.repaint();
-//        invalidate();
-//        validate();
-//        repaint();
               
         String encryptionText = "";
         if (perWalletModelData.getWallet() != null) {
@@ -930,11 +923,5 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         amountLabelFiat.setMinimumSize(new Dimension(fiatLabelMinimumWidth, amountLabelFiat.getMinimumSize().height));
         amountLabelFiat.setPreferredSize(new Dimension(fiatLabelMinimumWidth, amountLabelFiat.getPreferredSize().height));
         amountLabelFiat.setMaximumSize(new Dimension(fiatLabelMinimumWidth, amountLabelFiat.getMaximumSize().height));
-//        amountLabelFiat.invalidate();
-//        amountLabelFiat.validate();
-//        amountLabelFiat.repaint();
-//        invalidate();
-//        validate();
-//        repaint();
     }
 }
