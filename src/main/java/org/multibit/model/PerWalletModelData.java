@@ -122,6 +122,10 @@ public class PerWalletModelData {
             String currentWalletDescription = walletInfo.getProperty(WalletInfo.DESCRIPTION_PROPERTY);
             if (!walletDescription.equals(currentWalletDescription)) {
                 walletInfo.put(WalletInfo.DESCRIPTION_PROPERTY, walletDescription);
+                if (wallet != null) {
+                    wallet.setDescription(walletDescription);
+                }
+                
                 setDirty(true);
             }
         }

@@ -238,6 +238,11 @@ public class Wallet implements Serializable, IsMultiBitClass {
     WalletVersion version;
     
     /**
+     * A description for the wallet
+     */
+    String description;
+
+    /**
      * Creates a new, empty wallet with no keys and no transactions. If you want to restore a wallet from disk instead,
      * see loadFromFile.
      */
@@ -2386,5 +2391,13 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
     public void setVersion(WalletVersion version) {
         this.version = version;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

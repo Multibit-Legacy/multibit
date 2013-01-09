@@ -151,6 +151,15 @@ public class FileHandler {
                 // protobuf.2   (unencrypted) wallets stored as Wallet messages
                 // protobuf.3   (encrypted) wallets are stored as Wallet messages with a mandatory extension
                 wallet = Wallet.loadFromFileStream(stream);
+                
+                // If wallet description is only in the wallet, copy it to the wallet info
+                // (perhaps the user deleted/ did not copy the info file.
+                if (walletInfo != null) {
+                    String walletDescriptionInInfo = walletInfo.getProperty(WalletInfo.DESCRIPTION_PROPERTY);
+                    if ((walletDescriptionInInfo == null || walletDescriptionInInfo.length() == 0) && wallet.getDescription() != null ) {
+                        walletInfo.put(WalletInfo.DESCRIPTION_PROPERTY, wallet.getDescription());
+                    }
+                }
             } finally {
                 if (stream != null) {
                     stream.close();
@@ -326,6 +335,16 @@ public class FileHandler {
         // Save the wallet file
         try {
             if (perWalletModelData.getWallet() != null) {
+                // Wallet description is currently stored in the wallet info file but is now available on the wallet itself.
+                // Store the description from the wallet info in the wallet - in the future the wallet value will be primary
+                // and wallet infos can be deprecated.
+                // TODO - migrate completely to use wallet description and then deprecate value in info file
+                if (walletInfo != null) {
+                    String walletDescriptionInInfoFile = walletInfo.getProperty(WalletInfo.DESCRIPTION_PROPERTY);
+                    if (walletDescriptionInInfoFile != null) {
+                        perWalletModelData.getWallet().setDescription(walletDescriptionInInfoFile);
+                    }
+                }
                 String oldBackupFilename = perWalletModelData.getWalletInfo().getProperty(MultiBitModel.WALLET_BACKUP_FILE);
                 File oldBackupFile = null;
                 String newBackupFilename = null;
