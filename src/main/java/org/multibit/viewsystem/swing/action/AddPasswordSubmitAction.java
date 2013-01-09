@@ -32,7 +32,7 @@ import com.google.bitcoin.crypto.ScryptParameters;
 import org.multibit.file.FileHandler;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
-import com.google.bitcoin.core.WalletMajorVersion;
+import com.google.bitcoin.core.WalletVersion;
 import org.multibit.viewsystem.swing.view.panels.AddPasswordPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +102,7 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
         if (wallet != null) {
             if (controller.getModel().getActiveWalletWalletInfo() != null) {
                 // Only an unencrypted protobuf wallet can have a password added to it.
-                if (controller.getModel().getActiveWalletWalletInfo().getWalletMajorVersion() != WalletMajorVersion.PROTOBUF) {
+                if (controller.getModel().getActiveWalletWalletInfo().getWalletVersion() != WalletVersion.PROTOBUF) {
                     addPasswordPanel.setMessage1(controller.getLocaliser().getString(
                             "addPasswordPanel.addPasswordFailed", new String[]{"Wallet is not protobuf.2"}));
                     return;
@@ -130,7 +130,7 @@ public class AddPasswordSubmitAction extends MultiBitSubmitAction implements Wal
                     }
 
                     wallet.encrypt(wallet.getEncrypterDecrypter().deriveKey(passwordToUse));
-                    controller.getModel().getActiveWalletWalletInfo().setWalletMajorVersion(WalletMajorVersion.PROTOBUF_ENCRYPTED);
+                    controller.getModel().getActiveWalletWalletInfo().setWalletVersion(WalletVersion.PROTOBUF_ENCRYPTED);
                     controller.getModel().getActivePerWalletModelData().setDirty(true);
                     FileHandler fileHandler = new FileHandler(controller);
                     fileHandler.savePerWalletModelData(controller.getModel().getActivePerWalletModelData(), true);

@@ -24,7 +24,7 @@ import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
-import com.google.bitcoin.core.WalletMajorVersion;
+import com.google.bitcoin.core.WalletVersion;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinPanel;
 
 /**
@@ -59,7 +59,7 @@ public class CreateNewSendingAddressAction extends MultiBitSubmitAction {
 
         WalletInfo walletInfo = perWalletModelData.getWalletInfo();
         if (walletInfo == null) {
-            walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletMajorVersion.PROTOBUF_ENCRYPTED);
+            walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletVersion.PROTOBUF_ENCRYPTED);
             perWalletModelData.setWalletInfo(walletInfo);
         }
 

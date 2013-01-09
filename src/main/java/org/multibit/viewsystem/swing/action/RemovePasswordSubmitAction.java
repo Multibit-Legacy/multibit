@@ -27,7 +27,7 @@ import com.google.bitcoin.crypto.EncrypterDecrypterException;
 import org.multibit.file.FileHandler;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletBusyListener;
-import com.google.bitcoin.core.WalletMajorVersion;
+import com.google.bitcoin.core.WalletVersion;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.RemovePasswordPanel;
 import org.slf4j.Logger;
@@ -94,7 +94,7 @@ public class RemovePasswordSubmitAction extends MultiBitSubmitAction implements 
                             controller.fireWalletBusyChange(true);
 
                             wallet.removeEncryption(wallet.getEncrypterDecrypter().deriveKey(passwordToUse));
-                            controller.getModel().getActiveWalletWalletInfo().setWalletMajorVersion(WalletMajorVersion.PROTOBUF);
+                            controller.getModel().getActiveWalletWalletInfo().setWalletVersion(WalletVersion.PROTOBUF);
                             controller.getModel().getActivePerWalletModelData().setDirty(true);
                             FileHandler fileHandler = new FileHandler(controller);
                             fileHandler.savePerWalletModelData( controller.getModel().getActivePerWalletModelData(), true);

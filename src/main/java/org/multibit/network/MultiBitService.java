@@ -62,7 +62,7 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletMajorVersion;
+import com.google.bitcoin.core.WalletVersion;
 import com.google.bitcoin.core.WalletVersionException;
 import com.google.bitcoin.crypto.EncrypterDecrypter;
 import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
@@ -318,7 +318,7 @@ public class MultiBitService {
                 perWalletModelDataToReturn = controller.getModel().addWallet(wallet, walletFile.getAbsolutePath());
 
                 // Create a wallet info.
-                WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath(), WalletMajorVersion.PROTOBUF);
+                WalletInfo walletInfo = new WalletInfo(walletFile.getAbsolutePath(), WalletVersion.PROTOBUF);
                 perWalletModelDataToReturn.setWalletInfo(walletInfo);
 
                 // Set a default description.

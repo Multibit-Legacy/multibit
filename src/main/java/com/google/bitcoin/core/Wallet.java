@@ -233,15 +233,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
     private EncrypterDecrypter encrypterDecrypter;
 
     /**
-     * The wallet major version.
+     * The wallet version.
      */
-    WalletMajorVersion majorVersion;
+    WalletVersion version;
     
-    /** 
-     * The wallet minor version.
-     */
-    private int minorVersion;
-
     /**
      * Creates a new, empty wallet with no keys and no transactions. If you want to restore a wallet from disk instead,
      * see loadFromFile.
@@ -2385,19 +2380,11 @@ public class Wallet implements Serializable, IsMultiBitClass {
         this.currentlyEncrypted = currentlyEncrypted;
     }
     
-    public int getMinorVersion() {
-        return minorVersion;
+    public WalletVersion getVersion() {
+        return version;
     }
 
-    public void setMinorVersion(int minorVersion) {
-        this.minorVersion = minorVersion;
-    }
-
-    public WalletMajorVersion getMajorVersion() {
-        return majorVersion;
-    }
-
-    public void setMajorVersion(WalletMajorVersion majorVersion) {
-        this.majorVersion = majorVersion;
+    public void setVersion(WalletVersion version) {
+        this.version = version;
     }
 }

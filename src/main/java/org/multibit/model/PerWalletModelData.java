@@ -92,8 +92,8 @@ public class PerWalletModelData {
     public void setWalletInfo(WalletInfo walletInfo) {
         this.walletInfo = walletInfo;
         if (walletInfo != null && wallet != null) {
-            if (wallet.getMajorVersion() == null) {
-                wallet.setMajorVersion(walletInfo.getWalletMajorVersion());
+            if (wallet.getVersion() == null) {
+                wallet.setVersion(walletInfo.getWalletVersion());
             }
         }
     }

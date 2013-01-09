@@ -24,7 +24,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
-import com.google.bitcoin.core.WalletMajorVersion;
+import com.google.bitcoin.core.WalletVersion;
 import org.multibit.utils.ImageLoader;
 import org.multibit.viewsystem.swing.view.models.AddressBookTableModel;
 import org.multibit.viewsystem.swing.view.dialogs.DeleteSendingAddressConfirmDialog;
@@ -67,7 +67,7 @@ public class DeleteSendingAddressSubmitAction extends MultiBitSubmitAction {
 
         WalletInfo walletInfo = perWalletModelData.getWalletInfo();
         if (walletInfo == null) {
-            walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletMajorVersion.PROTOBUF_ENCRYPTED);
+            walletInfo = new WalletInfo(perWalletModelData.getWalletFilename(), WalletVersion.PROTOBUF_ENCRYPTED);
             perWalletModelData.setWalletInfo(walletInfo);
         }
 

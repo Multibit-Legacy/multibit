@@ -103,7 +103,7 @@ import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletMajorVersion;
+import com.google.bitcoin.core.WalletVersion;
 
 /*
  * JFrame displaying Swing version of MultiBit
@@ -1120,7 +1120,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                     removePasswordAction.setEnabled(true);
                 } else {
                     if (controller.getModel().getActiveWalletWalletInfo() == null ||
-                            controller.getModel().getActiveWalletWalletInfo().getWalletMajorVersion() == WalletMajorVersion.SERIALIZED) {
+                            controller.getModel().getActiveWalletWalletInfo().getWalletVersion() == WalletVersion.SERIALIZED) {
                         addPasswordAction.setEnabled(false);
                     } else {
                         addPasswordAction.setEnabled(true);

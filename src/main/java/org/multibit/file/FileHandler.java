@@ -43,7 +43,7 @@ import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
-import com.google.bitcoin.core.WalletMajorVersion;
+import com.google.bitcoin.core.WalletVersion;
 import org.multibit.network.MultiBitService;
 import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;
@@ -115,9 +115,9 @@ public class FileHandler {
             // See if the wallet is serialized or protobuf.
             WalletInfo walletInfo;
             if (isWalletSerialised(walletFile)) {
-                walletInfo = new WalletInfo(walletFilenameToUse, WalletMajorVersion.SERIALIZED);
+                walletInfo = new WalletInfo(walletFilenameToUse, WalletVersion.SERIALIZED);
             } else {
-                walletInfo = new WalletInfo(walletFilenameToUse, WalletMajorVersion.PROTOBUF_ENCRYPTED);
+                walletInfo = new WalletInfo(walletFilenameToUse, WalletVersion.PROTOBUF_ENCRYPTED);
             }
             
             // If the wallet file is missing or empty but the backup file exists load that instead.
@@ -332,13 +332,13 @@ public class FileHandler {
                 if (null != oldBackupFilename && !"".equals(oldBackupFilename) ) {
                     oldBackupFile = new File(oldBackupFilename);
                 }
-                if (WalletMajorVersion.PROTOBUF == walletInfo.getWalletMajorVersion() ||
-                        WalletMajorVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletMajorVersion()) {
+                if (WalletVersion.PROTOBUF == walletInfo.getWalletVersion() ||
+                        WalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion()) {
                     newBackupFilename = copyExistingWalletToBackupAndDeleteOriginal(walletFile);
                 }
 
                 log.debug("Saving wallet file '" + walletFile.getAbsolutePath() + "' ...");
-                if (WalletMajorVersion.SERIALIZED == walletInfo.getWalletMajorVersion()) {
+                if (WalletVersion.SERIALIZED == walletInfo.getWalletVersion()) {
                     saveToFileAsSerialised(perWalletModelData.getWallet(), walletFile);
                 } else {
                     // See if there are any encrypted private keys - if there
@@ -359,13 +359,13 @@ public class FileHandler {
                     }
 
                     if (walletIsActuallyEncrypted) {
-                        walletInfo.setWalletMajorVersion(WalletMajorVersion.PROTOBUF_ENCRYPTED);
+                        walletInfo.setWalletVersion(WalletVersion.PROTOBUF_ENCRYPTED);
                     }
 
-                    if (WalletMajorVersion.PROTOBUF == walletInfo.getWalletMajorVersion()) {
+                    if (WalletVersion.PROTOBUF == walletInfo.getWalletVersion()) {
                         // Save as a Wallet message.
                         perWalletModelData.getWallet().saveToFile(walletFile);
-                    } else if (WalletMajorVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletMajorVersion()) {
+                    } else if (WalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion()) {
                         fileOutputStream = new FileOutputStream(walletFile);
 
                         // Save as a Wallet message with a mandatory extension
@@ -374,15 +374,15 @@ public class FileHandler {
                                 .writeWalletWithMandatoryExtension(perWalletModelData.getWallet(), fileOutputStream);
                     } else {
                         throw new WalletVersionException("Cannot save wallet '" + perWalletModelData.getWalletFilename()
-                                + "'. Its wallet version is '" + walletInfo.getWalletMajorVersion().toString()
+                                + "'. Its wallet version is '" + walletInfo.getWalletVersion().toString()
                                 + "' but this version of MultiBit does not understand that format.");
                     }
                 }
                 log.debug("... done saving wallet file.");
 
                 
-                if (WalletMajorVersion.PROTOBUF == walletInfo.getWalletMajorVersion() ||
-                        WalletMajorVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletMajorVersion()) {
+                if (WalletVersion.PROTOBUF == walletInfo.getWalletVersion() ||
+                        WalletVersion.PROTOBUF_ENCRYPTED == walletInfo.getWalletVersion()) {
                     perWalletModelData.getWalletInfo().put(MultiBitModel.WALLET_BACKUP_FILE, newBackupFilename);
                     
                     // Delete the oldBackupFile unless the user has manually opened it.
@@ -416,7 +416,7 @@ public class FileHandler {
         }
         
         // Write wallet info.
-        walletInfo.writeToFile(walletInfoFilename, walletInfo.getWalletMajorVersion());
+        walletInfo.writeToFile(walletInfoFilename, walletInfo.getWalletVersion());
     }
     
     /**
@@ -431,7 +431,7 @@ public class FileHandler {
         if (passwordToUse != null && passwordToUse.length > 0) {
             if (controller.getModel() != null
                     && controller.getModel().getActiveWalletWalletInfo() != null
-                    && controller.getModel().getActiveWalletWalletInfo().getWalletMajorVersion() == WalletMajorVersion.PROTOBUF_ENCRYPTED
+                    && controller.getModel().getActiveWalletWalletInfo().getWalletVersion() == WalletVersion.PROTOBUF_ENCRYPTED
                     && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
                 // Save a backup copy of the private keys, encrypted with the newPasswordToUse.
                 PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
@@ -647,13 +647,13 @@ public class FileHandler {
                     orderList.add(perWalletModelData.getWalletFilename());
                 }
                 
-                if (perWalletModelData.getWalletInfo().getWalletMajorVersion() == WalletMajorVersion.PROTOBUF_ENCRYPTED) {
+                if (perWalletModelData.getWalletInfo().getWalletVersion() == WalletVersion.PROTOBUF_ENCRYPTED) {
                     if (!protobuf3List.contains(perWalletModelData.getWalletFilename())) {
                         protobuf3List.add(perWalletModelData.getWalletFilename());
                     }
-                 } else if (perWalletModelData.getWalletInfo().getWalletMajorVersion() == null
-                         || perWalletModelData.getWalletInfo().getWalletMajorVersion() == WalletMajorVersion.SERIALIZED 
-                         || perWalletModelData.getWalletInfo().getWalletMajorVersion() == WalletMajorVersion.PROTOBUF) {
+                 } else if (perWalletModelData.getWalletInfo().getWalletVersion() == null
+                         || perWalletModelData.getWalletInfo().getWalletVersion() == WalletVersion.SERIALIZED 
+                         || perWalletModelData.getWalletInfo().getWalletVersion() == WalletVersion.PROTOBUF) {
                     if (!earlyList.contains(perWalletModelData.getWalletFilename())) {
                         earlyList.add(perWalletModelData.getWalletFilename());
                     }

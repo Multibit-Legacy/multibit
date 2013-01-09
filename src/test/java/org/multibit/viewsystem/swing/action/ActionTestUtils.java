@@ -15,7 +15,7 @@ import org.multibit.file.FileHandler;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
-import com.google.bitcoin.core.WalletMajorVersion;
+import com.google.bitcoin.core.WalletVersion;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
@@ -66,7 +66,7 @@ public class ActionTestUtils {
          String walletFile = multiBitDirectoryPath + File.separator + descriptor + ".wallet";
          
          // Put the wallet in the model as the active wallet.
-         perWalletModelData.setWalletInfo(new WalletInfo(walletFile, WalletMajorVersion.PROTOBUF_ENCRYPTED));
+         perWalletModelData.setWalletInfo(new WalletInfo(walletFile, WalletVersion.PROTOBUF_ENCRYPTED));
          perWalletModelData.setWalletFilename(walletFile);
          perWalletModelData.setWalletDescription(descriptor);
          

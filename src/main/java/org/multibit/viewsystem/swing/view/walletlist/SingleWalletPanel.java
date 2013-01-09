@@ -62,7 +62,7 @@ import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 
 import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.Wallet.BalanceType;
-import com.google.bitcoin.core.WalletMajorVersion;
+import com.google.bitcoin.core.WalletVersion;
 
 public class SingleWalletPanel extends JPanel implements ActionListener, FocusListener {
 
@@ -640,7 +640,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
             setIconForWalletType(perWalletModelData.getWallet().getEncryptionType(), walletTypeButton);
     
             if (walletFormatButton != null) {
-                WalletMajorVersion walletVersion = perWalletModelData.getWalletInfo().getWalletMajorVersion();
+                WalletVersion walletVersion = perWalletModelData.getWalletInfo().getWalletVersion();
                 if (walletVersion != null) {
                     walletFormatButton.setText(controller.getLocaliser().getString(walletVersion.getLocalisationKey()));
                 }
@@ -738,7 +738,7 @@ public class SingleWalletPanel extends JPanel implements ActionListener, FocusLi
         constraints.anchor = GridBagConstraints.LINE_START;
         innerDetailPanel.add(walletFilenameLabel, constraints);
 
-        WalletMajorVersion walletVersion = perWalletModelData.getWalletInfo().getWalletMajorVersion();
+        WalletVersion walletVersion = perWalletModelData.getWalletInfo().getWalletVersion();
         
         Action walletFormatHelpAction = new HelpContextAction(controller, null, walletVersion.getLocalisationKey(),
                 walletVersion.getLocalisationKey(), walletVersion.getLocalisationKey(), HelpContentsPanel.HELP_WALLET_FORMATS_URL);

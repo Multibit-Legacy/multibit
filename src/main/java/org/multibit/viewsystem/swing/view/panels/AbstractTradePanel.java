@@ -105,7 +105,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.WalletMajorVersion;
+import com.google.bitcoin.core.WalletVersion;
 import com.google.bitcoin.uri.BitcoinURI;
 import org.multibit.viewsystem.swing.view.models.AddressBookTableModel;
 import org.multibit.viewsystem.swing.view.ImageSelection;
@@ -1433,7 +1433,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
             WalletInfo walletInfo = controller.getModel().getActiveWalletWalletInfo();
             if (walletInfo == null) {
-                walletInfo = new WalletInfo(controller.getModel().getActiveWalletFilename(), WalletMajorVersion.PROTOBUF_ENCRYPTED);
+                walletInfo = new WalletInfo(controller.getModel().getActiveWalletFilename(), WalletVersion.PROTOBUF_ENCRYPTED);
                 controller.getModel().setActiveWalletInfo(walletInfo);
             }
             address = WhitespaceTrimmer.trim(address);
