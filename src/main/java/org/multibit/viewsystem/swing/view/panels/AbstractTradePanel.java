@@ -571,9 +571,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             constraints.weightx = 0.1;
             constraints.weighty = 1;
             constraints.anchor = GridBagConstraints.LINE_START;
-            addressesHeaderPanel.add(deleteButton, constraints);
-
-            
+            addressesHeaderPanel.add(deleteButton, constraints);           
         }
 
         constraints.fill = GridBagConstraints.BOTH;
@@ -1347,7 +1345,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                 createNewButton.setToolTipText(getLocalisationString(CREATE_NEW_TOOLTIP, null));
             }
             if (deleteButton != null) {
-                deleteButton.setEnabled(true);
+                boolean deleteEnable = true;
+                if (addressesTableModel != null) {
+                    deleteEnable = addressesTableModel.getRowCount() > 0;
+                }
+                deleteButton.setEnabled(deleteEnable);
                 deleteButton.setToolTipText(getLocalisationString(DELETE_TOOLTIP, null));
             }
             if (pasteSwatchButton != null) {
