@@ -26,7 +26,7 @@ import javax.swing.JPanel;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
@@ -34,7 +34,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 /**
  * The help about view.
  */
-public class HelpAboutPanel extends JPanel implements View {
+public class HelpAboutPanel extends JPanel implements MultiBitView {
     private static final long serialVersionUID = 191352212345057705L;
 
     private static final String MULTIBIT_URL = "https://multibit.org";
@@ -139,6 +139,6 @@ public class HelpAboutPanel extends JPanel implements View {
 
     @Override
     public int getViewId() {
-        return View.HELP_ABOUT_VIEW;
+        return MultiBitView.HELP_ABOUT_VIEW;
     }
 }

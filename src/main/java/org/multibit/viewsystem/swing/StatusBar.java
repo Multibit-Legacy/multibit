@@ -201,7 +201,7 @@ public class StatusBar extends JPanel implements MessageListener {
 
         // show messages action
         MultiBitAction showMessagesAction = new MultiBitAction(controller, null, null,
-                "messagesPanel.title", "messagesPanel.mnemonic", org.multibit.viewsystem.View.MESSAGES_VIEW);
+                "messagesPanel.title", "messagesPanel.mnemonic", org.multibit.viewsystem.core.MultiBitView.MESSAGES_VIEW);
         statusLabel.setAction(showMessagesAction);
         statusLabel.setHorizontalAlignment(JButton.LEADING);
         String tooltipText = HelpContentsPanel.createMultilineTooltipText(new String[] {

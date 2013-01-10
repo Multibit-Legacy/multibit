@@ -22,7 +22,7 @@ import javax.swing.Action;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.dataproviders.ShowUriDialogDataProvider;
 import org.multibit.viewsystem.swing.view.dialogs.ShowOpenUriDialog;
 
@@ -69,6 +69,6 @@ public class ShowOpenUriCancelAction extends AbstractAction {
         controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI, "false");   
         
         showOpenUriDialog.setVisible(false);
-        controller.displayView(View.TRANSACTIONS_VIEW);      
+        controller.displayView(MultiBitView.TRANSACTIONS_VIEW);      
     }
 }

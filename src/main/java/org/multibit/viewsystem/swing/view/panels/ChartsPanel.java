@@ -42,7 +42,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
@@ -60,7 +60,7 @@ import com.xeiam.xchart.XChartPanel;
 /**
  * The Charts view.
  */
-public class ChartsPanel extends JPanel implements View, ComponentListener {
+public class ChartsPanel extends JPanel implements MultiBitView, ComponentListener {
 
     private Logger log = LoggerFactory.getLogger(ChartsPanel.class);
 
@@ -397,7 +397,7 @@ public class ChartsPanel extends JPanel implements View, ComponentListener {
     @Override
     public int getViewId() {
 
-        return View.CHARTS_VIEW;
+        return MultiBitView.CHARTS_VIEW;
     }
 
     class ChartData {

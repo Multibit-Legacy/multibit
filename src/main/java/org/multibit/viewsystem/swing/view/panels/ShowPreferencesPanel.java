@@ -54,7 +54,7 @@ import org.multibit.exchange.TickerTimerTask;
 import org.multibit.model.ExchangeData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
@@ -71,7 +71,7 @@ import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 /**
  * The show preferences view.
  */
-public class ShowPreferencesPanel extends JPanel implements View, PreferencesDataProvider {
+public class ShowPreferencesPanel extends JPanel implements MultiBitView, PreferencesDataProvider {
 
     private static final int LANGUAGE_CODE_VERTICAL_INSET = 2;
 
@@ -1501,7 +1501,7 @@ public class ShowPreferencesPanel extends JPanel implements View, PreferencesDat
 
     @Override
     public int getViewId() {
-        return View.PREFERENCES_VIEW;
+        return MultiBitView.PREFERENCES_VIEW;
     }
 
     // PreferencesDataProvider methods

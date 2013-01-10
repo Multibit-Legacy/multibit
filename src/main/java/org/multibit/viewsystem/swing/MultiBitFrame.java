@@ -71,7 +71,7 @@ import org.multibit.model.StatusEnum;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.platform.GenericApplication;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.CreateWalletSubmitAction;
 import org.multibit.viewsystem.swing.action.DeleteWalletAction;
@@ -85,7 +85,7 @@ import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
 import org.multibit.viewsystem.swing.view.dialogs.SendBitcoinConfirmDialog;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
-import org.multibit.viewsystem.swing.view.ViewFactory;
+import org.multibit.viewsystem.core.MultiBitViewFactory;
 import org.multibit.viewsystem.swing.view.components.BlinkLabel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.components.HelpButton;
@@ -104,6 +104,7 @@ import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletVersion;
+import org.multibit.viewsystem.core.IView;
 
 /*
  * JFrame displaying Swing version of MultiBit
@@ -189,7 +190,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     public Logger logger = LoggerFactory.getLogger(MultiBitFrame.class.getName());
 
-    private ViewFactory viewFactory;
+    private MultiBitViewFactory viewFactory;
 
     private Timer fileChangeTimer;
 
@@ -257,7 +258,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         sizeAndCenter();
 
-        viewFactory = new ViewFactory(controller, this);
+        viewFactory = new MultiBitViewFactory(controller, this);
 
         initUI();
 
@@ -366,21 +367,21 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Add the send bitcoin tab.
         JPanel sendBitcoinOutlinePanel = new JPanel(new BorderLayout());
-        View sendBitcoinView = viewFactory.getView(View.SEND_BITCOIN_VIEW);
+        IView sendBitcoinView = viewFactory.getView(MultiBitView.SEND_BITCOIN_VIEW);
         sendBitcoinOutlinePanel.add((JPanel) sendBitcoinView, BorderLayout.CENTER);
         viewTabbedPane.addTab(sendBitcoinView.getViewTitle(), sendBitcoinView.getViewIcon(), sendBitcoinView.getViewTooltip(),
                 sendBitcoinOutlinePanel);
 
         // Add the receive bitcoin tab.
         JPanel receiveBitcoinOutlinePanel = new JPanel(new BorderLayout());
-        View receiveBitcoinView = viewFactory.getView(View.RECEIVE_BITCOIN_VIEW);
+        IView receiveBitcoinView = viewFactory.getView(MultiBitView.RECEIVE_BITCOIN_VIEW);
         receiveBitcoinOutlinePanel.add((JPanel) receiveBitcoinView, BorderLayout.CENTER);
         viewTabbedPane.addTab(receiveBitcoinView.getViewTitle(), receiveBitcoinView.getViewIcon(),
                 receiveBitcoinView.getViewTooltip(), receiveBitcoinOutlinePanel);
 
         // Add the transactions tab.
         JPanel transactionsOutlinePanel = new JPanel(new BorderLayout());
-        View transactionsView = viewFactory.getView(View.TRANSACTIONS_VIEW);
+        IView transactionsView = viewFactory.getView(MultiBitView.TRANSACTIONS_VIEW);
         transactionsOutlinePanel.add((JPanel) transactionsView, BorderLayout.CENTER);
         viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsView.getViewTooltip(),
                 transactionsOutlinePanel);
@@ -738,7 +739,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         
         // Add password action.
         addPasswordAction = new MultiBitWalletBusyAction(controller, ImageLoader.ADD_PASSWORD_ICON_FILE, "addPasswordAction.text",
-                "addPasswordAction.tooltip", "addPasswordAction.mnemonic", View.ADD_PASSWORD_VIEW);
+                "addPasswordAction.tooltip", "addPasswordAction.mnemonic", MultiBitView.ADD_PASSWORD_VIEW);
         menuItem = new JMenuItem(addPasswordAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -746,7 +747,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Change password action.
         changePasswordAction = new MultiBitWalletBusyAction(controller, ImageLoader.CHANGE_PASSWORD_ICON_FILE, "changePasswordAction.text",
-                "changePasswordAction.tooltip", "changePasswordAction.mnemonic", View.CHANGE_PASSWORD_VIEW);
+                "changePasswordAction.tooltip", "changePasswordAction.mnemonic", MultiBitView.CHANGE_PASSWORD_VIEW);
         menuItem = new JMenuItem(changePasswordAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -754,7 +755,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Remove password action.
         removePasswordAction = new MultiBitWalletBusyAction(controller, ImageLoader.REMOVE_PASSWORD_ICON_FILE, "removePasswordAction.text",
-                "removePasswordAction.tooltip", "removePasswordAction.mnemonic", View.REMOVE_PASSWORD_VIEW);
+                "removePasswordAction.tooltip", "removePasswordAction.mnemonic", MultiBitView.REMOVE_PASSWORD_VIEW);
         menuItem = new JMenuItem(removePasswordAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -773,7 +774,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Show welcome action.
         MultiBitAction showWelcomeAction = new MultiBitAction(controller, ImageLoader.WELCOME_ICON_FILE, "welcomePanel.text",
-                "welcomePanel.title", "welcomePanel.mnemonic", View.WELCOME_VIEW);
+                "welcomePanel.title", "welcomePanel.mnemonic", MultiBitView.WELCOME_VIEW);
         menuItem = new JMenuItem(showWelcomeAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -783,11 +784,11 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
             showHelpContentsAction = new MultiBitAction(controller, ImageLoader.HELP_CONTENTS_ICON_FILE,
                 "showHelpContentsAction.text", "showHelpContentsAction.tooltip", "showHelpContentsAction.mnemonic",
-                View.HELP_CONTENTS_VIEW);
+                MultiBitView.HELP_CONTENTS_VIEW);
         } else {
             showHelpContentsAction = new MultiBitAction(controller, ImageLoader.HELP_CONTENTS_RTL_ICON_FILE,
                     "showHelpContentsAction.text", "showHelpContentsAction.tooltip", "showHelpContentsAction.mnemonic",
-                    View.HELP_CONTENTS_VIEW);
+                    MultiBitView.HELP_CONTENTS_VIEW);
         }
         menuItem = new JMenuItem(showHelpContentsAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
@@ -797,7 +798,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         if (application != null && !application.isMac()) {
             // Non Macs have a Help About menu item.
             MultiBitAction helpAboutAction = new MultiBitAction(controller, ImageLoader.MULTIBIT_SMALL_ICON_FILE,
-                    "helpAboutAction.text", "helpAboutAction.tooltip", "helpAboutAction.mnemonic", View.HELP_ABOUT_VIEW);
+                    "helpAboutAction.text", "helpAboutAction.tooltip", "helpAboutAction.mnemonic", MultiBitView.HELP_ABOUT_VIEW);
             menuItem = new JMenuItem(helpAboutAction);
             menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
             menuItem.setComponentOrientation(componentOrientation);
@@ -807,7 +808,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // ViewTransactions action.
         MultiBitAction showTransactionsAction = new MultiBitAction(controller, ImageLoader.TRANSACTIONS_ICON_FILE,
                 "showTransactionsAction.text", "showTransactionsAction.tooltip", "showTransactionsAction.mnemonic",
-                View.TRANSACTIONS_VIEW);
+                MultiBitView.TRANSACTIONS_VIEW);
         menuItem = new JMenuItem(showTransactionsAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -816,7 +817,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // View Charts action.
         MultiBitAction showChartsAction = new MultiBitAction(controller, ImageLoader.CHART_LINE_ICON_FILE,
                 "chartsPanelAction.text", "chartsPanelAction.tooltip", "chartsPanelAction.mnemonic",
-                View.CHARTS_VIEW);
+                MultiBitView.CHARTS_VIEW);
         menuItem = new JMenuItem(showChartsAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -824,7 +825,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Show messages action.
         MultiBitAction showMessagesAction = new MultiBitAction(controller, ImageLoader.MESSAGES_ICON_FILE, "messagesPanel.text",
-                "messagesPanel.tooltip", "messagesPanel.mnemonic", View.MESSAGES_VIEW);
+                "messagesPanel.tooltip", "messagesPanel.mnemonic", MultiBitView.MESSAGES_VIEW);
         menuItem = new JMenuItem(showMessagesAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -832,7 +833,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Send bitcoin action.
         MultiBitAction sendBitcoinAction = new MultiBitAction(controller, ImageLoader.SEND_BITCOIN_ICON_FILE,
-                "sendBitcoinAction.text", "sendBitcoinAction.tooltip", "sendBitcoinAction.mnemonic", View.SEND_BITCOIN_VIEW);
+                "sendBitcoinAction.text", "sendBitcoinAction.tooltip", "sendBitcoinAction.mnemonic", MultiBitView.SEND_BITCOIN_VIEW);
         menuItem = new JMenuItem(sendBitcoinAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -840,7 +841,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         MultiBitAction receiveBitcoinAction = new MultiBitAction(controller, ImageLoader.RECEIVE_BITCOIN_ICON_FILE,
                 "receiveBitcoinAction.text", "receiveBitcoinAction.tooltip", "receiveBitcoinAction.mnemonic",
-                View.RECEIVE_BITCOIN_VIEW);
+                MultiBitView.RECEIVE_BITCOIN_VIEW);
         menuItem = new JMenuItem(receiveBitcoinAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -851,7 +852,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             // Non Macs have a Preferences menu item.
             MultiBitAction showPreferencesAction = new MultiBitAction(controller, ImageLoader.PREFERENCES_ICON_FILE,
                     "showPreferencesAction.text", "showPreferencesAction.tooltip", "showPreferencesAction.mnemonic",
-                    View.PREFERENCES_VIEW);
+                    MultiBitView.PREFERENCES_VIEW);
             menuItem = new JMenuItem(showPreferencesAction);
             menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
             menuItem.setComponentOrientation(componentOrientation);
@@ -909,7 +910,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // Import private keys.
         showImportPrivateKeysAction = new MultiBitWalletBusyAction(controller, ImageLoader.IMPORT_PRIVATE_KEYS_ICON_FILE,
                 "showImportPrivateKeysAction.text", "showImportPrivateKeysAction.tooltip", "showImportPrivateKeysAction.mnemonic",
-                View.SHOW_IMPORT_PRIVATE_KEYS_VIEW);
+                MultiBitView.SHOW_IMPORT_PRIVATE_KEYS_VIEW);
         menuItem = new JMenuItem(showImportPrivateKeysAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -918,7 +919,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
         // Export private keys.
         showExportPrivateKeysAction = new MultiBitWalletBusyAction(controller, ImageLoader.EXPORT_PRIVATE_KEYS_ICON_FILE,
                 "showExportPrivateKeysAction.text", "showExportPrivateKeysAction.tooltip", "showExportPrivateKeysAction.mnemonic",
-                View.SHOW_EXPORT_PRIVATE_KEYS_VIEW);
+                MultiBitView.SHOW_EXPORT_PRIVATE_KEYS_VIEW);
         menuItem = new JMenuItem(showExportPrivateKeysAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -928,7 +929,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         MultiBitAction resetTransactionsAction = new MultiBitAction(controller, ImageLoader.RESET_TRANSACTIONS_ICON_FILE,
                 "resetTransactionsAction.text", "resetTransactionsAction.tooltip", "resetTransactionsAction.mnemonic",
-                View.RESET_TRANSACTIONS_VIEW);
+                MultiBitView.RESET_TRANSACTIONS_VIEW);
         menuItem = new JMenuItem(resetTransactionsAction);
         menuItem.setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         menuItem.setComponentOrientation(componentOrientation);
@@ -980,8 +981,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             for (int i = 0; i < viewTabbedPane.getTabCount(); i++) {
                 JPanel tabComponent = (JPanel) viewTabbedPane.getComponentAt(i);
                 Component[] components = tabComponent.getComponents();
-                if (components != null && components.length > 0 && components[0] instanceof View) {
-                    View loopView = ((View) components[0]);
+                if (components != null && components.length > 0 && components[0] instanceof MultiBitView) {
+                    MultiBitView loopView = ((MultiBitView) components[0]);
                     loopView.displayView();
                     if (loopView.getViewId() == controller.getCurrentView()) {
                         viewTabbedPane.setSelectedIndex(i);
@@ -998,23 +999,23 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     public void displayView(int viewToDisplay) {
         //log.debug("Displaying view '" + viewToDisplay + "'");
         // Open wallet view obselete - show transactions
-        if (View.OPEN_WALLET_VIEW == viewToDisplay) {
-            viewToDisplay = View.TRANSACTIONS_VIEW;
+        if (MultiBitView.OPEN_WALLET_VIEW == viewToDisplay) {
+            viewToDisplay = MultiBitView.TRANSACTIONS_VIEW;
         }
         // Create Bulk addreses obselete - show transactions
-        if (View.CREATE_BULK_ADDRESSES_VIEW == viewToDisplay) {
-            viewToDisplay = View.TRANSACTIONS_VIEW;
+        if (MultiBitView.CREATE_BULK_ADDRESSES_VIEW == viewToDisplay) {
+            viewToDisplay = MultiBitView.TRANSACTIONS_VIEW;
         }
 
         // Show wallets view always on display.
-        if (View.YOUR_WALLETS_VIEW == viewToDisplay) {
+        if (MultiBitView.YOUR_WALLETS_VIEW == viewToDisplay) {
             walletsView.displayView();
             return;
         }
 
         controller.setCurrentView(viewToDisplay);
 
-        final View nextViewFinal = viewFactory.getView(viewToDisplay);
+        final IView nextViewFinal = viewFactory.getView(viewToDisplay);
 
         if (nextViewFinal == null) {
             log.debug("Cannot display view " + viewToDisplay);
@@ -1034,8 +1035,8 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                         if (tabComponent != null) {
                             Component[] childComponents = tabComponent.getComponents();
                             String tabTitle = null;
-                            if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof View) {
-                                tabTitle = ((View) childComponents[0]).getViewTitle();
+                            if (childComponents != null && childComponents.length > 0 && childComponents[0] instanceof MultiBitView) {
+                                tabTitle = ((MultiBitView) childComponents[0]).getViewTitle();
                             }
                             if (viewTitle != null && viewTitle.equals(tabTitle)) {
                                 foundTab = true;
@@ -1068,12 +1069,12 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      */
     @Override
     public void navigateAwayFromView(int viewToNavigateAwayFrom) {
-        if (View.YOUR_WALLETS_VIEW == viewToNavigateAwayFrom) {
+        if (MultiBitView.YOUR_WALLETS_VIEW == viewToNavigateAwayFrom) {
             // Do nothing
             return;
         }
 
-        final View viewToNavigateAwayFromFinal = viewFactory.getView(viewToNavigateAwayFrom);
+        final IView viewToNavigateAwayFromFinal = viewFactory.getView(viewToNavigateAwayFrom);
 
         if (viewToNavigateAwayFromFinal != null) {
             SwingUtilities.invokeLater(new Runnable() {
@@ -1139,7 +1140,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
      */
     public void blockDownloaded() {
         // Update transaction screen in case status bars have changed.
-        if (View.TRANSACTIONS_VIEW == controller.getCurrentView()) {
+        if (MultiBitView.TRANSACTIONS_VIEW == controller.getCurrentView()) {
             ShowTransactionsPanel.updateTransactions();
         }
     }
@@ -1205,13 +1206,13 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 }
 
                 // Tell the current view to update itself.
-                View currentViewView = viewFactory.getView(controller.getCurrentView());
+                IView currentViewView = viewFactory.getView(controller.getCurrentView());
                 if (currentViewView != null) {
                     currentViewView.displayView();
                 }
 
                 // Tell the tab to refresh (gets round bug on replay for transactions panel)
-                View tabbedPaneCurrentView = viewTabbedPane.getCurrentlyShownView();
+                MultiBitView tabbedPaneCurrentView = viewTabbedPane.getCurrentlyShownView();
                 if (tabbedPaneCurrentView != null && System.identityHashCode(tabbedPaneCurrentView) != System.identityHashCode(currentViewView)) {
                     //log.debug("Tabbed pane is showing " + System.identityHashCode(tabbedPaneCurrentView) + ", ViewFactory has " + System.identityHashCode(currentViewView));
                     tabbedPaneCurrentView.displayView();
@@ -1235,6 +1236,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
     void updateHeader() {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 updateHeaderOnSwingThread();
             }
@@ -1305,7 +1307,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     @Deprecated
     public void handleAbout(ApplicationEvent event) {
-        controller.displayView(View.HELP_ABOUT_VIEW);
+        controller.displayView(MultiBitView.HELP_ABOUT_VIEW);
         event.setHandled(true);
     }
 
@@ -1327,7 +1329,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
     @Override
     @Deprecated
     public void handlePreferences(ApplicationEvent event) {
-        controller.displayView(View.PREFERENCES_VIEW);
+        controller.displayView(MultiBitView.PREFERENCES_VIEW);
     }
 
     @Override

@@ -36,7 +36,7 @@ import javax.swing.SwingConstants;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.HelpContextAction;
@@ -51,7 +51,7 @@ import com.google.bitcoin.core.EncryptionType;
 /**
  * The remove password view.
  */
-public class RemovePasswordPanel extends JPanel implements View, WalletBusyListener {
+public class RemovePasswordPanel extends JPanel implements MultiBitView, WalletBusyListener {
 
     private static final long serialVersionUID = 444992298432957705L;
 
@@ -546,7 +546,7 @@ public class RemovePasswordPanel extends JPanel implements View, WalletBusyListe
 
     @Override
     public int getViewId() {
-        return View.REMOVE_PASSWORD_VIEW;
+        return MultiBitView.REMOVE_PASSWORD_VIEW;
     }
 
     @Override

@@ -39,7 +39,7 @@ import javax.swing.SwingConstants;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ChangePasswordSubmitAction;
@@ -54,7 +54,7 @@ import com.google.bitcoin.core.EncryptionType;
 /**
  * The change password view.
  */
-public class ChangePasswordPanel extends JPanel implements View, WalletBusyListener {
+public class ChangePasswordPanel extends JPanel implements MultiBitView, WalletBusyListener {
 
     private static final long serialVersionUID = 444992298432957705L;
 
@@ -795,7 +795,7 @@ public class ChangePasswordPanel extends JPanel implements View, WalletBusyListe
 
     @Override
     public int getViewId() {
-        return View.CHANGE_PASSWORD_VIEW;
+        return MultiBitView.CHANGE_PASSWORD_VIEW;
     }
 
     @Override

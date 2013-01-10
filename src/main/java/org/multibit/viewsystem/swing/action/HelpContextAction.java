@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import org.multibit.controller.ICoreController;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.utils.ImageLoader;
@@ -30,7 +31,7 @@ public class HelpContextAction extends AbstractAction {
 
     private static final long serialVersionUID = 191948235465057705L;
 
-    private MultiBitController controller;
+    private ICoreController controller;
     private String helpContextToDisplay;
 
     /**
@@ -42,7 +43,7 @@ public class HelpContextAction extends AbstractAction {
      * @param mnemonicKey The localisation key for the mnemonic of the action
      * @param viewToDisplay The help context to display on action activation.   A path in the help
      */
-    public HelpContextAction(MultiBitController controller, String imagePath, String textKey, String tooltipKey, String mnemonicKey, String helpContextToDisplay) {
+    public HelpContextAction(ICoreController controller, String imagePath, String textKey, String tooltipKey, String mnemonicKey, String helpContextToDisplay) {
         super(controller.getLocaliser().getString(textKey), ImageLoader.createImageIcon(imagePath));
         this.controller = controller;
         this.helpContextToDisplay = helpContextToDisplay;

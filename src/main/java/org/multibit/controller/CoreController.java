@@ -41,7 +41,7 @@ import org.multibit.platform.listener.GenericOpenURIEvent;
 import org.multibit.platform.listener.GenericPreferencesEvent;
 import org.multibit.platform.listener.GenericQuitEvent;
 import org.multibit.platform.listener.GenericQuitResponse;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.ViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
 import org.slf4j.Logger;
@@ -149,12 +149,12 @@ public class CoreController implements ICoreController {
             viewSystem.navigateAwayFromView(getCurrentView());
         }
 
-        setCurrentView(View.HELP_CONTENTS_VIEW);
+        setCurrentView(MultiBitView.HELP_CONTENTS_VIEW);
 
         // tell all views which view to display
         for (ViewSystem viewSystem : getViewSystems()) {
             viewSystem.setHelpContext(helpContextToDisplay);
-            viewSystem.displayView(View.HELP_CONTENTS_VIEW);
+            viewSystem.displayView(MultiBitView.HELP_CONTENTS_VIEW);
         }
     }
 
@@ -239,7 +239,7 @@ public class CoreController implements ICoreController {
         if (getModel() != null) {
             return getModel().getCurrentView();
         } else {
-            return View.DEFAULT_VIEW;
+            return MultiBitView.DEFAULT_VIEW;
         }
     }
 
@@ -331,7 +331,7 @@ public class CoreController implements ICoreController {
             log.debug("Routing straight to send view for address = " + address);
 
             getModel().setUserPreference(MultiBitModel.BRING_TO_FRONT, "true");
-            displayView(View.SEND_BITCOIN_VIEW);
+            displayView(MultiBitView.SEND_BITCOIN_VIEW);
             return;
         } else {
             // Show the confirm dialog to see if the user wants to use URI.
@@ -341,19 +341,19 @@ public class CoreController implements ICoreController {
             getModel().setUserPreference(MultiBitModel.OPEN_URI_AMOUNT, amount);
             log.debug("Routing to show open uri view for address = " + address);
 
-            displayView(View.SHOW_OPEN_URI_DIALOG_VIEW);
+            displayView(MultiBitView.SHOW_OPEN_URI_DIALOG_VIEW);
             return;
         }
     }
 
     @Override
     public void onPreferencesEvent(GenericPreferencesEvent event) {
-        displayView(View.PREFERENCES_VIEW);
+        displayView(MultiBitView.PREFERENCES_VIEW);
     }
 
     @Override
     public void onAboutEvent(GenericAboutEvent event) {
-        displayView(View.HELP_ABOUT_VIEW);
+        displayView(MultiBitView.HELP_ABOUT_VIEW);
     }
     
 }

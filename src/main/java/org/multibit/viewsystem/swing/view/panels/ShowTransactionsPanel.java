@@ -73,7 +73,7 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletTableData;
 import org.multibit.utils.DateUtils;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.UpdateTransactionsTimerTask;
@@ -87,7 +87,7 @@ import org.slf4j.LoggerFactory;
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 
-public class ShowTransactionsPanel extends JPanel implements View, CurrencyConverterListener {
+public class ShowTransactionsPanel extends JPanel implements MultiBitView, CurrencyConverterListener {
     private static final long serialVersionUID = 1235108897887842662L;
 
     private static final Logger log = LoggerFactory.getLogger(ShowTransactionsPanel.class);
@@ -939,7 +939,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
     @Override
     public int getViewId() {
-        return View.TRANSACTIONS_VIEW;
+        return MultiBitView.TRANSACTIONS_VIEW;
     }
 
     @Override

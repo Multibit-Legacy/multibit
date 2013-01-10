@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.multibit.viewsystem;
-
-import javax.swing.Icon;
+package org.multibit.viewsystem.core;
 
 
 /**
@@ -25,7 +23,7 @@ import javax.swing.Icon;
  * @author jim
  *
  */
-public interface View extends IView{
+public interface MultiBitView extends IView{
     public static final int TRANSACTIONS_VIEW = 101;
     public static final int SEND_BITCOIN_VIEW = 102;
     public static final int SEND_BITCOIN_CONFIRM_VIEW = 103;  // obsolete - now done with Swing dialog

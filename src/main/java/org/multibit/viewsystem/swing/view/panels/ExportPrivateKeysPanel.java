@@ -48,7 +48,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.ExportPrivateKeysSubmitAction;
@@ -65,7 +65,7 @@ import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
 /**
  * The export private keys panel.
  */
-public class ExportPrivateKeysPanel extends JPanel implements View, WalletBusyListener {
+public class ExportPrivateKeysPanel extends JPanel implements MultiBitView, WalletBusyListener {
 
     private static final long serialVersionUID = 444992298119957705L;
 
@@ -1001,7 +1001,7 @@ public class ExportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
 
     @Override
     public int getViewId() {
-        return View.SHOW_EXPORT_PRIVATE_KEYS_VIEW;
+        return MultiBitView.SHOW_EXPORT_PRIVATE_KEYS_VIEW;
     }
 
     // Used in testing.

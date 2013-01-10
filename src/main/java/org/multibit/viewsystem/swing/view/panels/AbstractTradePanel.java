@@ -85,7 +85,7 @@ import org.multibit.qrcode.QRCodeEncoderDecoder;
 import org.multibit.qrcode.QRCodeGenerator;
 import org.multibit.utils.ImageLoader;
 import org.multibit.utils.WhitespaceTrimmer;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.dataproviders.BitcoinFormDataProvider;
 import org.multibit.viewsystem.dataproviders.CopyQRCodeImageDataProvider;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
@@ -116,7 +116,7 @@ import org.multibit.viewsystem.swing.view.ImageSelection;
  * @author jim
  * 
  */
-public abstract class AbstractTradePanel extends JPanel implements View, CopyQRCodeImageDataProvider, BitcoinFormDataProvider, CurrencyConverterListener {
+public abstract class AbstractTradePanel extends JPanel implements MultiBitView, CopyQRCodeImageDataProvider, BitcoinFormDataProvider, CurrencyConverterListener {
 
     public boolean isShowSidePanel() {
         return showSidePanel;

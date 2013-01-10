@@ -40,7 +40,7 @@ import org.multibit.exchange.CurrencyConverterResult;
 import org.multibit.model.AddressBookData;
 import org.multibit.model.MultiBitModel;
 import org.multibit.utils.ImageLoader;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.action.CopySendAddressAction;
@@ -63,7 +63,7 @@ import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Utils;
 import org.multibit.viewsystem.swing.view.models.AddressBookTableModel;
 
-public class SendBitcoinPanel extends AbstractTradePanel implements View {
+public class SendBitcoinPanel extends AbstractTradePanel implements MultiBitView {
 
     private static final long serialVersionUID = -2065108865497111662L;
 
@@ -485,7 +485,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements View {
 
     @Override
     public int getViewId() {
-        return View.SEND_BITCOIN_VIEW;
+        return MultiBitView.SEND_BITCOIN_VIEW;
     }
     
     public SendBitcoinConfirmAction getSendBitcoinConfirmAction() {

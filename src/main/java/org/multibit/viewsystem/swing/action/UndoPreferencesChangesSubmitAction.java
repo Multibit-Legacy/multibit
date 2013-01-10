@@ -25,7 +25,7 @@ import javax.swing.UIManager;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
@@ -85,6 +85,6 @@ public class UndoPreferencesChangesSubmitAction extends AbstractAction {
         UIManager.put("ToolTip.font", new Font(previousFontName, previousFontStyleAsInt, previousFontSizeAsInt));
 
         controller.fireDataStructureChanged();
-        controller.displayView(View.PREFERENCES_VIEW);
+        controller.displayView(MultiBitView.PREFERENCES_VIEW);
     }
 }

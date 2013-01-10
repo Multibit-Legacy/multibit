@@ -38,7 +38,7 @@ import javax.swing.table.TableCellRenderer;
 
 import org.joda.money.BigMoney;
 import org.multibit.controller.MultiBitController;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
 import org.multibit.viewsystem.swing.view.panels.HelpContentsPanel;
@@ -99,7 +99,7 @@ public class TickerTablePanel extends JPanel {
         MouseListener viewPreferencesMouseListener = new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent arg0) {
-                controller.displayView(View.PREFERENCES_VIEW);
+                controller.displayView(MultiBitView.PREFERENCES_VIEW);
             }
         };
 

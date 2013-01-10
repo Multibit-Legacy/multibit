@@ -5,7 +5,7 @@ import java.util.TimerTask;
 import javax.swing.SwingUtilities;
 
 import org.multibit.controller.MultiBitController;
-import org.multibit.viewsystem.View;
+import org.multibit.viewsystem.core.MultiBitView;
 import org.multibit.viewsystem.swing.view.panels.ShowTransactionsPanel;
 
 public class UpdateTransactionsTimerTask extends TimerTask {
@@ -37,7 +37,7 @@ public class UpdateTransactionsTimerTask extends TimerTask {
 
                 if (updateThisTime) {
                     mainFrame.updateHeader();
-                    if (controller.getCurrentView() == View.TRANSACTIONS_VIEW) {
+                    if (controller.getCurrentView() == MultiBitView.TRANSACTIONS_VIEW) {
                         // log.debug("Updating transaction view");
                         transactionsPanel.displayView();
                     }
