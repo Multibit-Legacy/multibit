@@ -25,7 +25,7 @@ import org.multibit.viewsystem.swing.view.components.FontSizer;
 public class CreateNewReceivingAddressSubmitActionTest extends TestCase {      
     public static final char[] TEST_PASSWORD1 = "my hovercraft has eels".toCharArray();
     
-    private int TIME_TO_WAIT_FOR_ONE_KEY = 200; // milliseconds
+    private int TIME_TO_WAIT_FOR_ONE_KEY = 1000; // milliseconds
     
     @Test
     public void testAddReceivingAddressesWithNonEncryptedWallet() throws Exception {       

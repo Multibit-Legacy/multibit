@@ -73,9 +73,11 @@ public class SendBitcoinNowSubmitActionTest extends TestCase {
   
         // Set the action up to use test parameters and fail-on-send.
         sendBitcoinNowAction.setTestParameters(true, false);
+        Thread.sleep(DELAY_TO_UPDATE_MESSAGES);
         
         // Execute - this should give the sending or failed message.
         sendBitcoinNowAction.actionPerformed(null);
+        Thread.sleep(DELAY_TO_UPDATE_MESSAGES);
         assertTrue("Wrong message - expecting sending/sent on messageText1 was '" + sendBitcoinConfirmPanel.getMessageText1() + "'", "".equals(sendBitcoinConfirmPanel.getMessageText1().trim()) || EXPECTED_SENDING_BITCOIN.equals(sendBitcoinConfirmPanel.getMessageText1()) ||
                 EXPECTED_SEND_FAILED.equals(sendBitcoinConfirmPanel.getMessageText1()));    
         assertEquals("Wrong message - expecting sending on messageText2", EXPECTED_TEST_SEND_FAILED_ERROR, sendBitcoinConfirmPanel.getMessageText2());    
