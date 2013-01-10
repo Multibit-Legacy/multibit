@@ -38,6 +38,7 @@ import org.multibit.exchange.CurrencyConverter;
 import org.multibit.file.FileHandler;
 import org.multibit.file.WalletLoadException;
 import com.google.bitcoin.core.WalletVersionException;
+import org.multibit.controller.CoreController;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
@@ -104,7 +105,7 @@ public class MultiBit {
             Properties userPreferences = FileHandler.loadUserPreferences(applicationDataDirectoryLocator);
 
             // create the controller
-            controller = new MultiBitController(applicationDataDirectoryLocator);
+            controller = new MultiBitController(new CoreController(applicationDataDirectoryLocator));
 
             log.info("Configuring native event handling");
             GenericApplicationSpecification specification = new GenericApplicationSpecification();

@@ -28,6 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.Localiser;
+import org.multibit.controller.CoreController;
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
@@ -91,7 +92,7 @@ public class FileHandlerTest extends TestCase {
         ScryptParameters scryptParameters = new ScryptParameters(salt);
         encrypterDecrypter = new EncrypterDecrypterScrypt(scryptParameters);
         
-        controller = new MultiBitController();
+        controller = new MultiBitController(new CoreController());
         Localiser localiser = new Localiser();
         MultiBitModel model = new MultiBitModel(controller);
         controller.setLocaliser(localiser);
@@ -461,7 +462,7 @@ public class FileHandlerTest extends TestCase {
     }
     
     public void testIsSerialisdWallet() throws Exception {
-        MultiBitController controller = new MultiBitController();
+        MultiBitController controller = new MultiBitController(new CoreController());
         Localiser localiser = new Localiser();
         MultiBitModel model = new MultiBitModel(controller);
 
@@ -489,7 +490,7 @@ public class FileHandlerTest extends TestCase {
     
     @Test
     public void testCannotLoadOrSaveFutureWalletVersions() throws IOException {
-        MultiBitController controller = new MultiBitController();
+        MultiBitController controller = new MultiBitController(new CoreController());
         @SuppressWarnings("unused")
         MultiBitModel model = new MultiBitModel(controller);
         FileHandler fileHandler = new FileHandler(controller);
@@ -540,7 +541,7 @@ public class FileHandlerTest extends TestCase {
     
     @Test
     public void testWalletVersion2() throws IOException {
-        MultiBitController controller = new MultiBitController();
+        MultiBitController controller = new MultiBitController(new CoreController());
         @SuppressWarnings("unused")
         MultiBitModel model = new MultiBitModel(controller);
         FileHandler fileHandler = new FileHandler(controller);
