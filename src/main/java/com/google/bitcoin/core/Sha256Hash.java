@@ -78,7 +78,12 @@ public class Sha256Hash implements Serializable, IsMultiBitClass {
      */
     public static Sha256Hash hashFileContents(File f) throws IOException {
         // Lame implementation that just reads the entire file into RAM. Can be made more efficient later.
-        return create(ByteStreams.toByteArray(new FileInputStream(f)));
+        // Lame implementation that just reads the entire file into RAM. Can be made more efficient later.
+        FileInputStream fileInputStream = new FileInputStream(f);
+        Sha256Hash sha256Hash = create(ByteStreams.toByteArray(fileInputStream));
+        fileInputStream.close();
+        fileInputStream = null;
+        return sha256Hash;
     }
 
     /**
