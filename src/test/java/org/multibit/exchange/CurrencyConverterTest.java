@@ -37,7 +37,11 @@ public class CurrencyConverterTest extends TestCase {
         MultiBitController controller = new MultiBitController();
         @SuppressWarnings("unused")
         MultiBitModel model = new MultiBitModel(controller);
+        assertNotNull(model);
 
+        // set the default currency to USD
+        controller.getModel().setUserPreference(MultiBitModel.TICKER_FIRST_ROW_CURRENCY, "USD");
+        
         CurrencyConverter converter = CurrencyConverter.INSTANCE;
         assertNotNull(converter);
 
