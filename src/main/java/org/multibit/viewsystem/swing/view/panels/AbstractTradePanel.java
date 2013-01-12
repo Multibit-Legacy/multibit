@@ -1280,6 +1280,13 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         constraints2.anchor = GridBagConstraints.LINE_START;
         amountPanel.add(amountUnitFiatLabel, constraints2);  
         amountPanel.add(MultiBitTitledPanel.createStent(amountUnitFiatLabel.getPreferredSize().width, amountUnitFiatLabel.getPreferredSize().height), constraints2);
+
+        // Make fiat fields visible if currency is available.
+        boolean fiatIsVisible = CurrencyConverter.INSTANCE.isShowingFiat() && CurrencyConverter.INSTANCE.getRate() != null;
+        amountUnitFiatLabel.setVisible(fiatIsVisible);
+        amountFiatTextField.setVisible(fiatIsVisible);
+        amountEqualsLabel.setVisible(fiatIsVisible);
+        
         return amountPanel;
     }
     
@@ -1333,7 +1340,11 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
                 createNewButton.setToolTipText(getLocalisationString(CREATE_NEW_TOOLTIP, null));
             }
             if (deleteButton != null) {
-                deleteButton.setEnabled(true);
+                boolean deleteEnable = true;
+                if (addressesTableModel != null) {
+                    deleteEnable = addressesTableModel.getRowCount() > 0;
+                }
+                deleteButton.setEnabled(deleteEnable);
                 deleteButton.setToolTipText(getLocalisationString(DELETE_TOOLTIP, null));
             }
             if (pasteSwatchButton != null) {
@@ -1342,7 +1353,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
             }
         }
         
-        if (CurrencyConverter.INSTANCE.isShowingFiat()) {
+        if (CurrencyConverter.INSTANCE.isShowingFiat() && CurrencyConverter.INSTANCE.getRate() != null) {
             if (amountFiatTextField != null) {
                 amountFiatTextField.setVisible(true);
                 amountEqualsLabel.setVisible(true);
@@ -1939,6 +1950,18 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
 
             @Override
             public void run() {
+                // Make fiat fields visible if currency is available.
+                boolean fiatIsVisible = CurrencyConverter.INSTANCE.isShowingFiat() && CurrencyConverter.INSTANCE.getRate() != null;
+                if (amountUnitFiatLabel != null) {
+                    amountUnitFiatLabel.setVisible(fiatIsVisible);
+                }
+                if (amountFiatTextField != null) {
+                    amountFiatTextField.setVisible(fiatIsVisible);
+                }
+                if (amountEqualsLabel != null) {
+                    amountEqualsLabel.setVisible(fiatIsVisible);
+                }
+
                 if (amountBTCTextField != null) {
                     CurrencyConverterResult converterResult = CurrencyConverter.INSTANCE.parseToBTC(amountBTCTextField.getText());
                     if (converterResult.isBtcMoneyValid()) {

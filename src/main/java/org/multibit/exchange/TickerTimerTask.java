@@ -39,7 +39,7 @@ import com.xeiam.xchange.service.marketdata.polling.PollingMarketDataService;
  */
 public class TickerTimerTask extends TimerTask {
 
-    public static final int DEFAULT_REPEAT_RATE = 600000; // milliseconds (ten minutes)
+    public static final int DEFAULT_REPEAT_RATE = 600000; // milliseconds
 
     public static final int INITIAL_DELAY = 500; // milliseconds
 
@@ -53,10 +53,9 @@ public class TickerTimerTask extends TimerTask {
     private List<CurrencyPair> exchangeSymbols;
 
     /**
-     * Constructs the object, sets the string to be output in function run().
+     * Constructs the TickerTimerTask and initialises currencies of interest.
      */
     public TickerTimerTask(MultiBitController controller, MultiBitFrame mainFrame) {
-    	
         this.controller = controller;
         this.mainFrame = mainFrame;
 
@@ -76,8 +75,9 @@ public class TickerTimerTask extends TimerTask {
 
 
     /**
-     * When the timer executes, this code is run.
+     * When the timer executes, get the exchange data and pass to the CurrencyConverter, which notifies parties of interest.
      */
+    @Override
     public void run() {
         try {
             // Create exchange.
@@ -91,8 +91,10 @@ public class TickerTimerTask extends TimerTask {
             
             if (marketDataService != null) {
                 if (exchangeSymbols != null) {
-                    // Only get data from server if ticker is being shown.
-                    if (!Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW))) {
+                    // Only get data from server if ticker is being shown or if currency conversion is switched on.
+                    // (This is to minimise the load on the remote servers).
+                    if (!Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.TICKER_SHOW)) ||
+                            !Boolean.FALSE.toString().equals(controller.getModel().getUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT))) {
                         for (CurrencyPair loopSymbolPair : exchangeSymbols) {
                             // Get symbol ticker if it is one of the currencies
                             // we are interested in.

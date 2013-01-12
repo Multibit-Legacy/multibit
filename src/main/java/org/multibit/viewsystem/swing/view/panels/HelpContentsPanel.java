@@ -39,7 +39,7 @@ import org.multibit.viewsystem.swing.browser.Browser;
 public class HelpContentsPanel extends JPanel implements View {
 
     public static final String HELP_BASE_URL = "http://www.multibit.org/";
-    
+
     public static final String HELP_CONTENTS_URL = "help_contents.html";
     public static final String HELP_SENDING_URL = "help_sendingBitcoin.html";
     public static final String HELP_RECEIVING_URL = "help_receivingBitcoin.html";
@@ -48,7 +48,7 @@ public class HelpContentsPanel extends JPanel implements View {
     public static final String HELP_IMPORTING_PRIVATE_KEYS_URL = "help_importingPrivateKeys.html";
     public static final String HELP_EXPORTING_PRIVATE_KEYS_URL = "help_exportingPrivateKeys.html";
     public static final String HELP_RESET_BLOCKCHAIN_URL = "help_resetBlockchain.html";
-    
+
     private static final long serialVersionUID = 4921443778446348403L;
 
     private Browser browser;
@@ -56,7 +56,7 @@ public class HelpContentsPanel extends JPanel implements View {
 
     private MultiBitController controller;
     private MultiBitFrame mainFrame;
-  
+
     public static final String SPACER = "   "; // 3 spaces
 
     boolean firstTimeLoaded = false;
@@ -66,37 +66,29 @@ public class HelpContentsPanel extends JPanel implements View {
         this.mainFrame = mainFrame;
         helpContext = mainFrame.getHelpContext();
         if (helpContext == null || "".equals(helpContext)) {
-            helpContext = "help_contents.html";
+            helpContext = HELP_CONTENTS_URL;
         }
-        
+
         setLayout(new BorderLayout());
         firstTimeLoaded = true;
 
         setBackground(ColorAndFontConstants.BACKGROUND_COLOR);
 
-        final MultiBitController  finalController = controller;
+        final MultiBitController finalController = controller;
         final MultiBitFrame finalMainFrame = mainFrame;
-        
+
         mainFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        SwingUtilities.invokeLater(new Runnable() {
 
-            @Override
-            public void run() {
-                browser = new Browser(finalController, finalMainFrame, HELP_BASE_URL + helpContext);
-                
-                JScrollPane scrollPane = new JScrollPane(browser);
-                scrollPane.setPreferredSize(new Dimension(800, 400));
-                scrollPane.setBorder(BorderFactory.createEmptyBorder());
-                scrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
-                scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        browser = new Browser(finalController, finalMainFrame, HELP_BASE_URL + helpContext);
 
-                add(scrollPane, BorderLayout.CENTER);          
-            }
-            
-        });
-      
+        JScrollPane scrollPane = new JScrollPane(browser);
+        scrollPane.setPreferredSize(new Dimension(800, 400));
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(MultiBitModel.SCROLL_INCREMENT);
+
+        add(scrollPane, BorderLayout.CENTER);
     }
-    
 
     public static String createMultilineTooltipText(String[] toolTips) {
         // multiline tool tip text
@@ -125,15 +117,15 @@ public class HelpContentsPanel extends JPanel implements View {
         if (helpContext == null || "".equals(helpContext)) {
             helpContext = "help_contents.html";
         }
-        
+
         if (browser != null) {
-            if (!firstTimeLoaded || (firstTimeLoaded && !browser.wasLoadedOkAtConstruction())) {
-                  browser.visit(HELP_BASE_URL + helpContext);
+            if (!firstTimeLoaded || (firstTimeLoaded && !browser.isLoading())) {
+                browser.visit(HELP_BASE_URL + helpContext, false);
             }
         }
         firstTimeLoaded = false;
     }
-    
+
     @Override
     public Icon getViewIcon() {
         if (ComponentOrientation.LEFT_TO_RIGHT == ComponentOrientation.getOrientation(controller.getLocaliser().getLocale())) {
@@ -147,7 +139,7 @@ public class HelpContentsPanel extends JPanel implements View {
     public String getViewTitle() {
         return controller.getLocaliser().getString("showHelpContentsAction.text");
     }
-    
+
     @Override
     public String getViewTooltip() {
         return controller.getLocaliser().getString("showHelpContentsAction.tooltip");
@@ -156,25 +148,5 @@ public class HelpContentsPanel extends JPanel implements View {
     @Override
     public int getViewId() {
         return View.HELP_CONTENTS_VIEW;
-    }
-
-
-    public String getPreviousCurrency2() {
-        return null;
-    }
-
-
-    public String getPreviousExchange2() {
-        return null;
-    }
-
-
-    public boolean getPreviousShowSecondRow() {
-        return false;
-    }
-
-
-    public String getPreviousCurrency1() {
-        return null;
     }
 }

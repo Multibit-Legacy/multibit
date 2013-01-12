@@ -48,6 +48,7 @@ public class ActivatedHyperlinkListener implements HyperlinkListener {
         this.browser = browser;
     }
 
+    @Override
     public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
         HyperlinkEvent.EventType type = hyperlinkEvent.getEventType();
         final URL url = hyperlinkEvent.getURL();
@@ -87,9 +88,10 @@ public class ActivatedHyperlinkListener implements HyperlinkListener {
             }
         } else if (type == HyperlinkEvent.EventType.ACTIVATED) {
             Runnable runner = new Runnable() {
+                @Override
                 public void run() {
                     if ((HTTP_PROTOCOL.equals(url.getProtocol()) || HTTPS_PROTOCOL.equals(url.getProtocol())) && (MULTIBIT_HOST_NAME.equals(url.getHost()) || MULTIBIT_HOST_NAME2.equals(url.getHost()))) {
-                        browser.visit(url.toString());
+                        browser.visit(url.toString(), false);
                     } else {
                         JOptionPane.showMessageDialog(mainFrame, "The help contents can only show HTTP content from "
                                 + MULTIBIT_HOST_NAME + " and " + MULTIBIT_HOST_NAME + "\nPlease use your main browser to view the URL:\n" + url.toString(),
