@@ -702,7 +702,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * Handle when a transaction becomes newly active on the best chain, either due to receiving a new block or a
      * re-org making inactive transactions active.
      */
-    private void processTxFromBestChain(Transaction tx, Transaction doubleSpend) throws VerificationException, ScriptException {
+    private void processTxFromBestChain(Transaction tx, Transaction doubleSpend) throws VerificationException {
         // This TX may spend our existing outputs even though it was not pending. This can happen in unit
         // tests, if keys are moved between wallets, if we're catching up to the chain given only a set of keys,
         // or if a dead coinbase transaction has moved back onto the main chain.
@@ -2155,7 +2155,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
         this.lastBlockSeenHash = lastBlockSeenHash;
     }
     
-    public ArrayList<ECKey> getKeychain() {
+    public Collection<ECKey> getKeychain() {
         return keychain;
     }
 
@@ -2355,7 +2355,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
             return false;
         }
         
-        ECKey firstECKey = getKeychain().get(0);
+        ECKey firstECKey = getKeychain().iterator().next();
 
         if (firstECKey != null && firstECKey.getEncryptedPrivateKey() != null) {
             try {

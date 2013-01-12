@@ -36,6 +36,7 @@ import org.multibit.viewsystem.swing.view.panels.ExportPrivateKeysPanel;
 import org.multibit.viewsystem.swing.view.components.FontSizer;
 
 import com.google.bitcoin.core.Utils;
+import com.google.bitcoin.core.Wallet.BalanceType;
 
 public class ExportPrivateKeysSubmitActionTest extends TestCase {   
     
@@ -133,7 +134,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         privateKeysHandler = new PrivateKeysHandler(controller.getModel().getNetworkParameters());
         privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename1), EXPORT_FILE_PASSWORD);
         assertEquals("Wrong number of keys read in from encrypted export file", 1, privateKeyAndDates.size());
-        assertEquals("Wrong private key read in from encrypted export file", Utils.bytesToHexString(controller.getModel().getActiveWallet().getKeychain().get(0).getPrivKeyBytes()), 
+        assertEquals("Wrong private key read in from encrypted export file", Utils.bytesToHexString(controller.getModel().getActiveWallet().getKeychain().iterator().next().getPrivKeyBytes()), 
                 Utils.bytesToHexString(privateKeyAndDates.iterator().next().getKey().getPrivKeyBytes()));  
         
         // Set the export file password protect radio to output unencrypted.
@@ -158,7 +159,7 @@ public class ExportPrivateKeysSubmitActionTest extends TestCase {
         // Read in the unencrypted exported private key file.
         privateKeyAndDates = privateKeysHandler.readInPrivateKeys(new File(outputFilename2), null);
         assertEquals("Wrong number of keys read in from unencrypted export file", 1, privateKeyAndDates.size());
-        assertEquals("Wrong private key read in from unencrypted export file", Utils.bytesToHexString(controller.getModel().getActiveWallet().getKeychain().get(0).getPrivKeyBytes()), 
+        assertEquals("Wrong private key read in from unencrypted export file", Utils.bytesToHexString(controller.getModel().getActiveWallet().getKeychain().iterator().next().getPrivKeyBytes()), 
                 Utils.bytesToHexString(privateKeyAndDates.iterator().next().getKey().getPrivKeyBytes()));          
     }
     

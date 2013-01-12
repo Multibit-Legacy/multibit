@@ -260,7 +260,7 @@ public class PrivateKeysHandler {
        // Determine if keys need to be decrypted.
         boolean decryptionRequired = false;
 
-        ArrayList<ECKey> keychain = wallet.getKeychain();
+        Collection<ECKey> keychain = wallet.getKeychain();
         Collection<PrivateKeyAndDate> keyAndDates = new ArrayList<PrivateKeyAndDate>();
 
         synchronized (keychain) {
@@ -407,7 +407,7 @@ public class PrivateKeysHandler {
     /**
      * This method is here because there is no equals on ECKey.
      */
-    private boolean keyChainContainsPrivateKey(ArrayList<ECKey> keyChain, ECKey keyToAdd) {
+    private boolean keyChainContainsPrivateKey(Collection<ECKey> keyChain, ECKey keyToAdd) {
         if (keyChain == null || keyToAdd == null) {
             return false;
         } else {

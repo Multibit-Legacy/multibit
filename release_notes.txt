@@ -6,6 +6,7 @@ Version 0.5.8beta
 + Fiat currency fields only shown on Send and Request if fiat currency successfully found from remote server
 + Fixed help borking MultiBit if no network present
 + Removed cacheManager code - no longer supported
++ Backward compatible wallet changes (description added, minor version dropped).
 
 
 7 Jan 2013 Version 0.4.18

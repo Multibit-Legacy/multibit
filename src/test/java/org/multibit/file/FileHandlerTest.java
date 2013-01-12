@@ -19,7 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 import junit.framework.TestCase;
 
@@ -28,20 +29,20 @@ import org.junit.Test;
 import org.multibit.Constants;
 import org.multibit.Localiser;
 import org.multibit.controller.MultiBitController;
-import com.google.bitcoin.crypto.EncrypterDecrypter;
-import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
-import com.google.bitcoin.crypto.ScryptParameters;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.WalletInfo;
-import com.google.bitcoin.core.WalletVersion;
 
 import com.google.bitcoin.core.ECKey;
+import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.EncryptionType;
+import com.google.bitcoin.core.WalletVersion;
 import com.google.bitcoin.core.WalletVersionException;
+import com.google.bitcoin.crypto.EncrypterDecrypter;
+import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
+import com.google.bitcoin.crypto.ScryptParameters;
 
 public class FileHandlerTest extends TestCase {
     private final String WALLET_TESTDATA_DIRECTORY = "wallets";
@@ -281,7 +282,7 @@ public class FileHandlerTest extends TestCase {
         assertTrue("Wallet isCurrentlyEncrypted is false when it should be true", perWalletModelData.getWallet().isCurrentlyEncrypted());
 
         // Get the keys of the wallet and check that all the keys are encrypted.
-        ArrayList<ECKey> keys = newWallet.getKeychain();
+        Collection<ECKey> keys = newWallet.getKeychain();
         for (ECKey key : keys) {
             assertTrue("Key is not encrypted when it should be", key.isEncrypted());
         }
@@ -311,7 +312,7 @@ public class FileHandlerTest extends TestCase {
         assertTrue("Wallet isCurrentlyEncrypted is false when it should be true", perWalletModelDataReborn.getWallet().isCurrentlyEncrypted());
         
         // Get the keys out the reborn wallet and check that all the keys are encrypted.
-        ArrayList<ECKey> rebornEncryptedKeys = perWalletModelDataReborn.getWallet().getKeychain();
+        Collection<ECKey> rebornEncryptedKeys = perWalletModelDataReborn.getWallet().getKeychain();
         for (ECKey key : rebornEncryptedKeys) {
             assertTrue("Key is not encrypted when it should be", key.isEncrypted());
         }
@@ -320,11 +321,12 @@ public class FileHandlerTest extends TestCase {
         perWalletModelDataReborn.getWallet().decrypt(perWalletModelDataReborn.getWallet().getEncrypterDecrypter().deriveKey(WALLET_PASSWORD));
 
         // Get the keys out the reborn wallet and check that all the keys match.
-        ArrayList<ECKey> rebornKeys = perWalletModelDataReborn.getWallet().getKeychain();
+        Collection<ECKey> rebornKeys = perWalletModelDataReborn.getWallet().getKeychain();
         
         assertEquals("Wrong number of keys in reborn wallet", 2, rebornKeys.size());
         
-        ECKey firstRebornKey = rebornKeys.get(0);
+        Iterator<ECKey> iterator = rebornKeys.iterator();
+        ECKey firstRebornKey = iterator.next();
         assertTrue("firstRebornKey should now de decrypted but is not", !firstRebornKey.isEncrypted());
         // The reborn unencrypted private key bytes should match the original private key.
         byte[] firstRebornPrivateKeyBytes = firstRebornKey.getPrivKeyBytes();
@@ -334,7 +336,7 @@ public class FileHandlerTest extends TestCase {
             assertEquals("Byte " + i + " of the reborn first private key did not match the original", originalPrivateKeyBytes1[i], firstRebornPrivateKeyBytes[i]);
         }
         
-        ECKey secondRebornKey = rebornKeys.get(1);
+        ECKey secondRebornKey = iterator.next();
         assertTrue("secondRebornKey should now de decrypted but is not", !secondRebornKey.isEncrypted());
         // The reborn unencrypted private key bytes should match the original private key.
         byte[] secondRebornPrivateKeyBytes = secondRebornKey.getPrivKeyBytes();
