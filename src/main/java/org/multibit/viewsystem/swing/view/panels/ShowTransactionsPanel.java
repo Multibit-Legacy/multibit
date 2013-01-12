@@ -84,6 +84,7 @@ import org.multibit.viewsystem.swing.view.components.MultiBitLabel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 
@@ -120,6 +121,8 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     private static final String RTL_PROGRESS_4_ICON_FILE = "/images/circleProgress4.png";
     private static final String RTL_PROGRESS_5_ICON_FILE = "/images/circleProgress5.png";
     private static final String TICK_ICON_FILE = "/images/tick.png";
+    private static final String PICKAXE_ICON_FILE = "/images/pickaxe.png";
+    private static final String ERROR_ICON_FILE = "/images/bulletError.png";
 
     private int selectedRow = -1;
     
@@ -375,13 +378,20 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     class ImageRenderer extends DefaultTableCellRenderer {
         private static final long serialVersionUID = 154545L;
 
-        JLabel label = new JLabel();
+        JLabel primaryLabel = new JLabel();
 
+        // If the component is a doubleIcon the next fields are used.
+        JLabel extraLabel = new JLabel();
+        boolean doubleIcon = false;
+        JPanel combinationPanel = new JPanel();
+        
         ImageIcon shapeTriangleIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_TRIANGLE_ICON_FILE);
         ImageIcon shapeSquareIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_SQUARE_ICON_FILE);
         ImageIcon shapeHeptagonIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_PENTAGON_ICON_FILE);
         ImageIcon shapeHexagonIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_HEXAGON_ICON_FILE);
         ImageIcon tickIcon = ImageLoader.createImageIcon(TICK_ICON_FILE);
+        ImageIcon pickaxeIcon = ImageLoader.createImageIcon(PICKAXE_ICON_FILE);
+        ImageIcon errorIcon = ImageLoader.createImageIcon(ERROR_ICON_FILE);
         ImageIcon progress0Icon = ImageLoader.createImageIcon(PROGRESS_0_ICON_FILE);
         ImageIcon progress1Icon = ImageLoader.createImageIcon(PROGRESS_1_ICON_FILE);
         ImageIcon progress2Icon = ImageLoader.createImageIcon(PROGRESS_2_ICON_FILE);
@@ -396,11 +406,22 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
-            label.setHorizontalAlignment(SwingConstants.CENTER);
-            label.setOpaque(true);
+            primaryLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            primaryLabel.setVerticalAlignment(SwingConstants.CENTER);
+            primaryLabel.setOpaque(true);
+            extraLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            extraLabel.setVerticalAlignment(SwingConstants.CENTER);
+            extraLabel.setOpaque(true);
+            combinationPanel.setOpaque(true);
+            combinationPanel.setLayout(new GridBagLayout());
 
-            TransactionConfidence confidence = (TransactionConfidence) value;
+            GridBagConstraints constraints = new GridBagConstraints();
 
+            Transaction transaction = (Transaction)value;
+            TransactionConfidence confidence = null;
+            if (transaction != null) {
+                confidence = transaction.getConfidence();
+            }            
             ConfidenceType confidenceType = null;
             if (confidence != null) {
                 confidenceType = confidence.getConfidenceType();
@@ -410,74 +431,123 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             }
             switch (confidenceType) {
             case UNKNOWN: {
-                label.setText("?");
-                label.setIcon(null);
+                primaryLabel.setText("?");
+                primaryLabel.setIcon(null);
                 // label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.notConfirmed"));
                 break;
             }
             case BUILDING: {
                 if (controller.getMultiBitService().getChain() == null) {
-                    label.setText("?");
-                    label.setIcon(null);
+                    primaryLabel.setText("?");
+                    primaryLabel.setIcon(null);
                 } else {
                     int numberOfBlocksEmbedded = controller.getMultiBitService().getChain().getBestChainHeight() - confidence.getAppearedAtChainHeight() + 1;
-                    ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded, confidence);
-                    label.setIcon(buildingIcon);
-                    label.setText("");
+                    ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded, transaction);
+                    primaryLabel.setIcon(buildingIcon);
+                    primaryLabel.setText("");
                     if (numberOfBlocksEmbedded >= 6) {
-                        label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.isConfirmed"));
+                        primaryLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.isConfirmed"));
                     } else {
-                        label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
+                        primaryLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
                     }
                 }
                 break;
             }
             case NOT_SEEN_IN_CHAIN: {
-                label.setIcon(getConfidenceIcon(confidence));
-                label.setText("");
+                primaryLabel.setIcon(getConfidenceIcon(confidence));
+                primaryLabel.setText("");
                 
-                label.setToolTipText(getConfidenceToolTip(confidence) );
+                primaryLabel.setToolTipText(getConfidenceToolTip(confidence) );
 
                 // label.setText("NSIC");
                 break;
             }
             case NOT_IN_BEST_CHAIN: {
-                label.setIcon(getConfidenceIcon(confidence));
-                label.setText("");
-                label.setToolTipText(getConfidenceToolTip(confidence) );
+                primaryLabel.setIcon(getConfidenceIcon(confidence));
+                primaryLabel.setText("");
+                primaryLabel.setToolTipText(getConfidenceToolTip(confidence) );
                 // label.setText("NSIBC");
                 break;
             }
             case DEAD: {
-                label.setIcon(null);
-                label.setText("DS");
+                primaryLabel.setIcon(null);
+                primaryLabel.setText("DS");
                 break;
             }
             default: {
-                label.setIcon(null);
-                label.setText("?");
+                primaryLabel.setIcon(null);
+                primaryLabel.setText("?");
                 break;
             }
+            }
+           
+            if (transaction != null && transaction.isCoinBase()) {
+                extraLabel.setIcon(pickaxeIcon);
+                doubleIcon = true;
+                
+                constraints.fill = GridBagConstraints.NONE;
+                constraints.gridx = 0;
+                constraints.gridy = 0;
+                constraints.weightx = 1;
+                constraints.weighty = 1;
+                constraints.anchor = GridBagConstraints.LINE_END;
+                combinationPanel.add(primaryLabel, constraints);
+
+                constraints.fill = GridBagConstraints.NONE;
+                constraints.gridx = 1;
+                constraints.gridy = 0;
+                constraints.weightx = 1;
+                constraints.weighty = 1;
+                constraints.anchor = GridBagConstraints.LINE_START;
+
+                combinationPanel.add(extraLabel, constraints);
+            } else {
+                doubleIcon = false;
             }
 
             if (isSelected) {
                 selectedRow = row;
-                label.setBackground(table.getSelectionBackground());
-                label.setForeground(table.getSelectionForeground());
+                primaryLabel.setBackground(table.getSelectionBackground());
+                primaryLabel.setForeground(table.getSelectionForeground());
+                extraLabel.setBackground(table.getSelectionBackground());
+                extraLabel.setForeground(table.getSelectionForeground());
+                combinationPanel.setBackground(table.getSelectionBackground());
             } else {
-                label.setForeground(table.getForeground());
+                primaryLabel.setForeground(table.getForeground());
+                extraLabel.setForeground(table.getForeground());
+                combinationPanel.setForeground(table.getForeground());
                 if (row % 2 == 0) {
-                    label.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                    primaryLabel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                    extraLabel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
+                    combinationPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                 } else {
-                    label.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
-                    label.setOpaque(true);
+                    primaryLabel.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
+                    extraLabel.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
+                    combinationPanel.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
+                    primaryLabel.setOpaque(true);
+                    extraLabel.setOpaque(true);
+                    combinationPanel.setOpaque(true);
                 }
             }
 
-            return label;
+            if (doubleIcon) {
+                return combinationPanel;
+            } else {
+                return primaryLabel;
+            }
         }
 
-        private ImageIcon getBuildingIcon(int numberOfBlocksEmbedded, TransactionConfidence confidence) {
+        private ImageIcon getBuildingIcon(int numberOfBlocksEmbedded, Transaction transaction) {
+            TransactionConfidence confidence = null;
+            if (transaction != null) {
+                confidence = transaction.getConfidence();
+            }
+
+            // Coinbase transactions mature 20 times slower than regular ones
+            if (transaction != null && transaction.isCoinBase()) {
+                numberOfBlocksEmbedded = numberOfBlocksEmbedded / 20;
+            }
+            
             if (numberOfBlocksEmbedded < 0) {
                 numberOfBlocksEmbedded = 0;
             }

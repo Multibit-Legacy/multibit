@@ -95,9 +95,9 @@ public class WalletTableModel extends AbstractTableModel {
         switch (column) {
         case 0: {
             if (walletDataRow.getTransaction() != null && walletDataRow.getTransaction().getConfidence() != null) {
-                return walletDataRow.getTransaction().getConfidence();
+                return walletDataRow.getTransaction();
             } else {
-                return  ConfidenceType.UNKNOWN;
+                return null;
             }
         }
         case 1: {
