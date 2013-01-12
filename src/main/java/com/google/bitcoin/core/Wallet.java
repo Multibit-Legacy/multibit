@@ -167,6 +167,11 @@ public class Wallet implements Serializable, IsMultiBitClass {
     // as a convenience to API users so they don't have to register on every transaction themselves.
     private transient TransactionConfidence.Listener txConfidenceListener;
 
+    // If a TX hash appears in this set then notifyNewBestBlock will ignore it, as its confidence was already set up
+    // in receive() via Transaction.setBlockAppearance(). As the BlockChain always calls notifyNewBestBlock even if
+    // it sent transactions to the wallet, without this we'd double count.
+    private transient HashSet<Sha256Hash> ignoreNextNewBlock;
+
     /**
      * Creates a new, empty wallet with no keys and no transactions. If you want to restore a wallet from disk instead,
      * see loadFromFile.
@@ -184,6 +189,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
     private void createTransientState() {
         eventListeners = new ArrayList<WalletEventListener>();
+        ignoreNextNewBlock = new HashSet<Sha256Hash>();
         txConfidenceListener = new TransactionConfidence.Listener() {
             public void onConfidenceChanged(Transaction tx) {
                 invokeOnTransactionConfidenceChanged(tx);
@@ -526,6 +532,12 @@ public class Wallet implements Serializable, IsMultiBitClass {
         // transaction update its confidence and timestamp bookkeeping data.
         if (block != null) {
             tx.setBlockAppearance(block, bestChain);
+            if (bestChain) {
+                // Don't notify this tx of work done in notifyNewBestBlock which will be called immediately after
+                // this method has been called by BlockChain for all relevant transactions. Otherwise we'd double
+                // count.
+                ignoreNextNewBlock.add(txHash);
+            }
             invokeOnTransactionConfidenceChanged(tx);
         }
 
@@ -575,7 +587,13 @@ public class Wallet implements Serializable, IsMultiBitClass {
             // This is so that they can update their work done and depth.
             Set<Transaction> transactions = getTransactions(true, false);
             for (Transaction tx : transactions) {
-                tx.getConfidence().notifyWorkDone(block);
+                if (ignoreNextNewBlock.contains(tx.getHash())) {
+                    // tx was already processed in receive() due to it appearing in this block, so we don't want to
+                    // notify the tx confidence of work done twice, it'd result in miscounting.
+                    ignoreNextNewBlock.remove(tx.getHash());
+                } else {
+                    tx.getConfidence().notifyWorkDone(block);
+                }
             }
         }
     }

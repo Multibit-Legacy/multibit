@@ -90,7 +90,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         inputs = new ArrayList<TransactionInput>();
         outputs = new ArrayList<TransactionOutput>();
         // We don't initialize appearsIn deliberately as it's only useful for transactions stored in the wallet.
-        length = 10; // 8 for std fields + 1 for each 0 varint
+        length = 8; // 8 for std fields
 
         updatedAt = new Date();
     }
@@ -102,7 +102,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         outputs = new ArrayList<TransactionOutput>();
         this.hash = hash;
         // We don't initialize appearsIn deliberately as it's only useful for transactions stored in the wallet.
-        length = 10; //8 for std fields + 1 for each 0 varint
+        length = 8; //8 for std fields
 
         updatedAt = new Date();
     }
@@ -291,11 +291,15 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
             transactionConfidence.setAppearedAtChainHeight(block.getHeight());
 
             // Reset the confidence block depth.
-            transactionConfidence.setDepthInBlocks(0);
+            transactionConfidence.setDepthInBlocks(1);
 
             // Reset the work done.
-            transactionConfidence.setWorkDone(BigInteger.ZERO);
-
+            try {
+                transactionConfidence.setWorkDone(block.getHeader().getWork());
+            } catch (VerificationException e) {
+                throw new RuntimeException(e);  // Cannot happen.
+            }
+            
             // The transaction is now on the best chain.
             transactionConfidence.setConfidenceType(ConfidenceType.BUILDING);
         }
@@ -328,7 +332,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         // This is tested in WalletTest.
         BigInteger v = BigInteger.ZERO;
         for (TransactionInput input : inputs) {
-            // This input is taking value from an transaction in our wallet. To discover the value,
+            // This input is taking value a transaction in our wallet. To discover the value,
             // we must find the connected transaction.
             TransactionOutput connected = input.getConnectedOutput(wallet.unspent);
             if (connected == null)
@@ -644,7 +648,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         unCache();
         input.setParent(this);
         inputs.add(input);
-        adjustLength(input.length);
+        adjustLength(inputs.size(), input.length);
     }
 
     /**
@@ -654,7 +658,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
         unCache();
         to.setParent(this);
         outputs.add(to);
-        adjustLength(to.length);
+        adjustLength(outputs.size(), to.length);
     }
 
     /**

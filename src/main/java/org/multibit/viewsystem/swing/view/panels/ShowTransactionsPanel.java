@@ -122,7 +122,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
     private static final String RTL_PROGRESS_5_ICON_FILE = "/images/circleProgress5.png";
     private static final String TICK_ICON_FILE = "/images/tick.png";
     private static final String PICKAXE_ICON_FILE = "/images/pickaxe.png";
-    private static final String ERROR_ICON_FILE = "/images/bulletError.png";
+    private static final String SMALL_EXCLAMATION_MARK_ICON_FILE = "/images/smallExclamationMark.png";
 
     private int selectedRow = -1;
     
@@ -391,7 +391,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         ImageIcon shapeHexagonIcon = ImageLoader.createImageIcon(ImageLoader.SHAPE_HEXAGON_ICON_FILE);
         ImageIcon tickIcon = ImageLoader.createImageIcon(TICK_ICON_FILE);
         ImageIcon pickaxeIcon = ImageLoader.createImageIcon(PICKAXE_ICON_FILE);
-        ImageIcon errorIcon = ImageLoader.createImageIcon(ERROR_ICON_FILE);
+        ImageIcon smallExclamationMarkIcon = ImageLoader.createImageIcon(SMALL_EXCLAMATION_MARK_ICON_FILE);
         ImageIcon progress0Icon = ImageLoader.createImageIcon(PROGRESS_0_ICON_FILE);
         ImageIcon progress1Icon = ImageLoader.createImageIcon(PROGRESS_1_ICON_FILE);
         ImageIcon progress2Icon = ImageLoader.createImageIcon(PROGRESS_2_ICON_FILE);
@@ -406,6 +406,8 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
+            
+            // Prepare the primary icon (used always), and and extra icon and containing panel for use as required.
             primaryLabel.setHorizontalAlignment(SwingConstants.CENTER);
             primaryLabel.setVerticalAlignment(SwingConstants.CENTER);
             primaryLabel.setOpaque(true);
@@ -417,7 +419,30 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
             GridBagConstraints constraints = new GridBagConstraints();
 
+            // Prepare a double icon panel for use as required.
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.gridx = 0;
+            constraints.gridy = 0;
+            constraints.weightx = 1;
+            constraints.weighty = 1;
+            constraints.anchor = GridBagConstraints.LINE_END;
+            combinationPanel.add(primaryLabel, constraints);
+
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.gridx = 1;
+            constraints.gridy = 0;
+            constraints.weightx = 1;
+            constraints.weighty = 1;
+            constraints.anchor = GridBagConstraints.LINE_START;
+
+            combinationPanel.add(extraLabel, constraints); 
+            
+            
+            // Get the transaction confidence
             Transaction transaction = (Transaction)value;
+            
+            //transaction.setLockTime(54);
+            
             TransactionConfidence confidence = null;
             if (transaction != null) {
                 confidence = transaction.getConfidence();
@@ -429,11 +454,21 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             if (confidenceType == null) {
                 confidenceType = ConfidenceType.UNKNOWN;
             }
+ 
+   
+            // Coinbase transactions have an extra pickaxe icon.
+            if (transaction != null && transaction.isCoinBase()) {
+                extraLabel.setIcon(pickaxeIcon);
+                doubleIcon = true;
+            } else {
+                doubleIcon = false;
+            }
+
+            // Work out the primary icon.
             switch (confidenceType) {
             case UNKNOWN: {
                 primaryLabel.setText("?");
                 primaryLabel.setIcon(null);
-                // label.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.notConfirmed"));
                 break;
             }
             case BUILDING: {
@@ -442,13 +477,21 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                     primaryLabel.setIcon(null);
                 } else {
                     int numberOfBlocksEmbedded = controller.getMultiBitService().getChain().getBestChainHeight() - confidence.getAppearedAtChainHeight() + 1;
+                    if (transaction != null && transaction.isCoinBase()) {
+                        // Coinbase tx mature slower than regular blocks
+                        numberOfBlocksEmbedded = numberOfBlocksEmbedded / 20;
+                    }
                     ImageIcon buildingIcon = getBuildingIcon(numberOfBlocksEmbedded, transaction);
                     primaryLabel.setIcon(buildingIcon);
                     primaryLabel.setText("");
                     if (numberOfBlocksEmbedded >= 6) {
                         primaryLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.isConfirmed"));
                     } else {
-                        primaryLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
+                        if (transaction != null && transaction.isCoinBase()) {
+                            primaryLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmedAndCoinbase"));                            
+                        } else {
+                            primaryLabel.setToolTipText(controller.getLocaliser().getString("multiBitFrame.status.beingConfirmed"));
+                        }
                     }
                 }
                 break;
@@ -457,21 +500,37 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 primaryLabel.setIcon(getConfidenceIcon(confidence));
                 primaryLabel.setText("");
                 
-                primaryLabel.setToolTipText(getConfidenceToolTip(confidence) );
-
-                // label.setText("NSIC");
+                primaryLabel.setToolTipText(getConfidenceToolTip(transaction) );
+                
+                if (transaction != null) {
+                    if (transaction.getLockTime() > 0) {
+                        extraLabel.setIcon(smallExclamationMarkIcon);
+                        doubleIcon = true;
+                    } else {
+                        doubleIcon = false;
+                    }
+                }
                 break;
             }
             case NOT_IN_BEST_CHAIN: {
                 primaryLabel.setIcon(getConfidenceIcon(confidence));
                 primaryLabel.setText("");
-                primaryLabel.setToolTipText(getConfidenceToolTip(confidence) );
-                // label.setText("NSIBC");
+                primaryLabel.setToolTipText(getConfidenceToolTip(transaction) );
+                
+                if (transaction != null) {
+                    if (transaction.getLockTime() > 0) {
+                        extraLabel.setIcon(smallExclamationMarkIcon);
+                        doubleIcon = true;
+                    } else {
+                        doubleIcon = false;
+                    }
+                }
+
                 break;
             }
             case DEAD: {
-                primaryLabel.setIcon(null);
-                primaryLabel.setText("DS");
+                primaryLabel.setIcon(smallExclamationMarkIcon);
+                primaryLabel.setText(controller.getLocaliser().getString("multiBitFrame.status.dead"));
                 break;
             }
             default: {
@@ -481,30 +540,11 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             }
             }
            
-            if (transaction != null && transaction.isCoinBase()) {
-                extraLabel.setIcon(pickaxeIcon);
-                doubleIcon = true;
-                
-                constraints.fill = GridBagConstraints.NONE;
-                constraints.gridx = 0;
-                constraints.gridy = 0;
-                constraints.weightx = 1;
-                constraints.weighty = 1;
-                constraints.anchor = GridBagConstraints.LINE_END;
-                combinationPanel.add(primaryLabel, constraints);
+            // Propagate the tooltip text.
+            extraLabel.setToolTipText(primaryLabel.getToolTipText());
+            combinationPanel.setToolTipText(primaryLabel.getToolTipText());
 
-                constraints.fill = GridBagConstraints.NONE;
-                constraints.gridx = 1;
-                constraints.gridy = 0;
-                constraints.weightx = 1;
-                constraints.weighty = 1;
-                constraints.anchor = GridBagConstraints.LINE_START;
-
-                combinationPanel.add(extraLabel, constraints);
-            } else {
-                doubleIcon = false;
-            }
-
+            // Set foreground and background colors.
             if (isSelected) {
                 selectedRow = row;
                 primaryLabel.setBackground(table.getSelectionBackground());
@@ -530,6 +570,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 }
             }
 
+            // Return either a single icon or a double icon panel.
             if (doubleIcon) {
                 return combinationPanel;
             } else {
@@ -541,11 +582,6 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             TransactionConfidence confidence = null;
             if (transaction != null) {
                 confidence = transaction.getConfidence();
-            }
-
-            // Coinbase transactions mature 20 times slower than regular ones
-            if (transaction != null && transaction.isCoinBase()) {
-                numberOfBlocksEmbedded = numberOfBlocksEmbedded / 20;
             }
             
             if (numberOfBlocksEmbedded < 0) {
@@ -604,7 +640,29 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             }
         }
         
-        private String getConfidenceToolTip(TransactionConfidence confidence) {
+        private String getConfidenceToolTip(Transaction transaction) {
+            TransactionConfidence confidence = null;
+            if (transaction != null) {
+                confidence = transaction.getConfidence();
+            }
+
+            // Work out the line describing the is the transaction is standard or not.
+            String transactionTrustfulness = "";
+            if (transaction != null) {
+                if (transaction.getLockTime() > 0) {
+                    // Non standard transaction.
+                    transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmedAndNotStandard") + ".";
+                } else {
+                    // Normal transaction.
+                    if (transaction != null && transaction.isCoinBase()) {
+                        transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmedAndCoinbase") + ".";  
+                    } else {
+                        transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmed") + ".";  
+                    }
+                }
+            }
+            
+            // Work out the line describing the number of peers.
             int peers = 0;
             if (confidence != null && confidence.getBroadcastBy() != null) {
                 peers = confidence.getBroadcastBy().size();
@@ -623,13 +681,12 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             }
 
             return HelpContentsPanel.createMultilineTooltipText(new String[] {
-                    controller.getLocaliser().getString("multiBitFrame.status.notConfirmed") + ".", builder.toString() });
+                    transactionTrustfulness, builder.toString() });
         }
         
         private ImageIcon getConfidenceIcon(TransactionConfidence confidence) {
             // By default return a triangle which indicates the least known.
             ImageIcon iconToReturn = shapeTriangleIcon;
-            
             
             if (confidence != null) {
                 if (confidence.getConfidenceType() == ConfidenceType.BUILDING) {

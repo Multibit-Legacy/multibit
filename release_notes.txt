@@ -1,9 +1,12 @@
 MultiBit release notes.
 
 Version 0.4.19
++ Improved notification to user of anomalous transactions
++ Coinbase transactions now have pickaxe icon and status icon fills more slowly
 + Now only hits currency server if ticker is shown or currency conversions are on
 + Fiat currency fields only shown on Send and Request if fiat currency successfully found from remote server
-+ Fixed help borking MultiBit if no network present
++ Fixed help tab borking MultiBit if no network present
++ Update to bitcoinj 0.6.1
 
 
 6th Jan 2013 Version 0.4.18
