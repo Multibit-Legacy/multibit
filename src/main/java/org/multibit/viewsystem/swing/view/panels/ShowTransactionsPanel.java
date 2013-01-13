@@ -893,21 +893,22 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
         private final TabSet tabSet = new TabSet(new TabStop[] { tabStopRight, tabStopLeft });
 
-        private AttributeSet attributeSet;
+        private AttributeSet paragraphAttributeSet;
         private JTextPane pane;
         private Style style;
-
+        
         public DecimalAlignRenderer() {
             pane = new JTextPane();
 
             StyleContext styleContext = StyleContext.getDefaultStyleContext();
-            attributeSet = styleContext.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.TabSet, tabSet);
-            pane.setParagraphAttributes(attributeSet, true);
+            paragraphAttributeSet = styleContext.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.TabSet, tabSet);
+            pane.setParagraphAttributes(paragraphAttributeSet, true);
+            
             style = pane.addStyle("number", null);
 
             pane.setOpaque(true);
-            pane.setBorder(BorderFactory.createEmptyBorder());
-        }
+            pane.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,  ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
+         }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
@@ -965,19 +966,19 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             if (isSelected) {
                 selectedRow = row;
                 pane.setBackground(table.getSelectionBackground());
-                // outerPanel.setBackground(table.getSelectionBackground());
+                outerPanel.setBackground(table.getSelectionBackground());
                 filler.setBackground(table.getSelectionBackground());
-                pane.setBorder(BorderFactory.createMatteBorder(1,1,1,1, table.getSelectionBackground()));
+                pane.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, table.getSelectionBackground()));
             } else {
                 if (row % 2 == 0) {
                     pane.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
-                    pane.setBorder(BorderFactory.createMatteBorder(1,1,1,1, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
+                    pane.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR));
                     outerPanel.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                     filler.setBackground(ColorAndFontConstants.VERY_LIGHT_BACKGROUND_COLOR);
                     outerPanel.setOpaque(true);
                 } else {
                     pane.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
-                    pane.setBorder(BorderFactory.createMatteBorder(1,1,1,1, ColorAndFontConstants.ALTERNATE_TABLE_COLOR));
+                    pane.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, ColorAndFontConstants.ALTERNATE_TABLE_COLOR));
                     outerPanel.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
                     filler.setBackground(ColorAndFontConstants.ALTERNATE_TABLE_COLOR);
                     pane.setOpaque(true);
@@ -995,6 +996,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             StyleConstants.setBold(style, false);
             StyleConstants.setFontSize(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getSize());
             StyleConstants.setFontFamily(style, FontSizer.INSTANCE.getAdjustedDefaultFont().getFontName());
+            StyleConstants.setSpaceBelow(style, 10);
 
             pane.getStyledDocument().setCharacterAttributes(0, pane.getText().length(), pane.getStyle("number"), true);
 
