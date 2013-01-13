@@ -164,6 +164,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             assertTrue("Transactions are missing", !(transactions == null || transactions.isEmpty()));
             Transaction transaction = transactions.iterator().next();
             assertNotNull("First transaction is null", transaction);
+            System.out.println("First transaction before roundtrip\n" + transaction);
             
             assertTrue("The first transaction in the wallet is not a coinbase but it should be", transaction.isCoinBase());
             
@@ -181,6 +182,7 @@ public class MiningCoinBaseTransactionsSeenTest extends TestCase {
             assertTrue("No reborn transactions", ! (rebornTransactions == null || rebornTransactions.isEmpty()));
             Transaction rebornTransaction = rebornTransactions.iterator().next();
             assertNotNull("No reborn first transaction", rebornTransaction);
+            System.out.println("First transaction after roundtrip\n" + rebornTransaction);
             
             assertTrue("The first transaction in the wallet is not a coinbase but it should be", rebornTransaction.isCoinBase());
             

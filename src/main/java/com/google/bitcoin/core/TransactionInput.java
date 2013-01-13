@@ -36,6 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class TransactionInput extends ChildMessage implements Serializable, IsMultiBitClass {
     public static final long NO_SEQUENCE = 0xFFFFFFFFL;
+    public static final long NO_SEQUENCE_ALTERNATIVE = -1L;
     private static final long serialVersionUID = 2;
     public static final byte[] EMPTY_ARRAY = new byte[0];
 
@@ -151,7 +152,7 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
     public boolean isCoinBase() {
         maybeParse();
         return outpoint.getHash().equals(Sha256Hash.ZERO_HASH) &&
-                outpoint.getIndex() == NO_SEQUENCE;
+                (outpoint.getIndex() == NO_SEQUENCE || outpoint.getIndex() == NO_SEQUENCE_ALTERNATIVE);
     }
 
     /**
@@ -332,7 +333,7 @@ public class TransactionInput extends ChildMessage implements Serializable, IsMu
     }
 
     public boolean hasSequence() {
-        return sequence != NO_SEQUENCE;
+        return (sequence != NO_SEQUENCE && sequence != NO_SEQUENCE_ALTERNATIVE);
     }
     
     /** determine whether the transaction input is in the wallet */

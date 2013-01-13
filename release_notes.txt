@@ -3,9 +3,9 @@ MultiBit release notes.
 Version 0.4.19
 
 Improvements
-+ Improved status notification of transactions
++ Improved status notifications for transactions
 + Update to bitcoinj 0.6.1
-+ Coinbase transactions now have pickaxe icon and status icon fills more slowly
++ Coinbase transactions now have a pickaxe icon and the status icon fills more slowly
 + Now only hits currency server if ticker is shown or currency conversions are on
 + Fiat currency fields only shown on Send and Request if fiat currency successfully found from remote server
 

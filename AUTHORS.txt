@@ -27,7 +27,7 @@ D4CH                - Danish
 damnek              - Dutch
 darpho              - Spanish
 dr-nix              - Dutch
-druhy               - Slovak, French, German
+druhy               - Slovak, Czech, French, German
 DutchBrat           - Dutch
 Emin Gun Sirer      - Turkish
 eqawasmi            - Arabic
@@ -82,6 +82,7 @@ robsned             - Hindi
 ronimo              - French
 samer               - Arabic
 sasha               - Russian
+shelart             - Russian
 spiccioli           - Italian
 stlucifer           - Hindi
 techmix             - Persian
