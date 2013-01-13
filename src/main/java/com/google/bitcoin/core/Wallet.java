@@ -289,6 +289,8 @@ public class Wallet implements Serializable, IsMultiBitClass {
             wallet = new WalletProtobufSerializer().readWallet(stream);
         }
         
+        //System.out.println("Wallet after load:\n" + wallet.toString());
+        
         if (!wallet.isConsistent()) {
             log.error("Loaded an inconsistent wallet");
         }

@@ -316,6 +316,8 @@ public class FileHandler {
          File walletFile = new File(walletFilename);
          WalletInfo walletInfo = perWalletModelData.getWalletInfo();
          
+         //System.out.println("Wallet before save:\n" + perWalletModelData.getWallet().toString());
+
          FileOutputStream fileOutputStream = null;
          
          // Save the wallet file
