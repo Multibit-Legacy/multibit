@@ -103,11 +103,13 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
     private static final String SPACER = "   "; // 3 spaces
     
-    private static final int STATUS_WIDTH_DELTA = 4;
+    private static final int STATUS_WIDTH_DELTA = 6;
 
     private static final int TABLE_BORDER = 3;
 
     private static final int MINIMUM_ICON_HEIGHT = 18;
+    
+    private static final int HEIGHT_DELTA = 3;
 
     public static final String PROGRESS_0_ICON_FILE = "/images/circleProgress0.png";
     private static final String PROGRESS_1_ICON_FILE = "/images/circleProgress1.png";
@@ -178,7 +180,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         table.setOpaque(false);
         table.setBorder(BorderFactory.createEmptyBorder());
         table.setComponentOrientation(ComponentOrientation.getOrientation(controller.getLocaliser().getLocale()));
-        table.setRowHeight(Math.max(MINIMUM_ICON_HEIGHT, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()));
+        table.setRowHeight(Math.max(MINIMUM_ICON_HEIGHT, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()) + HEIGHT_DELTA);
 
         // Use status icons.
         table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
@@ -495,7 +497,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 break;
             }
             case NOT_SEEN_IN_CHAIN: {
-                primaryLabel.setIcon(getNumberOfPeersSeenIcon(confidence));
+                primaryLabel.setIcon(getConfidenceIcon(confidence));
                 primaryLabel.setText("");
                 
                 primaryLabel.setToolTipText(getUnconfirmedConfidenceToolTip(transaction) );
@@ -511,7 +513,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 break;
             }
             case NOT_IN_BEST_CHAIN: {
-                primaryLabel.setIcon(getNumberOfPeersSeenIcon(confidence));
+                primaryLabel.setIcon(getConfidenceIcon(confidence));
                 primaryLabel.setText("");
                 primaryLabel.setToolTipText(getUnconfirmedConfidenceToolTip(transaction) );
                 
@@ -593,7 +595,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
             switch (numberOfBlocksEmbedded) {
             case 0: {
-                return getNumberOfPeersSeenIcon(confidence);
+                return getConfidenceIcon(confidence);
             }
             case 1: {
                 if (isLeftToRight) {
@@ -634,7 +636,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 return tickIcon;
             }
             default:
-                return getNumberOfPeersSeenIcon(confidence);
+                return getConfidenceIcon(confidence);
             }
         }
         
@@ -682,7 +684,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                     transactionTrustfulness, builder.toString() });
         }
         
-        private ImageIcon getNumberOfPeersSeenIcon(TransactionConfidence confidence) {
+        private ImageIcon getConfidenceIcon(TransactionConfidence confidence) {
             // By default return a triangle which indicates the least known.
             ImageIcon iconToReturn = shapeTriangleIcon;
             
@@ -724,7 +726,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
-            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
+            label.setBorder(new EmptyBorder(new Insets(0, TABLE_BORDER, 1, TABLE_BORDER)));
 
             label.setText(value + SPACER);
 
@@ -772,7 +774,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
-            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
+            label.setBorder(new EmptyBorder(new Insets(0, TABLE_BORDER, 1, TABLE_BORDER)));
 
             label.setText(value + SPACER);
 
@@ -814,7 +816,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 int column) {
             label.setHorizontalAlignment(SwingConstants.TRAILING);
             label.setOpaque(true);
-            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
+            label.setBorder(new EmptyBorder(new Insets(0, TABLE_BORDER, 1, TABLE_BORDER)));
 
             String formattedDate = "";
             if (value != null) {
@@ -864,7 +866,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 int column) {
             label.setHorizontalAlignment(SwingConstants.LEADING);
             label.setOpaque(true);
-            label.setBorder(new EmptyBorder(new Insets(1, TABLE_BORDER, 1, TABLE_BORDER)));
+            label.setBorder(new EmptyBorder(new Insets(0, TABLE_BORDER, 1, TABLE_BORDER)));
             label.setText((String) value);
 
             if (isSelected) {
