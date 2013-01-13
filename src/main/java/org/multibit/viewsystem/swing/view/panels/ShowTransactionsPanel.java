@@ -407,7 +407,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             
-            // Prepare the primary icon (used always), and and extra icon and containing panel for use as required.
+            // Prepare the primary icon (used always), and an extra icon and containing panel for use as required.
             primaryLabel.setHorizontalAlignment(SwingConstants.CENTER);
             primaryLabel.setVerticalAlignment(SwingConstants.CENTER);
             primaryLabel.setOpaque(true);
@@ -438,11 +438,9 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
             combinationPanel.add(extraLabel, constraints); 
             
             
-            // Get the transaction confidence
+            // Get the transaction and transaction confidence
             Transaction transaction = (Transaction)value;
-            
-            //transaction.setLockTime(54);
-            
+     
             TransactionConfidence confidence = null;
             if (transaction != null) {
                 confidence = transaction.getConfidence();
@@ -497,10 +495,10 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 break;
             }
             case NOT_SEEN_IN_CHAIN: {
-                primaryLabel.setIcon(getConfidenceIcon(confidence));
+                primaryLabel.setIcon(getNumberOfPeersSeenIcon(confidence));
                 primaryLabel.setText("");
                 
-                primaryLabel.setToolTipText(getConfidenceToolTip(transaction) );
+                primaryLabel.setToolTipText(getUnconfirmedConfidenceToolTip(transaction) );
                 
                 if (transaction != null) {
                     if (transaction.getLockTime() > 0) {
@@ -513,9 +511,9 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 break;
             }
             case NOT_IN_BEST_CHAIN: {
-                primaryLabel.setIcon(getConfidenceIcon(confidence));
+                primaryLabel.setIcon(getNumberOfPeersSeenIcon(confidence));
                 primaryLabel.setText("");
-                primaryLabel.setToolTipText(getConfidenceToolTip(transaction) );
+                primaryLabel.setToolTipText(getUnconfirmedConfidenceToolTip(transaction) );
                 
                 if (transaction != null) {
                     if (transaction.getLockTime() > 0) {
@@ -595,7 +593,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
             switch (numberOfBlocksEmbedded) {
             case 0: {
-                return getConfidenceIcon(confidence);
+                return getNumberOfPeersSeenIcon(confidence);
             }
             case 1: {
                 if (isLeftToRight) {
@@ -636,11 +634,11 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                 return tickIcon;
             }
             default:
-                return getConfidenceIcon(confidence);
+                return getNumberOfPeersSeenIcon(confidence);
             }
         }
         
-        private String getConfidenceToolTip(Transaction transaction) {
+        private String getUnconfirmedConfidenceToolTip(Transaction transaction) {
             TransactionConfidence confidence = null;
             if (transaction != null) {
                 confidence = transaction.getConfidence();
@@ -684,7 +682,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
                     transactionTrustfulness, builder.toString() });
         }
         
-        private ImageIcon getConfidenceIcon(TransactionConfidence confidence) {
+        private ImageIcon getNumberOfPeersSeenIcon(TransactionConfidence confidence) {
             // By default return a triangle which indicates the least known.
             ImageIcon iconToReturn = shapeTriangleIcon;
             

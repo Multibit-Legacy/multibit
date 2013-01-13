@@ -38,6 +38,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.multibit.MultiBit;
 import org.multibit.controller.MultiBitController;
 import org.multibit.exchange.CurrencyConverter;
 import org.multibit.message.Message;
@@ -469,7 +470,13 @@ public class TransactionDetailsDialog extends MultiBitDialog {
     }
 
     private String createStatusText(Transaction transaction) {
-        return transaction.getConfidence().toString();
+        if (transaction.getLockTime() > 0) {
+            // Non standard transaction.
+            String transactionTrustfulness = MultiBit.getController().getLocaliser().getString("multiBitFrame.status.notConfirmedAndNotStandard") + ". ";
+            return transactionTrustfulness + transaction.getConfidence().toString(); 
+        } else {
+            return transaction.getConfidence().toString();   
+        }
     }
 
     /**
