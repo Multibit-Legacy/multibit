@@ -109,7 +109,7 @@ public class ShowTransactionsPanel extends JPanel implements View, CurrencyConve
 
     private static final int MINIMUM_ICON_HEIGHT = 18;
     
-    private static final int HEIGHT_DELTA = 3;
+    public static final int HEIGHT_DELTA = 3;
 
     public static final String PROGRESS_0_ICON_FILE = "/images/circleProgress0.png";
     private static final String PROGRESS_1_ICON_FILE = "/images/circleProgress1.png";

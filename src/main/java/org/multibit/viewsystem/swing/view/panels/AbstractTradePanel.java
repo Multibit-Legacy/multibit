@@ -629,7 +629,7 @@ public abstract class AbstractTradePanel extends JPanel implements View, CopyQRC
         addressesTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         addressesTable.setRowSelectionAllowed(true);
         addressesTable.setColumnSelectionAllowed(false);
-        addressesTable.setRowHeight(getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight());
+        addressesTable.setRowHeight(getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight() + ShowTransactionsPanel.HEIGHT_DELTA);
 
         // row sorter
         TableRowSorter<TableModel> rowSorter = new TableRowSorter<TableModel>(addressesTable.getModel());
