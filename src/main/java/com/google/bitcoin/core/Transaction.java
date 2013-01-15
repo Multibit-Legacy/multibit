@@ -17,6 +17,7 @@
 package com.google.bitcoin.core;
 
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
+import com.google.bitcoin.crypto.EncrypterDecrypterException;
 import com.google.common.base.Preconditions;
 import org.multibit.IsMultiBitClass;
 import org.slf4j.Logger;
@@ -658,8 +659,10 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * @param wallet   A wallet is required to fetch the keys needed for signing.
      * @param decryptBeforeSigning True is keys need decrypting before signing
      * @param aesKey The AES key to using for decrypting
+     * @throws EncrypterDecrypterException 
+     * @throws IllegalStateException 
      */
-    public synchronized void signInputs(SigHash hashType, Wallet wallet, boolean decryptBeforeSigning, KeyParameter aesKey) throws ScriptException {
+    public synchronized void signInputs(SigHash hashType, Wallet wallet, boolean decryptBeforeSigning, KeyParameter aesKey) throws ScriptException, IllegalStateException, EncrypterDecrypterException {
         Preconditions.checkState(inputs.size() > 0);
         Preconditions.checkState(outputs.size() > 0);
 

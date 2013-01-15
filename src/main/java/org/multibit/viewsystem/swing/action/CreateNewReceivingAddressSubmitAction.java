@@ -107,8 +107,17 @@ public class CreateNewReceivingAddressSubmitAction extends MultiBitSubmitAction 
                 }
                 encryptNewKeys = true;
 
-                if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
-                    // The password supplied is incorrect.
+                try {
+                    if (!controller.getModel().getActiveWallet()
+                            .checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
+                        // The password supplied is incorrect.
+                        createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
+                                "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                        return;
+                    }
+                } catch (EncrypterDecrypterException ede) {
+                    log.debug(ede.getClass().getCanonicalName() + " " + ede.getMessage());
+                    // The password supplied is probably incorrect.
                     createNewReceivingAddressPanel.setMessageText(controller.getLocaliser().getString(
                             "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
                     return;

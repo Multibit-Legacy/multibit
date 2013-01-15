@@ -242,7 +242,7 @@ public class FileHandlerTest extends TestCase {
     }
     
     @Test
-    public void testCreateProtobufEncryptedWallet() throws IOException {
+    public void testCreateProtobufEncryptedWallet() throws Exception {
         // Create an encrypted wallet.
         File temporaryWallet = File.createTempFile(TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX, ".wallet");
         temporaryWallet.deleteOnExit();
@@ -350,7 +350,7 @@ public class FileHandlerTest extends TestCase {
     }
 
     @Test
-    public void testDefaultScryptParameters() throws IOException {
+    public void testDefaultScryptParameters() throws Exception {
         // Create an encrypted wallet with default scrypt parameters.
         File temporaryWallet = File.createTempFile(TEST_SCRYPT_PARAMETERS + "1", ".wallet");
         temporaryWallet.deleteOnExit();
@@ -397,7 +397,7 @@ public class FileHandlerTest extends TestCase {
     }
 
     @Test
-    public void testNonDefaultScryptParameters() throws IOException {
+    public void testNonDefaultScryptParameters() throws Exception {
         // Non default scrypt parameters.
         int n = 32768;
         int r = 8;

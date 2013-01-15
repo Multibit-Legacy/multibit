@@ -61,7 +61,7 @@ public class PrivateKeysHandlerTest extends TestCase {
     public static final String BLOCKCHAIN_DOUBLE_PASSWORD_WALLET_FILE = "blockchain_test_double_encrypted.aes.json";
     
     @Test
-    public void testExport() throws IOException {
+    public void testExport() throws Exception {
         MultiBitController controller = new MultiBitController();
         
         Localiser localiser = new Localiser();
@@ -100,7 +100,7 @@ public class PrivateKeysHandlerTest extends TestCase {
     }
     
     @Test
-    public void testImport() throws IOException {
+    public void testImport() throws Exception {
         NetworkParameters prodNet = NetworkParameters.prodNet();
         PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(prodNet);
         assertNotNull(privateKeysHandler);

@@ -36,6 +36,8 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import com.google.bitcoin.crypto.EncrypterDecrypter;
+import com.google.bitcoin.crypto.EncrypterDecrypterException;
+
 import org.multibit.crypto.EncrypterDecrypterOpenSSL;
 import org.multibit.utils.DateUtils;
 import org.slf4j.Logger;
@@ -89,7 +91,7 @@ public class PrivateKeysHandler {
     }
 
     public void exportPrivateKeys(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryptionOfExportFile, char[] exportPassword, char[] walletPassword)
-            throws IOException {
+            throws IOException, EncrypterDecrypterException {
 
         // Construct a StringBuffer with the private key export text.
         StringBuffer outputStringBuffer = new StringBuffer();
@@ -146,9 +148,10 @@ public class PrivateKeysHandler {
      * @param exportPassword
      *            the password to use is encryption is required
      * @return Verification The result of verification
+     * @throws EncrypterDecrypterException 
      */
     public Verification verifyExportFile(File exportFile, Wallet wallet, BlockChain blockChain, boolean performEncryptionOfExportFile,
-            char[] exportPassword, char[] walletPassword) {
+            char[] exportPassword, char[] walletPassword) throws EncrypterDecrypterException {
         boolean thereWereFailures = false;
 
         String messageKey = "privateKeysHandler.failedForUnknownReason";
@@ -201,7 +204,7 @@ public class PrivateKeysHandler {
         return new Verification(!thereWereFailures, messageKey, messageData);
     }
 
-    public Collection<PrivateKeyAndDate> readInPrivateKeys(File importFile, char[] password) throws PrivateKeysHandlerException {
+    public Collection<PrivateKeyAndDate> readInPrivateKeys(File importFile, char[] password) throws PrivateKeysHandlerException, EncrypterDecrypterException {
         if (importFile == null) {
             throw new PrivateKeysHandlerException("Import file cannot be null");
         }
@@ -256,7 +259,7 @@ public class PrivateKeysHandler {
         out.append("#").append("\n");
     }
 
-    private Collection<PrivateKeyAndDate> createKeyAndDates(Wallet wallet, BlockChain blockChain, char[] walletPassword) {
+    private Collection<PrivateKeyAndDate> createKeyAndDates(Wallet wallet, BlockChain blockChain, char[] walletPassword) throws EncrypterDecrypterException {
        // Determine if keys need to be decrypted.
         boolean decryptionRequired = false;
 

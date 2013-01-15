@@ -132,17 +132,31 @@ public class SendBitcoinNowAction extends AbstractAction implements WalletBusyLi
             char[] walletPassword = walletPasswordField.getPassword();
  
             if (controller.getModel().getActiveWallet() != null) {
-                if (controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
+                if (controller.getModel().getActiveWallet().getEncryptionType() == EncryptionType.ENCRYPTED_SCRYPT_AES
+                        && controller.getModel().getActiveWallet().isCurrentlyEncrypted()) {
                     // Encrypted wallet.
                     if (walletPassword == null || walletPassword.length == 0) {
                         // User needs to enter password.
-                        sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("showExportPrivateKeysAction.youMustEnterTheWalletPassword"), "");
+                        sendBitcoinConfirmPanel.setMessageText(
+                                controller.getLocaliser().getString("showExportPrivateKeysAction.youMustEnterTheWalletPassword"),
+                                "");
                         return;
                     }
-     
-                    if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword)) {
-                        // The password supplied is incorrect.
-                        sendBitcoinConfirmPanel.setMessageText(controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"), "");
+
+                    try {
+                        if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword)) {
+                            // The password supplied is incorrect.
+                            sendBitcoinConfirmPanel.setMessageText(
+                                    controller.getLocaliser()
+                                            .getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"), "");
+                            return;
+                        }
+                    } catch (EncrypterDecrypterException ede) {
+                        log.debug(ede.getClass().getCanonicalName() + " " + ede.getMessage());
+                        // The password supplied is probably incorrect.
+                        sendBitcoinConfirmPanel.setMessageText(
+                                controller.getLocaliser().getString("createNewReceivingAddressSubmitAction.passwordIsIncorrect"),
+                                "");
                         return;
                     }
                 }

@@ -20,6 +20,8 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.BufferedBlockCipher;
 import org.spongycastle.crypto.CipherParameters;
 import org.spongycastle.crypto.PBEParametersGenerator;
@@ -50,6 +52,8 @@ import com.google.bitcoin.crypto.EncrypterDecrypterException;
  * 
  */
 public class EncrypterDecrypterOpenSSL {
+    private Logger log = LoggerFactory.getLogger(EncrypterDecrypterOpenSSL.class);
+
     /**
      * The string encoding to use when converting strings to bytes
      */
@@ -96,7 +100,7 @@ public class EncrypterDecrypterOpenSSL {
 
     private static SecureRandom secureRandom = new SecureRandom();
 
-    public EncrypterDecrypterOpenSSL() {
+    public EncrypterDecrypterOpenSSL()  {
         try {
             openSSLSaltedBytes = OPENSSL_SALTED_TEXT.getBytes(STRING_ENCODING);
 
@@ -105,7 +109,7 @@ public class EncrypterDecrypterOpenSSL {
                     EncrypterDecrypterOpenSSL.NUMBER_OF_CHARACTERS_TO_MATCH_IN_OPENSSL_MAGIC_TEXT);
 
         } catch (UnsupportedEncodingException e) {
-            throw new EncrypterDecrypterException("Could not construct EncrypterDecrypter", e);
+            log.error("Could not construct EncrypterDecrypter", e.getMessage());
         }
     }
 

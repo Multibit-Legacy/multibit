@@ -1201,8 +1201,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * This method is stateless in the sense that calling it twice with the same inputs will result in two
      * Transaction objects which are equal. The wallet is not updated to track its pending status or to mark the
      * coins as spent until commitTx is called on the result.
+     * @throws EncrypterDecrypterException 
+     * @throws IllegalStateException 
      */
-    public synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) {
+    public synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
         return createSend(address, nanocoins, fee, getChangeAddress(), decryptBeforeSigning, aesKey);
     }
 
@@ -1214,8 +1216,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param to Address to send the coins to.
      * @param nanocoins How many coins to send.
      * @return the Transaction that was created, or null if there are insufficient coins in thew allet.
+     * @throws EncrypterDecrypterException 
+     * @throws IllegalStateException 
      */
-    public synchronized Transaction sendCoinsOffline(Address to, BigInteger nanocoins, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) {
+    public synchronized Transaction sendCoinsOffline(Address to, BigInteger nanocoins, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
         Transaction tx = createSend(to, nanocoins, fee, decryptBeforeSigning, aesKey);
         if (tx == null)   // Not enough money! :-(
             return null;
@@ -1240,9 +1244,11 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param fee       The fee to include     
      * @return the Transaction
      * @throws IOException if there was a problem broadcasting the transaction
+     * @throws EncrypterDecrypterException 
+     * @throws IllegalStateException 
      */
     public synchronized Transaction sendCoinsAsync(PeerGroup peerGroup, Address to, BigInteger nanocoins, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey)
-            throws IOException {
+            throws IOException, IllegalStateException, EncrypterDecrypterException {
         Transaction tx = sendCoinsOffline(to, nanocoins, fee, decryptBeforeSigning, aesKey);
         if (tx == null)
             return null;  // Not enough money.
@@ -1261,8 +1267,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param nanocoins How many nanocoins to send. You can use Utils.toNanoCoins() to calculate this.
      * @param fee       The fee to include     
      * @return The {@link Transaction} that was created or null if there was insufficient balance to send the coins.
+     * @throws EncrypterDecrypterException 
+     * @throws IllegalStateException 
      */
-    public synchronized Transaction sendCoins(PeerGroup peerGroup, Address to, BigInteger nanocoins, final BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) {
+    public synchronized Transaction sendCoins(PeerGroup peerGroup, Address to, BigInteger nanocoins, final BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
         Transaction tx = sendCoinsOffline(to, nanocoins, fee, decryptBeforeSigning, aesKey);
         if (tx == null)
             return null;  // Not enough money.
@@ -1285,8 +1293,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param fee       The fee to include     
      * @return The {@link Transaction} that was created or null if there was insufficient balance to send the coins.
      * @throws IOException if there was a problem broadcasting the transaction
+     * @throws EncrypterDecrypterException 
+     * @throws IllegalStateException 
      */
-    public synchronized Transaction sendCoins(Peer peer, Address to, BigInteger nanocoins, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws IOException {
+    public synchronized Transaction sendCoins(Peer peer, Address to, BigInteger nanocoins, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws IOException, IllegalStateException, EncrypterDecrypterException {
         // TODO: This API is fairly questionable and the function isn't tested. If anything goes wrong during sending
         // on the peer you don't get access to the created Transaction object and must fish it out of the wallet then
         // do your own retry later.
@@ -1317,8 +1327,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param changeAddress Which address to send the change to, in case we can't make exactly the right value from
      *                      our coins. This should be an address we own (is in the keychain).
      * @return a new {@link Transaction} or null if we cannot afford this send.
+     * @throws EncrypterDecrypterException 
+     * @throws IllegalStateException 
      */
-    synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, Address changeAddress, boolean decryptBeforeSigning, KeyParameter aesKey) {
+    synchronized Transaction createSend(Address address, BigInteger nanocoins, final BigInteger fee, Address changeAddress, boolean decryptBeforeSigning, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
         log.info("Creating send tx to " + address.toString() + " for " +
                 bitcoinValueToFriendlyString(nanocoins));
 
@@ -1339,8 +1351,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
      *                         our coins. This should be an address we own (is in the keychain).
      * @param fee              The fee to include     
      * @return False if we cannot afford this send, true otherwise
+     * @throws EncrypterDecrypterException 
+     * @throws IllegalStateException 
      */
-    public synchronized boolean completeTx(Transaction sendTx, Address changeAddress, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) {
+    public synchronized boolean completeTx(Transaction sendTx, Address changeAddress, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
         // Calculate the transaction total
         BigInteger nanocoins = BigInteger.ZERO;
         for(TransactionOutput output : sendTx.getOutputs()) {
@@ -1423,7 +1437,7 @@ public class Wallet implements Serializable, IsMultiBitClass {
             // If this happens it means an output script in a wallet tx could not be understood. That should never
             // happen, if it does it means the wallet has got into an inconsistent state.
             throw new RuntimeException(e);
-        }
+        } 
 
         // keep a track of the date the tx was created (used in MultiBitService
         // to work out the block it appears in)
@@ -1477,8 +1491,10 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * @param sendTx           The transaction to complete
      * @param fee              The fee to include
      * @return False if we cannot afford this send, true otherwise
+     * @throws EncrypterDecrypterException 
+     * @throws IllegalStateException 
      */
-    public synchronized boolean completeTx(Transaction sendTx, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) {
+    public synchronized boolean completeTx(Transaction sendTx, BigInteger fee, boolean decryptBeforeSigning, KeyParameter aesKey) throws IllegalStateException, EncrypterDecrypterException {
         return completeTx(sendTx, getChangeAddress(), fee, decryptBeforeSigning, aesKey);
     }
 
@@ -2218,8 +2234,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
     /**
      * Encrypt the wallet with the supplied AES key.
      * @param aesKey The AES key to use to encrypt the wallet
+     * @throws EncrypterDecrypterException 
      */
-    public void encrypt(KeyParameter aesKey) {
+    public void encrypt(KeyParameter aesKey) throws EncrypterDecrypterException {
         if (currentlyEncrypted) {
             throw new WalletIsAlreadyEncryptedException("Wallet is already encrypted");
         }
@@ -2266,8 +2283,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * Decrypt the wallet with the supplied AES key.
      * 
      * @param aesKey The AES key to use to decrypt the wallet
+     * @throws EncrypterDecrypterException 
      */
-    public void decrypt(KeyParameter aesKey) {
+    public void decrypt(KeyParameter aesKey) throws EncrypterDecrypterException {
         if (!currentlyEncrypted) {
             throw new WalletIsAlreadyDecryptedException("Wallet is already decrypted");
         }
@@ -2313,8 +2331,9 @@ public class Wallet implements Serializable, IsMultiBitClass {
      * The wallet is no longer encrypted.
      * 
      * @param aesKey The AES key to use to decrypt the wallet
+     * @throws EncrypterDecrypterException 
      */
-    public void removeEncryption(KeyParameter aesKey) {
+    public void removeEncryption(KeyParameter aesKey) throws EncrypterDecrypterException {
         // Remove any encryption on the keys.
         if (isCurrentlyEncrypted()) {
             decrypt(aesKey);
@@ -2334,10 +2353,11 @@ public class Wallet implements Serializable, IsMultiBitClass {
 
     /**
      *  Check whether the password can decrypt the first key in the wallet.
+     * @throws EncrypterDecrypterException 
      *  
      *  @returns boolean True if password supplied can decrypt the first private key in the wallet, false otherwise.
      */
-    public boolean checkPasswordCanDecryptFirstPrivateKey(char[] password) {
+    public boolean checkPasswordCanDecryptFirstPrivateKey(char[] password) throws EncrypterDecrypterException {
         if (encrypterDecrypter == null) {
             // The password cannot decrypt anything as the encrypterDecrypter is null.
             return false;

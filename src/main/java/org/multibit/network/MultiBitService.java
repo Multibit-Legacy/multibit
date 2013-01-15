@@ -65,6 +65,7 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletVersion;
 import com.google.bitcoin.core.WalletVersionException;
 import com.google.bitcoin.crypto.EncrypterDecrypter;
+import com.google.bitcoin.crypto.EncrypterDecrypterException;
 import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
 import com.google.bitcoin.crypto.ScryptParameters;
 import com.google.bitcoin.discovery.IrcDiscovery;
@@ -540,10 +541,11 @@ public class MultiBitService {
      *            the amount to send to, in BTC, as a String
      * @return The sent transaction (may be null if there were insufficient
      *         funds for send)
+     * @throws EncrypterDecrypterException 
      */
 
     public Transaction sendCoins(PerWalletModelData perWalletModelData, String sendAddressString, String amount, BigInteger fee, boolean decryptBeforeSigning, char[] password)
-            throws java.io.IOException, AddressFormatException {
+            throws java.io.IOException, AddressFormatException, EncrypterDecrypterException {
         // Send the coins
         Address sendAddress = new Address(networkParameters, sendAddressString);
 

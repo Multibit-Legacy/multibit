@@ -120,9 +120,19 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                 return;
             }
 
-            // See if the password is the correct wallet password.
-            if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPasswordField.getPassword())) {
-                // The password supplied is incorrect.
+            try {
+                // See if the password is the correct wallet password.
+                if (!controller.getModel().getActiveWallet()
+                        .checkPasswordCanDecryptFirstPrivateKey(walletPasswordField.getPassword())) {
+                    // The password supplied is incorrect.
+                    importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
+                            "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                    importPrivateKeysPanel.setMessageText2(" ");
+                    return;
+                }
+            } catch (EncrypterDecrypterException ede) {
+                log.debug(ede.getClass().getCanonicalName() + " " + ede.getMessage());
+                // The password supplied is probably incorrect.
                 importPrivateKeysPanel.setMessageText1(controller.getLocaliser().getString(
                         "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
                 importPrivateKeysPanel.setMessageText2(" ");
@@ -415,8 +425,9 @@ public class ImportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
 
     /**
      * Determine whether the key is already in the wallet.
+     * @throws EncrypterDecrypterException 
      */
-    private boolean keyChainContainsPrivateKey(Collection<byte[]> unencryptedPrivateKeys, ECKey keyToAdd, char[] walletPassword) {
+    private boolean keyChainContainsPrivateKey(Collection<byte[]> unencryptedPrivateKeys, ECKey keyToAdd, char[] walletPassword) throws EncrypterDecrypterException {
         if (unencryptedPrivateKeys == null || keyToAdd == null) {
             return false;
         } else {

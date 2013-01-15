@@ -48,6 +48,7 @@ import org.multibit.controller.MultiBitController;
 import org.multibit.crypto.EncrypterDecrypterOpenSSL;
 import org.multibit.file.PrivateKeyAndDate;
 import org.multibit.file.PrivateKeysHandler;
+import org.multibit.file.PrivateKeysHandlerException;
 import org.multibit.model.MultiBitModel;
 import org.multibit.model.WalletBusyListener;
 import org.multibit.utils.ImageLoader;
@@ -892,7 +893,13 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
                     } else if (myWalletPlainFileChooser.accept(file)) {
                         // File is not encrypted.
                         enableImportFilePasswordPanel(false);
-                        readInImportFileAndUpdateDetails();
+                        try {
+                            readInImportFileAndUpdateDetails();
+                        } catch (EncrypterDecrypterException e) {
+                            setMessageText1(controller.getLocaliser().getString(
+                                    "importPrivateKeysSubmitAction.privateKeysImportFailure",
+                                    new Object[] { e.getClass().getName() + " " + e.getMessage() }));
+                        }
                     }
                 }
             }
@@ -939,8 +946,10 @@ public class ImportPrivateKeysPanel extends JPanel implements View, WalletBusyLi
 
     /**
      * Read in the import file and show the file details.
+     * @throws EncrypterDecrypterException 
+     * @throws PrivateKeysHandlerException 
      */
-    private void readInImportFileAndUpdateDetails() {
+    private void readInImportFileAndUpdateDetails() throws PrivateKeysHandlerException, EncrypterDecrypterException {
         // Update number of keys and earliest date.
 
         try {
