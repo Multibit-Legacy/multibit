@@ -1,21 +1,20 @@
 /**
  * Copyright 2011 multibit.org
  *
- * Licensed under the MIT license (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the MIT license (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License
+ * at
  *
- *    http://opensource.org/licenses/mit-license.php
+ * http://opensource.org/licenses/mit-license.php
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package org.multibit.viewsystem.swing.action;
 
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.math.BigInteger;
 import java.util.Timer;
@@ -23,10 +22,6 @@ import java.util.Timer;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import org.joda.money.CurrencyUnit;
 import org.multibit.controller.MultiBitController;
@@ -35,37 +30,30 @@ import org.multibit.exchange.TickerTimerTask;
 import org.multibit.message.Message;
 import org.multibit.message.MessageManager;
 import org.multibit.model.MultiBitModel;
-import org.multibit.viewsystem.dataproviders.PreferencesDataProvider;
-import org.multibit.viewsystem.swing.ColorAndFontConstants;
 import org.multibit.viewsystem.swing.MultiBitFrame;
-import org.multibit.viewsystem.swing.view.components.FontSizer;
 import org.multibit.viewsystem.swing.view.ticker.TickerTableModel;
 
 import com.google.bitcoin.core.Utils;
+import org.multibit.viewsystem.dataproviders.MultiBitPreferencesDataProvider;
+import org.multibit.viewsystem.swing.action.PreferencesSubmitAction;
 
 /**
  * This {@link Action} applies changes to the preferences panel.
  */
-public class ShowPreferencesSubmitAction extends AbstractAction {
+public class MultiBitPreferencesSubmitAction extends AbstractAction implements PreferencesSubmitAction {
 
     private static final long serialVersionUID = 1923492460523457765L;
-
-    private MultiBitController controller;
-    private PreferencesDataProvider dataProvider;
-    private MultiBitFrame mainFrame;
+    MultiBitController controller;
+    MultiBitPreferencesDataProvider dataProvider;
+    MultiBitFrame mainFrame;
 
     /**
      * Creates a new {@link ShowPreferencesSubmitAction}.
      */
-    public ShowPreferencesSubmitAction(MultiBitController controller, PreferencesDataProvider dataProvider, Icon icon, MultiBitFrame mainFrame) {
-        super(controller.getLocaliser().getString("showPreferencesSubmitAction.text"), icon);
+    public MultiBitPreferencesSubmitAction(MultiBitController controller, MultiBitPreferencesDataProvider dataProvider, MultiBitFrame mainFrame) {
         this.controller = controller;
         this.dataProvider = dataProvider;
         this.mainFrame = mainFrame;
-
-        MnemonicUtil mnemonicUtil = new MnemonicUtil(controller.getLocaliser());
-        putValue(SHORT_DESCRIPTION, controller.getLocaliser().getString("showPreferencesSubmitAction.tooltip"));
-        putValue(MNEMONIC_KEY, mnemonicUtil.getMnemonic("showPreferencesSubmitAction.mnemonicKey"));
     }
 
     /**
@@ -80,13 +68,11 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         String updateStatusText = "";
 
         if (dataProvider != null) {
-            controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_UNDO_CHANGES_TEXT,
-                    dataProvider.getPreviousUndoChangesText());
 
             String previousSendFee = dataProvider.getPreviousSendFee();
             String newSendFee = dataProvider.getNewSendFee();
             controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_SEND_FEE, previousSendFee);
-            
+
             // Check fee is set.
             if (newSendFee == null || "".equals(newSendFee)) {
                 // Fee must be set validation error.
@@ -114,91 +100,15 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
                     controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, previousSendFee);
                     feeValidationError = true;
                     updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
-                            new Object[] { newSendFee });
+                            new Object[]{newSendFee});
                 } catch (ArithmeticException ae) {
                     // Recycle the old fee and set status message.
                     controller.getModel().setUserPreference(MultiBitModel.SEND_FEE, previousSendFee);
                     feeValidationError = true;
                     updateStatusText = controller.getLocaliser().getString("showPreferencesPanel.couldNotUnderstandFee",
-                            new Object[] { newSendFee });
+                            new Object[]{newSendFee});
                 }
             }
-        }
-
-        String previousLanguageCode = dataProvider.getPreviousUserLanguageCode();
-        String newLanguageCode = dataProvider.getNewUserLanguageCode();
-        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_USER_LANGUAGE_CODE, previousLanguageCode);
-
-        if (previousLanguageCode != null && !previousLanguageCode.equals(newLanguageCode)) {
-            // New language to set on model.
-            controller.getModel().setUserPreference(MultiBitModel.USER_LANGUAGE_CODE, newLanguageCode);
-            wantToFireDataStructureChanged = true;
-        }
-
-        // Open URI - use dialog.
-        String openUriDialog = dataProvider.getOpenUriDialog();
-        if (openUriDialog != null) {
-            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_SHOW_DIALOG, openUriDialog);
-        }
-
-        // Open URI - use URI.
-        String openUriUseUri = dataProvider.getOpenUriUseUri();
-        if (openUriUseUri != null) {
-            controller.getModel().setUserPreference(MultiBitModel.OPEN_URI_USE_URI, openUriUseUri);
-        }
-
-        // Font data.
-        boolean fontHasChanged = false;
-        String previousFontName = dataProvider.getPreviousFontName();
-        String newFontName = dataProvider.getNewFontName();
-
-        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_NAME, previousFontName);
-
-        if (newFontName != null) {
-            controller.getModel().setUserPreference(MultiBitModel.FONT_NAME, newFontName);
-
-            if (!newFontName.equals(previousFontName)) {
-                fontHasChanged = true;
-            }
-        }
-
-        String previousFontStyle = dataProvider.getPreviousFontStyle();
-        String newFontStyle = dataProvider.getNewFontStyle();
-
-        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_STYLE, previousFontStyle);
-
-        if (newFontStyle != null) {
-            controller.getModel().setUserPreference(MultiBitModel.FONT_STYLE, newFontStyle);
-
-            if (!newFontStyle.equals(previousFontStyle)) {
-                fontHasChanged = true;
-            }
-        }
-
-        String previousFontSize = dataProvider.getPreviousFontSize();
-        String newFontSize = dataProvider.getNewFontSize();
-
-        controller.getModel().setUserPreference(MultiBitModel.PREVIOUS_FONT_SIZE, previousFontSize);
-
-        if (newFontSize != null) {
-            controller.getModel().setUserPreference(MultiBitModel.FONT_SIZE, newFontSize);
-
-            if (!newFontSize.equals(previousFontSize)) {
-                fontHasChanged = true;
-            }
-        }
-        
-        // Look and feel.
-        boolean lookAndFeelHasChanged = false;
-        String previousLookAndFeel = dataProvider.getPreviousLookAndFeel();
-        String newLookAndFeel = dataProvider.getNewLookAndFeel();
-
-        controller.getModel().setUserPreference(MultiBitModel.LOOK_AND_FEEL, previousLookAndFeel);
-
-        if (newLookAndFeel != null && (!newLookAndFeel.equals(previousLookAndFeel) || !newLookAndFeel.equals(UIManager.getLookAndFeel().getName()))) {
-            controller.getModel().setUserPreference(MultiBitModel.LOOK_AND_FEEL, newLookAndFeel);
-
-            lookAndFeelHasChanged = true;
         }
 
 
@@ -212,7 +122,7 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         boolean showExchange = dataProvider.getNewShowExchange();
 
         boolean restartTickerTimer = false;
-        
+
         if (dataProvider.getPreviousShowCurrency() != showCurrency) {
             wantToFireDataStructureChanged = true;
             restartTickerTimer = true;
@@ -236,18 +146,23 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
 
         controller.getModel().setUserPreference(MultiBitModel.TICKER_SHOW, new Boolean(showTicker).toString());
         controller.getModel().setUserPreference(MultiBitModel.SHOW_BITCOIN_CONVERTED_TO_FIAT, new Boolean(showBitcoinConvertedToFiat).toString());
-        
+
         String columnsToShow = "";
-        if (showCurrency)
+        if (showCurrency) {
             columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_CURRENCY;
-        if (showRate)
+        }
+        if (showRate) {
             columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_LAST_PRICE;
-        if (showBid)
+        }
+        if (showBid) {
             columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_BID;
-        if (showAsk)
+        }
+        if (showAsk) {
             columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_ASK;
-        if (showExchange)
+        }
+        if (showExchange) {
             columnsToShow = columnsToShow + " " + TickerTableModel.TICKER_COLUMN_EXCHANGE;
+        }
 
         if ("".equals(columnsToShow)) {
             // A user could just switch all the columns off in the settings so
@@ -302,9 +217,9 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
         // Set on the model the currencies we are interested in - only these get
         // downloaded to save bandwidth/ server time.
         if (dataProvider.getNewShowSecondRow()) {
-            controller.getModel().getExchangeData().setCurrenciesWeAreInterestedIn(new String[] { newCurrency1, newCurrency2 });
+            controller.getModel().getExchangeData().setCurrenciesWeAreInterestedIn(new String[]{newCurrency1, newCurrency2});
         } else {
-            controller.getModel().getExchangeData().setCurrenciesWeAreInterestedIn(new String[] { newCurrency1 });
+            controller.getModel().getExchangeData().setCurrenciesWeAreInterestedIn(new String[]{newCurrency1});
         }
 
         // Can undo.
@@ -323,53 +238,17 @@ public class ShowPreferencesSubmitAction extends AbstractAction {
             mainFrame.setTickerTimer(tickerTimer);
             tickerTimer.schedule(new TickerTimerTask(controller, mainFrame), 0, TickerTimerTask.DEFAULT_REPEAT_RATE);
         }
-        
-        if (fontHasChanged) {
-            Font newFont = dataProvider.getSelectedFont();
-            FontSizer.INSTANCE.initialise(controller);
-            if (newFont != null) {
-                UIManager.put("ToolTip.font", newFont);
-            }
 
-            wantToFireDataStructureChanged = true;
-        }
 
         if (wantToFireDataStructureChanged) {
             // Redo everything.
             controller.fireDataStructureChanged();
         }
-        
-        if (lookAndFeelHasChanged) {
-            try {
-                if (MultiBitModel.SYSTEM_LOOK_AND_FEEL.equals(newLookAndFeel)) {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                }
-                else {
-                    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                        if (newLookAndFeel.equalsIgnoreCase(info.getName())) {
-                            UIManager.setLookAndFeel(info.getClassName());
-                            break;
-                        }
-                    }
-                }
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (UnsupportedLookAndFeelException e) {
-                e.printStackTrace();
-            }
 
-            ColorAndFontConstants.init();
-            controller.fireDataStructureChanged();
-            SwingUtilities.updateComponentTreeUI(mainFrame);
-        }
 
         // Return to the same view.
         controller.displayView(controller.getCurrentView());
-        
+
         if (feeValidationError) {
             MessageManager.INSTANCE.addMessage(new Message(updateStatusText));
         } else {

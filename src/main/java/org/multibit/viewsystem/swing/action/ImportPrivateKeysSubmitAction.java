@@ -52,6 +52,7 @@ import com.google.bitcoin.core.Utils;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.store.BlockStoreException;
 import com.piuk.blockchain.MyWallet;
+import java.util.logging.Level;
 
 /**
  * This {@link Action} imports the private keys to the active wallet.

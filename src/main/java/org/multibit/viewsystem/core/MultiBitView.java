@@ -23,14 +23,11 @@ package org.multibit.viewsystem.core;
  * @author jim
  *
  */
-public interface MultiBitView extends IView{
+public interface MultiBitView extends View{
     public static final int TRANSACTIONS_VIEW = 101;
     public static final int SEND_BITCOIN_VIEW = 102;
     public static final int SEND_BITCOIN_CONFIRM_VIEW = 103;  // obsolete - now done with Swing dialog
     public static final int RECEIVE_BITCOIN_VIEW = 104;
-    public static final int HELP_CONTENTS_VIEW = 105;
-    public static final int HELP_ABOUT_VIEW = 106;
-    public static final int PREFERENCES_VIEW = 107; 
     public static final int OPEN_WALLET_VIEW = 108;           // obsolete - now done with Swing dialog
     public static final int SAVE_WALLET_AS_VIEW = 109;        // obsolete - now done with Swing dialog
     public static final int VALIDATION_ERROR_VIEW = 110;     // obsolete - now done with Swing dialog

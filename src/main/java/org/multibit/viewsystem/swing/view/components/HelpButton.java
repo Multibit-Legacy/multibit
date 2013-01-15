@@ -3,7 +3,7 @@ package org.multibit.viewsystem.swing.view.components;
 import java.awt.Dimension;
 
 import javax.swing.Action;
-import org.multibit.controller.ICoreController;
+import org.multibit.controller.Controller;
 
 import org.multibit.controller.MultiBitController;
 
@@ -11,11 +11,11 @@ public class HelpButton extends MultiBitButton {
 
     private static final long serialVersionUID = 6708096174704292284L;
 
-    public HelpButton(Action action, ICoreController controller) {
+    public HelpButton(Action action, Controller controller) {
         this(action, controller, false);
     }
 
-    public HelpButton(Action action, ICoreController controller, boolean paintBorder) {
+    public HelpButton(Action action, Controller controller, boolean paintBorder) {
         super(action, controller);
 
         setBorderPainted(paintBorder);

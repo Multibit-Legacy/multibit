@@ -39,11 +39,8 @@ import org.multibit.model.MultiBitModel;
 import org.multibit.platform.listener.GenericAboutEvent;
 import org.multibit.platform.listener.GenericOpenURIEvent;
 import org.multibit.platform.listener.GenericPreferencesEvent;
-import org.multibit.platform.listener.GenericQuitEvent;
-import org.multibit.platform.listener.GenericQuitResponse;
-import org.multibit.viewsystem.core.MultiBitView;
+import org.multibit.viewsystem.core.View;
 import org.multibit.viewsystem.ViewSystem;
-import org.multibit.viewsystem.swing.action.ExitAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,13 +48,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Cameron Garnham
  */
-public class CoreController implements ICoreController {
+public class CoreController implements Controller {
     
     private Logger log = LoggerFactory.getLogger(CoreController.class);
     
     
     /**
-     * The view systems under control of the MultiBitController.
+     * The view systems under control of the CoreController.
      */
     private Collection<ViewSystem> viewSystems;
     
@@ -149,17 +146,17 @@ public class CoreController implements ICoreController {
             viewSystem.navigateAwayFromView(getCurrentView());
         }
 
-        setCurrentView(MultiBitView.HELP_CONTENTS_VIEW);
+        setCurrentView(View.HELP_CONTENTS_VIEW);
 
         // tell all views which view to display
         for (ViewSystem viewSystem : getViewSystems()) {
             viewSystem.setHelpContext(helpContextToDisplay);
-            viewSystem.displayView(MultiBitView.HELP_CONTENTS_VIEW);
+            viewSystem.displayView(View.HELP_CONTENTS_VIEW);
         }
     }
 
     /**
-     * Register a new MultiBitViewSystem from the list of views that are managed.
+     * Register a new ViewSystem from the list of views that are managed.
      * 
      * @param viewSystem
      *            system
@@ -178,25 +175,7 @@ public class CoreController implements ICoreController {
     public void setModel(MultiBitModel model) {
         this.model = model;
     }
-    
-     /**
-     * The language has been changed.
-     */
-    @Override
-    public void fireDataStructureChanged() {
-        Locale newLocale = new Locale(model.getUserPreference(MultiBitModel.USER_LANGUAGE_CODE));
-        localiser.setLocale(newLocale);
 
-        int viewToDisplay = getCurrentView();
-
-        // tell the viewSystems to refresh their views
-        for (ViewSystem viewSystem : getViewSystems()) {
-            viewSystem.recreateAllViews(true);
-        }
-
-        setCurrentView(viewToDisplay);
-        fireDataChanged();
-    }
 
     /**
      * Fire that all the views need recreating.
@@ -212,12 +191,30 @@ public class CoreController implements ICoreController {
     /**
      * Fire that the model data has changed.
      */
-    @Override
     public void fireDataChanged() {
-        for (ViewSystem viewSystem : getViewSystems()) {
+        for (ViewSystem viewSystem : this.viewSystems) {
             viewSystem.fireDataChanged();
         }
     }
+    
+     /**
+     * The language has been changed.
+     */
+    public void fireDataStructureChanged() {
+        Locale newLocale = new Locale(this.getModel().getUserPreference(MultiBitModel.USER_LANGUAGE_CODE));
+        this.getLocaliser().setLocale(newLocale);
+
+        int viewToDisplay = getCurrentView();
+
+        // tell the viewSystems to refresh their views
+        for (ViewSystem viewSystem : this.viewSystems) {
+            viewSystem.recreateAllViews(true);
+        }
+
+        setCurrentView(viewToDisplay);
+        fireDataChanged();
+    }
+    
 
     @Override
     public Localiser getLocaliser() {
@@ -239,7 +236,7 @@ public class CoreController implements ICoreController {
         if (getModel() != null) {
             return getModel().getCurrentView();
         } else {
-            return MultiBitView.DEFAULT_VIEW;
+            return View.DEFAULT_VIEW;
         }
     }
 
@@ -321,39 +318,43 @@ public class CoreController implements ICoreController {
         BigInteger numericAmount = null == bitcoinURI.getAmount() ? BigInteger.ZERO : bitcoinURI.getAmount();
         String amount = getLocaliser().bitcoinValueToStringNotLocalised(numericAmount, false, false);
 
-        if (Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
-            // Do not show confirm dialog - go straight to send view.
-            // Populate the model with the URI data.
-            getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, address);
-            getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, label);
-            getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amount);
-            getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "true");
-            log.debug("Routing straight to send view for address = " + address);
-
-            getModel().setUserPreference(MultiBitModel.BRING_TO_FRONT, "true");
-            displayView(MultiBitView.SEND_BITCOIN_VIEW);
-            return;
-        } else {
-            // Show the confirm dialog to see if the user wants to use URI.
-            // Populate the model with the URI data.
-            getModel().setUserPreference(MultiBitModel.OPEN_URI_ADDRESS, address);
-            getModel().setUserPreference(MultiBitModel.OPEN_URI_LABEL, label);
-            getModel().setUserPreference(MultiBitModel.OPEN_URI_AMOUNT, amount);
-            log.debug("Routing to show open uri view for address = " + address);
-
-            displayView(MultiBitView.SHOW_OPEN_URI_DIALOG_VIEW);
-            return;
-        }
+        // temp.
+        
+        return;
+        
+//        if (Boolean.FALSE.toString().equalsIgnoreCase(showOpenUriDialogText)) {
+//            // Do not show confirm dialog - go straight to send view.
+//            // Populate the model with the URI data.
+//            getModel().setActiveWalletPreference(MultiBitModel.SEND_ADDRESS, address);
+//            getModel().setActiveWalletPreference(MultiBitModel.SEND_LABEL, label);
+//            getModel().setActiveWalletPreference(MultiBitModel.SEND_AMOUNT, amount);
+//            getModel().setActiveWalletPreference(MultiBitModel.SEND_PERFORM_PASTE_NOW, "true");
+//            log.debug("Routing straight to send view for address = " + address);
+//
+//            getModel().setUserPreference(MultiBitModel.BRING_TO_FRONT, "true");
+//            displayView(View.SEND_BITCOIN_VIEW);
+//            return;
+//        } else {
+//            // Show the confirm dialog to see if the user wants to use URI.
+//            // Populate the model with the URI data.
+//            getModel().setUserPreference(MultiBitModel.OPEN_URI_ADDRESS, address);
+//            getModel().setUserPreference(MultiBitModel.OPEN_URI_LABEL, label);
+//            getModel().setUserPreference(MultiBitModel.OPEN_URI_AMOUNT, amount);
+//            log.debug("Routing to show open uri view for address = " + address);
+//
+//            displayView(View.SHOW_OPEN_URI_DIALOG_VIEW);
+//            return;
+//        }
     }
 
     @Override
     public void onPreferencesEvent(GenericPreferencesEvent event) {
-        displayView(MultiBitView.PREFERENCES_VIEW);
+        displayView(View.PREFERENCES_VIEW);
     }
 
     @Override
     public void onAboutEvent(GenericAboutEvent event) {
-        displayView(MultiBitView.HELP_ABOUT_VIEW);
+        displayView(View.HELP_ABOUT_VIEW);
     }
     
 }

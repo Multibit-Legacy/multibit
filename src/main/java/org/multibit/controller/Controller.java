@@ -38,7 +38,7 @@ import org.multibit.viewsystem.ViewSystem;
  *
  * @author Cameron Garnham
  */
-public interface ICoreController extends GenericOpenURIEventListener, GenericPreferencesEventListener,
+public interface Controller extends GenericOpenURIEventListener, GenericPreferencesEventListener,
         GenericAboutEventListener {
     
     public static final String ENCODED_SPACE_CHARACTER = "%20";
@@ -49,9 +49,9 @@ public interface ICoreController extends GenericOpenURIEventListener, GenericPre
     public void registerViewSystem(ViewSystem viewSystem);
     public MultiBitModel getModel();
     public void setModel(MultiBitModel model);
-    public void fireDataStructureChanged();
     public void fireRecreateAllViews(boolean initUI);
     public void fireDataChanged();
+    public void fireDataStructureChanged();
     public Localiser getLocaliser();
     public void setLocaliser(Localiser localiser);
     public ApplicationDataDirectoryLocator getApplicationDataDirectoryLocator();

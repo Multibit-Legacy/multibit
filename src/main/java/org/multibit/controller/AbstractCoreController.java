@@ -41,12 +41,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Cameron Garnham
  */
-public abstract class AbstractCoreController implements ICoreController, GenericQuitEventListener {
-    
-    private ICoreController coreController = null;
-    
-    public AbstractCoreController(ICoreController coreController)
-    {
+public abstract class AbstractCoreController implements Controller, GenericQuitEventListener {
+
+    private Controller coreController = null;
+
+    public AbstractCoreController(Controller coreController) {
         this.coreController = coreController;
     }
 
@@ -54,7 +53,7 @@ public abstract class AbstractCoreController implements ICoreController, Generic
     public Collection<ViewSystem> getViewSystems() {
         return coreController.getViewSystems();
     }
-    
+
     @Override
     public void displayView(int viewToDisplay) {
         coreController.displayView(viewToDisplay);
@@ -81,11 +80,6 @@ public abstract class AbstractCoreController implements ICoreController, Generic
     }
 
     @Override
-    public void fireDataStructureChanged() {
-        coreController.fireDataChanged();;
-    }
-
-    @Override
     public void fireRecreateAllViews(boolean initUI) {
         coreController.fireRecreateAllViews(initUI);
     }
@@ -93,6 +87,11 @@ public abstract class AbstractCoreController implements ICoreController, Generic
     @Override
     public void fireDataChanged() {
         coreController.fireDataChanged();
+    }
+
+    @Override
+    public void fireDataStructureChanged() {
+        coreController.fireDataStructureChanged();
     }
 
     @Override
@@ -129,10 +128,9 @@ public abstract class AbstractCoreController implements ICoreController, Generic
     public void onOpenURIEvent(GenericOpenURIEvent event) {
         coreController.onOpenURIEvent(event);
     }
-    
+
     @Override
-    public void handleOpenURI()
-    {
+    public void handleOpenURI() {
         coreController.handleOpenURI();
     }
 
@@ -148,12 +146,11 @@ public abstract class AbstractCoreController implements ICoreController, Generic
 
     @Override
     public abstract void onQuitEvent(GenericQuitEvent event, GenericQuitResponse response);
- 
+
     /**
      * @return True if the application can quit
      */
     protected boolean isOKToQuit() {
         return true;
     }
-    
 }

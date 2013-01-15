@@ -1166,7 +1166,7 @@ public abstract class AbstractTradePanel extends JPanel implements MultiBitView,
         GridBagConstraints constraints2 = new GridBagConstraints();
         int longFieldWidth = fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT);
 
-        amountBTCTextField = new MultiBitTextField("", 10, controller);
+        amountBTCTextField = new MultiBitTextField("", 10);
         amountBTCTextField.setHorizontalAlignment(JTextField.TRAILING);
         amountBTCTextField.setMinimumSize(new Dimension((int) (longFieldWidth * 0.45), getFontMetrics(
                 FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()
@@ -1226,7 +1226,7 @@ public abstract class AbstractTradePanel extends JPanel implements MultiBitView,
         amountPanel.add(amountEqualsLabel, constraints2);
         amountPanel.add(MultiBitTitledPanel.createStent(amountEqualsLabel.getPreferredSize().width, amountEqualsLabel.getPreferredSize().height), constraints2);
 
-        amountFiatTextField = new MultiBitTextField("", 8, controller);
+        amountFiatTextField = new MultiBitTextField("", 8);
         amountFiatTextField.setHorizontalAlignment(JTextField.TRAILING);
         amountFiatTextField.setMinimumSize(new Dimension((int) (longFieldWidth * 0.2), getFontMetrics(
                 FontSizer.INSTANCE.getAdjustedDefaultFont()).getHeight()

@@ -147,7 +147,7 @@ public class ReceiveBitcoinPanel extends AbstractTradePanel implements MultiBitV
 
         FontMetrics fontMetric = getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont());
         int longFieldWidth = fontMetric.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT);
-        addressTextField = new MultiBitTextField("", 24, controller);
+        addressTextField = new MultiBitTextField("", 24);
 
         //addressTextField = new MultiBitTextArea("", 24, 1, controller);
         addressTextField.setEditable(false);

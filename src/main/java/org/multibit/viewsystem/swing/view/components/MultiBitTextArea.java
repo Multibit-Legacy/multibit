@@ -19,7 +19,7 @@ import java.awt.ComponentOrientation;
 
 import javax.swing.BorderFactory;
 import javax.swing.JTextArea;
-import org.multibit.controller.ICoreController;
+import org.multibit.controller.Controller;
 
 import org.multibit.controller.MultiBitController;
 
@@ -27,7 +27,7 @@ public class MultiBitTextArea extends JTextArea {
 
     private static final long serialVersionUID = 3539740758937470378L;
    
-    public MultiBitTextArea(String text, int height, int width, ICoreController controller) {
+    public MultiBitTextArea(String text, int height, int width, Controller controller) {
         super(text, height, width);
         setFont(FontSizer.INSTANCE.getAdjustedDefaultFont());
         setBorder(BorderFactory.createEmptyBorder());

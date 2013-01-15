@@ -21,41 +21,76 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.multibit.viewsystem;
+package org.multibit.viewsystem.dataproviders;
 
 /**
  *
  * @author Cameron Garnham
  */
-public interface ViewSystem {
+public interface MultiBitPreferencesDataProvider  {
+
+    String getNewCurrency1();
+
+    String getNewCurrency2();
+
+    String getNewExchange1();
+
+    String getNewExchange2();
 
     /**
-     * display the view specified
-     * @param view to display - one of the View constants
+     * Get the new send fee
      */
-    void displayView(int viewToDisplay);
+    String getNewSendFee();
+
+    boolean getNewShowAsk();
+
+    boolean getNewShowBid();
+
+    boolean getNewShowBitcoinConvertedToFiat();
+
+    boolean getNewShowCurrency();
+
+    boolean getNewShowExchange();
+
+    boolean getNewShowRate();
+
+    boolean getNewShowSecondRow();
+
+    boolean getNewShowTicker();
+
+    String getPreviousCurrency1();
+
+    String getPreviousCurrency2();
+
+    String getPreviousExchange1();
+
+    String getPreviousExchange2();
 
     /**
-     * tells the view system that the model data has changed (but the wallet is still the same)
-     */   
-    public void fireDataChanged();
-    
-    /**
-     * navigate away from a view - gives the view the opportunity to tidy up/ disappear etc
-     * @param viewToNavigateAwayFrom - current view to navigate away from -one of the View constants
+     * Get the previous send fee
      */
-    void navigateAwayFromView(int viewToNavigateAwayFrom);
+    String getPreviousSendFee();
+
+    boolean getPreviousShowAsk();
+
+    boolean getPreviousShowBid();
+
+    boolean getPreviousShowBitcoinConvertedToFiat();
 
     /**
-     * tells the view system to recreate all views e.g. after a language change or wallet change
-     * @param initUI Completely redraw everything on all screens = true
+     * ticker information
+     * @return
      */
-    void recreateAllViews(boolean initUI);
+    boolean getPreviousShowCurrency();
 
-    /**
-     * Set the help context to display
-     * @param helpContextToDisplay
-     */
-    void setHelpContext(String helpContextToDisplay);
+    boolean getPreviousShowExchange();
+
+    boolean getPreviousShowRate();
+
+    boolean getPreviousShowSecondRow();
+
+    boolean getPreviousShowTicker();
+
+    boolean isTickerVisible();
     
 }

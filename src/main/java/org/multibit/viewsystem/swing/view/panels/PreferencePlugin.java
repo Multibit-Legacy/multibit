@@ -21,49 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.multibit.viewsystem.core;
+package org.multibit.viewsystem.swing.view.panels;
 
-import javax.swing.Icon;
+import javax.swing.JPanel;
+import org.multibit.viewsystem.swing.action.PreferencesSubmitAction;
 
 /**
  *
  * @author Cameron Garnham
  */
-public interface IView {
-    public static final int SAME_VIEW = -1; // Not a real view - used to forward to the same view as calling
-    public static final int UNKNOWN_VIEW = 0;
-    public static final int WELCOME_VIEW = 1;
-    
-    public static final int DEFAULT_VIEW = WELCOME_VIEW;
+public interface PreferencePlugin {
+
+    void addToMainPanel(JPanel mainPanel);
 
     /**
-     * display the view
+     * Update preferences panel.
      */
     void displayView();
-
-    /**
-     * @returns the icon for the view
-     */
-    Icon getViewIcon();
-
-    /**
-     * @returns the view identifier for the view
-     */
-    int getViewId();
-
-    /**
-     * @returns the title for the view
-     */
-    String getViewTitle();
-
-    /**
-     * @returns the tooltip for the view
-     */
-    String getViewTooltip();
-
-    /**
-     * Navigate away from the view (including releasing any resources used)
-     */
-    void navigateAwayFromView();
+    
+    PreferencesSubmitAction getPreferencesSubmitAction();
     
 }

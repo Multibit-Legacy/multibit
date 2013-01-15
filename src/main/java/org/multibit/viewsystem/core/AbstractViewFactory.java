@@ -31,27 +31,27 @@ import java.util.Map;
  * @author Cameron Garnham
  */
 public abstract class AbstractViewFactory {
-    protected Map<Integer, IView> viewMap;
+    protected Map<Integer, View> viewMap;
 
     public AbstractViewFactory() {
         initialise();
     }
     
     public final void initialise() {
-        viewMap = new HashMap<Integer, IView>();
+        viewMap = new HashMap<Integer, View>();
     }
 
     public void addView(int viewNumber, MultiBitView view) {
         viewMap.put(viewNumber, view);
     }
 
-    public IView getView(int viewNumber) {
-        IView viewToReturn = viewMap.get(viewNumber);
+    public View getView(int viewNumber) {
+        View viewToReturn = viewMap.get(viewNumber);
         if (viewToReturn == null) {
             viewToReturn = createView(viewNumber);
         }
         return viewToReturn;
     }
     
-    protected abstract IView createView(int viewNumber);
+    protected abstract View createView(int viewNumber);
 }

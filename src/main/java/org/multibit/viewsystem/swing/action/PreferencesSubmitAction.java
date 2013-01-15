@@ -21,41 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.multibit.viewsystem;
+package org.multibit.viewsystem.swing.action;
+
+import javax.swing.Action;
 
 /**
  *
  * @author Cameron Garnham
  */
-public interface ViewSystem {
-
-    /**
-     * display the view specified
-     * @param view to display - one of the View constants
-     */
-    void displayView(int viewToDisplay);
-
-    /**
-     * tells the view system that the model data has changed (but the wallet is still the same)
-     */   
-    public void fireDataChanged();
-    
-    /**
-     * navigate away from a view - gives the view the opportunity to tidy up/ disappear etc
-     * @param viewToNavigateAwayFrom - current view to navigate away from -one of the View constants
-     */
-    void navigateAwayFromView(int viewToNavigateAwayFrom);
-
-    /**
-     * tells the view system to recreate all views e.g. after a language change or wallet change
-     * @param initUI Completely redraw everything on all screens = true
-     */
-    void recreateAllViews(boolean initUI);
-
-    /**
-     * Set the help context to display
-     * @param helpContextToDisplay
-     */
-    void setHelpContext(String helpContextToDisplay);
+public interface PreferencesSubmitAction extends Action {
     
 }

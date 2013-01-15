@@ -16,6 +16,7 @@
 package org.multibit.viewsystem.swing.view.components;
 
 import java.awt.Font;
+import org.multibit.controller.Controller;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.model.MultiBitModel;
@@ -24,10 +25,10 @@ import org.multibit.viewsystem.swing.ColorAndFontConstants;
 public enum FontSizer {
         INSTANCE;
         
-    private MultiBitController controller;
+    private Controller controller;
     private Font adjustedDefaultFont;
     
-    public void initialise(MultiBitController controller) {
+    public void initialise(Controller controller) {
         this.controller = controller;
         adjustedDefaultFont = createAdjustedDefaultFont();
     }

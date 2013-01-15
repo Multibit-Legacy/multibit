@@ -4,16 +4,16 @@ import java.math.BigInteger;
 
 import org.multibit.model.PerWalletModelData;
 import org.multibit.model.StatusEnum;
-import org.multibit.viewsystem.ViewSystem;
 
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
+import org.multibit.viewsystem.MultiBitViewSystem;
 
 /**
  * A very simple implementation of a view system.
  */
-public class SimpleViewSystem implements ViewSystem {
+public class SimpleViewSystem implements MultiBitViewSystem {
     int numberOfBlocksDownloaded = 0;
 
     public int getNumberOfBlocksDownloaded() {

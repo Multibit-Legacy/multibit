@@ -155,7 +155,7 @@ public class SendBitcoinPanel extends AbstractTradePanel implements MultiBitView
         formPanel.add(MultiBitTitledPanel.createStent((int)notUsedReceiveAddressLabel.getPreferredSize().getWidth()), constraints);
         
         int longFieldWidth = fontMetrics.stringWidth(MultiBitFrame.EXAMPLE_LONG_FIELD_TEXT);
-        addressTextField = new MultiBitTextField("", 24, controller);
+        addressTextField = new MultiBitTextField("", 24);
         addressTextField.setHorizontalAlignment(JTextField.LEADING);
         addressTextField.setMinimumSize(new Dimension(longFieldWidth, getFontMetrics(FontSizer.INSTANCE.getAdjustedDefaultFont())
                 .getHeight() + TEXTFIELD_VERTICAL_DELTA));

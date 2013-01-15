@@ -28,12 +28,13 @@ import org.multibit.viewsystem.swing.view.panels.ExportPrivateKeysPanel;
 import org.multibit.viewsystem.swing.view.panels.ReceiveBitcoinPanel;
 import org.multibit.viewsystem.swing.view.panels.AddPasswordPanel;
 import org.multibit.viewsystem.swing.view.panels.ChangePasswordPanel;
-import org.multibit.viewsystem.swing.view.panels.ShowPreferencesPanel;
+import org.multibit.viewsystem.swing.view.panels.PreferencesPanel;
 import org.multibit.viewsystem.swing.view.panels.ChartsPanel;
 import org.multibit.viewsystem.swing.view.panels.ImportPrivateKeysPanel;
 
 import org.multibit.controller.MultiBitController;
 import org.multibit.viewsystem.swing.MultiBitFrame;
+import org.multibit.viewsystem.swing.view.panels.MultiBitPreferencesPanel;
 
 /**
  * a factory class that lazy loads views
@@ -53,8 +54,8 @@ public class MultiBitViewFactory extends AbstractViewFactory {
     }
     
     @Override
-    protected IView createView(int viewNumber) {
-        IView viewToReturn = null;
+    protected View createView(int viewNumber) {
+        View viewToReturn = null;
         switch (viewNumber) {
             case MultiBitView.SAME_VIEW:
                 {
@@ -93,7 +94,9 @@ public class MultiBitViewFactory extends AbstractViewFactory {
                 }
             case MultiBitView.PREFERENCES_VIEW:
                 {
-                    viewToReturn = new ShowPreferencesPanel(controller, mainFrame);
+                    PreferencesPanel preferencesPanel = new PreferencesPanel(controller, mainFrame);
+                    preferencesPanel.AddPreferencesPlugin(new MultiBitPreferencesPanel(controller, mainFrame, preferencesPanel));
+                    viewToReturn = preferencesPanel;
                     break;
                 }
             case MultiBitView.RESET_TRANSACTIONS_VIEW:

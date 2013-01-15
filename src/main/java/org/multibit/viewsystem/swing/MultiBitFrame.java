@@ -104,12 +104,13 @@ import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletVersion;
-import org.multibit.viewsystem.core.IView;
+import org.multibit.viewsystem.MultiBitViewSystem;
+import org.multibit.viewsystem.core.View;
 
 /*
  * JFrame displaying Swing version of MultiBit
  */
-public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationListener, WalletBusyListener, CurrencyConverterListener {
+public class MultiBitFrame extends JFrame implements MultiBitViewSystem, ApplicationListener, WalletBusyListener, CurrencyConverterListener {
 
     private static final Logger log = LoggerFactory.getLogger(MultiBitFrame.class);
 
@@ -367,21 +368,21 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         // Add the send bitcoin tab.
         JPanel sendBitcoinOutlinePanel = new JPanel(new BorderLayout());
-        IView sendBitcoinView = viewFactory.getView(MultiBitView.SEND_BITCOIN_VIEW);
+        View sendBitcoinView = viewFactory.getView(MultiBitView.SEND_BITCOIN_VIEW);
         sendBitcoinOutlinePanel.add((JPanel) sendBitcoinView, BorderLayout.CENTER);
         viewTabbedPane.addTab(sendBitcoinView.getViewTitle(), sendBitcoinView.getViewIcon(), sendBitcoinView.getViewTooltip(),
                 sendBitcoinOutlinePanel);
 
         // Add the receive bitcoin tab.
         JPanel receiveBitcoinOutlinePanel = new JPanel(new BorderLayout());
-        IView receiveBitcoinView = viewFactory.getView(MultiBitView.RECEIVE_BITCOIN_VIEW);
+        View receiveBitcoinView = viewFactory.getView(MultiBitView.RECEIVE_BITCOIN_VIEW);
         receiveBitcoinOutlinePanel.add((JPanel) receiveBitcoinView, BorderLayout.CENTER);
         viewTabbedPane.addTab(receiveBitcoinView.getViewTitle(), receiveBitcoinView.getViewIcon(),
                 receiveBitcoinView.getViewTooltip(), receiveBitcoinOutlinePanel);
 
         // Add the transactions tab.
         JPanel transactionsOutlinePanel = new JPanel(new BorderLayout());
-        IView transactionsView = viewFactory.getView(MultiBitView.TRANSACTIONS_VIEW);
+        View transactionsView = viewFactory.getView(MultiBitView.TRANSACTIONS_VIEW);
         transactionsOutlinePanel.add((JPanel) transactionsView, BorderLayout.CENTER);
         viewTabbedPane.addTab(transactionsView.getViewTitle(), transactionsView.getViewIcon(), transactionsView.getViewTooltip(),
                 transactionsOutlinePanel);
@@ -1015,7 +1016,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
 
         controller.setCurrentView(viewToDisplay);
 
-        final IView nextViewFinal = viewFactory.getView(viewToDisplay);
+        final View nextViewFinal = viewFactory.getView(viewToDisplay);
 
         if (nextViewFinal == null) {
             log.debug("Cannot display view " + viewToDisplay);
@@ -1074,7 +1075,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
             return;
         }
 
-        final IView viewToNavigateAwayFromFinal = viewFactory.getView(viewToNavigateAwayFrom);
+        final View viewToNavigateAwayFromFinal = viewFactory.getView(viewToNavigateAwayFrom);
 
         if (viewToNavigateAwayFromFinal != null) {
             SwingUtilities.invokeLater(new Runnable() {
@@ -1206,7 +1207,7 @@ public class MultiBitFrame extends JFrame implements ViewSystem, ApplicationList
                 }
 
                 // Tell the current view to update itself.
-                IView currentViewView = viewFactory.getView(controller.getCurrentView());
+                View currentViewView = viewFactory.getView(controller.getCurrentView());
                 if (currentViewView != null) {
                     currentViewView.displayView();
                 }

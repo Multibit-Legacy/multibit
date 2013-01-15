@@ -21,41 +21,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.multibit.viewsystem;
+package org.multibit.viewsystem.core;
+
+import javax.swing.Icon;
 
 /**
  *
  * @author Cameron Garnham
  */
-public interface ViewSystem {
-
-    /**
-     * display the view specified
-     * @param view to display - one of the View constants
-     */
-    void displayView(int viewToDisplay);
-
-    /**
-     * tells the view system that the model data has changed (but the wallet is still the same)
-     */   
-    public void fireDataChanged();
+public interface View {
+    public static final int SAME_VIEW = -1; // Not a real view - used to forward to the same view as calling
+    public static final int UNKNOWN_VIEW = 0;
+    public static final int WELCOME_VIEW = 1;
+    public static final int HELP_CONTENTS_VIEW = 2;
+    public static final int HELP_ABOUT_VIEW = 3;
+    public static final int PREFERENCES_VIEW = 4; 
     
-    /**
-     * navigate away from a view - gives the view the opportunity to tidy up/ disappear etc
-     * @param viewToNavigateAwayFrom - current view to navigate away from -one of the View constants
-     */
-    void navigateAwayFromView(int viewToNavigateAwayFrom);
+    public static final int DEFAULT_VIEW = WELCOME_VIEW;
 
     /**
-     * tells the view system to recreate all views e.g. after a language change or wallet change
-     * @param initUI Completely redraw everything on all screens = true
+     * display the view
      */
-    void recreateAllViews(boolean initUI);
+    void displayView();
 
     /**
-     * Set the help context to display
-     * @param helpContextToDisplay
+     * @returns the icon for the view
      */
-    void setHelpContext(String helpContextToDisplay);
+    Icon getViewIcon();
+
+    /**
+     * @returns the view identifier for the view
+     */
+    int getViewId();
+
+    /**
+     * @returns the title for the view
+     */
+    String getViewTitle();
+
+    /**
+     * @returns the tooltip for the view
+     */
+    String getViewTooltip();
+
+    /**
+     * Navigate away from the view (including releasing any resources used)
+     */
+    void navigateAwayFromView();
     
 }

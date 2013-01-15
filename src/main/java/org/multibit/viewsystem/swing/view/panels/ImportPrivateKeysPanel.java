@@ -67,6 +67,8 @@ import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
 import com.piuk.blockchain.MyWallet;
 import com.piuk.blockchain.MyWalletEncryptedKeyFileFilter;
 import com.piuk.blockchain.MyWalletPlainKeyFileFilter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
 import org.multibit.viewsystem.swing.view.PrivateKeyFileFilter;
 

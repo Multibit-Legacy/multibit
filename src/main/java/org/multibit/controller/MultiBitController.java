@@ -28,7 +28,7 @@ import org.multibit.model.WalletBusyListener;
 import org.multibit.network.MultiBitService;
 import org.multibit.platform.listener.GenericQuitEvent;
 import org.multibit.platform.listener.GenericQuitResponse;
-import org.multibit.viewsystem.ViewSystem;
+import org.multibit.viewsystem.MultiBitViewSystem;
 import org.multibit.viewsystem.swing.action.ExitAction;
 import org.multibit.viewsystem.swing.view.panels.SendBitcoinConfirmPanel;
 import org.slf4j.Logger;
@@ -46,6 +46,8 @@ import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.TransactionConfidence.ConfidenceType;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.Wallet;
+import java.util.Locale;
+import org.multibit.model.MultiBitModel;
 
 /**
  * The MVC controller for MultiBit.
@@ -56,6 +58,12 @@ public class MultiBitController extends AbstractCoreController implements PeerEv
 
     private Logger log = LoggerFactory.getLogger(MultiBitController.class);
 
+    
+    /**
+     * The view systems under control of the CoreController.
+     */
+    private Collection<MultiBitViewSystem> viewSystems;
+    
     /**
      * The WalletBusy listeners
      */
@@ -71,9 +79,12 @@ public class MultiBitController extends AbstractCoreController implements PeerEv
     /**
      * Class encapsulating the location of the Application Data Directory.
      */
+    
+    
 
-    public MultiBitController(ICoreController coreController) {
+    public MultiBitController(Controller coreController) {
         super(coreController);
+        viewSystems = new ArrayList<MultiBitViewSystem>();
         walletBusyListeners = new ArrayList<WalletBusyListener>();
         fileHandler = new FileHandler(this);
     }
@@ -96,13 +107,14 @@ public class MultiBitController extends AbstractCoreController implements PeerEv
         }
         return perWalletModelDataToReturn;
     }
+    
 
     public void fireFilesHaveBeenChangedByAnotherProcess(PerWalletModelData perWalletModelData) {
-        for (ViewSystem viewSystem : super.getViewSystems()) {
+        for (MultiBitViewSystem viewSystem : this.viewSystems) {
             viewSystem.fireFilesHaveBeenChangedByAnotherProcess(perWalletModelData);
         }
 
-        fireDataChanged();
+        super.fireDataChanged();
     }
 
     /**
@@ -158,7 +170,7 @@ public class MultiBitController extends AbstractCoreController implements PeerEv
     }
 
     public void setOnlineStatus(StatusEnum statusEnum) {
-        for (ViewSystem viewSystem : super.getViewSystems()) {
+        for (MultiBitViewSystem viewSystem : this.viewSystems) {
             viewSystem.setOnlineStatus(statusEnum);
         }
     }
@@ -168,7 +180,7 @@ public class MultiBitController extends AbstractCoreController implements PeerEv
      */
     public void fireBlockDownloaded() {
         // log.debug("Fire blockdownloaded");
-        for (ViewSystem viewSystem : super.getViewSystems()) {
+        for (MultiBitViewSystem viewSystem : this.viewSystems) {
             viewSystem.blockDownloaded();
         }
     }
@@ -188,13 +200,13 @@ public class MultiBitController extends AbstractCoreController implements PeerEv
     }
 
     public void onCoinsReceived(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        for (ViewSystem viewSystem : super.getViewSystems()) {
+        for (MultiBitViewSystem viewSystem : this.viewSystems) {
             viewSystem.onCoinsReceived(wallet, transaction, prevBalance, newBalance);
         }
     }
 
     public void onCoinsSent(Wallet wallet, Transaction transaction, BigInteger prevBalance, BigInteger newBalance) {
-        for (ViewSystem viewSystem : super.getViewSystems()) {
+        for (MultiBitViewSystem viewSystem : this.viewSystems) {
             viewSystem.onCoinsSent(wallet, transaction, prevBalance, newBalance);
         }
     }
@@ -210,7 +222,7 @@ public class MultiBitController extends AbstractCoreController implements PeerEv
         if (getMultiBitService().getChain() != null && transaction.getConfidence().getConfidenceType() == ConfidenceType.BUILDING) {
             transaction.getConfidence().setDepthInBlocks(getMultiBitService().getChain().getBestChainHeight() - transaction.getConfidence().getAppearedAtChainHeight() + 1);
         }
-        for (ViewSystem viewSystem : super.getViewSystems()) {
+        for (MultiBitViewSystem viewSystem : this.viewSystems) {
             viewSystem.onTransactionConfidenceChanged(wallet, transaction);
         }
         checkForDirtyWallets(transaction);
@@ -228,7 +240,7 @@ public class MultiBitController extends AbstractCoreController implements PeerEv
                 log.debug("Marking wallet '" + loopPerWalletModelData.getWalletFilename() + "' as dirty.");
             }
         }
-        for (ViewSystem viewSystem : super.getViewSystems()) {
+        for (MultiBitViewSystem viewSystem : this.viewSystems) {
             viewSystem.onReorganize(wallet);
         }
     }
