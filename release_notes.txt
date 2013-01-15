@@ -3,7 +3,7 @@ MultiBit release notes.
 14 Jan 2013 Version 0.4.19
 
 Please note: this version does NOT include a full fix for the zero-confirmation vulnerability
-announced by Retep on 10 Jan 2013. (Still working on it).
+announced by Retep on 10 Jan 2013. (This is still being worked on).
  
 Improvements
 + Improved status notifications for transactions
