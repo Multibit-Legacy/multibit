@@ -28,6 +28,8 @@ import java.math.BigInteger;
 import java.util.*;
 
 import static com.google.bitcoin.core.Utils.*;
+import com.google.bitcoin.crypto.EncrypterDecrypterException;
+import java.util.logging.Level;
 
 /**
  * <p>A transaction represents the movement of coins from some addresses to some other addresses. It can also represent
@@ -659,7 +661,7 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
      * @param decryptBeforeSigning True is keys need decrypting before signing
      * @param aesKey The AES key to using for decrypting
      */
-    public synchronized void signInputs(SigHash hashType, Wallet wallet, boolean decryptBeforeSigning, KeyParameter aesKey) throws ScriptException {
+    public synchronized void signInputs(SigHash hashType, Wallet wallet, boolean decryptBeforeSigning, KeyParameter aesKey) throws ScriptException, EncrypterDecrypterException {
         Preconditions.checkState(inputs.size() > 0);
         Preconditions.checkState(outputs.size() > 0);
 
@@ -699,6 +701,8 @@ public class Transaction extends ChildMessage implements Serializable, IsMultiBi
                 bos.write((hashType.ordinal() + 1) | (anyoneCanPay ? 0x80 : 0));
                 signatures[i] = bos.toByteArray();
                 bos.close();
+            } catch (IllegalStateException ex) {
+                java.util.logging.Logger.getLogger(Transaction.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException e) {
                 throw new RuntimeException(e);  // Cannot happen.
             }

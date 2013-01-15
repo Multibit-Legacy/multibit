@@ -39,6 +39,8 @@ import org.spongycastle.util.Arrays;
 
 import com.google.bitcoin.core.EncryptionType;
 import com.google.bitcoin.core.MultiBitBlockChain;
+import com.google.bitcoin.crypto.EncrypterDecrypterException;
+import java.util.logging.Level;
 
 /**
  * This {@link Action} exports the active wallets private keys.
@@ -96,14 +98,17 @@ public class ExportPrivateKeysSubmitAction extends MultiBitSubmitAction implemen
                         "showExportPrivateKeysAction.youMustEnterTheWalletPassword"));
                 return;
             }
-
-            // See if the password is the correct wallet password.
-            if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
-                // The password supplied is incorrect.
-                exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
-                        "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
-                exportPrivateKeysPanel.setMessage2(" ");
-                return;
+            try {
+                // See if the password is the correct wallet password.
+                if (!controller.getModel().getActiveWallet().checkPasswordCanDecryptFirstPrivateKey(walletPassword.getPassword())) {
+                    // The password supplied is incorrect.
+                    exportPrivateKeysPanel.setMessage1(controller.getLocaliser().getString(
+                            "createNewReceivingAddressSubmitAction.passwordIsIncorrect"));
+                    exportPrivateKeysPanel.setMessage2(" ");
+                    return;
+                }
+            } catch (EncrypterDecrypterException ex) {
+                java.util.logging.Logger.getLogger(ExportPrivateKeysSubmitAction.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 

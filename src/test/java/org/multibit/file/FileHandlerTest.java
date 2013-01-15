@@ -42,6 +42,7 @@ import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.WalletVersion;
 import com.google.bitcoin.core.WalletVersionException;
 import com.google.bitcoin.crypto.EncrypterDecrypter;
+import com.google.bitcoin.crypto.EncrypterDecrypterException;
 import com.google.bitcoin.crypto.EncrypterDecrypterScrypt;
 import com.google.bitcoin.crypto.ScryptParameters;
 
@@ -243,7 +244,7 @@ public class FileHandlerTest extends TestCase {
     }
     
     @Test
-    public void testCreateProtobufEncryptedWallet() throws IOException {
+    public void testCreateProtobufEncryptedWallet() throws IOException, EncrypterDecrypterException {
         // Create an encrypted wallet.
         File temporaryWallet = File.createTempFile(TEST_CREATE_ENCRYPTED_PROTOBUF_PREFIX, ".wallet");
         temporaryWallet.deleteOnExit();
@@ -351,7 +352,7 @@ public class FileHandlerTest extends TestCase {
     }
 
     @Test
-    public void testDefaultScryptParameters() throws IOException {
+    public void testDefaultScryptParameters() throws IOException, EncrypterDecrypterException {
         // Create an encrypted wallet with default scrypt parameters.
         File temporaryWallet = File.createTempFile(TEST_SCRYPT_PARAMETERS + "1", ".wallet");
         temporaryWallet.deleteOnExit();
@@ -398,7 +399,7 @@ public class FileHandlerTest extends TestCase {
     }
 
     @Test
-    public void testNonDefaultScryptParameters() throws IOException {
+    public void testNonDefaultScryptParameters() throws IOException, EncrypterDecrypterException {
         // Non default scrypt parameters.
         int n = 32768;
         int r = 8;

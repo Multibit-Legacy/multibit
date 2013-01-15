@@ -147,8 +147,11 @@ public class ImportPrivateKeysPanel extends JPanel implements MultiBitView, Wall
             walletPasswordRequired = true;
         }
         enableWalletPassword(walletPasswordRequired);
-        
-        encrypterDecrypter = new EncrypterDecrypterOpenSSL();
+        try {
+            encrypterDecrypter = new EncrypterDecrypterOpenSSL();
+        } catch (EncrypterDecrypterException ex) {
+            Logger.getLogger(ImportPrivateKeysPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
         multiBitFileChooser = new PrivateKeyFileFilter(controller);
         myWalletPlainFileChooser = new MyWalletPlainKeyFileFilter();
         myWalletEncryptedFileChooser = new MyWalletEncryptedKeyFileFilter();
@@ -894,7 +897,11 @@ public class ImportPrivateKeysPanel extends JPanel implements MultiBitView, Wall
                     } else if (myWalletPlainFileChooser.accept(file)) {
                         // File is not encrypted.
                         enableImportFilePasswordPanel(false);
-                        readInImportFileAndUpdateDetails();
+                        try {
+                            readInImportFileAndUpdateDetails();
+                        } catch (EncrypterDecrypterException ex) {
+                            Logger.getLogger(ImportPrivateKeysPanel.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
             }
@@ -942,7 +949,7 @@ public class ImportPrivateKeysPanel extends JPanel implements MultiBitView, Wall
     /**
      * Read in the import file and show the file details.
      */
-    private void readInImportFileAndUpdateDetails() {
+    private void readInImportFileAndUpdateDetails() throws EncrypterDecrypterException {
         // Update number of keys and earliest date.
 
         try {

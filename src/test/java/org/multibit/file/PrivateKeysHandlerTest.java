@@ -33,6 +33,7 @@ import org.multibit.model.MultiBitModel;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.EncrypterDecrypterException;
 import com.piuk.blockchain.MyWallet;
 import org.multibit.controller.CoreController;
 
@@ -101,7 +102,7 @@ public class PrivateKeysHandlerTest extends TestCase {
     }
     
     @Test
-    public void testImport() throws IOException {
+    public void testImport() throws IOException, PrivateKeysHandlerException, EncrypterDecrypterException {
         NetworkParameters prodNet = NetworkParameters.prodNet();
         PrivateKeysHandler privateKeysHandler = new PrivateKeysHandler(prodNet);
         assertNotNull(privateKeysHandler);

@@ -96,7 +96,7 @@ public class EncrypterDecrypterOpenSSL {
 
     private static SecureRandom secureRandom = new SecureRandom();
 
-    public EncrypterDecrypterOpenSSL() {
+    public EncrypterDecrypterOpenSSL() throws EncrypterDecrypterException {
         try {
             openSSLSaltedBytes = OPENSSL_SALTED_TEXT.getBytes(STRING_ENCODING);
 
